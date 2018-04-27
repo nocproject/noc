@@ -116,6 +116,11 @@ class Service(object):
         "span": "ctx"
     }
 
+    # Timeout to wait NSQ writer is to close
+    NSQ_WRITER_CLOSE_TRY_TIMEOUT = 0.25
+    # Times to try to close NSQ writer
+    NSQ_WRITER_CLOSE_RETRIES = 5
+
     class RegistrationError(Exception):
         pass
 
@@ -514,6 +519,35 @@ class Service(object):
                     )
         # Custom deactivation
         yield self.on_deactivate()
+        # Flush pending NSQ messages
+        if self.nsq_writer:
+            conns = list(self.nsq_writer.conns)
+            n = self.NSQ_WRITER_CLOSE_RETRIES
+            while conns:
+                self.logger.info("Waiting for %d NSQ connections to finish", len(conns))
+                waiting = []
+                for conn_id in conns:
+                    connect = self.nsq_writer.conns.get(conn_id)
+                    if not connect:
+                        continue
+                    if connect.callback_queue:
+                        # Pending operations
+                        waiting += [conn_id]
+                    elif not connect.closed():
+                        # Unclosed connection
+                        connect.close()
+                        waiting += [conn_id]
+                conns = waiting
+                if conns:
+                    n -= 1
+                    if n <= 0:
+                        self.logger.info("Failed to close NSQ writer properly. Giving up. Pending messages may be lost")
+                        break
+                    # Wait
+                    yield tornado.gen.sleep(self.NSQ_WRITER_CLOSE_TRY_TIMEOUT)
+                else:
+                    self.logger.info("NSQ writer is shut down clearly")
+        # Continue deactivation
         # Finally stop ioloop
         self.dcs = None
         self.logger.info("Stopping IOLoop")
@@ -546,7 +580,7 @@ class Service(object):
         addr, port = self.get_service_address()
         r = yield self.dcs.register(
             self.name, addr, port,
-            pool=config.pool or None,
+            pool=config.pool if self.pooled else None,
             lock=self.get_leader_lock_name(),
             tags=self.get_register_tags()
         )

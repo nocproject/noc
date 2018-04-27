@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,6 +18,11 @@ class Script(BaseScript):
     name = "Alcatel.7302.get_interfaces"
     interface = IGetInterfaces
 
+    rx_bridge_port = re.compile(
+        r"^(?P<ifname>\S+)\s+(?P<bridge_port>\d+)\s+(?P<pvid>\d+)\s+\d+\s*\n",
+        re.MULTILINE)
+    rx_vlan_map = re.compile(
+        r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_ifname = re.compile("port : (?P<ifname>\S+)")
     rx_ifindex = re.compile("if-index : (?P<ifindex>\d+)")
     rx_ififo = re.compile("info : \"(?P<info>.+?)\"")
@@ -52,24 +57,61 @@ class Script(BaseScript):
         "bridge-port": "other"
     }
 
+    @staticmethod
+    def wrong_interface(ifname):
+        if ifname.startswith("bonding"):
+            return True
+        elif ifname.startswith("xdsl-line"):
+            return True
+        elif ifname.startswith("xdsl-channel"):
+            return True
+        elif ifname.startswith("bridge-port"):
+            return True
+        elif ifname.startswith("vlan_port"):
+            return True
+        else:
+            return False
+
     def execute(self):
+        self.cli(
+            "environment inhibit-alarms mode batch terminal-timeout timeout:360",
+            ignore_errors=True
+        )
+
+        bridge_port = {}
+        v = self.cli("show bridge port")
+        for match in self.rx_bridge_port.finditer(v):
+            bridge_port["atm-pvc:%s" % match.group("ifname")] = match.group("pvid")
+
+        tagged_vlans = {}
+        v = self.cli("show vlan shub-port-vlan-map")
+        for match in self.rx_vlan_map.finditer(v):
+            ifname = match.group("ifname")
+            ifname = ifname.replace("lt:", "atm-if:")
+            if ifname == "network:0":
+                ifname = "ethernet:1"
+            if ifname == "network:1":
+                ifname = "ethernet:2"
+            if ifname in tagged_vlans:
+                tagged_vlans[ifname] += [match.group("vlan_id")]
+            else:
+                tagged_vlans[ifname] = [match.group("vlan_id")]
+
         interfaces = []
-        try:
-            self.cli("environment inhibit-alarms mode batch terminal-timeout timeout:360")
-        except self.CLISyntaxError:
-            pass
         v = self.cli("show interface port detail")
         for p in v.split("----\nport\n----"):
             match = self.rx_ifname.search(p)
             if not match:
                 continue
             ifname = match.group("ifname")
-            match = self.rx_admin_status.search(p)
-            admin_status = match.group("admin_status") in ["up", "admin-up"]
-            match = self.rx_oper_status.search(p)
-            oper_status = match.group("oper_status") == "up"
+            if self.wrong_interface(ifname):
+                continue
             match = self.rx_vpi_vci.search(ifname)
             if not match:
+                match = self.rx_admin_status.search(p)
+                admin_status = match.group("admin_status") in ["up", "admin-up"]
+                match = self.rx_oper_status.search(p)
+                oper_status = match.group("oper_status") == "up"
                 match = self.rx_type.search(p)
                 iftype = self.types[match.group("type")]
                 match = self.rx_ifindex.search(p)
@@ -99,10 +141,27 @@ class Script(BaseScript):
                     i["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
                 if i["name"].startswith("l2-vlan:"):
                     i["subinterfaces"][0]["vlan_ids"] = [int(i["name"][8:])]
+                if ifname in tagged_vlans:
+                    i["subinterfaces"][0]["tagged_vlans"] = tagged_vlans[ifname]
                 interfaces += [i]
-            else:
+
+        # Repeat, because "atm-if" follows "atm-pvc"
+        for p in v.split("----\nport\n----"):
+            match = self.rx_ifname.search(p)
+            if not match:
+                continue
+            ifname = match.group("ifname")
+            if self.wrong_interface(ifname):
+                continue
+            match = self.rx_vpi_vci.search(ifname)
+            if match:
+                ifname1 = match.group("ifname")
                 vpi = match.group("vpi")
                 vci = match.group("vci")
+                match = self.rx_admin_status.search(p)
+                admin_status = match.group("admin_status") in ["up", "admin-up"]
+                match = self.rx_oper_status.search(p)
+                oper_status = match.group("oper_status") == "up"
                 sub = {
                     "name": ifname,
                     "admin_status": admin_status,
@@ -111,13 +170,16 @@ class Script(BaseScript):
                     "vpi": vpi,
                     "vci": vci
                 }
-                ifname = match.group("ifname").replace("atm-pvc", "atm-if")
+                if ifname in bridge_port:
+                    sub["vlan_ids"] = [int(bridge_port.get(ifname))]
+                ifname = ifname1.replace("atm-pvc:", "atm-if:")
                 for i in interfaces:
                     if i["name"] == ifname:
                         i["subinterfaces"] += [sub]
                         break
 
-        for match in self.rx_ip.finditer(self.cli("show ip shub vrf")):
+        v = self.cli("show ip shub vrf")
+        for match in self.rx_ip.finditer(v):
             ip_address = match.group("ip")
             ip_subnet = match.group("mask")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
@@ -137,6 +199,7 @@ class Script(BaseScript):
                 }]
             }
             interfaces += [i]
+
         v = self.cli("info configure system flat")
         match = self.rx_mgmt_ip.search(v)
         if match:
@@ -155,4 +218,5 @@ class Script(BaseScript):
                 i["subinterfaces"][0]["vlan_ids"] = \
                     [int(match.group("vlan_id"))]
             interfaces += [i]
+
         return [{"interfaces": interfaces}]

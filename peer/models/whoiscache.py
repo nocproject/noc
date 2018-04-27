@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# <describe module here>
+# WhoisCache
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.settings import config
+from noc.config import config
 from noc.lib.validators import is_asn
 from noc.core.ip import IP
-from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
+from noc.core.prefixlist import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.lib import nosql
 
 
@@ -33,7 +33,7 @@ class WhoisCache(object):
                 # ASN Given
                 members.update([a.upper()])
             else:
-                o = collection.find_one({"_id": a}, fields=["members"])
+                o = collection.find_one({"_id": a}, {"members": 1})
                 if o:
                     for m in [x for x in o["members"] if x not in seen]:
                         members.update(cls.resolve_as_set(m, seen, collection))
@@ -46,7 +46,7 @@ class WhoisCache(object):
         # Resolve
         prefixes = set()
         for a in cls.resolve_as_set(as_set):
-            o = collection.find_one({"_id": a}, fields=["routes"])
+            o = collection.find_one({"_id": a}, {"routes": 1})
             if o:
                 prefixes.update(o["routes"])
         return prefixes
@@ -54,9 +54,11 @@ class WhoisCache(object):
     @classmethod
     def resolve_as_set_prefixes(cls, as_set, optimize=None):
         prefixes = cls._resolve_as_set_prefixes(as_set)
-        pl_optimize = config.getboolean("peer", "prefix_list_optimization")
-        threshold = config.getint("peer", "prefix_list_optimization_threshold")
-        if optimize or (optimize is None and pl_optimize and len(prefixes) >= threshold):
+        if optimize or (
+                optimize is None and
+                config.peer.prefix_list_optimization and
+                len(prefixes) >= config.peer.prefix_list_optimization_threshold
+        ):
             return set(optimize_prefix_list(prefixes))
         return prefixes
 
@@ -67,10 +69,12 @@ class WhoisCache(object):
         Returns a list of (prefix, min length, max length)
         """
         prefixes = cls._resolve_as_set_prefixes(as_set)
-        pl_optimize = config.getboolean("peer", "prefix_list_optimization")
-        threshold = config.getint("peer", "prefix_list_optimization_threshold")
-        max_len = config.getint("peer", "max_prefix_length")
-        if optimize or (optimize is None and pl_optimize and len(prefixes) >= threshold):
+        max_len = config.peer.max_prefix_length
+        if optimize or (
+                optimize is None and
+                config.peer.prefix_list_optimization and
+                len(prefixes) >= config.peer.prefix_list_optimization_threshold
+        ):
             # Optimization is enabled
             return [
                 (p.prefix, p.mask, m)

@@ -18,10 +18,16 @@ class Script(BaseScript):
     interface = IGetIfindexes
     requires = []
 
+    MAX_GETNEXT_RETIRES = 0
+
+    def get_getnext_retires(self):
+        return self.MAX_GETNEXT_RETIRES
+
     def execute_snmp(self):
         r = {}
         unknown_interfaces = []
-        for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
+        for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"],
+                                           max_retries=self.get_getnext_retires()):
             try:
                 v = self.profile.convert_interface_name(name)
             except InterfaceTypeError as e:

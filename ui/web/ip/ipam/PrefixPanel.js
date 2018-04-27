@@ -48,6 +48,13 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     store: []
                 },
                 {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: __("Name"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
@@ -107,6 +114,30 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     xtype: "project.project.LookupField",
                     fieldLabel: __("Project"),
                     allowBlank: true
+                },
+                {
+                    name: "prefix_discovery_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Prefix Discovery Policy"),
+                    allowBlank: false,
+                    store: [
+                        ["P", __("Profile")],
+                        ["E", __("Enable")],
+                        ["D", __("Disable")]
+                    ],
+                    uiStyle: "medium"
+                },
+                {
+                    name: "address_discovery_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Address Discovery Policy"),
+                    allowBlank: false,
+                    store: [
+                        ["P", __("Profile")],
+                        ["E", __("Enable")],
+                        ["D", __("Disable")]
+                    ],
+                    uiStyle: "medium"
                 }
             ],
             formToolbar: [

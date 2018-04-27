@@ -12,7 +12,7 @@ import logging
 import os
 import datetime
 import functools
-# Django modules
+# Third-party modules
 from django.template import RequestContext
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseForbidden, HttpResponseNotFound)
@@ -28,6 +28,7 @@ from django.views.static import serve as serve_static
 from django.http import Http404
 import ujson
 import six
+import jinja2
 # NOC modules
 from noc.lib.forms import NOCForm
 from noc import settings
@@ -144,6 +145,7 @@ class Application(object):
         self.app_id = "%s.%s" % (self.module, self.app)
         self.menu_url = None   # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
+        self.j2_env = None
 
     @classmethod
     def add_to_class(cls, name, value):
@@ -267,14 +269,38 @@ class Application(object):
             # Django model
             return get_object_or_404(*args, **kwargs)
 
+    def get_environment(self):
+        """
+        Returns jinja2 environment
+        :return:
+        """
+        if not self.j2_env:
+            self.j2_env = jinja2.Environment(
+                loader=jinja2.FileSystemLoader([
+                    os.path.join("services", "web", "apps", self.module, self.app, "templates"),
+                    "templates"
+                ])
+            )
+        return self.j2_env
+
     def render(self, request, template, dict=None, **kwargs):
         """
         Render template within context
         """
-        return render_to_response(self.get_template_path(template),
-                                  dict if dict else kwargs,
-                                  context_instance=RequestContext(request,
-                                                                  {"app": self}))
+        if template.endswith(".j2"):
+            env = self.get_environment()
+            tpl = env.get_template(template)
+            return HttpResponse(
+                tpl.render(
+                    request=request,
+                    app=self,
+                    **(dict if dict else kwargs)
+                )
+            )
+        else:
+            return render_to_response(self.get_template_path(template),
+                                      dict if dict else kwargs,
+                                      context_instance=RequestContext(request, {"app": self}))
 
     def render_template(self, template, dict=None, **kwargs):
         """

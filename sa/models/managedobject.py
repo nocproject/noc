@@ -565,9 +565,6 @@ class ManagedObject(Model):
         deleted_cache_keys = [
             "managedobject-name-to-id-%s" % self.name
         ]
-        # IPAM sync
-        if self.object_profile.sync_ipam:
-            self.sync_ipam()
         # Notify new object
         if not self.initial_data["id"]:
             self.event(self.EV_NEW, {"object": self})
@@ -691,38 +688,6 @@ class ManagedObject(Model):
         # Reset discovery cache
         from noc.inv.models.discoveryid import DiscoveryID
         DiscoveryID.clean_for_object(self)
-
-    def sync_ipam(self):
-        """
-        Synchronize FQDN and address with IPAM
-        """
-        from noc.ip.models.address import Address
-        from noc.ip.models.vrf import VRF
-        # Generate FQDN from template
-        fqdn = self.object_profile.get_fqdn(self)
-        # Get existing IPAM record
-        vrf = self.vrf if self.vrf else VRF.get_global()
-        try:
-            a = Address.objects.get(vrf=vrf, address=self.address)
-        except Address.DoesNotExist:
-            # Create new address
-            Address(
-                vrf=vrf,
-                address=self.address,
-                fqdn=fqdn,
-                managed_object=self
-            ).save()
-            return
-        # Update existing address
-        if (
-            a.managed_object != self or
-            a.address != self.address or
-            a.fqdn != fqdn
-        ):
-            a.managed_object = self
-            a.address = self.address
-            a.fqdn = fqdn
-            a.save()
 
     def get_index(self):
         """

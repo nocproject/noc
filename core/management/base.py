@@ -27,6 +27,7 @@ class BaseCommand(object):
         self.verbose_level = 0
         self.stdout = stdout
         self.stderr = stderr
+        self.is_debug = False
 
     def print(self, *args, **kwargs):
         if "file" not in kwargs:
@@ -191,3 +192,4 @@ class BaseCommand(object):
         for l in logger.manager.loggerDict.itervalues():
             if hasattr(l, "setLevel"):
                 l.setLevel(level)
+        self.is_debug = level <= logging.DEBUG

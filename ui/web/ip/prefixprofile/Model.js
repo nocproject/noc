@@ -36,11 +36,20 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             type: "string"
         },
         {
-            name: "enable_prefix_discovery",
-            type: "boolean"
+            name: "prefix_discovery_policy",
+            type: "string"
         },
         {
             name: "workflow",
+            type: "string"
+        },
+        {
+            name: "workflow__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "address_discovery_policy",
             type: "string"
         },
         {
@@ -48,20 +57,17 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             type: "boolean"
         },
         {
-            name: "enable_ip_discovery",
-            type: "boolean"
-        },
-        {
             name: "bi_id",
             type: "int"
         },
         {
-            name: "autocreated_prefix_profile",
+            name: "name_template",
             type: "string"
         },
         {
-            name: "autocreated_prefix_profile__label",
-            type: "string"
+            name: "name_template__label",
+            type: "string",
+            persist: false
         },
         {
             name: "name",

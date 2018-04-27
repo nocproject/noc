@@ -499,7 +499,10 @@ class NetworkSegment(Document):
             for vlan in VLAN.objects.filter(segment=self.id):
                 vlan.refresh_translation()
         if hasattr(self, "_changed_fields") and "parent" in self._changed_fields:
+            self.update_access()
             self.update_links()
+            if self.parent:
+                self.parent.update_links()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_border_cache"), lock=lambda _: id_lock)

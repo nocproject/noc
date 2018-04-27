@@ -199,7 +199,7 @@ class Script(BaseScript):
                 continue
             # I do not known, what are these
             if ifname.startswith("DCN-Serial") \
-            or ifname.startswith("Cpos-Trunk"):
+                    or ifname.startswith("Cpos-Trunk"):
                 continue
             sub = {
                 "name": ifname,
@@ -209,7 +209,7 @@ class Script(BaseScript):
                 "enabled_afi": []
             }
             if (ifname in switchports and
-                        ifname not in portchannel_members):
+                    ifname not in portchannel_members):
                 # Bridge
                 sub["enabled_afi"] += ['BRIDGE']
                 u, t = switchports[ifname]
@@ -234,50 +234,50 @@ class Script(BaseScript):
             a_stat, data = data.split("\n", 1)
             a_stat = a_stat.lower().endswith("up")
             o_stat = None
-            for l in data.splitlines():
-                l = l.strip()
+            for line in data.splitlines():
+                line = line.strip()
                 # Oper. status
                 if o_stat is None:
-                    match = self.rx_line_proto.search(l)
+                    match = self.rx_line_proto.search(line)
                     if match:
                         o_stat = match.group("o_state").lower().endswith("up")
                         continue
                 # Process description
-                if l.startswith("Description:"):
-                    d = l[12:].strip()
+                if line.startswith("Description:"):
+                    d = line[12:].strip()
                     if d != "---":
                         sub["description"] = d
                     continue
                 # Process description
-                if l.startswith("Description :"):
-                    d = l[13:].strip()
+                if line.startswith("Description :"):
+                    d = line[13:].strip()
                     if d != "---":
                         sub["description"] = d
                     continue
                 # MAC
                 if not sub.get("mac"):
-                    match = self.rx_mac.search(l)
+                    match = self.rx_mac.search(line)
                     if match and match.group("mac") != "0000-0000-0000":
                         sub["mac"] = match.group("mac")
                         continue
                 # Static vlans
-                match = self.rx_pvid.search(l)
+                match = self.rx_pvid.search(line)
                 if match and ("untagged_vlan" not in sub):
                     sub["untagged_vlan"] = int(match.group("pvid"))
                     continue
                 # Static vlans
-                if l.startswith("Encapsulation "):
-                    enc = l[14:]
+                if line.startswith("Encapsulation "):
+                    enc = line[14:]
                     if enc.startswith("802.1Q"):
                         sub["vlan_ids"] = [enc.split(",")[2].split()[2]]
                     continue
                 # MTU
-                match = self.rx_mtu.search(l)
+                match = self.rx_mtu.search(line)
                 if match:
                     sub["mtu"] = int(match.group("mtu"))
                     continue
                 # IP Unnumbered
-                match = self.rx_ipv4_unnumb.search(l)
+                match = self.rx_ipv4_unnumb.search(line)
                 if match:
                     sub["ip_unnumbered_subinterface"] = match.group("iface")
                     sub["enabled_afi"] = ['IPv4']
@@ -343,6 +343,7 @@ class Script(BaseScript):
                 vrfs[v["name"]] = {
                     "forwarding_instance": v["name"],
                     "type": "VRF",
+                    "vpn_id": v.get("vpn_id"),
                     "interfaces": []
                 }
                 rd = v.get("rd")
