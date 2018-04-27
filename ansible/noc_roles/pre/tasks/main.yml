@@ -16,7 +16,7 @@
 - name: Display all variables/facts known for a host
   debug:
     var: hostvars[inventory_hostname]
-    verbosity: 8
+    verbosity: 3
   tags:
     - always
 
