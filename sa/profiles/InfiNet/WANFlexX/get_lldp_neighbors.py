@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.mac import MAC
 
 class Script(BaseScript):
     name = "InfiNet.WANFlexX.get_lldp_neighbors"
