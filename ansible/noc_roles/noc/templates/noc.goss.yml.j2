@@ -17,20 +17,20 @@ file:
   {{noc_root}}/etc/noc_services.conf:
     exists: true
     mode: "0640"
-    owner: {{noc_user}}
+    owner: root
     group: root
     filetype: file
     contains: []
   {{noc_root}}/etc/supervisord.conf:
     exists: true
-    mode: "0755"
-    owner: {{noc_user}}
+    mode: "0640"
+    owner: root
     group: root
     filetype: file
     contains: []
   {{noc_root}}/etc/tower.yml:
     exists: true
-    mode: "0755"
+    mode: "0640"
     owner: {{noc_user}}
     group: root
     filetype: file
@@ -120,12 +120,14 @@ service:
     enabled: true
     running: true
 command:
+{% if noc_env_type == 'prod' %}
   {{noc_root}}/bin/pip freeze | grep raven:
     exit-status: 0
     stdout:
     - raven==6.1.0
     stderr: []
     timeout: 10000
+{% endif %}
   {{noc_root}}/bin/pip freeze | grep supervisor:
     exit-status: 0
     stdout:
