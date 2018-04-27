@@ -17,4 +17,3 @@
       vars: { goss_service_name: ansible }
     - role: goss
       vars: { goss_service_name: time }
-
