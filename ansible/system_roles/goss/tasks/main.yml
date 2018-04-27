@@ -8,13 +8,16 @@
     when:
       - ansible_distribution != 'FreeBSD'
 
+  # yamllint disable rule:indentation
   - name: place main check file
     copy:
       content: |
         ---
         gossfile:
-          {{goss_conf_dir}}/*.yml: {}
+          {{ goss_conf_dir }}/*.yml: {}
       dest: "{{goss_conf}}/goss.yaml"
+  # yamllint enable rule:indentation
+
   when:
     - goss_complete is not defined
 
