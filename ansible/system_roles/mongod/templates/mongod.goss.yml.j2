@@ -38,7 +38,8 @@ port:
   tcp:27017:
     listening: true
     ip:
-    - 0.0.0.0
+    - 127.0.0.1
+    - {{ mongo_listen_addr }}
 service:
   mongod:
     enabled: true
