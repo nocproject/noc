@@ -21,6 +21,7 @@ from noc.lib.text import ranges_to_list
 class RouterOSParser(BasePyParser):
     rx_continue = re.compile(r"\\\n\s*", re.MULTILINE)
     SPEED_MAP = {
+        "10Gbps": 10000,
         "1Gbps": 1000,
         "100Mbps": 100
     }
