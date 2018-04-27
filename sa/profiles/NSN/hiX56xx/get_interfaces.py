@@ -55,6 +55,7 @@ class Script(BaseScript):
     def execute(self):
         interfaces = []
         port_map = {}
+
         v = self.cli("show port", cached=True)  # used in get_mac_address_table
         for match in self.rx_port.finditer(v):
             if match.group("admin_status") == "-":
@@ -78,6 +79,7 @@ class Script(BaseScript):
                 }]
             }
             interfaces += [iface]
+
         for i in interfaces:
             sub = i["subinterfaces"][0]
             v = self.cli(
@@ -147,6 +149,7 @@ class Script(BaseScript):
                                 sub["tagged_vlans"] = [vlan_id]
                             iface["subinterfaces"] = [sub]
                             interfaces += [iface]
+
         # Do not use range s1-s10 due to high CPU utilization
         for s in range(0, 11):
             v = self.cli("show lre s%s xdsl atm vcctp-info" % s)
@@ -168,6 +171,7 @@ class Script(BaseScript):
                                 sub["vci"] = match.group("vci")
                                 break
                         break
+
         v = self.cli("show interface")
         for p in v.split("\nInterface "):
             match = self.rx_interface.search(p)
