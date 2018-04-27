@@ -47,6 +47,7 @@ postgres_user: pgsql
 postgres_data_dir: /usr/local/pgsql/data
 postgresql_conf_prefix: /usr/local/pgsql/data
 postgres_version: 9.5
+postgres_proccess: postgres
 
 tower_path: /usr/local/tower
 
