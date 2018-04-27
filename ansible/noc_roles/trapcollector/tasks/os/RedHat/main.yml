@@ -1,1 +1,20 @@
 ---
+- name: check firewalld state
+  systemd:
+    name: firewalld
+  check_mode: "True"
+  register: firewalld_state
+  tags:
+    - config
+    - firewall
+
+- name: Add firewall permissions for nodes
+  firewalld:
+    port: "{{ trapcollector_listen_traps.split(':')[1] }}/udp"
+    permanent: "True"
+    state: enabled
+    immediate: "True"
+  when: "firewalld_state.status.ActiveState == 'active'"
+  tags:
+    - config
+    - firewall

@@ -29,6 +29,11 @@ forms:
       default: "0.0.0.0:514"
       label: "Listen SYSLOG"
       type: str
+    permit_firewall:
+      default: True  # yamllint disable-line rule:truthy
+      label: "Permit syslog port in firewall"
+      type: bool
+      description: "Open suslog port in firewall. Works on Centos/Rhel only."
 
 services:
   syslogcollector:
