@@ -1,37 +1,15 @@
 ---
-#- name: Install Grafana simple datasource plugin
-#  grafana_plugin:
-#    name: "{{item}}"
-#    version: latest
-#    state: present
-#    grafana_plugins_dir: "{{grafana_plugins_dir}}"
-#  with_items:
-#    - grafana-simple-json-datasource
-#    - vertamedia-clickhouse-datasource
-#  notify: restart grafana
-#  environment:
-#    https_proxy: "{{http_proxy}}"
-#  tags:
-#    - requirements
-
-- name: Install Grafana simple datasource plugin
-  command: "grafana-cli plugins install grafana-simple-json-datasource"
-  args:
-    creates: "{{grafana_plugins_dir}}/grafana-simple-json-datasource/src/datasource.js"
+- name: "Install Grafana {{item}} plugin"
+  grafana_plugin:
+    name: "{{item}}"
+    version: latest
+    state: present
+    grafana_plugins_dir: "{{grafana_plugins_dir}}"
+  with_items:
+    - grafana-simple-json-datasource
+    - vertamedia-clickhouse-datasource
   notify: restart grafana
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-  tags:
-    - requirements
-
-- name: Install Grafana clickhouse datasource plugin
-  command: "grafana-cli plugins install vertamedia-clickhouse-datasource"
-  args:
-    creates: "{{grafana_plugins_dir}}/vertamedia-clickhouse-datasource/datasource.js"
-  notify: restart grafana
-  environment:
-    http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
   tags:
     - requirements
