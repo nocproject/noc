@@ -5,6 +5,9 @@
   template:
     src: grafana.ini
     dest: "{{ etc_prefix }}/grafana/grafana.ini"
+    owner: "root"
+    group: "grafana"
+    mode: "0640"
   notify: restart grafana
   no_log: "{{tower_show_secrets}}"
   tags:
