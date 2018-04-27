@@ -18,19 +18,19 @@ port:
   tcp:8300:
     listening: true
     ip:
-    - {{ ansible_host }}
+    - {{ consul_bind_address }}
 {% endif %}
 {% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   tcp:8301:
     listening: true
     ip:
-    - {{ ansible_host }}
+    - {{ consul_bind_address }}
 {% endif %}
 {% if consul_power == 'bootstrap' or consul_power == 'server' %}
   tcp:8302:
     listening: true
     ip:
-    - {{ ansible_host }}
+    - {{ consul_bind_address }}
 {% endif %}
 {% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   tcp6:8500:
@@ -48,13 +48,13 @@ port:
   udp:8301:
     listening: true
     ip:
-    - {{ ansible_host }}
+    - {{ consul_bind_address }}
 {% endif %}
 {% if consul_power == 'bootstrap' or consul_power == 'server' %}
   udp:8302:
     listening: true
     ip:
-    - {{ ansible_host }}
+    - {{ consul_bind_address }}
 {% endif %}
 {% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   udp6:8600:
