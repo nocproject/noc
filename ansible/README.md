@@ -13,6 +13,6 @@ Supported platforms are:
 
 * Debian 8
 * CentOS 7
-* RHEL 7.2
+* RHEL 7
 * Ubuntu 16
-* FreeBSD
+* FreeBSD 10.2+
