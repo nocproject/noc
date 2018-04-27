@@ -45,7 +45,7 @@ user:
     groups:
     - grafana
     home: /usr/share/grafana
-    shell: /sbin/nologin
+    shell: {{ fake_shell }}
 group:
   grafana:
     exists: true
