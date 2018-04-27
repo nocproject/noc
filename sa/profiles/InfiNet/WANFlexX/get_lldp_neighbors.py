@@ -22,7 +22,7 @@ class Script(BaseScript):
 
     @property
     def execute_cli(self):
-        result = []  
+        result = [] 
         try:
             lldp = self.cli("lldp report")
         except self.CLISyntaxError:

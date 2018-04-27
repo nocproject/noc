@@ -18,13 +18,14 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(
-#        r"ChassisID:    \|\s*(?P<mac>\S+)",
         r"PortID:       \|\s*(?P<mac>\S+)",
         re.MULTILINE)
 
+    @property
     def execute(self):
         match = self.re_search(self.rx_mac, self.cli("lldp local\n"))
         return {
             "first_chassis_mac": match.group("mac"),
             "last_chassis_mac": match.group("mac")
         }
+
