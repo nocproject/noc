@@ -2,15 +2,15 @@ file:
   {{ postgresql_conf_prefix }}/pg_hba.conf:
     exists: true
     mode: "0600"
-    owner: postgres
+    owner: {{ postgres_user }}
     group: postgres
     filetype: file
     contains:
     - /host\s+all\s+all\s+0.0.0.0/0\s+md5/
   {{ postgresql_conf_prefix }}/postgresql.conf:
     exists: true
-    mode: "0644"
-    owner: postgres
+    mode: "0600"
+    owner: {{ postgres_user }}
     group: postgres
     filetype: file
     contains: []
@@ -18,29 +18,33 @@ port:
   tcp:5432:
     listening: true
 service:
-  postgresql-{{ postgres_version }}:
-    enabled: true
+  {{ postgres_system_service }}:
+{% if 'svc-patroni' in groups %}
+    enabled: false
     running: false
+{% else %}
+    enabled: true
+    running: true
+{% endif %}
 user:
-  postgres:
+  {{ postgres_user }}:
     exists: true
     groups:
     - postgres
-    home: /var/lib/pgsql
+    home: {{ postgres_home }}
     shell: /bin/bash
 group:
   postgres:
     exists: true
 process:
-  postgres:
+  {{ postgres_proccess }}:
     running: true
 {% if noc_env_type == 'prod' %}
 mount:
-  /var/lib/pgsql:
+  {{ postgres_home }}:
     exists: true
     opts:
     - rw
     - relatime
-    source: /dev/mapper/vg00-postgres_data
     filesystem: xfs
 {% endif %}

@@ -11,9 +11,9 @@
 - name: set postgres master fact
   changed_when: "False"
   set_fact:
-    postgres_master: "{{hostvars[groups['svc-postgres-master'][0]].ansible_host}}"
+    postgres_master: "{{ postgres_listen_address }}"
     postgres_master_node: "{{groups['svc-postgres-master'][0]}}"
-    postgres_listen: "{{postgres_listen}}"
+    postgres_listen_port: "{{postgres_listen_port}}"
   delegate_to: "{{item}}"
   delegate_facts: "True"
   with_items: "{{groups['all']}}"
@@ -24,6 +24,8 @@
   lineinfile:
     dest: "{{postgresql_hba_path}}"
     line: "host    all             all             0.0.0.0/0            md5"
+    mode: "0600"
+    owner: "{{ postgres_user }}"
   notify: reload postgres
   tags:
     - config
@@ -32,6 +34,8 @@
   lineinfile:
     dest: "{{postgresql_conf_path}}"
     line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
+    owner: "{{ postgres_user }}"
+    mode: "0600"
   notify: restart postgres
   tags:
     - config

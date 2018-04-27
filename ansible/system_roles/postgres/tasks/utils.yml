@@ -21,11 +21,11 @@
     monitoring_service_name: postgresql
     monitoring_service_tags: ""
     monitoring_service_port: 5432  # noqa have to be number
-    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_address: "{{ postgres_listen_address }}}"
     monitoring_service_check_interval: "10s"
     monitoring_service_procstat_check: "False"
     monitoring_config:
-      address: "host={{ ansible_host }} user={{postgres_noc_user}} password={{postgres_noc_password}} sslmode=disable database={{postgres_noc_db}}"
+      address: "host={{ postgres_listen_address }} user={{postgres_noc_user}} password={{postgres_noc_password}} sslmode=disable database={{postgres_noc_db}}"
       ignored_databases: ["postgres", "template0", "template1"]
   when: has_svc_monitoring is defined
   tags:

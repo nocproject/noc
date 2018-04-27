@@ -5,7 +5,7 @@ postgresql_hba_path: "{{postgresql_conf_prefix}}/pg_hba.conf"
 #Memtune
 kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
 kernel_shmmax: "{{ kernel_shmall|int() * 4096 }}"
-postgres_listen: 5432
+postgres_listen_port: 5432
 
 
 postgres_path: /usr/bin/postgres
@@ -19,3 +19,5 @@ postgres_noc_db: noc
 postgres_noc_user: noc
 postgres_noc_password:
 postgres_become_user: "True"
+
+postgres_listen_address: "{{ ansible_host }}"
