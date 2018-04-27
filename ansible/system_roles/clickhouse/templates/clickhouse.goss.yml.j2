@@ -119,7 +119,11 @@ file:
     filetype: directory
     contains: []
 package:
+{% if ansible_distribution in ['RedHat', 'CentOS'] %}
   clickhouse-server:
+{% elif ansible_distribution in ['Debian', 'Ubuntu'] %}
+  clickhouse-server-base:
+{% endif %}
     installed: true
 service:
   clickhouse-server:
