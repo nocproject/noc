@@ -1,9 +1,11 @@
+---
 file:
   /etc/sudoers:
     exists: true
     mode: "0440"
     contains:
     - '!/^Defaults requiretty/'
+{% if ansible_user != 'vagrant' %}
     - '/^{{ ansible_user }}.+ALL=\(ALL\) NOPASSWD: ALL/'
   /home/{{ ansible_user }}/.ssh/authorized_keys:
     exists: true
@@ -13,10 +15,9 @@ file:
     filetype: file
     contains:
     - "/ssh-rsa .+/"
+{% endif %}
 user:
   {{ ansible_user }}:
     exists: true
-    groups:
-    - wheel
     home: /home/{{ ansible_user }}
     shell: /bin/bash
