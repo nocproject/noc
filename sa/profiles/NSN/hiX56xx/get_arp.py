@@ -3,7 +3,7 @@
 # NSN.hiX56xx.get_arp
 # sergey.sadovnikov@gmail.com
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,19 +16,14 @@ import re
 class Script(BaseScript):
     name = "NSN.hiX56xx.get_arp"
     interface = IGetARP
-    rx_line = re.compile(
-        "^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)$")
+
+    rx_arp = re.compile(
+        "^\s*(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)\s*\n",
+        re.MULTILINE)
 
     def execute(self):
-        s = self.cli("show arp")
         r = []
-        for l in s.split("\n"):
-            match = self.rx_line.match(l.strip())
-            if not match:
-                continue
-            r.append({
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "interface": match.group("interface")
-            })
+        v = self.cli("show arp")
+        for match in self.rx_arp.finditer(v):
+            r += [match.groupdict()]
         return r

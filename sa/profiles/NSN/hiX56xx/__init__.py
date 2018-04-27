@@ -4,7 +4,7 @@
 # OS:     hiX56xx
 # sergey.sadovnikov@gmail.com
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NSN.hiX56xx"
-    pattern_more = "^ --More--"
+    pattern_more = "^ --More-- "
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
