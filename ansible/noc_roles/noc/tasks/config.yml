@@ -3,13 +3,15 @@
   template:
     src: "etc/supervisord.conf.j2"
     dest: "{{ noc_etc }}/supervisord.conf"
+    owner: "root"
+    mode: "0640"
   no_log: "{{tower_show_secrets}}"
 
 - name: Build services config
   template:
     src: "etc/noc_services.conf.j2"
     dest: "{{noc_root}}/etc/noc_services.conf"
-    owner: "{{noc_user}}"
+    owner: "root"
     mode: "0640"
   when:
     - noc_services is defined
@@ -19,6 +21,8 @@
   template:
     src: "etc/tower.yml.j2"
     dest: "{{ noc_etc }}/tower.yml"
+    mode: "0640"
+    owner: "{{noc_user}}"
   no_log: "{{tower_show_secrets}}"
   when:
     - noc_services is defined
@@ -28,6 +32,8 @@
   template:
     src: "etc/pooled.yml.j2"
     dest: "{{ noc_etc }}/pool-{{item.name}}.yml"
+    mode: "0640"
+    owner: "{{noc_user}}"
   no_log: "{{tower_show_secrets}}"
   when:
     - noc_services is defined
