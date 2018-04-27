@@ -1,6 +1,11 @@
 package:
+{% if ansible_distribution in ['RedHat', 'CentOS'] %}
   libssh2:
     installed: true
+{% elif ansible_distribution in ['Debian', 'Ubuntu'] %}
+  libssh2-1:
+    installed: true
+{% endif %}
 command:
   {{noc_root}}/bin/pip freeze | grep pylibssh2:
     exit-status: 0
