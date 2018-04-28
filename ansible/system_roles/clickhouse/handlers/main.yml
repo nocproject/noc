@@ -2,7 +2,7 @@
 - name: reload clickhouse-server
   become: "False"
   debug:
-    msg: Clickhouse consiguration was changed. hope it will reload it automaticaly
+    msg: Clickhouse configuration was changed. hope it will reload it automaticaly
 
 - name: restart clickhouse-server
   become: "True"
