@@ -36,4 +36,4 @@ class AddressApplication(ExtModelApplication):
 
     def queryset(self, request, query=None):
         qs = super(AddressApplication, self).queryset(request, query=query)
-        return qs.filter(PrefixAccess.read_Q(request.user, field="address"))
+        return qs.filter(PrefixAccess.read_Q(request.user, field="address", table="ip_address"))
