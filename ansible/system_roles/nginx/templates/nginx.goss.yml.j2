@@ -1,12 +1,19 @@
 file:
-  /etc/nginx/upstream.conf:
+  {{ nginx_conf_path }}:
+    exists: true
+    mode: "0644"
+    owner: {{ nginx_user }}
+    group: root
+    filetype: file
+    contains: []
+  {{ nginx_conf_upstream_path }}:
     exists: true
     mode: "0644"
     owner: root
     group: root
     filetype: file
     contains: []
-  /etc/nginx/ssl/noc.crt:
+  {{ nginx_ssl_cert_path }}:
     exists: true
     mode: "0400"
     owner: {{ nginx_user }}
@@ -14,7 +21,7 @@ file:
     filetype: file
     contains:
       - '-----BEGIN CERTIFICATE-----'
-  /etc/nginx/ssl/noc.key:
+  {{ nginx_ssl_key_path }}:
     exists: true
     mode: "0400"
     owner: {{ nginx_user }}

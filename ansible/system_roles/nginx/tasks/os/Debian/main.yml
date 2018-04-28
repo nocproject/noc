@@ -28,6 +28,13 @@
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
 
+- name: Enable Nginx system service
+  service:
+    name: "{{ nginx_system_service }}"
+    enabled: "True"
+    state: started
+  notify: reload nginx
+
 - name: Remove default.conf site
   file:
     path: /etc/nginx/conf.d/default.conf
