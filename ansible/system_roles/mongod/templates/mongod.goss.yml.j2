@@ -47,6 +47,7 @@ service:
 user:
   {{ mongo_user }}:
     exists: true
+    home: {{ mongo_db_path }}
     groups:
     - {{ mongo_user }}
     shell: {{ fake_shell }}
