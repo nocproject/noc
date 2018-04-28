@@ -35,5 +35,6 @@
     state: started
 
 - include_tasks: "firewall.yml"
+  when: nginx_permit_firewall
   tags:
     - firewall
