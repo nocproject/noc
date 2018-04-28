@@ -14,7 +14,9 @@
     permanent: "True"
     state: enabled
     immediate: "True"
-  when: "firewalld_state.status.ActiveState == 'active'"
+  when:
+    - "firewalld_state.status.ActiveState == 'active'"
+    - trapcollector_permit_firewall
   tags:
     - config
     - firewall
