@@ -5,6 +5,7 @@ command:
     - /syslogcollector-.+RUNNING/
     stderr: []
     timeout: 10000
+{% if molecule_yml is not defined %}
 {% if syslogcollector_permit_firewall | bool %}
   /sbin/iptables-save | grep "dport 514":
     exit-status: 0
@@ -12,6 +13,7 @@ command:
     - /ACCEPT/
     stderr: []
     timeout: 10000
+{% endif %}
 {% endif %}
 port:
   udp:514:
