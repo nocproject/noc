@@ -152,8 +152,8 @@ class PrefixAccess(models.Model):
         for vrf, afi in vaccess:
             for p in vaccess[vrf, afi]:
                 stmt += ["(%s = %d AND %s = '%s' AND %s <<= '%s')" % (
-                    ".".join([table, "vrf_id"]) if table else "vrf_id", vrf,
-                    ".".join([table, "afi"]) if table else "afi", afi,
-                    ".".join([table, field]) if table else field, p
+                    "%s.vrf_id" % table if table else "vrf_id", vrf,
+                    "%s.afi" % table if table else "afi", afi,
+                    "%s.%s" % (table, field) if table else field, p
                 )]
         return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))
