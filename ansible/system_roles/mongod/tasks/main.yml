@@ -7,6 +7,13 @@
   with_items: "{{groups['svc-mongod-exec']}}"
   when: "'bootstrap' in hostvars[item]['mongod_power']"
 
+- name: Create mongod user
+  user:
+    name: "{{ mongo_user }}"
+    shell: "{{ fake_shell }}"
+    system: "True"
+    home: "{{ mongo_db_path }}"
+
 - name: Creating mongodb directories
   file:
     path: "{{ item }}"
