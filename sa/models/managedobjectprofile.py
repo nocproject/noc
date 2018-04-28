@@ -175,8 +175,12 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_config = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_asset = models.BooleanField(default=False)
-    # Collect hardware configuration
+    # Process topology from NRI
     enable_box_discovery_nri = models.BooleanField(default=False)
+    # Process NRI portmapping
+    enable_box_discovery_nri_portmap = models.BooleanField(default=False)
+    # Process NRI service binding
+    enable_box_discovery_nri_service = models.BooleanField(default=False)
     # VPN discovery (interface)
     enable_box_discovery_vpn_interface = models.BooleanField(default=False)
     # VPN discovery (MPLS)

@@ -37,7 +37,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryAddressManagement: false,
             enableBoxDiscoveryAddressDHCP: false,
             enableBoxDiscoveryAddressNeighbor: false,
-            enableBoxDiscoveryHK: false
+            enableBoxDiscoveryHK: false,
+            enableBoxDiscoveryNRIPortmap: false
         }
     },
 
@@ -644,7 +645,10 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "enable_box_discovery_nri",
                                                     xtype: "checkboxfield",
-                                                    boxLabel: __("NRI")
+                                                    boxLabel: __("NRI"),
+                                                    bind: {
+                                                        disabled: "{!enableBoxDiscoveryNRIPortmap.checked}"
+                                                    }
                                                 },
                                                 {
                                                     name: "enable_box_discovery_bfd",
@@ -937,7 +941,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryAddressNeighbor.checked}"
                                             }
-
                                         }
                                     ]
                                 },
@@ -1051,6 +1054,31 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     uiStyle: "medium"
                                                 }
                                             ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("NRI"),
+                                    layouy: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_box_discovery_nri_portmap",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Portmapper"),
+                                            reference: "enableBoxDiscoveryNRIPortmap"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_nri_service",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Service Binding"),
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryNRIPortmap.checked}"
+                                            }
                                         }
                                     ]
                                 },
