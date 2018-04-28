@@ -21,7 +21,6 @@ influxdb_system_service: influxd
 influxdb_user: influxd
 
 mongo_arbiter_pid: " "
-mongo_db_path: /var/db/mongodb/
 mongo_log_path: /var/db/mongodb/mongod.log
 mongo_pid: /var/db/mongodb/mongod.lock
 mongo_path: /usr/local/bin/mongo
