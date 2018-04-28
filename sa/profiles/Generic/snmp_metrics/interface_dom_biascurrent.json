@@ -1,0 +1,6 @@
+{
+  "$metric": "Interface | DOM | Bias Current",
+  "$type": "cli",
+  "handler": "collect_dom_metrics",
+  "type": "gauge"
+}

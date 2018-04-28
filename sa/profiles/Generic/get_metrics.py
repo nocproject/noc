@@ -11,6 +11,7 @@ import time
 import os
 from threading import Lock
 import re
+from collections import Iterable
 # Third-party modules
 import six
 import ujson
@@ -366,6 +367,30 @@ class CapabilityListRule(OIDRule):
                     yield oid, self.type, self.scale, cfg.path
 
 
+@six.add_metaclass(OIDRuleBase)
+class CLIRule(object):
+    """
+    Rule for getting metrics from CLI
+    handler - method name, for getting metrics
+    """
+    name = "cli"
+
+    def __init__(self, handler, type, scale=1):
+        self.handler = handler
+        self.type = type
+        self.scale = scale
+
+    @classmethod
+    def from_json(cls, data):
+        if "handler" not in data:
+            raise ValueError("Handler is required")
+        return CLIRule(
+            handler=data["handler"],
+            type=data.get("type", "gauge"),
+            scale=data.get("scale", 1)
+        )
+
+
 class Script(BaseScript):
     """
     Retrieve data for topology discovery
@@ -412,9 +437,13 @@ class Script(BaseScript):
         """
         metrics = [MetricConfig(**m) for m in metrics]
         self.collect_profile_metrics(metrics)
+        snmp_batch, cli_batch = self.proccess_rules(metrics)
         if self.has_capability("SNMP"):
-            self.collect_snmp_metrics(metrics)
+            r = self.collect_snmp_metrics(snmp_batch)
+            self.proccess_result(snmp_batch, r)
         #
+        r = self.collect_cli_metrics(cli_batch)
+        self.proccess_result(cli_batch[0], r)
         return self.get_metrics()
 
     def collect_profile_metrics(self, metrics):
@@ -423,24 +452,70 @@ class Script(BaseScript):
         """
         pass
 
-    def collect_snmp_metrics(self, metrics):
+    def proccess_rules(self, metrics):
         """
-        Collect all collectible SNMP metrics
+        Proccess rules files and return batch
+        :param metrics:
+        :return:
         """
-        batch = {}
+        snmp_batch = dict()
+        cli_batch = dict()
+        handlers = []
         for m in metrics:
             # Calculate oids
             self.logger.debug("Make oid for metrics: %s" % m.metric)
             snmp_rule = self.get_snmp_rule(m.metric)
-            if snmp_rule:
+            if isinstance(snmp_rule, CLIRule):
+                handlers += [snmp_rule.handler]
+                metric = tuple(m.path + [m.metric]) if m.path else (m.path, m.metric)
+                cli_batch[(snmp_rule.handler, metric)] = BatchConfig(
+                    id=m.id,
+                    metric=m.metric,
+                    path=m.path,
+                    type=snmp_rule.type,
+                    scale=snmp_rule.scale
+                )
+            elif snmp_rule:
                 for oid, vtype, scale, path in snmp_rule.iter_oids(self, m):
-                    batch[oid] = BatchConfig(
+                    snmp_batch[oid] = BatchConfig(
                         id=m.id,
                         metric=m.metric,
                         path=path,
                         type=vtype,
                         scale=scale
                     )
+        return snmp_batch, (cli_batch, handlers)
+
+    def collect_cli_metrics(self, batch):
+        """
+        Collect all collectible CLI metrics
+        and filter it for batch
+        :param batch:
+        :return:
+        """
+        # self.logger.debug("Batch: %s" % batch)
+        results = {}
+        c_batch, handlers = batch
+        for m_handler in set(handlers):
+            handler = getattr(self, m_handler, None)
+            if not handler:
+                continue
+            for metric, value in six.iteritems(handler()):
+                if (m_handler, metric) in c_batch and c_batch[(m_handler, metric)].path:
+                    results[(m_handler, metric)] = value
+                elif (m_handler, (None, metric[-1])) in c_batch:
+                    if (m_handler, (None, metric[-1])) not in results:
+                        results[(m_handler, (None, metric[-1]))] = [(metric, value)]
+                    results[(m_handler, (None, metric[-1]))] += [(metric, value)]
+                    self.logger.info("Empty path in path")
+                else:
+                    self.logger.info("Metric not in batch")
+        return results
+
+    def collect_snmp_metrics(self, batch):
+        """
+        Collect all collectible SNMP metrics
+        """
         self.logger.debug("Batch: %s" % batch)
         # Run snmp batch
         if not batch:
@@ -479,6 +554,9 @@ class Script(BaseScript):
                 self.logger.error(
                     "SNMP error code %s", e.code
                 )
+        return results
+
+    def proccess_result(self, batch, results):
         # Process results
         for oid in batch:
             ts = self.get_ts()
@@ -493,7 +571,7 @@ class Script(BaseScript):
                         oid
                     )
                     continue
-            elif callable(batch[oid].scale):
+            elif batch[oid].scale and callable(batch[oid].scale):
                 # Multiple oids and calculated value
                 v = []
                 for o in oid:
@@ -515,6 +593,30 @@ class Script(BaseScript):
                         "Cannot calculate complex value for %s "
                         "due to missed values: %s",
                         oid, v
+                    )
+                    continue
+            elif isinstance(oid, tuple):
+                if oid in results and isinstance(results[oid], Iterable):
+                    for path, v in results[oid]:
+                        bv = batch[oid]
+                        self.set_metric(
+                            id=bv.id,
+                            metric=bv.metric,
+                            value=v,
+                            ts=ts,
+                            path=path[:-1],
+                            type=bv.type,
+                            scale=bv.scale
+                        )
+                    continue
+                elif oid in results:
+                    v = results[oid]
+                    if v is None:
+                        continue
+                else:
+                    self.logger.error(
+                        "Failed to get CLI %s",
+                        oid
                     )
                     continue
             else:
@@ -628,3 +730,19 @@ class Script(BaseScript):
         if "$metric" not in data:
             raise ValueError("$metric key is required")
         rules[data["$metric"]] = OIDRule.load(data)
+
+    def collect_dom_metrics(self, path=None):
+        r = {}
+        for m in self.scripts.get_dom_status():
+            iface = m["interface"]
+            if m.get("temp_c") is not None:
+                r[("", "", "", iface, "Interface | DOM | Temperature")] = m["temp_c"]
+            if m.get("voltage_v") is not None:
+                r[("", "", "", iface, "Interface | DOM | Voltage")] = m["voltage_v"]
+            if m.get("optical_rx_dbm") is not None:
+                r[("", "", "", iface, "Interface | DOM | RxPower")] = m["optical_rx_dbm"]
+            if m.get("current_ma") is not None:
+                r[("", "", "", iface, "Interface | DOM | Bias Current")] = m["current_ma"]
+            if m.get("optical_tx_dbm") is not None:
+                r[("", "", "", iface, "Interface | DOM | TxPower")] = m["optical_tx_dbm"]
+        return r
