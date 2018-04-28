@@ -63,6 +63,7 @@ command:
     - 'nginx: the configuration file /etc/nginx/nginx.conf syntax is ok'
     - 'nginx: configuration file /etc/nginx/nginx.conf test is successful'
     timeout: 10000
+{% if molecule_yml is not defined %}
 {% if nginx_permit_firewall | bool %}
   /sbin/iptables-save | grep "dport 443":
     exit-status: 0
@@ -70,4 +71,5 @@ command:
     - /ACCEPT/
     stderr: []
     timeout: 10000
+{% endif %}
 {% endif %}
