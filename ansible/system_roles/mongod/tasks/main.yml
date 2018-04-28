@@ -19,6 +19,8 @@
   template:
     src: mongod.conf.j2
     dest: "{{ mongo_conf }}"
+    owner: "{{ mongo_user }}"
+    mode: "0644"
   notify: restart mongod
   tags:
     - config
@@ -27,6 +29,8 @@
   template:
     src: mongod-arbiter.conf.j2
     dest: "{{ mongo_dir }}/mongod-arbiter.conf"
+    owner: "{{ mongo_user }}"
+    mode: "0644"
   notify: restart mongod-arbiter
   when: "has_svc_mongod_arbiter | default(False)"
   tags:
@@ -36,16 +40,12 @@
   template:
     src: "mongo.key.j2"
     dest: "{{ mongo_dir }}/mongo.key"
+    owner: "{{ mongo_user }}"
+    mode: "0400"
   no_log: "{{tower_show_secrets}}"
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
-
-- name: Setting mongo.key permissions
-  file:
-    path: "{{ mongo_dir }}/mongo.key"
-    owner: "{{ mongo_user }}"
-    mode: 0400
 
 - name: Install MongoDB logrotated config
   template:
@@ -62,6 +62,14 @@
     name: "{{ mongod_system_service }}"
     enabled: "True"
     state: started
+
+- name: Setting mongo data directory permissions
+  file:
+    path: "{{ mongo_db_path }}"
+    owner: "{{ mongo_user }}"
+    mode: "0750"
+    state: directory
+    recurse: true
 
 - name: Create MongoDB arbiter directory
   file:
@@ -86,6 +94,7 @@
   template:
     src: shell.js.j2
     dest: "{{ mongo_dir }}/shell.js"
+    owner: "{{ mongo_user }}"
   no_log: "{{tower_show_secrets}}"
   tags:
     - config
@@ -135,14 +144,14 @@
     monitoring_service_name: mongodb
     monitoring_service_tags: ""
     monitoring_service_port: 27017
-    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_address: "{{ mongo_listen_addr }}"
     monitoring_service_check_interval: "10s"
     monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pattern
     monitoring_service_procstat_value: mongod
     monitoring_config:
       gather_perdb_stats: "true"
-      servers: ["mongodb://{{ noc_mongo_admin_user }}:{{ mongod_password }}@127.0.0.1:27017/admin"]
+      servers: ["mongodb://{{ noc_mongo_admin_user }}:{{ mongod_password }}@{{ mongo_listen_addr }}:27017/admin"]
   when: has_svc_monitoring is defined
   tags:
     - monitoring

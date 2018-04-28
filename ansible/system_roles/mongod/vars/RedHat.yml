@@ -1,0 +1,4 @@
+# RHEL settings
+---
+mongo_user: mongod
+mongo_db_path: /var/lib/mongod

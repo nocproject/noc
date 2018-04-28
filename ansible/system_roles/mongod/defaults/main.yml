@@ -15,7 +15,6 @@ mongo_db_path: /var/lib/mongo/
 mongo_fork: "false"
 mongo_log_path: /var/log/mongodb/mongod.log
 mongo_pid: /var/run/mongodb/mongod.pid
-mongo_user: mongodb
 mongod_arbiter_system_service: mongod-arbiter
 mongod_path: /usr/bin/mongod
 mongod_system_service: mongod

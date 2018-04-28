@@ -2,36 +2,36 @@ file:
   /etc/mongod.conf:
     exists: true
     mode: "0644"
-    owner: root
+    owner: {{ mongo_user }}
     group: root
     filetype: file
     contains: []
   /etc/mongod/mongo.key:
     exists: true
     mode: "0400"
-    owner: mongod
+    owner: {{ mongo_user }}
     group: root
     filetype: file
     contains: []
-  /var/lib/mongo:
+  {{ mongo_db_path }}:
     exists: true
-    mode: "0755"
-    owner: mongod
-    group: mongod
+    mode: "0750"
+    owner: {{ mongo_user }}
+    group: {{ mongo_user }}
     filetype: directory
     contains: []
-  /var/lib/mongo/index:
+  {{ mongo_db_path }}/index:
     exists: true
-    mode: "0755"
-    owner: mongod
-    group: mongod
+    mode: "0750"
+    owner: {{ mongo_user }}
+    group: {{ mongo_user }}
     filetype: directory
     contains: []
-  /var/lib/mongo/journal:
+  {{ mongo_db_path }}/journal:
     exists: true
-    mode: "0755"
-    owner: mongod
-    group: mongod
+    mode: "0750"
+    owner: {{ mongo_user }}
+    group: {{ mongo_user }}
     filetype: directory
     contains: []
 port:
@@ -45,39 +45,35 @@ service:
     enabled: true
     running: true
 user:
-  mongod:
+  {{ mongo_user }}:
     exists: true
     groups:
-    - mongod
-    home: /var/lib/mongo
-    shell: /bin/false
+    - {{ mongo_user }}
+    shell: {{ fake_shell }}
 group:
-  mongod:
+  {{ mongo_user }}:
     exists: true
 process:
   mongod:
     running: true
 {% if noc_env_type == 'prod' %}
 mount:
-  /var/lib/mongo:
+  {{ mongo_db_path }}:
     exists: true
     opts:
     - rw
     - relatime
-    source: /dev/mapper/vg00-mongo_data
     filesystem: xfs
-  /var/lib/mongo/index:
+  {{ mongo_db_path }}/index:
     exists: true
     opts:
     - rw
     - relatime
-    source: /dev/mapper/vg00-mongo_index
     filesystem: xfs
-  /var/lib/mongo/journal:
+  {{ mongo_db_path }}/journal:
     exists: true
     opts:
     - rw
     - relatime
-    source: /dev/mapper/vg00-wal
     filesystem: xfs
 {% endif %}

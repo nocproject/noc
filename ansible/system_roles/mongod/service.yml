@@ -8,6 +8,7 @@
     - mongod
     - external
   vars_files:
+    - "vars/{{ ansible_distribution }}.yml"
     - "../../vars/main.yml"
     - "../../vars/{{ ansible_distribution }}.yml"
   pre_tasks:
