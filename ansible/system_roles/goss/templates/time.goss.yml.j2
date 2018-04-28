@@ -2,8 +2,10 @@
 command:
   timedatectl:
     exit-status: 0
+    stderr: []
+    timeout: 10000
+{% if molecule_yml is not defined %}
     stdout:
     - 'NTP enabled: yes'
     - 'NTP synchronized: yes'
-    stderr: []
-    timeout: 10000
+{% endif %}
