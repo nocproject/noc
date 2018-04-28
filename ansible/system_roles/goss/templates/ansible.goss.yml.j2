@@ -5,7 +5,7 @@ file:
     mode: "0440"
     contains:
     - '!/^Defaults requiretty/'
-{% if ansible_user != 'vagrant' %}
+{% if molecule_yml is not defined %}
     - '/^{{ ansible_user }}.+ALL=\(ALL\) NOPASSWD: ALL/'
   /home/{{ ansible_user }}/.ssh/authorized_keys:
     exists: true
