@@ -132,7 +132,7 @@ class PrefixAccess(models.Model):
         ).exists()
 
     @classmethod
-    def read_Q(cls, user, field="prefix"):
+    def read_Q(cls, user, field="prefix", table=""):
         """
         Returns django Q with read restrictions.
         Q can be applied to prefix
@@ -151,7 +151,9 @@ class PrefixAccess(models.Model):
         stmt = []
         for vrf, afi in vaccess:
             for p in vaccess[vrf, afi]:
-                stmt += ["(vrf_id = %d AND afi = '%s' AND %s <<= '%s'" % (
-                    vrf, afi, field, p
+                stmt += ["(%s = %d AND %s = '%s' AND %s <<= '%s')" % (
+                    "%s.vrf_id" % table if table else "vrf_id", vrf,
+                    "%s.afi" % table if table else "afi", afi,
+                    "%s.%s" % (table, field) if table else field, p
                 )]
         return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))
