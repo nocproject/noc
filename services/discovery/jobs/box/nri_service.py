@@ -35,7 +35,7 @@ class NRIServiceCheck(DiscoveryCheck):
             )
             return
         # Check object has interfaces
-        if self.has_capability("DB | Interfaces"):
+        if not self.has_capability("DB | Interfaces"):
             self.logger.info(
                 "No interfaces discovered. "
                 "Skipping interface status check"
@@ -62,9 +62,10 @@ class NRIServiceCheck(DiscoveryCheck):
             (s["_id"], ServiceProfile.get_by_id(s["profile"]))
             for s in slist
         )
+        icol = Interface._get_collection()
         nmap = {}
         bulk = []
-        for i in Interface._get_collection().find({
+        for i in icol.find({
             "managed_object": self.object.id,
             "nri_name": {
                 "$exists": True
@@ -133,4 +134,4 @@ class NRIServiceCheck(DiscoveryCheck):
             bulk += [UpdateOne({"_id": i["_id"]}, {"$set": op})]
         if bulk:
             self.logger.info("Sending %d updates", len(bulk))
-            scol.bulk_write(bulk)
+            icol.bulk_write(bulk)
