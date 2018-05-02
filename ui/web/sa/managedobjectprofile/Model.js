@@ -286,6 +286,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_nri_portmap",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_nri_service",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_box_discovery_sla",
             type: "boolean",
             defaultValue: false

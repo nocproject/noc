@@ -29,7 +29,9 @@ from .lldp import LLDPCheck
 from .lacp import LACPCheck
 from .stp import STPCheck
 from .udld import UDLDCheck
+from .nri_portmap import NRIPortmapperCheck
 from .nri import NRICheck
+from .nri_service import NRIServiceCheck
 from .sla import SLACheck
 from .cpe import CPECheck
 from .bfd import BFDCheck
@@ -105,8 +107,12 @@ class BoxDiscoveryJob(MODiscoveryJob):
             AssetCheck(self).run()
         if self.object.object_profile.enable_box_discovery_vlan:
             VLANCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_nri_portmap:
+            NRIPortmapperCheck(self).run()
         if self.object.object_profile.enable_box_discovery_nri:
             NRICheck(self).run()
+        if self.object.object_profile.enable_box_discovery_nri_service:
+            NRIServiceCheck(self).run()
         if self.object.object_profile.enable_box_discovery_cpe:
             CPECheck(self).run()
         if self.object.object_profile.enable_box_discovery_mac:
