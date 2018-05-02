@@ -27,3 +27,8 @@ class Profile(BaseProfile):
 
     def shutdown_session(self, script):
         script.cli("terminal no length")
+
+    def convert_interface_name(self, s):
+        if s.startswith("adsl2"):
+            s = "%s/%s" % (s[5:-2], s[-2:])
+        return s
