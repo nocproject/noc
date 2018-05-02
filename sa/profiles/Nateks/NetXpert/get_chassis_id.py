@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# InfiNet.WANFlexX.get_chassis_id
+# Nateks.NetXpert.get_chassis_id
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -13,7 +13,7 @@ import re
 
 
 class Script(BaseScript):
-    name = "InfiNet.WANFlexX.get_chassis_id"
+    name = "Nateks.NetXpert.get_chassis_id"
     cache = True
     interface = IGetChassisID
 
