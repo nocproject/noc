@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# NRI Portmapper check
+# NRI Topology check
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -32,9 +32,13 @@ class NRICheck(TopologyDiscoveryCheck):
                 "Skipping interface status check"
             )
             return
+        # Bulk interface aliasing
+        self.seen_neighbors = set()
+        # Actual discovery
         return super(NRICheck, self).handler()
 
     def iter_neighbors(self, mo):
+        self.set_nri_aliases(mo)
         for d in ExtNRILink._get_collection().find({
             "$or": [
                 {"src_mo": mo.id},
@@ -44,12 +48,8 @@ class NRICheck(TopologyDiscoveryCheck):
             if d.get("ignored"):
                 continue
             if d["src_mo"] == mo.id:
-                iface = Interface.objects.filter(managed_object=mo, nri_name=d["src_interface"]).first()
-                self.set_interface_alias(mo, iface.name, d["src_interface"])
                 yield d["src_interface"], d["dst_mo"], d["dst_interface"]
             elif d["dst_mo"] == mo.id:
-                iface = Interface.objects.filter(managed_object=mo, nri_name=d["dst_interface"]).first()
-                self.set_interface_alias(mo, iface.name, d["dst_interface"])
                 yield d["dst_interface"], d["src_mo"], d["src_interface"]
 
     def get_neighbor(self, n):
@@ -63,3 +63,28 @@ class NRICheck(TopologyDiscoveryCheck):
         :return:
         """
         return remote_interface
+
+    def set_nri_aliases(self, mo):
+        """
+        Fill interface alias cache with nri names
+        :param mo:
+        :return:
+        """
+        if mo in self.seen_neighbors:
+            return
+        seen = False
+        for d in Interface._get_collection().find({
+            "managed_object": mo.id,
+            "nri_name": {
+                "$exists": True
+            }
+        }, {
+            "_id": 0,
+            "name": 1,
+            "nri_name": 1
+        }):
+            self.set_interface_alias(mo, d["name"], d["nri_name"])
+            seen = True
+        self.seen_neighbors.add(mo)
+        if not seen:
+            self.logger.info("[%s] Object has no nri interface name. Topology may be incomplete")
