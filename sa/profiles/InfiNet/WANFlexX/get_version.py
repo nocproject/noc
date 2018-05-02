@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "InfiNet.WANFlexX.get_version"
     cache = True
     interface = IGetVersion
-    rx_ver = re.compile(r"^(?P<platform>.+?)\s+WANFleX\s+(?P<version>\S+)",
+    rx_ver = re.compile(r"^(?P<platform>.+?)\s+WANFleX\s+(?P<ver>\S+)",
                         re.MULTILINE)
 
     def execute(self):
@@ -25,5 +25,5 @@ class Script(BaseScript):
         return {
             "vendor": "InfiNet",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("ver")
         }
