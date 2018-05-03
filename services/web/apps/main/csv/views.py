@@ -101,11 +101,12 @@ class CSVApplication(Application):
                 if get_model_id(m) == 'ip.Address':
                     accepted_prefixes = get_model('ip.PrefixAccess').objects.filter(user=request.user,
                                                                                     can_change=True).values_list(
-                        'prefix', flat=True)
+                        'prefix', 'vrf_id')
                     csv_reader = csv.DictReader(request.FILES['file'])
                     for row in csv_reader:
                         for prefix in accepted_prefixes:
-                            if self.address_in_network(row['address'], prefix):
+                            if self.address_in_network(row['address'], prefix[0])\
+                                    and get_model('ip.VRF').objects.get(id=prefix[1]).name == row['vrf']:
                                 accepted_row.append(row)
                                 if row['address'] in forbidden_row:
                                     forbidden_row.remove(row['address'])
@@ -125,7 +126,6 @@ class CSVApplication(Application):
                 return new_csv_file, check_msg
 
             if form.is_valid():
-                # DEVMON-335: add checking PrefixAccess of user imported ip.Address
                 if request.user.is_superuser:
                     csv_file = request.FILES["file"]
                     resp_msg = ""
