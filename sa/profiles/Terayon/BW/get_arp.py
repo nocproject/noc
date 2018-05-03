@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# NSN.hiX56xx.get_arp
-# sergey.sadovnikov@gmail.com
+# Terayon.BW.get_arp
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -14,16 +13,19 @@ import re
 
 
 class Script(BaseScript):
-    name = "NSN.hiX56xx.get_arp"
+    name = "Terayon.BW.get_arp"
     interface = IGetARP
 
-    rx_arp = re.compile(
-        "^\s*(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)\s*\n",
-        re.MULTILINE)
+    rx_line = re.compile(
+        r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
+        r"(?P<mac>\S+)\s+N/A\s+(?P<interface>\S+)\s+dynamic", re.MULTILINE)
 
-    def execute(self):
+    def execute(self, interface=None):
         r = []
-        v = self.cli("show arp")
-        for match in self.rx_arp.finditer(v):
+        for match in self.rx_line.finditer(self.cli("show ip arp")):
+            if (
+                interface is not None and interface != match.group("interface")
+            ):
+                continue
             r += [match.groupdict()]
         return r

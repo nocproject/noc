@@ -726,7 +726,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
-                if (remote_interface in loops and loops[remote_interface] == li):
+                if remote_interface in loops and loops[remote_interface] == li:
                     self.logger.info(
                         "Loop link detected: %s:%s - %s:%s",
                         self.object.name, li,
@@ -1041,7 +1041,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             )
             if (
                 llink.discovery_method != self.name and
-                (llink.discovery_method is None or self.is_preferable_over(llink))
+                (llink.discovery_method is None or
+                 self.is_preferable_over(local_object, remote_object, llink))
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)
@@ -1052,7 +1053,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         # Check method preferences
         if llink:
-            if self.is_preferable_over(llink):
+            if self.is_preferable_over(local_object, remote_object, llink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     llink, self.name, llink.discovery_method
@@ -1067,7 +1068,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 return
         if rlink:
-            if self.is_preferable_over(rlink):
+            if self.is_preferable_over(local_object, remote_object, rlink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     rlink, self.name, rlink.discovery_method
@@ -1310,11 +1311,19 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_object.name, remote_interface,
             )
 
-    def is_preferable_over(self, link):
+    def is_preferable_over(self, mo1, mo2, link):
         """
         Check current discovery method is preferable over link's one
+        :param mo1: Local managed object
+        :param mo2: Remote managed object
+        :param link: Existing ling
+        :returns: True, if check's method is preferabble
         """
-        return self.job.is_preferable_method(self.name, link.discovery_method)
+        if mo1.segment == mo2.segment or mo2.segment.id not in mo1.segment.get_path():
+            # Same segment, or mo1 is in upper segment. apply local segment policy
+            return mo1.segment.profile.is_preferable_method(self.name, link.discovery_method)
+        # mo2 is in upper segment, use remote segment policy
+        return mo2.segment.profile.is_preferable_method(self.name, link.discovery_method)
 
     def set_interface_alias(self, object, interface_name, alias):
         """

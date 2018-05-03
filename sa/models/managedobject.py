@@ -644,6 +644,14 @@ class ManagedObject(Model):
         # Rebuild summary
         if "object_profile" in self.changed_fields:
             self.segment.update_summary()
+        # Apply discovery jobs
+        self.ensure_discovery_jobs()
+        # Rebuild selector cache
+        SelectorCache.rebuild_for_object(self)
+        #
+        cache.delete("managedobject-id-%s" % self.id,
+                     version=MANAGEDOBJECT_CACHE_VERSION)
+        cache.delete_many(deleted_cache_keys)
         # Rebuild segment access
         if self.initial_data["id"] is None:
             self.segment.update_access()
@@ -660,14 +668,6 @@ class ManagedObject(Model):
             from noc.inv.models.link import Link
             for l in Link.object_links(self):
                 l.save()
-        # Apply discovery jobs
-        self.ensure_discovery_jobs()
-        # Rebuild selector cache
-        SelectorCache.rebuild_for_object(self)
-        #
-        cache.delete("managedobject-id-%s" % self.id,
-                     version=MANAGEDOBJECT_CACHE_VERSION)
-        cache.delete_many(deleted_cache_keys)
         # Handle became unmanaged
         if (
             not self.initial_data["id"] is None and

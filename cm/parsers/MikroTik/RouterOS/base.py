@@ -12,15 +12,13 @@ from collections import defaultdict
 # Third-party modules
 from pyparsing import *
 # NOC modules
-from noc.core.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
-from noc.lib.text import ranges_to_list
 
 
 class RouterOSParser(BasePyParser):
     rx_continue = re.compile(r"\\\n\s*", re.MULTILINE)
     SPEED_MAP = {
+        "10Gbps": 10000,
         "1Gbps": 1000,
         "100Mbps": 100
     }
