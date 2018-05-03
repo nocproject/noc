@@ -690,6 +690,13 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
+        # Check object has interfaces
+        if not self.has_capability("DB | Interfaces"):
+            self.logger.info(
+                "No interfaces has been discovered. "
+                "Skipping topology check"
+            )
+            return
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
         loops = {}  # first interface, second interface
