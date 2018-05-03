@@ -25,13 +25,6 @@ class NRICheck(TopologyDiscoveryCheck):
         if not self.object.remote_system:
             self.logger.info("Created directly. No NRI integration. Skipping check")
             return
-        # Check object has interfaces
-        if not self.has_capability("DB | Interfaces"):
-            self.logger.info(
-                "No interfaces discovered. "
-                "Skipping interface status check"
-            )
-            return
         # Bulk interface aliasing
         self.seen_neighbors = set()
         # Actual discovery
