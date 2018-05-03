@@ -155,13 +155,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
     def get_failed_interval(self):
         return self.object.object_profile.box_discovery_failed_interval
 
-    def is_preferable_method(self, m1, m2):
-        """
-        Returns True if m1 topology discovery method is
-        preferable over m2
-        """
-        return self.object.segment.profile.is_preferable_method(m1, m2)
-
     def can_update_alarms(self):
         return self.object.can_create_box_alarms()
 
