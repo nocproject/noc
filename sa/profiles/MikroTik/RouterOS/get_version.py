@@ -39,6 +39,8 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("system resource print")
         version = self.rx_ver.search(v).group("version")
+        if "(bugfix)" in version:
+            version = version[:-9]
         if "(stable)" in version:
             version = version[:-9]
         if "(current)" in version:
