@@ -82,6 +82,7 @@ class CLI(object):
         self.close_timeout = None
         self.setup_complete = False
         self.to_raise_privileges = script.credentials.get("raise_privileges", True)
+        self.state = "start"
 
     def close(self):
         if self.script.session:
@@ -93,6 +94,10 @@ class CLI(object):
             self.ioloop.close(all_fds=True)
             self.ioloop = None
         self.is_closed = True
+
+    def set_state(self, state):
+        self.logger.debug("Changing state to <%s>", state)
+        self.state = state
 
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:
@@ -269,6 +274,8 @@ class CLI(object):
                     )
                 else:
                     r = yield f
+                if self.script.to_track:
+                    self.script.push_cli_tracking(r, self.state)
             except tornado.iostream.StreamClosedError:
                 # Check if remote end closes connection just
                 # after connection established
@@ -350,6 +357,8 @@ class CLI(object):
         while not done:
             r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
                                                partial=True)
+            if self.script.to_track:
+                self.script.push_cli_tracking(r, self.state)
             self.logger.debug("Received: %r", r)
             buffer = self.cleaned_input(buffer + r)
             # Check for syntax error
@@ -436,7 +445,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_start(self, data=None, match=None):
-        self.logger.debug("State: <START>")
+        self.set_state("start")
         if self.profile.setup_sequence and not self.setup_complete:
             self.expect({
                 "setup": self.on_setup_sequence
@@ -452,7 +461,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_username(self, data, match):
-        self.logger.debug("State: <USERNAME>")
+        self.set_state("username")
         self.send(
             (self.script.credentials.get("user", "") or "") +
             (self.profile.username_submit or "\n")
@@ -466,7 +475,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_password(self, data, match):
-        self.logger.debug("State: <PASSWORD>")
+        self.set_state("password")
         self.send(
             (self.script.credentials.get("password", "") or "") +
             (self.profile.password_submit or "\n")
@@ -482,7 +491,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_unprivileged_prompt(self, data, match):
-        self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
+        self.set_state("unprivileged_prompt")
         if self.to_raise_privileges:
             # Start privilege raising sequence
             if not self.profile.command_super:
@@ -510,13 +519,13 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_failure(self, data, match, error_cls=None):
-        self.logger.debug("State: <FAILURE>")
+        self.set_state("failure")
         error_cls = error_cls or CLIError
         raise error_cls(self.buffer or data or None)
 
     @tornado.gen.coroutine
     def on_prompt(self, data, match):
-        self.logger.debug("State: <PROMT>")
+        self.set_state("prompt")
         if not self.is_started:
             self.resolve_pattern_prompt(match)
         d = "".join(self.collected_data + [data])
@@ -529,7 +538,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_super_username(self, data, match):
-        self.logger.debug("State: SUPER_USERNAME")
+        self.set_state("super_username")
         self.send(
             (self.script.credentials.get("user", "") or "") +
             (self.profile.username_submit or "\n")
@@ -544,6 +553,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_super_password(self, data, match):
+        self.set_state("super_password")
         self.send(
             (self.script.credentials.get("super_password", "") or "") +
             (self.profile.username_submit or "\n")
@@ -558,7 +568,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_setup_sequence(self, data, match):
-        self.logger.debug("State: <SETUP>")
+        self.set_state("setup")
         self.logger.debug(
             "Performing setup sequence: %s",
             self.profile.setup_sequence
@@ -577,6 +587,8 @@ class CLI(object):
                     future=self.iostream.read_bytes(4096, partial=True),
                     io_loop=self.ioloop
                 )
+                if self.script.to_track:
+                    self.script.push_cli_tracking(resp, self.state)
                 self.logger.debug("Receiving: %r", resp)
         self.logger.debug("Setup sequence complete")
         self.setup_complete = True
