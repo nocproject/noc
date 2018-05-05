@@ -13,7 +13,7 @@ from collections import namedtuple
 # NOC modules
 from .ber import BEREncoder, BERDecoder, parse_p_oid
 from .consts import (PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
-                    PDU_RESPONSE, PDU_GETBULK_REQUEST)
+                     PDU_RESPONSE, PDU_GETBULK_REQUEST)
 from .version import SNMP_v1, SNMP_v2c
 
 
@@ -88,9 +88,9 @@ def getbulk_pdu(community, oid, request_id=None,
     # Encode variable bindings
     varbinds = e.encode_sequence([
         e.encode_sequence([
-            e.encode_oid(oid),
+            e.encode_oid(o),
             e.encode_null()
-        ]) for oid in oids
+        ]) for o in oids
     ])
     # Encode RFC-1905 SNMP GET PDU
     pdu = e.encode_choice(PDU_GETBULK_REQUEST, [
@@ -162,4 +162,3 @@ def parse_get_response_raw(pdu):
         error_index=pdu[3],
         varbinds=varbinds
     )
-
