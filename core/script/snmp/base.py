@@ -188,7 +188,7 @@ class SNMP(object):
                 filter=None, cached=False,
                 only_first=False, bulk=None,
                 max_repetitions=None, version=None,
-                max_retries=0):
+                max_retries=0, timeout=10, raw_varbinds=False):
         @tornado.gen.coroutine
         def run():
             try:
@@ -204,7 +204,9 @@ class SNMP(object):
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
                     version=version,
-                    max_retries=max_retries
+                    max_retries=max_retries,
+                    timeout=timeout,
+                    raw_varbinds=raw_varbinds
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
