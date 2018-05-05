@@ -168,6 +168,11 @@ class BaseScript(object):
         #
         self.http_cache = {}
         self.partial_result = None
+        # Tracking
+        self.to_track = False
+        self.cli_tracked_data = []
+        # state -> [..]
+        self.cli_fsm_tracked_data = {}
         #
         if not parent and version and not name.endswith(".get_version"):
             self.logger.debug("Filling get_version cache with %s",
@@ -938,6 +943,36 @@ class BaseScript(object):
 
     def to_keep_cli_session(self):
         return self.keep_cli_session
+
+    def start_tracking(self):
+        self.logger.debug("Start tracking")
+        self.to_track = True
+
+    def stop_tracking(self):
+        self.logger.debug("Stop tracking")
+        self.to_track = False
+        self.cli_tracked_data = []
+
+    def push_cli_tracking(self, r, state):
+        if state == "prompt":
+            self.cli_tracked_data += [r]
+        elif state in self.cli_fsm_tracked_data:
+            self.cli_fsm_tracked_data[state] += [r]
+        else:
+            self.cli_fsm_tracked_data[state] = [r]
+
+    def push_snmp_tracking(self, oid, tlv):
+        self.logger.debug("PUSH SNMP %s: %r", oid, tlv)
+
+    def pop_cli_tracking(self):
+        self.logger.debug("Collecting %d tracked CLI items", len(self.cli_tracked_data))
+        r = self.cli_tracked_data
+        self.cli_tracked_data = []
+        return r
+
+    def iter_cli_fsm_tracking(self):
+        for state in self.cli_fsm_tracked_data:
+            yield state, self.cli_fsm_tracked_data[state]
 
 
 class ScriptsHub(object):
