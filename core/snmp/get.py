@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import random
 from collections import namedtuple
 # NOC modules
-from .ber import BEREncoder, BERDecoder
+from .ber import BEREncoder, BERDecoder, parse_p_oid
 from .consts import (PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
                     PDU_RESPONSE, PDU_GETBULK_REQUEST)
 from .version import SNMP_v1, SNMP_v2c
@@ -125,3 +125,41 @@ def parse_get_response(pdu):
         error_index=pdu[3],
         varbinds=pdu[4]
     )
+
+
+def parse_get_response_raw(pdu):
+    d = BERDecoder()
+    # Strip outher sequence
+    msg, _ = d.split_tlv(pdu)
+    # Strip proto version
+    _, msg = d.split_tlv(msg)
+    # Strip community
+    _, msg = d.split_tlv(msg)
+    # Strip inner sequence
+    msg, _ = d.split_tlv(msg)
+    # Strip pdu type
+    _, msg = d.split_tlv(msg)
+    # strip request id
+    _, msg = d.split_tlv(msg)
+    # strip error_code
+    _, msg = d.split_tlv(msg)
+    # strip error_index
+    msg, _ = d.split_tlv(msg)
+    # Varbinds
+    varbinds = []
+    while msg:
+        vb, msg = d.split_tlv(msg)
+        oid, value = d.split_tlv(vb)
+        varbinds += [[parse_p_oid(oid), value]]
+    data = d.parse_sequence(pdu)[0]
+    pdu = data[2]
+    if pdu[0] != PDU_RESPONSE:
+        raise ValueError("Invalid response PDU type: %s" % pdu[0])
+    return GetResponse(
+        community=data[1],
+        request_id=pdu[1],
+        error_status=pdu[2],
+        error_index=pdu[3],
+        varbinds=varbinds
+    )
+
