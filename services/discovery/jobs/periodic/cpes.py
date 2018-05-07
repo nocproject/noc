@@ -234,7 +234,7 @@ class CPESTATUSCheck(DiscoveryCheck):
         addalarmapt = set(bscaptalarm.keys()) - set(aptalarms.keys())
         for aa in addalarmapt:
             # Check bscname, if not bscname. Create alarm fo bs and sector
-            alarmclass = AlarmClass.objects.get(name="BS | PM | %s" % bscaptalarm[aa]["alarm"])
+            alarmclass = AlarmClass.objects.filter(name="BS | PM | %s" % bscaptalarm[aa]["alarm"]).first()
             if not alarmclass:
                 alarmclass = AlarmClass.objects.get(name="BS | PM | UNKNOWN")
             alarm = ActiveAlarm(
