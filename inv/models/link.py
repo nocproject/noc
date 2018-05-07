@@ -74,7 +74,10 @@ class Link(Document):
     l3_cost = IntField(default=1)
 
     def __unicode__(self):
-        return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+        if self.interfaces:
+            return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+        else:
+            return u"Stale link (%s)" % self.id
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
