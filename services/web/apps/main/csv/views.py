@@ -103,7 +103,10 @@ class CSVApplication(Application):
                                                                                     can_change=True).values_list(
                         'prefix', 'vrf_id')
                     csv_reader = csv.DictReader(request.FILES['file'])
+                    keys = None
                     for row in csv_reader:
+                        if not keys:
+                            keys = row.keys()
                         for prefix in accepted_prefixes:
                             if self.address_in_network(row['address'], prefix[0])\
                                     and get_model('ip.VRF').objects.get(id=prefix[1]).name == row['vrf']:
@@ -114,7 +117,6 @@ class CSVApplication(Application):
                                 forbidden_row.append(row['address'])
                     forbidden_ip = list(set(forbidden_row))
 
-                    keys = accepted_row[0].keys()
                     new_csv_file = StringIO.StringIO()
                     dict_writer = csv.DictWriter(new_csv_file, keys)
                     dict_writer.writeheader()
