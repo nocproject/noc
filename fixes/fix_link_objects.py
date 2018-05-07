@@ -21,5 +21,5 @@ def fix():
     ).timeout(False):
         try:
             l.save()
-        except AssertionError as e:
+        except AssertionError:
             print("Assertion Error, check link with id: %s" % l.id)
