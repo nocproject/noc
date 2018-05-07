@@ -24,6 +24,7 @@ provisioner:
     converge: playbook.yml
   options:
     i: inv.yml
+    e: tower_dist_dir=/tmp
   lint:
     name: ansible-lint
 scenario:
@@ -41,6 +42,3 @@ scenario:
     - destroy
 verifier:
   name: goss
-  lint:
-    name: flake8
-    enabled: false

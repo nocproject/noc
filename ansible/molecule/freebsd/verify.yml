@@ -15,8 +15,8 @@
   vars:
     goss_version: v0.3.5
     goss_arch: amd64
-    goss_dst: /opt/goss_{{goss_version}}/goss
-    goss_test_directory: /etc/goss/goss.d
+    goss_dst: /usr/local/bin/goss
+    goss_test_directory: /usr/local/etc/goss/goss.d
     goss_format: documentation
   tasks:
 

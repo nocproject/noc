@@ -41,4 +41,3 @@ scenario:
     - destroy
 verifier:
   name: goss
-  enabled: True

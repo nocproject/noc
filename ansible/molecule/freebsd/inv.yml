@@ -9,6 +9,7 @@ all:
           activator_script_threads: 20
           activator_tos: 0
           ansible_ssh_pipelining: true
+          ansible_python_interpreter: /usr/local/bin/python2
           bi_language: en-us
           bi_loglevel: info
           bi_power: 2
@@ -729,6 +730,7 @@ all:
           syslogcollector_power: 1
           syslogcollector_permit_firewall: 1
           tower_data: ./
+          tower_dist_dir: ./dist
           tower_ssh_keys: /opt/tower/var/tower/ssh/NOC
           trapcollector_listen_traps: 0.0.0.0:162
           trapcollector_loglevel: info
