@@ -77,7 +77,7 @@ class Link(Document):
         if self.interfaces:
             return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
         else:
-            return u"Link w/o interfaces (%s)" % self.id
+            return u"Stale link (%s)" % self.id
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
