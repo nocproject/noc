@@ -1,6 +1,8 @@
 ---
 - name: Add Nginx key Debian
-  apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+  apt_key:
+    url: http://nginx.org/keys/nginx_signing.key
+    state: present
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
