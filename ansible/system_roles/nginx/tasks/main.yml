@@ -59,7 +59,7 @@
     monitoring_service_procstat_value: "/var/run/nginx.pid"
     monitoring_config:
       urls: ["https://{{ noc_web_host }}/ng_stats"]
-      insecure_skip_verify: "{{ if nginx_self_signed_cerificate | ternary('true','false') }}"
+      insecure_skip_verify: "{{ nginx_self_signed_cerificate | ternary('true','false') }}"
   when: has_svc_monitoring is defined
   tags:
     - monitoring
