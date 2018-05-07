@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from __future__ import print_function
 # Third-party modules
 from mongoengine.queryset import Q
 # NOC modules
@@ -20,5 +21,5 @@ def fix():
     ).timeout(False):
         try:
             l.save()
-        except AssertionError:
+        except AssertionError as e:
             print("Assertion Error, check link with id: %s" % l.id)
