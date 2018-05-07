@@ -18,4 +18,7 @@ def fix():
             Q(linked_segments__exists=False) |
             Q(type__exists=False)
     ).timeout(False):
-        l.save()
+        try:
+            l.save()
+        except AssertionError:
+            print("Assertion Error, check link with id: %s" % l.id)
