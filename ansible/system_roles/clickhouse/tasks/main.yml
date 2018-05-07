@@ -15,6 +15,7 @@
     mode: 0775
     group: clickhouse
     owner: clickhouse
+    recurse: "True"
   with_items:
     - "{{ch_etc_path}}"
     - "{{ch_log_dir}}"
@@ -29,6 +30,7 @@
   template:
     src: "users.xml"
     dest: "{{ch_etc_path}}/"
+    owner: clickhouse
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
 
@@ -36,6 +38,7 @@
   template:
     src: "config.xml"
     dest: "{{ch_etc_path}}/"
+    owner: clickhouse
   no_log: "{{tower_show_secrets}}"
   notify: restart clickhouse-server
 

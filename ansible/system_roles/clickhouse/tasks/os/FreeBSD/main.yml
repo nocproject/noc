@@ -3,3 +3,31 @@
   pkgng:
     name: "clickhouse"
     state: present
+
+- name: check if timezone is selected
+  stat:
+    path: /etc/localtime
+  register: tzfile
+
+- name: set tz if not already set
+  file:
+    src: /usr/share/zoneinfo/Etc/UTC
+    dest: /etc/localtime
+    state: link
+  when:
+    - not tzfile.stat.exists
+
+- name: Create ch directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: 0775
+    group: clickhouse
+    owner: clickhouse
+    recurse: "True"
+  with_items:
+    - "{{ch_etc_path}}"
+    - "{{ch_log_dir}}"
+    - "{{ch_data_dir}}"
+    - "{{ch_big_query_dir}}"
+    - "{{ch_dictionaries_path}}"

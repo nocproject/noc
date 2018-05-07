@@ -70,14 +70,6 @@
     enabled: "True"
     state: started
 
-- name: Setting mongo data directory permissions
-  file:
-    path: "{{ mongo_db_path }}"
-    owner: "{{ mongo_user }}"
-    mode: "0750"
-    state: directory
-    recurse: true
-
 - name: Create MongoDB arbiter directory
   file:
     path: "{{ noc_root }}/var/db/mongo-arbiter"

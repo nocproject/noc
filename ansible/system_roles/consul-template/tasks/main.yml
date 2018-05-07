@@ -9,6 +9,13 @@
 
 - name: include install
   import_tasks: "install.yml"
+  when:
+    - ansible_distribution != 'FreeBSD'
+
+- name: include install
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  when:
+    - ansible_distribution == 'FreeBSD'
 
 - name: consul-template config file
   template:
@@ -29,15 +36,6 @@
   notify:
     - reload systemd
     - restart consul-template
-  tags:
-    - config
-
-- name: copy consul-template bsdinit service configuration
-  template:
-    src: consul-template.bsdinit.j2
-    dest: "{{etc_prefix}}/rc.d/consul-template"
-    mode: 0755
-  when: "'FreeBSD' in ansible_system"
   tags:
     - config
 

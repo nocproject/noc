@@ -1,1 +1,20 @@
 ---
+- name: Install Goss
+  pkgng:
+    name: "goss"
+    state: present
+
+- name: provide facts for freebsd
+  set_fact:
+    goss_version: 0.3.4
+    goss_bin_path: /usr/local/bin/goss
+
+- name: create goss dirs
+  file:
+    dest: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ goss_conf }}"
+    - "{{ goss_conf_dir }}"
+    - "{{ goss_path }}"
+  when: not ansible_check_mode

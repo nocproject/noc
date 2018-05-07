@@ -1,3 +1,3 @@
 # FreeBSD settings
 ---
-nginx_user: nginx # ????? have to be fixed
+nginx_user: nginx  # ????? have to be fixed

@@ -43,8 +43,10 @@ nsqadmin_reload_command: "service nsqadmin restart"
 postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql
-postgres_data_dir: /usr/local/pgsql/data
-postgresql_conf_prefix: /usr/local/pgsql/data
+postgres_home: /usr/local/pgsql
+postgres_data_dir: "{{postgres_home}}/data"
+postgresql_conf_prefix: "{{postgres_home}}/data"
+postgres_superuser: pgsql
 postgres_version: 9.5
 postgres_proccess: postgres
 

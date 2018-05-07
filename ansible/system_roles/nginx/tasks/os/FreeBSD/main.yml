@@ -4,6 +4,56 @@
     name: "nginx"
     state: present
 
+- name: Enable Nginx system service
+  service:
+    name: "{{ nginx_system_service }}"
+    enabled: "True"
+    state: started
+  notify: reload nginx
+
+# yamllint disable rule:indentation
+- name: install dummy upstream.conf
+  copy:
+    dest: "{{nginx_conf_upstream_path}}"
+    content: |
+      upstream noc-web {
+         server 127.0.0.1:65535; # check consul for web service
+      }
+
+      upstream login {
+         server 127.0.0.1:65535; # check consul for login service
+      }
+
+      upstream card {
+         server 127.0.0.1:65535; # check consul for card service
+      }
+
+      upstream mrt {
+         server 127.0.0.1:65535; # check consul for mrt service
+      }
+
+      upstream bi {
+         server 127.0.0.1:65535; # check consul for bi service
+      }
+
+      upstream grafana {
+         server 127.0.0.1:65535; # check consul for grafana service
+      }
+
+      upstream grafanads {
+         server 127.0.0.1:65535; # check consul for grafanads service
+      }
+
+      upstream notebook {
+         server 127.0.0.1:65535; # check consul for notebook service
+      }
+    force: "False"
+  notify: reload nginx
+  tags:
+    - keepalived
+    - config
+# yamllint enable rule:indentation
+
 - name: Add newsyslogd rules
   template:
     src: "os/FreeBSD/nginx.conf"
