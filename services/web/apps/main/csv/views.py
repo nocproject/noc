@@ -16,6 +16,9 @@ from noc.core.translation import ugettext as _
 from noc.lib.app.application import Application, view
 from noc.core.csvutils import csv_export, csv_import, get_model_fields, IR_FAIL, IR_SKIP, IR_UPDATE
 from noc.models import get_model, get_model_id
+# Modules for parsing CSV
+import csv
+import StringIO
 
 
 class CSVApplication(Application):
@@ -69,6 +72,14 @@ class CSVApplication(Application):
         ])
         referer = forms.CharField(widget=forms.HiddenInput)
 
+    def address_in_network(self, ip, net):
+        """Is an address in a network"""
+        ipaddr = int(''.join(['%02x' % int(x) for x in ip.split('.')]), 16)
+        netstr, bits = net.split('/')
+        netaddr = int(''.join(['%02x' % int(x) for x in netstr.split('.')]), 16)
+        mask = (0xffffffff << (32 - int(bits))) & 0xffffffff
+        return (ipaddr & mask) == (netaddr & mask)
+
     @view(url=r"^import/(?P<model>[a-zA-Z1-9]+\.[a-zA-Z1-9]+)/$",
           url_name="import", access="import")
     def view_import(self, request, model):
@@ -83,17 +94,55 @@ class CSVApplication(Application):
             return self.response_not_found("Invalid model")
         if request.POST:
             form = self.ImportForm(request.POST, request.FILES)
+
+            def import_check_perms():
+                accepted_row = []
+                forbidden_row = []
+                if get_model_id(m) == 'ip.Address':
+                    accepted_prefixes = get_model('ip.PrefixAccess').objects.filter(user=request.user,
+                                                                                    can_change=True).values_list(
+                        'prefix', 'vrf_id')
+                    csv_reader = csv.DictReader(request.FILES['file'])
+                    keys = None
+                    for row in csv_reader:
+                        if not keys:
+                            keys = row.keys()
+                        for prefix in accepted_prefixes:
+                            if self.address_in_network(row['address'], prefix[0])\
+                                    and get_model('ip.VRF').objects.get(id=prefix[1]).name == row['vrf']:
+                                accepted_row.append(row)
+                                if row['address'] in forbidden_row:
+                                    forbidden_row.remove(row['address'])
+                            else:
+                                forbidden_row.append(row['address'])
+                    forbidden_ip = list(set(forbidden_row))
+
+                    new_csv_file = StringIO.StringIO()
+                    dict_writer = csv.DictWriter(new_csv_file, keys)
+                    dict_writer.writeheader()
+                    dict_writer.writerows(accepted_row)
+                    check_msg = ", \n\nskipped because of PrefixAccess - %d IP: \n%s" % (len(forbidden_ip), "\n".join(forbidden_ip))
+                else:
+                    new_csv_file = request.FILES["file"]
+                    check_msg = ""
+                return new_csv_file, check_msg
+
             if form.is_valid():
+                if request.user.is_superuser:
+                    csv_file = request.FILES["file"]
+                    resp_msg = ""
+                else:
+                    csv_file, resp_msg = import_check_perms()
                 count, error = csv_import(
-                    m, request.FILES["file"],
+                    m, csv_file,
                     resolution=form.cleaned_data["resolve"]
                 )
                 if count is None:
                     self.message_user(request,
                                       "Error importing data: %s" % error)
                 else:
-                    self.message_user(request,
-                                      "%d records are imported/updated" % count)
+                    return HttpResponse("%d records are imported/updated" % count + resp_msg, content_type="text/plain")
+                    # self.message_user(request, "%d records are imported/updated" % count + resp_msg)
                 return self.response_redirect(form.cleaned_data["referer"])
         else:
             form = self.ImportForm({
