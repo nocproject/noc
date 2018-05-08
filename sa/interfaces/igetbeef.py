@@ -70,7 +70,7 @@ class IGetBeef(BaseInterface):
         # Output for type == cli
         "cli": DictListParameter(attrs={
             # ans.name
-            "name": StringParameter(),
+            "names": StringListParameter(),
             # ans.value
             "request": StringParameter(),
             #
@@ -80,5 +80,10 @@ class IGetBeef(BaseInterface):
         "mib": DictListParameter(attrs={
             "oid": OIDParameter(),
             "value": StringParameter()
-        })
+        }),
+        # MIB binary encoding
+        "mib_encoding": StringParameter(
+            default="hex",
+            choices=["hex", "base64"]
+        )
     })
