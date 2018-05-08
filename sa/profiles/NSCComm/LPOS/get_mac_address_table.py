@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NSCComm.LPOS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,6 +29,8 @@ class Script(BaseScript):
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         for match in self.rx_line.finditer(self.cli("mapmac -f")):
+            if match.group("type") in ["mcast", "bcast"]:
+                continue
             if match.group("port") != "cpu":
                 r += [{
                     "vlan_id": 1,
