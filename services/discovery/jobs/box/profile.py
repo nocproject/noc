@@ -84,7 +84,7 @@ class ProfileCheck(DiscoveryCheck):
             message = "Not find profile for OID: %s or HTTP string: %s" % (snmp_result, http_result)
         elif not snmp_result:
             message = "Cannot fetch snmp data, check device for SNMP access"
-            self.logger.info("Cannot fetch snmp data, check device acces for SNMP")
+            self.logger.info("Cannot fetch SNMP data, check device access for SNMP")
         elif not http_result:
             message = "Cannot fetch HTTP data, check device for HTTP access"
             self.logger.info("Cannot fetch http data, check device for HTTP access")
