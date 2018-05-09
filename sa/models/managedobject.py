@@ -50,7 +50,6 @@ from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
-from noc.settings import config
 from noc.core.scheduler.job import Job
 from noc.core.handler import get_handler
 from noc.core.debug import error_report

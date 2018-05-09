@@ -7,11 +7,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 # Third-party modules
 import six
 # NOC modules
-from gridvcs import GridVCS
+from .gridvcs import GridVCS
 
 logger = logging.getLogger(__name__)
 
