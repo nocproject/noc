@@ -472,7 +472,10 @@ class Application(object):
         """
         Iterator returning application views
         """
-        for n in [v for v in dir(self) if hasattr(getattr(self, v), "url")]:
+        for n in (
+            v for v in dir(self)
+            if v != "model" and hasattr(getattr(self, v), "url")
+        ):
             yield getattr(self, n)
 
     def get_permissions(self):

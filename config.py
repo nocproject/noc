@@ -359,7 +359,6 @@ class Config(BaseConfig):
         dig = StringParameter()
         vcs_path = StringParameter(default="/usr/local/bin/hg")
         repo = StringParameter(default="/var/repo")
-        config_mirror_path = StringParameter("")
         backup_dir = StringParameter(default="/var/backup")
         etl_import = StringParameter(default="/var/lib/noc/import")
         ssh_key_prefix = StringParameter(default="etc/noc_ssh")

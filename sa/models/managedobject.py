@@ -50,7 +50,6 @@ from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
-from noc.settings import config
 from noc.core.scheduler.job import Job
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
@@ -227,7 +226,7 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     # CM
-    config = GridVCSField("config", mirror=config.path.config_mirror_path)
+    config = GridVCSField("config")
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                      blank=True, null=True)
@@ -933,7 +932,9 @@ class ManagedObject(Model):
         old_data = self.config.read()
         is_new = not bool(old_data)
         diff = None
-        if not is_new:
+        if is_new:
+            changed = True
+        else:
             # Calculate diff
             if self.config_diff_filter_handler:
                 handler = get_handler(self.config_diff_filter_handler)
@@ -943,17 +944,40 @@ class ManagedObject(Model):
                     new_data = handler(self, data)
                     if not old_data and not new_data:
                         logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
+                else:
+                    new_data = data
             else:
                 new_data = data
-            if old_data == new_data:
-                return  # Nothing changed
-            diff = "".join(difflib.unified_diff(
-                old_data.splitlines(True),
-                new_data.splitlines(True),
-                fromfile=os.path.join("a", self.name.encode("utf8")),
-                tofile=os.path.join("b", self.name.encode("utf8"))
-            ))
-        # Notify changes
+            changed = old_data != new_data
+            if changed:
+                diff = "".join(difflib.unified_diff(
+                    old_data.splitlines(True),
+                    new_data.splitlines(True),
+                    fromfile=os.path.join("a", self.name.encode("utf8")),
+                    tofile=os.path.join("b", self.name.encode("utf8"))
+                ))
+        if changed:
+            # Notify changes
+            self.notify_config_changes(
+                is_new=is_new,
+                data=data,
+                diff=diff
+            )
+            # Save config
+            self.write_config(data)
+        # Apply mirroring settings
+        self.mirror_config(data, changed)
+        # Run config validation
+        self.validate_config(changed)
+
+    def notify_config_changes(self, is_new, data, diff):
+        """
+        Notify about config changes
+        :param is_new:
+        :param data:
+        :param diff:
+        :return:
+        """
         self.event(
             self.EV_CONFIG_CHANGED,
             {
@@ -963,9 +987,86 @@ class ManagedObject(Model):
                 "diff": diff
             }
         )
-        # Save config
+
+    def write_config(self, data):
+        """
+        Save config to GridVCS
+        :param data: Config data
+        :return:
+        """
+        logger.debug("[%s] Writing config", self.name)
         self.config.write(data)
-        # Run config validation
+
+    def mirror_config(self, data, changed):
+        """
+        Save config to mirror
+        :param data: Config data
+        :param changed: True if config has been changed
+        :return:
+        """
+        logger.debug("[%s] Mirroring config", self.name)
+        policy = self.object_profile.config_mirror_policy
+        # D - Disable
+        if policy == "D":
+            logger.debug("[%s] Mirroring is disabled by policy. Skipping", self.name)
+            return
+        # C - Mirror on Change
+        if policy == "C" and not changed:
+            logger.debug("[%s] Configuration has not been changed. Skipping", self.name)
+            return
+        # Check storage
+        storage = self.object_profile.config_mirror_storage
+        if not storage:
+            logger.debug("[%s] Storage is not configured. Skipping", self.name)
+            return
+        if not storage.enable_config_mirror:
+            logger.debug("[%s] Config mirroring is disabled for storage '%s'. Skipping",
+                         self.name, storage.name)
+            return  # No storage setting
+        # Check template
+        template = self.object_profile.config_mirror_template
+        if not template:
+            logger.debug("[%s] Path template is not configured. Skipping", self.name)
+            return
+        # Render path
+        path = self.object_profile.config_mirror_template.render_subject(object=self).strip()
+        if not path:
+            logger.debug("[%s] Empty mirror path. Skipping", self.name)
+            return
+        logger.debug(
+            "[%s] Mirroring to %s:%s",
+            self.name,
+            self.object_profile.config_mirror_storage.name,
+            path
+        )
+        dir_path = os.path.dirname(path)
+        try:
+            with storage.open_fs() as fs:
+                if dir_path and dir_path != "/":
+                    logger.debug("[%s] Ensuring directory: %s", self.name, dir_path)
+                    fs.makedirs(dir_path, recreate=True)
+                logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
+                fs.setbytes(path, bytes(data))
+        except storage.Error as e:
+            logger.error("[%s] Failed to mirror config: %s", self.name, e)
+
+    def validate_config(self, changed):
+        """
+        Apply config validation rules
+        :param changed:
+        :return:
+        """
+        logger.debug("[%s] Validating config", self.name)
+        policy = self.object_profile.config_validation_policy
+        # D - Disable
+        if policy == "D":
+            logger.debug("[%s] Validation is disabled by policy. Skipping", self.name)
+            return
+        # C - Mirror on Change
+        if policy == "C" and not changed:
+            logger.debug("[%s] Configuration has not been changed. Skipping", self.name)
+            return
+        # Validate
         from noc.cm.engine import Engine
         engine = Engine(self)
         try:

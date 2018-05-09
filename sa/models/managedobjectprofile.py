@@ -13,12 +13,10 @@ from threading import Lock
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.template import Template, Context
 import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from .authprofile import AuthProfile
-from noc.lib.validators import is_fqdn
 from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
@@ -36,6 +34,8 @@ from noc.core.window import wf_choices
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
 from noc.vc.models.vpnprofile import VPNProfile
+from noc.main.models.extstorage import ExtStorage
+from noc.main.models.template import Template
 
 
 m_valid = DictListParameter(attrs={
@@ -472,6 +472,36 @@ class ManagedObjectProfile(models.Model):
         AddressProfile,
         null=True, blank=True
     )
+    # Config mirror settings
+    config_mirror_storage = DocumentReferenceField(
+        ExtStorage,
+        null=True, blank=True
+    )
+    config_mirror_template = models.ForeignKey(
+        Template, verbose_name=_("Config Mirror Template"),
+        blank=True, null=True
+    )
+    config_mirror_policy = models.CharField(
+        _("Config Mirror Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="C"
+    )
+    # Config validation settings
+    config_validation_policy = models.CharField(
+        _("Config Validation Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="C"
+    )
     #
     metrics = PickledField(blank=True)
     #
@@ -507,20 +537,6 @@ class ManagedObjectProfile(models.Model):
         """
         for mo in self.managedobject_set.order_by("pool").distinct("pool"):
             yield mo.pool
-
-    def get_fqdn(self, object):
-        if self.fqdn_template:
-            # Render template
-            ctx = Context({"object": object})
-            f = Template(self.fqdn_template).render(ctx)
-            # Remove spaces
-            f = "".join(f.split())
-        else:
-            f = object.name
-        # Check resulting fqdn
-        if not is_fqdn(f):
-            raise ValueError("Invalid FQDN: %s" % f)
-        return f
 
     def on_save(self):
         box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
