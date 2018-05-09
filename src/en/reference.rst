@@ -33,5 +33,7 @@ Reference
     /reference/user
     /reference/group
     /reference/pool
+    /reference/notification-group
+    /reference/template
     /reference/threshold-profile
     /reference/handler

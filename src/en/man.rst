@@ -46,6 +46,7 @@ Command Reference
     /man/migrate
     /man/mongo
     /man/newapp
+    /man/notify
     /man/nri-link
     /man/nri
     /man/parse-events
