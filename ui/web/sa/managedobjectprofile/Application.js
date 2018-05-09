@@ -21,7 +21,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.remotesystem.LookupField",
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.addressprofile.LookupField",
-        "NOC.vc.vpnprofile.LookupField"
+        "NOC.vc.vpnprofile.LookupField",
+        "NOC.main.template.LookupField",
+        "NOC.main.extstorage.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -29,6 +31,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     validationModelId: "sa.ManagedObjectProfile",
     viewModel: {
         data: {
+            enableBoxDiscoveryConfig: false,
             enableBoxDiscoveryVPNInterface: false,
             enableBoxDiscoveryVPNMPLS: false,
             enableBoxDiscoveryPrefixInterface: false,
@@ -606,7 +609,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_config",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Config")
+                                            boxLabel: __("Config"),
+                                            reference: "enableBoxDiscoveryConfig"
                                         },
                                         {
                                             name: "enable_box_discovery_asset",
@@ -1276,6 +1280,79 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: true,
                                             minValue: 0,
                                             uiStyle: "small"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            title: __("Config"),
+                            items: [
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Config Mirror"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "config_mirror_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Mirror Policy"),
+                                            allowBlank: false,
+                                            store: [
+                                                ["D", __("Disabled")],
+                                                ["A", __("Always Mirror")],
+                                                ["C", __("Mirror on Change")]
+                                            ],
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            }
+                                        },
+                                        {
+                                            name: "config_mirror_storage",
+                                            xtype: "main.extstorage.LookupField",
+                                            fieldLabel: __("Storage"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            }
+                                        },
+                                        {
+                                            name: "config_mirror_template",
+                                            xtype: "main.template.LookupField",
+                                            fieldLabel: __("Path Template"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Config Validation"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "config_validation_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Validation Policy"),
+                                            allowBlank: false,
+                                            store: [
+                                                ["D", __("Disabled")],
+                                                ["A", __("Always Mirror")],
+                                                ["C", __("Mirror on Change")]
+                                            ],
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            }
                                         }
                                     ]
                                 }

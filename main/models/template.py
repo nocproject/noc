@@ -33,6 +33,7 @@ def template_validator(value):
     ("ip.AddressProfile", "name_template"),
     ("ip.AddressProfile", "fqdn_template"),
     ("ip.PrefixProfile", "name_template"),
+    ("sa.ManagedObjectProfile", "config_mirror_template"),
     ("vc.VPNProfile", "name_template")
 ])
 class Template(models.Model):

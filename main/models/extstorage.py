@@ -15,10 +15,15 @@ from mongoengine.fields import StringField, BooleanField
 from fs import open_fs
 from fs.errors import FSError
 import cachetools
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObjectProfile", "config_mirror_storage")
+])
 class ExtStorage(Document):
     meta = {
         "collection": "extstorages",

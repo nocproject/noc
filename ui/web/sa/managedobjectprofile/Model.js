@@ -589,5 +589,31 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string",
             persist: false
         },
+        {
+            name: "config_mirror_storage",
+            type: "string"
+        },
+        {
+            name: "config_mirror_storage__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "config_mirror_template",
+            type: "string"
+        },
+        {
+            name: "config_mirror_template__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "config_mirror_policy",
+            type: "string"
+        },
+        {
+            name: "config_validation_policy",
+            type: "string"
+        }
     ]
 });
