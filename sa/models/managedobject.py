@@ -1048,7 +1048,7 @@ class ManagedObject(Model):
                 logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
                 fs.setbytes(path, bytes(data))
         except storage.Error as e:
-            logger.error("Failed to mirror config: %s", e)
+            logger.error("[%s] Failed to mirror config: %s", self.name, e)
 
     def validate_config(self, changed):
         """
