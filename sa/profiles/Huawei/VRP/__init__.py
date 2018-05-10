@@ -49,7 +49,7 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
-    rx_ver = re.compile(r"\s*(\d+)\.(\d+)\s*\((?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)\)\S*")
+    rx_ver = re.compile(r"\s*(\d+)\.(\d+)\s*(\((?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)\))?\S*")
 
     def cmp_version(self, x, y):
         """
@@ -71,9 +71,10 @@ class Profile(BaseProfile):
         :param y: [12358].x (VxxxRxxxCxx)
         :return:
         """
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)[0]],
-            [int(z) for z in self.rx_ver.findall(y)[0]]
+        # pylint: disable=cmp-builtin
+        return cmp(  # noqa
+            [int(z) for z in self.rx_ver.findall(str(x))[0]],
+            [int(z) for z in self.rx_ver.findall(str(y))[0]]
         )
 
     def generate_prefix_list(self, name, pl, strict=True):
@@ -359,6 +360,4 @@ class Profile(BaseProfile):
                     self.update_dict(r[part_name]["table"][-1], field)
                 else:
                     r[part_name]["table"] += [field]
-                pass
-
         return r
