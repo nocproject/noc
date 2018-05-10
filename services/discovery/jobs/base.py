@@ -678,6 +678,8 @@ class DiscoveryCheck(object):
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
     NEIGHBOR_CACHE_VERSION = 1
+    # clean_interface settings
+    aliased_names_only = False
 
     def __init__(self, *args, **kwargs):
         super(TopologyDiscoveryCheck, self).__init__(*args, **kwargs)
@@ -973,13 +975,19 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def clean_interface(self, object, interface):
         """
-        Finaly clean interface name
-        And convert to local conventions
-        :param object:
-        :param interface:
+        Finaly clean interface name:
+        * Check for interface alias
+        * When aliased_names_only is not set - use local name
+        :param object: ManagedObject instance
+        :param interface: interface name
         :return: Interface name or None if interface cannot be cleaned
         """
-        return self.interface_aliases.get((object.id, interface), interface)
+        i = self.interface_aliases.get((object.id, interface))
+        if i:
+            return i
+        if self.aliased_names_only:
+            return None
+        return interface
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
