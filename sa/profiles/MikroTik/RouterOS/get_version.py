@@ -45,7 +45,7 @@ class Script(BaseScript):
         match = self.rx_arch.search(v)
         if match:
             arch = match.group("arch")
-            platform = "%s (%s)" % (platform, arch)
+            # platform = "%s (%s)" % (platform, arch)
         else:
             arch = None
         r = {
