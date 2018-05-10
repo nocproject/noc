@@ -11,7 +11,7 @@ from south.db import db
 from django.db import models
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db.add_column(
             "fm_alarmtrigger",
