@@ -71,6 +71,7 @@ class Profile(BaseProfile):
         :param y: [12358].x (VxxxRxxxCxx)
         :return:
         """
+        # pylint: disable=cmp-builtin
         return cmp(  # noqa
             [int(z) for z in self.rx_ver.findall(str(x))[0]],
             [int(z) for z in self.rx_ver.findall(str(y))[0]]
