@@ -7,9 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 from threading import Lock
 import operator
+import six
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, DictField,
@@ -19,10 +21,10 @@ from mongoengine import signals
 from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules
-from connectiontype import ConnectionType
-from connectionrule import ConnectionRule
-from unknownmodel import UnknownModel
-from vendor import Vendor
+from .connectiontype import ConnectionType
+from .connectionrule import ConnectionRule
+from .unknownmodel import UnknownModel
+from .vendor import Vendor
 from noc.main.models.doccategory import category
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
@@ -337,7 +339,7 @@ def clear_unknown_models(sender, document, **kwargs):
                    document.data["asset"].get("order_part_no", []))
         if part_no:
             vendor = document.vendor
-            if isinstance(vendor, basestring):
+            if isinstance(vendor, six.string_types):
                 vendor = Vendor.objects.get(id=vendor)
             UnknownModel.clear_unknown(vendor.code, part_no)
 
