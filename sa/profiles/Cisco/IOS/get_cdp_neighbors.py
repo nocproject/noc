@@ -39,7 +39,7 @@ class Script(BaseScript):
                     try:
                         msg = res[ii]['4']
                         neighbors += [{
-                            "device_id": res[ii]['6'],
+                            "device_id": re.search(r"^[^\(]*", res[ii]['6']).group(0),
                             "local_interface": self.profile.convert_interface_name(ii[0]),
                             "remote_interface": res[ii]['7'],
                             "remote_ip": "%d.%d.%d.%d" % (ord(msg[0]), ord(msg[1]), ord(msg[2]), ord(msg[3])),
