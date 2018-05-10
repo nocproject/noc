@@ -42,6 +42,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryAddressNeighbor: false,
             enableBoxDiscoveryHK: false,
             enableBoxDiscoveryNRIPortmap: false
+        },
+        formulas: {
+            disableConfigPolicy: {
+                bind: {
+                    bindTo: '{mirrorPolicy.selection}',
+                    deep: true
+                },
+                get: function(record) {
+                    return record ? this.data.enableBoxDiscoveryConfig.checked
+                        && record.get('id') === 'D' : true;
+                }
+            }
         }
     },
 
@@ -205,10 +217,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         },
                         {
                             title: __("Access"),
+                            tooltip: __("Worked with devices settings"),
                             items: [
                                 {
                                     name: "access_preference",
                                     xtype: "combobox",
+                                    tooltip: __("Protocol priority worked on device. <br/>" +
+                                        "Warning! Device profile (SA Profile) should support worked in selected mode"),
                                     fieldLabel: __("Access Preference"),
                                     labelWidth: 220,
                                     allowBlank: false,
@@ -219,11 +234,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["SC", __("SNMP, CLI")],
                                         ["CS", __("CLI, SNMP")]
                                     ],
-                                    value: "CS"
+                                    value: "CS",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "cli_session_policy",
                                     xtype: "combobox",
+                                    tooltip: __("Use one session worked on device. <br/>" +
+                                        "If disabled - worked one script - one login. Logout after script end."),
                                     fieldLabel: __("CLI Session Policy"),
                                     labelWidth: 220,
                                     allowBlank: true,
@@ -233,11 +253,17 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "E"
+                                    value: "E",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "cli_privilege_policy",
                                     xtype: "combobox",
+                                    tooltip: __("Do enable if login unprivilege mode on device. <br/>" +
+                                        "Raise Privileges - send enable, Do not raise - work on current mode <br/>" +
+                                        "(immediately after login)"),
                                     fieldLabel: __("CLI Privilege Policy"),
                                     labelWidth: 220,
                                     allowBlank: true,
@@ -246,9 +272,15 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["D", __("Do not raise")],
                                         ["E", __("Raise Privileges")]
                                     ],
-                                    value: "E"
+                                    value: "E",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Card"),
@@ -1287,6 +1319,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         },
                         {
                             title: __("Config"),
+                            tooltip: __("Settings policy for config discovery: Validation and mirroring config"),
                             items: [
                                 {
                                     xtype: "fieldset",
@@ -1300,24 +1333,44 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "config_mirror_policy",
                                             xtype: "combobox",
+                                            reference: "mirrorPolicy",
                                             fieldLabel: __("Mirror Policy"),
                                             allowBlank: false,
-                                            store: [
-                                                ["D", __("Disabled")],
-                                                ["A", __("Always Mirror")],
-                                                ["C", __("Mirror on Change")]
-                                            ],
+                                            tooltip: __('Mirroring config policy worked inside Config discovery. ' +
+                                                'Saving config every discovery finished or when only config changed'),
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    {"id": "D", "label": __("Disabled")},
+                                                    {"id": "A", "label": __("Always Mirror")},
+                                                    {"id": "C", "label": __("Mirror on Change")}
+                                                ]
+                                            },
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
                                             }
+
                                         },
                                         {
                                             name: "config_mirror_storage",
                                             xtype: "main.extstorage.LookupField",
                                             fieldLabel: __("Storage"),
+                                            query: {
+                                                enable_config_mirror: "True"
+                                            },
                                             allowBlank: true,
+                                            tooltip: __('External storage for save config. ' +
+                                                'Setup in Main -> Setup -> Ext. storage'),
                                             bind: {
-                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                                disabled: "{disableConfigPolicy}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
                                             }
                                         },
                                         {
@@ -1325,8 +1378,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "main.template.LookupField",
                                             fieldLabel: __("Path Template"),
                                             allowBlank: true,
+                                            tooltip: __('Save config path template. ' +
+                                                'Setup on Main -> Setup -> Templates, subject form.' +
+                                                'Simple is: {{ object.name }}.txt on subject'),
                                             bind: {
-                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                                disabled: "{disableConfigPolicy}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
                                             }
                                         }
                                     ]
@@ -1350,16 +1409,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 ["A", __("Always Mirror")],
                                                 ["C", __("Mirror on Change")]
                                             ],
+                                            tooltip: __('If config validation policy worked: ' +
+                                                'Always after config dicovery or only if detect changes on config'),
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
                                             }
                                         }
                                     ]
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Metrics"),
+                            tooltip: __("Setup colleced metric on divices (not Interface!). <br/>" +
+                                "(Interface Metrics settings Inventory -> Setup -> Interface Profile)"),
                             items: [
                                 {
                                     name: "metrics",
@@ -1480,45 +1549,79 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ]
 
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("MAC"),
+                            tooltip: __("Filter settings for MAC disocovery"),
                             items: [
                                 {
                                     name: "mac_collect_all",
                                     xtype: "checkbox",
+                                    tooltip: __("Not filter collected MACs"),
                                     boxLabel: __("Collect All"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "mac_collect_interface_profile",
                                     xtype: "checkbox",
+                                    tooltip: __("Collect MACs only for allowed interfaces. <br/>" +
+                                        "(MAC Discovery Policy on Inventory -> Setup -> Interface Profile)"),
                                     boxLabel: __("Collect if permitted by interface profile"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "mac_collect_management",
                                     xtype: "checkbox",
+                                    tooltip: __("Collect MAC only for managed VLAN. <br/>" +
+                                        "Managed VLAN set in Inventory -> Setup -> NetworkSegmentProfile"),
                                     boxLabel: __("Collect from management VLAN"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "mac_collect_multicast",
                                     xtype: "checkbox",
+                                    tooltip: __("Collect MAC only for Multicast VLAN. <br/>" +
+                                        "Multicast VLAN set in Inventory -> Setup -> NetworkSegmentProfile"),
                                     boxLabel: __("Collect from multicast VLAN"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "mac_collect_vcfilter",
                                     xtype: "checkbox",
+                                    tooltip: __("Collect MAC only for VLAN on VCFilter. <br/>" +
+                                        "MVCFilter set in VC Management -> Setup -> VCFilter"),
                                     boxLabel: __("Collect from VLAN matching VC Filter"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Autosegmentation"),
+                            tooltip: __("Settings for autosegmentatin proccess: <br/>" +
+                                "Automaticaly detect segment for ManagedObject with this ObjectProfile.<br/>" +
+                                "Uses MAC and needed MAC enable in Box"),
                             items: [
                                 {
                                     name: "autosegmentation_policy",
@@ -1537,23 +1640,40 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "autosegmentation_level_limit",
                                     xtype: "numberfield",
+                                    tooltip: __("Max level (Common -> Level) there will be changed segment. <br/>" +
+                                        "(Autosegmentation not worked with ManagedObject less this level"),
                                     labelWidth: 150,
                                     fieldLabel: __("Level Limit"),
                                     allowBlank: false,
-                                    uiStyle: "small"
+                                    uiStyle: "small",
+                                    listeners: {
+                                        render: me.addTooltip
+                                }
                                 },
                                 {
                                     name: "autosegmentation_segment_name",
                                     xtype: "textfield",
+                                    tooltip: __("Jinja template for creating segment name. <br/>" +
+                                        "Worked with \"Segmentate for object's segment\" and " +
+                                        "\"Segmentate for child segment\" options"),
+                                    tooltip: __(""),
                                     labelWidth: 150,
                                     fieldLabel: __("Segment Name"),
                                     allowBlank: true,
-                                    uiStyle: "extra"
+                                    uiStyle: "extra",
+                                    listeners: {
+                                        render: me.addTooltip
                                 }
-                            ]
+                                }
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Integration"),
+                            tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
+                                "Do not Edit field directly!"),
                             items: [
                                 {
                                     name: "remote_system",
@@ -1578,14 +1698,21 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     allowBlank: true,
                                     uiStyle: "medium"
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Escalation"),
+                            tooltip: __("Policy for do managedobject in escalation proccess: " +
+                                "FM -> Setup -> Escalation"),
                             items: [
                                 {
                                     name: "escalation_policy",
                                     xtype: "combobox",
+                                    tooltip: __("Enable - allow escalate alarm for ManagedObject. <br/>" +
+                                        "As Depended - allow escalate ManagedObject only as depend (not root) on alarm"),
                                     labelWidth: 150,
                                     fieldLabel: __("Escalation Policy"),
                                     allowBlank: true,
@@ -1595,30 +1722,54 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["D", __("Disable")],
                                         ["R", __("As Depended")]
                                     ],
-                                    value: "E"
+                                    value: "E",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Telemetry"),
+                            tooltip: __("Setting for saving discovery operation on ClickHouse telemetry table. <br/>" +
+                                "Warning! Activate telemetry if you really know for it. <br/>" +
+                                "Enable overhad about +25% CPU usage"),
                             items: [
                                 {
                                     name: "box_discovery_telemetry_sample",
                                     xtype: "numberfield",
+                                    tooltip: __("Sampling value for Box discovery. Interval from 0 to 1. <br/>" +
+                                        "1 - all jobs will saved, 0 - Not collect telemetry, <br/>" +
+                                        " 0,99 ... 0,1 - chance to save"),
                                     labelWidth: 150,
                                     fieldLabel: __("Box Sample"),
                                     allowBlank: false,
-                                    uiStyle: "medium"
+                                    uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "periodic_discovery_telemetry_sample",
                                     xtype: "numberfield",
+                                    tooltip: __('Sampling value for Periodic discovery. Interval from 0 to 1. <br/>' +
+                                        '1 - all jobs will saved, 0 - Not collect telemetry, ' +
+                                        ' 0,99 ... 0,1 - chance to save'),
                                     labelWidth: 150,
                                     fieldLabel: __("Periodic Sample"),
                                     allowBlank: false,
-                                    uiStyle: "medium"
+                                    uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         }
                     ]
                 }
