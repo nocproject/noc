@@ -73,8 +73,8 @@ class Profile(BaseProfile):
         """
         # pylint: disable=cmp-builtin
         return cmp(  # noqa
-            [int(z) for z in self.rx_ver.findall(str(x))[0]],
-            [int(z) for z in self.rx_ver.findall(str(y))[0]]
+            [int(z) for z in self.rx_ver.findall(str(x))[0] if z.isdigit()],
+            [int(z) for z in self.rx_ver.findall(str(y))[0] if z.isdigit()]
         )
 
     def generate_prefix_list(self, name, pl, strict=True):
