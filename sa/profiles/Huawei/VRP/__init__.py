@@ -359,6 +359,4 @@ class Profile(BaseProfile):
                     self.update_dict(r[part_name]["table"][-1], field)
                 else:
                     r[part_name]["table"] += [field]
-                pass
-
         return r
