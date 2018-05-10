@@ -113,11 +113,11 @@ class Script(BaseScript):
                 n["remote_port_subtype"] = self.PORT_TYPES[n["remote_port_subtype"].lower()]
                 if n["remote_port_subtype"] == 3:
                     n["remote_port"] = MACAddressParameter().clean(n["remote_port"])
-                if n["remote_port_description"] in ["NA", "N/A"]:
+                if n.get("remote_port_description") in ["NA", "N/A"]:
                     del n["remote_port_description"]
-                if n["remote_system_description"] in ["NA", "N/A"]:
+                if n.get("remote_system_description") in ["NA", "N/A"]:
                     del n["remote_system_description"]
-                if n["remote_system_name"] in ["NA", "N/A"]:
+                if n.get("remote_system_name") in ["NA", "N/A"]:
                     del n["remote_system_name"]
                 # Process capabilities
                 caps = 0

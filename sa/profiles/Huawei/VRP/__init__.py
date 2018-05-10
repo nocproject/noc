@@ -49,6 +49,33 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
+    rx_ver = re.compile(r"\s*(\d+)\.(\d+)\s*\((?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)\)\S*")
+
+    def cmp_version(self, x, y):
+        """
+        Huawei VRP system software version is divided into "core version" (or "kernel") and "release" two.
+        We are talking about is the VRP 1.x, 2.x, 3.x, And now VRP 5.x and 8.x versions.
+        Huawei release status of the VRP system is based on V, R, C three letters
+        (representing three different version number) were identified, the basic format is VxxxRxxxCxx:
+        * Vxxx logo products / solutions change program main product platform, called V version number.
+        * Rxxx identification for generic versions of all customers posting, known as the R version number.
+        * version of C customized version of the fast to meet the development version of R different types
+          based on customer's demand, known as the C version number.
+        [Note] the above described V version and R version number, independent number, do not influence each other.
+               It is between them and no affiliation. For example, the product can occur platform changes,
+               and functional properties remain unchanged,
+               such as the original VR version is V100R005, the new VR version V200R005.
+          In the same R version, C version of XX from 00 to 1 units numbered. If the R version number change,
+          the C version number of the XX began to re numbered 01, such as V100R001C01, V100R001C02, V100R002C01
+        :param x: [12358].x (VxxxRxxxCxx)
+        :param y: [12358].x (VxxxRxxxCxx)
+        :return:
+        """
+        return cmp(
+            [int(z) for z in self.rx_ver.findall(x)[0]],
+            [int(z) for z in self.rx_ver.findall(y)[0]]
+        )
+
     def generate_prefix_list(self, name, pl, strict=True):
         me = "ip ip-prefix %s permit %%s" % name
         mne = "ip ip-prefix %s permit %%s le %%d" % name
