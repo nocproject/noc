@@ -1,2 +1,2 @@
 ---
-syslogcollector_permit_firewall: True
+syslogcollector_permit_firewall: "True"
