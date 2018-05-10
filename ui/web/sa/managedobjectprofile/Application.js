@@ -42,6 +42,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryAddressNeighbor: false,
             enableBoxDiscoveryHK: false,
             enableBoxDiscoveryNRIPortmap: false
+        },
+        formulas: {
+            disableConfigPolicy: {
+                bind: {
+                    bindTo: '{mirrorPolicy.selection}',
+                    deep: true
+                },
+                get: function(record) {
+                    console.log(record);
+                    return record ? this.data.enableBoxDiscoveryConfig.checked
+                        && record.get('id') === 'D' : true;
+                }
+            }
         }
     },
 
@@ -1300,24 +1313,34 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "config_mirror_policy",
                                             xtype: "combobox",
+                                            reference: "mirrorPolicy",
                                             fieldLabel: __("Mirror Policy"),
                                             allowBlank: false,
-                                            store: [
-                                                ["D", __("Disabled")],
-                                                ["A", __("Always Mirror")],
-                                                ["C", __("Mirror on Change")]
-                                            ],
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    {"id": "D", "label": __("Disabled")},
+                                                    {"id": "A", "label": __("Always Mirror")},
+                                                    {"id": "C", "label": __("Mirror on Change")}
+                                                ]
+                                            },
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryConfig.checked}"
                                             }
+
                                         },
                                         {
                                             name: "config_mirror_storage",
                                             xtype: "main.extstorage.LookupField",
                                             fieldLabel: __("Storage"),
+                                            query: {
+                                                enable_config_mirror: "True"
+                                            },
                                             allowBlank: true,
                                             bind: {
-                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                                disabled: "{disableConfigPolicy}"
                                             }
                                         },
                                         {
@@ -1326,7 +1349,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             fieldLabel: __("Path Template"),
                                             allowBlank: true,
                                             bind: {
-                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                                disabled: "{disableConfigPolicy}"
                                             }
                                         }
                                     ]
