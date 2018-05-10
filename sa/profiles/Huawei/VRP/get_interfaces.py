@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_vlan
 
 
 class Script(BaseScript):
@@ -323,7 +324,8 @@ class Script(BaseScript):
                 interfaces += [iface]
             else:
                 iface, vlan_id = ifname.split(".")
-                sub["vlan_ids"] = [vlan_id]
+                if is_vlan(vlan_id):
+                    sub["vlan_ids"] = [vlan_id]
                 interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
         vrfs = {

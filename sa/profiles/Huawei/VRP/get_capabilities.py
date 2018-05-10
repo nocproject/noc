@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,10 +21,10 @@ class Script(BaseScript):
         """
         try:
             r = self.cli("display stp global | include Enabled")
-            return "Enabled" in r
+            return "Enabled" in r and "Tc-protection" not in r
         except self.CLISyntaxError:
             try:
-                r = self.cli("display stp | include disabled")
+                r = self.cli("display stp | include isabled")
                 return "Protocol Status" not in r
             except self.CLISyntaxError:
                 r = self.cli("display stp")

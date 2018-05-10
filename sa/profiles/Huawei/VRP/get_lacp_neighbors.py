@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_lacp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ class Script(BaseScript):
             if first:
                 first = False
                 pc_name = block
+                continue
+            if "Number Of Up Port In Trunk: 0" in block:
                 continue
             self.logger.info("Block is: %s" % block)
             out = self.profile.parse_block(block)
