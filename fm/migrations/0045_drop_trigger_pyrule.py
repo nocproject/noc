@@ -39,7 +39,7 @@ class Migration:
         for t_id, rule_name in rows:
             db.execute(
                 """UPDATE fm_eventtrigger
-                SET desciption = 'Removed pyRule ' || %s
+                SET description = 'Removed pyRule ' || %s
                 WHERE id = %s
                 """, [rule_name, t_id]
             )
@@ -50,7 +50,7 @@ class Migration:
         for t_id, rule_name in rows:
             db.execute(
                 """UPDATE fm_alarmtrigger
-                SET desciption = 'Removed pyRule ' || %s
+                SET description = 'Removed pyRule ' || %s
                 WHERE id = %s
                 """, [rule_name, t_id]
             )
