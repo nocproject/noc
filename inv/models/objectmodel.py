@@ -16,6 +16,7 @@ from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
 from mongoengine import signals
+from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules
 from connectiontype import ConnectionType
@@ -106,6 +107,7 @@ class ObjectModel(Document):
             ("vendor", "data.asset.order_part_no")
         ],
         "json_collection": "inv.objectmodels",
+        "json_unique_fields": ["name"],
         "json_depends_on": [
             "inv.vendors",
             "inv.connectionrules"
@@ -141,6 +143,8 @@ class ObjectModel(Document):
     def save(self, *args, **kwargs):
         try:
             super(ObjectModel, self).save(*args, **kwargs)
+        except NotUniqueError as e:
+            raise e
         except Exception as e:
             raise ValueError("%s: %s" % (e.__doc__, e.message))
         # Update connection cache
