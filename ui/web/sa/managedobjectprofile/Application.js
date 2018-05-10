@@ -50,7 +50,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     deep: true
                 },
                 get: function(record) {
-                    console.log(record);
                     return record ? this.data.enableBoxDiscoveryConfig.checked
                         && record.get('id') === 'D' : true;
                 }
