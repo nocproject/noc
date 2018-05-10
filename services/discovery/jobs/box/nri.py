@@ -19,6 +19,7 @@ class NRICheck(TopologyDiscoveryCheck):
     Maps NRI port name to local interface
     """
     name = "nri"
+    aliased_names_only = True
 
     def handler(self):
         self.logger.info("NRI Topology")
