@@ -1,15 +1,23 @@
 ---
 dependency:
   name: galaxy
+
 driver:
-  name: vagrant
-  provider:
-    name: virtualbox
+  name: delegated
+  hostname: ${vsphere_hostname}
+  esxi_hostname: ${esxi_hostname}
+  username: ${vsphere_username}
+  password: ${vsphere_password}
+  datacenter: ${datacenter}
+  validate_certs: "no"
+  resource_pool: ${resource_pool}
+  folder: ${folder}
+  ssh_identity_file: "/tmp/temporary_ssh_key"
 lint:
   name: yamllint
 platforms:
   - name: node1
-    box: debian/jessie64
+    template: packer-debian8
     memory: 3072
     cpu: 2
 provisioner:
@@ -24,23 +32,17 @@ provisioner:
     converge: playbook.yml
   options:
     i: inv.yml
+    e: tower_dist_dir=/tmp
   lint:
     name: ansible-lint
 scenario:
-  name: debian
+  name: default
   test_sequence:
-    - lint
     - destroy
-    - syntax
     - create
     - prepare
     - converge
     - verify
-    - idempotence
-    - side_effect
     - destroy
 verifier:
   name: goss
-  lint:
-    name: flake8
-    enabled: false
