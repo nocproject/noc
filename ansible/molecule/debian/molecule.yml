@@ -16,7 +16,7 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: node1
+  - name: node_debian
     template: packer-debian8
     memory: 3072
     cpu: 2
@@ -28,6 +28,7 @@ provisioner:
     ANSIBLE_STDOUT_CALLBACK: debug
     ANSIBLE_CALLBACK_WHITELIST: timer,profile_tasks
     ANSIBLE_LOAD_CALLBACK_PLUGINS: "True"
+    ANSIBLE_FORCE_COLOR: "True"
   playbooks:
     converge: playbook.yml
   options:
