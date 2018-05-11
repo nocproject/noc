@@ -4,6 +4,6 @@
   gather_facts: false
   tasks:
     - name: Install python for Ansible
-      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      raw: test -e /usr/bin/python || yum install -y python
       become: true
       changed_when: false
