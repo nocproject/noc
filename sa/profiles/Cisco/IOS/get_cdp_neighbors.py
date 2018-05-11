@@ -45,12 +45,12 @@ class Script(BaseScript):
                             "remote_ip": "%d.%d.%d.%d" % (ord(msg[0]), ord(msg[1]), ord(msg[2]), ord(msg[3])),
                             "platform": res[ii]['8'],
                         }]
-                    except:
+                    except self.CLISyntaxError:
                         pass
                 return {
-                        "device_id": device_id,
-                        "neighbors": neighbors
-                    }
+                    "device_id": device_id,
+                    "neighbors": neighbors
+                }
             except self.snmp.TimeOutError:
                 pass
         for match in self.rx_entry.finditer(self.cli("show cdp neighbors detail")):
