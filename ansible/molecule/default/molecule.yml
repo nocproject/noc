@@ -32,6 +32,7 @@ provisioner:
     converge: playbook.yml
   options:
     i: inv.yml
+    e: tower_dist_dir=/tmp
   lint:
     name: ansible-lint
 scenario:
