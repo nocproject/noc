@@ -6,9 +6,9 @@
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.FormField");
 
-Ext.define("NOC.core.FormField", {
+Ext.define("NOC.core.ListFormField", {
     extend: "Ext.panel.Panel",
-    alias: "widget.formfield",
+    alias: "widget.listform",
     mixins: {
         field: 'Ext.form.field.Field'
     },
