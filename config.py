@@ -23,11 +23,11 @@ from noc.core.config.params import (
 
 class Config(BaseConfig):
     loglevel = MapParameter(default="info", mappings={
-        "critical": logging.CRITICAL,
-        "error": logging.ERROR,
-        "warning": logging.WARNING,
-        "info": logging.INFO,
-        "debug": logging.DEBUG
+        "critical": logging.CRITICAL,  # noqa
+        "error": logging.ERROR,  # noqa
+        "warning": logging.WARNING,  # noqa
+        "info": logging.INFO,  # noqa
+        "debug": logging.DEBUG  # noqa
     })
 
     class activator(ConfigSection):
@@ -210,9 +210,12 @@ class Config(BaseConfig):
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
-        telemetry = BooleanParameter(default=False, help="Enable internal telemetry export to Clickhouse")
-        consul_healthchecks = BooleanParameter(default=True, help="While registering serive in consul also register health check")
-        service_registration = BooleanParameter(default=True, help="Permit consul self registration")
+        telemetry = BooleanParameter(default=False,
+                                     help="Enable internal telemetry export to Clickhouse")
+        consul_healthchecks = BooleanParameter(default=True,
+                                               help="While registering serive in consul also register health check")
+        service_registration = BooleanParameter(default=True,
+                                                help="Permit consul self registration")
         pypy = BooleanParameter(default=False)
         forensic = BooleanParameter(default=False)
 
