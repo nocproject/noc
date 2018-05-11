@@ -22,6 +22,9 @@ platforms:
     cpu: 2
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      force_color: 1
   env:
     ANSIBLE_ROLES_PATH: $PWD/additional_roles:$PWD/system_roles:$PWD/noc_roles
     TOWER_SHOW_SECRETS: "True"
