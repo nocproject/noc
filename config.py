@@ -323,6 +323,8 @@ class Config(BaseConfig):
         rs = StringParameter()
         retries = IntParameter(default=20)
         timeout = SecondsParameter(default="3s")
+        retry_writes = BooleanParameter(default=False)
+        app_name = StringParameter()
 
     class mrt(ConfigSection):
         max_concurrency = IntParameter(default=50)
@@ -535,6 +537,10 @@ class Config(BaseConfig):
                 "password": self.mongo.password,
                 "socketKeepAlive": True
             }
+            if self.mongo.app_name:
+                self._mongo_connection_args["appname"] = self.mongo.app_name
+            if self.mongo.retry_writes:
+                self._mongo_connection_args["retryWrites"] = True
             has_credentials = self.mongo.user or self.mongo.password
             if has_credentials:
                 self._mongo_connection_args["authentication_source"] = self.mongo.db
