@@ -737,7 +737,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         me.inlineStores
         .filter(function(store) {
-            return store.hasOwnProperty("rootProperty") && Ext.String.startsWith(store.rootProperty, "direct_");
+            return store.hasOwnProperty("isRemote") && store.isRemote;
         })
         .forEach(function(store) {
             result[store.rootProperty] = store.getData().items.map(function(item) {
@@ -765,7 +765,7 @@ Ext.define("NOC.core.ModelApplication", {
                 me.saveInlines(
                     data[me.idField],
                     me.inlineStores.filter(function(store) {
-                        return !(store.hasOwnProperty("rootProperty") && Ext.String.startsWith(store.rootProperty, "direct_"));
+                        return !(store.hasOwnProperty("isRemote") && store.isRemote);
                     }));
                 me.unmask();
                 NOC.msg.complete(__("Saved"));

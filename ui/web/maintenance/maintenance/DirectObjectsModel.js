@@ -11,6 +11,7 @@ Ext.define("NOC.maintenance.maintenance.DirectObjectsModel", {
     rest_url: "/maintenance/maintenance/{{parent}}/",
     rootProperty: "direct_objects",
     parentField: "object",
+    isRemote: false,
 
     fields: [
         {
