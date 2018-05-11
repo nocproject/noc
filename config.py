@@ -23,11 +23,16 @@ from noc.core.config.params import (
 
 class Config(BaseConfig):
     loglevel = MapParameter(default="info", mappings={
-        "critical": logging.CRITICAL,  # noqa
-        "error": logging.ERROR,  # noqa
-        "warning": logging.WARNING,  # noqa
-        "info": logging.INFO,  # noqa
-        "debug": logging.DEBUG  # noqa
+        # pylint: disable=used-before-assignment
+        "critical": logging.CRITICAL,
+        # pylint: disable=used-before-assignment
+        "error": logging.ERROR,
+        # pylint: disable=used-before-assignment
+        "warning": logging.WARNING,
+        # pylint: disable=used-before-assignment
+        "info": logging.INFO,
+        # pylint: disable=used-before-assignment
+        "debug": logging.DEBUG
     })
 
     class activator(ConfigSection):
