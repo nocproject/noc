@@ -24,6 +24,7 @@ Ext.define("NOC.core.InlineModelStore", {
         me.rootProperty = model.rootProperty ? model.rootProperty : "data";
         me.parentField = model.parentField;
         me.restUrl = model.rest_url;
+        me.isRemote = model.isRemote;
         for(var i=0; i < fields.length; i++) {
             var field = fields[i],
                 dv = field.defaultValue;

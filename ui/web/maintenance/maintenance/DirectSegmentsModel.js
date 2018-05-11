@@ -10,7 +10,8 @@ Ext.define("NOC.maintenance.maintenance.DirectSegmentsModel", {
     extend: "Ext.data.Model",
     rest_url: "/maintenance/maintenance/{{parent}}/",
     rootProperty: "direct_segments",
-    parentField: "segment",
+    parentField: "segment11",
+    isRemote: false,
 
     fields: [
         {

@@ -737,7 +737,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         me.inlineStores
         .filter(function(store) {
-            return store.hasOwnProperty("rootProperty") && store.hasOwnProperty("parentField");
+            return store.hasOwnProperty("isRemote") && store.isRemote;
         })
         .forEach(function(store) {
             result[store.rootProperty] = store.getData().items.map(function(item) {
@@ -765,7 +765,7 @@ Ext.define("NOC.core.ModelApplication", {
                 me.saveInlines(
                     data[me.idField],
                     me.inlineStores.filter(function(store) {
-                        return !store.hasOwnProperty("rootProperty");
+                        return !(store.hasOwnProperty("isRemote") && store.isRemote);
                     }));
                 me.unmask();
                 NOC.msg.complete(__("Saved"));
@@ -827,7 +827,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.form.setValues(fv);
         //
         me.currentRecord = null;
-        me.resetInlines();
+        me.resetInlines(defaults);
         me.setFormTitle(me.createTitle, "NEW");
         me.showForm();
         // Activate delete button
@@ -1215,11 +1215,15 @@ Ext.define("NOC.core.ModelApplication", {
         });
     },
     //
-    resetInlines: function() {
+    resetInlines: function(defaults) {
         var me = this;
         Ext.each(me.inlineStores, function(istore) {
-            istore.loadData([]);
-        });
+            var value = [];
+            if(istore.hasOwnProperty("rootProperty") && this.hasOwnProperty(istore.rootProperty)) {
+                value = this[istore.rootProperty];
+            }
+            istore.loadData(value);
+        }, defaults);
     },
     // Load inline stores
     loadInlines: function() {
@@ -1823,8 +1827,8 @@ Ext.define("NOC.core.ModelApplication", {
     },
     //
     clearTriggerToolTip: function() {
-            var triggerEl = this.getTrigger('clear').el;
-            triggerEl.dom.setAttribute("data-qtip", __("to default value"));
+        var triggerEl = this.getTrigger('clear').el;
+        triggerEl.dom.setAttribute("data-qtip", __("to default value"));
     },
     //
     onMetrics: function(record) {
