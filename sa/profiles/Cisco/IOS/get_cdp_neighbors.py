@@ -39,7 +39,7 @@ class Script(BaseScript):
                 for ii in res:
                     try:
                         r_device_id = res[ii]['6']
-			# check if "()" in device_id and platform starts with "N", then clear out
+                        # check if "()" in device_id and platform starts with "N", then clear out
                         if self.rx_serial_check.match(r_device_id) and res[ii]['8'].startswith("N"):
                             r_device_id = self.rx_serial_check.match(r_device_id).group(1)
                         neighbors += [{
