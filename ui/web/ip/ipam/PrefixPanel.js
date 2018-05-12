@@ -18,6 +18,12 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
     currentPrefixId: null,
     restUrl: "/ip/prefix/",
 
+    viewModel: {
+        data: {
+            isNew: false
+        }
+    },
+
     initComponent: function () {
         var me = this;
 
@@ -27,7 +33,10 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             tooltip: __("Rebase prefix to a new location"),
             scope: me,
             handler: me.onRebase,
-            hasAccess: NOC.hasPermission("rebase")
+            hasAccess: NOC.hasPermission("rebase"),
+            bind: {
+                disabled: "{isNew}"
+            }
         });
 
         Ext.apply(me, {
@@ -45,7 +54,10 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     fieldLabel: __("Prefix"),
                     allowBlank: false,
                     uiStyle: "medium",
-                    store: []
+                    store: [],
+                    bind: {
+                        readOnly: "{!isNew}"
+                    }
                 },
                 {
                     name: "name",
@@ -100,7 +112,10 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     name: "state",
                     xtype: "statefield",
                     fieldLabel: __("State"),
-                    allowBlank: true
+                    allowBlank: true,
+                    bind: {
+                        disabled: "{isNew}"
+                    }
                 },
                 {
                     name: "allocated_till",
@@ -202,8 +217,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                me.rebaseButton.setDisabled(false);
-                me.getField("prefix").setReadOnly(true);
+                me.getViewModel().set("isNew", false);
                 me.setTitle(__("Change prefix ") + data.prefix);
                 me.setValues(data)
             },
@@ -236,8 +250,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                 } else {
                     values.prefix = me.app.getCommonPrefixPart(data.afi, data.prefix)
                 }
-                me.rebaseButton.setDisabled(true);
-                prefixField.setReadOnly(false);
+                me.getViewModel().set("isNew", true);
                 me.setValues(values);
                 me.setTitle(__("Create new prefix"))
             },
