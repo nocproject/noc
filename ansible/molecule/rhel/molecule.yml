@@ -42,7 +42,7 @@ provisioner:
   lint:
     name: ansible-lint
 scenario:
-  name: debian
+  name: rhel
   test_sequence:
     - destroy
     - create

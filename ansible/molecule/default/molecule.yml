@@ -42,7 +42,7 @@ provisioner:
   lint:
     name: ansible-lint
 scenario:
-  name: debian
+  name: default
   test_sequence:
     - destroy
     - create
