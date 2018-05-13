@@ -13,10 +13,12 @@ driver:
   resource_pool: ${resource_pool}
   folder: ${folder}
   ssh_identity_file: "/tmp/temporary_ssh_key"
+  ssh_user: vagrant
+  ssh_port: 22
 lint:
   name: yamllint
 platforms:
-  - name: node_debian
+  - name: noc_node_debian8
     template: packer-debian8
     memory: 3072
     cpu: 2

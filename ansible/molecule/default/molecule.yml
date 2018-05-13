@@ -13,10 +13,12 @@ driver:
   resource_pool: ${resource_pool}
   folder: ${folder}
   ssh_identity_file: "/tmp/temporary_ssh_key"
+  ssh_user: vagrant
+  ssh_port: 22
 lint:
   name: yamllint
 platforms:
-  - name: node_centos
+  - name: noc_node_centos7
     template: packer-centos7
     memory: 3072
     cpu: 2
@@ -40,7 +42,7 @@ provisioner:
   lint:
     name: ansible-lint
 scenario:
-  name: default
+  name: debian
   test_sequence:
     - destroy
     - create

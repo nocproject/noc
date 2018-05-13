@@ -1,46 +1,54 @@
 ---
 dependency:
   name: galaxy
+
 driver:
-  name: vagrant
-  provider:
-    name: virtualbox
+  name: delegated
+  hostname: ${vsphere_hostname}
+  esxi_hostname: ${esxi_hostname}
+  username: ${vsphere_username}
+  password: ${vsphere_password}
+  datacenter: ${datacenter}
+  validate_certs: "no"
+  resource_pool: ${resource_pool}
+  folder: ${folder}
+  ssh_identity_file: "/tmp/temporary_ssh_key"
+  ssh_user: vagrant
+  ssh_port: 22
 lint:
   name: yamllint
 platforms:
-  - name: node1
-    box: bento/ubuntu-16.04
+  - name: noc_node_ubuntu16
+    template: packer-ubuntu16
     memory: 3072
     cpu: 2
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      force_color: 1
   env:
     ANSIBLE_ROLES_PATH: $PWD/additional_roles:$PWD/system_roles:$PWD/noc_roles
     TOWER_SHOW_SECRETS: "True"
     ANSIBLE_STDOUT_CALLBACK: debug
     ANSIBLE_CALLBACK_WHITELIST: timer,profile_tasks
     ANSIBLE_LOAD_CALLBACK_PLUGINS: "True"
+    ANSIBLE_FORCE_COLOR: "True"
   playbooks:
     converge: playbook.yml
   options:
     i: inv.yml
+    e: tower_dist_dir=/tmp
   lint:
     name: ansible-lint
 scenario:
-  name: ubuntu
+  name: debian
   test_sequence:
-    - lint
     - destroy
-    - syntax
     - create
     - prepare
     - converge
     - verify
-    - idempotence
-    - side_effect
     - destroy
 verifier:
   name: goss
-  lint:
-    name: flake8
-    enabled: false

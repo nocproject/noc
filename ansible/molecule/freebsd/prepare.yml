@@ -3,7 +3,7 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Install python for Ansible
-      raw: test -e /usr/local/bin/python2 || (pkg update && pkg install -y python2)
-      become: true
+    - name: sleep 6 to overcome some bug
+      command: sleep 250
       changed_when: false
+      delegate_to: localhost

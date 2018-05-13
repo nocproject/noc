@@ -1,25 +1,24 @@
 ---
-
 - name: Destroy
   hosts: localhost
   connection: local
   gather_facts: false
   tasks:
     - name: Destroy molecule instance(s)
-      molecule_vagrant:
-        instance_name: "{{ item.name }}"
-        platform_box: "{{ item.box }}"
-        provider_name: "{{ molecule_yml.driver.provider.name }}"
-        force_stop: "{{ item.force_stop | default(true) }}"
-
-        state: destroy
+      vmware_guest:
+        hostname: "{{ molecule_yml.driver.hostname }}"
+        esxi_hostname: "{{ molecule_yml.driver.esxi_hostname }}"
+        username: "{{ molecule_yml.driver.username }}"
+        password: "{{ molecule_yml.driver.password }}"
+        datacenter: "{{ molecule_yml.driver.datacenter }}"
+        validate_certs: "{{ molecule_yml.driver.validate_certs }}"
+        resource_pool: "{{ molecule_yml.driver.resource_pool }}"
+        folder: "{{ molecule_yml.driver.hostname }}"
+        name: "{{ item.name }}"
+        state: absent
+        force: "yes"
       register: server
       with_items: "{{ molecule_yml.platforms }}"
-
-    # NOTE(retr0h): Vagrant/VBox sucks and parallelizing instance deletion
-    # causes issues.
-
-    # Mandatory configuration for Molecule to function.
 
     - name: Populate instance config
       set_fact:
@@ -31,4 +30,4 @@
         #               https://github.com/ansible/ansible/issues/20885
         content: "{{ instance_conf | to_json | from_json | molecule_to_yaml | molecule_header }}"
         dest: "{{ molecule_instance_config }}"
-      when: server.changed | bool
+      when: server is changed

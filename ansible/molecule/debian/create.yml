@@ -3,7 +3,6 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  no_log: "{{ not lookup('env', 'MOLECULE_DEBUG') | bool }}"
   tasks:
     - name: Create molecule instance(s)
       vmware_guest:
@@ -15,6 +14,7 @@
         validate_certs: "{{ molecule_yml.driver.validate_certs }}"
         resource_pool: "{{ molecule_yml.driver.resource_pool }}"
         folder: "{{ molecule_yml.driver.folder }}"
+        guest_id: "{{ item.guest_id | default(omit) }}"
         name: "{{ item.name }}"
         template: "{{ item.template }}"
         hardware:
@@ -22,18 +22,22 @@
           num_cpus: "{{ item.cpu | default(omit) }}"
         wait_for_ip_address: "yes"
         state: poweredon
+        networks:
+          - name: "{{ item.network.name | default(omit) }}"
+            type: "{{ item.network.type | default(omit) }}"
+        customization:
+          hostname: "{{ item.hostname | default(omit) }}"
+          domain: "{{ item.domain | default(omit) }}"
       register: server
       with_items: "{{ molecule_yml.platforms }}"
-
-    - debug: var=server,shell_command_output
 
     - name: Populate instance config dict
       set_fact:
         instance_conf_dict: {
           'instance': "{{ item.instance.hw_name }}",
           'address': "{{ item.instance.ipv4 }}",
-          'user': "vagrant",
-          'port': "22",
+          'user': "{{ molecule_yml.driver.ssh_user }}",
+          'port': "{{ molecule_yml.driver.ssh_port }}",
           'identity_file': "{{ molecule_yml.driver.ssh_identity_file }}"
         }
       with_items: "{{ server.results }}"
