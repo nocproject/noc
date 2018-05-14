@@ -19,6 +19,20 @@ from noc.services.login.backends.base import BaseAuthBackend
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        """
+        Check ldap user login.
+        :param backend: default "ldap"
+        :param user: Username
+        :param password: Pasword
+        :param ./noc login --backend --user "username" --password "password"
+        :return True or False
+        Check ldap user info
+        :param backend: default "ldap"
+        :param user: Username or Mail
+        :param info: Info flag for use check user information
+        :param ./noc login --backend --user "username" --info
+        :return User Full name, Ldap Groups, mail and more.
+        """
         parser.add_argument(
             "--backend",
             action="store",
