@@ -63,7 +63,7 @@ class Command(BaseCommand):
                     s = s.replace("#", "\n")
                 if "whenChanged" in i:
                     s = parse(s.split(".")[0])
-                self.print("%s:%s" % (i,s))
+                self.print("%s:%s" % (i, s))
         else:
             if not password:
                 password = getpass.getpass()
@@ -101,6 +101,6 @@ class Command(BaseCommand):
                 user_info[k] = value
         return user_info
 
+
 if __name__ == "__main__":
     Command().run()
-
