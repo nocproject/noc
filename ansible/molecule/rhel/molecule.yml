@@ -39,8 +39,8 @@ provisioner:
   options:
     i: inv.yml
     e: tower_dist_dir=/tmp
-    e: rhel_register_rhel_subscription_username=${rhel_subscription_username}
-    e: rhel_register_rhel_subscription_password=${rhel_subscription_password}
+    e: rhel_register_rhel_subscription_username=${rhel_subscription_username}  # yamllint disable-line rule:key-duplicates
+    e: rhel_register_rhel_subscription_password=${rhel_subscription_password}  # yamllint disable-line rule:key-duplicates
   lint:
     name: ansible-lint
 scenario:
