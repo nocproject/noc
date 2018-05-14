@@ -28,6 +28,5 @@ class Script(BaseScript):
             return {"result": False,
                     "message": "Error: %s (%s)" % (e.default_msg, e.message)}
         except Exception as e:
-            print "login exception", e
             return {"result": False,
                     "message": "Exception: %s" % repr(e)}

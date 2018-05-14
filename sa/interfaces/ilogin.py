@@ -14,4 +14,3 @@ from .base import BooleanParameter, DictParameter, StringParameter
 class ILogin(BaseInterface):
     returns = DictParameter(attrs={"result": BooleanParameter(),
                                    "message": StringParameter(default="")})
-
