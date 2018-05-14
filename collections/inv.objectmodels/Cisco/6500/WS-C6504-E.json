@@ -7,7 +7,7 @@
   "connection_rule__name": "Cisco | 6500-E",
   "connections": [
 	{
-	  "description": null,
+	  "description": "Fan module slot",
 	  "direction": "i",
 	  "gender": "f",
 	  "name": "fan",

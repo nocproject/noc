@@ -25,7 +25,7 @@
             "description": "Fan slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "fan1",
+            "name": "fan",
             "type__name": "Cisco | 7600 | 7609 Fan"
         },
         {
