@@ -1,0 +1,15 @@
+{
+    "name": "Disk",
+    "$collection": "pm.metricscopes",
+    "uuid": "c34050a3-d456-432e-9ec2-945547ca9096",
+    "table_name": "disk",
+    "description": "Disk metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [{
+        "is_required": false,
+        "name": "path"
+    }]
+}
