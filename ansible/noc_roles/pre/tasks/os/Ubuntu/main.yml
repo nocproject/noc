@@ -11,6 +11,7 @@
     - sudo
     - curl
     - apt-transport-https
+    - dbus  # to setup hostname
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

@@ -10,6 +10,7 @@
     - sudo
     - curl
     - apt-transport-https
+    - dbus  # to setup hostname
   become: "True"
   environment:
     https_proxy: "{{http_proxy}}"
