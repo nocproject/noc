@@ -1,0 +1,10 @@
+{
+    "name": "Disk | Usage Percent",
+    "$collection": "pm.metrictypes",
+    "uuid": "e797c78e-a62e-450e-98a2-d4f11b7a9f15",
+    "scope__name": "Disk",
+    "field_name": "disk_usage_p",
+    "field_type": "UInt8",
+    "description": "Disk Usage %",
+    "measure": "%"
+}
