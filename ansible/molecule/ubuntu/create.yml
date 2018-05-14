@@ -23,8 +23,8 @@
         wait_for_ip_address: "yes"
         state: poweredon
         networks:
-          - name: "{{ item.network.name | default(omit) }}"
-            type: "{{ item.network.type | default(omit) }}"
+          - name: "{{ item.network_name | default(omit) }}"
+            type: "{{ item.network_type | default(omit) }}"
         customization:
           hostname: "{{ item.hostname | default(omit) }}"
           domain: "{{ item.domain | default(omit) }}"

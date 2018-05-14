@@ -3,7 +3,7 @@ all:
   children:
     dc-DC:
       hosts:
-        node1:
+        noc_node_centos7:
           activator_loglevel: info
           activator_power: 2
           activator_script_threads: 20
@@ -687,7 +687,7 @@ all:
               pool: null
           noc_user: noc
           noc_version: microservices
-          noc_web_host: node1
+          noc_web_host: noc_node_centos7
           node_id: 1
           nsqd_max_messages_in_memory: 10000
           nsqd_max_msg_size: 1048576
@@ -735,333 +735,333 @@ all:
           web_loglevel: info
           web_max_threads: 10
           web_power: 2
-    noc-config-node1:
+    noc-config-noc_node_centos7:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     nodes:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-activator:
       children:
-        cfg-activator-default-node1:
+        cfg-activator-default-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-activator-read: {}
     svc-activator-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-bi:
       children:
-        cfg-bi-node1:
+        cfg-bi-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-bi-read: {}
     svc-bi-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-card:
       children:
-        cfg-card-node1:
+        cfg-card-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-card-read: {}
     svc-card-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-ch_datasource:
       children:
-        cfg-ch_datasource-node1:
+        cfg-ch_datasource-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-ch_datasource-read: {}
     svc-ch_datasource-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-chwriter:
       children:
-        cfg-chwriter-node1:
+        cfg-chwriter-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-chwriter-read: {}
     svc-chwriter-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-classifier:
       children:
-        cfg-classifier-default-node1:
+        cfg-classifier-default-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-classifier-read: {}
     svc-classifier-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-clickhouse:
       children:
-        cfg-clickhouse-node1:
+        cfg-clickhouse-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-clickhouse-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-clickhouse-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-consul:
       children:
-        cfg-consul-node1:
+        cfg-consul-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-consul-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-consul-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-consul-template:
       children:
-        cfg-consul-template-node1:
+        cfg-consul-template-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-consul-template-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-consul-template-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-correlator:
       children:
-        cfg-correlator-default-node1:
+        cfg-correlator-default-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-correlator-read: {}
     svc-correlator-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-discovery:
       children:
-        cfg-discovery-default-node1:
+        cfg-discovery-default-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-discovery-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-discovery-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-escalator:
       children:
-        cfg-escalator-node1:
+        cfg-escalator-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-escalator-read: {}
     svc-escalator-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-goss:
       children:
-        cfg-goss-node1:
+        cfg-goss-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-goss-read: {}
     svc-goss-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-grafana:
       children:
-        cfg-grafana-node1:
+        cfg-grafana-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-grafana-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-grafana-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-grafanads:
       children:
-        cfg-grafanads-node1:
+        cfg-grafanads-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-grafanads-read: {}
     svc-grafanads-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-login:
       children:
-        cfg-login-node1:
+        cfg-login-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-login-read: {}
     svc-login-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-mailsender:
       children:
-        cfg-mailsender-node1:
+        cfg-mailsender-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-mailsender-read: {}
     svc-mailsender-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-memcached:
       children:
-        cfg-memcached-node1:
+        cfg-memcached-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-memcached-read: {}
     svc-memcached-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-mongod:
       children:
-        cfg-mongod-node1:
+        cfg-mongod-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-mongod-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-mongod-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-mrt:
       children:
-        cfg-mrt-node1:
+        cfg-mrt-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-mrt-read: {}
     svc-mrt-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-nginx:
       children:
-        cfg-nginx-node1:
+        cfg-nginx-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-nginx-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-nginx-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-noc:
       children:
-        cfg-noc-node1:
+        cfg-noc-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-noc-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-noc-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-nsqd:
       children:
-        cfg-nsqd-node1:
+        cfg-nsqd-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-nsqd-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-nsqd-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-nsqlookupd:
       children:
-        cfg-nsqlookupd-node1:
+        cfg-nsqlookupd-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-nsqlookupd-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-nsqlookupd-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-omap:
       children:
-        cfg-omap-node1:
+        cfg-omap-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-omap-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-omap-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-pgbouncer:
       children:
-        cfg-pgbouncer-node1:
+        cfg-pgbouncer-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-pgbouncer-read: {}
     svc-pgbouncer-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-ping:
       children:
-        cfg-ping-default-node1:
+        cfg-ping-default-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-ping-read: {}
     svc-ping-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-postgres:
       children:
-        cfg-postgres-node1:
+        cfg-postgres-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-postgres-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-postgres-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-sae:
       children:
-        cfg-sae-node1:
+        cfg-sae-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-sae-read:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
     svc-sae-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-scheduler:
       children:
-        cfg-scheduler-node1:
+        cfg-scheduler-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-scheduler-read: {}
     svc-scheduler-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-syslogcollector:
       children:
-        cfg-syslogcollector-default-node1:
+        cfg-syslogcollector-default-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-syslogcollector-read: {}
     svc-syslogcollector-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-trapcollector:
       children:
-        cfg-trapcollector-default-node1:
+        cfg-trapcollector-default-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-trapcollector-read: {}
     svc-trapcollector-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     svc-web:
       children:
-        cfg-web-node1:
+        cfg-web-noc_node_centos7:
           hosts:
-            node1: {}
+            noc_node_centos7: {}
         svc-web-read: {}
     svc-web-exec:
       hosts:
-        node1: {}
+        noc_node_centos7: {}
     ungrouped: {}
