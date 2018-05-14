@@ -121,6 +121,8 @@ _MODELS = {
     "main.UserProfile": "noc.main.models.userprofile.UserProfile",
     "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
     "main.UserState": "noc.main.models.userstate.UserState",
+    #
+    "dev.Quiz": "noc.dev.models.quiz",
     # project models
     "project.Project": "noc.project.models.project.Project",
     # gis models
@@ -322,6 +324,7 @@ FTS_MODELS = [
 ]
 
 COLLECTIONS = [
+    "dev.Quiz",
     "fm.SyntaxAlias",
     "sa.Profile",
     "sa.Action",
