@@ -12,7 +12,6 @@ from dateutil.parser import parse
 import getpass
 import ldap3
 # NOC modules
-from noc.core.management.base import BaseCommand
 from noc.main.models.authldapdomain import AuthLDAPDomain
 from noc.core.management.base import BaseCommand
 from noc.services.login.backends.base import BaseAuthBackend
@@ -104,3 +103,4 @@ class Command(BaseCommand):
 
 if __name__ == "__main__":
     Command().run()
+
