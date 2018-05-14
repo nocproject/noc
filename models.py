@@ -325,6 +325,7 @@ FTS_MODELS = [
 
 COLLECTIONS = [
     "dev.Quiz",
+    "dev.Spec",
     "fm.SyntaxAlias",
     "sa.Profile",
     "sa.Action",
