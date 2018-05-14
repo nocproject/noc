@@ -1,37 +1,32 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Quiz model
+# Spec model
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
+import os
 import operator
 from threading import Lock
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, EmbeddedDocumentField,
-                                ListField, UUIDField, IntField, DateTimeField)
+from mongoengine.fields import (StringField, EmbeddedDocumentField, DateTimeField,
+                                ListField, UUIDField, IntField)
 import cachetools
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
-from noc.core.model.decorator import on_delete_check
+from noc.lib.nosql import PlainReferenceField
+from noc.sa.models.profile import Profile
+from .quiz import Quiz, Q_TYPES
 
 id_lock = Lock()
 
-Q_TYPES = [
-    "str",  # Arbitrary string
-    "bool",  # Yes/No
-    "int",  # Integer value
-    "cli",  # CLI command. Several commands possible
-    "snmp-get",  # OID for SNMP GET
-    "snmp-getnext"  # OID for SNMP GETNEXT
-]
 
-
-class QuizChange(EmbeddedDocument):
+class SpecChange(EmbeddedDocument):
     date = DateTimeField()
     changes = StringField()
 
@@ -42,51 +37,43 @@ class QuizChange(EmbeddedDocument):
         }
 
 
-class QuizQuestion(EmbeddedDocument):
-    # Unique (within quiz) question name/variable name
+class SpecAnswer(EmbeddedDocument):
     name = StringField()
-    # Arbitrary formed question
-    question = StringField()
-    # Answer type
     type = StringField(choices=Q_TYPES)
-    when = StringField(default="True")
+    value = StringField()
 
     def json_data(self):
         return {
             "name": self.name,
-            "question": self.question,
             "type": self.type,
-            "when": self.when
+            "value": self.value
         }
 
 
-@on_delete_check(check=[
-    ("dev.Spec", "quiz")
-])
-class Quiz(Document):
+class Spec(Document):
     meta = {
-        "collection": "quiz",
+        "collection": "specs",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "dev.quiz"
+        "json_collection": "dev.specs"
     }
 
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
     revision = IntField(default=1)
-    changes = ListField(EmbeddedDocumentField(QuizChange))
-    # Information text before quiz
-    disclaimer = StringField()
-    # List of questions
-    questions = ListField(EmbeddedDocumentField(QuizQuestion))
+    quiz = PlainReferenceField(Quiz)
+    author = StringField()
+    profile = PlainReferenceField(Profile)
+    changes = ListField(EmbeddedDocumentField(SpecChange))
+    answers = ListField(EmbeddedDocumentField(SpecAnswer))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        return Quiz.objects.filter(id=id).first()
+        return Spec.objects.filter(id=id).first()
 
     @property
     def json_data(self):
@@ -96,9 +83,11 @@ class Quiz(Document):
             "uuid": self.uuid,
             "description": self.description,
             "revision": self.revision,
-            "disclaimer": self.disclaimer,
+            "quiz__name": self.quiz.name,
+            "author": self.author,
+            "profile__name": self.profile.name,
             "changes": [c.json_data for c in self.changes],
-            "questions": [c.json_data for c in self.questions]
+            "answers": [c.json_data for c in self.answers]
         }
 
     def to_json(self):
@@ -110,11 +99,13 @@ class Quiz(Document):
                 "uuid",
                 "description",
                 "revision",
-                "disclaimer",
-                "changes",
-                "questions"
+                "quiz__name",
+                "author",
+                "profile__name",
+                "answers"
             ]
         )
 
     def get_json_path(self):
-        return "%s.json" % quote_safe_path(self.name)
+        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
+        return os.path.join(*p) + ".json"
