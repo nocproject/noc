@@ -39,6 +39,8 @@ provisioner:
   options:
     i: inv.yml
     e: tower_dist_dir=/tmp
+    e: rhel_register_rhel_subscription_username=${rhel_subscription_username}
+    e: rhel_register_rhel_subscription_password=${rhel_subscription_password}
   lint:
     name: ansible-lint
 scenario:
