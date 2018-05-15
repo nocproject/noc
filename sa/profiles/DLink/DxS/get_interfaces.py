@@ -128,8 +128,6 @@ class Script(BaseScript):
         r"Description\s+:\s*(?P<desc>.*?)\s*\n"
         r"HardWare Type\s+:\s*.+\s*\n"
         r"MAC Address\s+:\s*(?P<mac>\S+)\s*\n")
-    rx_udld = re.compile(
-        r"(?P<port>\d+(?:[:/]\d+)?)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
     rx_ctp = re.compile(
         r"^(?P<port>\d+(?:[:/]\d+)?)\s+(?P<status>Enabled|Disabled)\s+\S+",
         re.MULTILINE)
@@ -338,7 +336,7 @@ class Script(BaseScript):
                 igmp = []
 
         lldp = []
-        if self.has_capability("Network | STP"):
+        if self.has_capability("Network | LLDP"):
             try:
                 c = self.cli("show lldp", cached=True)
                 lldp_enable = self.rx_lldp_gs.search(c) is not None
@@ -370,12 +368,6 @@ class Script(BaseScript):
                         macs[match.group("port")] = match.group("mac")
                 except self.CLISyntaxError:
                     pass
-
-        try:
-            c = self.cli("show duld ports")
-            udld = self.rx_udld.findall(c)
-        except self.CLISyntaxError:
-            udld = []
 
         ctp = []
         try:
@@ -434,12 +426,13 @@ class Script(BaseScript):
                 for i in c:
                     stp += [i['port']]
 
+        oam = []
         if self.has_capability("Network | OAM"):
             try:
                 c = self.cli("show ethernet_oam ports configuration")
                 oam = self.rx_oam.findall(c)
             except self.CLISyntaxError:
-                oam = []
+                pass
 
         ports = self.profile.get_ports(self)
         vlans = self.profile.get_vlans(self)
@@ -490,8 +483,6 @@ class Script(BaseScript):
                 i["enabled_protocols"] += ["LLDP"]
             if ifname in ctp:
                 i["enabled_protocols"] += ["CTP"]
-            if ifname in udld:
-                i["enabled_protocols"] += ["UDLD"]
             if ifname in gvrp:
                 i["enabled_protocols"] += ["GVRP"]
             if ifname in stp:
