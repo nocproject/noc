@@ -149,7 +149,7 @@ class Script(BaseScript):
         for match in self.rx_ipif.finditer(ipif):
             admin_status = match.group("admin_state") == "Enabled"
             o_status = match.group("oper_status")
-            oper_status = re.match(self.rx_link_up, o_status) is not None
+            oper_status = self.rx_link_up.match(o_status) is not None
             i = {
                 "name": "System",
                 "type": "SVI",
