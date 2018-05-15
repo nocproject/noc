@@ -31,7 +31,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         fqdn = ''
-        v = self.cli("show running-config")
+        v = self.scripts.get_config()
         match = self.rx_hostname.search(v)
         if match:
             fqdn = match.group("hostname")
