@@ -91,7 +91,7 @@ class Script(BaseScript):
             untagged_ports = self.expand_interface_range(
                 self.profile.open_brackets(match.group("untagged_ports")))
             for p in members:
-                if not(p in untagged_ports):
+                if p not in untagged_ports:
                     tagged_ports += [p]
             vlans += [{
                 "vlan_id": int(match.group("vlan_id")),
