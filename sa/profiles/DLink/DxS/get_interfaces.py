@@ -338,24 +338,26 @@ class Script(BaseScript):
                 igmp = []
 
         lldp = []
+        if self.has_capability("Network | STP"):
+            try:
+                c = self.cli("show lldp", cached=True)
+                lldp_enable = self.rx_lldp_gs.search(c) is not None
+            except self.CLISyntaxError:
+                lldp_enable = False
+            if lldp_enable:
+                try:
+                    c = self.cli("show lldp ports")
+                    lldp = self.rx_lldp.findall(c)
+                except self.CLISyntaxError:
+                    pass
+
         macs = {}
         try:
-            c = self.cli("show lldp")
-            lldp_enable = self.rx_lldp_gs.search(c) is not None
-            try:
-                c = self.cli("show lldp local_ports mode brief")
-                for match in self.rx_lldp1.finditer(c):
-                    macs[match.group("port")] = match.group("mac")
-            except self.CLISyntaxError:
-                pass
+            c = self.cli("show lldp local_ports mode brief")
+            for match in self.rx_lldp1.finditer(c):
+                macs[match.group("port")] = match.group("mac")
         except self.CLISyntaxError:
-            lldp_enable = False
-        if lldp_enable:
-            try:
-                c = self.cli("show lldp ports")
-                lldp = self.rx_lldp.findall(c)
-            except self.CLISyntaxError:
-                pass
+            pass
 
         if len(macs) == 0:
             if (
@@ -414,28 +416,30 @@ class Script(BaseScript):
             pass
 
         stp = []
-        c = ""
-        try:
-            if self.match_version(DES3x2x) or self.match_version(DES30xx):
-                c = self.cli("show stp\nq")
-            else:
-                c = self.cli("show stp")
-        except self.CLISyntaxError:
-            pass
-        if self.rx_stp_gs.search(c) is not None:
-            c = self.cli(
-                "show stp ports",
-                obj_parser=self.parse_stp,
-                cmd_next="n", cmd_stop="q"
-            )
-            for i in c:
-                stp += [i['port']]
+        if self.has_capability("Network | STP"):
+            c = ""
+            try:
+                if self.match_version(DES3x2x) or self.match_version(DES30xx):
+                    c = self.cli("show stp\nq")
+                else:
+                    c = self.cli("show stp", cached=True)
+            except self.CLISyntaxError:
+                pass
+            if self.rx_stp_gs.search(c) is not None:
+                c = self.cli(
+                    "show stp ports",
+                    obj_parser=self.parse_stp,
+                    cmd_next="n", cmd_stop="q"
+                )
+                for i in c:
+                    stp += [i['port']]
 
-        try:
-            c = self.cli("show ethernet_oam ports configuration")
-            oam = self.rx_oam.findall(c)
-        except self.CLISyntaxError:
-            oam = []
+        if self.has_capability("Network | OAM"):
+            try:
+                c = self.cli("show ethernet_oam ports configuration")
+                oam = self.rx_oam.findall(c)
+            except self.CLISyntaxError:
+                oam = []
 
         ports = self.profile.get_ports(self)
         vlans = self.profile.get_vlans(self)
