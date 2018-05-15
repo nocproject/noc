@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
+
 class Script(BaseScript):
     name = "Linux.RHEL.get_version"
     cache = True
@@ -22,13 +23,13 @@ class Script(BaseScript):
     Fedora release 23 (Twenty Three)
     CentOS release 5.11 (Final)
     CentOS release 6.7 (Final)
-    CentOS Linux release 7.2.1511 (Core) 
+    CentOS Linux release 7.2.1511 (Core)
     Red Hat Enterprise Linux Server release 6.6 (Santiago)
-    """ 
+    """
 
     rx_ver = re.compile(
-        r"(?P<distr>[^,]+) release (?P<version>[^ ,]+) \((?P<codename>[^,]+)\)"
-        , re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"(?P<distr>[^,]+) release (?P<version>[^ ,]+) \((?P<codename>[^,]+)\)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     """
     http://unix.stackexchange.com/questions/89714/easy-way-to-determine-virtualization-technology
@@ -52,7 +53,7 @@ class Script(BaseScript):
 
         r = self.cli("cat /etc/redhat-release", cached=True)
         if "No such file or directory" not in r:
-            match = self.re_search(self.rx_ver, r)
+            match = self.rx_ver.search(r)
             version = match.group("version")
             codename = match.group("codename")
             distr = match.group("distr")
@@ -73,10 +74,10 @@ class Script(BaseScript):
                 self.check_virtual_xen,
                 self.check_virtual_dom0,
                 self.check_virtual_qemu
-                ], virtual)
+            ], virtual)
 
             match1 = rx.search(virtual)
-        
+
             if match1.group("virtplatform") == "bare":
                 # print (match1.group("virtplatform"))
                 virtualplatform = ""
@@ -96,5 +97,5 @@ class Script(BaseScript):
                 "codename": codename,
                 "distro": distr,
                 "kernel": kernel.strip(),
-                }
             }
+        }
