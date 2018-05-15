@@ -86,7 +86,6 @@ class Script(BaseScript):
                 # print (virtualplatform)
                 virtualplatform = "".join((" ", virtualplatform))
         else:
-            print ("HUI")
             virtualplatform = ""
 
         return {

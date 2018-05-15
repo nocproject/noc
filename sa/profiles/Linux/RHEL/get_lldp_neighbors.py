@@ -92,7 +92,6 @@ class Script(BaseScript):
                 if name2 not in map:
                     continue
 
-                print name2
                 if id != id_last and map[name2] == 'local_interface':
                     neighbors += [{map[name2]: value.strip("'"), 'neighbors': [remotehost]}]
                 else:
@@ -131,7 +130,6 @@ class Script(BaseScript):
                     "neighbors": []
                 }
 
-                print match.group("remote_port_type")
                 if match.group("remote_port_type") == 'ifname':
                     rps = 5
                     remote_port = remote_if
