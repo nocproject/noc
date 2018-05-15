@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"^\s*(?P<vlan_id>\d+)\s+(?P<name>.+?)\s+(\S+|)\s+\S+\s+\S+\s*$",
         re.MULTILINE)
 
-    def execute_SNMP(self):
+    def execute_snmp(self, **kwargs):
         r = []
         for vlan, name in self.snmp.join_tables(
             "1.3.6.1.2.1.17.7.1.4.2.1.3",
@@ -30,7 +30,7 @@ class Script(BaseScript):
             r += [{"vlan_id": vlan, "name": name}]
         return r
 
-    def execute_CLI(self):
+    def execute_cli(self, **kwargs):
         r = []
         for match in self.rx_vlan.finditer(self.cli("show vlan")):
             if match.group("name") != "-":
