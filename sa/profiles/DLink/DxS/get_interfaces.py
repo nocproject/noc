@@ -17,8 +17,6 @@ from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3620
-from noc.sa.profiles.DLink.DxS import DES3x2x
-from noc.sa.profiles.DLink.DxS import DES30xx
 from noc.core.mib import mib
 from noc.core.mac import MAC
 
@@ -100,11 +98,9 @@ class Script(BaseScript):
         r"OSPF Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
     rx_ospfv3_gs = re.compile(
         r"OSPFv3 Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
-    rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled?")
     rx_ctp_gs = re.compile(r"(LBD )?Status\s+: Enabled")
     rx_pim_gs = re.compile(r"PIM Global State\s+: Enabled")
     rx_gvrp_gs = re.compile(r"Global GVRP\s+: Enabled")
-    rx_stp_gs = re.compile(r"STP Status\s+: Enabled")
     rx_dvmrp_gs = re.compile(r"DVMRP Global State\s+: Enabled")
     rx_rip = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+(?:Disabled|Enabled)\s+"
@@ -338,16 +334,10 @@ class Script(BaseScript):
         lldp = []
         if self.has_capability("Network | LLDP"):
             try:
-                c = self.cli("show lldp", cached=True)
-                lldp_enable = self.rx_lldp_gs.search(c) is not None
+                c = self.cli("show lldp ports")
+                lldp = self.rx_lldp.findall(c)
             except self.CLISyntaxError:
-                lldp_enable = False
-            if lldp_enable:
-                try:
-                    c = self.cli("show lldp ports")
-                    lldp = self.rx_lldp.findall(c)
-                except self.CLISyntaxError:
-                    pass
+                pass
 
         macs = {}
         try:
@@ -409,22 +399,13 @@ class Script(BaseScript):
 
         stp = []
         if self.has_capability("Network | STP"):
-            c = ""
-            try:
-                if self.match_version(DES3x2x) or self.match_version(DES30xx):
-                    c = self.cli("show stp\nq")
-                else:
-                    c = self.cli("show stp", cached=True)
-            except self.CLISyntaxError:
-                pass
-            if self.rx_stp_gs.search(c) is not None:
-                c = self.cli(
-                    "show stp ports",
-                    obj_parser=self.parse_stp,
-                    cmd_next="n", cmd_stop="q"
-                )
-                for i in c:
-                    stp += [i['port']]
+            c = self.cli(
+                "show stp ports",
+                obj_parser=self.parse_stp,
+                cmd_next="n", cmd_stop="q", cached=True
+            )
+            for i in c:
+                stp += [i['port']]
 
         oam = []
         if self.has_capability("Network | OAM"):
