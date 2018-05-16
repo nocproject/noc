@@ -71,7 +71,7 @@ _mt_seq = itertools.count(0)
 
 
 def metrics(metrics, has_script=None, has_capability=None,
-            matcher=None, access=None):
+            matcher=None, access=None, volatile=True):
     """
     Decorator to use inside get_metrics script to denote functions
     which can return set of metrics
@@ -95,6 +95,9 @@ def metrics(metrics, has_script=None, has_capability=None,
         * S - for SNMP-only
         * C - for CLI-only
         * None - always match
+    :param volatile: True - Function call results may be changed over time
+        False - Function call results are persistent.
+        Function may be called only once
     :return: None
     """
     def wrapper(f):
@@ -104,6 +107,7 @@ def metrics(metrics, has_script=None, has_capability=None,
         f.mt_has_capability = has_capability
         f.mt_matcher = matcher
         f.mt_access = access
+        f.mt_volatile = volatile
         return f
 
     if isinstance(metrics, six.string_types):
@@ -212,6 +216,8 @@ class MetricScriptBase(BaseScriptMetaclass):
         f.mt_has_capability = "SNMP"
         f.mt_matcher = None
         f.mt_access = "S"
+        f.mt_volatile = False
+        f.mt_seq = -1
         setattr(script, fn, six.create_unbound_method(f, script))
         ff = getattr(script, fn)
         ff.__func__.__name__ = fn
@@ -309,6 +315,7 @@ class Script(BaseScript):
         for m in metrics:
             self.metric_configs[m.metric] += [m]
         # Process metrics collection
+        persistent = set()
         for m in metrics:
             if m.id in self.seen_ids:
                 self.logger.debug("[%s] Metric type is already collected. Skipping", m.metric)
@@ -318,7 +325,11 @@ class Script(BaseScript):
                 continue
             # Call handlers
             for h in self.iter_handlers(m.metric):
+                if not h.mt_volative and h.mt_seq in persistent:
+                    continue  # persistent function already called
                 h(self, self.metric_configs[m.metric])
+                if not h.mt_volative:
+                    persistent.add(h.mt_seq)
                 if m.id in self.seen_ids:
                     break  # Metric collected
         # Request snmp metrics from box
