@@ -346,7 +346,7 @@ class Script(BaseScript):
         :return: callable accepting *metrics*
         """
         def is_applicable(f):
-            if f.mt_has_script and not f.mt_has_script in self.scripts:
+            if f.mt_has_script and f.mt_has_script not in self.scripts:
                 return False
             if f.mt_has_capability and not self.has_capability(f.mt_has_capability):
                 return False
