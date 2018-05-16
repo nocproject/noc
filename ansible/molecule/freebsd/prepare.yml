@@ -2,8 +2,4 @@
 - name: Prepare
   hosts: all
   gather_facts: false
-  tasks:
-    - name: sleep 6 to overcome some bug
-      command: sleep 250
-      changed_when: false
-      delegate_to: localhost
+  tasks: []
