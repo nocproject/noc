@@ -263,7 +263,7 @@ class Script(BaseScript):
         self.snmp_batch = {}
         # Collected metric ids
         self.seen_ids = set()
-        # (metric type, path) -> metric config
+        # get_path_hash(metric type, path) -> metric config
         self.paths = {}
         # metric type -> [metric config]
         self.metric_configs = defaultdict(list)
@@ -283,6 +283,10 @@ class Script(BaseScript):
         """
         return self.profile.snmp_metrics_get_chunk
 
+    @staticmethod
+    def get_path_hash(metric, path):
+        return "\x00".join([metric] + list(path))
+
     def execute(self, metrics):
         """
         Metrics is a list of:
@@ -296,7 +300,7 @@ class Script(BaseScript):
         metrics = [MetricConfig(**m) for m in metrics]
         # Split by metric types
         self.paths = dict(
-            ((m.metric, m.path), m)
+            (self.get_path_hash(m.metric, m.path), m)
             for m in metrics
         )
         for m in metrics:
@@ -523,7 +527,7 @@ class Script(BaseScript):
                 metric = id[0]
             if not path:
                 path = id[1]
-            id = self.paths.get(id)
+            id = self.paths.get(self.get_path_hash(*id))
             if not id:
                 # Not requested, ignoring
                 return
