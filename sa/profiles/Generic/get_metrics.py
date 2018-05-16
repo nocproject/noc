@@ -318,7 +318,7 @@ class Script(BaseScript):
                 continue
             # Call handlers
             for h in self.iter_handlers(m.metric):
-                h(self.metric_configs[m.metric])
+                h(self, self.metric_configs[m.metric])
                 if m.id in self.seen_ids:
                     break  # Metric collected
         # Request snmp metrics from box
