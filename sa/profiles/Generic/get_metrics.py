@@ -285,7 +285,10 @@ class Script(BaseScript):
 
     @staticmethod
     def get_path_hash(metric, path):
-        return "\x00".join([metric] + list(path))
+        if path:
+            return "\x00".join([metric] + list(path))
+        else:
+            return metric
 
     def execute(self, metrics):
         """
