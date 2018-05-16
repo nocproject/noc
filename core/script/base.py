@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SA Script base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -36,22 +36,23 @@ from noc.core.span import Span
 from noc.core.matcher import match
 
 
-class BaseScript(object):
+class BaseScriptMetaclass(type):
+    """
+    Process @match decorators
+    """
+    def __new__(mcs, name, bases, attrs):
+        n = type.__new__(mcs, name, bases, attrs)
+        n._execute_chain = sorted(
+            (v for v in attrs.itervalues() if hasattr(v, "_seq")),
+            key=operator.attrgetter("_seq")
+        )
+        return n
+
+
+class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     """
     Service Activation script base class
     """
-    class __metaclass__(type):
-        """
-        Process @match decorators
-        """
-        def __new__(mcs, name, bases, attrs):
-            n = type.__new__(mcs, name, bases, attrs)
-            n._execute_chain = sorted(
-                (v for v in attrs.itervalues() if hasattr(v, "_seq")),
-                key=operator.attrgetter("_seq")
-            )
-            return n
-
     # Script name in form of <vendor>.<system>.<name>
     name = None
     # Default script timeout
