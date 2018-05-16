@@ -217,7 +217,6 @@ class MetricScriptBase(BaseScriptMetaclass):
         f.mt_matcher = None
         f.mt_access = "S"
         f.mt_volatile = False
-        f.mt_seq = -1
         setattr(script, fn, six.create_unbound_method(f, script))
         ff = getattr(script, fn)
         ff.__func__.__name__ = fn
@@ -325,11 +324,12 @@ class Script(BaseScript):
                 continue
             # Call handlers
             for h in self.iter_handlers(m.metric):
-                if not h.mt_volative and h.mt_seq in persistent:
+                hid = id(h)
+                if not h.mt_volative and hid in persistent:
                     continue  # persistent function already called
                 h(self, self.metric_configs[m.metric])
                 if not h.mt_volative:
-                    persistent.add(h.mt_seq)
+                    persistent.add(hid)
                 if m.id in self.seen_ids:
                     break  # Metric collected
         # Request snmp metrics from box
