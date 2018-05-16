@@ -327,18 +327,27 @@ class Script(BaseScript):
         :param metric: Metric type name
         :return: callable accepting *metrics*
         """
+        def is_applicable(f):
+            if f.mt_has_script and not f.mt_has_script in self.scripts:
+                return False
+            if f.mt_has_capability and not self.has_capability(f.mt_has_capability):
+                return False
+            if f.mt_matcher and not getattr(self, f.mt_matcher, False):
+                return False
+            return True
+
         pref = self.get_access_preference()
         handlers = self._mt_map[metric]
         pri = pref[0]
         sec = pref[1] if len(pref) > 1 else None
         # Iterate primary method
         for h in handlers:
-            if not h.mt_access or h.mt_access == pri:
+            if (not h.mt_access or h.mt_access == pri) and is_applicable(h):
                 yield h
         # Iterate secondary method
         if sec:
             for h in handlers:
-                if h.mt_access == sec:
+                if h.mt_access == sec and is_applicable(h):
                     yield h
 
     def collect_profile_metrics(self, metrics):
