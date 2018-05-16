@@ -530,10 +530,11 @@ class Script(BaseScript):
                 metric = id[0]
             if not path:
                 path = id[1]
-            id = self.paths.get(self.get_path_hash(*id))
-            if not id:
+            mc = self.paths.get(self.get_path_hash(*id))
+            if not mc:
                 # Not requested, ignoring
                 return
+            id = mc.id
             if not multi and id in self.seen_ids:
                 return  # Already seen
         self.metrics += [{
