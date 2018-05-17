@@ -9,5 +9,5 @@ console.debug("Defining NOC.dev.spec.LookupField");
 Ext.define("NOC.dev.spec.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.dev.spec.LookupField",
-    uiStyle: "medium"
+    uiStyle: "large"
 });
