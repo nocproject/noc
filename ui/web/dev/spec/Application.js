@@ -46,7 +46,7 @@ Ext.define("NOC.dev.spec.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "large"
                 },
                 {
                     name: "uuid",
