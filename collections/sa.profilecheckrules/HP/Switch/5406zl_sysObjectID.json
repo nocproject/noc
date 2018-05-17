@@ -1,0 +1,13 @@
+{
+    "name": "HP | ProCurve |  Switch 5406zl sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c2365a6c-c980-40bf-bc9f-68e5d5547e56",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.11.2.3.7.11.50",
+    "action": "match",
+    "profile__name": "HP.ProCurve"
+}
