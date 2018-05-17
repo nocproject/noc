@@ -18,7 +18,7 @@ from noc.core.mac import MAC
 from noc.lib.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
-from noc.core.interface.parameter import ORParameter
+from noc.core.interface.parameter import ORParameter  # noqa
 
 
 class NoneParameter(Parameter):
@@ -67,7 +67,7 @@ class StringParameter(Parameter):
             return self.default
         try:
             value = str(value)
-        except:
+        except:  # noqa
             self.raise_error(value)
         if self.choices and value not in self.choices:
             self.raise_error(value)
@@ -80,7 +80,7 @@ class UnicodeParameter(StringParameter):
             return self.default
         try:
             value = unicode(value)
-        except:
+        except: # noqa
             self.raise_error(value)
         if self.choices and value not in self.choices:
             self.raise_error(value)
@@ -299,13 +299,13 @@ class ListParameter(Parameter):
             return self.default
         try:
             return list(value)
-        except:
+        except:  # noqa
             self.raise_error(value)
 
     def form_clean(self, value):
         try:
             return self.clean(eval(value, {}, {}))
-        except:
+        except:  # noqa
             self.raise_error(value)
 
 
@@ -354,7 +354,7 @@ class InstanceOfParameter(Parameter):
         try:
             if self.is_valid(value):
                 return value
-        except:
+        except:  # noqa
             pass
         self.raise_error(value)
 
@@ -418,7 +418,7 @@ class SubclassOfParameter(Parameter):
         try:
             if self.is_valid(value):
                 return value
-        except:
+        except:  # noqa
             pass
         self.raise_error(value)
 
@@ -500,6 +500,8 @@ class DictParameter(Parameter):
     """
     >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":10,"s":"ten"})
     {'i': 10, 's': 'ten'}
+    >>> DictParameter(attrs={"result": BooleanParameter(), "message": StringParameter(default="")}).clean({"result": True})
+    {'message': '', 'result': True}
     >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","x":"ten"}) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
@@ -520,6 +522,7 @@ class DictParameter(Parameter):
         in_value = value.copy()
         out_value = {}
         for a_name, attr in self.attrs.items():
+            # print a_name, attr
             if a_name not in in_value and attr.required:
                 if attr.default is not None:
                     out_value[a_name] = attr.default
@@ -528,6 +531,7 @@ class DictParameter(Parameter):
                         value,
                         "Attribute '%s' is required in %s" % (
                             a_name, value))
+            # print out_value
             if a_name in in_value:
                 try:
                     out_value[a_name] = attr.clean(in_value[a_name])
@@ -559,7 +563,10 @@ class DictParameter(Parameter):
         out_value = {}
         for a_name, attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                self.raise_error(value, "Attribute '%s' required" % a_name)
+                if attr.default is not None:
+                    out_value[a_name] = attr.default
+                else:
+                    self.raise_error(value, "Attribute '%s' required" % a_name)
             if a_name in in_value:
                 try:
                     out_value[a_name] = attr.script_clean_input(profile, in_value[a_name])
@@ -581,11 +588,14 @@ class DictParameter(Parameter):
         out_value = {}
         for a_name, attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                self.raise_error(value, "Attribute '%s' required" % a_name)
+                if attr.default is not None:
+                    out_value[a_name] = attr.default
+                else:
+                    self.raise_error(value, "Attribute '%s' required" % a_name)
             if a_name in in_value:
                 try:
                     out_value[a_name] = attr.script_clean_result(profile,
-                                                             in_value[a_name])
+                                                                 in_value[a_name])
                 except InterfaceTypeError as e:
                     self.raise_error(
                         value,
@@ -671,7 +681,7 @@ class IPv4Parameter(StringParameter):
         try:
             if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
-        except:
+        except:  # noqa
             self.raise_error(value)
         # Avoid output like 001.002.003.004
         v = ".".join("%d" % int(c) for c in X)
@@ -704,7 +714,7 @@ class IPv4PrefixParameter(StringParameter):
         n, m = v.split("/", 1)
         try:
             m = int(m)
-        except:
+        except:  # noqa
             self.raise_error(value)
         if m < 0 or m > 32:
             self.raise_error(value)
@@ -714,7 +724,7 @@ class IPv4PrefixParameter(StringParameter):
         try:
             if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
-        except:
+        except:  # noqa
             self.raise_error(value)
         return v
 
@@ -782,7 +792,7 @@ class IPv6PrefixParameter(StringParameter):
         n, m = v.split("/", 1)
         try:
             m = int(m)
-        except:
+        except:  # noqa
             self.raise_error(value)
         if m < 0 or m > 128:
             self.raise_error(value)
@@ -856,8 +866,8 @@ class VLANStackParameter(ListOfParameter):
     """
     def __init__(self, required=True, default=None):
         super(VLANStackParameter, self).__init__(element=IntParameter(),
-                                           required=required,
-                                           default=default, convert=True)
+                                                 required=required,
+                                                 default=default, convert=True)
 
     def clean(self, value):
         value = super(VLANStackParameter, self).clean(value)
@@ -880,7 +890,7 @@ class VLANIDListParameter(ListOfParameter):
     """
     def __init__(self, required=True, default=None):
         super(VLANIDListParameter, self).__init__(element=VLANIDParameter(),
-                                           required=required, default=default)
+                                                  required=required, default=default)
 
 
 #
@@ -1009,37 +1019,37 @@ class RDParameter(Parameter):
         '100000:100'
         """
         try:
-            l, r = value.split(":")
-            r = long(r)
+            left, right = value.split(":")
+            right = long(right)
         except ValueError:
             self.raise_error(value)
-        if r < 0:
+        if right < 0:
             self.raise_error(value)
-        if "." in l:
+        if "." in left:
             # IP:N
             try:
-                l = IPv4Parameter().clean(l)
+                left = IPv4Parameter().clean(left)
             except InterfaceTypeError:
                 self.raise_error(value)
-            if r > 65535:
+            if right > 65535:
                 self.raise_error(value)
         else:
             # ASN:N
             try:
-                if l.endswith("L") or l.endswith("l"):
-                    l = l[:-1]
-                l = int(l)
+                if left.endswith("L") or left.endswith("l"):
+                    left = left[:-1]
+                    left = int(left)
             except ValueError:
                 self.raise_error(value)
-            if l < 0:
+            if left < 0:
                 self.raise_error(value)
-            if l > 65535:
-                if r > 65535:  # 4-byte ASN
+            if left > 65535:
+                if right > 65535:  # 4-byte ASN
                     self.raise_error(value)
             else:
-                if r > 0xFFFFFFFF:  # 2-byte ASN
+                if right > 0xFFFFFFFF:  # 2-byte ASN
                     self.raise_error(value)
-        return "%s:%s" % (l, r)
+        return "%s:%s" % (left, right)
 
 
 class GeoPointParameter(Parameter):
@@ -1070,7 +1080,7 @@ class GeoPointParameter(Parameter):
                 self.raise_error(value)
             s = v[0]
             if (s not in ("(", "[") or (s == "(" and v[-1] != ")") or
-                (s == "[" and v[-1]) != "]"):
+                    (s == "[" and v[-1]) != "]"):
                 self.raise_error(value)
             return self.clean(v[1:-1].split(","))
         else:
@@ -1196,6 +1206,7 @@ class ObjectIdParameter(REStringParameter):
         super(ObjectIdParameter, self).__init__(
             "^[0-9a-f]{24}$", required=required, default=default
         )
+
 
 #
 # Module Test
