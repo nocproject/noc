@@ -67,7 +67,7 @@ class StringParameter(Parameter):
             return self.default
         try:
             value = str(value)
-        except:  # noqa
+        except Exception:
             self.raise_error(value)
         if self.choices and value not in self.choices:
             self.raise_error(value)
@@ -80,7 +80,7 @@ class UnicodeParameter(StringParameter):
             return self.default
         try:
             value = unicode(value)
-        except: # noqa
+        except Exception:
             self.raise_error(value)
         if self.choices and value not in self.choices:
             self.raise_error(value)
@@ -299,13 +299,13 @@ class ListParameter(Parameter):
             return self.default
         try:
             return list(value)
-        except:  # noqa
+        except Exception:
             self.raise_error(value)
 
     def form_clean(self, value):
         try:
             return self.clean(eval(value, {}, {}))
-        except:  # noqa
+        except Exception:
             self.raise_error(value)
 
 
@@ -354,7 +354,7 @@ class InstanceOfParameter(Parameter):
         try:
             if self.is_valid(value):
                 return value
-        except:  # noqa
+        except Exception:
             pass
         self.raise_error(value)
 
@@ -418,7 +418,7 @@ class SubclassOfParameter(Parameter):
         try:
             if self.is_valid(value):
                 return value
-        except:  # noqa
+        except Exception:
             pass
         self.raise_error(value)
 
@@ -460,7 +460,7 @@ class ListOfParameter(ListParameter):
             value = [value]
         v = super(ListOfParameter, self).clean(value)
         if self.is_list:
-            return [[e.clean(vv) for e, vv in zip(self.element, v)] for v in value]
+            return [[e.clean(vv) for e, vv in zip(self.element, v)] for v in value]  # noqa
         else:
             return [self.element.clean(x) for x in v]
 
@@ -469,7 +469,7 @@ class ListOfParameter(ListParameter):
             return self.default
         v = super(ListOfParameter, self).script_clean_input(profile, value)
         if self.is_list:
-            return [[e.script_clean_input(profile, vv) for e, vv in zip(self.element, v)] for v in value]
+            return [[e.script_clean_input(profile, vv) for e, vv in zip(self.element, v)] for v in value]  # noqa
         else:
             return [self.element.script_clean_input(profile, x) for x in v]
 
@@ -478,7 +478,7 @@ class ListOfParameter(ListParameter):
             return self.default
         v = super(ListOfParameter, self).script_clean_result(profile, value)
         if self.is_list:
-            return [[e.script_clean_result(profile, vv) for e, vv in zip(self.element, v)] for v in value]
+            return [[e.script_clean_result(profile, vv) for e, vv in zip(self.element, v)] for v in value]  # noqa
         else:
             return [self.element.script_clean_result(profile, x) for x in v]
 
@@ -681,7 +681,7 @@ class IPv4Parameter(StringParameter):
         try:
             if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
-        except:  # noqa
+        except Exception:
             self.raise_error(value)
         # Avoid output like 001.002.003.004
         v = ".".join("%d" % int(c) for c in X)
@@ -714,7 +714,7 @@ class IPv4PrefixParameter(StringParameter):
         n, m = v.split("/", 1)
         try:
             m = int(m)
-        except:  # noqa
+        except Exception:
             self.raise_error(value)
         if m < 0 or m > 32:
             self.raise_error(value)
@@ -724,7 +724,7 @@ class IPv4PrefixParameter(StringParameter):
         try:
             if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
-        except:  # noqa
+        except Exception:
             self.raise_error(value)
         return v
 
@@ -792,7 +792,7 @@ class IPv6PrefixParameter(StringParameter):
         n, m = v.split("/", 1)
         try:
             m = int(m)
-        except:  # noqa
+        except Exception:
             self.raise_error(value)
         if m < 0 or m > 128:
             self.raise_error(value)
