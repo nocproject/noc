@@ -269,7 +269,7 @@ class Script(BaseScript):
         return r
 
     def execute(self):
-        v = self.cli("show spanning-tree")
+        v = self.cli("show spanning-tree", cached=True)
         if "Spanning tree enabled mode STP" in v:
             return self.process_pvst(v, proto="STP", sep="###### STP ")
         elif "Spanning tree enabled mode RSTP" in v:

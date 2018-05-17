@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_local_users
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,11 +18,12 @@ class Script(BaseScript):
     interface = IGetLocalUsers
 
     rx_name = re.compile(
-        r"^username\s+(?P<username>\S+)\s+password encrypted (\S+\s+privilege\s+(?P<privilege>\d+)|.*)")
+        r"^username\s+(?P<username>\S+)\s+password encrypted "
+        r"(\S+\s+privilege\s+(?P<privilege>\d+)|.*)")
     rx_priv = re.compile(r"^(\S+\s|\s+\S+\s|\S+\s+\S+\s)+(?P<privilege>\d+)")
 
     def execute(self):
-        data = self.cli("show running-config")
+        data = self.scripts.get_config()
         r = []
         data = data.split("\n")
         for i in range(len(data)):
@@ -39,9 +40,9 @@ class Script(BaseScript):
                     user_class = "superuser"
                 else:
                     user_class = privilege
-                r.append({
+                r += [{
                     "username": name.group("username"),
                     "class": user_class,
                     "is_active": True
-                    })
+                }]
         return r
