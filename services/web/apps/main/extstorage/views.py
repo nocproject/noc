@@ -19,3 +19,4 @@ class ExtStorageApplication(ExtDocApplication):
     title = _("Ext. Storage")
     menu = [_("Setup"), _("Ext. Storages")]
     model = ExtStorage
+    glyph = "database"

@@ -21,5 +21,4 @@ class QuizApplication(ExtDocApplication):
     model = Quiz
 
     def deserialize(self, data):
-        print repr(data)
         return super(QuizApplication, self).deserialize(data)
