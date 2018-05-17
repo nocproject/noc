@@ -25,6 +25,7 @@ class Script(GetMetricsScript):
     @metrics(
         ["Interface | Errors | CRC", "Interface | Errors | Frame"],
         has_capability="DB | Interfaces",
+        volatile=False,
         access="C"  # CLI version
     )
     def get_vrp_interface_metrics(self, metrics):
