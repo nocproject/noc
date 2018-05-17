@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Interface loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -14,8 +15,8 @@ import inspect
 import threading
 import os
 import re
-## NOC modules
-from base import BaseInterface
+# NOC modules
+from .base import BaseInterface
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +123,7 @@ class InterfaceLoader(object):
         if not self.all_interfaces:
             self.find_interfaces()
         return name in self.all_interfaces
+
 
 # Create singleton object
 loader = InterfaceLoader()
