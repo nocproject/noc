@@ -24,6 +24,10 @@ Ext.define("NOC.main.extstorage.Model", {
             type: "boolean"
         },
         {
+            name: "enable_beef",
+            type: "boolean"
+        },
+        {
             name: "name",
             type: "string"
         },
