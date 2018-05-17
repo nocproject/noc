@@ -18,6 +18,7 @@ class MMLError(CLIError):
     default_code = ERR_MML_UNKNOWN
     default_msg = "MML Error"
 
+
 class MMLConnectionRefused(MMLError):
     default_code = ERR_MML_CONNECTION_REFUSED
     default_msg = "Connection refused"
