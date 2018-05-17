@@ -479,7 +479,8 @@ class ManagedObjectProfile(models.Model):
     )
     config_mirror_template = models.ForeignKey(
         Template, verbose_name=_("Config Mirror Template"),
-        blank=True, null=True
+        blank=True, null=True,
+        related_name="config_mirror_objects_set"
     )
     config_mirror_policy = models.CharField(
         _("Config Mirror Policy"),
@@ -501,6 +502,26 @@ class ManagedObjectProfile(models.Model):
             ("C", "Change")
         ],
         default="C"
+    )
+    # Beef collection settings
+    beef_storage = DocumentReferenceField(
+        ExtStorage,
+        null=True, blank=True
+    )
+    beef_path_template = models.ForeignKey(
+        Template, verbose_name=_("Beef Path Template"),
+        blank=True, null=True,
+        related_name="beef_objects_set"
+    )
+    beef_policy = models.CharField(
+        _("Beef Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="D"
     )
     #
     metrics = PickledField(blank=True)
