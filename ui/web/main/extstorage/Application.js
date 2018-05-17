@@ -41,6 +41,12 @@ Ext.define("NOC.main.extstorage.Application", {
                     dataIndex: "enable_config_mirror",
                     width: 50,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Beef"),
+                    dataIndex: "enable_beef",
+                    width: 50,
+                    renderer: NOC.render.Bool
                 }
             ],
 
@@ -69,6 +75,11 @@ Ext.define("NOC.main.extstorage.Application", {
                     name: "enable_config_mirror",
                     xtype: "checkbox",
                     boxLabel: __("Config Mirror")
+                },
+                {
+                    name: "enable_beef",
+                    xtype: "checkbox",
+                    boxLabel: __("Beef")
                 }
             ]
         });
