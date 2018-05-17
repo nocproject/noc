@@ -40,6 +40,7 @@
     src: "config.xml"
     dest: "{{ch_etc_path}}/"
     owner: clickhouse
+    group: clickhouse
     mode: "0644"
   no_log: "{{tower_show_secrets}}"
   notify: restart clickhouse-server
@@ -62,6 +63,7 @@
     dest: "{{ ch_etc_path }}/noc.xml"
     force: "False"
     owner: clickhouse
+    group: clickhouse
     mode: "0644"
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
@@ -72,6 +74,7 @@
   file:
     dest: "{{ ch_etc_path }}/noc.xml"
     owner: clickhouse
+    group: clickhouse
     mode: "0644"
   tags:
     - config
