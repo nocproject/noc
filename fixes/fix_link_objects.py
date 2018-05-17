@@ -14,7 +14,11 @@ from noc.inv.models.link import Link
 
 
 def fix():
-    for l in Link.objects.filter().timeout(False):
+    for l in Link.objects.filter(
+            Q(linked_objects__exists=False) |
+            Q(linked_segments__exists=False) |
+            Q(type__exists=False)
+    ).timeout(False):
         try:
             l.save()
         except AssertionError:

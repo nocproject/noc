@@ -6,7 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from error import InterfaceTypeError
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from .error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 
 
