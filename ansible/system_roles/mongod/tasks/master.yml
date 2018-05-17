@@ -56,12 +56,6 @@
     - rs_conf_status is changed
     - rs_status is changed
 
-- name: set correct permissions for mongodir
-  file:
-    state: directory
-    path: "{{ mongo_dir }}"
-    recurse: "True"
-
 - name: set master_init done
   set_fact:
     mongo_master_init_done: "True"

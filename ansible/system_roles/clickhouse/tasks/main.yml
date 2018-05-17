@@ -31,6 +31,7 @@
     src: "users.xml"
     dest: "{{ch_etc_path}}/"
     owner: clickhouse
+    mode: "0640"
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
 
@@ -39,6 +40,7 @@
     src: "config.xml"
     dest: "{{ch_etc_path}}/"
     owner: clickhouse
+    mode: "0644"
   no_log: "{{tower_show_secrets}}"
   notify: restart clickhouse-server
 
@@ -59,10 +61,21 @@
     src: "noc.xml"
     dest: "{{ ch_etc_path }}/noc.xml"
     force: "False"
+    owner: clickhouse
+    mode: "0644"
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
   tags:
     - config
+
+- name: force permissions
+  file:
+    dest: "{{ ch_etc_path }}/noc.xml"
+    owner: clickhouse
+    mode: "0644"
+  tags:
+    - config
+
 
 - name: Start clickhouse service
   service:

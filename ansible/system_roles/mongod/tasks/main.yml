@@ -154,3 +154,10 @@
   when: has_svc_monitoring is defined
   tags:
     - monitoring
+
+- name: set correct permissions for mongodir
+  file:
+    state: directory
+    path: "{{ mongo_db_path }}"
+    mode: 0750
+    recurse: "True"
