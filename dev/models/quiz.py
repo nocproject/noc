@@ -35,6 +35,7 @@ class QuizChange(EmbeddedDocument):
     date = DateTimeField()
     changes = StringField()
 
+    @property
     def json_data(self):
         return {
             "date": self.date.isoformat(),
@@ -51,6 +52,7 @@ class QuizQuestion(EmbeddedDocument):
     type = StringField(choices=Q_TYPES)
     when = StringField(default="True")
 
+    @property
     def json_data(self):
         return {
             "name": self.name,
@@ -93,7 +95,7 @@ class Quiz(Document):
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
+            "uuid": str(self.uuid),
             "description": self.description,
             "revision": self.revision,
             "disclaimer": self.disclaimer,
