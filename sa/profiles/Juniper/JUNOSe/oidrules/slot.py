@@ -15,7 +15,6 @@ class SlotRule(OIDRule):
 
     name = "slot"
 
-
     def iter_oids(self, script, metric):
         """
                 SlotNumber

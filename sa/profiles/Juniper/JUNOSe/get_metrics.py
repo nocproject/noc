@@ -46,5 +46,4 @@ class Script(GetMetricsScript):
                     path=("0", str(slot), ""),
                     value=int(rtt),
                     multi=True
-                 )
-
+                )
