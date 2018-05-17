@@ -18,7 +18,9 @@ Ext.define("NOC.core.ListFormField", {
     initComponent: function() {
         var me = this;
 
-        me.fields = Ext.clone(me.items);
+        me.fields = Ext.clone(me.items).map(function(item) {
+            return Ext.Object.merge(item, {isListForm: true})
+        });
 
         me.addButton = Ext.create("Ext.button.Button", {
             text: __("Add"),
