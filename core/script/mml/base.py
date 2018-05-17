@@ -187,7 +187,7 @@ class MMLBase(object):
             if self.rx_mml_continue:
                 # Process continued block
                 offset = max(0, len(r) - self.MATCH_TAIL)
-                match = self.rx_mml_end.search(r, offset)
+                match = self.rx_mml_continue.search(r, offset)
                 if match:
                     self.logger.debug("Continuing in the next block")
                     result += [r[:match.start()]]
