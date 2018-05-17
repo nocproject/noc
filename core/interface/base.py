@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface base class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Interface base class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 from error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
