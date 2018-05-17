@@ -7,7 +7,7 @@
 console.debug("Defining NOC.core.FormField");
 
 Ext.define("NOC.core.ListFormField", {
-    extend: "Ext.panel.Panel",
+    extend: "Ext.form.FieldContainer",
     alias: "widget.listform",
     mixins: {
         field: 'Ext.form.field.Field'
@@ -18,7 +18,9 @@ Ext.define("NOC.core.ListFormField", {
     initComponent: function() {
         var me = this;
 
-        me.fields = Ext.clone(me.items);
+        me.fields = Ext.clone(me.items).map(function(item) {
+            return Ext.Object.merge(item, {isListForm: true})
+        });
 
         me.addButton = Ext.create("Ext.button.Button", {
             text: __("Add"),
@@ -42,18 +44,21 @@ Ext.define("NOC.core.ListFormField", {
             scope: me,
             handler: me.onCloneRecord
         });
+
         me.moveUpButton = Ext.create("Ext.button.Button", {
             text: __("Move Up"),
             glyph: NOC.glyph.caret_up,
             scope: me,
             handler: me.onMoveUp
         });
+
         me.moveDownButton = Ext.create("Ext.button.Button", {
             text: __("Move Down"),
             glyph: NOC.glyph.caret_down,
             scope: me,
             handler: me.onMoveDown
         });
+
         me.mainConfig = {
             dockedItems: [
                 {
@@ -72,14 +77,36 @@ Ext.define("NOC.core.ListFormField", {
             ],
             items: []
         };
-        Ext.apply(me, me.mainConfig);
+        me.panel = Ext.create("Ext.form.Panel", {
+            dockedItems: [
+                {
+                    xtype: "toolbar",
+                    dock: "top",
+                    items: [
+                        me.addButton,
+                        me.deleteButton,
+                        "-",
+                        me.cloneButton,
+                        "-",
+                        me.moveUpButton,
+                        me.moveDownButton
+                    ]
+                }
+            ],
+            items: []
+        });
+        Ext.apply(me, {
+            items: [
+                me.panel
+            ]
+        });
         me.currentSelection = undefined;
         me.callParent();
     },
     getValue: function() {
         var me = this,
             records = [];
-        me.items.each(function(panel) {
+        me.panel.items.each(function(panel) {
             records.push(panel.form.getValues())
         });
         return records;
@@ -91,12 +118,12 @@ Ext.define("NOC.core.ListFormField", {
         } else {
             v = v || [];
         }
-        if(!Ext.isEmpty(v) && me.timerHander){
+        if(!Ext.isEmpty(v) && me.timerHander) {
             clearTimeout(me.timerHander);
             me.timerHander = undefined;
         }
-        if(me.items.length){
-            me.removeAll();
+        if(me.panel.items.length) {
+            me.panel.removeAll();
         }
         Ext.each(v, me.createForm, me);
         this.disableButtons(me);
@@ -105,7 +132,7 @@ Ext.define("NOC.core.ListFormField", {
         var me = this;
         me.timerHander = setTimeout(function(scope) {
             scope.removeAll();
-        }, 750, me);
+        }, 750, me.panel);
     },
     onAddRecord: function() {
         var me = this;
@@ -114,38 +141,38 @@ Ext.define("NOC.core.ListFormField", {
     onDeleteRecord: function() {
         var me = this;
         // remove by itemId
-        me.remove(me.currentSelection);
+        me.panel.remove(me.currentSelection);
         me.disableButtons();
     },
     onCloneRecord: function() {
         var me = this;
-        me.createForm(me.getComponent(me.currentSelection).getValues());
+        me.createForm(me.panel.getComponent(me.currentSelection).getValues());
     },
     onMoveDown: function() {
         var me = this, index;
-        index = me.items.findIndexBy(function(i) {
+        index = me.panel.items.findIndexBy(function(i) {
             return i.itemId === me.currentSelection
         }, me);
-        if(index < me.items.getCount() - 1) {
-            me.moveAfter(me.items.get(index), me.items.get(index + 1));
+        if(index < me.panel.items.getCount() - 1) {
+            me.panel.moveAfter(me.panel.items.get(index), me.panel.items.get(index + 1));
         }
     },
     onMoveUp: function() {
         var me = this, index;
-        index = me.items.findIndexBy(function(i) {
+        index = me.panel.items.findIndexBy(function(i) {
             return i.itemId === me.currentSelection
         }, me);
         if(index > 0) {
-            me.moveBefore(me.items.get(index), me.items.get(index - 1));
+            me.panel.moveBefore(me.panel.items.get(index), me.panel.items.get(index - 1));
         }
     },
     createForm: function(record, index) {
-        var me = this, panel, itemId;
+        var me = this, formPanel, itemId;
         if(!index) {
-            index = me.items.getCount();
+            index = me.panel.items.getCount();
         }
         itemId = me.id + '-' + index;
-        panel = Ext.create('Ext.form.Panel', {
+        formPanel = Ext.create('Ext.form.Panel', {
             itemId: itemId,
             items: me.fields,
             defaults: {
@@ -156,7 +183,7 @@ Ext.define("NOC.core.ListFormField", {
                 focusenter: function(self) {
                     var me = this, label;
                     // reset selected label
-                    me.items.each(function(panel) {
+                    me.panel.items.each(function(panel) {
                         var l = panel.items.get(0).getFieldLabel().replace(me.isSelectedPrefix, "");
                         panel.items.get(0).setFieldLabel(l);
                     });
@@ -168,9 +195,9 @@ Ext.define("NOC.core.ListFormField", {
                 }
             }
         });
-        panel.form.setValues(record);
-        me.add(panel);
-        panel.items.get(0).focus();
+        formPanel.form.setValues(record);
+        me.panel.add(formPanel);
+        formPanel.items.get(0).focus();
     },
     disableButtons: function() {
         var me = this;
