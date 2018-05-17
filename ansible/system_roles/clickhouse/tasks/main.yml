@@ -31,6 +31,7 @@
     src: "users.xml"
     dest: "{{ch_etc_path}}/"
     owner: clickhouse
+    group: clickhouse
     mode: "0640"
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
@@ -78,7 +79,6 @@
     mode: "0644"
   tags:
     - config
-
 
 - name: Start clickhouse service
   service:
