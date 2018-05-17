@@ -614,6 +614,28 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "config_validation_policy",
             type: "string"
+        },
+        {
+            name: "beef_storage",
+            type: "string"
+        },
+        {
+            name: "beef_storage__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "beef_path_template",
+            type: "string"
+        },
+        {
+            name: "beef_path_template__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "beef_policy",
+            type: "string"
         }
     ]
 });

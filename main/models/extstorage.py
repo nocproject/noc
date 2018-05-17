@@ -22,7 +22,8 @@ id_lock = Lock()
 
 
 @on_delete_check(check=[
-    ("sa.ManagedObjectProfile", "config_mirror_storage")
+    ("sa.ManagedObjectProfile", "config_mirror_storage"),
+    ("sa.ManagedObjectProfile", "beef_storage"),
 ])
 class ExtStorage(Document):
     meta = {
