@@ -13,7 +13,6 @@ Ext.define("NOC.core.ListFormField", {
         field: 'Ext.form.field.Field'
     },
     items: [],
-    isSelectedPrefix: "<*>",
     timerHander: undefined,
     initComponent: function() {
         var me = this;
@@ -184,17 +183,17 @@ Ext.define("NOC.core.ListFormField", {
                     var me = this, label;
                     // reset selected label
                     me.panel.items.each(function(panel) {
-                        var l = panel.items.get(0).getFieldLabel().replace(me.isSelectedPrefix, "");
-                        panel.items.get(0).setFieldLabel(l);
+                        panel.setBodyStyle("border-left-width", "1px");
+                        panel.setBodyStyle("margin-left", "5px")
                     });
-                    label = self.items.get(0).getFieldLabel();
-                    self.items.get(0).setFieldLabel(me.isSelectedPrefix + label);
+                    me.selected(self);
                     me.currentSelection = self.itemId;
                     me.deleteButton.setDisabled(false);
                     me.cloneButton.setDisabled(false);
                 }
             }
         });
+        formPanel.setBodyStyle("margin-left", "5px");
         formPanel.form.setValues(record);
         me.panel.add(formPanel);
         formPanel.items.get(0).focus();
@@ -204,5 +203,9 @@ Ext.define("NOC.core.ListFormField", {
         me.currentSelection = undefined;
         me.deleteButton.setDisabled(true);
         me.cloneButton.setDisabled(true);
+    },
+    selected: function(panel) {
+        panel.setBodyStyle("border-left-width", "6px");
+        panel.setBodyStyle("margin-left", "0px")
     }
 });
