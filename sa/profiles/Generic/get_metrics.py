@@ -291,7 +291,7 @@ class Script(BaseScript):
     @staticmethod
     def get_path_hash(metric, path):
         if path:
-            return "\x00".join([metric] + list(path))
+            return "\x00".join([metric] + [str(x) for x in path])
         else:
             return metric
 
@@ -325,10 +325,10 @@ class Script(BaseScript):
             # Call handlers
             for h in self.iter_handlers(m.metric):
                 hid = id(h)
-                if not h.mt_volative and hid in persistent:
+                if not h.mt_volatile and hid in persistent:
                     continue  # persistent function already called
                 h(self, self.metric_configs[m.metric])
-                if not h.mt_volative:
+                if not h.mt_volatile:
                     persistent.add(hid)
                 if m.id in self.seen_ids:
                     break  # Metric collected
@@ -544,6 +544,7 @@ class Script(BaseScript):
             mc = self.paths.get(self.get_path_hash(*id))
             if not mc:
                 # Not requested, ignoring
+                self.logger.info("Not requesting, ignoring")
                 return
             id = mc.id
             if not multi and id in self.seen_ids:
@@ -570,3 +571,32 @@ class Script(BaseScript):
         :return: OIDRule descendant or None
         """
         return cls._oid_rules.get(name)
+
+    @metrics(
+        ["Interface | DOM | RxPower",
+         "Interface | DOM | Temperature", "Interface | DOM | TxPower",
+         "Interface | DOM | Voltage"],
+        has_capability="DB | Interfaces",
+        access="C",  # CLI version
+        volatile=False
+    )
+    def collect_dom_metrics(self, metrics):
+        r = {}
+        for m in self.scripts.get_dom_status():
+            ipath = ["", "", "", m["interface"]]
+            if m.get("temp_c") is not None:
+                self.set_metric(id=("Interface | DOM | Temperature", ipath),
+                                value=m["temp_c"])
+            if m.get("voltage_v") is not None:
+                self.set_metric(id=("Interface | DOM | Voltage", ipath),
+                                value=m["voltage_v"])
+            if m.get("optical_rx_dbm") is not None:
+                self.set_metric(id=("Interface | DOM | RxPower", ipath),
+                                value=m["optical_rx_dbm"])
+            if m.get("current_ma") is not None:
+                self.set_metric(id=("Interface | DOM | Bias Current", ipath),
+                                value=m["current_ma"])
+            if m.get("optical_tx_dbm") is not None:
+                self.set_metric(id=("Interface | DOM | TxPower", ipath),
+                                value=m["optical_tx_dbm"])
+        return r
