@@ -35,6 +35,7 @@ class ExtStorage(Document):
     url = StringField()
     description = StringField()
     enable_config_mirror = BooleanField(default=False)
+    enable_beef = BooleanField(default=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
