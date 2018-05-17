@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ class Script(BaseScript):
         # Enet ports info
         enet_ports = self.cli("statistics enet")
         tagged = defaultdict(list)
-        for match in re.finditer(self.rx_vlan, vlans):
+        for match in self.rx_vlan.finditer(vlans):
             up = 0
             if match.group("vstatus") == "enabled":
                 for x in match.group("uplinkmask"):
