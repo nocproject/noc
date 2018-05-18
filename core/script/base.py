@@ -19,7 +19,6 @@ from functools import reduce
 import six
 # NOC modules
 from .snmp.base import SNMP
-from .snmp.beef import BeefSNMP
 from .http.base import HTTP
 from noc.core.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
@@ -28,7 +27,6 @@ from .context import (ConfigurationContextManager, CacheContextManager,
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.handler import get_handler
 from noc.core.mac import MAC
-from .beef import Beef
 from .error import (ScriptError, CLISyntaxError, CLIOperationError,
                     NotSupportedError, UnexpectedResultError)
 from noc.config import config
@@ -107,14 +105,13 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
 
     cli_protocols = {
         "telnet": "noc.core.script.cli.telnet.TelnetCLI",
-        "ssh": "noc.core.script.cli.ssh.SSHCLI",
-        "beef": "noc.core.script.cli.beef.BeefCLI"
+        "ssh": "noc.core.script.cli.ssh.SSHCLI"
     }
 
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
                  version=None, parent=None, timeout=None,
-                 name=None, collect_beef=False,
+                 name=None,
                  session=None, session_idle_timeout=None):
         self.service = service
         self.tos = config.activator.tos
@@ -139,19 +136,10 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         self.start_time = None
         self.args = self.clean_input(args or {})
         self.cli_stream = None
-        if collect_beef:
-            self.beef = Beef(script=self.name)
-            self.logger.info("Collecting beef %s", self.beef.uuid)
-        else:
-            self.beef = None
         if self.parent:
             self.snmp = self.root.snmp
-            self.beef = self.parent.beef
         else:
-            if self.credentials.get("beef"):
-                self.snmp = BeefSNMP(self)
-            else:
-                self.snmp = SNMP(self, beef=self.beef)
+            self.snmp = SNMP(self)
         self.http = HTTP(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
@@ -773,8 +761,6 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                            cmd_next=cmd_next, cmd_stop=cmd_stop,
                            ignore_errors=ignore_errors)
         if isinstance(r, six.string_types):
-            if self.beef:
-                self.beef.set_cli(cmd, r)
             # Check for syntax errors
             if not ignore_errors:
                 # Then check for operation error

@@ -30,11 +30,10 @@ class SNMP(object):
 
     SNMPError = SNMPError
 
-    def __init__(self, script, beef=None):
+    def __init__(self, script):
         self.script = script
         self.ioloop = None
         self.result = None
-        self.beef = beef
         self.logger = PrefixLoggerAdapter(script.logger, "snmp")
         self.timeouts_limit = 0
         self.timeouts = 0
@@ -105,9 +104,6 @@ class SNMP(object):
                     version=version
                 )
                 self.timeouts = self.timeouts_limit
-                if self.beef:
-                    # Restore from beef
-                    self.beef.set_snmp_get(oids, self.result)
             except SNMPError as e:
                 if e.code == TIMED_OUT:
                     if self.timeouts_limit:

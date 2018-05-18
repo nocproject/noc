@@ -44,10 +44,6 @@ class Command(BaseCommand):
             help="Disable SNMP"
         )
         parser.add_argument(
-            "--beef",
-            help="Collect beef to file"
-        )
-        parser.add_argument(
             "--access-preference",
             dest="access_preference",
             help="Alter access method preference"
@@ -69,7 +65,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, script, object_name, arguments, pretty,
-               yaml, use_snmp, beef, access_preference,
+               yaml, use_snmp, access_preference,
                *args, **options):
         # Get object
         obj = self.get_object(object_name[0])
@@ -112,8 +108,7 @@ class Command(BaseCommand):
             args=args,
             version=version,
             timeout=3600,
-            name=script,
-            collect_beef=bool(beef)
+            name=script
         )
         result = scr.run()
         if pretty:
@@ -124,19 +119,6 @@ class Command(BaseCommand):
             yaml.dump(result, sys.stdout)
         else:
             self.stdout.write("%s\n" % result)
-        if beef:
-            if scr.version:
-                scr.beef.set_version(**scr.version)
-            else:
-                # @todo: Fix
-                self.stdout.write("Warning! Beef contains no version info\n")
-            scr.beef.set_result(result)
-            if scr._motd:
-                scr.beef.set_motd(scr._motd)
-            if os.path.isdir(beef):
-                beef = os.path.join(beef, "%s.json" % scr.beef.uuid)
-            self.stdout.write("Writing beef to %s\n" % beef)
-            scr.beef.save(beef)
 
     def get_object(self, object_name):
         """
