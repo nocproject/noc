@@ -20,7 +20,7 @@ from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 
-__all__ = ["Model"]
+__all__ = ["Model", "NestedModel"]
 
 
 class ModelBase(type):

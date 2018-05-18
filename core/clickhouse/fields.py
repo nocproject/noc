@@ -26,7 +26,7 @@ class BaseField(object):
         :param default: Default field value (if value not set)
         :param description: Field description
         """
-        self.field_number = self.FIELD_NUMBER.next()
+        self.field_number = next(self.FIELD_NUMBER)
         self.name = None
         self.default = default or self.default_value
         self.description = description
