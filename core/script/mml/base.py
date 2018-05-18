@@ -32,8 +32,6 @@ class MMLBase(object):
     CONNECT_RETRIES = config.activator.connect_retries
     # Timeout after immediate disconnect
     CONNECT_TIMEOUT = config.activator.connect_timeout
-    #
-    HEADER_SEP = "\r\n"
 
     def __init__(self, script, tos=None):
         self.script = script
@@ -169,14 +167,16 @@ class MMLBase(object):
     @tornado.gen.coroutine
     def get_mml_response(self):
         result = []
+        header_sep = self.profile.mml_header_separator
         while True:
             r = yield self.read_until_end()
+            r = r.strip()
             # Process header
-            if self.HEADER_SEP not in r:
+            if header_sep not in r:
                 self.result = ""
                 self.error = MMLBadResponse("Missed header separator")
                 raise tornado.gen.Return(None)
-            header, r = r.split(self.HEADER_SEP, 1)
+            header, r = r.split(header_sep, 1)
             code, msg = self.profile.parse_mml_header(header)
             if code:
                 # MML Error

@@ -181,6 +181,8 @@ class BaseProfile(object):
     # True - Send multiline command at once
     # False - Send multiline command line by line
     batch_send_multiline = True
+    # String to separate MML response header from body
+    mml_header_separator = "\r\n\r\n"
     # Always enclose MML command arguments with quotes
     # False - pass integers as unquoted
     mml_always_quote = False
