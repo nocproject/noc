@@ -2,28 +2,49 @@
 # ----------------------------------------------------------------------
 # Beef management
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import pprint
 import glob
 import os
+import argparse
+# Third-party modules
+import six
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.dev.models.spec import Spec
+from noc.main.models.extstorage import ExtStorage
 
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
+        # collect command
+        collect_parser = subparsers.add_parser("collect")
+        collect_parser.add_argument(
+            "--spec",
+            help="Spec path or URL"
+        )
+        collect_parser.add_argument(
+            "objects",
+            nargs=argparse.REMAINDER,
+            help="Object names or ids"
+        )
         # view command
         view_parser = subparsers.add_parser("view")
         view_parser.add_argument(
-            "beef",
-            nargs=1,
-            help="Beef UUID or path"
+            "--storage",
+            help="External storage name"
+        )
+        view_parser.add_argument(
+            "--path",
+            help="Path name"
         )
         # list command
         list_parser = subparsers.add_parser("list")  # noqa
@@ -45,52 +66,91 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_view(self, beef, *args, **options):
-        b = Beef.load_by_id(beef[0])
-        if not b:
-            self.die("Beef not found: %s" % beef[0])
+    def handle_collect(self, spec, objects, *args, **options):
+        # Get spec data
+        sp = Spec.get_by_name(spec)
+        if not sp:
+            self.die("Invalid spec: '%s'" % spec)
+        # Spec data
+        req = sp.get_spec_request()
+        # Get effective list of managed objects
+        mos = set()
+        for ox in objects:
+            for mo in ManagedObjectSelector.resolve_expression(ox):
+                mos.add(mo)
+        # Collect beefs
+        for mo in mos:
+            self.print("Collecting beef from %s" % mo.name)
+            if mo.profile.name != sp.profile.name:
+                self.print("  Profile mismatch. Skipping")
+                continue
+            if mo.object_profile.beef_policy == "D":
+                self.print("  Collection disabled by policy. Skipping")
+                continue
+            if not mo.object_profile.beef_storage:
+                self.print("  Beef storage is not configured. Skipping")
+                continue
+            if not mo.object_profile.beef_path_template:
+                self.print("  Beef path template is not configured. Skipping")
+                continue
+            storage = mo.object_profile.beef_storage
+            path = mo.object_profile.beef_path_template.render_subject(
+                object=mo,
+                spec=sp
+            )
+            if not path:
+                self.print("  Beef path is empty. Skipping")
+                continue
+            bdata = mo.scripts.get_beef(spec=req)
+            beef = Beef.from_json(bdata)
+            self.print("  Saving to %s:%s" % (storage.name, path))
+            try:
+                cdata, udata = beef.save(storage, path)
+                if cdata == udata:
+                    self.print("  %d bytes written" % cdata)
+                else:
+                    self.print("  %d bytes written (%d uncompressed. Ratio %.2f/1)" % (
+                        cdata, udata, float(udata) / float(cdata)))
+            except IOError as e:
+                self.print("  Failed to save: %s" % e)
+            self.print("  Done")
+
+    def handle_view(self, storage, path, *args, **options):
+        st = ExtStorage.get_by_name(storage)
+        if not st:
+            self.die("Invalid storage '%s'" % storage)
+        if not st.enable_beef:
+            self.die("Storage is not configured for beef")
+        try:
+            beef = Beef.load(st, path)
+        except IOError as e:
+            self.die("Failed to load beef: %s" % e)
         r = [
-            "===[ %s {%s} ]==========" % (b.script, b.uuid),
-            "Platform : %s %s" % (b.vendor, b.platform),
-            "Version  : %s" % b.version,
-            "Date     : %s" % b.date
+            "UUID     : %s" % beef.uuid,
+            "Platform : %s %s Version: %s" % (beef.box.vendor, beef.box.platform,
+                                             beef.box.version),
+            "Spec     : %s" % beef.spec,
+            "Changed  : %s" % beef.changed
         ]
-        if b.input:
-            r += ["---[ Input ]-----------"]
-            r += [pprint.pformat(b.input), ""]
-        if b.result:
-            if (isinstance(b.result, basestring) and
-                    "START OF TRACEBACK" in b.result):
+        if True or beef.description:
+            r += ["Description:\n  %s\n" % beef.description.replace("\n", "\n  ")]
+        r += ["--[CLI FSM]----------"]
+        for c in beef.cli_fsm:
+            r += ["---- State: %s" % c.state]
+            for n, reply in enumerate(c.reply):
                 r += [
-                    "---[ Traceback ]-----------",
-                    b.result,
+                    "-------- Packet #%d" % n,
+                    "%r" % reply
                 ]
-            else:
+        r += ["--[CLI]----------"]
+        for c in beef.cli:
+            r += ["---- Names: %s" % ", ".join(c.names)]
+            r += ["-------- Request: %s" % c.request]
+            for n, reply in enumerate(c.reply):
                 r += [
-                    "---[ Result ]-----------",
-                    pprint.pformat(b.result),
+                    "-------- Packet #%d" % n,
+                    "%r" % reply
                 ]
-        # Dump CLI commands
-        if b.cli:
-            r += [
-                "---[ CLI ]-----------"
-            ]
-            for cmd in b.cli:
-                r += [
-                    "-----> %s" % cmd,
-                    b.cli[cmd],
-                ]
-        # DUMP SNMP GET
-        if b.snmp_get:
-            r += [
-                "---[SNMP GET]---",
-                pprint.pformat(b.snmp_get),
-            ]
-        if b.snmp_getnext:
-            r += [
-                "---[SNMP GETNEXT]---",
-                pprint.pformat(b.snmp_getnext),
-            ]
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
         return
