@@ -13,7 +13,7 @@ import hashlib
 # Third-party modules
 import six
 # NOC modules
-from .fields import BaseField
+from .fields import BaseField, NestedField
 from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
@@ -114,8 +114,14 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def get_fingerprint(cls):
+        field_list = []
+        for f in cls._fields_order:
+            if isinstance(cls._fields[f], NestedField):
+                field_list += ["%s.%s" % (f, nf) for nf in cls._fields[f].field_type._fields_order]
+            else:
+                field_list += [f]
         return "%s.%s" % (cls._get_db_table(),
-                          ".".join(cls._fields_order))
+                          ";".join(field_list))
 
     @classmethod
     def get_short_fingerprint(cls):
@@ -337,3 +343,14 @@ class Model(six.with_metaclass(ModelBase)):
             "duration": dt,
             "sql": sql
         }
+
+
+class NestedModel(Model):
+
+    @classmethod
+    def get_create_sql(cls):
+        return ",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)
+
+    @classmethod
+    def get_fingerprint(cls):
+        return ["%s.%s" % (cls._fields[f].name, f) for f in cls._fields_order]

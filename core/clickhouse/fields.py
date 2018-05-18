@@ -13,11 +13,19 @@ import struct
 
 
 class BaseField(object):
+    """
+    BaseField class for ClickHouse structure
+    """
     FIELD_NUMBER = itertools.count()
     db_type = None
     default_value = ""
 
     def __init__(self, default=None, description=None):
+        """
+
+        :param default: Default field value (if value not set)
+        :param description: Field description
+        """
         self.field_number = self.FIELD_NUMBER.next()
         self.name = None
         self.default = default or self.default_value
@@ -25,18 +33,40 @@ class BaseField(object):
         self.is_agg = False
 
     def get_create_sql(self):
+        """
+        Return query for table create query. Example:
+
+            CounterID UInt32,
+            StartDate Date,
+
+        :return:
+        """
         return "%s %s" % (self.name, self.get_db_type())
 
     def get_db_type(self):
+        """
+        Return Field type. Use it in create query
+        :return:
+        """
         return self.db_type
 
     def to_tsv(self, value):
+        """
+        Use method when field convert to tsv format (ex. export)
+        :param value:
+        :return:
+        """
         if value is None:
             return str(self.default_value)
         else:
             return str(value)
 
     def to_tsv_array(self, value):
+        """
+        Use method when field include in array
+        :param value:
+        :return:
+        """
         return "'%s'" % self.to_tsv(value)
 
 
@@ -200,3 +230,23 @@ class AggregatedField(BaseField):
         return self.f_expr.format(p={"field": self.name,
                                      "function": function,
                                      "f_param": f_param})
+
+
+class NestedField(ArrayField):
+    db_type = "Nested"
+
+    def __init__(self, field_type, description=None, *args):
+        super(NestedField, self).__init__(field_type=field_type, description=description)
+
+    def to_tsv(self, value):
+        out = []
+        for field_type in self.field_type._fields_order:
+            r = ["["]
+            r += [",".join(self.field_type._fields[field_type].to_tsv_array(v[field_type]) for v in value)]
+            r += ["]"]
+            out += ["".join(r)]
+        # r = r[:-1]
+        return "\t".join(out)
+
+    def get_db_type(self):
+        return "Nested (\n%s \n)" % self.field_type.get_create_sql()
