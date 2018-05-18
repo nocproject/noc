@@ -6,15 +6,19 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
+# NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from noc.sa.profiles.Generic.get_metrics import OIDRule
-from noc.core.mib import mib
+from .oidrules.platform import PlatformRule
 from noc.lib.validators import is_ipv4
 
 
 class Script(GetMetricsScript):
     name = "Rotek.RTBS.get_metrics"
-
+    OID_RULES = [
+        PlatformRule
+    ]
     CHECKS = set(["Check | Avail"])
 
     def collect_profile_metrics(self, metrics):
@@ -46,15 +50,3 @@ class Script(GetMetricsScript):
                 if result["success"]:
                     r[("ping", ip, "Check | RTT")] = float(result["avg"])
         return r
-
-
-class PlatformRule(OIDRule):
-    name = "platform"
-
-    def iter_oids(self, script, cfg):
-        ver = script.snmp.get("1.3.6.1.2.1.1.2.0")
-        # check sysObjectID
-        obj = ver.split(".")[-1]
-        oid = mib[self.expand(self.oid, {"platform": obj, "ifIndex": cfg.ifindex})]
-        if oid:
-            yield oid, self.type, self.scale, cfg.path

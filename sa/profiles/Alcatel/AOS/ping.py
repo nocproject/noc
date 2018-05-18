@@ -20,8 +20,8 @@ class Script(BaseScript):
         r"min/avg/max\s+=\s+(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?",
         re.MULTILINE | re.DOTALL)
 
-    def execute(self, address, count=None, source_address=None, size=None, \
-        df=None):
+    def execute(self, address, count=None,
+                source_address=None, size=None, df=None):
 
         cmd = "ping %s" % address
         if count:

@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Alcatel.AOS.get_metrics
+# CounterRule
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from .oidrules.slot import SlotRule
+from .oid import OIDRule
 
 
-class Script(GetMetricsScript):
-    name = "Alcatel.AOS.get_metrics"
-
-    OID_RULES = [
-        SlotRule
-    ]
+class CounterRule(OIDRule):
+    """
+    SNMP OID for SNMP counters
+    """
+    name = "counter"
+    default_type = "counter"
