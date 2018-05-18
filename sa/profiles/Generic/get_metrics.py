@@ -241,6 +241,7 @@ class Script(BaseScript):
     """
     name = "Generic.get_metrics"
     interface = IGetMetrics
+    requires = []
 
     # Define counter types
     GAUGE = "gauge"
