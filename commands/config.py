@@ -15,13 +15,18 @@ from noc.core.management.base import BaseCommand
 class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
-        subparsers.add_parser("dump")
+        dump_parser = subparsers.add_parser("dump")
+        dump_parser.add_argument(
+            "section",
+            help="Print only config section with Name",
+            default=None
+        )
 
     def handle(self, cmd, *args, **options):
         getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_dump(self):
-        config.dump(url="yaml://")
+    def handle_dump(self, *args, **options):
+        config.dump(url="yaml://", section=options.get("section"))
 
 
 if __name__ == "__main__":

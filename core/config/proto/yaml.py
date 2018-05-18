@@ -41,7 +41,7 @@ class YAMLProtocol(BaseProtocol):
         if data:
             self.config.update(data)
 
-    def dump(self):
+    def dump(self, section=None):
         r = ["---"]
         current = []
         for path in self.config:
@@ -50,6 +50,8 @@ class YAMLProtocol(BaseProtocol):
                 continue
             p = path.split(".")
             prefix = p[:-1]
+            if section and p[0] != section:
+                continue
             if prefix != current:
                 # Common part
                 current = [

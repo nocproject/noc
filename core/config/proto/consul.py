@@ -71,5 +71,5 @@ class ConsulProtocol(BaseProtocol):
         ioloop = tornado.ioloop.IOLoop.current()
         ioloop.run_sync(self.load_async)
 
-    def dump(self):
+    def dump(self, section=None):
         raise NotImplementedError
