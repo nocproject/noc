@@ -84,6 +84,7 @@ Ext.define("NOC.dev.quiz.Application", {
                 {
                     name: "questions",
                     xtype: "listform",
+                    fieldLabel: __("Questions"),
                     items: [
                         {
                             name: "name",
