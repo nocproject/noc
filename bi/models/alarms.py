@@ -7,13 +7,14 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.clickhouse.model import Model, NestedModel
 from noc.core.clickhouse.fields import (DateField, DateTimeField,
                                         Int16Field,
                                         Int32Field, Int64Field,
                                         StringField,
                                         Float64Field, ReferenceField,
-                                        IPv4Field)
+                                        IPv4Field, NestedField,
+                                        ArrayField, UInt32Field)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.vendor import Vendor
@@ -28,6 +29,16 @@ from noc.core.bi.dictionaries.pool import Pool
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
+
+
+class Services(NestedModel):
+    profile = StringField(description="Profile")
+    summary = UInt32Field(description="Summary")
+
+
+class Subscribers(NestedModel):
+    profile = StringField(description="Profile")
+    summary = UInt32Field(description="Summary")
 
 
 class Alarms(Model):
@@ -68,6 +79,8 @@ class Alarms(Model):
     # Coordinates
     x = Float64Field(description=_("Longitude"))
     y = Float64Field(description=_("Latitude"))
+    services = NestedField(Services, description="Services")
+    subscribers = NestedField(Subscribers, description="Subscribers")
 
     @classmethod
     def transform_query(cls, query, user):
