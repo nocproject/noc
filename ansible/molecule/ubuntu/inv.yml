@@ -725,7 +725,7 @@ all:
           syslogcollector_loglevel: info
           syslogcollector_power: 1
           syslogcollector_permit_firewall: 1
-          tower_data: ./
+          tower_data: /tmp/dist
           tower_ssh_keys: /opt/tower/var/tower/ssh/NOC
           trapcollector_listen_traps: 0.0.0.0:162
           trapcollector_loglevel: info
