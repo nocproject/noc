@@ -21,6 +21,7 @@
             state: directory
             owner: root
             group: root
+          connection: local
 
         - name: install minio client
           become: false
