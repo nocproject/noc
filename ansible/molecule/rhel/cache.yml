@@ -15,7 +15,7 @@
         - name: upload pip cache
           command: /tmp/mc mirror {{pip_cache_dir}} {{minio_bucket}}/pip
 
-        - name: upload apt cache
+        - name: upload pkg cache
           command: /tmp/mc mirror {{pkg_cache_dir}} {{minio_bucket}}/pkgs
 
       when: use_cache
