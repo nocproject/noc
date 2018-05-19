@@ -11,9 +11,14 @@
     - block:
         - name: upload pip cache
           shell: /tmp/mc mirror $PIP_CACHE myminio/{{inventory_hostname | replace('_','-')}}/pip
+          ignore_errors: true
+          failed_when: false  #waiting for https://github.com/metacloud/molecule/issues/1304
 
         - name: upload apt cache
           shell: /tmp/mc mirror $PKG_CACHE myminio/{{inventory_hostname | replace('_','-')}}/pkgs
+          ignore_errors: true
+          failed_when: false  #waiting for https://github.com/metacloud/molecule/issues/1304
+
       when: use_cache
 
 - name: Destroy
