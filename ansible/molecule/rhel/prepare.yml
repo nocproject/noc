@@ -8,38 +8,38 @@
       set_fact:
         use_cache: "{{ lookup('env','USE_CACHE') or True | bool }}"
     - block:
-      - name: install minio client
-        become: false
-        get_url:
-          url: https://dl.minio.io/client/mc/release/linux-amd64/mc
-          dest: /tmp/dist/mc
-        connection: local
+        - name: install minio client
+          become: false
+          get_url:
+            url: https://dl.minio.io/client/mc/release/linux-amd64/mc
+            dest: /tmp/dist/mc
+          connection: local
 
-      - name: upload mc client to node
-        copy:
-          src: /tmp/dist/mc
-          dest: /tmp/mc
-          mode: 0755
+        - name: upload mc client to node
+          copy:
+            src: /tmp/dist/mc
+            dest: /tmp/mc
+            mode: 0755
 
-      - name: config cache url
-        shell: /tmp/mc config host add myminio $MINIO_URL $MINIO_KEY $MINIO_SECRET
+        - name: config cache url
+          shell: /tmp/mc config host add myminio $MINIO_URL $MINIO_KEY $MINIO_SECRET
 
-      - name: create minio bucket
-        command: /tmp/mc mb "myminio/{{inventory_hostname | replace('_','-')}}"
-        ignore_errors: true
-        failed_when: false
+        - name: create minio bucket
+          command: /tmp/mc mb "myminio/{{inventory_hostname | replace('_','-')}}"
+          ignore_errors: true
+          failed_when: false
 
-      - name: create cache dir
-        file:
-          path: "{{ lookup('env','PIP_CACHE') }}"
-          state: directory
-          owner: root
-          group: root
+        - name: create cache dir
+          file:
+            path: "{{ lookup('env','PIP_CACHE') }}"
+            state: directory
+            owner: root
+            group: root
 
-      - name: download pip cache
-        shell: /tmp/mc mirror myminio/{{inventory_hostname | replace('_','-')}}/pip $PIP_CACHE
+        - name: download pip cache
+          shell: /tmp/mc mirror myminio/{{inventory_hostname | replace('_','-')}}/pip $PIP_CACHE
 
-      - name: download pkg cache
-        shell: /tmp/mc mirror "myminio/{{inventory_hostname | replace('_','-')}}/pkgs" $PKG_CACHE
+        - name: download pkg cache
+          shell: /tmp/mc mirror "myminio/{{inventory_hostname | replace('_','-')}}/pkgs" $PKG_CACHE
 
       when: use_cache
