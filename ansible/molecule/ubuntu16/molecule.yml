@@ -46,7 +46,7 @@ provisioner:
   lint:
     name: ansible-lint
 scenario:
-  name: ubuntu
+  name: ubuntu16
   test_sequence:
     - destroy
     - create
