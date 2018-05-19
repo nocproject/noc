@@ -37,24 +37,24 @@
             mode: 0755
 
         - name: config cache url
-          command: /tmp/mc config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}
+          command: "/tmp/mc config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}"
 
         - name: create minio bucket
-          command: /tmp/mc mb "{{ minio_bucket }}"
+          command: "/tmp/mc mb {{ minio_bucket }}"
           ignore_errors: true
           failed_when: false
 
         - name: create cache dir
           file:
-            path: {{ pip_cache_dir }}
+            path: "{{ pip_cache_dir }}"
             state: directory
             owner: root
             group: root
 
         - name: download pip cache
-          command: /tmp/mc mirror {{ minio_bucket }}/pip {{ pip_cache_dir }}
+          command: "/tmp/mc mirror {{ minio_bucket }}/pip {{ pip_cache_dir }}"
 
         - name: download pkg cache
-          command: /tmp/mc mirror "{{ minio_bucket }}/pkgs" {{pkg_cache_dir}}
+          command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}}"
 
       when: use_cache
