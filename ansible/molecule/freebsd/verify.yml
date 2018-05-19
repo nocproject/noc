@@ -27,3 +27,5 @@
       command: "{{ goss_dst }} -g {{ item }} validate"
       register: test_results
       with_items: "{{ test_files.stdout_lines }}"
+      ignore_errors: true
+      failed_when: false
