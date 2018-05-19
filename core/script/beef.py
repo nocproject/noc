@@ -71,7 +71,7 @@ class Beef(object):
         self.cli = [
             CLI(
                 names=[n for n in self.get_or_die(d, "names")],
-                request=self.get_or_die(d, "request"),
+                request=str(self.get_or_die(d, "request")),
                 reply=[str(n) for n in self.get_or_die(d, "reply")]
             ) for d in self.get_or_die(data, "cli")
         ]
@@ -173,13 +173,53 @@ class Beef(object):
         :param path:
         :return:
         """
-        try:
-            with storage.open_fs() as fs:
-                data = fs.getbytes(unicode(path))
-        except storage.Error as e:
-            raise IOError(str(e))
+        if isinstance(storage, six.string_types):
+            # Load from URL
+            from fs import open_fs
+            from fs.errors import FSError
+            try:
+                with open_fs(storage) as fs:
+                    data = fs.getbytes(unicode(path))
+            except FSError as e:
+                raise IOError(str(e))
+        else:
+            # Load from external storage
+            try:
+                with storage.open_fs() as fs:
+                    data = fs.getbytes(unicode(path))
+            except storage.Error as e:
+                raise IOError(str(e))
         if path.endswith(".gz"):
             data = cls.decompress_gzip(data)
         elif path.endswith(".json.bz2"):
             data = cls.decompress_bz2(data)
         return Beef.from_json(data)
+
+    def iter_fsm_state_reply(self, state):
+        """
+        Iterate fsm states
+        :param state:
+        :return:
+        """
+        for fsm in self.cli_fsm:
+            if fsm.state == state:
+                for reply in fsm.reply:
+                    yield reply
+                break
+
+    def iter_cli_reply(self, command):
+        """
+        Iterate fsm states
+        :param state:
+        :return:
+        """
+        cmd = str(command.rstrip())
+        found = False
+        for c in self.cli:
+            if c.request == cmd:
+                for reply in c.reply:
+                    yield reply
+                found = True
+                break
+        if not found:
+            raise KeyError

@@ -105,7 +105,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
 
     cli_protocols = {
         "telnet": "noc.core.script.cli.telnet.TelnetCLI",
-        "ssh": "noc.core.script.cli.ssh.SSHCLI"
+        "ssh": "noc.core.script.cli.ssh.SSHCLI",
+        "beef": "noc.core.script.cli.beef.BeefCLI"
     }
 
     def __init__(self, service, credentials,
@@ -961,6 +962,27 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         for state in self.cli_fsm_tracked_data:
             yield state, self.cli_fsm_tracked_data[state]
 
+    def request_beef(self):
+        """
+        Download and return beef
+        :return:
+        """
+        if not hasattr(self, "_beef"):
+            self.logger.debug("Requesting beef")
+            beef_storage_url = self.credentials.get("beef_storage_url")
+            beef_path = self.credentials.get("beef_path")
+            if not beef_storage_url:
+                self.logger.debug("No storage URL")
+                self._beef = None
+                return None
+            if not beef_path:
+                self.logger.debug("No beef path")
+                self._beef = None
+                return None
+            from .beef import Beef
+            beef = Beef.load(beef_storage_url, beef_path)
+            self._beef = beef
+        return self._beef
 
 class ScriptsHub(object):
     """

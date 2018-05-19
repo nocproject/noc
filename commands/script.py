@@ -17,6 +17,7 @@ import ujson
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
 from noc.core.script.loader import loader
+from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF
 
 
 class Command(BaseCommand):
@@ -155,17 +156,24 @@ class Command(BaseCommand):
         if creds.snmp_ro:
             credentials["snmp_version"] = "v2c"
             credentials["snmp_ro"] = creds.snmp_ro
-        if obj.scheme in (1, 2):
-            credentials["cli_protocol"] = {
-                1: "telnet",
-                2: "ssh"
-            }[obj.scheme]
+        if obj.scheme in CLI_PROTOCOLS:
+            credentials["cli_protocol"] = PROTOCOLS[obj.scheme]
             if obj.port:
                 credentials["cli_port"] = obj.port
-        elif obj.scheme in (3, 4):
-            credentials["http_protocol"] = "https" if obj.scheme == 4 else "http"
+        elif obj.scheme in HTTP_PROTOCOLS:
+            credentials["http_protocol"] = PROTOCOLS[obj.scheme]
             if obj.port:
                 credentials["http_port"] = obj.port
+        if (
+            obj.scheme == BEEF and
+            obj.object_profile.beef_storage and
+            obj.object_profile.beef_path_template
+        ):
+            beef_path = obj.object_profile.beef_path_template.render_subject(object=obj)
+            if beef_path:
+                credentials["beef_storage_url"] = obj.object_profile.beef_storage.url
+                credentials["beef_path"] = beef_path
+        print credentials
         return credentials
 
     rx_arg = re.compile(

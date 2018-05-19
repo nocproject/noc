@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.sa.managedobject.Lookup
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.SchemeLookupField");
@@ -15,6 +15,8 @@ Ext.define("NOC.sa.managedobject.SchemeLookupField", {
     store: [
         [1, "TELNET"],
         [2, "SSH"],
-        [3, "HTTP"]
+        [3, "HTTP"],
+        [4, "HTTPS"],
+        [5, "Beef"]
     ]
 });
