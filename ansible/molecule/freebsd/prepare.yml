@@ -22,6 +22,8 @@
             owner: root
             group: wheel
           connection: local
+          vars:
+            ansible_python_interpreter: /usr/bin/python
 
         - name: install minio client
           pkgng:
