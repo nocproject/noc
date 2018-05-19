@@ -13,9 +13,9 @@
 
     - block:
         - name: upload pip cache
-          command: minio-client mirror {{pip_cache_dir}} {{minio_bucket}}/pip
+          command: minio-client mirror {{pip_cache_dir}} {{minio_bucket}}/pip --overwrite
 
-        - name: upload apt cache
-          command: minio-client mirror {{pkg_cache_dir}} {{minio_bucket}}/pkgs
+        - name: upload pkg cache
+          command: minio-client mirror {{pkg_cache_dir}} {{minio_bucket}}/pkgs --overwrite
 
       when: use_cache
