@@ -62,8 +62,6 @@ pip_ldflags: "-L/usr/local/lib"
 nsd_log_dir: /var/log/nsq
 nsq_root: /usr/local/nsq
 
-ch_log_dir: /var/log/clickhouse
-ch_data_dir: /var/db/clickhouse
 
 fake_shell: /sbin/nologin
 
