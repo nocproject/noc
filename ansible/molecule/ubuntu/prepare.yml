@@ -8,6 +8,14 @@
       set_fact:
         use_cache: "{{ lookup('env','USE_CACHE') or True | bool }}"
     - block:
+        - name: create dist dir
+          file:
+            path: /tmp/dist/
+            state: directory
+            owner: root
+            group: root
+          connection: local
+
         - name: install minio client
           become: false
           get_url:
