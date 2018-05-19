@@ -10,6 +10,18 @@
     http_proxy: "{{http_proxy}}"
     LC_ALL: C
 
+- name: Install wheel
+  pip:
+    name: wheel
+    chdir: "{{noc_root}}"
+    virtualenv: "{{noc_root}}"
+    state: present
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
 - name: Fix broken PIP versions
   command: "{{ noc_root }}/scripts/deploy/fix-pip"
   args:
