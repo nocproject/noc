@@ -1,0 +1,18 @@
+---
+- name: Upload cache
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: export use_cache var
+      set_fact:
+        use_cache: "{{ lookup('env','USE_CACHE') or True | bool }}"
+
+    - block:
+        - name: upload pip cache
+          shell: /tmp/mc mirror $PIP_CACHE myminio/{{inventory_hostname | replace('_','-')}}/pip
+
+        - name: upload apt cache
+          shell: /tmp/mc mirror $PKG_CACHE myminio/{{inventory_hostname | replace('_','-')}}/pkgs
+
+      when: use_cache

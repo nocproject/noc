@@ -36,6 +36,7 @@ provisioner:
     ANSIBLE_FORCE_COLOR: "True"
   playbooks:
     converge: playbook.yml
+    side_effect: cache.yml
   options:
     i: inv.yml
     e: tower_dist_dir=/tmp
@@ -49,6 +50,7 @@ scenario:
     - prepare
     - converge
     - verify
+    - side_effect
     - destroy
 verifier:
   name: goss
