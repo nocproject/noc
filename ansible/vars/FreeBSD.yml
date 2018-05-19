@@ -68,6 +68,9 @@ ch_data_dir: /var/db/clickhouse
 fake_shell: /sbin/nologin
 
 clickhouse_service_name: clickhouse
+ch_log_dir: /var/log/clickhouse-server
+ch_data_dir: /var/lib/clickhouse
+ch_run_dir: /var/run/clickhouse
 
 pgbouncer_user: pgbouncer
 pgbouncer_path_pid: /var/run/pgbouncer
