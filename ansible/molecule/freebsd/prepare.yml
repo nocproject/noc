@@ -24,23 +24,14 @@
           connection: local
 
         - name: install minio client
-          become: false
-          get_url:
-            url: https://dl.minio.io/client/mc/release/linux-amd64/mc
-            dest: /tmp/dist/mc
-          connection: local
-
-        - name: upload mc client to node
-          copy:
-            src: /tmp/dist/mc
-            dest: /tmp/mc
-            mode: 0755
+          pkg_ng:
+            name: minio-client
 
         - name: config cache url
-          command: "/tmp/mc config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}"
+          command: "minio-client config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}"
 
         - name: create minio bucket
-          command: "/tmp/mc mb {{ minio_bucket }}"
+          command: "minio-client mb {{ minio_bucket }}"
           ignore_errors: true
           failed_when: false
 
@@ -52,9 +43,9 @@
             group: root
 
         - name: download pip cache
-          command: "/tmp/mc mirror {{ minio_bucket }}/pip {{ pip_cache_dir }}"
+          command: "minio-client mirror {{ minio_bucket }}/pip {{ pip_cache_dir }}"
 
         - name: download pkg cache
-          command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}}"
+          command: "minio-client mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}}"
 
       when: use_cache

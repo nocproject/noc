@@ -13,9 +13,9 @@
 
     - block:
         - name: upload pip cache
-          command: /tmp/mc mirror {{pip_cache_dir}} {{minio_bucket}}/pip
+          command: minio-client mirror {{pip_cache_dir}} {{minio_bucket}}/pip
 
         - name: upload apt cache
-          command: /tmp/mc mirror {{pkg_cache_dir}} {{minio_bucket}}/pkgs
+          command: minio-client mirror {{pkg_cache_dir}} {{minio_bucket}}/pkgs
 
       when: use_cache
