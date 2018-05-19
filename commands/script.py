@@ -173,7 +173,6 @@ class Command(BaseCommand):
             if beef_path:
                 credentials["beef_storage_url"] = obj.object_profile.beef_storage.url
                 credentials["beef_path"] = beef_path
-        print credentials
         return credentials
 
     rx_arg = re.compile(

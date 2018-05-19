@@ -12,8 +12,6 @@ import pprint
 import glob
 import os
 import argparse
-# Third-party modules
-import six
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
@@ -127,8 +125,11 @@ class Command(BaseCommand):
             self.die("Failed to load beef: %s" % e)
         r = [
             "UUID     : %s" % beef.uuid,
-            "Platform : %s %s Version: %s" % (beef.box.vendor, beef.box.platform,
-                                             beef.box.version),
+            "Platform : %s %s Version: %s" % (
+                beef.box.vendor,
+                beef.box.platform,
+                beef.box.version
+            ),
             "Spec     : %s" % beef.spec,
             "Changed  : %s" % beef.changed
         ]

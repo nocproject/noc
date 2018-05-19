@@ -984,6 +984,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             self._beef = beef
         return self._beef
 
+
 class ScriptsHub(object):
     """
     Object representing Script.scripts structure.
