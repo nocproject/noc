@@ -20,11 +20,11 @@
             path: /tmp/dist/
             state: directory
             owner: root
-            group: root
+            group: wheel
           connection: local
 
         - name: install minio client
-          pkg_ng:
+          pkgng:
             name: minio-client
 
         - name: config cache url
@@ -40,7 +40,6 @@
             path: "{{ pip_cache_dir }}"
             state: directory
             owner: root
-            group: root
 
         - name: download pip cache
           command: "minio-client mirror {{ minio_bucket }}/pip {{ pip_cache_dir }}"
