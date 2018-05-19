@@ -9,7 +9,7 @@
         use_cache: "{{ lookup('env','USE_CACHE') or True | bool }}"
         minio_url: "{{ lookup('env','MINIO_URL') }}"
         minio_key: "{{ lookup('env','MINIO_KEY') }}"
-        minio_secret:  "{{ lookup('env','MINIO_SECRET') }}"
+        minio_secret: "{{ lookup('env','MINIO_SECRET') }}"
         minio_bucket: "myminio/{{inventory_hostname | replace('_','-')}}"
         pip_cache_dir: "{{ lookup('env','PIP_CACHE') }}"
         pkg_cache_dir: "{{ lookup('env','PKG_CACHE') }}"
