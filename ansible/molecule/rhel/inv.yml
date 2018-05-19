@@ -34,7 +34,6 @@ all:
           clickhouse_ro_password: noc
           clickhouse_user: noc
           config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
-          consul_address: 10.0.2.15
           consul_master_token: null
           consul_power: bootstrap
           consul_replication_token: null
@@ -117,7 +116,6 @@ all:
           mongod_rs: noc
           mongod_user: noc
           mongod_version: 3.4
-          mongo_listen_addr: 10.0.2.15
           mrt_loglevel: info
           mrt_max_concurrency: 50
           mrt_power: 2
@@ -217,6 +215,7 @@ all:
           noc_dc: DC
           noc_env: NOC
           noc_env_type: eval
+          noc_web_host: noc_node_rhel7
           noc_group: noc
           noc_installation_name: Unconfigured installation
           noc_python_interpreter: python
@@ -689,7 +688,6 @@ all:
               pool: null
           noc_user: noc
           noc_version: microservices
-          noc_web_host: 10.0.2.15
           node_id: 1
           nsqd_max_messages_in_memory: 10000
           nsqd_max_msg_size: 1048576
@@ -712,7 +710,6 @@ all:
           postgres_replicator_password: noc
           postgres_superuser_password: noc
           postgres_version: 9.6
-          postgres_listen_address: 10.0.2.15
           required_assets:
             - web
             - mib
