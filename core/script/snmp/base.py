@@ -20,6 +20,8 @@ from noc.core.error import NOCError, ERR_SNMP_TIMEOUT, ERR_SNMP_FATAL_TIMEOUT
 
 
 class SNMP(object):
+    name = "snmp"
+
     class TimeOutError(NOCError):
         default_code = ERR_SNMP_TIMEOUT
         default_msg = "SNMP Timeout"
@@ -34,7 +36,7 @@ class SNMP(object):
         self.script = script
         self.ioloop = None
         self.result = None
-        self.logger = PrefixLoggerAdapter(script.logger, "snmp")
+        self.logger = PrefixLoggerAdapter(script.logger, self.name)
         self.timeouts_limit = 0
         self.timeouts = 0
         self.socket = None

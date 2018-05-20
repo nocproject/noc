@@ -19,6 +19,7 @@ from functools import reduce
 import six
 # NOC modules
 from .snmp.base import SNMP
+from .snmp.beef import BeefSNMP
 from .http.base import HTTP
 from noc.core.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
@@ -139,6 +140,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         self.cli_stream = None
         if self.parent:
             self.snmp = self.root.snmp
+        elif self.is_beefed:
+            self.snmp = BeefSNMP(self)
         else:
             self.snmp = SNMP(self)
         self.http = HTTP(self)
@@ -983,6 +986,10 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             beef = Beef.load(beef_storage_url, beef_path)
             self._beef = beef
         return self._beef
+
+    @property
+    def is_beefed(self):
+        return self.credentials.get("cli_protocol") == "beef"
 
 
 class ScriptsHub(object):

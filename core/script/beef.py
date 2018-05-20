@@ -9,6 +9,8 @@
 # Python modules
 import os
 from collections import namedtuple
+import bisect
+import itertools
 # Third-party modules
 import ujson
 import six
@@ -31,6 +33,8 @@ class Beef(object):
         self.cli = None
         self.mib = None
         self.mib_encoding = None
+        self.mib_oid_values = None
+        self.mib_oids = None
 
     @classmethod
     def from_json(cls, data):
@@ -82,6 +86,7 @@ class Beef(object):
                 value=self.get_or_die(d, "value")
             ) for d in self.get_or_die(data, "mib")
         ]
+        self._mib_decoder = getattr(self, "mib_decode_%s" % self.mib_encoding)
 
     def get_data(self):
         return {
@@ -104,10 +109,10 @@ class Beef(object):
                 "request": d.request,
                 "reply": d.reply
             } for d in self.cli],
-            "mib_encoding": "base64",
+            "mib_encoding": self.mib_encoding,
             "mib": [{
                 "oid": d.oid,
-                "value": d.value.encode("base64").strip()
+                "value": d.value
             } for d in self.mib]
         }
 
@@ -223,3 +228,62 @@ class Beef(object):
                 break
         if not found:
             raise KeyError
+
+    @staticmethod
+    def mib_decode_base64(value):
+        """
+        Decode base64
+        :param value:
+        :return:
+        """
+        return value.decode("base64")
+
+    @staticmethod
+    def mib_decode_hex(value):
+        """
+        Decode base64
+        :param value:
+        :return:
+        """
+        return value.decode("hex")
+
+    def get_mib_oid_values(self):
+        if self.mib_oid_values is None:
+            self.mib_oid_values = dict(
+                (m.oid, m.value) for m in self.mib
+            )
+        return self.mib_oid_values
+
+    def get_mib_value(self, oid):
+        """
+        Lookup mib and return oid value
+        :param oid:
+        :return: Binary OID data or None
+        """
+        v = self.get_mib_oid_values().get(oid)
+        if v is None:
+            return None
+        return self._mib_decoder(v)
+
+    def get_mib_oids(self):
+        """
+        Return sorted list of MIB oids
+        :return:
+        """
+        if self.mib_oids is None:
+            self.mib_oids = sorted(
+                (tuple(int(c) for c in m.oid.split(".")) for m in self.mib)
+            )
+        return self.mib_oids
+
+    def iter_mib_oids(self, oid):
+        """
+        Generator yielding all consequentive oids
+        :param oid:
+        :return:
+        """
+        start = tuple(int(c) for c in oid.split("."))
+        oids = self.get_mib_oids()
+        i = bisect.bisect_left(oids, start)
+        for o in itertools.islice(oids, i, len(oids)):
+            yield ".".join(str(c) for c in o)
