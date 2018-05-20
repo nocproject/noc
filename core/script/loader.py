@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Script loader
-#----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -15,8 +16,8 @@ import threading
 import os
 import re
 # NOC modules
-from base import BaseScript
 from noc.core.profile.loader import GENERIC_PROFILE
+from .base import BaseScript
 
 logger = logging.getLogger(__name__)
 
@@ -179,6 +180,7 @@ class ScriptLoader(object):
         if not self.all_scripts:
             self.find_scripts()
         return name in self.all_scripts
+
 
 # Create singleton object
 loader = ScriptLoader()
