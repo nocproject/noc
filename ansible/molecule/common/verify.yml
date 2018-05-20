@@ -24,9 +24,9 @@
       shell: "ls {{ goss_test_directory }}/*.yml"
       register: test_files
 
-    - name: sleep for 20 secs to noc finishes start
+    - name: sleep for 60 secs to noc finish start
       pause:
-        seconds: 20
+        seconds: 60
 
     - name: Execute Goss tests
       command: "{{ goss_dst }} -g {{ item }} validate --format {{ goss_format }}"
