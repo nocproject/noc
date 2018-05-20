@@ -47,7 +47,7 @@ class SAEAPI(API):
             ap.snmp_ro, ap.snmp_rw,
             mo.cli_privilege_policy, mop.cli_privilege_policy,
             mo.access_preference, mop.access_preference,
-            mop.beef_storage, mop.beef_path_template
+            mop.beef_storage, mop.beef_path_template_id
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
