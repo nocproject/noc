@@ -17,7 +17,7 @@ from tornado.concurrent import TracebackFuture
 from noc.core.snmp.ber import BERDecoder, BEREncoder
 from noc.core.snmp.consts import (PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
                                   PDU_GETBULK_REQUEST, PDU_RESPONSE)
-from noc.core.snmp.error import NO_ERROR
+from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME
 from .base import SNMP
 
 
@@ -110,7 +110,10 @@ class BeefSNMP(SNMP):
             v = beef.get_mib_value(oid[0])
             if v is None:
                 # @todo: Error index
-                pass
+                if not err_index:
+                    err_index = n + 1
+                    err_status = NO_SUCH_NAME
+                    v = "\x80"  # Missed instance
             r += [(oid[0], v)]
         return err_status, err_index, r
 
