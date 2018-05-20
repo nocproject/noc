@@ -48,6 +48,7 @@ class ScriptLoader(object):
                 except Exception as e:
                     logger.error("Error in script name \"%s\": %s", name, e)
                     return None
+                is_generic = False
                 if os.path.exists(
                         os.path.join(
                             "custom", "sa", "profiles", vendor, system,
@@ -67,6 +68,7 @@ class ScriptLoader(object):
                 else:
                     # Generic script
                     module_name = "noc.sa.profiles.Generic.%s" % sn
+                    is_generic = True
                 try:
                     sm = __import__(module_name, {}, {}, "*")
                     for n in dir(sm):
@@ -76,7 +78,13 @@ class ScriptLoader(object):
                             issubclass(o, BaseScript) and
                             o.__module__ == sm.__name__
                         ):
-                            script = o
+                            if is_generic:
+                                # Create subclass with proper name
+                                script = type("Script", (o,), {
+                                    "name": name
+                                })
+                            else:
+                                script = o
                             break
                     if not script:
                         logger.error("Script not found: %s", name)

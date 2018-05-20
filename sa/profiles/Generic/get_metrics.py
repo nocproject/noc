@@ -578,6 +578,7 @@ class Script(BaseScript):
          "Interface | DOM | Temperature", "Interface | DOM | TxPower",
          "Interface | DOM | Voltage"],
         has_capability="DB | Interfaces",
+        has_script="get_dom_status",
         access="C",  # CLI version
         volatile=False
     )
