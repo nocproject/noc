@@ -1,0 +1,42 @@
+---
+- name: expose vars to playbook
+  set_fact:
+    minio_url: "{{ lookup('env','MINIO_URL') }}"
+    minio_key: "{{ lookup('env','MINIO_KEY') }}"
+    minio_secret: "{{ lookup('env','MINIO_SECRET') }}"
+    minio_bucket: "myminio/{{inventory_hostname | replace('_','-')}}"
+    pip_cache_dir: "{{ lookup('env','PIP_CACHE') }}"
+    pkg_cache_dir: "{{ lookup('env','PKG_CACHE') }}"
+
+- name: create dist dir
+  file:
+    path: /tmp/dist/
+    state: directory
+    owner: root
+  connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python
+
+- name: install minio client
+  pkgng:
+    name: minio-client
+
+- name: config cache url
+  command: "minio-client config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}"
+
+- name: create minio bucket
+  command: "minio-client mb {{ minio_bucket }}"
+  ignore_errors: true
+  failed_when: false
+
+- name: create cache dir
+  file:
+    path: "{{ pip_cache_dir }}"
+    state: directory
+    owner: root
+
+- name: download pip cache
+  command: "minio-client mirror {{ minio_bucket }}/pip {{ pip_cache_dir }} --overwrite"
+
+- name: download pkg cache
+  command: "minio-client mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}} --overwrite"

@@ -38,7 +38,11 @@ provisioner:
     MINIO_KEY: $MINIO_KEY
     MINIO_SECRET: $MINIO_SECRET
   playbooks:
-    converge: playbook.yml
+    create: ../common/create.yml
+    prepare: prepare.yml
+    converge: ../common/playbook.yml
+    verify: verify.yml
+    destroy: ../common/destroy.yml
     side_effect: cache.yml
   options:
     i: inv.yml

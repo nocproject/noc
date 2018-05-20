@@ -1,0 +1,6 @@
+---
+- import_playbook: ../../pre.yml
+
+- import_playbook: tower.yml
+
+- import_playbook: ../../post.yml

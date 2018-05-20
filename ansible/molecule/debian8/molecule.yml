@@ -38,8 +38,12 @@ provisioner:
     MINIO_KEY: $MINIO_KEY
     MINIO_SECRET: $MINIO_SECRET
   playbooks:
-    converge: playbook.yml
-    side_effect: cache.yml
+    create: ../common/create.yml
+    prepare: ../common/prepare.yml
+    converge: ../common/playbook.yml
+    verify: ../common/verify.yml
+    side_effect: ../common/cache.yml
+    destroy: ../common/destroy.yml
   options:
     i: inv.yml
     e: tower_dist_dir=/tmp
