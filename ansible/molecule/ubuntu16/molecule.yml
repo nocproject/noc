@@ -18,8 +18,8 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: noc_node_freebsd11
-    template: packer-freebsd11
+  - name: noc_node_ubuntu16
+    template: packer-ubuntu16
     memory: 3072
     cpu: 2
 provisioner:
@@ -39,18 +39,18 @@ provisioner:
     MINIO_SECRET: $MINIO_SECRET
   playbooks:
     create: ../common/create.yml
-    prepare: prepare.yml
+    prepare: ../common/prepare.yml
     converge: ../common/playbook.yml
-    verify: verify.yml
+    verify: ../common/verify.yml
+    side_effect: ../common/cache.yml
     destroy: ../common/destroy.yml
-    side_effect: cache.yml
   options:
     i: inv.yml
     e: tower_dist_dir=/tmp
   lint:
     name: ansible-lint
 scenario:
-  name: freebsd
+  name: ubuntu16
   test_sequence:
     - destroy
     - create

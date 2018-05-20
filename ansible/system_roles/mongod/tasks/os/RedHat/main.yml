@@ -32,7 +32,9 @@
 
 - name: Clean Mongodb repo cache
   shell: yum clean all --enablerepo=mongodb
-  when: mongo_repo_stat.changed
+  when:
+    - mongo_repo_stat.changed
+    - molecule_yml is not defined
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

@@ -26,8 +26,4 @@
     owner: clickhouse
     recurse: "True"
   with_items:
-    - "{{ch_etc_path}}"
-    - "{{ch_log_dir}}"
-    - "{{ch_data_dir}}"
-    - "{{ch_big_query_dir}}"
-    - "{{ch_dictionaries_path}}"
+    - "{{ ch_run_dir }}"

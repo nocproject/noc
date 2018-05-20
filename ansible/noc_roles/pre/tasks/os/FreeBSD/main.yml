@@ -1,7 +1,10 @@
 ---
 - name: Setting hostname in rc.conf
   become: "True"
-  lineinfile: dest=/etc/rc.conf regexp=^hostname= line="hostname=\"{{ ansible_nodename }}\""
+  lineinfile:
+    dest: /etc/rc.conf
+    regexp: "^hostname="
+    line: "hostname=\"{{ ansible_nodename }}\""
   tags:
     - config
 
@@ -19,10 +22,12 @@
   tags:
     - requirements
 
-#- name: Update hostname
-#  command: hostname {{ ansible_nodename }}
-#  tags:
-#    - config
+- name: Update hostname
+  become: "True"
+  hostname:
+    name: "{{ inventory_hostname }}"
+  tags:
+    - config
 
 - name: create dirs
   become: "True"
