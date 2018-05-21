@@ -32,6 +32,18 @@ class MMLBase(object):
     CONNECT_RETRIES = config.activator.connect_retries
     # Timeout after immediate disconnect
     CONNECT_TIMEOUT = config.activator.connect_timeout
+    # compiled capabilities
+    HAS_TCP_KEEPALIVE = hasattr(socket, "SO_KEEPALIVE")
+    HAS_TCP_KEEPIDLE = hasattr(socket, "TCP_KEEPIDLE")
+    HAS_TCP_KEEPINTVL = hasattr(socket, "TCP_KEEPINTVL")
+    HAS_TCP_KEEPCNT = hasattr(socket, "TCP_KEEPCNT")
+    HAS_TCP_NODELAY = hasattr(socket, "TCP_NODELAY")
+    # Time until sending first keepalive probe
+    KEEP_IDLE = 10
+    # Keepalive packets interval
+    KEEP_INTVL = 10
+    # Terminate connection after N keepalive failures
+    KEEP_CNT = 3
 
     def __init__(self, script, tos=None):
         self.script = script
@@ -46,6 +58,7 @@ class MMLBase(object):
         self.error = None
         self.is_closed = False
         self.close_timeout = None
+        self.current_timeout = None
         self.tos = tos
         self.rx_mml_end = re.compile(self.script.profile.pattern_mml_end, re.MULTILINE)
         if self.script.profile.pattern_mml_continue:
@@ -181,7 +194,7 @@ class MMLBase(object):
             if code:
                 # MML Error
                 self.result = ""
-                self.error = MMLError("%s (%s)" % (msg, code))
+                self.error = MMLError("%s (code=%s)" % (msg, code))
                 raise tornado.gen.Return(None)
             # Process continuation
             if self.rx_mml_continue:
