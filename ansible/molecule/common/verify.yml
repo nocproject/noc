@@ -26,7 +26,7 @@
 
     - name: sleep for 60 secs to noc finish start
       pause:
-        seconds: 1
+        seconds: 60
 
     - name: Execute Goss tests
       command: "{{ goss_dst }} -g {{ item }} validate --format {{ goss_format }}"
