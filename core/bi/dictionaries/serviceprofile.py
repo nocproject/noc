@@ -19,4 +19,3 @@ class ServiceProfile(Dictionary):
     name = StringField()
     desription = StringField()
     glyph = StringField()
-
