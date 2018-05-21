@@ -1,0 +1,82 @@
+---
+- name: Add MongoDB repository
+  yum_repository:
+    name: mongodb
+    description: MongoDB Repository
+    baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongod_version }}/x86_64/
+    gpgcheck: "True"
+    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc
+    enabled: "True"
+  register: mongo_repo_stat
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
+- name: Disable Transparent Hugepages (bootloader)
+  template:
+    src: "os/RedHat/etc/grub.d/50_disable_transparent_hugepages.j2"
+    dest: /etc/grub.d/50_disable_transparent_hugepages
+  register: dht_status
+
+- name: Disable Transparent Hugepages (runtime)
+  shell: |
+    if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+    echo never > /sys/kernel/mm/transparent_hugepage/defrag;
+    fi
+  when: dht_status.changed
+  notify: restart mongod
+
+- name: Clean Mongodb repo cache
+  shell: yum clean all --enablerepo=mongodb
+  when:
+    - mongo_repo_stat.changed
+    - molecule_yml is not defined
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+
+- name: ReInstall MongoDB on version change
+  yum:
+    name: "{{item}}"
+    state: latest
+    update_cache: "True"
+  when: mongo_repo_stat.changed
+  with_items:
+    - mongodb-org
+    - mongodb-org-server
+    - mongodb-org-shell
+    - mongodb-org-tools
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+
+- name: Install MongoDB
+  yum:
+    name: mongodb-org
+    state: present
+    update_cache: "True"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+
+- name: Copy mongod service file
+  template:
+    src: etc/systemd/system/mongod.service.j2
+    dest: /etc/systemd/system/mongod.service
+  register: mongod_service
+  notify:
+    - reload systemd
+    - restart mongod
+
+- name: Copy systemd tmpfile
+  template:
+    src: etc/tmpfiles.d/mongo.conf.j2
+    dest: /etc/tmpfiles.d/mongo.conf
+  tags:
+    - config
+
+- include_tasks: "arbiter.yml"
+  when: "has_svc_mongo_arbiter | default(False)"

@@ -33,11 +33,6 @@
       register: test_results
       with_items: "{{ test_files.stdout_lines }}"
 
-    - name: Display details about the goss results
-      debug:
-        msg: "{{ item.stdout_lines }}"
-      with_items: "{{ test_results.results }}"
-
     - name: Fail when tests fail
       fail:
         msg: "Goss failed to validate"

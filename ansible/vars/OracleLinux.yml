@@ -1,0 +1,18 @@
+# OEL settings
+---
+mongo_fork: "True"
+mongo_user: mongod
+pgbouncer_path_pid: /var/run/pgbouncer
+postgres_system_service: postgresql-{{ postgres_version }}
+postgres_bin_dir: /usr/pgsql-{{ postgres_version }}/bin
+postgres_home: /var/lib/pgsql
+postgres_data_dir: "{{ postgres_home }}/{{ postgres_version }}/data"
+postgresql_conf_prefix: "{{ postgres_home }}/{{ postgres_version }}/data"
+postgres_proccess: postmaster
+
+memcahed_user: memcached
+memcahed_conf: "/etc/sysconfig/memcached"
+
+jemalloc_path: /lib64/libjemalloc.so.1
+
+fake_shell: /sbin/nologin

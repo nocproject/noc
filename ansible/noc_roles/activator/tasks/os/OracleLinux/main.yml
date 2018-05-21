@@ -1,0 +1,11 @@
+---
+- name: Install OEL system packages
+  yum:
+    name: "{{ item }}"
+    update_cache: "True"
+  with_items:
+    - libssh2
+    - libssh2-devel
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
