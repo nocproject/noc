@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fnocproject%2Fnoc.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fnocproject%2Fnoc?ref=badge_shield)
+
 Copyright (C) 2007-2013, The NOC Project
 http://nocproject.org/
 
@@ -9,3 +11,7 @@ performance management, service activation/provisioning,
 multi-VRF address space management (IPAM),
 multi-vendor configuration management, DNS provisioning,
 peering management, RPSL and BGP filter generation, and reporting. 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fnocproject%2Fnoc.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fnocproject%2Fnoc?ref=badge_large)
