@@ -120,8 +120,8 @@ class Model(six.with_metaclass(ModelBase)):
                 field_list += ["%s.%s" % (f, nf) for nf in cls._fields[f].field_type._fields_order]
             else:
                 field_list += [f]
-        return "%s.%s" % (cls._get_db_table(),
-                          ";".join(field_list))
+        return "%s|%s" % (cls._get_db_table(),
+                          "|".join(field_list))
 
     @classmethod
     def get_short_fingerprint(cls):
