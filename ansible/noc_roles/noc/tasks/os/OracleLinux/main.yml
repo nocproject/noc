@@ -1,0 +1,79 @@
+---
+- name: Add PostgreSQL repository OEL
+  yum_repository:
+    name: pgdg-{{ postgres_version|replace(".","") }}-centos
+    description: PostgreSQL {{ postgres_version }}
+    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
+    gpgcheck: "True"
+    gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
+    enabled: "True"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
+- name: Add epel repo
+  yum_repository:
+    name: ol7_optional_latest
+    state: present
+    description: "Oracle Linux $releasever Optional Latest ($basearch)"
+    file: public-yum-ol7
+    enabled: "True"
+    baseurl: https://yum.oracle.com/repo/OracleLinux/OL7/optional/latest/$basearch/
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+    gpgcheck: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Add optional repo
+  yum_repository:
+    name: ol7_developer_EPEL
+    state: present
+    description: "Oracle Linux $releasever Development Packages ($basearch)"
+    file: public-yum-ol7
+    enabled: "True"
+    baseurl: https://yum.oracle.com/repo/OracleLinux/OL7/developer_EPEL/$basearch/
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+    gpgcheck: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install OEL system packages
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: "True"
+  with_items:
+    - git
+    - patch
+    - python-virtualenv
+    - gcc
+    - postgresql{{ postgres_version|replace(".","") }}
+    - postgresql-devel
+    - postgresql{{ postgres_version|replace(".","") }}-devel
+    - libffi
+    - libffi-devel
+    - libmemcached
+    - libmemcached-devel
+    - zlib-devel
+    - jemalloc
+    - bzip2
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install supervisord init script
+  template:
+    src: "noc.service.j2"
+    dest: "/etc/systemd/system/{{ noc_system_service }}.service"
+    mode: "a+r"
+  notify: reload systemd

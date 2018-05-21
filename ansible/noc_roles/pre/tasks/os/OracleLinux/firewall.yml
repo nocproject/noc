@@ -1,0 +1,35 @@
+---
+- name: check firewalld state
+  systemd:
+    name: firewalld
+  check_mode: "True"
+  become: "True"
+  register: firewalld_state
+  tags:
+    - config
+    - firewall
+
+- name: Add firewall permissions for nodes
+  firewalld:
+    rich_rule: "rule family='ipv4' source address={{ hostvars[item].ansible_host}} accept"
+    permanent: "True"
+    state: enabled
+    immediate: "True"
+  with_items: "{{ groups['all'] }}"
+  become: "True"
+  when: "firewalld_state.status.ActiveState == 'active'"
+  tags:
+    - config
+    - firewall
+
+- name: Add firewall permissions for tower
+  firewalld:
+    rich_rule: "rule family='ipv4' source address={{ tower_ip }} accept"
+    permanent: "True"
+    state: enabled
+    immediate: "True"
+  when: "firewalld_state.status.ActiveState == 'active'"
+  become: "True"
+  tags:
+    - config
+    - firewall

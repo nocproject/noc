@@ -1,0 +1,36 @@
+---
+- name: Set proxy for yum
+  lineinfile:
+    dest: /etc/yum.conf
+    regexp: "^proxy=.*"
+    line: "proxy={{ http_proxy }}"
+  become: "True"
+  when:
+    - http_proxy is defined
+  tags:
+    - config
+
+- name: Disable selinux
+  become: "True"
+  selinux:
+    policy: targeted
+    state: disabled
+
+- name: Install CentOS system packages pre
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: "True"
+  become: "True"
+  with_items:
+    - unzip
+    - ca-certificates
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
+- include_tasks: "firewall.yml"
+  tags:
+    - firewall
