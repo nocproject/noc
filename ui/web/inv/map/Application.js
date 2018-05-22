@@ -462,7 +462,7 @@ Ext.define("NOC.inv.map.Application", {
             icon: Ext.Msg.QUESTION,
             buttons: Ext.Msg.YESNO,
             fn: function(btn) {
-                if(btn == "yes") {
+                if(btn === "yes") {
                     me.mapPanel.resetLayout(forceSpring);
                 }
             }
