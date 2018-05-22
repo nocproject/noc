@@ -85,6 +85,9 @@ class Quiz(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
+    def __unicode__(self):
+        return self.name
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
