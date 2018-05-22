@@ -34,7 +34,8 @@ def snmp_get(address, oids, port=161,
              timeout=10,
              tos=None,
              ioloop=None,
-             udp_socket=None):
+             udp_socket=None,
+             raw_varbinds=False):
     """
     Perform SNMP get request and returns Future to be used
     inside @tornado.gen.coroutine
@@ -73,7 +74,10 @@ def snmp_get(address, oids, port=161,
             sock.settimeout(prev_timeout)
         else:
             sock.close()
-    resp = parse_get_response(data)
+    if raw_varbinds:
+        resp = parse_get_response_raw(data)
+    else:
+        resp = parse_get_response(data)
     if resp.error_status == NO_ERROR:
         # Success
         if oid_map:

@@ -24,6 +24,7 @@ class Script(BaseScript):
     interface = IGetBeef
     requires = []
     BEEF_FORMAT = "1"
+    MIB_ENCODING = "base64"
 
     def execute(self, spec):
         result = {
@@ -34,7 +35,7 @@ class Script(BaseScript):
             "cli": [],
             "cli_fsm": [],
             "mib": [],
-            "mib_encoding": "base64"
+            "mib_encoding": self.MIB_ENCODING
         }
         # Process CLI answers
         result["cli"] = self.get_cli_results(spec)
@@ -42,7 +43,7 @@ class Script(BaseScript):
         result["cli_fsm"] = self.get_cli_fsm_results()
         # Apply MIB snapshot
         self.logger.debug("Collecting MIB snapshot")
-        result["mib"] = self.get_mib_snapshot()
+        result["mib"] = self.get_snmp_results(spec)
         # Process version reply
         result["box"] = self.scripts.get_version()
         return result
@@ -64,6 +65,7 @@ class Script(BaseScript):
         self.logger.debug("Collecting CLI beef")
         self.start_tracking()
         for cmd in cmd_answers:
+            self.logger.debug("Collecting command: %s" % cmd)
             # Issue command
             try:
                 self.cli(cmd)
@@ -87,11 +89,30 @@ class Script(BaseScript):
             }]
         return r
 
-    def get_mib_snapshot(self):
+    def collect_snmp(self, spec):
+        # Collect
+        for ans in spec["answers"]:
+            if ans["type"] == "snmp-get":
+                value = self.snmp.get(ans["value"], raw_varbinds=True)
+                yield {
+                    "oid": str(ans["value"]),
+                    "value": value.encode(self.MIB_ENCODING).strip()
+                }
+            elif ans["type"] == "snmp-getnext":
+                for oid, value in self.snmp.getnext(ans["value"], raw_varbinds=True):
+                    yield {
+                        "oid": str(oid),
+                        "value": value.encode(self.MIB_ENCODING).strip()
+                    }
+
+    def get_snmp_results(self, spec):
         r = []
-        for oid, value in self.snmp.getnext("1.3.6", raw_varbinds=True):
-            r += [{
-                "oid": str(oid),
-                "value": value.encode("base64").strip()
-            }]
-        return r
+        # Deduplicate
+        oids = {}
+        for v in self.collect_snmp(spec):
+            if v["oid"] in oids:
+                continue  # Duplicate
+            oids[v["oid"]] = tuple(int(x) for x in v["oid"].split("."))
+            r += [v]
+        # Sort
+        return sorted(r, key=lambda x: oids[x["oid"]])

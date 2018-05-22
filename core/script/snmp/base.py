@@ -86,11 +86,12 @@ class SNMP(object):
             return SNMP_v1
         return SNMP_v2c
 
-    def get(self, oids, cached=False, version=None):
+    def get(self, oids, cached=False, version=None, raw_varbinds=False):
         """
         Perform SNMP GET request
         :param oid: string or list of oids
         :param cached: True if get results can be cached during session
+        :param raw_varbinds: Return value in BER encoding
         :returns: eigther result scalar or dict of name -> value
         """
         @tornado.gen.coroutine
@@ -103,7 +104,8 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
-                    version=version
+                    version=version,
+                    raw_varbinds=raw_varbinds
                 )
                 self.timeouts = self.timeouts_limit
             except SNMPError as e:
