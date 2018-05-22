@@ -17,6 +17,13 @@ Ext.define("NOC.wf.workflow.Application", {
 
     initComponent: function() {
         var me = this;
+        me.WF_EDITOR = me.registerItem("NOC.wf.workflow.WFEditorII");
+        me.editorButton = Ext.create("Ext.button.Button", {
+            text: __("Editor"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onEditor
+        });
         Ext.apply(me, {
             columns: [
                 {
@@ -82,8 +89,16 @@ Ext.define("NOC.wf.workflow.Application", {
                         }
                     ]
                 }
+            ],
+
+            formToolbar: [
+                me.editorButton
             ]
         });
         me.callParent();
+    },
+    onEditor: function() {
+        var me = this;
+        me.previewItem(me.WF_EDITOR, me.currentRecord);
     }
 });

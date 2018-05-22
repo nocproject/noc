@@ -212,9 +212,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper = new joint.dia.Paper({
             el: dom,
             model: me.graph,
-            gridSize: 10,
-            gridWidth: 10,
-            gridHeight: 10,
+            gridSize: 25,
+            gridWidth: 25,
+            gridHeight: 25,
+            preventContextMenu: false,
+            async: false,
+            guard: function(evt) {
+                return (evt.type === "mousedown" && evt.buttons === 2);
+            },
             interactive: Ext.bind(me.onInteractive, me)
         });
         // Apply SVG filters
@@ -494,7 +499,6 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     onSegmentContextMenu: function(evt) {
         var me = this;
-
         evt.preventDefault();
         me.segmentMenu.showAt(evt.clientX, evt.clientY);
     },
@@ -512,6 +516,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             me.nodeMenu.showAt(evt.clientX, evt.clientY);
         }
     },
+    //
     onCellDoubleClick: function(view, evt, x, y) {
         var me = this,
             data = view.model.get("data");
@@ -521,6 +526,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             );
         }
     },
+    //
     onBlankSelected: function() {
         var me = this;
         me.unhighlight();
@@ -981,20 +987,20 @@ Ext.define("NOC.inv.map.MapPanel", {
         };
 
         Ext.create('NOC.maintenance.maintenancetype.LookupField')
-            .getStore()
-            .load({
-                params: {__query: 'РНР'},
-                callback: function(records) {
-                    if(records.length > 0) {
-                        Ext.apply(args, {
-                            type: records[0].id
-                        })
-                    }
-                    NOC.launch("maintenance.maintenance", "new", {
-                        args: args
-                    });
+        .getStore()
+        .load({
+            params: {__query: 'РНР'},
+            callback: function(records) {
+                if(records.length > 0) {
+                    Ext.apply(args, {
+                        type: records[0].id
+                    })
                 }
-            });
+                NOC.launch("maintenance.maintenance", "new", {
+                    args: args
+                });
+            }
+        });
     },
 
     onNodeMenuNewMaintaince: function() {
@@ -1230,7 +1236,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         textSpan.style.display = 'block';
         textSpan.appendChild(textNode);
         svgDocument.appendChild(textElement);
-        if (!opt.svgDocument) {
+        if(!opt.svgDocument) {
             document.body.appendChild(svgDocument);
         }
 
@@ -1240,27 +1246,27 @@ Ext.define("NOC.inv.map.MapPanel", {
         var p;
         var lineHeight;
 
-        for (var i = 0, l = 0, len = words.length; i < len; i++) {
+        for(var i = 0, l = 0, len = words.length; i < len; i++) {
             var word = words[i];
 
             textNode.data = lines[l] ? lines[l] + word : word;
-            if (textSpan.getComputedTextLength() <= width) {
+            if(textSpan.getComputedTextLength() <= width) {
                 // the current line fits
                 lines[l] = textNode.data;
-                if (p) {
+                if(p) {
                     // We were partitioning. Put rest of the word onto next line
                     full[l++] = true;
                     // cancel partitioning
                     p = 0;
                 }
             } else {
-                if (!lines[l] || p) {
+                if(!lines[l] || p) {
                     var partition = !!p;
                     p = word.length - 1;
-                    if (partition || !p) {
+                    if(partition || !p) {
                         // word has only one character.
-                        if (!p) {
-                            if (!lines[l]) {
+                        if(!p) {
+                            if(!lines[l]) {
                                 // we won't fit this text within our rect
                                 lines = [];
                                 break;
@@ -1284,7 +1290,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                         words.splice(i, 1, word.substring(0, p), word.substring(p));
                         // adjust words length
                         len++;
-                        if (l && !full[l - 1]) {
+                        if(l && !full[l - 1]) {
                             // if the previous line is not full, try to fit max part of
                             // the current word there
                             l--;
@@ -1298,28 +1304,28 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
             // if size.height is defined we have to check whether the height of the entire
             // text exceeds the rect height
-            if (height !== undefined) {
-                if (lineHeight === undefined) {
+            if(height !== undefined) {
+                if(lineHeight === undefined) {
                     var heightValue;
                     // use the same defaults as in V.prototype.text
-                    if (styles.lineHeight === 'auto') {
-                        heightValue = { value: 1.5, unit: 'em' };
+                    if(styles.lineHeight === 'auto') {
+                        heightValue = {value: 1.5, unit: 'em'};
                     } else {
-                        heightValue = joint.util.parseCssNumeric(styles.lineHeight, ['em']) || { value: 1, unit: 'em' };
+                        heightValue = joint.util.parseCssNumeric(styles.lineHeight, ['em']) || {value: 1, unit: 'em'};
                     }
                     lineHeight = heightValue.value;
-                    if (heightValue.unit === 'em' ) {
+                    if(heightValue.unit === 'em') {
                         lineHeight *= textElement.getBBox().height;
                     }
                 }
-                if (lineHeight * lines.length > height) {
+                if(lineHeight * lines.length > height) {
                     // remove overflowing lines
                     lines.splice(Math.floor(height / lineHeight));
                     break;
                 }
             }
         }
-        if (opt.svgDocument) {
+        if(opt.svgDocument) {
             // svg document was provided, remove the text element only
             svgDocument.removeChild(textElement);
         } else {
