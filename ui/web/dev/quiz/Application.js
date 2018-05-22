@@ -17,6 +17,15 @@ Ext.define("NOC.dev.quiz.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+            app: me,
+            restUrl: new Ext.XTemplate('/dev/quiz/{id}/json/'),
+            previewName: new Ext.XTemplate('Quiz: {name}')
+        });
+
+        me.ITEM_JSON = me.registerItem(me.jsonPanel);
+
         Ext.apply(me, {
             columns: [
                 {
@@ -124,8 +133,25 @@ Ext.define("NOC.dev.quiz.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                {
+                    text: __("JSON"),
+                    glyph: NOC.glyph.file,
+                    tooltip: __("Show JSON"),
+                    hasAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onJSON
+                }
             ]
         });
         me.callParent();
+    },
+
+    //
+    onJSON: function() {
+        var me = this;
+        me.showItem(me.ITEM_JSON);
+        me.jsonPanel.preview(me.currentRecord);
     }
 });
