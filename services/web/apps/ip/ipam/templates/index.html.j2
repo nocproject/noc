@@ -94,7 +94,7 @@ th[class=rd] {
             <td>{{vrf.rd}}</td>
             <td>{{vrf.vpn_id}}</td>
             <td>{% if vrf.afi_ipv4 %}<a class="changelink" href="/ip/ipam/{{ vrf.id }}/4/0.0.0.0/0/" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
-            <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="/ip/ipam/{{ vrf.id }}/6/::/0/'" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
+            <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="/ip/ipam/{{ vrf.id }}/6/::/0/" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
             <td>{% if vrf.project %}{{ vrf.project.code }}{% endif %}</td>
             <td>{% if vrf.description %}{{vrf.description}}{% endif %}</td>
             <td>
