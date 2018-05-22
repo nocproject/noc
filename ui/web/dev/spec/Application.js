@@ -125,7 +125,15 @@ Ext.define("NOC.dev.spec.Application", {
                             xtype: "combobox",
                             fieldLabel: __("Type"),
                             allowBlank: false,
-                            uiStyle: "medium"
+                            uiStyle: "medium",
+                            store: [
+                                ["str", "str"],
+                                ["bool", "bool"],
+                                ["int", "int"],
+                                ["cli", "cli"],
+                                ["snmp-get", "snmp-get"],
+                                ["snmp-getnext", "snmp-getnext"]
+                            ]
                         },
                         {
                             name: "value",
