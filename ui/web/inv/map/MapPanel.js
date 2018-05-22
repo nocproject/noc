@@ -212,10 +212,9 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper = new joint.dia.Paper({
             el: dom,
             model: me.graph,
-            gridSize: 10,
-            gridWidth: 10,
-            gridHeight: 10,
-            drawGrid: "fixedDot",
+            gridSize: 25,
+            gridWidth: 25,
+            gridHeight: 25,
             preventContextMenu: false,
             async: false,
             guard: function(evt) {

@@ -411,8 +411,17 @@ Ext.define("NOC.inv.map.Application", {
 
     onEdit: function() {
         var me = this;
+        me.mapPanel.paper.clearGrid();
         if(me.editButton.pressed) {
             me.mapPanel.setOverlayMode(0);
+            me.mapPanel.paper.setGrid({
+                name: 'doubleMesh',
+                args: [
+                    {color: '#bdc3c7', thickness: 1}, // settings for the primary mesh
+                    {color: '#bdc3c7', scaleFactor: 5, thickness: 2} //settings for the secondary mesh
+                ]
+            });
+            me.mapPanel.paper.drawGrid();
             me.viewMapButton.setPressed(true);
             me.rotateButton.setDisabled(false);
         }
@@ -475,7 +484,7 @@ Ext.define("NOC.inv.map.Application", {
     },
 
     onChangeName: function() {
-      var me = this;
+        var me = this;
         me.mapPanel.changeLabelText(me.addressIPButton.pressed);
     },
 
