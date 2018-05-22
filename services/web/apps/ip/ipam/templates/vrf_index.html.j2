@@ -523,7 +523,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 <td><a href="#" onclick="app.showPrefix({{ prefix.vrf.id }}, '6', '{{ prefix.ipv6_transition.prefix }}')">{{ prefix.ipv6_transition.prefix }}</a></td>
             </tr>
         {%  endif %}
-        {%  if prefix.afi == "6" and prefix.ipv4_transition %}
+        {%  if prefix.afi == "6" and prefix.has_transition and prefix.ipv4_transition %}
             <tr>
                 <td><b>Dual-stack allocation</b></td>
                 <td><a href="#" onclick="app.showPrefix(prefix.vrf.id, '4', '{{ prefix.ipv4_transition.prefix }}')">{{ prefix.ipv4_transition.prefix }}</a></td>
