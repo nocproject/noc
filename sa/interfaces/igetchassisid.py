@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 from noc.core.interface.base import BaseInterface
-from base import DictListParameter, MACAddressParameter
+from .base import DictListParameter, MACAddressParameter
 
 
 class IGetChassisID(BaseInterface):
