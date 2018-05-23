@@ -118,7 +118,7 @@ class Profile(BaseProfile):
         # if set(self.rx_ver.search(x).groups()) and self.rx_ver.search(y):
         if any(a) and any(b):
             r = list(dropwhile(lambda s: s == 0,
-                               [(int(a) > int(b)) - (int(a) < int(b)) for a, b in izip(a, b)
+                               [(int(a) > int(b)) - (int(a) < int(b)) for a, b in izip(a, b)   # noqa
                                 if a is not None and b is not None]))
             return r[0] if r else 0
         else:

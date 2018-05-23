@@ -126,7 +126,7 @@ class Script(BaseScript):
 
         # vlans = ""
         for row in instance_table:
-            s = row[0:13]
+            # s = row[0:13]
             if check_d.match(row[0:13]):
                 instance = int(row[0:13].strip())
                 vlans = row[14:]
@@ -161,7 +161,7 @@ class Script(BaseScript):
                     "root_priority": match.group("root_priority"),
                     "bridge_id": match.group("bridge_id"),
                     "bridge_priority": match.group("bridge_priority"),
-                    }]
+                }]
                 if instance_id not in interfaces:
                     interfaces[instance_id] = []
                 for match in v2:
