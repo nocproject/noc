@@ -114,7 +114,6 @@ class Profile(BaseProfile):
         -1
         >>> Profile().cmp_version("100", "5.30 (V100R005C02B236)")
         """
-        print x, y
         a, b = self.rx_ver.search(str(x)).groups()[1:], self.rx_ver.search(str(y)).groups()[1:]
         # if set(self.rx_ver.search(x).groups()) and self.rx_ver.search(y):
         if any(a) and any(b):

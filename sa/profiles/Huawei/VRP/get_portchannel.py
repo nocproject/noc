@@ -5,9 +5,7 @@
 # Copyright (C) 2007-2014 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
 import re
@@ -16,11 +14,7 @@ import re
 class Script(BaseScript):
     name = "Huawei.VRP.get_portchannel"
     interface = IGetPortchannel
-
-    @BaseScript.match(version__startswith="3.")
-    def execute_vrp3(self):
-        return []
-        raise self.NotSupportedError()
+    cache = True
 
     rx_chan_line_vrp5 = re.compile(
         r"(?P<interface>Eth-Trunk\d+).*?\n"
@@ -28,8 +22,10 @@ class Script(BaseScript):
         r"(?:Actor)?PortName[^\n]+(?P<members>.*?)(\n\s*\n|\n\s\s)",
         re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
-    @BaseScript.match()
-    def execute_other(self):
+    def execute_cli(self):
+        if self.is_kernel_3:
+            self.logger.info("Huawei 3.XX not portchannel command")
+            return []
         r = []
         try:
             trunk = self.cli("display eth-trunk", cached=True)

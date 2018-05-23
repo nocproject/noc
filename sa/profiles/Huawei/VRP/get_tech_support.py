@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_tech_support"
     interface = IGetTechSupport
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         try:
             c = self.cli("display diagnostic-information")
         except self.CLISyntaxError:

@@ -192,7 +192,7 @@ class Script(BaseScript):
             st["interfaces"] = interfaces[st["id"]]
         return r
 
-    def execute(self):
+    def execute_cli(self):
         # Save port attributes
         # cli_stp = self.cli("display stp brief", cached=True)
         ports = self.get_ports_attrs()

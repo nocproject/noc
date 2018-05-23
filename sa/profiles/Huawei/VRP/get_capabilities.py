@@ -24,7 +24,7 @@ class Script(BaseScript):
             return "Enabled" in r
         except self.CLISyntaxError:
             try:
-                r = self.cli("display stp | include disabled")
+                r = self.cli("display stp | include isabled")
                 return "Protocol Status" not in r
             except self.CLISyntaxError:
                 r = self.cli("display stp")

@@ -5,11 +5,12 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
-import re
 
 
 class Script(BaseScript):
@@ -25,31 +26,28 @@ class Script(BaseScript):
     rx_ifc_br_status = re.compile(
         r"^\s*(?P<interface>[^ ]+)\s+(?P<status>up|down|\*down).*$", re.IGNORECASE)
 
-    def execute(self, interface=None):
-        if self.has_snmp():
-            try:
-                # Get interface status
-                r = []
-                # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for i, n, s in self.snmp.join([
-                    "1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"
-                ]):
-                    iface = self.profile.convert_interface_name(n)
-                    # ifOperStatus up(1)
-                    if (interface and interface == iface):
-                        return [{"interface": iface, "status": int(s) == 1}]
-                    r += [{"interface": iface, "status": int(s) == 1}]
-                return r
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self, interface=None, **kwargs):
+        # Get interface status
+        r = []
+        # IF-MIB::ifName, IF-MIB::ifOperStatus
+        for i, n, s in self.snmp.join([
+            "1.3.6.1.2.1.31.1.1.1.1",
+            "1.3.6.1.2.1.2.2.1.8"
+        ]):
+            iface = self.profile.convert_interface_name(n)
+            # ifOperStatus up(1)
+            if (interface and interface == iface):
+                return [{"interface": iface, "status": int(s) == 1}]
+            r += [{"interface": iface, "status": int(s) == 1}]
+        return r
+
+    def execute_cli(self, interface=None):
         # Fallback to CLI
         r = []
         #
         # VRP3 style
         #
-        version = self.profile.fix_version(self.scripts.get_version())
-        if version.startswith("3."):
+        if self.is_kernel_3 or self.is_bad_platform:
             for line in self.cli("display interface").splitlines():
                 if (
                     (
