@@ -10,7 +10,7 @@
 # Python modules
 import re
 import numpy as np
-from itertools import izip, izip_longest, dropwhile, imap
+from itertools import izip, izip_longest, dropwhile
 from collections import defaultdict
 # NOC modules
 from noc.core.profile.base import BaseProfile

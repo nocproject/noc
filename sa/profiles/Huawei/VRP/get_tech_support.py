@@ -5,9 +5,7 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igettechsupport import IGetTechSupport
 
