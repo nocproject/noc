@@ -919,7 +919,7 @@ class BaseScript(object):
                 del cls.session_cli[session_id]
             mml_stream = cls.session_mml.get(session_id)
             if mml_stream:
-                del cls.mml_stream[session_id]
+                del cls.session_mml[session_id]
         if cli_stream and not cli_stream.is_closed:
             cli_stream.shutdown_session()
             cli_stream.close()

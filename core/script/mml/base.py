@@ -289,3 +289,8 @@ class MMLBase(object):
                 r = self.buffer[:match.start()]
                 self.buffer = self.buffer[match.end()]
                 raise tornado.gen.Return(r)
+
+    def shutdown_session(self):
+        if self.profile.shutdown_session:
+            self.logger.debug("Shutdown session")
+            self.profile.shutdown_session(self.script)
