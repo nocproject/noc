@@ -87,6 +87,8 @@ class Beef(object):
             ) for d in self.get_or_die(data, "mib")
         ]
         self._mib_decoder = getattr(self, "mib_decode_%s" % self.mib_encoding)
+        self.cli_encoding = self.get_or_die(data, "cli_encoding")
+        self._cli_decoder = getattr(self, "cli_decode_%s" % self.cli_encoding)
 
     def get_data(self):
         return {
@@ -100,6 +102,7 @@ class Beef(object):
             },
             "changed": self.changed,
             "description": self.description,
+            "cli_encoding": self.cli_encoding,
             "cli_fsm": [{
                 "state": d.state,
                 "reply": d.reply
@@ -209,7 +212,7 @@ class Beef(object):
         for fsm in self.cli_fsm:
             if fsm.state == state:
                 for reply in fsm.reply:
-                    yield reply
+                    yield self._cli_decoder(reply)
                 break
 
     def iter_cli_reply(self, command):
@@ -223,7 +226,7 @@ class Beef(object):
         for c in self.cli:
             if c.request == cmd:
                 for reply in c.reply:
-                    yield reply
+                    yield self._cli_decoder(reply)
                 found = True
                 break
         if not found:
@@ -246,6 +249,15 @@ class Beef(object):
         :return:
         """
         return value.decode("hex")
+
+    @staticmethod
+    def cli_decode_quopri(value):
+        """
+        Decode quoted-printable
+        :param value:
+        :return:
+        """
+        return value.decode("quopri")
 
     def get_mib_oid_values(self):
         if self.mib_oid_values is None:

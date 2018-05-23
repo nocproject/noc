@@ -24,6 +24,7 @@ class Script(BaseScript):
     interface = IGetBeef
     requires = []
     BEEF_FORMAT = "1"
+    CLI_ENCODING = "quopri"
     MIB_ENCODING = "base64"
 
     def execute(self, spec):
@@ -35,7 +36,8 @@ class Script(BaseScript):
             "cli": [],
             "cli_fsm": [],
             "mib": [],
-            "mib_encoding": self.MIB_ENCODING
+            "mib_encoding": self.MIB_ENCODING,
+            "cli_encoding": self.CLI_ENCODING
         }
         # Process CLI answers
         result["cli"] = self.get_cli_results(spec)
@@ -75,7 +77,7 @@ class Script(BaseScript):
             r += [{
                 "names": cmd_answers[cmd],
                 "request": cmd,
-                "reply": self.pop_cli_tracking()
+                "reply": [v.encode(self.CLI_ENCODING) for v in self.pop_cli_tracking()]
             }]
         self.stop_tracking()
         return r
@@ -85,7 +87,7 @@ class Script(BaseScript):
         for state, reply in self.iter_cli_fsm_tracking():
             r += [{
                 "state": state,
-                "reply": reply
+                "reply": [v.encode(self.CLI_ENCODING) for v in reply]
             }]
         return r
 

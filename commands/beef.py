@@ -141,7 +141,7 @@ class Command(BaseCommand):
             for n, reply in enumerate(c.reply):
                 r += [
                     "-------- Packet #%d" % n,
-                    "%r" % reply
+                    "%r" % beef._cli_decoder(reply)
                 ]
         r += ["--[CLI]----------"]
         for c in beef.cli:
@@ -150,7 +150,7 @@ class Command(BaseCommand):
             for n, reply in enumerate(c.reply):
                 r += [
                     "-------- Packet #%d" % n,
-                    "%r" % reply
+                    "%r" % beef._cli_decoder(reply)
                 ]
         # Dump output
         self.stdout.write("\n".join(r) + "\n")

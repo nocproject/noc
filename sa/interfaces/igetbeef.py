@@ -85,5 +85,10 @@ class IGetBeef(BaseInterface):
         "mib_encoding": StringParameter(
             default="hex",
             choices=["hex", "base64"]
+        ),
+        # CLI binary encoding
+        "cli_encoding": StringParameter(
+            default="quopri",
+            choices=["quopri"]
         )
     })
