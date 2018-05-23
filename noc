@@ -19,19 +19,17 @@ if [ -f "$PWD/.env" ]; then
     . "$PWD/.env"
 fi
 
-
-if [ -f "./bin/python" ]; then
-  export PYTHON_INTERPRETER="./bin/python"
+if [ ! -z "${NOC_PYTHON_INTERPRETER}" ]; then
+  export PYTHON_INTERPRETER="${NOC_PYTHON_INTERPRETER}"
 fi
 
-if [ ! -z "${NOC_PYTHON_INTERPRETER}" ] && [ -z "${PYTHON_INTERPRETER}" ]; then
-  export PYTHON_INTERPRETER="${NOC_PYTHON_INTERPRETER}"
+if [ -z "${PYTHON_INTERPRETER}" ] && [ -f "./bin/python" ]; then
+  export PYTHON_INTERPRETER="./bin/python"
 fi
 
 if [ -z "${PYTHON_INTERPRETER}" ]; then
   export PYTHON_INTERPRETER='/usr/bin/env python'
 fi
-
 
 if [ -f "./custom/commands/$CMD.sh" ]; then
     shift
