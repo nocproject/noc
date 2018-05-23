@@ -84,6 +84,7 @@ class Quiz(Document):
     questions = ListField(EmbeddedDocumentField(QuizQuestion))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -92,6 +93,11 @@ class Quiz(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Quiz.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        return Quiz.objects.filter(name=name).first()
 
     @property
     def json_data(self):
