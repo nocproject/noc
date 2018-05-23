@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 from collections import defaultdict
@@ -37,11 +36,12 @@ class Script(BaseScript):
         r"\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?"
         r"(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?"
         r"[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
-       re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
     rx_sh_ip_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+"
         r"line\s+protocol\s+is\s+", re.IGNORECASE)
-    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
+    rx_mac = re.compile(
+        r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
         re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(
         r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
@@ -55,7 +55,8 @@ class Script(BaseScript):
     rx_vlan_line = re.compile(
         r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+"
         r"(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
-    rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
+    rx_vlan_line_cont = re.compile(
+        r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_pim = re.compile(r"^\S+\s+(?P<name>\S+)\s+v\d+/\S+\s+\d+")
@@ -66,10 +67,12 @@ class Script(BaseScript):
     rx_cisco_interface_sonet = re.compile(r"^(?P<type>Se)\s+(?P<number>\d+\S+)$")
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
-    rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
+    rx_lldp = re.compile(
+        "^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
     rx_gvtp = re.compile("VTP Operating Mode\s+: Off", re.MULTILINE)
-    rx_vtp = re.compile("^\s*(?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+enabled",
+    rx_vtp = re.compile(
+        "^\s*(?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+enabled",
         re.MULTILINE)
     rx_vtp1 = re.compile(
         "^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+",
@@ -202,7 +205,7 @@ class Script(BaseScript):
                 r[match.group("interface")] = int(match.group("ifindex"))
         return r
 
-    ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
+    # Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
     rx_vlan_ubr = re.compile(
         r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})")
 
@@ -467,6 +470,9 @@ class Script(BaseScript):
                 rd = v.get("rd")
                 if rd:
                     vrfs[v["name"]]["rd"] = rd
+                vpn_id = v.get("vpn_id")
+                if vpn_id:
+                    vrfs[v["name"]]["vpn_id"] = vpn_id
                 for i in v["interfaces"]:
                     imap[i] = v["name"]
         for i in interfaces:

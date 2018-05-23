@@ -13,6 +13,7 @@ from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_vlan
 
 
 class Script(BaseScript):
@@ -166,10 +167,7 @@ class Script(BaseScript):
             if ifname.startswith("NULL"):
                 continue
             # I do not known, what are these
-            if (
-                ifname.startswith("DCN-Serial") or
-                ifname.startswith("Cpos-Trunk")
-            ):
+            if ifname.startswith("DCN-Serial") or ifname.startswith("Cpos-Trunk"):
                 continue
             sub = {
                 "name": ifname,
@@ -178,9 +176,8 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "enabled_afi": []
             }
-            if (
-                ifname in switchports and ifname not in portchannel_members
-            ):
+            if (ifname in switchports and
+                    ifname not in portchannel_members):
                 # Bridge
                 sub["enabled_afi"] += ['BRIDGE']
                 u, t = switchports[ifname]
@@ -257,8 +254,9 @@ class Script(BaseScript):
                 if o_stat is None:
                     o_stat = False
                 match = self.rx_iftype.match(ifname)
-                iftype = self.profile.if_types[match.group(1)]
+                iftype = self.profile.get_interface_type(match.group(1))
                 if iftype is None:
+                    self.logger.info("Iface name %s, type unknown", match.group(1))
                     continue  # Skip ignored interfaces
                 iface = {
                     "name": ifname,
@@ -294,7 +292,8 @@ class Script(BaseScript):
                 interfaces += [iface]
             else:
                 iface, vlan_id = ifname.split(".")
-                sub["vlan_ids"] = [vlan_id]
+                if is_vlan(vlan_id):
+                    sub["vlan_ids"] = [vlan_id]
                 interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
         vrfs = {
@@ -314,6 +313,7 @@ class Script(BaseScript):
                 vrfs[v["name"]] = {
                     "forwarding_instance": v["name"],
                     "type": "VRF",
+                    "vpn_id": v.get("vpn_id"),
                     "interfaces": []
                 }
                 rd = v.get("rd")
@@ -326,10 +326,8 @@ class Script(BaseScript):
             if subs:
                 for vrf in set(imap.get(si["name"], "default") for si in subs):
                     c = i.copy()
-                    c["subinterfaces"] = [
-                        si for si in subs
-                        if imap.get(si["name"], "default") == vrf
-                    ]
+                    c["subinterfaces"] = [si for si in subs
+                                          if imap.get(si["name"], "default") == vrf]
                     vrfs[vrf]["interfaces"] += [c]
             elif i.get("aggregated_interface"):
                 vrfs["default"]["interfaces"] += [i]

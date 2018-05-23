@@ -65,6 +65,7 @@ class NotificationGroup(models.Model):
     description = models.TextField("Description", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -72,10 +73,18 @@ class NotificationGroup(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return NotificationGroup.objects.get(id=id)
-        except NotificationGroup.DoesNotExist:
-            return None
+        ng = NotificationGroup.objects.filter(id=id)[:1]
+        if ng:
+            return ng[0]
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        ng = NotificationGroup.objects.filter(name=name)[:1]
+        if ng:
+            return ng[0]
+        return None
 
     @property
     def members(self):

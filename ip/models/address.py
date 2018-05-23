@@ -52,11 +52,18 @@ class Address(models.Model):
         AddressProfile,
         null=False, blank=False
     )
+    name = models.CharField(
+        _("Name"),
+        max_length=255,
+        null=False, blank=False
+    )
     fqdn = models.CharField(
         _("FQDN"),
         max_length=255,
         help_text=_("Full-qualified Domain Name"),
-        validators=[check_fqdn])
+        validators=[check_fqdn],
+        null=True, blank=True
+    )
     project = models.ForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
@@ -77,6 +84,11 @@ class Address(models.Model):
         related_name="address_set",
         on_delete=models.SET_NULL,
         help_text=_("Set if address belongs to the Managed Object's interface"))
+    subinterface = models.CharField(
+        "SubInterface",
+        max_length=128,
+        null=True, blank=True
+    )
     description = models.TextField(
         _("Description"),
         blank=True, null=True)
@@ -99,6 +111,19 @@ class Address(models.Model):
         null=True, blank=True,
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL)
+    source = models.CharField(
+        "Source",
+        max_length=1,
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("m", "Management"),
+            ("d", "DHCP"),
+            ("n", "Neighbor")
+        ],
+        null=False, blank=False,
+        default="M"
+    )
 
     csv_ignored_fields = ["prefix"]
 
@@ -122,7 +147,7 @@ class Address(models.Model):
         :return: VRF already containing address or None
         :rtype: VRF or None
         """
-        if vrf.vrf_group.address_constraint != "G":
+        if not vrf.vrf_group or vrf.vrf_group.address_constraint != "G":
             return None
         afi = cls.get_afi(address)
         try:
@@ -183,8 +208,11 @@ class Address(models.Model):
         """
         Full-text search
         """
-        content = [self.address, self.fqdn]
-        card = "Address %s, FQDN %s" % (self.address, self.fqdn)
+        content = [self.address, self.name]
+        card = "Address %s, Name %s" % (self.address, self.name)
+        if self.fqdn:
+            content += [self.fqdn]
+            card += ", FQDN %s" % self.fqdn
         if self.mac:
             content += [self.mac]
             card += ", MAC %s" % self.mac

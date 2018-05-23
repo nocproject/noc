@@ -21,11 +21,14 @@ Ext.define("NOC.core.InlineModelStore", {
             fields = model.fields.items,
             defaultValues = {};
 
+        me.rootProperty = model.rootProperty ? model.rootProperty : "data";
+        me.parentField = model.parentField;
         me.restUrl = model.rest_url;
+        me.isLocal = model.isLocal;
         for(var i=0; i < fields.length; i++) {
             var field = fields[i],
                 dv = field.defaultValue;
-            if(dv != undefined) {
+            if(dv !== undefined) {
                 defaultValues[field.name] = dv;
             }
         }
@@ -40,7 +43,7 @@ Ext.define("NOC.core.InlineModelStore", {
             },
             reader: {
                 type: "json",
-                rootProperty: "data",
+                rootProperty: me.rootProperty,
                 totalProperty: "total",
                 successProperty: "success"
             },

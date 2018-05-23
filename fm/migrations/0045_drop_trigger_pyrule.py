@@ -11,7 +11,7 @@ from south.db import db
 from django.db import models
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db.add_column(
             "fm_alarmtrigger",
@@ -39,7 +39,7 @@ class Migration:
         for t_id, rule_name in rows:
             db.execute(
                 """UPDATE fm_eventtrigger
-                SET desciption = 'Removed pyRule ' || %s
+                SET description = 'Removed pyRule ' || %s
                 WHERE id = %s
                 """, [rule_name, t_id]
             )
@@ -50,7 +50,7 @@ class Migration:
         for t_id, rule_name in rows:
             db.execute(
                 """UPDATE fm_alarmtrigger
-                SET desciption = 'Removed pyRule ' || %s
+                SET description = 'Removed pyRule ' || %s
                 WHERE id = %s
                 """, [rule_name, t_id]
             )

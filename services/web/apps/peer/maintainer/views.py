@@ -9,6 +9,7 @@
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.peer.models.maintainer import Maintainer
+from noc.lib.app.repoinline import RepoInline
 from noc.core.translation import ugettext as _
 
 
@@ -19,3 +20,5 @@ class MaintainerApplication(ExtModelApplication):
     title = _("Maintainers")
     menu = [_("Setup"), _("Maintainers")]
     model = Maintainer
+
+    rpsl = RepoInline("rpsl")

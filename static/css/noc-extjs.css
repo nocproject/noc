@@ -393,3 +393,22 @@ TABLE {
     margin-bottom: -2px;
     z-index: 1;
 }
+
+.x-component, .x-container {
+    position: initial;
+}
+
+.x-panel-body {
+    overflow: unset;
+}
+
+/*
+ * Safari 11 fieldset title issue
+ */
+.x-fieldset-header-default > .x-fieldset-header-text {
+    position:static;
+}
+
+.x-fieldset {
+  overflow: visible;
+}

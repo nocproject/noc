@@ -10,7 +10,7 @@
 from __future__ import absolute_import
 # NOC modules
 from .base import CLI
-from .error import CLIError
+from noc.core.script.error import CLISyntaxError
 
 
 class BeefCLI(CLI):
@@ -20,7 +20,8 @@ class BeefCLI(CLI):
         super(BeefCLI, self).__init__(*args, **kwargs)
         self.beef = self.script.credentials["beef"]
 
-    def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
+    def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None,
+                ignore_errors=True):
         scm = self.script.profile.command_submit
         if cmd.endswith(self.script.profile.command_submit):
             c = cmd[:-len(scm)]
@@ -29,7 +30,7 @@ class BeefCLI(CLI):
         try:
             result = self.beef.cli[c]
         except KeyError:
-            raise CLIError(cmd)
+            raise CLISyntaxError(cmd)
         # Strip echo
         if result.startswith(cmd):
             result = result[len(cmd):]

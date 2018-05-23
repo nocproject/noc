@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.error import NOCError
 from noc.sa.interfaces.ilogin import ILogin
 
 
@@ -22,6 +23,11 @@ class Script(BaseScript):
     def execute(self):
         try:
             self.cli("")
-            return True
-        except:
-            return False
+            return {"result": True,
+                    "message": ""}
+        except NOCError as e:
+            return {"result": False,
+                    "message": "Error: %s (%s)" % (e.default_msg, e.message)}
+        except Exception as e:
+            return {"result": False,
+                    "message": "Exception: %s" % repr(e)}

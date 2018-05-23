@@ -13,7 +13,9 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         "NOC.maintenance.maintenancetype.LookupField",
         "NOC.sa.managedobject.LookupField",
         "NOC.inv.networksegment.LookupField",
-        "NOC.main.timepattern.LookupField"
+        "NOC.main.timepattern.LookupField",
+        "NOC.maintenance.maintenance.DirectObjectsModel",
+        "NOC.maintenance.maintenance.DirectSegmentsModel"
     ],
     model: "NOC.maintenance.maintenance.Model",
     initComponent: function() {
@@ -164,34 +166,6 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                     xtype: "sa.managedobject.LookupField",
                     fieldLabel: __("Escalate to"),
                     allowBlank: true
-                },
-                {
-                    name: "direct_objects",
-                    xtype: "gridfield",
-                    fieldLabel: __("Objects"),
-                    columns: [
-                        {
-                            text: __("Object"),
-                            dataIndex: "object",
-                            editor: "sa.managedobject.LookupField",
-                            flex: 1,
-                            renderer: NOC.render.Lookup("object")
-                        }
-                    ]
-                },
-                {
-                    name: "direct_segments",
-                    xtype: "gridfield",
-                    fieldLabel: __("Segments"),
-                    columns: [
-                        {
-                            text: __("Segment"),
-                            dataIndex: "segment",
-                            editor: "inv.networksegment.LookupField",
-                            flex: 1,
-                            renderer: NOC.render.Lookup("segment")
-                        }
-                    ]
                 }
             ],
             formToolbar: [
@@ -201,6 +175,37 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         });
         me.callParent();
     },
+
+    inlines: [
+        {
+            title: __("Objects"),
+            collapsed: false,
+            model: "NOC.maintenance.maintenance.DirectObjectsModel",
+            columns: [
+                {
+                    text: __("Object"),
+                    dataIndex: "object",
+                    editor: "sa.managedobject.LookupField",
+                    flex: 1,
+                    renderer: NOC.render.Lookup("object")
+                }
+            ]
+        },
+        {
+            title: __("Segments"),
+            collapsed: false,
+            model: "NOC.maintenance.maintenance.DirectSegmentsModel",
+            columns: [
+                {
+                    text: __("Segment"),
+                    dataIndex: "segment",
+                    editor: "inv.networksegment.LookupField",
+                    flex: 1,
+                    renderer: NOC.render.Lookup("segment")
+                }
+            ]
+        }
+    ],
 
     editRecord: function(record) {
         var me = this,
@@ -239,7 +244,7 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                 }
             };
         return "" + year + "-" + q(month + 1) + "-" + q(day) + "T" +
-                q(hour) + ":" + q(min) + ":" + q(sec);
+            q(hour) + ":" + q(min) + ":" + q(sec);
     },
 
     onCard: function() {

@@ -3,14 +3,14 @@
 # Vendor: Huawei
 # OS:     VRP
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 import numpy as np
-from itertools import izip_longest
+from itertools import izip, izip_longest, dropwhile, imap
 from collections import defaultdict
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -49,7 +49,83 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
-    if_types = {
+    matchers = {
+        "is_kernel_3": {
+            "version": {
+                "$gte": "3.0",
+                "$lt": "5.0"
+            }
+        },
+        "is_kernelgte_5": {
+            "version": {
+                "$gte": "5.0"
+            }
+        },
+        "is_bad_platform": {
+            "version": {
+                "$in": ["5.20"]
+            },
+            "platform": {
+                "$in": ["S5628F", "S5628F-HI"]
+            }
+        }
+    }
+
+    rx_ver = re.compile(r"((?:(\d)\.(\d+))\s*)?\(?(?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)(?:B(\d+)|)(?:SPC(\d+)|)\)?")
+    rx_ver_kern = re.compile(r"\s*(\d)\.(\d+)\s*")
+    rx_ver_rel = re.compile(r"\(?(?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)(?:B(\d+)|)(?:SPC(\d+)|)\)?")
+
+    def cmp_version(self, x, y):
+        """
+        Huawei VRP system software version is divided into "core version" (or "kernel") and "release" two.
+        We are talking about is the VRP 1.x, 2.x, 3.x, And now VRP 5.x and 8.x versions.
+        Huawei release status of the VRP system is based on V, R, C three letters
+        (representing three different version number) were identified, the basic format is VxxxRxxxCxx:
+        * Vxxx logo products / solutions change program main product platform, called V version number.
+        * Rxxx identification for generic versions of all customers posting, known as the R version number.
+        * version of C customized version of the fast to meet the development version of R different types
+          based on customer's demand, known as the C version number.
+        [Note] the above described V version and R version number, independent number, do not influence each other.
+               It is between them and no affiliation. For example, the product can occur platform changes,
+               and functional properties remain unchanged,
+               such as the original VR version is V100R005, the new VR version V200R005.
+          In the same R version, C version of XX from 00 to 1 units numbered. If the R version number change,
+          the C version number of the XX began to re numbered 01, such as V100R001C01, V100R001C02, V100R002C01
+        :param x: [12358].x (VxxxRxxxCxxBxxx)
+        :param y: [12358].x (VxxxRxxxCxxBxxx)
+        :return: <0 , if v1<v2
+                  0 , if v1==v2
+                 >0 , if v1>v2
+               None , if v1 and v2 cannot be compared
+
+        >>> Profile().cmp_version("5.30 (V100R005C02B236)", "5.30")
+        0
+        >>> Profile().cmp_version("5.30 (V100R005C02B236)", "5.40")
+        -1
+        >>> Profile().cmp_version("R006C02", "5.30 (V100R005C02B236)")
+        1
+        >>> Profile().cmp_version("5.30 (V100R003C00SPC100)", "5.30 (V100R005C02B236)")
+        -1
+        >>> Profile().cmp_version("5.80 (V100R005C02SPC100)", "5.80 (V100R005C02B236)")
+        0
+        >>> Profile().cmp_version("5.00 (V100R005C02SPC100)", "3.80 (V100R005C02B236)")
+        1
+        >>> Profile().cmp_version("3.10 (V100R005C02SPC100)", "3.80 (V100R005C02B236)")
+        -1
+        >>> Profile().cmp_version("100", "5.30 (V100R005C02B236)")
+        """
+        print x, y
+        a, b = self.rx_ver.search(str(x)).groups()[1:], self.rx_ver.search(str(y)).groups()[1:]
+        # if set(self.rx_ver.search(x).groups()) and self.rx_ver.search(y):
+        if any(a) and any(b):
+            r = list(dropwhile(lambda s: s == 0,
+                               [(int(a) > int(b)) - (int(a) < int(b)) for a, b in izip(a, b)
+                                if a is not None and b is not None]))
+            return r[0] if r else 0
+        else:
+            return None
+
+    INTERFACE_TYPES = {
         "Aux": "tunnel",
         "Cellular": "tunnel",
         "Eth-Trunk": "aggregated",
@@ -81,12 +157,19 @@ class Profile(BaseProfile):
         "Pos": None
     }
 
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name)
+
     def generate_prefix_list(self, name, pl, strict=True):
-        p = "ip ip-prefix %s permit %%s" % name
-        if not strict:
-            p += " le 32"
-        return "undo ip ip-prefix %s\n" % name + "\n".join(
-            [p % x.replace("/", " ") for x in pl])
+        me = "ip ip-prefix %s permit %%s" % name
+        mne = "ip ip-prefix %s permit %%s le %%d" % name
+        r = ["undo ip ip-prefix %s" % name]
+        for prefix, min_len, max_len in pl:
+            if min_len == max_len:
+                r += [me % prefix]
+            else:
+                r += [mne % (prefix, max_len)]
+        return "\n".join(r)
 
     rx_interface_name = re.compile(
         r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)"
@@ -360,6 +443,4 @@ class Profile(BaseProfile):
                     self.update_dict(r[part_name]["table"][-1], field)
                 else:
                     r[part_name]["table"] += [field]
-                pass
-
         return r

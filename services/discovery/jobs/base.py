@@ -678,6 +678,8 @@ class DiscoveryCheck(object):
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
     NEIGHBOR_CACHE_VERSION = 1
+    # clean_interface settings
+    aliased_names_only = False
 
     def __init__(self, *args, **kwargs):
         super(TopologyDiscoveryCheck, self).__init__(*args, **kwargs)
@@ -690,6 +692,13 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
+        # Check object has interfaces
+        if not self.has_capability("DB | Interfaces"):
+            self.logger.info(
+                "No interfaces has been discovered. "
+                "Skipping topology check"
+            )
+            return
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
         loops = {}  # first interface, second interface
@@ -726,7 +735,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
-                if (remote_interface in loops and loops[remote_interface] == li):
+                if remote_interface in loops and loops[remote_interface] == li:
                     self.logger.info(
                         "Loop link detected: %s:%s - %s:%s",
                         self.object.name, li,
@@ -966,13 +975,19 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def clean_interface(self, object, interface):
         """
-        Finaly clean interface name
-        And convert to local conventions
-        :param object:
-        :param interface:
+        Finaly clean interface name:
+        * Check for interface alias
+        * When aliased_names_only is not set - use local name
+        :param object: ManagedObject instance
+        :param interface: interface name
         :return: Interface name or None if interface cannot be cleaned
         """
-        return self.interface_aliases.get((object.id, interface), interface)
+        i = self.interface_aliases.get((object.id, interface))
+        if i:
+            return i
+        if self.aliased_names_only:
+            return None
+        return interface
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
@@ -1041,7 +1056,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             )
             if (
                 llink.discovery_method != self.name and
-                (llink.discovery_method is None or self.is_preferable_over(llink))
+                (llink.discovery_method is None or
+                 self.is_preferable_over(local_object, remote_object, llink))
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)
@@ -1052,7 +1068,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         # Check method preferences
         if llink:
-            if self.is_preferable_over(llink):
+            if self.is_preferable_over(local_object, remote_object, llink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     llink, self.name, llink.discovery_method
@@ -1067,7 +1083,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 return
         if rlink:
-            if self.is_preferable_over(rlink):
+            if self.is_preferable_over(local_object, remote_object, rlink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     rlink, self.name, rlink.discovery_method
@@ -1310,11 +1326,19 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_object.name, remote_interface,
             )
 
-    def is_preferable_over(self, link):
+    def is_preferable_over(self, mo1, mo2, link):
         """
         Check current discovery method is preferable over link's one
+        :param mo1: Local managed object
+        :param mo2: Remote managed object
+        :param link: Existing ling
+        :returns: True, if check's method is preferabble
         """
-        return self.job.is_preferable_method(self.name, link.discovery_method)
+        if mo1.segment == mo2.segment or mo2.segment.id not in mo1.segment.get_path():
+            # Same segment, or mo1 is in upper segment. apply local segment policy
+            return mo1.segment.profile.is_preferable_method(self.name, link.discovery_method)
+        # mo2 is in upper segment, use remote segment policy
+        return mo2.segment.profile.is_preferable_method(self.name, link.discovery_method)
 
     def set_interface_alias(self, object, interface_name, alias):
         """

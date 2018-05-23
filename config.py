@@ -23,10 +23,15 @@ from noc.core.config.params import (
 
 class Config(BaseConfig):
     loglevel = MapParameter(default="info", mappings={
+        # pylint: disable=used-before-assignment
         "critical": logging.CRITICAL,
+        # pylint: disable=used-before-assignment
         "error": logging.ERROR,
+        # pylint: disable=used-before-assignment
         "warning": logging.WARNING,
+        # pylint: disable=used-before-assignment
         "info": logging.INFO,
+        # pylint: disable=used-before-assignment
         "debug": logging.DEBUG
     })
 
@@ -210,9 +215,12 @@ class Config(BaseConfig):
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
-        telemetry = BooleanParameter(default=False, help="Enable internal telemetry export to Clickhouse")
-        consul_healthchecks = BooleanParameter(default=True, help="While registering serive in consul also register health check")
-        service_registration = BooleanParameter(default=True, help="Permit consul self registration")
+        telemetry = BooleanParameter(default=False,
+                                     help="Enable internal telemetry export to Clickhouse")
+        consul_healthchecks = BooleanParameter(default=True,
+                                               help="While registering serive in consul also register health check")
+        service_registration = BooleanParameter(default=True,
+                                                help="Permit consul self registration")
         pypy = BooleanParameter(default=False)
         forensic = BooleanParameter(default=False)
 
@@ -323,6 +331,8 @@ class Config(BaseConfig):
         rs = StringParameter()
         retries = IntParameter(default=20)
         timeout = SecondsParameter(default="3s")
+        retry_writes = BooleanParameter(default=False)
+        app_name = StringParameter()
 
     class mrt(ConfigSection):
         max_concurrency = IntParameter(default=50)
@@ -359,7 +369,6 @@ class Config(BaseConfig):
         dig = StringParameter()
         vcs_path = StringParameter(default="/usr/local/bin/hg")
         repo = StringParameter(default="/var/repo")
-        config_mirror_path = StringParameter("")
         backup_dir = StringParameter(default="/var/backup")
         etl_import = StringParameter(default="/var/lib/noc/import")
         ssh_key_prefix = StringParameter(default="etc/noc_ssh")
@@ -497,6 +506,16 @@ class Config(BaseConfig):
         events_path = StringParameter(default="collections/test.events")
         profilecheck_path = StringParameter(default="collections/test.profilecheck")
 
+    class peer(ConfigSection):
+        enable_ripe = BooleanParameter(default=True)
+        enable_arin = BooleanParameter(default=True)
+        enable_radb = BooleanParameter(default=True)
+        prefix_list_optimization = BooleanParameter(default=True)
+        prefix_list_optimization_threshold = IntParameter(default=1000)
+        max_prefix_length = IntParameter(default=24)
+        rpsl_inverse_pref_style = BooleanParameter(default=False)
+
+    # pylint: disable=super-init-not-called
     def __init__(self):
         self.setup_logging()
 
@@ -527,6 +546,10 @@ class Config(BaseConfig):
                 "password": self.mongo.password,
                 "socketKeepAlive": True
             }
+            if self.mongo.app_name:
+                self._mongo_connection_args["appname"] = self.mongo.app_name
+            if self.mongo.retry_writes:
+                self._mongo_connection_args["retryWrites"] = True
             has_credentials = self.mongo.user or self.mongo.password
             if has_credentials:
                 self._mongo_connection_args["authentication_source"] = self.mongo.db
