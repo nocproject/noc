@@ -42,7 +42,7 @@ class Script(BaseScript):
     )
     rx_ver_snmp4_ne_me = re.compile(
         r"Huawei Versatile Routing Platform Software.*?"
-        r"Version (?P<version>\S+) .*?"
+        r"Version (?P<version>\S+)\s*(\(\S+\s+(?P<image>\S+)\))?.*?"
         r"\s*(?P<platform>NetEngine\s+|MultiserviceEngine\s+\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
