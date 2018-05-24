@@ -31,7 +31,7 @@ class Script(BaseScript):
     )
     rx_hw = re.compile(
         r"^\s+Hardware is (?P<hw_type>\S+)(, active is \S+)?"
-        r"(, address is (?P<mac>\S+))?\s*\n",
+        r"(,\s+address is (?P<mac>\S+))?\s*\n",
         re.MULTILINE
     )
     rx_alias = re.compile(
@@ -59,6 +59,7 @@ class Script(BaseScript):
         "Gigabit-Combo": "physical",
         "Gigabit-TX": "physical",
         "SFP": "physical",
+        "SFP+": "physical",
         "EtherChannel": "aggregated",
         "EtherSVI": "SVI"
     }
