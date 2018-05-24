@@ -53,6 +53,15 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     return record ? this.data.enableBoxDiscoveryConfig.checked
                         && record.get('id') === 'D' : true;
                 }
+            },
+            disableBeefPolicy: {
+                bind: {
+                    bindTo: '{beefPolicy.selection}',
+                    deep: true
+                },
+                get: function(record) {
+                    return record ? record.get('id') === 'D' : true;
+                }
             }
         }
     },
@@ -1416,6 +1425,55 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             },
                                             listeners: {
                                                 render: me.addTooltip
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Beef"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "beef_policy",
+                                            xtype: "combobox",
+                                            reference: "beefPolicy",
+                                            fieldLabel: __("Beef Policy"),
+                                            allowBlank: false,
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    {"id": "D", "label": __("Disabled")},
+                                                    {"id": "A", "label": __("Always Collect")},
+                                                    {"id": "C", "label": __("Collect on Change")}
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            name: "beef_storage",
+                                            xtype: "main.extstorage.LookupField",
+                                            fieldLabel: __("Storage"),
+                                            query: {
+                                                enable_beef: "True"
+                                            },
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{disableBeefPolicy}"
+                                            }
+                                        },
+                                        {
+                                            name: "beef_path_template",
+                                            xtype: "main.template.LookupField",
+                                            fieldLabel: __("Path Template"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{disableBeefPolicy}"
                                             }
                                         }
                                     ]

@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// main.extstorage Model
+// dev.quiz Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.extstorage.Model");
+console.debug("Defining NOC.dev.quiz.Model");
 
-Ext.define("NOC.main.extstorage.Model", {
+Ext.define("NOC.dev.quiz.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/main/extstorage/",
+    rest_url: "/dev/quiz/",
 
     fields: [
         {
@@ -16,23 +16,32 @@ Ext.define("NOC.main.extstorage.Model", {
             type: "string"
         },
         {
-            name: "url",
+            name: "description",
             type: "string"
         },
         {
-            name: "enable_config_mirror",
-            type: "boolean"
-        },
-        {
-            name: "enable_beef",
-            type: "boolean"
+            name: "uuid",
+            type: "string"
         },
         {
             name: "name",
             type: "string"
         },
         {
-            name: "description",
+            name: "questions",
+            type: "auto"
+        },
+        {
+            name: "revision",
+            type: "int",
+            defaultValue: 1
+        },
+        {
+            name: "changes",
+            type: "auto"
+        },
+        {
+            name: "disclaimer",
             type: "string"
         }
     ]

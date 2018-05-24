@@ -62,11 +62,10 @@ from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
+from noc.core.script.scheme import SCHEME_CHOICES
 
 # Increase whenever new field added
 MANAGEDOBJECT_CACHE_VERSION = 8
-
-scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -149,7 +148,8 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     scheme = IntegerField(
-        "Scheme", choices=scheme_choices
+        "Scheme",
+        choices=SCHEME_CHOICES
     )
     address = CharField("Address", max_length=64)
     port = IntegerField("Port", blank=True, null=True)
