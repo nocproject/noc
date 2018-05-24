@@ -42,5 +42,5 @@ class Script(GetMetricsScript):
             if "Frames" in data:
                 self.set_metric(
                     id=("Interface | Errors | Frame", ipath),
-                    value=int(data["Frame"])
+                    value=int(data["Frames"])
                 )

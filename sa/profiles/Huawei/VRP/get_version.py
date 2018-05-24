@@ -59,8 +59,7 @@ class Script(BaseScript):
 
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
 
-    def execute(self):
-        v = ""
+    def parse_version(self, v):
         match_re_list = [
             self.rx_ver,
             self.rx_ver_snmp,
@@ -68,6 +67,45 @@ class Script(BaseScript):
             self.rx_ver_snmp3,
             self.rx_ver_snmp5
         ]
+        if "NetEngine" in v or "MultiserviceEngine" in v:
+            # Use specified regex for this platform
+            match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
+        rx = self.find_re(match_re_list, v)
+        match = rx.search(v)
+        image = None
+        platform = match.group("platform")
+        # Convert NetEngine to NE
+        if platform.lower().startswith("netengine"):
+            n, p = platform.split(" ", 1)
+            platform = "NE%s" % p.strip().upper()
+        elif platform.lower().startswith("multiserviceengine"):
+            n, p = platform.split(" ", 1)
+            platform = "ME%s" % p.strip().upper()
+        # Found in AR1220 and AR1220E
+        elif platform.startswith("Huawei "):
+            n, p = platform.split(" ", 1)
+            platform = p.strip()
+        if "image" in match.groupdict():
+            image = match.group("image")
+        return platform, match.group("version"), image
+
+    def execute_snmp(self, **kwargs):
+
+        v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
+        platform, version, image = self.parse_version(v)
+
+        r = {
+            "vendor": "Huawei",
+            "platform": platform,
+            "version": version
+        }
+        if image:
+            r["version"] = "%s (%s)" % (version, image)
+            r["image"] = image
+        return r
+
+    def execute_cli(self):
+        v = ""
         if self.has_snmp():
             # Trying SNMP
             try:
@@ -81,29 +119,14 @@ class Script(BaseScript):
                 v = self.cli("display version", cached=True)
             except self.CLISyntaxError:
                 raise self.NotSupportedError()
-        if "NetEngine" in v or "MultiserviceEngine" in v:
-            # Use specified regex for this platform
-            match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
-        rx = self.find_re(match_re_list, v)
-        match = rx.search(v)
-        platform = match.group("platform")
-        # Convert NetEngine to NE
-        if platform.lower().startswith("netengine"):
-            n, p = platform.split(" ", 1)
-            platform = "NE%s" % p.strip().upper()
-        elif platform.lower().startswith("multiserviceengine"):
-            n, p = platform.split(" ", 1)
-            platform = "ME%s" % p.strip().upper()
-        # Found in AR1220 and AR1220E
-        elif platform.startswith("Huawei "):
-            n, p = platform.split(" ", 1)
-            platform = p.strip()
+
+        platform, version, image = self.parse_version(v)
         r = {
             "vendor": "Huawei",
             "platform": platform,
-            "version": match.group("version")
+            "version": version
         }
-        if "image" in match.groupdict():
-            image = match.group("image")
-            r["attributes"] = {"image": image}
+        if image:
+            r["version"] = "%s (%s)" % (version, image)
+            r["image"] = image
         return r
