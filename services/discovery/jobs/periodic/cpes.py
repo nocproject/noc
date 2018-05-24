@@ -13,6 +13,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.utils import get_alarm
 
@@ -38,6 +39,8 @@ class CPESTATUSCheck(DiscoveryCheck):
             self.ericsson_bsc()
         if self.object.profile.name == "Ericsson.BS":
             self.ericsson_bs()
+        if self.object.profile.name == "Huawei.U2000":
+            self.huawei_u2000()
 
     def ericsson_bsc(self):
         self.logger.info("Checking Alarm CPEs")
@@ -262,6 +265,76 @@ class CPESTATUSCheck(DiscoveryCheck):
             # AlarmEscalation.watch_escalations(ealarm)
             # self.logger.info("Start watch escalation for Alarm %s",
             #                 alarmclass.name)
+        # Search alarm in bscalarm, if alarm not in bscalarm, close!
+        closealarmapt = set(aptalarms.keys()) - set(bscaptalarm.keys())
+        for ca in closealarmapt:
+            al = aptalarms[ca]
+            if al:
+                # Clear alarm
+                self.logger.info("Alarm are OK. Clearing alarm %s", al)
+                al.clear_alarm("Alarm are OK")
+            else:
+                pass
+
+    def huawei_u2000(self):
+        self.logger.info("Checking Alarm BS")
+        co_id = self.object.id  # controller id
+        result = self.object.scripts.get_cpe_status()  # result get_cpe_status
+        # System Alarms
+        aptalarms = {str(a.vars["alfid"]): a for a in
+                     ActiveAlarm.objects.filter(vars__bscid=co_id,
+                                                vars__alfid__exists=True)}
+        print aptalarms.keys()
+        # Controller Alarms
+        bscaptalarm = {str(cpe["alfid"]): cpe for cpe in result}
+        print bscaptalarm.keys()
+        # Check if System Alarm = Controller Alarms
+        lockapt = set(aptalarms.keys()).intersection(set(bscaptalarm))
+        if lockapt:
+            self.logger.debug("OK")
+        # Search bscalarm in alarm, if bscalarm not in alarm, create!
+        addalarmapt = set(bscaptalarm.keys()) - set(aptalarms.keys())
+        for aa in addalarmapt:
+            # Check bscname, if not bscname. Create alarm fo bs and sector
+            if bscaptalarm[aa]["bsname"] != self.object.name:
+                mo = self.find_cpe(bscaptalarm[aa]["bsname"], co_id)
+                if mo:
+                    # Check bscname, if not bscname. Create alarm fo bs and sector
+                    severity = AlarmSeverity.objects.filter(name=bscaptalarm[aa]["alcls"]).first()
+                    if not severity:
+                        severity = AlarmSeverity.objects.get(name="INFO")
+                    alarmclass = AlarmClass.objects.filter(name="BS | PM | %s" % bscaptalarm[aa]["alarm"]).first()
+                    if not alarmclass:
+                        alarmclass = AlarmClass.objects.get(name="BS | PM | UNKNOWN")
+                    alarm = ActiveAlarm(
+                        timestamp=datetime.datetime.now(),
+                        managed_object=mo.id,
+                        alarm_class=alarmclass,
+                        severity=severity.severity,
+                        vars={
+                            "alcls": bscaptalarm[aa]["alcls"],
+                            "bscalarm": bscaptalarm[aa]["alarm"],
+                            "alfid": bscaptalarm[aa]["alfid"],
+                            "alnr": bscaptalarm[aa]["alnr"],
+                            "altime": bscaptalarm[aa]["altime"],
+                            "alinfo": bscaptalarm[aa]["alinfo"],
+                            "sp": bscaptalarm[aa]["sp"],
+                            "moi": bscaptalarm[aa]["moi"],
+                            "moc": bscaptalarm[aa]["moc"],
+                            "bscid": co_id
+                        }
+                    )
+                    alarm.save()
+                    self.logger.info("Raising alarm %s %s for %s with severity %s",
+                                     alarmclass.name, alarm.id, mo.name, alarm.severity)
+                    # print alarm.id
+                    # ealarm = get_alarm(alarm.id)
+                    # AlarmEscalation.watch_escalations(ealarm)
+                    # self.logger.info("Start watch escalation for Alarm %s",
+                    #                 alarmclass.name)
+
+                else:
+                    self.logger.info("No MO %s", bscaptalarm[aa]["bsname"])
         # Search alarm in bscalarm, if alarm not in bscalarm, close!
         closealarmapt = set(aptalarms.keys()) - set(bscaptalarm.keys())
         for ca in closealarmapt:

@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Ericsson.BS.get_capabilities
+# Huawei.U2000.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # NOC modules
-from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "Ericsson.BC.get_capabilities"
-    cache = True
+    name = "Huawei.U20000.get_version"
+    interface = IGetVersion
 
-    def execute_platform_cli(self, caps):
-        caps["Mobile | BS"] = True
+    def execute(self):
+        return None
