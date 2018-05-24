@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-        config = self.cli("config")
+        self.cli("config")
         show = self.cli("show")
-        exit = self.cli("exit")
+        self.cli("exit")
         return self.cleaned_config(show)
