@@ -115,6 +115,19 @@ class Script(BaseScript):
             lldp += [match.group("name")]
         return lldp
 
+    def execute_snmp(self):
+        vlans = self.scripts.get_switchport()
+        r = super(Script, self).execute_snmp()
+        if vlans:
+            vlans = {v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])} for v in vlans}
+            for fi in r:
+                for iface in fi["interfaces"]:
+                    if iface["name"] in vlans:
+                        if vlans[iface["name"]]["untagged"]:
+                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]]["untagged"]
+                        iface["subinterfaces"][0]["tagged_vlans"] = vlans[iface["name"]]["tagged"]
+        return r
+
     def execute_cli(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = {}

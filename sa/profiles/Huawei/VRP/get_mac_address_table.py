@@ -32,7 +32,7 @@ class Script(BaseScript):
         elif version.startswith("5"):
             rx_line = rx_vrp5line
         else:
-            raise self.NotSupportedError()
+            rx_line = rx_vrp5line
         r = []
         for l in self.cli(cmd).splitlines():
             match = rx_line.match(l.strip())
