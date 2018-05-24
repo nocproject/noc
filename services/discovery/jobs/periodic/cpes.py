@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import datetime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -284,10 +285,10 @@ class CPESTATUSCheck(DiscoveryCheck):
         aptalarms = {str(a.vars["alfid"]): a for a in
                      ActiveAlarm.objects.filter(vars__bscid=co_id,
                                                 vars__alfid__exists=True)}
-        print aptalarms.keys()
+        # print (aptalarms.keys())
         # Controller Alarms
         bscaptalarm = {str(cpe["alfid"]): cpe for cpe in result}
-        print bscaptalarm.keys()
+        # print (bscaptalarm.keys())
         # Check if System Alarm = Controller Alarms
         lockapt = set(aptalarms.keys()).intersection(set(bscaptalarm))
         if lockapt:

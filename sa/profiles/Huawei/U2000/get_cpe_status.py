@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -132,5 +133,5 @@ class Script(BaseScript):
                             result += [res]
             else:
                 continue
-        print len(result)
+
         return result
