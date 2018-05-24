@@ -101,7 +101,7 @@ class Script(BaseScript):
         }
         if image:
             r["version"] = "%s (%s)" % (version, image)
-            r["attributes"] = {"image": image}
+            r["image"] = image
         return r
 
     def execute_cli(self):
@@ -128,5 +128,5 @@ class Script(BaseScript):
         }
         if image:
             r["version"] = "%s (%s)" % (version, image)
-            r["attributes"] = {"image": image}
+            r["image"] = image
         return r
