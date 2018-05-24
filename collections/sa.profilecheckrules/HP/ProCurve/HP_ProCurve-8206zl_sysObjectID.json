@@ -1,0 +1,13 @@
+{
+    "name": "HP | ProCurve | 8206zl sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "0a2d910f-0ada-441c-b471-a9e2d42af6a5",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.11.2.3.7.11.113",
+    "action": "match",
+    "profile__name": "HP.ProCurve"
+}
