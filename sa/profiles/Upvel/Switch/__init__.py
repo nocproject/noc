@@ -8,7 +8,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import re
+# import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
