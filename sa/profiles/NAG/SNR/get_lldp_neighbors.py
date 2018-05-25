@@ -86,7 +86,7 @@ class Script(BaseScript):
                 }
                 n = {"remote_chassis_id_subtype": match.group("rem_cid_type")}
                 n["remote_port_subtype"] = {
-                    #"Interface alias": 1,
+                    "Interface alias": 1,
                     #"Port component": 2,
                     "MAC address": 3,
                     "Interface": 5,
