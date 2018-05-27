@@ -1,0 +1,84 @@
+{
+  "bars": false,
+  "timeFrom": null,
+  "links": [],
+  "thresholds": [],
+  "spaceLength": 10,
+  "nullPointMode": "null",
+  "renderer": "flot",
+  "linewidth": 1,
+  "steppedLine": false,
+  "id": "9d647f97-a2c8-4cb5-9521-20aa106d39c1",
+  "fill": 1,
+  "title": "Disk | Usage",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "individual"
+  },
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": true,
+    "values": true,
+    "alignAsTable": true,
+    "total": false
+  },
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "disk",
+      "intervalFactor": 1,
+      "query": "SELECT \n  $timeSeries as t, \n  avg(disk_usage_b) as `Disk | Usage | Bytes`\n  FROM \n  $table \n  WHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series"
+    }
+  ],
+  "yaxes": [
+    {
+      "logBase": 1,
+      "format": "bytes",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    }
+  ],
+  "xaxis": {
+    "buckets": null,
+    "values": [],
+    "mode": "time",
+    "name": null,
+    "show": true
+  },
+  "seriesOverrides": [],
+  "percentage": false,
+  "type": "graph",
+  "dashes": false,
+  "dashLength": 10,
+  "stack": false,
+  "timeShift": null,
+  "aliasColors": {
+    "Disk | Usage | Bytes": "#5195ce"
+  },
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+  "span": 6
+}

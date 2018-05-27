@@ -7,11 +7,11 @@
     },
     {
       "color": "#508642",
-      "text": "On Air"
+      "text": "Recording"
     },
     {
       "color": "#e24d42",
-      "text": "Not Broadcasting"
+      "text": "Not Recording"
     }
   ],
   "datasource": null,
@@ -19,7 +19,7 @@
   "expandFromQueryS": 600,
   "extendLastValue": true,
   "highlightOnMouseover": true,
-  "id": "9c8319ce-0616-400f-9c13-20e67c6291fc",
+  "id": "9ff96872-0cf1-4758-8f20-ea6443cc7bf8",
   "legendSortBy": "-ms",
   "lineColor": "rgba(128, 128, 128, 1.0)",
   "links": [],
@@ -59,7 +59,7 @@
       "dateTimeColDataType": "ts",
       "datetimeLoading": false,
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((concat('Video | Broadcast ',p), d)) AS groupArr\n    FROM \n    ( SELECT \n          $timeSeries as t, \n        path[3] as p, \n        avg(video_broadcast) d \n        from $table \n        WHERE \n            $timeFilter\n            AND managed_object=$bi_id\n            AND path[3] in ('Sub', 'Pri')\n        GROUP BY t, path[3]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+      "query": "SELECT \n    t, \n    groupArray((concat('Video | Record | Status ',p), d)) AS groupArr\n    FROM \n    ( SELECT \n          $timeSeries as t, \n        path[3] as p, \n        avg(video_record) d \n        from $table \n        WHERE \n            $timeFilter\n            AND managed_object=$bi_id\n            AND path[3] in ('Sub', 'Pri')\n        GROUP BY t, path[3]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
       "table": "video",
@@ -67,17 +67,17 @@
     }
   ],
   "textSize": 24,
-  "title": "Video | Broadcast",
+  "title": "Video | Record | Status",
   "type": "natel-discrete-panel",
   "valueMaps": [
     {
       "op": "=",
-      "text": "On Air",
+      "text": "Recording",
       "value": "1"
     },
     {
       "op": "=",
-      "text": "Not Broadcasting",
+      "text": "Not Recording",
       "value": "0"
     }
   ],
