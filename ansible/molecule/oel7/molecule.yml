@@ -34,9 +34,6 @@ provisioner:
     ANSIBLE_CALLBACK_WHITELIST: timer,profile_tasks
     ANSIBLE_LOAD_CALLBACK_PLUGINS: "True"
     ANSIBLE_FORCE_COLOR: "True"
-    MINIO_URL: $MINIO_URL
-    MINIO_KEY: $MINIO_KEY
-    MINIO_SECRET: $MINIO_SECRET
   playbooks:
     create: ../common/create.yml
     prepare: ../common/prepare.yml
@@ -47,8 +44,6 @@ provisioner:
   options:
     i: inv.yml
     e: tower_dist_dir=/tmp
-    e: rhel_register_rhel_subscription_username=${rhel_subscription_username}  # yamllint disable-line rule:key-duplicates
-    e: rhel_register_rhel_subscription_password=${rhel_subscription_password}  # yamllint disable-line rule:key-duplicates
   lint:
     name: ansible-lint
 scenario:

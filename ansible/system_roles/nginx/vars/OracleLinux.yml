@@ -1,0 +1,4 @@
+# CentOS settings
+---
+nginx_user: nginx
+nginx_permit_firewall: "True"

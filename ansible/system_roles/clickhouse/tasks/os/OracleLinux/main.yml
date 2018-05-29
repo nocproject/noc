@@ -1,0 +1,24 @@
+---
+- name: Add altinity repository
+  yum_repository:
+    name: altinity_clickhouse
+    description: altinity_clickhouse
+    baseurl: https://packagecloud.io/altinity/clickhouse/el/{{ ansible_distribution_major_version }}/$basearch
+    gpgcheck: "False"
+    enabled: "True"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
+- name: Install CH
+  yum:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - clickhouse-client
+    - clickhouse-server-common
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"

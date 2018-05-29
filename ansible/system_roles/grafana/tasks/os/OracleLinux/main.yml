@@ -1,0 +1,28 @@
+---
+- name: Add Grafana repository
+  yum_repository:
+    name: grafana
+    description: Grafana repository
+    baseurl: https://packagecloud.io/grafana/stable/el/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    gpgcheck: "True"
+    gpgkey: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    enabled: "True"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
+- name: Install Grafana
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: "True"
+  with_items:
+    - "grafana-{{grafana_version}}"
+    - open-sans-fonts
+  tags:
+    - requirements
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
