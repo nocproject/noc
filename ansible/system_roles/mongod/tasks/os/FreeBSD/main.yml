@@ -12,7 +12,7 @@
 
 - name: Install MongoDB
   pkgng:
-    name: "mongodb32"
+    name: "mongodb{{mongo_version|replace('.','')}}"
     state: present
 
 - name: Add newsyslogd rules
