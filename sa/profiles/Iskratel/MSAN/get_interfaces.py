@@ -73,7 +73,7 @@ class Script(BaseScript):
                 for match in self.rx_if_pvc.finditer(c):
                     for match1 in self.rx_pvc.finditer(match.group("pvcs")):
                         pvc += [{
-                            "port":match.group("port"),
+                            "port": match.group("port"),
                             "vpi": int(match1.group("vpi")),
                             "vci": int(match1.group("vci")),
                             "vlan": int(match1.group("vlan"))
@@ -83,7 +83,7 @@ class Script(BaseScript):
                 c = self.cli("show pvc all")
                 for match in self.rx_pvc1.finditer(c):
                     pvc += [{
-                        "port":match.group("port"),
+                        "port": match.group("port"),
                         "vpi": int(match.group("vpi")),
                         "vci": int(match.group("vci"))
                     }]
@@ -107,7 +107,7 @@ class Script(BaseScript):
             }
             descr = match.group('descr').strip()
             if descr and not descr.startswith('Short ') \
-            and not descr.startswith('Long '):
+                    and not descr.startswith('Long '):
                 i["description"] = descr
             try:
                 c = self.cli("show port description %s" % ifname)
@@ -132,7 +132,7 @@ class Script(BaseScript):
             for p in pvc:
                 match1 = self.rx_port1.search(p["port"])
                 if p["port"] == ifname \
-                or (match1 and match1.group("port") == ifname):
+                        or (match1 and match1.group("port") == ifname):
                     s = {
                         "name": p["port"],
                         "admin_status": match.group('admin_status') == "Enable",
@@ -162,14 +162,14 @@ class Script(BaseScript):
                 ifname = match.group("port")
                 for i in interfaces:
                     if i["name"] == ifname \
-                    and len(i["subinterfaces"]) == 1:
+                            and len(i["subinterfaces"]) == 1:
                         if match.group("type") == "Untagged":
-                            i["subinterfaces"][0]["untagged"] = v["vlan_id"]
+                            i["subinterfaces"][0]["untagged_vlan"] = v["vlan_id"]
                         if match.group("type") == "Tagged":
-                            if "tagged" in i["subinterfaces"][0]:
-                                i["subinterfaces"][0]["tagged"] += [v["vlan_id"]]
+                            if "tagged_vlans" in i["subinterfaces"][0]:
+                                i["subinterfaces"][0]["tagged_vlans"] += [v["vlan_id"]]
                             else:
-                                i["subinterfaces"][0]["tagged"] = [v["vlan_id"]]
+                                i["subinterfaces"][0]["tagged_vlans"] = [v["vlan_id"]]
         match = self.rx_svi.search(self.cli("show network"))
         if match:
             i = {
