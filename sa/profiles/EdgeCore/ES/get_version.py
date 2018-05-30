@@ -150,6 +150,8 @@ class Script(BaseScript):
                 platform = "ECS4210-12T"
             elif platform == "1.3.6.1.4.1.259.10.1.42.104":
                 platform = "ECS4210-12P"
+            elif platform == "1.3.6.1.4.1.259.6.10.50":
+                platform = "ES3526X"
             else:
                 raise self.NotSupportedError(platform)
         r = {
