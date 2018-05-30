@@ -21,7 +21,7 @@
           Details:  http://repo.mongodb.org/apt/debian/dists/
       when:
         - ansible_distribution == "Debian"
-        - ansible_distribution_version is version_compare(9.0, '>=')
+        - ansible_distribution_version is version_compare(10.0, '>=')
   when:
     - has_svc_mongod is defined
   tags:
