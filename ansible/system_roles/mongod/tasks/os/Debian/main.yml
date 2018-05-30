@@ -8,6 +8,7 @@
     - 7F0CEB10
     - EA312927
     - 0C49F3730359A14518585931BC711F9BA15703C6
+    - 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
