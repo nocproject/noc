@@ -33,16 +33,18 @@ from noc.sa.models.administrativedomain import AdministrativeDomain as Administr
 
 
 class Services(NestedModel):
-    profile = ReferenceField(ServiceProfile, description="Profile")
+    profile = StringField(description="Profile Name")
     summary = UInt32Field(description="Summary")
 
 
 class Subscribers(NestedModel):
-    profile = ReferenceField(SubscriberProfile, description="Profile")
+    profile = StringField(description="Profile Name")
     summary = UInt32Field(description="Summary")
 
 
 class Alarms(Model):
+    FIELD_CONVERTER = {"services": "arrayMap(x -> concat(services.profile[indexOf(services.summary, x)], ':', toString(x)), services.summary)",
+                       "subscribers": "arrayMap(x -> concat(subscribers.profile[indexOf(subscribers.summary, x)], ':', toString(x)), subscribers.summary)"}
     class Meta:
         db_table = "alarms"
         engine = MergeTree("date", ("ts", "managed_object"))
@@ -82,9 +84,11 @@ class Alarms(Model):
     y = Float64Field(description=_("Latitude"))
     services = NestedField(Services, description="Services")
     subscribers = NestedField(Subscribers, description="Subscribers")
+    location = StringField(description="Location")
 
     @classmethod
     def transform_query(cls, query, user):
+        print("Transform query", query)
         if not user or user.is_superuser:
             return query  # No restrictions
         # Get user domains
