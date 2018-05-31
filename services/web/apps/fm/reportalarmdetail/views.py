@@ -9,7 +9,6 @@
 # Python modules
 import datetime
 import csv
-import tempfile
 # Third-party modules
 from django.http import HttpResponse
 import StringIO
@@ -23,6 +22,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.managedobject import ManagedObject
+from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectpath import ObjectPath
@@ -33,6 +33,7 @@ from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+
 
 class ReportAlarmDetailApplication(ExtApplication):
     menu = _("Reports") + "|" + _("Alarm Detail")
@@ -56,8 +57,8 @@ class ReportAlarmDetailApplication(ExtApplication):
               "selector": StringParameter(required=False),
               "ex_selector": StringParameter(required=False),
               "columns": StringParameter(required=False),
-              "format": StringParameter(choices=["csv", "xlsx"])
-          })
+              "format": StringParameter(choices=["csv", "xlsx"])}
+          )
     def api_report(self, request, from_date, to_date, format,
                    min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
                    segment=None, administrative_domain=None, selector=None,
@@ -89,49 +90,54 @@ class ReportAlarmDetailApplication(ExtApplication):
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
 
-        cols = [
-            "id",
-            "root_id",
-            "from_ts",
-            "to_ts",
-            "duration_sec",
-            "object_name",
-            "object_address",
-            "object_profile",
-            "object_admdomain",
-            "object_platform",
-            "object_version",
-            "alarm_class",
-            "objects",
-            "subscribers",
-            "tt",
-            "escalation_ts",
-            "container_address"
-        ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
-            "segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+        cols = ["id",
+                "root_id",
+                "from_ts",
+                "to_ts",
+                "duration_sec",
+                "object_name",
+                "object_address",
+                "object_profile",
+                "object_admdomain",
+                "object_platform",
+                "object_version",
+                "alarm_class",
+                "alarm_subject",
+                "maintenance",
+                "objects",
+                "subscribers",
+                "tt",
+                "escalation_ts",
+                "container_address"] + \
+               ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + \
+               ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         header_row = [
-         "ID",
-         _("ROOT_ID"),
-         _("FROM_TS"),
-         _("TO_TS"),
-         _("DURATION_SEC"),
-         _("OBJECT_NAME"),
-         _("OBJECT_ADDRESS"),
-         _("OBJECT_PROFILE"),
-         _("OBJECT_ADMDOMAIN"),
-         _("OBJECT_PLATFORM"),
-         _("OBJECT_VERSION"),
-         _("ALARM_CLASS"),
-         _("OBJECTS"),
-         _("SUBSCRIBERS"),
-         _("TT"),
-         _("ESCALATION_TS"),
-         _("CONTAINER_ADDRESS")
-        ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
-            "SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+            "ID",
+            _("ROOT_ID"),
+            _("FROM_TS"),
+            _("TO_TS"),
+            _("DURATION_SEC"),
+            _("OBJECT_NAME"),
+            _("OBJECT_ADDRESS"),
+            _("OBJECT_PROFILE"),
+            _("OBJECT_ADMDOMAIN"),
+            _("OBJECT_PLATFORM"),
+            _("OBJECT_VERSION"),
+            _("ALARM_CLASS"),
+            _("ALARM_SUBJECT"),
+            _("MAINTENANCE"),
+            _("OBJECTS"),
+            _("SUBSCRIBERS"),
+            _("TT"),
+            _("ESCALATION_TS"),
+            _("CONTAINER_ADDRESS")] + \
+            ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + \
+            ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         if columns:
+            if "maintenance" in columns:
+                maintenance = Maintenance.currently_affected()
             cmap = []
             for c in columns.split(","):
                 try:
@@ -157,20 +163,23 @@ class ReportAlarmDetailApplication(ExtApplication):
             except bson.errors.InvalidId:
                 pass
 
+        ads = []
         if administrative_domain:
-            administrative_domain = [int(administrative_domain)]
-            ads = AdministrativeDomain.get_nested_ids(administrative_domain[0])
-            mos = mos.filter(administrative_domain__in=ads)
+            if administrative_domain.isdigit():
+                administrative_domain = [int(administrative_domain)]
+                ads = AdministrativeDomain.get_nested_ids(administrative_domain[0])
 
         if not request.user.is_superuser:
             user_ads = UserAccess.get_domains(request.user)
-            mos = mos.filter(
-                administrative_domain__in=user_ads)
-            if administrative_domain:
+            if administrative_domain and ads:
                 if administrative_domain[0] not in user_ads:
-                    administrative_domain = user_ads
+                    ads = list(set(ads) & set(user_ads))
+                else:
+                    ads = administrative_domain
             else:
-                administrative_domain = user_ads
+                ads = user_ads
+        if ads:
+            mos = mos.filter(administrative_domain__in=ads)
         if selector:
             selector = ManagedObjectSelector.get_by_id(int(selector))
             mos = mos.filter(selector.Q)
@@ -179,9 +188,9 @@ class ReportAlarmDetailApplication(ExtApplication):
             mos = mos.exclude(ex_selector.Q)
 
         # Working if Administrative domain set
-        if administrative_domain:
+        if ads:
             try:
-                q["adm_path"] = {"$in": administrative_domain}
+                q["adm_path"] = {"$in": ads}
                 # @todo More 2 level hierarhy
             except bson.errors.InvalidId:
                 pass
@@ -196,8 +205,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         if source in ["archive", "both"]:
             # Archived Alarms
             for a in ArchivedAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort(
-                    [("timestamp", 1)]):
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort([("timestamp", 1)]):
                 dt = a["clear_timestamp"] - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 if duration and duration < min_duration:
@@ -237,6 +245,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     attr_res[mo.id][2] if attr else "",
                     attr_res[mo.id][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
+                    ArchivedAlarm.objects.get(id=a["_id"]).subject,
+                    "Yes" if mo.id in maintenance else "No",
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
@@ -246,8 +256,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         # Active Alarms
         if source in ["active", "both"]:
             for a in ActiveAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort(
-                    [("timestamp", 1)]):
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort([("timestamp", 1)]):
                 dt = datetime.datetime.now() - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 if duration and duration < min_duration:
@@ -288,6 +297,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     attr_res[mo.id][2] if attr else "",
                     attr_res[mo.id][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
+                    ActiveAlarm.objects.get(id=a["_id"]).subject,
+                    "Yes" if mo.id in maintenance else "NO",
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
