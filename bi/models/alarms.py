@@ -31,7 +31,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain as Administr
 
 
 class Alarms(Model):
-    class Meta:
+    class Meta(object):
         db_table = "alarms"
         engine = MergeTree("date", ("ts", "managed_object"))
 
