@@ -208,7 +208,8 @@ class ReportAlarmDetailApplication(ExtApplication):
             for a in ArchivedAlarm._get_collection().with_options(
                     read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
                     {"$match": match},
-                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]}, 1000]}}},
+                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]},
+                                                             1000]}}},
                     {"$match": match_duration},
                     # {"$sort": {"timestamp": 1}}
                     ]):
@@ -265,7 +266,8 @@ class ReportAlarmDetailApplication(ExtApplication):
             for a in ActiveAlarm._get_collection().with_options(
                     read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
                     {"$match": match},
-                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]}, 1000]}}},
+                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]},
+                                                             1000]}}},
                     {"$match": match_duration},
                     {"$sort": {"timestamp": 1}}]):
 
