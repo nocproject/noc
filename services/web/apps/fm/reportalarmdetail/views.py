@@ -148,18 +148,17 @@ class ReportAlarmDetailApplication(ExtApplication):
             cmap = list(range(len(cols)))
 
         r = [translate_row(header_row, cmap)]
-        q = {
-            "timestamp": {
-                "$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"),
-                "$lt": datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
-            }
-        }
+        match = {"timestamp": {"$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"),
+                               "$lt": datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)}}
+        match_duration = {"duration": {"$gte": min_duration}}
+        if max_duration is not 0:
+            match_duration = {"duration": {"$gte": min_duration, "$lt": max_duration}}
 
         mos = ManagedObject.objects.filter(is_managed=True)
 
         if segment:
             try:
-                q["segment_path"] = bson.ObjectId(segment)
+                match["segment_path"] = bson.ObjectId(segment)
             except bson.errors.InvalidId:
                 pass
 
@@ -178,6 +177,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     ads = administrative_domain
             else:
                 ads = user_ads
+        else:
+            ads = administrative_domain
         if ads:
             mos = mos.filter(administrative_domain__in=ads)
         if selector:
@@ -190,14 +191,14 @@ class ReportAlarmDetailApplication(ExtApplication):
         # Working if Administrative domain set
         if ads:
             try:
-                q["adm_path"] = {"$in": ads}
+                match["adm_path"] = {"$in": ads}
                 # @todo More 2 level hierarhy
             except bson.errors.InvalidId:
                 pass
 
         mos_id = list(mos.values_list("id", flat=True))
         if selector or ex_selector:
-            q["managed_object"] = {"$in": mos_id}
+            match["managed_object"] = {"$in": mos_id}
 
         container_lookup = ReportContainer(mos_id)
         attr = ReportObjectAttributes([])
@@ -205,7 +206,13 @@ class ReportAlarmDetailApplication(ExtApplication):
         if source in ["archive", "both"]:
             # Archived Alarms
             for a in ArchivedAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort([("timestamp", 1)]):
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
+                    {"$match": match},
+                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]}, 1000]}}},
+                    {"$match": match_duration},
+                    # {"$sort": {"timestamp": 1}}
+                    ]):
+
                 dt = a["clear_timestamp"] - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 if duration and duration < min_duration:
@@ -256,8 +263,12 @@ class ReportAlarmDetailApplication(ExtApplication):
         # Active Alarms
         if source in ["active", "both"]:
             for a in ActiveAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort([("timestamp", 1)]):
-                dt = datetime.datetime.now() - a["timestamp"]
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
+                    {"$match": match},
+                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]}, 1000]}}},
+                    {"$match": match_duration},
+                    {"$sort": {"timestamp": 1}}]):
+
                 duration = dt.days * 86400 + dt.seconds
                 if duration and duration < min_duration:
                     continue
