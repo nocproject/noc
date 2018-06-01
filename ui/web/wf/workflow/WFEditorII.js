@@ -27,6 +27,33 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         me.menuPosition = {x: 0, y: 0};
         me.stateWidth = 100;
         me.stateHeight = 40;
+        me.inspector = {
+            xtype: "form",
+            itemId: "inspector",
+            flex: 1,
+            scrollable: "vertical",
+            bodyPadding: '10',
+            trackResetOnLoad: true,
+            defaults: {
+                labelAlign: "top",
+                width: "100%"
+            },
+            // blur: me.onSubmitInspector,
+            // listeners: {
+            //     scope: me,
+            //     // deactivate: me.onSubmitInspector,
+            //     statesave: me.onSubmitInspector
+            // },
+            buttons: [
+                {
+                    text: __("Submit"),
+                    disabled: true,
+                    formBind: true,
+                    scope: me,
+                    handler: me.onSubmitInspector
+                }
+            ]
+        };
         Ext.apply(me, {
             tbar: [
                 me.getCloseButton(),
@@ -49,32 +76,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                     itemId: "container",
                     flex: 4
                 },
-                {
-                    xtype: "form",
-                    itemId: "inspector",
-                    flex: 1,
-                    scrollable: "vertical",
-                    bodyPadding: '10',
-                    defaults: {
-                        labelAlign: "top",
-                        width: "100%"
-                    },
-                    blur: me.onSubmitInspector,
-                    listeners: {
-                        scope: me,
-                        // deactivate: me.onSubmitInspector,
-                        statesave: me.onSubmitInspector
-                    },
-                    buttons: [
-                        {
-                            text: __("Submit"),
-                            disabled: true,
-                            formBind: true,
-                            scope: me,
-                            handler: me.onSubmitInspector
-                        }
-                    ]
-                }
+                me.inspector
             ]
         });
         me.callParent();
@@ -315,8 +317,16 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         record.set(data);
         me.clearInspector(inspector);
         inspector.add(fields);
+
+        fields = fields.map(function(field) {
+            if(data.hasOwnProperty(field.name)) {
+                field.value = data[field.name];
+            }
+            return field;
+        });
         inspector.loadRecord(record);
         inspector.setTitle(title);
+        console.log(inspector.isDirty());
     },
     //
     showWorkflowInspector: function(inspector, data) {
