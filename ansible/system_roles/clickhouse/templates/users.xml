@@ -18,6 +18,7 @@
         <readonly>
             <readonly>1</readonly>
             <max_query_size>{{ clickhouse_query_size }}</max_query_size>
+            <max_ast_elements>{{ clickhouse_max_ast_elements }}</max_ast_elements>
         </readonly>
     </profiles>
 
