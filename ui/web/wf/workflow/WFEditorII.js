@@ -27,23 +27,22 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         me.menuPosition = {x: 0, y: 0};
         me.stateWidth = 100;
         me.stateHeight = 40;
+        me.isIspectorDirty = false;
         me.inspector = {
             xtype: "form",
             itemId: "inspector",
             flex: 1,
             scrollable: "vertical",
             bodyPadding: '10',
-            trackResetOnLoad: true,
+            // trackResetOnLoad: true,
             defaults: {
                 labelAlign: "top",
                 width: "100%"
             },
-            // blur: me.onSubmitInspector,
-            // listeners: {
-            //     scope: me,
-            //     // deactivate: me.onSubmitInspector,
-            //     statesave: me.onSubmitInspector
-            // },
+            listeners: {
+                scope: me,
+                dirtychange: me.isInspectorDirty
+            },
             buttons: [
                 {
                     text: __("Submit"),
@@ -75,8 +74,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                     xtype: "container",
                     itemId: "container",
                     flex: 4
-                },
-                me.inspector
+                }
             ]
         });
         me.callParent();
@@ -155,8 +153,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
     },
     //
     draw: function(data) {
-        var me = this, x = 200, y = 40,
-            inspector = me.getComponent("inspector");
+        var me = this, x = 200, y = 40;
         var stateByName = function(name) {
             return me.graph.getElements().filter(function(element) {
                 return element.attr("label/text") === name;
@@ -203,7 +200,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
             edgeSep: 80,
             rankDir: "TB"
         });
-        me.showWorkflowInspector(inspector, me.workflow);
+        me.showWorkflowInspector(me.workflow);
     },
     //
     unhighlight: function() {
@@ -253,10 +250,35 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
     },
     //
     onSelect: function(view) {
+        var me = this;
+        if(me.isIspectorDirty) {
+            Ext.Msg.show({
+                title: __("Unsaved data"),
+                msg: __("You have unsaved changes in inspector. Save or cancel the changes."),
+                buttons: Ext.Msg.YESNOCANCEL,
+                icon: Ext.MessageBox.WARNING,
+                modal: true,
+                scope: me,
+                fn: function(button) {
+                    var me = this;
+                    if(button === "yes") {
+                        me.onSubmitInspector();
+                        me.select(view);
+                    }
+                    if(button === "no") {
+                        me.isIspectorDirty = false;
+                        me.select(view);
+                    }
+                }
+            });
+        } else {
+            me.select(view);
+        }
+    },
+    //
+    select: function(view) {
         var me = this,
-            inspector = me.getComponent("inspector"),
             data = me.workflow;
-
         me.unhighlight();
         if(view.model) {
             data = view.model.get("data");
@@ -265,46 +287,50 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         }
         switch(data.type) {
             case "state": {
-                this.addElementTools(view);
-                me.showStateInspector(inspector, data);
+                me.addElementTools(view);
+                me.showStateInspector(data);
                 break;
             }
             case "transition": {
-                this.addLinkTools(view);
-                me.showTransitionInspector(inspector, data);
+                me.addLinkTools(view);
+                me.showTransitionInspector(data);
                 break;
             }
             case "workflow": {
-                me.showWorkflowInspector(inspector, data);
+                me.showWorkflowInspector(data);
                 break;
             }
         }
     },
     //
-    clearInspector: function(inspector) {
-        inspector.removeAll();
+    clearInspector: function() {
+        var me = this,
+            inspector = me.getComponent("inspector");
+        if(inspector && Ext.isFunction(inspector.destroy)) {
+            inspector.destroy();
+        }
     },
     //
-    showInspector: function(data, inspector, fields, title) {
-        var me = this,
+    showInspector: function(data, fields, title) {
+        var me = this, inspector,
             record = Ext.create(me.getModelName(data.type));
 
         record.set(data);
-        me.clearInspector(inspector);
-        inspector.add(fields);
+        me.clearInspector();
 
-        // fields = fields.map(function(field) {
-        //     if(data.hasOwnProperty(field.name)) {
-        //         field.value = data[field.name];
-        //     }
-        //     return field;
-        // });
-        inspector.loadRecord(record);
-        inspector.setTitle(title);
-        // console.log(inspector.isDirty());
+        me.inspector.items = fields.map(function(field) {
+            if(data.hasOwnProperty(field.name)) {
+                field.value = data[field.name];
+            }
+            return field;
+        });
+        me.inspector.record = record;
+        me.inspector.title = title;
+        inspector = Ext.create(me.inspector);
+        me.add(inspector);
     },
     //
-    showWorkflowInspector: function(inspector, data) {
+    showWorkflowInspector: function(data) {
         var me = this,
             fields = [
                 {
@@ -355,10 +381,10 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                 }
             ];
 
-        me.showInspector(data, inspector, fields, __("Workflow Inspector"));
+        me.showInspector(data, fields, __("Workflow Inspector"));
     },
     //
-    showStateInspector: function(inspector, data) {
+    showStateInspector: function(data) {
         var me = this,
             fields = [
                 {
@@ -444,10 +470,10 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                 }
             ];
 
-        me.showInspector(data, inspector, fields, __("State Inspector"));
+        me.showInspector(data, fields, __("State Inspector"));
     },
     //
-    showTransitionInspector: function(inspector, data) {
+    showTransitionInspector: function(data) {
         var me = this,
             fields = [
                 {
@@ -515,18 +541,17 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                 }
             ];
 
-        me.showInspector(data, inspector, fields, __("Transition Inspector"));
+        me.showInspector(data, fields, __("Transition Inspector"));
     },
     //
     onSubmitInspector: function() {
         var me = this,
             data,
-            form = me.getComponent("inspector"),
-            record = form.getRecord();
-
+            form = me.getComponent("inspector");
         if(form.isValid()) {
-            form.updateRecord(record);
-            data = record.getData();
+            form.updateRecord(form.record);
+            data = form.record.getData();
+            me.isIspectorDirty = false;
             if(me.currentHighlight && me.currentHighlight.model) {
                 me.currentHighlight.model.prop({data: data});
                 switch(me.currentHighlight.model.get('data').type) {
@@ -596,20 +621,10 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
     onAddState: function(item, evt) {
         var stateName = "New State";
         var me = this, view,
-            inspector = me.getComponent("inspector"),
             rect = new joint.shapes.standard.Rectangle(),
             data = {
                 type: "state",
                 name: stateName
-                // is_default: state.is_default,
-                // update_last_seen: state.update_last_seen,
-                // is_productive: state.is_productive,
-                // ttl: state.ttl,
-                // on_enter_handlers: state.on_enter_handlers,
-                // job_handler: state.job_handler,
-                // on_leave_handlers: state.on_leave_handlers,
-                // update_expired: state.update_expired,
-                // description: state.description
             };
         rect.prop({data: data});
         rect.set("position", me.menuPosition);
@@ -620,15 +635,14 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         me.currentHighlight = view;
         view.highlight();
         me.addElementTools(view);
-        me.showStateInspector(inspector, data);
+        me.showStateInspector(data);
     },
     //
     onRemoveCell: function() {
         var me = this,
-            inspector = me.getComponent("inspector"),
             data = me.workflow;
 
-        me.showWorkflowInspector(inspector, data);
+        me.showWorkflowInspector(data);
     },
     //
     loadData: function(data, type) {
@@ -646,7 +660,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         return ret;
     },
     //
-    getModelName: function(type){
+    getModelName: function(type) {
         switch(type) {
             case "transition":
                 return "NOC.wf.transition.Model";
@@ -655,6 +669,11 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
             case "workflow":
                 return "NOC.wf.workflow.Model"
         }
+    },
+    //
+    isInspectorDirty: function() {
+        var me = this;
+        me.isIspectorDirty = true;
     },
     //
     data: function() {
