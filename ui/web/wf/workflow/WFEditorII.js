@@ -100,7 +100,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         var me = this,
             dom = me.getComponent("container").el.dom;
         me.currentHighlight = null;
-        me.workflow = {type: "workflow", name: "", description: ""};
+        me.workflow = {};
         me.graph = new joint.dia.Graph;
         me.paper = new joint.dia.Paper({
             el: dom,
@@ -163,7 +163,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
             })
         };
 
-        me.workflow = Ext.merge(me.workflow, {name: data.name, description: data.description});
+        me.workflow = me.loadData(data, "workflow");
         data.states.forEach(function(state) {
             var rect = new joint.shapes.standard.Rectangle();
             rect.set("position", {x: x, y: y});
@@ -171,21 +171,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
             rect.attr("label/text", state.name);
             // .attr("rect/magnet", true);
             // .attr("text/pointer-events", "none");
-            rect.prop({
-                data: {
-                    type: "state",
-                    is_default: state.is_default,
-                    update_last_seen: state.update_last_seen,
-                    is_productive: state.is_productive,
-                    name: state.name,
-                    ttl: state.ttl,
-                    on_enter_handlers: state.on_enter_handlers,
-                    job_handler: state.job_handler,
-                    on_leave_handlers: state.on_leave_handlers,
-                    update_expired: state.update_expired,
-                    description: state.description
-                }
-            });
+            rect.prop({data: me.loadData(state, "state")});
             rect.addTo(me.graph);
             y += 100;
         });
@@ -205,19 +191,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                             }
                         }
                     });
-                    link.prop({
-                        data: {
-                            type: "transition",
-                            from_state: transition.from_state,
-                            to_state: transition.to_state,
-                            enable_manual: transition.enable_manual,
-                            description: transition.description,
-                            handlers: transition.handlers,
-                            is_active: transition.is_active,
-                            event: transition.event,
-                            label: transition.label
-                        }
-                    });
+                    link.prop({data: me.loadData(transition, "transition")});
                     link.addTo(me.graph);
                 });
             });
@@ -311,22 +285,23 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         inspector.removeAll();
     },
     //
-    showInspector: function(record, data, inspector, fields, title) {
-        var me = this;
+    showInspector: function(data, inspector, fields, title) {
+        var me = this,
+            record = Ext.create(me.getModelName(data.type));
 
         record.set(data);
         me.clearInspector(inspector);
         inspector.add(fields);
 
-        fields = fields.map(function(field) {
-            if(data.hasOwnProperty(field.name)) {
-                field.value = data[field.name];
-            }
-            return field;
-        });
+        // fields = fields.map(function(field) {
+        //     if(data.hasOwnProperty(field.name)) {
+        //         field.value = data[field.name];
+        //     }
+        //     return field;
+        // });
         inspector.loadRecord(record);
         inspector.setTitle(title);
-        console.log(inspector.isDirty());
+        // console.log(inspector.isDirty());
     },
     //
     showWorkflowInspector: function(inspector, data) {
@@ -378,10 +353,9 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                         }
                     ]
                 }
-            ],
-            record = Ext.create("NOC.wf.workflow.Model");
+            ];
 
-        me.showInspector(record, data, inspector, fields, __("Workflow Inspector"));
+        me.showInspector(data, inspector, fields, __("Workflow Inspector"));
     },
     //
     showStateInspector: function(inspector, data) {
@@ -468,10 +442,9 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                     fieldLabel: __("On Leave Handlers"),
                     allowBlank: true
                 }
-            ],
-            record = Ext.create("NOC.wf.state.Model");
+            ];
 
-        me.showInspector(record, data, inspector, fields, __("State Inspector"));
+        me.showInspector(data, inspector, fields, __("State Inspector"));
     },
     //
     showTransitionInspector: function(inspector, data) {
@@ -540,10 +513,9 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                     fieldLabel: __("Handlers"),
                     allowBlank: true
                 }
-            ],
-            record = Ext.create("NOC.wf.transition.Model");
+            ];
 
-        me.showInspector(record, data, inspector, fields, __("Transition Inspector"));
+        me.showInspector(data, inspector, fields, __("Transition Inspector"));
     },
     //
     onSubmitInspector: function() {
@@ -574,7 +546,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                     }
                 }
             } else { // workflow
-                me.workflow = Ext.merge(me.workflow, data);
+                me.workflow = me.loadData(data, "workflow");
             }
         }
     },
@@ -609,7 +581,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         var ret = Ext.merge(Ext.clone(me.workflow), {states: states, transitions: transitions});
         delete ret['type'];
         delete ret['id'];
-        // console.log(ret);
+        console.log(ret);
         console.log(JSON.stringify(ret));
     },
     //
@@ -657,6 +629,32 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
             data = me.workflow;
 
         me.showWorkflowInspector(inspector, data);
+    },
+    //
+    loadData: function(data, type) {
+        var me = this,
+            ret = {type: type},
+            record = Ext.create(me.getModelName(type));
+        Ext.Object.each(data, function(key, value) {
+            if(["states", "transitions"].indexOf(key) === -1) {
+                if(record.get(key) !== undefined) {
+                    record.set(key, value);
+                    ret[key] = value;
+                }
+            }
+        });
+        return ret;
+    },
+    //
+    getModelName: function(type){
+        switch(type) {
+            case "transition":
+                return "NOC.wf.transition.Model";
+            case "state":
+                return "NOC.wf.state.Model";
+            case "workflow":
+                return "NOC.wf.workflow.Model"
+        }
     },
     //
     data: function() {
@@ -838,6 +836,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                 }
             ],
             name: "Default Resource",
+            is_active: true,
             description: "Default resource workflow with external provisioning"
         }
     }
