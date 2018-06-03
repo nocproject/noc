@@ -41,7 +41,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
             },
             listeners: {
                 scope: me,
-                dirtychange: me.isInspectorDirty
+                dirtychange: me.inspectorDirty
             },
             buttons: [
                 {
@@ -674,7 +674,7 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
         }
     },
     //
-    isInspectorDirty: function() {
+    inspectorDirty: function() {
         var me = this;
         me.isIspectorDirty = true;
     },
