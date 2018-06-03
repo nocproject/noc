@@ -262,8 +262,9 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
                 fn: function(button) {
                     var me = this;
                     if(button === "yes") {
-                        me.onSubmitInspector();
-                        me.select(view);
+                        if(me.onSubmitInspector()) {
+                            me.select(view);
+                        }
                     }
                     if(button === "no") {
                         me.isIspectorDirty = false;
@@ -573,7 +574,9 @@ Ext.define("NOC.wf.workflow.WFEditorII", {
             } else { // workflow
                 me.workflow = me.loadData(data, "workflow");
             }
+            return true;
         }
+        return false;
     },
     //
     onSaveClick: function() {
