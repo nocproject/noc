@@ -36,6 +36,12 @@ forms:
       label: "Max query size"
       type: int
       common: environment
+    max_ast_elements:
+      default: 10000
+      label: "Max ast size"
+      type: int
+      common: environment
+      description: "Maximum number of elements in a query syntactic tree. Should be increased on lots of managed object "
 
 services:
   clickhouse:
