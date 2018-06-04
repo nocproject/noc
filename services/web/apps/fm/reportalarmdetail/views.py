@@ -9,11 +9,12 @@
 # Python modules
 import datetime
 import csv
-# Third-party modules
-from django.http import HttpResponse
 import StringIO
 import xlsxwriter
 import bson
+# Third-party modules
+from django.http import HttpResponse
+from django.db import connection
 from pymongo import ReadPreference
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -31,8 +32,42 @@ from noc.inv.models.object import Object
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
+from noc.services.web.apps.fm.alarm.views import AlarmApplication
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+
+
+class ReportAlarmObjects(object):
+    """MO fields report"""
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.out = self.load(self.mo_ids)
+        self.element = None
+
+    @staticmethod
+    def load(mos_id):
+        query = "select sa.id, sa.name, sa.address, sa.is_managed, "
+        query += "profile, op.name as object_profile, sa.container, "
+        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
+        query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
+        query += "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id " \
+                 "and ad.id = sa.administrative_domain_id " % (", ".join(str(m) for m in mos_id))
+        # query += "LIMIT 20"
+        cursor = connection.cursor()
+        cursor.execute(query)
+        return cursor
+
+    def __iter__(self):
+        for x in self.out:
+            self.element = x[1:]
+            yield x[0]
+
+    def __getitem__(self, item):
+        # @todo Create dynamic column
+        return self.element[item]
+
+    def get_all(self):
+        return {e: self.element for e in self}
 
 
 class ReportAlarmDetailApplication(ExtApplication):
@@ -108,6 +143,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "subscribers",
                 "tt",
                 "escalation_ts",
+                "location",
                 "container_address"] + \
                ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + \
                ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
@@ -131,13 +167,12 @@ class ReportAlarmDetailApplication(ExtApplication):
             _("SUBSCRIBERS"),
             _("TT"),
             _("ESCALATION_TS"),
+            _("LOCATION"),
             _("CONTAINER_ADDRESS")] + \
             ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + \
             ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         if columns:
-            if "maintenance" in columns:
-                maintenance = Maintenance.currently_affected()
             cmap = []
             for c in columns.split(","):
                 try:
@@ -177,8 +212,6 @@ class ReportAlarmDetailApplication(ExtApplication):
                     ads = administrative_domain
             else:
                 ads = user_ads
-        else:
-            ads = administrative_domain
         if ads:
             mos = mos.filter(administrative_domain__in=ads)
         if selector:
@@ -197,10 +230,16 @@ class ReportAlarmDetailApplication(ExtApplication):
                 pass
 
         mos_id = list(mos.values_list("id", flat=True))
-        if selector or ex_selector:
-            match["managed_object"] = {"$in": mos_id}
 
+        if len(mos_id) > 70000:
+            return self.response("Request Too Large, Objects limit is 70000\n"
+                                 "You can use the BI interface (BI -> Dashboard)", status=self.TOO_LARGE)
+        match["managed_object"] = {"$in": mos_id}
+        if "maintenance" in columns.split(","):
+            maintenance = Maintenance.currently_affected()
+        moss = ReportAlarmObjects(mos_id).get_all()
         container_lookup = ReportContainer(mos_id)
+        loc = AlarmApplication([])
         attr = ReportObjectAttributes([])
         attr_res = ReportAttrResolver([])
         if source in ["archive", "both"]:
@@ -213,7 +252,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     {"$match": match_duration},
                     # {"$sort": {"timestamp": 1}}
                     ]):
-
+                if int(a["managed_object"]) not in moss:
+                    continue
                 dt = a["clear_timestamp"] - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 total_objects = sum(
@@ -224,15 +264,16 @@ class ReportAlarmDetailApplication(ExtApplication):
                     ss["summary"] for ss in a["total_subscribers"])
                 if min_subscribers and total_subscribers < min_subscribers:
                     continue
-                mo = ManagedObject.get_by_id(a["managed_object"])
-                if not mo:
-                    continue
-                path = ObjectPath.get_path(mo)
-                if path:
-                    segment_path = [NetworkSegment.get_by_id(s).name
-                                    for s in path.segment_path if NetworkSegment.get_by_id(s)]
-                    container_path = [Object.get_by_id(s).name for s in
-                                      path.container_path if Object.get_by_id(s)]
+                if "segment_" in columns.split(",") or "container_" in columns.split(","):
+                    path = ObjectPath.get_path(a["managed_object"])
+                    if path:
+                        segment_path = [NetworkSegment.get_by_id(s).name
+                                        for s in path.segment_path if NetworkSegment.get_by_id(s)]
+                        container_path = [Object.get_by_id(s).name for s in
+                                          path.container_path if Object.get_by_id(s)]
+                    else:
+                        segment_path = []
+                        container_path = []
                 else:
                     segment_path = []
                     container_path = []
@@ -242,20 +283,22 @@ class ReportAlarmDetailApplication(ExtApplication):
                     a["timestamp"],
                     a["clear_timestamp"],
                     str(duration),
-                    mo.name,
-                    mo.address,
-                    mo.profile.name,
-                    mo.administrative_domain.name,
-                    attr_res[mo.id][2] if attr else "",
-                    attr_res[mo.id][3] if attr else "",
+                    moss[a["managed_object"]][0],
+                    moss[a["managed_object"]][1],
+                    moss[a["managed_object"]][5],
+                    moss[a["managed_object"]][6],
+                    attr_res[a["managed_object"]][2] if attr else "",
+                    attr_res[a["managed_object"]][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     ArchivedAlarm.objects.get(id=a["_id"]).subject,
-                    "Yes" if mo.id in maintenance else "No",
+                    "Yes" if a["managed_object"] in maintenance else "No",
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
                     a.get("escalation_ts"),
-                    container_lookup[mo.id].get("text", "") if container_lookup else ""
+                    ", ".join(l for l in (loc.location(moss[a["managed_object"]][5]) if
+                                          moss[a["managed_object"]][5] is not None else "")if l),
+                    container_lookup[a["managed_object"]].get("text", "") if container_lookup else ""
                 ], container_path, segment_path), cmap)]
         # Active Alarms
         if source in ["active", "both"]:
@@ -276,15 +319,16 @@ class ReportAlarmDetailApplication(ExtApplication):
                     ss["summary"] for ss in a["total_subscribers"])
                 if min_subscribers and total_subscribers < min_subscribers:
                     continue
-                mo = ManagedObject.get_by_id(a["managed_object"])
-                if not mo:
-                    continue
-                path = ObjectPath.get_path(mo)
-                if path:
-                    segment_path = [NetworkSegment.get_by_id(s).name
-                                    for s in path.segment_path if NetworkSegment.get_by_id(s)]
-                    container_path = [Object.get_by_id(s).name for s in
-                                      path.container_path if Object.get_by_id(s)]
+                if "segment_" in columns.split(",") or "container_" in columns.split(","):
+                    path = ObjectPath.get_path(a["managed_object"])
+                    if path:
+                        segment_path = [NetworkSegment.get_by_id(s).name
+                                        for s in path.segment_path if NetworkSegment.get_by_id(s)]
+                        container_path = [Object.get_by_id(s).name for s in
+                                          path.container_path if Object.get_by_id(s)]
+                    else:
+                        segment_path = []
+                        container_path = []
                 else:
                     segment_path = []
                     container_path = []
@@ -295,20 +339,22 @@ class ReportAlarmDetailApplication(ExtApplication):
                     # a["clear_timestamp"],
                     "",
                     str(duration),
-                    mo.name,
-                    mo.address,
-                    mo.profile.name,
-                    mo.administrative_domain.name,
-                    attr_res[mo.id][2] if attr else "",
-                    attr_res[mo.id][3] if attr else "",
+                    moss[a["managed_object"]][0],
+                    moss[a["managed_object"]][1],
+                    moss[a["managed_object"]][5],
+                    moss[a["managed_object"]][6],
+                    attr_res[a["managed_object"]][2] if attr else "",
+                    attr_res[a["managed_object"]][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
-                    ActiveAlarm.objects.get(id=a["_id"]).subject,
-                    "Yes" if mo.id in maintenance else "NO",
+                    ArchivedAlarm.objects.get(id=a["_id"]).subject,
+                    "Yes" if a["managed_object"] in maintenance else "No",
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
                     a.get("escalation_ts"),
-                    container_lookup[mo.id].get("text", ""),
+                    ", ".join(l for l in (loc.location(moss[a["managed_object"]][5]) if
+                                          moss[a["managed_object"]][5] is not None else "") if l),
+                    container_lookup[a["managed_object"]].get("text", "") if container_lookup else ""
                 ], container_path, segment_path), cmap)]
 
         if format == "csv":
