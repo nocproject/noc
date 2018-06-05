@@ -3,7 +3,7 @@
 # Vendor: 3Com
 # OS:     SuperStack3_4400
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
