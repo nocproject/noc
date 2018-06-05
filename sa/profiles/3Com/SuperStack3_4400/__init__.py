@@ -19,11 +19,9 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"(|-- )Enter <CR> for more or 'q' to quit(--|\s--):", "\r\n"),
     ]
-    pattern_username = "[Ll]ogin:"
     command_submit = "\r\n"
     username_submit = "\r\n"
     password_submit = "\r\n"
-#    enable_cli_session = False
     command_exit = "logout"
     convert_mac = BaseProfile.convert_mac_to_dashed
 

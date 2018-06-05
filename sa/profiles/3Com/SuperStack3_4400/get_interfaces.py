@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# 3Com.SuperStack3.get_interfaces
+# 3Com.SuperStack3_4400.get_interfaces
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"^(?P<port>\d+\:\d+)\s+(?P<status>Active|Inactive)\s+"
         r"(?P<stp>\S+)", re.MULTILINE)
     rx_stp = re.compile(r"^StpState:\s+Enabled", re.MULTILINE)
-    rx_lacp = re.compile(r"^LACP State:\s+Disabled", re.MULTILINE)
+    rx_lacp = re.compile(r"^LACP State:\s+(?:Disabled|-)", re.MULTILINE)
     rx_vlan = re.compile(
         r"^(?P<vlan_id>\d+)\s+.+\s+(?P<mode>\S+)\s+\S+\s*\n",
         re.MULTILINE)
@@ -34,7 +34,7 @@ class Script(BaseScript):
     def execute(self):
         interfaces = []
         ports = []
-        gstp = bool("Network | STP" in self.scripts.get_capabilities())
+        gstp = self.has_capability("Network | STP")
         v = self.profile.get_hardware(self)
         mac = v["mac"]
         v = self.cli("bridge port summary all")
