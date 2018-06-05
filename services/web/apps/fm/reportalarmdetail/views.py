@@ -302,6 +302,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             for a in ActiveAlarm._get_collection().with_options(
                     read_preference=ReadPreference.SECONDARY_PREFERRED).find(match).sort([("timestamp", 1)]):
 
+                dt = datetime.datetime.now() - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 total_objects = sum(
                     ss["summary"] for ss in a["total_objects"])
