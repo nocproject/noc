@@ -37,7 +37,7 @@ class Script(BaseScript):
         r"^Administrative Native VLAN tagging: \S+\s*\n"
         r"(^VLAN Trunking: \S+\s*\n)?"
         r"^Allowed VLANs:(?P<vlans>.*)\n", re.MULTILINE)
-    rx_vlan = re.compile(r"^\s*(?:VLAN )(?P<vlan>\d+)\s+", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*(?:VLAN )?(?P<vlan>\d+)\s+", re.MULTILINE)
     rx_hybrid_vlan = re.compile(
         r"^Hybrid Native Mode VLAN: (?P<native_vlan>\d+)", re.MULTILINE)
     rx_link = re.compile(
