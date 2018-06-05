@@ -230,11 +230,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                 pass
 
         mos_id = list(mos.values_list("id", flat=True))
-
-        if len(mos_id) > 70000:
-            return self.response("Request Too Large, Objects limit is 70000\n"
-                                 "You can use the BI interface (BI -> Dashboard)", status=self.TOO_LARGE)
-        match["managed_object"] = {"$in": mos_id}
+        if mos_id:
+            match["managed_object"] = {"$in": mos_id}
         if "maintenance" in columns.split(","):
             maintenance = Maintenance.currently_affected()
         moss = ReportAlarmObjects(mos_id).get_all()
