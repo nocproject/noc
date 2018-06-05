@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     name = "3Com.SuperStack3_4400"
     pattern_prompt = r"^Select menu option.*:"
     pattern_more = [
-        (r"(|-- )Enter <CR> for more or 'q' to quit(--|\s--): ", "\r\n"),
+        (r"(|-- )Enter <CR> for more or 'q' to quit(--|\s--):", "\r\n"),
     ]
     pattern_username = "[Ll]ogin:"
     command_submit = "\r\n"
