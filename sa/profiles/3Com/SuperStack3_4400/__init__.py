@@ -55,7 +55,7 @@ class Profile(BaseProfile):
         r"^Product Number\t*:\s+(?P<part_no>\S+)\n"
         r"^Serial Number\t*:\s+(?P<serial>\S+)\n",
         re.MULTILINE | re.IGNORECASE)
-
+        
     def get_hardware(self, script):
         c = script.cli("system summary", cached=True)
         return self.rx_hw.search(c).groupdict()
