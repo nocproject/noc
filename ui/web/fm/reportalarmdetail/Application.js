@@ -41,7 +41,8 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["subscribers", __("Affected Subscriber"), true],
                 ["tt", __("TT"), true],
                 ["escalation_ts", __("Escalation Time"), true],
-                ["container_address", __("Container Address"), true],
+                ["location", __("Location"), true],
+                ["container_address", __("Container Address"), false],
                 ["container_0", __("Container (Level 1)"), false],
                 ["container_1", __("Container (Level 2)"), false],
                 ["container_2", __("Container (Level 3)"), false],
@@ -49,13 +50,13 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["container_4", __("Container (Level 5)"), false],
                 ["container_5", __("Container (Level 6)"), false],
                 ["container_6", __("Container (Level 7)"), false],
-                ["segment_0", __("Segment (Level 1)"), true],
-                ["segment_1", __("Segment (Level 2)"), true],
-                ["segment_2", __("Segment (Level 3)"), true],
-                ["segment_3", __("Segment (Level 4)"), true],
-                ["segment_4", __("Segment (Level 5)"), true],
-                ["segment_5", __("Segment (Level 6)"), true],
-                ["segment_6", __("Segment (Level 7)"), true]
+                ["segment_0", __("Segment (Level 1)"), false],
+                ["segment_1", __("Segment (Level 2)"), false],
+                ["segment_2", __("Segment (Level 3)"), false],
+                ["segment_3", __("Segment (Level 4)"), false],
+                ["segment_4", __("Segment (Level 5)"), false],
+                ["segment_5", __("Segment (Level 6)"), false],
+                ["segment_6", __("Segment (Level 7)"), false]
             ]
         });
 
