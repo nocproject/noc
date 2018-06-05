@@ -59,4 +59,3 @@ class Profile(BaseProfile):
     def get_hardware(self, script):
         c = script.cli("system summary", cached=True)
         return self.rx_hw.search(c).groupdict()
-    
