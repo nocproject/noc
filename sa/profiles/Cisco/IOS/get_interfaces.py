@@ -126,7 +126,10 @@ class Script(BaseScript):
         for s in v.split("\n"):
             match = self.rx_cdp.search(s)
             if match:
-                r += [self.profile.convert_interface_name(match.group("iface").strip())]
+                try:
+                    r += [self.profile.convert_interface_name(match.group("iface").strip())]
+                except InterfaceTypeError:
+                    continue
         return r
 
     def get_vtp_interfaces(self):
