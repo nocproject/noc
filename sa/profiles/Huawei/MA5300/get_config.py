@@ -18,12 +18,12 @@ class Script(BaseScript):
 
     def execute(self):
 #	self.cli("cls")
-        self.cli("conf t")
-        self.cli("line vty 0 3")
+        self.cli("enable")
+#        self.cli("line vty 0 3")
 #        self.cli("length 0")
 #        self.cli("no length")
         
-        config = self.cli("show running-config")
+        config = self.cli("show running-config configuration config")
         return config
 #        return self.cleaned_config(config)
 
