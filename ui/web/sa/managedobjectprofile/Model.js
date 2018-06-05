@@ -609,11 +609,14 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "config_mirror_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "D"
         },
         {
             name: "config_validation_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "C"
+
         },
         {
             name: "beef_storage",
