@@ -25,8 +25,6 @@ from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
 from noc.core.bi.dictionaries.pool import Pool
-from noc.core.bi.dictionaries.serviceprofile import ServiceProfile
-from noc.core.bi.dictionaries.subscriberprofile import SubscriberProfile
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
