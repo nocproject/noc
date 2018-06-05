@@ -28,7 +28,7 @@ class OP(object):
         self.convert = convert
         self.function = function
 
-    def to_sql(self, seq):
+    def to_sql(self, seq, model=None):
         if self.min and len(seq) < self.min:
             raise ValueError("Missed argument: %s" % seq)
         if self.max and len(seq) > self.max:
@@ -152,6 +152,25 @@ def f_quantile(seq):
     return "quantile(%f)(%s)" % seq
 
 
+def resolve_format(seq):
+    # if seq == "nestedToString":
+    # f = seq.get("$field")
+    f = seq[0]
+    if f == "services":
+        return ", ".join([
+            "arrayMap(x -> concat(services.profile[indexOf(services.summary, x)]",
+            "':'",
+            "toString(x)), services.summary)"
+        ])
+    elif f == "subscribers":
+        return ", ".join([
+            "arrayMap(x -> concat(subscribers.profile[indexOf(subscribers.summary, x)]",
+            "':'",
+            "toString(x)), subscribers.summary)"
+        ])
+    return "%s" % seq[0]
+
+
 OP_MAP = {
     # Comparison
     "$eq": OP(min=2, max=2, join=" = "),
@@ -170,7 +189,7 @@ OP_MAP = {
     "$or": OP(min=1, join=" OR "),
     "$xor": OP(min=1, join=" XOR "),
     # Unary
-    "$field": OP(min=1, max=1, convert=lambda x: escape_field(x[0])),
+    "$field": OP(min=1, max=1, convert=resolve_format),
     "$neg": OP(min=1, max=1, prefix="-"),
     # Arithmetic
     "$plus": OP(min=2, max=2, join=" + "),
@@ -195,6 +214,7 @@ OP_MAP = {
     "$sum": OP(min=1, max=1, function="SUM"),
     "$avg": OP(min=1, max=1, function="AVG"),
     "$uniq": OP(min=1, function="uniq"),
+    "$uniqExact": OP(min=1, function="uniqExact"),
     "$empty": OP(min=1, function="empty"),
     "$notEmpty": OP(min=1, function="notEmpty"),
     "$position": OP(min=2, max=2, function="positionCaseInsensitiveUTF8"),
@@ -222,10 +242,11 @@ def escape_field(s):
     return "%s" % s
 
 
-def to_sql(expr):
+def to_sql(expr, model=None):
     """
     Convert query expression to sql
     :param expr:
+    :param model:
     :return:
     """
     if type(expr) == dict:
@@ -236,7 +257,7 @@ def to_sql(expr):
             v = expr[k]
             if type(v) != list:
                 v = [v]
-            return op.to_sql(v)
+            return op.to_sql(v, model)
     elif isinstance(expr, six.string_types) and expr.isdigit():
         return int(expr)
     elif isinstance(expr, six.string_types):

@@ -288,7 +288,7 @@ class Model(six.with_metaclass(ModelBase)):
             alias = f.get("alias", default_alias)
             if not f.get("hide"):
                 aliases += [alias]
-                fields_x += ["%s AS %s" % (to_sql(f["expr"], format=f.get("format")), escape_field(alias))]
+                fields_x += ["%s AS %s" % (to_sql(f["expr"], cls), escape_field(alias))]
             if "group" in f:
                 group_by[int(f["group"])] = alias
             if "order" in f:

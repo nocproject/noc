@@ -84,11 +84,10 @@ class Alarms(Model):
     y = Float64Field(description=_("Latitude"))
     services = NestedField(Services, description="Services")
     subscribers = NestedField(Subscribers, description="Subscribers")
-    location = StringField(description="Location")
+    # location = StringField(description="Location")
 
     @classmethod
     def transform_query(cls, query, user):
-        print("Transform query", query)
         if not user or user.is_superuser:
             return query  # No restrictions
         # Get user domains
