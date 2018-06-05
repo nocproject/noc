@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -21,7 +21,8 @@ class Script(BaseScript):
         r"^Bridge ID\s+: \d+\.(?P<mac>\S+)", re.MULTILINE)
 
     def execute(self):
-        match = self.re_search(self.rx_mac, self.cli("show spanning-tree"))
+        v = self.cli("show spanning-tree", cached=True)
+        match = self.rx_mac.search(v)
         return {
             "first_chassis_mac": match.group("mac"),
             "last_chassis_mac": match.group("mac")

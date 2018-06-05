@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s+(?P<admin_status>\S+)\s+"
-        r"\S+\s+\d+\s+\S+\s+(?P<oper_status>\S+)", re.MULTILINE)
+        r"\S+\s+(?:\S+\s+)?\d+\s+\S+\s+(?P<oper_status>\S+)\s*\n", re.MULTILINE)
     rx_stp = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G) \S+)\s+", re.MULTILINE)
     rx_ctp = re.compile(
@@ -35,9 +35,9 @@ class Script(BaseScript):
         r"^Access Mode VLAN: (?P<access_vlan>\d+)\s*\n"
         r"^Trunk Native Mode VLAN: (?P<native_vlan>\d+)\s*\n"
         r"^Administrative Native VLAN tagging: \S+\s*\n"
-        r"^VLAN Trunking: \S+\s*\n"
+        r"(^VLAN Trunking: \S+\s*\n)?"
         r"^Allowed VLANs:(?P<vlans>.*)\n", re.MULTILINE)
-    rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*(?:VLAN )(?P<vlan>\d+)\s+", re.MULTILINE)
     rx_hybrid_vlan = re.compile(
         r"^Hybrid Native Mode VLAN: (?P<native_vlan>\d+)", re.MULTILINE)
     rx_link = re.compile(
@@ -62,7 +62,7 @@ class Script(BaseScript):
     def get_stp(self):
         try:
             r = []
-            v = self.cli("show spanning-tree")
+            v = self.cli("show spanning-tree", cached=True)
             for match in self.rx_stp.finditer(v):
                 r += [self.profile.convert_interface_name(match.group("port"))]
             return r
@@ -81,7 +81,7 @@ class Script(BaseScript):
     def get_oam(self):
         try:
             r = []
-            v = self.cli("show link-oam")
+            v = self.cli("show link-oam", cached=True)
             for match in self.rx_oam.finditer(v):
                 r += [match.group("port") + " " + match.group("port_num")]
             return r
