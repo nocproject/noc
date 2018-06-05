@@ -60,4 +60,3 @@ class Profile(BaseProfile):
         c = script.cli("system summary", cached=True)
         return self.rx_hw.search(c).groupdict()
     
-    
