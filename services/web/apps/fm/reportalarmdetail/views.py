@@ -288,7 +288,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     attr_res[a["managed_object"]][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     ArchivedAlarm.objects.get(id=a["_id"]).subject,
-                    "Yes" if a["managed_object"] in maintenance else "No",
+                    "",
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
