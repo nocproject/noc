@@ -300,12 +300,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         # Active Alarms
         if source in ["active", "both"]:
             for a in ActiveAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-                    {"$match": match},
-                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]},
-                                                             1000]}}},
-                    {"$match": match_duration},
-                    {"$sort": {"timestamp": 1}}]):
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(match).sort([("timestamp", 1)]):
 
                 duration = dt.days * 86400 + dt.seconds
                 total_objects = sum(
@@ -343,7 +338,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     attr_res[a["managed_object"]][2] if attr else "",
                     attr_res[a["managed_object"]][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
-                    ArchivedAlarm.objects.get(id=a["_id"]).subject,
+                    ActiveAlarm.objects.get(id=a["_id"]).subject,
                     "Yes" if a["managed_object"] in maintenance else "No",
                     total_objects,
                     total_subscribers,
