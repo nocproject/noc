@@ -43,8 +43,6 @@ class Subscribers(NestedModel):
 
 
 class Alarms(Model):
-    FIELD_CONVERTER = {"services": "arrayMap(x -> concat(services.profile[indexOf(services.summary, x)], ':', toString(x)), services.summary)",
-                       "subscribers": "arrayMap(x -> concat(subscribers.profile[indexOf(subscribers.summary, x)], ':', toString(x)), subscribers.summary)"}
     class Meta:
         db_table = "alarms"
         engine = MergeTree("date", ("ts", "managed_object"))
@@ -122,3 +120,16 @@ class Alarms(Model):
         else:
             query["filter"] = q
         return query
+
+    @classmethod
+    def transform_field(cls, field):
+        if field == "services":
+            return ",".join(["arrayStringConcat(arrayMap(x -> concat(dictGetString('serviceprofile'",
+                             " 'name', toUInt64(services.profile[indexOf(services.summary, x)]))",
+                             " ':', toString(x)), services.summary),',')"])
+
+        elif field == "subscribers":
+            return ",".join(["arrayStringConcat(arrayMap(x -> concat(dictGetString('subscriberprofile'",
+                             " 'name', toUInt64(subscribers.profile[indexOf(subscribers.summary, x)]))",
+                             " ':', toString(x)), subscribers.summary),',')"])
+        return field
