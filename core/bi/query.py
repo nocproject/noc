@@ -243,19 +243,20 @@ def to_sql(expr, model=None):
     :param model:
     :return:
     """
-    if type(expr) == dict:
+    if isinstance(expr, dict):
         for k in expr:
             op = OP_MAP.get(k)
             if not op:
                 raise ValueError("Invalid operator: %s" % expr)
             v = expr[k]
-            if type(v) != list:
+            if not isinstance(v, list):
                 v = [v]
             return op.to_sql(v, model)
-    elif isinstance(expr, six.string_types) and expr.isdigit():
-        return int(expr)
     elif isinstance(expr, six.string_types):
-        return "'%s'" % escape_str(expr)
+        if expr.isdigit():
+            return int(expr)
+        else:
+            return "'%s'" % escape_str(expr)
     elif isinstance(expr, six.integer_types):
         return str(expr)
     elif isinstance(expr, float):
