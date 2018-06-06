@@ -6,8 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import BaseExtractor
+from .base import BaseExtractor
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.reboots import Reboots
