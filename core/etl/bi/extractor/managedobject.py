@@ -67,7 +67,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "platform": mo.platform,
                 "version": mo.version,
                 "name": ch_escape(mo.name),
-                "address": mo.address,
+                "ip": mo.address,
                 "is_managed": mo.is_managed,
                 # subscribers
                 # services
