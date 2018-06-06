@@ -28,15 +28,15 @@ class OP(object):
         self.convert = convert
         self.function = function
 
-    def to_sql(self, seq):
+    def to_sql(self, seq, model=None):
         if self.min and len(seq) < self.min:
             raise ValueError("Missed argument: %s" % seq)
         if self.max and len(seq) > self.max:
             raise ValueError("Too many arguments: %s" % seq)
         if self.convert:
-            return self.convert(seq)
+            return self.convert(seq, model)
         else:
-            r = ["(%s)" % to_sql(x) for x in seq]
+            r = ["(%s)" % to_sql(x, model=model) for x in seq]
             if self.join:
                 r = self.join.join(r)
             elif self.function:
@@ -48,10 +48,11 @@ class OP(object):
             return r
 
 
-def f_lookup(seq):
+def f_lookup(seq, model=None):
     """
     $lookup (dictionary, id [,field])
     :param seq:
+    :param model
     :return:
     """
     dict_name = seq[0]
@@ -84,40 +85,44 @@ def in_lookup(seq):
         return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(m))
 
 
-def f_ternary_if(seq):
+def f_ternary_if(seq, model=None):
     """
     $?
     :param seq:
+    :param model:
     :return:
     """
     return "((%s) ? (%s) : (%s))" % (to_sql(seq[0]),
                                      to_sql(seq[1]), to_sql(seq[2]))
 
 
-def f_between(seq):
+def f_between(seq, model=None):
     """
     $between(a, b)
     :param seq:
+    :param model:
     :return:
     """
     return "((%s) BETWEEN (%s) AND (%s))" % (
         to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
 
 
-def f_names(seq):
+def f_names(seq, model=None):
     """
     $names (dict, field)
     :param seq:
+    :param model:
     :return:
     """
     return "arrayMap(k->dictGetString('%s', 'name', toUInt64(k)), dictGetHierarchy('%s', %s))" \
            % (seq[0], seq[0], seq[1])
 
 
-def f_duration(seq):
+def f_duration(seq, model=None):
     """
     $duration (dict, field)
     :param seq:
+    :param model:
     :return:
     """
     return "SUM(arraySum(i -> ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1]) < 0) ? 0 :" \
@@ -125,10 +130,11 @@ def f_duration(seq):
            % ",".join(seq)
 
 
-def f_selector(seq):
+def f_selector(seq, model=None):
     """
     $selector (expr, model, query)
     :param seq:
+    :param model:
     :return:
     """
     expr, model_name, query = seq
@@ -152,6 +158,13 @@ def f_quantile(seq):
     return "quantile(%f)(%s)" % seq
 
 
+def resolve_format(seq, model=None):
+    if model and hasattr(model, "transform_field"):
+        tf = getattr(model, "transform_field")
+        return "%s" % tf(seq[0])
+    return "%s" % seq[0]
+
+
 OP_MAP = {
     # Comparison
     "$eq": OP(min=2, max=2, join=" = "),
@@ -170,7 +183,7 @@ OP_MAP = {
     "$or": OP(min=1, join=" OR "),
     "$xor": OP(min=1, join=" XOR "),
     # Unary
-    "$field": OP(min=1, max=1, convert=lambda x: escape_field(x[0])),
+    "$field": OP(min=1, max=1, convert=resolve_format),
     "$neg": OP(min=1, max=1, prefix="-"),
     # Arithmetic
     "$plus": OP(min=2, max=2, join=" + "),
@@ -195,6 +208,7 @@ OP_MAP = {
     "$sum": OP(min=1, max=1, function="SUM"),
     "$avg": OP(min=1, max=1, function="AVG"),
     "$uniq": OP(min=1, function="uniq"),
+    "$uniqExact": OP(min=1, function="uniqExact"),
     "$empty": OP(min=1, function="empty"),
     "$notEmpty": OP(min=1, function="notEmpty"),
     "$position": OP(min=2, max=2, function="positionCaseInsensitiveUTF8"),
@@ -222,25 +236,27 @@ def escape_field(s):
     return "%s" % s
 
 
-def to_sql(expr):
+def to_sql(expr, model=None):
     """
     Convert query expression to sql
     :param expr:
+    :param model:
     :return:
     """
-    if type(expr) == dict:
+    if isinstance(expr, dict):
         for k in expr:
             op = OP_MAP.get(k)
             if not op:
                 raise ValueError("Invalid operator: %s" % expr)
             v = expr[k]
-            if type(v) != list:
+            if not isinstance(v, list):
                 v = [v]
-            return op.to_sql(v)
-    elif isinstance(expr, six.string_types) and expr.isdigit():
-        return int(expr)
+            return op.to_sql(v, model)
     elif isinstance(expr, six.string_types):
-        return "'%s'" % escape_str(expr)
+        if expr.isdigit():
+            return int(expr)
+        else:
+            return "'%s'" % escape_str(expr)
     elif isinstance(expr, six.integer_types):
         return str(expr)
     elif isinstance(expr, float):
