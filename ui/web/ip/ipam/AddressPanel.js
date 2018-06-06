@@ -27,8 +27,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
     initComponent: function () {
         var me = this;
 
-        Ext.apply(me, {
-            fields: [
+        fieldsArr = [
                 {
                     name: "vrf",
                     xtype: "ip.vrf.LookupField",
@@ -131,7 +130,75 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     fieldLabel: __("Source"),
                     allowBlank: true
                 }
-            ]
+            ];
+
+        //
+        // Load CustomFields to Form
+        //
+        customfields=[];
+        Ext.Ajax.request({
+            url: "/main/customfield/?table=ip_address&is_hidden=false&is_active=true",
+            method: "GET",
+            async: false,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                if (data){
+                    type_to_extjs_type = {'str':'textfield',
+                    'int':'numberfield',
+                    'bool':'checkboxfield',
+                    'date':'datefield',
+                    'datetime':'datetimefield'
+                    };
+                    data.forEach(function(item, i, arr) {
+                        if (item['max_length'] === 0) {max_length = 256}
+                        else {max_length = item['max_length']}
+
+                        if (item['enum_group']) {
+                            xtype = 'combobox';
+                            store={"store":[]};
+
+                            Ext.Ajax.request({
+                                url: "/main/customfieldenumgroup/"+item['enum_group']+"/values/?is_active=true",
+                                method: "GET",
+                                async: false,
+                                success: function(response) {
+                                    var custvalues = Ext.decode(response.responseText);
+                                    if (custvalues){
+                                        custvalues.forEach(function(item, i, arr) {
+                                           store["store"].push([item['key'],item['value']]);
+                                        });
+                                    }
+                                },
+                                failure: function() {
+                                    NOC.error(__("Failed to load CustomValues data"))
+                                }
+                            });
+
+                        }
+                        else {
+                            xtype = type_to_extjs_type[item['type']];
+                            store = {};
+                        }
+
+                        customfields.push(Object.assign({}, {
+                            name: item["name"],
+                            xtype: xtype,
+                            fieldLabel: __(item["label"]),
+                            allowBlank: true,
+                            maxLength: max_length,
+                        },
+                            store));
+                    });
+                    console.log('Address custom fields was loaded!')
+                }
+            },
+            failure: function() {
+                NOC.error(__("Failed to load CustomFields data"))
+            }
+        });
+
+        Ext.apply(me, {
+            fields: fieldsArr.concat(customfields),
         });
         me.callParent()
     },

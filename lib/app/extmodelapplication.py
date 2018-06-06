@@ -32,6 +32,7 @@ from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter
+from noc.main.models.customfield import CustomField
 
 
 class ExtModelApplication(ExtApplication):
@@ -48,6 +49,7 @@ class ExtModelApplication(ExtApplication):
     ignored_fields = set(["id", "bi_id"])
 
     def __init__(self, *args, **kwargs):
+        CustomField.install_fields()
         super(ExtModelApplication, self).__init__(*args, **kwargs)
         self.db_table = self.model._meta.db_table
         self.pk_field_name = self.model._meta.pk.name
@@ -120,7 +122,6 @@ class ExtModelApplication(ExtApplication):
         return int(item)
 
     def get_custom_fields(self):
-        from noc.main.models.customfield import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_launch_info(self, request):
