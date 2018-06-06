@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from __future__ import absolute_import
 from collections import defaultdict
 
 # Python modules
@@ -14,7 +15,7 @@ import operator
 # Third-party modules
 from django.db.models import Q
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem
@@ -223,7 +224,7 @@ class ManagedObjectCard(BaseCard):
                                 load_out = iface_get_link_name['Interface | Load | Out']["value"] + \
                                     iface_get_link_name['Interface | Load | Out']["type"]
                                 errors_in = iface_get_link_name['Interface | Errors | In']["value"]
-                                erros_out = iface_get_link_name['Interface | Errors | Out']["value"]
+                                errors_out = iface_get_link_name['Interface | Errors | Out']["value"]
                             except TypeError:
                                 pass
                 else:
@@ -460,7 +461,7 @@ class ManagedObjectCard(BaseCard):
                 speed = float(speed)
             except BaseException:
                 pass
-            #speed = speed / 8.0
+#           speed = speed / 8.0
 
             if speed < 1024:
                 result = speed
