@@ -50,8 +50,12 @@ class ReportAlarmObjects(object):
         query += "profile, op.name as object_profile, sa.container, "
         query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
-        query += "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id " \
-                 "and ad.id = sa.administrative_domain_id " % (", ".join(str(m) for m in mos_id))
+        if mos_id:
+            query += "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id " \
+                     "and ad.id = sa.administrative_domain_id " % (", ".join(str(m) for m in mos_id))
+        else:
+            query += "WHERE sa.is_managed = True and op.id = sa.object_profile_id " \
+                     "and ad.id = sa.administrative_domain_id "
         # query += "LIMIT 20"
         cursor = connection.cursor()
         cursor.execute(query)
