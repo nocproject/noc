@@ -457,6 +457,7 @@
             <thead>
                 <th>{{ _("Name") }}</th>
                 <th>{{ _("Model") }}</th>
+                <th>{{ _("Part Number") }}</th>
                 <th>{{ _("Revision") }}</th>
                 <th>{{ _("Serial") }}</th>
                 <th>{{ _("Description") }}</th>
@@ -466,6 +467,7 @@
                 <tr>
                     <td>{{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * i["level"]) }}{{ i["name"] }}</td>
                     <td>{{ i["model"] }}</td>
+                    <td>{{ i["part_no"] }}</td>
                     <td>{{ i["revision"] }}</td>
                     <td>{{ i["serial"] }}</td>
                     <td>{{ i["description"] }}</td>
