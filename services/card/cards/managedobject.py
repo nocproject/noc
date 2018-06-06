@@ -365,6 +365,7 @@ class ManagedObjectCard(BaseCard):
             "revision": rev or "",
             "description": o.model.description,
             "model": o.model.name,
+            "part_no": ",".join(o.model.get_data("asset", "part_no")) or "",
             "children": []
         }
         for n in o.model.connections:
