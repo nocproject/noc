@@ -66,10 +66,11 @@ def f_lookup(seq, model=None):
     return "dictGet%s('%s', '%s', %s)" % (t, dict_name, field_name, id_expr)
 
 
-def in_lookup(seq):
+def in_lookup(seq, model=None):
     """
     $lookup (field, expr)
     :param seq:
+    :param model:
     :return:
     """
     s3 = " NOT" if ("$not" in seq) or ("$NOT" in seq) else ""
