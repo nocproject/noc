@@ -26,7 +26,7 @@ class Channel(object):
         if "|" in fields:
             # New format. Separated by '|'.
             # Nested fields are possible
-            parts = tuple(fields.split("."))
+            parts = tuple(fields.split("|"))
         else:
             # Old format. Separated by '.'.
             # Nested fields are not possible
