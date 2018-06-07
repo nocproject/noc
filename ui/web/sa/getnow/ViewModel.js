@@ -21,7 +21,8 @@ Ext.define('NOC.sa.getnow.ViewModel', {
             leave: 0,
             style: 'noc-badge-waiting',
             taskId: null
-        }
+        },
+        isFilterOpen: false
     },
 
     formulas: {
