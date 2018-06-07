@@ -517,7 +517,7 @@ class TableSection(ReportSection):
             return s
 
         s = [
-            "<script type='text/javascript' src='/ui/pkg/jquery.table2CSV/jquery.table2CSV.js'></script>",
+            "<script type='text/javascript' src='/ui/pkg/jquery.table2csv/jquery.table2csv.js'></script>",
             "<form id='report' action='/main/desktop/dlproxy/' method='POST'>",
             "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
             "<input type='hidden' name='filename' value='report.csv'>",
