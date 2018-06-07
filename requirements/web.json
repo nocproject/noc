@@ -14,6 +14,10 @@
       "version": "2.0.3"
     },
     {
+      "name": "jquery.tablesorter",
+      "version": "1.1.1"
+    },
+    {
       "name": "lodash",
       "version": "3.10.1"
     },
