@@ -18,6 +18,14 @@
       "version": "2.0.3"
     },
     {
+      "name": "jquery.tablesorter",
+      "version": "1.0.0"
+    },
+    {
+      "name": "jquery.jquery.table2csv",
+      "version": "1.0.0"
+    },
+    {
       "name": "lodash",
       "version": "3.10.1"
     },
