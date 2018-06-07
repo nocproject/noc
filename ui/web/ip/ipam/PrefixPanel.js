@@ -192,7 +192,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                             store = {};
                         }
 
-                        customfields.push(Object.assign({}, {
+                        customfields.push($.extend({}, {
                             name: item["name"],
                             xtype: xtype,
                             fieldLabel: __(item["label"]),
