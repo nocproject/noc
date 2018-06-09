@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+from __future__ import print_function
 import tornado.ioloop
 import tornado.gen
 # NOC modules
@@ -131,7 +132,7 @@ class CHWriterService(Service):
                     table, size = line.split()
                     metrics["table_size", ("name", table)] = int(size)
         except Exception:
-            print("Can not connect to ClickHouse")
+            self.logger.debug("ClickHouse is not available")
 
         nm = metrics["records_written"].value
         t = self.ioloop.time()
