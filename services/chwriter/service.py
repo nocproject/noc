@@ -83,7 +83,8 @@ class CHWriterService(Service):
         <v1>\t...\t<vN>\n
         """
         if self.stopping:
-            self.logger.info("Message received during stopping, requeueing message")
+            self.logger.info(
+                "Message received during stopping, requeueing message")
             return False
         if self.restore_timeout:
             self.logger.info("ClickHouse is not available, requeueing message")
@@ -106,6 +107,32 @@ class CHWriterService(Service):
 
     @tornado.gen.coroutine
     def report(self):
+        """
+        reports and metric collection
+        :return:
+        """
+        url = "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
+            self.ch_address,
+            config.clickhouse.rw_user,
+            config.clickhouse.rw_password,
+            config.clickhouse.db,
+            "SELECT%20table,sum(bytes)%20FROM%20system.parts%20GROUP%20BY%20table"
+        )
+        try:
+            code, headers, body = yield fetch(
+                url,
+                method="GET",
+                user=config.clickhouse.rw_user,
+                password=config.clickhouse.rw_password,
+                content_encoding=config.clickhouse.encoding
+            )
+            if code == 200:
+                for line in body.splitlines():
+                    table, size = line.split()
+                    metrics["table_size", ("name", table)] = int(size)
+        except Exception:
+            print("Can not connect to ClickHouse")
+
         nm = metrics["records_written"].value
         t = self.ioloop.time()
         if self.last_ts:
@@ -114,8 +141,7 @@ class CHWriterService(Service):
                 "Feeding speed: %.2frecords/sec, active channels: %s, buffered records: %d",
                 speed,
                 metrics["channels_active"],
-                metrics["records_buffered"].value
-            )
+                metrics["records_buffered"].value)
         self.last_metrics = nm
         self.last_ts = t
 
@@ -126,7 +152,8 @@ class CHWriterService(Service):
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
             metrics["channels_active"] = len(self.channels)
-        self.logger.debug("Active channels: %s", ", ".join(self.channels[c].name for c in self.channels))
+        self.logger.debug("Active channels: %s", ", ".join(
+            self.channels[c].name for c in self.channels))
         for c in list(self.channels):
             if self.restore_timeout:
                 break
@@ -222,9 +249,11 @@ class CHWriterService(Service):
             return
         self.logger.info("Suspending")
         self.restore_timeout = self.ioloop.add_timeout(
-            self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
-            self.check_restore
-        )
+            self.ioloop.time() +
+            float(
+                config.chwriter.suspend_timeout_ms) /
+            1000.0,
+            self.check_restore)
         metrics["suspends"] += 1
         self.suspend_subscription(self.on_data)
         # Return data to channels
@@ -267,9 +296,11 @@ class CHWriterService(Service):
                 self.resume()
             else:
                 self.restore_timeout = self.ioloop.add_timeout(
-                    self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
-                    self.check_restore
-                )
+                    self.ioloop.time() +
+                    float(
+                        config.chwriter.suspend_timeout_ms) /
+                    1000.0,
+                    self.check_restore)
 
     def stop(self):
         self.stopping = True
