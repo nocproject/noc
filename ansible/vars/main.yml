@@ -9,7 +9,7 @@ grafana_version: "5.0.3"
 nsq_version: "0.3.8"
 
 consul_version: "0.9.3"
-consul_template_version: "0.19.4"
+consul_template_version: "0.19.5"
 
 
 tower_ip: 127.0.0.1
