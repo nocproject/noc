@@ -42,7 +42,7 @@ class Script(BaseScript):
         r"\)",
         re.IGNORECASE
     )
-    rx_iftype = re.compile(r"^(\S+?)\d+.*$")
+    rx_iftype = re.compile(r"^(\D+?|\d{3}\S+?)\d+.*$")
     rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
     rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
