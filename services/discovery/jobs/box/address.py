@@ -16,6 +16,7 @@ from noc.ip.models.address import Address
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.lib.validators import is_fqdn
+from noc.core.ip import IP
 
 
 DiscoveredAddress = namedtuple("DiscoveredAddress", [
@@ -112,8 +113,9 @@ class AddressCheck(DiscoveryCheck):
             vrf = vrfs[vpn_id]
             seen = set()
             for a in Address.objects.filter(vrf=vrf, address__in=vrf_addresses[vpn_id]):
+                norm_address = IP.expand(a.address)
                 # Confirmed address, apply changes and touch
-                address = addresses[vpn_id, a.address]
+                address = addresses[vpn_id, norm_address]
                 self.apply_address_changes(a, address)
                 seen.add(address.address)
             for a in set(vrf_addresses[vpn_id]) - seen:
@@ -122,7 +124,8 @@ class AddressCheck(DiscoveryCheck):
         # Detaching hanging addresses
         self.logger.debug("Checking for hanging addresses")
         for a in Address.objects.filter(managed_object=self.object):
-            address = addresses.get((a.vrf.vpn_id, a.address))
+            norm_address = IP.expand(a.address)
+            address = addresses.get((a.vrf.vpn_id, norm_address))
             if not address or address.source not in LOCAL_SRC:
                 self.logger.info("Detaching %s:%s", a.vrf.name, a.address)
                 a.managed_object = None
@@ -137,14 +140,15 @@ class AddressCheck(DiscoveryCheck):
         :returns: Resulted addresses
         """
         for address in discovered_addresses:
-            old = addresses.get((address.vpn_id, address.address))
+            norm_address = IP.expand(address.address)
+            old = addresses.get((address.vpn_id, norm_address))
             if old:
                 if AddressCheck.is_preferred(old.source, address.source):
                     # New address is preferable, replace
-                    addresses[address.vpn_id, address.address] = address
+                    addresses[address.vpn_id, norm_address] = address
             else:
                 # Not seen yet
-                addresses[address.vpn_id, address.address] = address
+                addresses[address.vpn_id, norm_address] = address
         return addresses
 
     def is_enabled(self):
