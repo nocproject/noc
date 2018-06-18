@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // TablePreview
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.scripts.TablePreview");
@@ -16,16 +16,21 @@ Ext.define("NOC.sa.managedobject.scripts.TablePreview", {
             fields = [];
         me.searchFields = [];
         // Initialize store
-        for(var i in me.columns) {
-            var c = me.columns[i];
-            if(c.dataIndex) {
-                fields.push({
-                    name: c.dataIndex,
-                    type: "auto"
-                });
-                me.searchFields.push(c.dataIndex);
+        if (typeof me.fields == "undefined") {
+            for(var i in me.columns) {
+                var c = me.columns[i];
+                if(c.dataIndex) {
+                    fields.push({
+                        name: c.dataIndex,
+                        type: "auto"
+                    });
+                    me.searchFields.push(c.dataIndex);
+                }
             }
+        } else {
+            fields = me.fields;
         }
+
         me.store = Ext.create("Ext.data.Store", {
             model: null,
             fields: fields,
