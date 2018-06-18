@@ -601,3 +601,13 @@ def ipv6_expand(request):
 def test_ipv6_expand(ipv6_expand):
     p, x = ipv6_expand
     assert IPv6.expand(p) == x
+
+
+def test_expand_for_ipv4(ipv4_expand):
+    p, x = ipv4_expand
+    assert IP.expand(p) == x
+
+
+def test_expand_for_ipv6(ipv6_expand):
+    p, x = ipv6_expand
+    assert IP.expand(p) == x

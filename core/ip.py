@@ -260,6 +260,18 @@ class IP(object):
         nb = list(new_base.iter_bits()) + [0] * (base.mask - new_base.mask) + pb
         return self.from_bits(nb)
 
+    @staticmethod
+    def expand(addr):
+        """
+        Expand and normalize address for reliable key lookup
+        :param addr:
+        :return:
+        """
+        if ":" in addr:
+            return IPv6.expand(addr)
+        else:
+            return IPv4.expand(addr)
+
 
 class IPv4(IP):
     """
