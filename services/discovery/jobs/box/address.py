@@ -117,7 +117,7 @@ class AddressCheck(DiscoveryCheck):
                 # Confirmed address, apply changes and touch
                 address = addresses[vpn_id, norm_address]
                 self.apply_address_changes(a, address)
-                seen.add(address.address)
+                seen.add(norm_address)
             for a in set(vrf_addresses[vpn_id]) - seen:
                 # New address, create
                 self.create_address(addresses[vpn_id, a])
