@@ -349,6 +349,18 @@ def test_ipv4_netmask_to_len(ipv4_netmask_to_len):
     assert IPv4.netmask_to_len(m) == b
 
 
+@pytest.fixture(params=[
+    ("1.2.3.4", "1.2.3.4")
+])
+def ipv4_expand(request):
+    return request.param
+
+
+def test_ipv6_expand(ipv4_expand):
+    p, x = ipv4_expand
+    assert IPv4.expand(p) == x
+
+
 def test_ipv6_str():
     # Fully qualified
     assert str(IPv6("::/0")) == "::/0"
@@ -568,3 +580,24 @@ def ipv6_rebase(request):
 def test_ipv6_rebase(ipv6_rebase):
     p, b, nb, r = ipv6_rebase
     assert IPv6(p).rebase(IPv6(b), IPv6(nb)) == IPv6(r)
+
+
+@pytest.fixture(params=[
+    ("::", "0:0:0:0:0:0:0:0"),
+    ("::1", "0:0:0:0:0:0:0:1"),
+    ("2a01::", "2a01:0:0:0:0:0:0:0"),
+    ("2a01::1", "2a01:0:0:0:0:0:0:1"),
+    ("1:2::", "1:2:0:0:0:0:0:0"),
+    ("1:2:3::", "1:2:3:0:0:0:0:0"),
+    ("::1:2", "0:0:0:0:0:0:1:2"),
+    ("::1:2:3", "0:0:0:0:0:1:2:3"),
+    ("1:2::3:4", "1:2:0:0:0:0:3:4"),
+    ("1:2:3:4:5:6:7:8", "1:2:3:4:5:6:7:8")
+])
+def ipv6_expand(request):
+    return request.param
+
+
+def test_ipv6_expand(ipv6_expand):
+    p, x = ipv6_expand
+    assert IPv6.expand(p) == x
