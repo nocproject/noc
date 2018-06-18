@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetportchannel import IGetPortchannel
 import re
+from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
+from noc.sa.interfaces.igetportchannel import IGetPortchannel
 
 
 class Script(BaseScript):
