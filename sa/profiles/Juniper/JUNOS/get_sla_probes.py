@@ -34,7 +34,7 @@ class Script(BaseScript):
         "http-get": "http-get"
     }
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         v = self.cli("show services rpm probe-results")
         for match in self.rx_res.finditer(v):
