@@ -5,12 +5,12 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
+
+import re
+# NOC modules
+from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
@@ -23,7 +23,7 @@ class Script(BaseScript):
         match = self.rx_iface.search(i)
         return match.group(1)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             s = self.cli("show etherchannel summary")

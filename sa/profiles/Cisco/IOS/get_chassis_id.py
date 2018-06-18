@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 
@@ -19,22 +19,22 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    #
-    # Catalyst 2960/3560/3750/3750ME/3120 on IOS SE
-    # Catalyst 2900 on IOS E
-    # Catalyst 2960 on IOS FX
-    # Catalyst 2950 on IOS EA
-    # Catalyst 3850 on IOS EX
-    # Catalyst 3500 on IOS WC
-    # Single chassis mac
-    #
     rx_small_cat = re.compile(
         r"^Base [Ee]thernet MAC Address\s*:\s*(?P<id>\S+)",
         re.MULTILINE
     )
 
-    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY|E|WC")
     def execute_small_cat(self):
+        """
+        Catalyst 2960/3560/3750/3750ME/3120 on IOS SE
+        Catalyst 2900 on IOS E
+        Catalyst 2960 on IOS FX
+        Catalyst 2950 on IOS EA
+        Catalyst 3850 on IOS EX
+        Catalyst 3500 on IOS WC
+        Single chassis mac
+        :return:
+        """
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
         base = match.group("id")
@@ -43,16 +43,16 @@ class Script(BaseScript):
             "last_chassis_mac": base
         }]
 
-    #
-    # Cisco Catalyst 4000/4500/4500e Series
-    #
     rx_cat4000 = re.compile(
         r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
         re.MULTILINE | re.DOTALL
     )
 
-    @BaseScript.match(version__regex=r"SG|\d\d\.\d\d\.\d\d\.E|EWA")
     def execute_cat4000(self):
+        """
+        Cisco Catalyst 4000/4500/4500e Series
+        :return:
+        """
         try:
             v = self.cli("show idprom chassis")
         except self.CLISyntaxError:
@@ -65,17 +65,17 @@ class Script(BaseScript):
             "last_chassis_mac": MAC(base).shift(count - 1)
         }]
 
-    #
-    # Cisco Catalyst 6500 Series or Cisco router 7600 Series
-    #
     rx_cat6000 = re.compile(
         r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+"
         r"(?P<to_id>\S+)",
         re.MULTILINE
     )
 
-    @BaseScript.match(version__regex=r"S[YXR]")
     def execute_cat6000(self):
+        """
+        Cisco Catalyst 6500 Series or Cisco router 7600 Series
+        :return:
+        """
         v = self.cli("show catalyst6000 chassis-mac-addresses")
         match = self.re_search(self.rx_cat6000, v)
         return [{
@@ -83,16 +83,16 @@ class Script(BaseScript):
             "last_chassis_mac": match.group("to_id")
         }]
 
-    #
-    # IOS XE
-    #
     rx_iosxe = re.compile(
         r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s+"
         r"MAC Address block size\s*:\s*(?P<count>\d+)"
     )
 
-    @BaseScript.match(platform__regex=r"ASR100[0-6]")
     def execute_IOSXE(self):
+        """
+        IOS XE
+        :return:
+        """
         v = self.cli("show diag chassis eeprom detail")
         macs = []
         for f, t in [
@@ -110,20 +110,18 @@ class Script(BaseScript):
             } for f, t in macs
         ]
 
-    #
-    # C3900, C2951
-    #
     rx_c3900 = re.compile(
         r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s*\n"
         r"MAC Address block size\s*:\s*(?P<count>\d+)",
         re.MULTILINE
     )
 
-    #
-    # Cisco ISR series
-    #
-    @BaseScript.match(platform__regex=r"^(19\d\d|29\d\d|39\d\d)$")
     def execute_c3900(self):
+        """
+        Cisco ISR series
+        C3900, C2951
+        :return:
+        """
         v = self.cli("show diag")
         macs = []
         for f, t in [
@@ -141,15 +139,15 @@ class Script(BaseScript):
             } for f, t in macs
         ]
 
-    #
-    # 7200, 7301
-    #
     rx_7200 = re.compile(
         r"MAC Pool Size\s+(?P<count>\d+)\s+MAC Addr Base\s+(?P<mac>\S+)"
     )
 
-    @BaseScript.match(platform__regex=r"7200|7301")
     def execute_7200(self):
+        """
+        7200, 7301
+        :return:
+        """
         v = self.cli("show c%s | i MAC" % self.version["platform"])
         macs = []
         for f, t in [
@@ -167,9 +165,17 @@ class Script(BaseScript):
             } for f, t in macs
         ]
 
-    #
-    # Other
-    #
-    @BaseScript.match()
-    def execute_not_supported(self):
+    def execute_cli(self):
+        if self.is_platform_7200:
+            return self.execute_7200()
+        elif self.is_isr_router:
+            return self.execute_c3900()
+        elif self.is_iosxe:
+            return self.execute_IOSXE()
+        elif self.is_cat6000:
+            return self.execute_cat6000()
+        elif self.is_cat4000:
+            return self.execute_cat4000()
+        elif self.is_small_cat:
+            return self.execute_small_cat()
         raise self.NotSupportedError()

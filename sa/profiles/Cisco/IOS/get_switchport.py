@@ -5,13 +5,16 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+import six
+from itertools import compress
+from binascii import hexlify
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -28,7 +31,7 @@ class Script(BaseScript):
                          "^\s*Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
                          "^\s*Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
                          "^\s*Trunking VLANs Enabled: (?P<vlans>.+?)$",
-                         #"Pruning VLANs Enabled:",
+                         # "Pruning VLANs Enabled:",
                          re.MULTILINE | re.DOTALL)
 
     rx_descr_if = re.compile(
@@ -46,6 +49,72 @@ class Script(BaseScript):
         r"^\s*switchport trunk allowed vlan (?P<vlans>.+?)"
         r"^\s*switchport mode (?P<mode>trunk|access)",
         re.MULTILINE | re.DOTALL)
+
+    @staticmethod
+    def convert_vlan(vlans):
+        """
+
+        :param vlans: Byte string FF 00 01 80 ....
+        :return: itera
+        """
+        for line in vlans.splitlines():
+            for vlan_pack in line.split()[0]:
+                # for is_v in bin(int(vlan_pack, 16)):
+                for is_v in "{0:04b}".format(int(vlan_pack, 16)):
+                    yield int(is_v)
+
+    def execute_snmp(self, **kwargs):
+
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        r = {}
+        for ifindex, port_type, pvid, port_status in self.snmp.get_tables(
+                [
+                    mib["CISCO-VLAN-MEMBERSHIP-MIB::vmVlanType"],
+                    mib["CISCO-VLAN-MEMBERSHIP-MIB::vmVlan"],
+                    mib["CISCO-VLAN-MEMBERSHIP-MIB::vmPortStatus"]]):
+            # print port_num, ifindex, port_type, pvid
+            r[int(ifindex)] = {
+                "interface": names[int(ifindex)],
+                "status": port_status == 2,
+                # "ifindex": ifindex,
+                # "port_type": port_type,
+                "untagged": pvid,
+                "tagged": [],
+                "members": []
+            }
+        start = 0
+        for ifindex, native_vlan, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k in self.snmp.get_tables([
+            mib["CISCO-VTP-MIB::vlanTrunkPortNativeVlan"],
+            mib["CISCO-VTP-MIB::vlanTrunkPortEncapsulationOperType"],
+            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled"],
+            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled2k"],
+            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled3k"],
+            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled4k"]
+            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined"],
+            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined2k"],
+            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"],
+            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"]
+        ]):
+            print(ifindex, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k)
+            if int(enc_type) != 4:
+                # not dot1Q
+                continue
+            vlans_bank = hexlify("".join([vlans_base, vlans_2k, vlans_3k, vlans_4k]))
+            # vlans_bank = hexlify(vlans_bank)
+            if int(ifindex) in r:
+                r[int(ifindex)]["tagged"] += list(compress(range(start, 4096), self.convert_vlan(vlans_bank)))
+            else:
+                r[int(ifindex)] = {
+                    "interface": names[int(ifindex)],
+                    "status": True,
+                    # "ifindex": ifindex,
+                    # "port_type": port_type,
+                    "untagged": native_vlan,
+                    "tagged": list(compress(range(start, 4096), self.convert_vlan(vlans_bank))),
+                    "members": []
+                }
+            # r[port_num]["802.1Q Enabled"] = True
+        return list(six.itervalues(r))
 
     def parse_config(self):
         r = []
@@ -66,7 +135,6 @@ class Script(BaseScript):
             r += [iface]
         return r
 
-
     def get_description(self):
         r = []
         s = self.cli("show interfaces description", cached=True)
@@ -80,13 +148,13 @@ class Script(BaseScript):
             }]
         return r
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         try:
             v = self.cli("show interfaces switchport")
         except self.CLISyntaxError:
             # Cisco Catalist 3500 XL do not have this command
-            #raise self.NotSupportedError()
+            # raise self.NotSupportedError()
             return self.parse_config()
         v = "\n" + v
         v = self.rx_cont.sub(",", v)  # Unwind continuation lines
@@ -105,7 +173,7 @@ class Script(BaseScript):
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_body.search(s)
             if not match:
-                continue  #raise self.NotSupportedError()
+                continue  # raise self.NotSupportedError()
 
             interface = self.profile.convert_interface_name(
                 match.group("interface"))

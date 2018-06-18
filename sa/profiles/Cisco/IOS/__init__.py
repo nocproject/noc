@@ -18,7 +18,9 @@ class Profile(BaseProfile):
     name = "Cisco.IOS"
     pattern_more = [
         (r"^ --More-- ", " "),
-        (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
+        (r"(?:\?|interfaces)\s*\[confirm\]", "\n"),
+        (r"^Destination filename \[\S+\]", "\n"),
+        (r"^Proceed with reload\?\s*\[confirm\]", "y\n")
     ]
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = \
@@ -43,6 +45,56 @@ class Profile(BaseProfile):
         re.IGNORECASE)
     default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
     rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
+
+    matchers = {
+        "is_platform_7200": {
+            "platform": {
+                "$regex": r"7200|7301"
+            }
+        },
+        "is_isr_router": {
+            "platform": {
+                "$regex": r"^(19\d\d|29\d\d|39\d\d)$"
+            }
+        },
+        "is_iosxe": {
+            "platform": {
+                "$regex": r"ASR100[0-6]"
+            }
+        },
+        "is_cat6000": {
+            "version": {
+                "$regex": r"S[YXR]"
+            }
+        },
+        "is_cat4000": {
+            "version": {
+                "$regex": r"SG|\d\d\.\d\d\.\d\d\.E|EWA"
+            }
+        },
+        "is_small_cat": {
+            "version": {
+                "$regex": r"SE|EA|EZ|FX|EX|EY|E|WC"
+            }
+        },
+        "is_5350": {
+            "platform": {
+                "$regex": r"^5350"
+            }
+        },
+        "is_ubr": {
+            "version": {
+                "$regex": r"BC"
+            }
+        },
+        "is_vlan_switch": {
+            "platform": {
+                "$regex": r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
+                          r"C[23][69]00[a-z]?$|C8[7859]0|17\d\d|C18[01]X|19\d\d|2951|ASR\d+)"
+            }
+        },
+
+    }
 
     def cmp_version(self, x, y):
         """12(25)SEC2"""

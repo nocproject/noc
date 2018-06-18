@@ -8,15 +8,18 @@
 
 # Python modules
 import re
+import six
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
     name = "Cisco.IOS.get_mpls_vpn"
     interface = IGetMPLSVPN
+    cache = True
 
     rx_line = re.compile(r"^\s+(?P<vrf>.+?)\s+"
                          r"(?P<rd>\S+:\S+|<not set>)\s+"
@@ -163,3 +166,26 @@ class Script(BaseScript):
                         interfaces += members
                     vpns[-1]["interfaces"] += interfaces
         return vpns
+
+    def execute_snmp(self, **kwargs):
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        r = {}
+        for vrfindex, vrf_name, vrf_tag, vrf_status in self.snmp.get_tables(
+                [
+                    mib["CISCO-VRF-MIB::cvVrfName"],
+                    mib["CISCO-VRF-MIB::cvVrfVnetTag"],
+                    mib["CISCO-VRF-MIB::cvVrfOperStatus"]]):
+            # print port_num, ifindex, port_type, pvid
+            r[int(vrfindex)] = {
+                    "type": "VRF",
+                    "vpn_id": "",
+                    "status": bool(vrf_status),
+                    "name": vrf_name.strip(),
+                    "interfaces": []
+                }
+        for vrfifindex, vrfif_name, vrfif_status in self.snmp.get_tables(
+                [mib["CISCO-VRF-MIB::cvVrfInterfaceType"],
+                 mib["CISCO-VRF-MIB::cvVrfInterfaceRowStatus"]]):
+            vrf_index, ifindex = vrfifindex.split(".")
+            r[int(vrf_index)]["interfaces"] += [names[int(ifindex)]]
+        return list(six.itervalues(r))

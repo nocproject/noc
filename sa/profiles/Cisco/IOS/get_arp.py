@@ -5,11 +5,11 @@
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetarp import IGetARP
+
 import re
+from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_arp import Script as BaseScript
+from noc.sa.interfaces.igetarp import IGetARP
 
 
 class Script(BaseScript):
@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetARP
     rx_line = re.compile(r"^Internet\s+(?P<ip>\S+)\s+\d+\s+(?P<mac>\S+)\s+\S+(?:\s+(?P<interface>\S+))")
 
-    def execute(self, vrf=None):
+    def execute_cli(self, vrf=None):
         if vrf:
             s = self.cli("show ip arp vrf %s" % vrf)
         else:
