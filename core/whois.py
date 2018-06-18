@@ -47,6 +47,14 @@ class WhoisCacheLoader(object):
 
     @staticmethod
     def parse_rpsl(f, fields=None):
+        def q(s):
+            """
+            Sometimes, no-brake space symbol (\xa0) occures in whois database
+            :param s: Source line
+            :return: Cleaned string
+            """
+            return s.replace("\xa0", "").strip()
+
         obj = {}
         last = None
         for line in f:
@@ -63,7 +71,7 @@ class WhoisCacheLoader(object):
                 line, r = line.split("#", 1)
             if ":" in line:
                 last = None
-                k, v = [x.strip() for x in line.split(":", 1)]
+                k, v = [q(x) for x in line.split(":", 1)]
                 if fields and k not in fields:
                     continue
                 v = [x.strip() for x in v.split(",")]
