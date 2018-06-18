@@ -177,12 +177,12 @@ class Script(BaseScript):
                     mib["CISCO-VRF-MIB::cvVrfOperStatus"]]):
             # print port_num, ifindex, port_type, pvid
             r[int(vrfindex)] = {
-                    "type": "VRF",
-                    "vpn_id": "",
-                    "status": bool(vrf_status),
-                    "name": vrf_name.strip(),
-                    "interfaces": []
-                }
+                "type": "VRF",
+                "vpn_id": "",
+                "status": bool(vrf_status),
+                "name": vrf_name.strip(),
+                "interfaces": []
+            }
         for vrfifindex, vrfif_name, vrfif_status in self.snmp.get_tables(
                 [mib["CISCO-VRF-MIB::cvVrfInterfaceType"],
                  mib["CISCO-VRF-MIB::cvVrfInterfaceRowStatus"]]):

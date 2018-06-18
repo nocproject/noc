@@ -95,7 +95,7 @@ class Script(BaseScript):
             mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"],
             mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"]
         ]):
-            print(ifindex, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k)
+            # print(ifindex, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k)
             if int(enc_type) != 4:
                 # not dot1Q
                 continue
@@ -211,7 +211,7 @@ class Script(BaseScript):
             iface = {
                 "interface": interface,
                 "status": match.group("omode").strip() != "down",
-                "tagged": [v for v in tagged if v in known_vlans],
+                "tagged": [vlan for vlan in tagged if vlan in known_vlans],
                 "members": portchannels.get(interface, []),
                 "802.1Q Enabled": is_trunk,
                 "802.1ad Tunnel": False,

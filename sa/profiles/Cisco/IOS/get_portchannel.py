@@ -40,7 +40,7 @@ class Script(BaseScript):
                 iface["type"] = "L"
             else:
                 iface["type"] = "S"
-            for ifname in i[len(i)-1].split():
+            for ifname in i[len(i) - 1].split():
                 iface["members"] += [self.extract_iface(ifname)]
             r += [iface]
         return r

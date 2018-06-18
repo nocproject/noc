@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 import re
-from noc.core.script.base import BaseScript
+# NOC modules
 from noc.sa.profiles.Generic.get_arp import Script as BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
