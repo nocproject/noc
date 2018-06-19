@@ -8,7 +8,7 @@
 """
 """
 from noc.core.interface.base import BaseInterface
-from base import (ListOfParameter, DictParameter, VLANIDParameter,
+from base import (ListOfParameter, DictParameter, DictListParameter, VLANIDParameter,
                   InterfaceNameParameter, StringParameter, BooleanParameter)
 
 
@@ -32,10 +32,23 @@ class IGetSwitchport(BaseInterface):
         "802.1Q Enabled": BooleanParameter(default=False),
         # Q-in-Q tunneling
         "802.1ad Tunnel": BooleanParameter(default=False),
-        # Untagged VLAN if present
-        "untagged": VLANIDParameter(required=False),
+        # Default, native, PVID
+        "default_vlan": VLANIDParameter(required=False),
         # List of tagged vlans
         "tagged": ListOfParameter(element=VLANIDParameter()),
+        # List of untagged VLAN
+        "untagged": ListOfParameter(element=VLANIDParameter()),
+        "type": StringParameter(choices=["hybrid", ]),
+        "dynamic_vlans": DictListParameter(attrs={
+            "vlan": VLANIDParameter(),
+            "service": StringParameter(
+                choices=[
+                    "voice",
+                    "mvr",
+                    "multicast"
+                ]
+            )
+        }),
         # List of port-channel members, if applicable
         "members": ListOfParameter(element=InterfaceNameParameter())
     }))
