@@ -45,7 +45,7 @@ class WhoisCache(object):
         :param as_set:
         :return:
         """
-        if is_asn(as_set):
+        if is_asn(as_set[2:]):
             return True
         db = nosql.get_db()
         collection = db.noc.whois.asset.members
