@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# SA Profile test
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
+import os
+# Third-party modules
+import pytest
+# NOC modules
+from noc.core.profile.loader import loader
+from noc.core.profile.base import BaseProfile
+
+
+def get_profiles():
+    if os.environ.get("NOC_TEST_PROFILE"):
+        p_name = os.environ["NOC_TEST_PROFILE"]
+        return [x for x in loader.iter_profiles() if x == p_name]
+    else:
+        return list(loader.iter_profiles())
+
+
+@pytest.fixture(scope="session", params=get_profiles())
+def sa_profile(request):
+    return request.param
+
+
+@pytest.mark.dependency(name="profile_loading")
+def test_profile_loading(sa_profile):
+    profile = loader.get_profile(sa_profile)
+    assert profile is not None
+
+
+@pytest.mark.dependency(depends=["profile_loading"])
+def test_profile_type(sa_profile):
+    profile = loader.get_profile(sa_profile)
+    assert issubclass(profile, BaseProfile)
+
+
+@pytest.mark.dependency(depends=["profile_loading"])
+def test_profile_name(sa_profile):
+    profile = loader.get_profile(sa_profile)
+    assert getattr(profile, "name"), "Profile should has name"
+    req_name = profile.__module__
+    if req_name.startswith("noc.sa.profiles."):
+        req_name = req_name[16:]
+    assert profile.name == req_name
