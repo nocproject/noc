@@ -51,12 +51,4 @@ if [ -f "./commands/$CMD.py" ]; then
     exec ${PYTHON_INTERPRETER} "./commands/$CMD.py" "$@"
 fi
 
-case "$1" in
-    "paste")
-        shift
-        exec ./scripts/paste.py "$@"
-        ;;
-    *)
-        exec ${PYTHON_INTERPRETER} manage.py "$@"
-        ;;
-esac
+error_exit "Invalid command $1"

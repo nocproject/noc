@@ -150,12 +150,6 @@ LOCALE_PATHS = ["locale"]
 # SOUTH_AUTO_FREEZE_APP = False
 
 AUTH_PROFILE_MODULE = "main.UserProfile"
-#
-# Determine WEB process
-#
-IS_WEB = sys.argv[0].endswith("/web/service.py")
-IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
-
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
 # Do not enforce lowercase tags
