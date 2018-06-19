@@ -316,7 +316,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         if(me.requireGoogleAPI) {
             urls.push("@" + window.location.protocol + "//maps.google.com/maps/api/js?sensor=false&callback=_noc_load_callback")
         }
-        urls.push("/ui/js/noc/OpenLayers.js");
+        urls.push("/ui/web/js/OpenLayers.js");
         load_scripts(urls, me, function() {
             me.createMap(data.zoom, data.x, data.y, data.layer, data.layers);
         });
