@@ -10,7 +10,6 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.core.mib import mib
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
