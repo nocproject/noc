@@ -84,6 +84,7 @@ class ScriptLoader(object):
                                 script = type("Script", (o,), {
                                     "name": name
                                 })
+                                script.__module__ = "noc.sa.profiles.%s" % name
                             else:
                                 script = o
                             break
