@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 
@@ -19,15 +19,15 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    ##
-    ## Cisco WLC 5508
-    ##
     rx_wlc5508 = re.compile(
         r"^Burned-in MAC Address\.*\s(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @BaseScript.match(platform__regex=r"AIR-CT5508.*")
     def execute_wlc5508(self):
+        """
+        Cisco WLC 5508
+        :return:
+        """
         v = self.cli("show sysinfo")
         match = self.re_search(self.rx_wlc5508, v)
         base = match.group("id")
@@ -36,10 +36,7 @@ class Script(BaseScript):
             "last_chassis_mac": base
         }]
 
-
-    ##
-    ## Other
-    ##
-    @BaseScript.match()
-    def execute_not_supported(self):
+    def execute_cli(self):
+        if self.is_platform_5508:
+            return self.execute_wlc5508()
         raise self.NotSupportedError()

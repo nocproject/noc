@@ -10,13 +10,13 @@ import six
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetifindexes import IGetIfindexes
+from noc.sa.interfaces.igetportchannel import IGetPortchannel
 from noc.core.mib import mib
 
 
 class Script(BaseScript):
     name = "Generic.get_portchannel"
-    interface = IGetIfindexes
+    interface = IGetPortchannel
     cache = True
     requires = []
 
