@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import sys
 import logging
 from noc.config import config
 if config.features.pypy:
