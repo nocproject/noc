@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,6 +42,7 @@ class Script(BaseScript):
     }
     ROLE_MAP = {
         "disabled": "disabled",
+        "disable": "disabled",
         "root": "root",
         "alternate": "alternate",
         "designate": "designated",
@@ -75,7 +76,7 @@ class Script(BaseScript):
     def execute(self):
         r = self.cli("show spanning-tree")
         g = self.iter_blocks(r)
-        _, cfg = g.next()
+        _, cfg = next(g)
         if cfg["STP_ENABLED"].lower() != "enabled":
             # No STP
             return {
@@ -89,7 +90,7 @@ class Script(BaseScript):
 
         instance = {
             "id": 0,
-            "vlans": cfg["VLANS"],
+            "vlans": cfg.get("VLANS", "1-4095"),
             "bridge_id": "00:00:00:00:00:00",  # @todo: valid bridge_id,
             "bridge_priority": cfg["PRIORITY"],
             "root_id": root_id,

@@ -28,6 +28,8 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
+    # to one SNMP GET request
+    snmp_metrics_get_chunk = 10
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
     #
     # Version comparison

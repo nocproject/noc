@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     "south",
     # NOC modules
     "noc.main",
+    "noc.dev",
     "noc.project",
     "noc.wf",
     "noc.gis",

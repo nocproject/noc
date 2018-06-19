@@ -10,7 +10,6 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4, IPv6
 
@@ -26,7 +25,7 @@ def ranges_to_list_str(s):
             int(p)
             r += [p]
             continue
-        except:
+        except ValueError:
             pass
         match = rx_range.match(p)
         if not match:
@@ -169,7 +168,7 @@ class Script(BaseScript):
         lldp = []
         try:
             lldp_enable = self.has_capability("Network | LLDP")
-        except:
+        except Exception:
             lldp_enable = bool("Network | LLDP" in self.scripts.get_capabilities())
         if lldp_enable:
             try:
@@ -188,7 +187,7 @@ class Script(BaseScript):
         udld = []
         try:
             udld_enable = self.has_capability("Network | UDLD")
-        except:
+        except Exception:
             udld_enable = bool("Network | UDLD" in self.scripts.get_capabilities())
         if udld_enable:
             try:
@@ -217,8 +216,8 @@ class Script(BaseScript):
         switchports = {}
         for swp in self.scripts.get_switchport():
             switchports[swp["interface"]] = (
-            swp["untagged"] if "untagged" in swp else None,
-            swp["tagged"]
+                swp["untagged"] if "untagged" in swp else None,
+                swp["tagged"]
             )
 
         portchannel_members = {}
@@ -268,7 +267,7 @@ class Script(BaseScript):
                 if not match:
                     continue
                 n["oper_status"] = match.group("status")
-                status = match.group("status").lower() == "up"
+                # status = match.group("status").lower() == "up"
                 n["admin_status"] = match.group("status")
                 n["subinterfaces"] = [{
                     "name": iface,
@@ -303,7 +302,7 @@ class Script(BaseScript):
                 if not match:
                     continue
                 n["oper_status"] = match.group("status")
-                status = match.group("status").lower() == "up"
+                # status = match.group("status").lower() == "up"
                 n["admin_status"] = match.group("status")
                 n["subinterfaces"] = [{
                     "name": iface,
@@ -333,7 +332,7 @@ class Script(BaseScript):
                 ip = IPv4(ip, netmask=match.group("mask")).prefix
                 ip_list = [ip]
             vlan = match.group("vlan")
-            a_stat = "UP"
+            # a_stat = "UP"
             if ospf_enable and ifname in ospf:
                 enabled_protocols += ["OSPF"]
             if ospf3_enable and ifname in ospf3:
@@ -366,4 +365,6 @@ class Script(BaseScript):
                 }]
             }
             r += [iface]
+        if not r:
+            raise self.UnexpectedResultError("Has not interfaces in output")
         return [{"interfaces": r}]

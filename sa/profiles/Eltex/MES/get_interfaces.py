@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -102,9 +102,10 @@ class Script(BaseScript):
 
         # Get LLDP interfaces
         lldp = []
-        c = self.cli("show lldp configuration", ignore_errors=True)
-        if self.rx_lldp_en.search(c):
-            lldp = self.rx_lldp.findall(c)
+        if self.has_capability("Network | LLDP"):
+            c = self.cli("show lldp configuration", ignore_errors=True)
+            if self.rx_lldp_en.search(c):
+                lldp = self.rx_lldp.findall(c)
 
         # Get GVRP interfaces
         gvrp = []
@@ -114,9 +115,10 @@ class Script(BaseScript):
 
         # Get STP interfaces
         stp = []
-        c = self.cli("show spanning-tree", ignore_errors=True)
-        if self.rx_stp_en.search(c):
-            stp = self.rx_stp.findall(c)
+        if self.has_capability("Network | STP"):
+            c = self.cli("show spanning-tree", ignore_errors=True)
+            if self.rx_stp_en.search(c):
+                stp = self.rx_stp.findall(c)
 
         # Get ifname and description
         i = []

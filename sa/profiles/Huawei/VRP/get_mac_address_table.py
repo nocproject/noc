@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
@@ -31,6 +30,8 @@ class Script(BaseScript):
         elif version.startswith("5.3"):
             rx_line = rx_vrp53line
         elif version.startswith("5"):
+            rx_line = rx_vrp5line
+        else:
             rx_line = rx_vrp5line
         r = []
         for l in self.cli(cmd).splitlines():

@@ -994,7 +994,9 @@ Ext.define("NOC.core.ModelApplication", {
     // Returns form data
     getFormData: function() {
         var me = this,
-            fields = me.form.getFields().items,
+            fields = me.form.getFields().items.filter(function(item) {
+                return !(item.hasOwnProperty("isListForm") && item.isListForm)
+            }),
             f, field, data, name,
             fLen = fields.length,
             values = {};

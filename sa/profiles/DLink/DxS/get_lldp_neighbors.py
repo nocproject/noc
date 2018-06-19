@@ -78,11 +78,14 @@ class Script(BaseScript):
             for i in neigh:
                 if isinstance(neigh[i], six.string_types):
                     neigh[i] = neigh[i].rstrip("\x00")
-            neigh["remote_capabilities"] = int(
-                "".join(x for x in reversed("{0:016b}".format(
-                    ord(neigh["remote_capabilities"]) << 8 + 0x0
-                ))), 2
-            )
+            if neigh["remote_capabilities"]:
+                neigh["remote_capabilities"] = int(
+                    "".join(x for x in reversed("{0:016b}".format(
+                        ord(neigh["remote_capabilities"]) << 8 + 0x0
+                    ))), 2
+                )
+            else:
+                neigh["remote_capabilities"] = 0
             r += [{
                 "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
                 "neighbors": [neigh]

@@ -23,7 +23,8 @@ class Script(BaseScript):
     def execute(self):
         try:
             self.cli("")
-            return {"result": True}
+            return {"result": True,
+                    "message": ""}
         except NOCError as e:
             return {"result": False,
                     "message": "Error: %s (%s)" % (e.default_msg, e.message)}

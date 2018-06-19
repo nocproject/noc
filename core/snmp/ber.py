@@ -32,6 +32,11 @@ def did(tag_class, is_constructed, tag_id):
 
 
 class BERDecoder(object):
+    @staticmethod
+    def split_tlv(msg):
+        decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(msg)
+        return msg[offset:offset + length], msg[offset + length:]
+
     def parse_tlv(self, msg):
         decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(msg)
         value, rest = msg[offset:offset + length], msg[offset + length:]
@@ -244,6 +249,9 @@ class BERDecoder(object):
         # CHARACTER STRING	P/C	29	1D
         # BMPString	P/C	30	1E
         # (use long-form)	-	31	1F
+        # SNMP_NOSUCHOBJECT 0x80
+        # SNMP_NOSUCHINSTANCE 0x81
+        # SNMP_ENDOFMIBVIEW 0x82
         did(0, False, 0x80): parse_null,  # missed instance?
         # >> Universal, Constructed types
         # BIT STRING	P/C	3	3
