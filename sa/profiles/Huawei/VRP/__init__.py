@@ -151,6 +151,7 @@ class Profile(BaseProfile):
         "NULL": "null",
         "RprPos": "unknown",
         "Rpr": "unknown",
+        "40GE": "physical",
         "100GE": "physical",
         "Serial": None,
         "Pos": None

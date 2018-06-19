@@ -42,7 +42,7 @@ class Script(BaseScript):
         r"\)",
         re.IGNORECASE
     )
-    rx_iftype = re.compile(r"^(\D+?|\d{3}\S+?)\d+.*$")
+    rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
     rx_dis_ip_int = re.compile(
         r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)",
         re.IGNORECASE)
