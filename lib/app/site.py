@@ -92,7 +92,6 @@ class Site(object):
         self.menu_roots = {}  # app -> menu
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
-        self.testing_mode = hasattr(settings, "IS_TEST")
         self.log_api_calls = config.logging.log_api_calls
         self.log_sql_statements = config.logging.log_sql_statements
         self.app_contributors = defaultdict(set)
