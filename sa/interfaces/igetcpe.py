@@ -32,7 +32,9 @@ class IGetCPE(BaseInterface):
         * docsis - DOCSIS cable modem
         * other - all other typesu8
     * interface - controller's physical interface leading to CPE
+    * vendor - CPE vendor
     * model - CPE model
+    * version - CPE os version
     * serial - CPE serial number
     * ip - CPE IP
     * mac - CPE mac
@@ -61,7 +63,9 @@ class IGetCPE(BaseInterface):
             "other"
         ]),
         "interface": InterfaceNameParameter(required=False),
+        "vendor": StringParameter(required=False),
         "model": StringParameter(required=False),
+        "version": StringParameter(required=False),
         "serial": StringParameter(required=False),
         "ip": IPv4Parameter(required=False),
         "mac": MACAddressParameter(required=False),
