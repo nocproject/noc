@@ -475,8 +475,7 @@ class BaseProfile(object):
             else:
                 return str(s)
         if ";" in cmd:
-            r = [cmd, "\r\n"]
-            return "".join(r)
+            return "%s\r\n" % cmd
         r = [cmd, ":"]
         if kwargs:
             if self.mml_always_quote:
