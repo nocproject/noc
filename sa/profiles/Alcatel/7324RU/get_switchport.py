@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_switchport
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,9 +14,11 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.lib.text import *
 from collections import defaultdict
 
+
 class Script(BaseScript):
     name = "Alcatel.7324RU.get_switchport"
     interface = IGetSwitchport
+
     rx_vlan = re.compile(
         r"[ ]*(?P<vid>\d+)[ ]*(?P<vname>[A-Za-z0-9\-\.]+)\n"
         r"(([ 0-9]+)\n)?[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
@@ -26,7 +28,7 @@ class Script(BaseScript):
 
     def execute(self):
         tagged = defaultdict(list)
-#        untagged = defaultdict(list)
+        # untagged = defaultdict(list)
         va = self.cli("adsl pvc show")
         vl = self.cli("switch vlan show *")
         r = []
@@ -34,25 +36,25 @@ class Script(BaseScript):
         for line in parse_table(va):
             r += [{
                 "interface": line[0],
-                "untagged":  line[3],
+                "untagged": line[3],
                 "tagged": [],
                 "members": []
             }]
-        for match in re.finditer(self.rx_vlan, vl):
+        for match in self.rx_vlan.finditer(vl):
             up = 0
             if match.group("vstatus") == "enabled":
                 for i in match.group("uplinkmask"):
                     up += 1
                     if i == "T":
                         tagged[up] += [match.group("vid")]
-#                    if i == "U":
-#                        untagged[up]+=[match.group("vid")]
+                    # if i == "U":
+                    # untagged[up]+=[match.group("vid")]
         for i in range(up):
             r += [{
-                "interface": "enet"+str(i+1),
+                "interface": "enet" + str(i + 1),
                 "802.1Q Enabled": True,
-#                "untagged": untagged[i+1],
-                "tagged": tagged[i+1],
+                # "untagged": untagged[i+1],
+                "tagged": tagged[i + 1],
                 "members": []
             }]
         return r

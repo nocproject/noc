@@ -17,8 +17,6 @@ from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3620
-from noc.sa.profiles.DLink.DxS import DES3x2x
-from noc.sa.profiles.DLink.DxS import DES30xx
 from noc.core.mib import mib
 from noc.core.mac import MAC
 
@@ -100,11 +98,9 @@ class Script(BaseScript):
         r"OSPF Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
     rx_ospfv3_gs = re.compile(
         r"OSPFv3 Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
-    rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled?")
     rx_ctp_gs = re.compile(r"(LBD )?Status\s+: Enabled")
     rx_pim_gs = re.compile(r"PIM Global State\s+: Enabled")
     rx_gvrp_gs = re.compile(r"Global GVRP\s+: Enabled")
-    rx_stp_gs = re.compile(r"STP Status\s+: Enabled")
     rx_dvmrp_gs = re.compile(r"DVMRP Global State\s+: Enabled")
     rx_rip = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+(?:Disabled|Enabled)\s+"
@@ -128,8 +124,6 @@ class Script(BaseScript):
         r"Description\s+:\s*(?P<desc>.*?)\s*\n"
         r"HardWare Type\s+:\s*.+\s*\n"
         r"MAC Address\s+:\s*(?P<mac>\S+)\s*\n")
-    rx_udld = re.compile(
-        r"(?P<port>\d+(?:[:/]\d+)?)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
     rx_ctp = re.compile(
         r"^(?P<port>\d+(?:[:/]\d+)?)\s+(?P<status>Enabled|Disabled)\s+\S+",
         re.MULTILINE)
@@ -338,24 +332,20 @@ class Script(BaseScript):
                 igmp = []
 
         lldp = []
-        macs = {}
-        try:
-            c = self.cli("show lldp")
-            lldp_enable = self.rx_lldp_gs.search(c) is not None
-            try:
-                c = self.cli("show lldp local_ports mode brief")
-                for match in self.rx_lldp1.finditer(c):
-                    macs[match.group("port")] = match.group("mac")
-            except self.CLISyntaxError:
-                pass
-        except self.CLISyntaxError:
-            lldp_enable = False
-        if lldp_enable:
+        if self.has_capability("Network | LLDP"):
             try:
                 c = self.cli("show lldp ports")
                 lldp = self.rx_lldp.findall(c)
             except self.CLISyntaxError:
                 pass
+
+        macs = {}
+        try:
+            c = self.cli("show lldp local_ports mode brief")
+            for match in self.rx_lldp1.finditer(c):
+                macs[match.group("port")] = match.group("mac")
+        except self.CLISyntaxError:
+            pass
 
         if len(macs) == 0:
             if (
@@ -368,12 +358,6 @@ class Script(BaseScript):
                         macs[match.group("port")] = match.group("mac")
                 except self.CLISyntaxError:
                     pass
-
-        try:
-            c = self.cli("show duld ports")
-            udld = self.rx_udld.findall(c)
-        except self.CLISyntaxError:
-            udld = []
 
         ctp = []
         try:
@@ -414,28 +398,22 @@ class Script(BaseScript):
             pass
 
         stp = []
-        c = ""
-        try:
-            if self.match_version(DES3x2x) or self.match_version(DES30xx):
-                c = self.cli("show stp\nq")
-            else:
-                c = self.cli("show stp")
-        except self.CLISyntaxError:
-            pass
-        if self.rx_stp_gs.search(c) is not None:
+        if self.has_capability("Network | STP"):
             c = self.cli(
                 "show stp ports",
                 obj_parser=self.parse_stp,
-                cmd_next="n", cmd_stop="q"
+                cmd_next="n", cmd_stop="q", cached=True
             )
             for i in c:
                 stp += [i['port']]
 
-        try:
-            c = self.cli("show ethernet_oam ports configuration")
-            oam = self.rx_oam.findall(c)
-        except self.CLISyntaxError:
-            oam = []
+        oam = []
+        if self.has_capability("Network | OAM"):
+            try:
+                c = self.cli("show ethernet_oam ports configuration")
+                oam = self.rx_oam.findall(c)
+            except self.CLISyntaxError:
+                pass
 
         ports = self.profile.get_ports(self)
         vlans = self.profile.get_vlans(self)
@@ -486,8 +464,6 @@ class Script(BaseScript):
                 i["enabled_protocols"] += ["LLDP"]
             if ifname in ctp:
                 i["enabled_protocols"] += ["CTP"]
-            if ifname in udld:
-                i["enabled_protocols"] += ["UDLD"]
             if ifname in gvrp:
                 i["enabled_protocols"] += ["GVRP"]
             if ifname in stp:

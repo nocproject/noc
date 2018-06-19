@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SAE API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,12 +11,15 @@ import tornado.gen
 # NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
+from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF
 from noc.sa.models.managedobject import ManagedObject  # noqa Do not delete
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.main.models.template import Template
+from noc.main.models.extstorage import ExtStorage
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
 from noc.config import config
@@ -43,7 +46,8 @@ class SAEAPI(API):
             ap.user, ap.password, ap.super_password,
             ap.snmp_ro, ap.snmp_rw,
             mo.cli_privilege_policy, mop.cli_privilege_policy,
-            mo.access_preference, mop.access_preference
+            mo.access_preference, mop.access_preference,
+            mop.beef_storage, mop.beef_path_template_id
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -153,7 +157,8 @@ class SAEAPI(API):
          ap_user, ap_password, ap_super_password,
          ap_snmp_ro, ap_snmp_rw,
          privilege_policy, p_privilege_policy,
-         access_preference, p_access_preference) = data[0]
+         access_preference, p_access_preference,
+         beef_storage_id, beef_path_template_id) = data[0]
         # Check object is managed
         if not is_managed:
             metrics["error", ("type", "object_not_managed")] += 1
@@ -190,15 +195,12 @@ class SAEAPI(API):
                 credentials["snmp_version"] = "v2c"
             elif capabilities.get("SNMP | v1"):
                 credentials["snmp_version"] = "v1"
-        if scheme in (1, 2):
-            credentials["cli_protocol"] = {
-                1: "telnet",
-                2: "ssh"
-            }[scheme]
+        if scheme in CLI_PROTOCOLS:
+            credentials["cli_protocol"] = PROTOCOLS[scheme]
             if port:
                 credentials["cli_port"] = port
-        elif scheme in (3, 4):
-            credentials["http_protocol"] = "https" if scheme == 4 else "http"
+        elif scheme in HTTP_PROTOCOLS:
+            credentials["http_protocol"] = PROTOCOLS[scheme]
             if port:
                 credentials["http_port"] = port
         # Build version
@@ -212,6 +214,15 @@ class SAEAPI(API):
                 version["image"] = sw_image
         else:
             version = None
+        # Beef processing
+        if scheme == BEEF and beef_storage_id and beef_path_template_id:
+            mo = ManagedObject.get_by_id(object_id)
+            tpl = Template.get_by_id(beef_path_template_id)
+            beef_path = tpl.render_subject(object=mo)
+            if beef_path:
+                storage = ExtStorage.get_by_id(beef_storage_id)
+                credentials["beef_storage_url"] = storage.url
+                credentials["beef_path"] = beef_path
         return dict(
             profile=Profile.get_by_id(profile).name,
             pool_id=pool_id,

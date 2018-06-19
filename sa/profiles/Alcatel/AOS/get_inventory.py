@@ -17,13 +17,13 @@ class Script(BaseScript):
     name = "Alcatel.AOS.get_inventory"
     interface = IGetInventory
     rx_ni = re.compile(
-    r"^\s+GBIC\s+(?P<int_number>\d+)\n"
-    r"\s+Manufacturer Name:\s+(?P<vendor>\S+)(|\s+),\n"
-    r"^\s+Part Number:\s+(?P<part_number>\S+)(|\s+),\n"
-    r"^\s+Hardware Revision:\s+(|(?P<hw_rev>\S+))(|\s+),\n"
-    r"^\s+Serial Number:\s+(?P<serial>\S+)(|\s+)(|\s+),\n",
+        r"^\s+GBIC\s+(?P<int_number>\d+)\n"
+        r"\s+Manufacturer Name:\s+(?P<vendor>\S+)(|\s+),\n"
+        r"^\s+Part Number:\s+(?P<part_number>\S+)(|\s+),\n"
+        r"^\s+Hardware Revision:\s+(|(?P<hw_rev>\S+))(|\s+),\n"
+        r"^\s+Serial Number:\s+(?P<serial>\S+)(|\s+)(|\s+),\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-                                                    
+
     def execute(self):
         objects = []
         # Chassis info
@@ -43,7 +43,7 @@ class Script(BaseScript):
         for match in self.rx_ni.finditer(iface):
             number = match.group("int_number")
 #           type = match.group("int")
-            vendor = match.group("vendor")
+            # vendor = match.group("vendor")
             serial = match.group("serial")
             hw_rev = match.group("hw_rev")
             if not hw_rev:

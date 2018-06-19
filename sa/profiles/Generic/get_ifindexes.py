@@ -16,6 +16,7 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Generic.get_ifindexes"
     interface = IGetIfindexes
+    cache = True
     requires = []
 
     MAX_GETNEXT_RETIRES = 0

@@ -372,7 +372,6 @@ class Config(BaseConfig):
         backup_dir = StringParameter(default="/var/backup")
         etl_import = StringParameter(default="/var/lib/noc/import")
         ssh_key_prefix = StringParameter(default="etc/noc_ssh")
-        beef_prefix = StringParameter(default="/var/lib/noc/beef/sa")
         cp_new = StringParameter(default="/var/lib/noc/cp/crashinfo/new")
         bi_data_prefix = StringParameter(default="/var/lib/noc/bi")
         babel_cfg = StringParameter(default="etc/babel.cfg")

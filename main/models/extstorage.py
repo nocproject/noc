@@ -22,7 +22,8 @@ id_lock = Lock()
 
 
 @on_delete_check(check=[
-    ("sa.ManagedObjectProfile", "config_mirror_storage")
+    ("sa.ManagedObjectProfile", "config_mirror_storage"),
+    ("sa.ManagedObjectProfile", "beef_storage"),
 ])
 class ExtStorage(Document):
     meta = {
@@ -35,8 +36,10 @@ class ExtStorage(Document):
     url = StringField()
     description = StringField()
     enable_config_mirror = BooleanField(default=False)
+    enable_beef = BooleanField(default=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     Error = FSError
 
@@ -47,6 +50,11 @@ class ExtStorage(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return ExtStorage.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        return ExtStorage.objects.filter(name=name).first()
 
     def open_fs(self):
         return open_fs(self.url)

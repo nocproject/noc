@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,9 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
-from noc.core.mac import MAC
+from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 
 
 class Script(BaseScript):
@@ -62,14 +60,11 @@ class Script(BaseScript):
                 "remote_capabilities": caps
             }
             if match.group("system_name"):
-                neighbor["remote_system_name"] = \
-                match.group("system_name").strip()
+                neighbor["remote_system_name"] = match.group("system_name").strip()
             if match.group("system_description"):
-                neighbor["remote_system_description"] = \
-                match.group("system_description").strip()
+                neighbor["remote_system_description"] = match.group("system_description").strip()
             if match.group("port_description"):
-                neighbor["remote_port_description"] = \
-                match.group("port_description").strip()
+                neighbor["remote_port_description"] = match.group("port_description").strip()
             r += [{
                 "local_interface": match.group("port"),
                 "neighbors": [neighbor]

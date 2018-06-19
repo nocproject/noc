@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$",
         re.MULTILINE | re.DOTALL)
     rx_neigh = re.compile(
-        r"^(?P<local_if>.e-\S+?|me\d|fxp0)\s.*?$",
+        r"^(?P<local_if>.e-\S+?|me\d(?:\.\d+)?|fxp0)\s.*?$",
         re.MULTILINE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
@@ -44,7 +44,8 @@ class Script(BaseScript):
     )
     CHASSIS_TYPE = {
         "Mac address": 4,
-        "Network address": 5
+        "Network address": 5,
+        "Locally assigned": 7
     }
     PORT_TYPE = {
         "Interface alias": 1,

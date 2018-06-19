@@ -48,7 +48,7 @@ class ManagedObject(Model):
     # Management
     pool = ReferenceField(Pool, description=_("Pool Name"))
     name = StringField(description=_("Name"))
-    address = IPv4Field(description=_("Address"))
+    ip = IPv4Field(description=_("IP Address"))
     is_managed = BooleanField(description=_("Is Managed"))
     # Platform
     profile = ReferenceField(Profile, description=_("Profile"))

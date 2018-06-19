@@ -24,7 +24,7 @@ class Script(BaseScript):
             return "Enabled" in r
         except self.CLISyntaxError:
             try:
-                r = self.cli("display stp | include disabled")
+                r = self.cli("display stp | include isabled")
                 return "Protocol Status" not in r
             except self.CLISyntaxError:
                 r = self.cli("display stp")
@@ -92,7 +92,6 @@ class Script(BaseScript):
                 oids = ["1.3.6.1.2.1.47.1.1.1.1.5", "1.3.6.1.2.1.47.1.1.1.1.6"]
                 s_pos = 0
                 for index, type, pos in list(self.snmp.get_tables(oids, bulk=True)):
-                    print index, type, pos
                     if type == 5:
                         s_pos = pos
                     elif type == 9:
