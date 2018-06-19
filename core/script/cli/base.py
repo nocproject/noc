@@ -13,7 +13,6 @@ import re
 import functools
 import datetime
 from functools import reduce
-from threading import Lock
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -52,10 +51,6 @@ class CLI(object):
     KEEP_INTVL = 10
     # Terminate connection after N keepalive failures
     KEEP_CNT = 3
-    # Patterns lock
-    patterns_lock = Lock()
-    # profile name -> patterns
-    patterns_cache = {}
 
     class InvalidPagerPattern(Exception):
         pass
@@ -69,7 +64,7 @@ class CLI(object):
         self.ioloop = None
         self.command = None
         self.prompt_stack = []
-        self.patterns = self.get_patterns()
+        self.patterns = self.profile.patterns.copy()
         self.buffer = ""
         self.is_started = False
         self.result = None
@@ -593,62 +588,6 @@ class CLI(object):
         self.logger.debug("Setup sequence complete")
         self.setup_complete = True
         yield self.on_start(data, match)
-
-    def get_patterns(self):
-        with self.patterns_lock:
-            pc = self.patterns_cache.get(self.profile.name)
-            if not pc:
-                pc = self.build_patterns()
-                self.patterns_cache[self.profile.name] = pc
-            return pc.copy()
-
-    def build_patterns(self):
-        """
-        Return dict of compiled regular expressions
-        """
-        patterns = {
-            "username": re.compile(self.profile.pattern_username,
-                                   re.DOTALL | re.MULTILINE),
-            "password": re.compile(self.profile.pattern_password,
-                                   re.DOTALL | re.MULTILINE),
-            "prompt": re.compile(self.profile.pattern_prompt,
-                                 re.DOTALL | re.MULTILINE)
-        }
-        if self.profile.pattern_unprivileged_prompt:
-            patterns["unprivileged_prompt"] = re.compile(
-                self.profile.pattern_unprivileged_prompt,
-                re.DOTALL | re.MULTILINE
-            )
-        if self.profile.pattern_super_password:
-            patterns["super_password"] = re.compile(
-                self.profile.pattern_super_password,
-                re.DOTALL | re.MULTILINE
-            )
-        if isinstance(self.profile.pattern_more, six.string_types):
-            more_patterns = [self.profile.pattern_more]
-            patterns["more_commands"] = [self.profile.command_more]
-        else:
-            # .more_patterns is a list of (pattern, command)
-            more_patterns = [x[0] for x in self.profile.pattern_more]
-            patterns["more_commands"] = [x[1] for x in self.profile.pattern_more]
-        if self.profile.pattern_start_setup:
-            patterns["setup"] = re.compile(
-                self.profile.pattern_start_setup,
-                re.DOTALL | re.MULTILINE
-            )
-        # Merge pager patterns
-        patterns["pager"] = re.compile(
-            "|".join([r"(%s)" % p for p in more_patterns]),
-            re.DOTALL | re.MULTILINE
-        )
-        patterns["more_patterns"] = [
-            re.compile(p, re.MULTILINE | re.DOTALL)
-            for p in more_patterns]
-        patterns["more_patterns_commands"] = list(zip(
-            patterns["more_patterns"],
-            patterns["more_commands"]
-        ))
-        return patterns
 
     def resolve_pattern_prompt(self, match):
         """

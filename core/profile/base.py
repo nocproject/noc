@@ -10,6 +10,7 @@
 import re
 import functools
 # Third-party modules
+import six
 import tornado.gen
 # NOC modules
 from noc.core.ip import IPv4
@@ -17,7 +18,14 @@ from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
 
 
-class BaseProfile(object):
+class BaseProfileMetaclass(type):
+    def __new__(mcs, name, bases, attrs):
+        n = type.__new__(mcs, name, bases, attrs)
+        n.patterns = n._get_patterns()
+        return n
+
+
+class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     """
     Equipment profile. Contains all equipment personality and specific
     """
@@ -179,6 +187,8 @@ class BaseProfile(object):
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
+    # Filled by metaclass
+    patterns = {}
 
     def convert_prefix(self, prefix):
         """
@@ -440,3 +450,52 @@ class BaseProfile(object):
         yield cli.iostream.write(cls.command_submit)
         # Wait until prompt
         yield cli.read_until_prompt()
+
+    @classmethod
+    def _get_patterns(cls):
+        """
+        Return dict of compiled regular expressions
+        """
+        patterns = {
+            "username": re.compile(cls.pattern_username,
+                                   re.DOTALL | re.MULTILINE),
+            "password": re.compile(cls.pattern_password,
+                                   re.DOTALL | re.MULTILINE),
+            "prompt": re.compile(cls.pattern_prompt,
+                                 re.DOTALL | re.MULTILINE)
+        }
+        if cls.pattern_unprivileged_prompt:
+            patterns["unprivileged_prompt"] = re.compile(
+                cls.pattern_unprivileged_prompt,
+                re.DOTALL | re.MULTILINE
+            )
+        if cls.pattern_super_password:
+            patterns["super_password"] = re.compile(
+                cls.pattern_super_password,
+                re.DOTALL | re.MULTILINE
+            )
+        if isinstance(cls.pattern_more, six.string_types):
+            more_patterns = [cls.pattern_more]
+            patterns["more_commands"] = [cls.command_more]
+        else:
+            # .more_patterns is a list of (pattern, command)
+            more_patterns = [x[0] for x in cls.pattern_more]
+            patterns["more_commands"] = [x[1] for x in cls.pattern_more]
+        if cls.pattern_start_setup:
+            patterns["setup"] = re.compile(
+                cls.pattern_start_setup,
+                re.DOTALL | re.MULTILINE
+            )
+        # Merge pager patterns
+        patterns["pager"] = re.compile(
+            "|".join([r"(%s)" % p for p in more_patterns]),
+            re.DOTALL | re.MULTILINE
+        )
+        patterns["more_patterns"] = [
+            re.compile(p, re.MULTILINE | re.DOTALL)
+            for p in more_patterns]
+        patterns["more_patterns_commands"] = list(zip(
+            patterns["more_patterns"],
+            patterns["more_commands"]
+        ))
+        return patterns
