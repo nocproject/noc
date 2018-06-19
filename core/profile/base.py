@@ -12,6 +12,7 @@ import functools
 # Third-party modules
 import six
 import tornado.gen
+import six
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -83,6 +84,10 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # "^.+\\" -- treat trailing backspace as continuation
     # "banner\s+login\s+(\S+)" -- continue until matched group
     pattern_multiline_commands = None
+    # MML end of block pattern
+    pattern_mml_end = None
+    # MML continue pattern
+    pattern_mml_continue = None
     # Device can strip long hostname in various modes
     # i.e
     # my.very.long.hostname# converts to
@@ -184,6 +189,11 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # True - Send multiline command at once
     # False - Send multiline command line by line
     batch_send_multiline = True
+    # String to separate MML response header from body
+    mml_header_separator = "\r\n\r\n"
+    # Always enclose MML command arguments with quotes
+    # False - pass integers as unquoted
+    mml_always_quote = False
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
@@ -499,3 +509,46 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
             patterns["more_commands"]
         ))
         return patterns
+
+    def get_mml_login(self, script):
+        """
+        Generate MML login command. .get_mml_command may be used for formatting
+        :param script: BaseScript instance
+        :return: Login command
+        """
+        raise NotImplementedError()
+
+    def get_mml_command(self, cmd, **kwargs):
+        """
+        Generate MML command
+        :param cmd:
+        :param kwargs:
+        :return:
+        """
+        def qi(s):
+            return "\"%s\"" % s
+
+        def nqi(s):
+            if isinstance(s, six.string_types):
+                return "\"%s\"" % s
+            else:
+                return str(s)
+        if ";" in cmd:
+            return "%s\r\n" % cmd
+        r = [cmd, ":"]
+        if kwargs:
+            if self.mml_always_quote:
+                q = qi
+            else:
+                q = nqi
+            r += [", ".join("%s=%s" % (k, q(kwargs[k])) for k in kwargs)]
+        r += [";", "\r\n"]
+        return "".join(r)
+
+    def parse_mml_header(self, header):
+        """
+        Parse MML response header
+        :param header: Response header
+        :return: error code, error message
+        """
+        raise NotImplementedError()
