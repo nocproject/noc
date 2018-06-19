@@ -164,10 +164,10 @@ class Config(BaseConfig):
 
     class customization(ConfigSection):
         favicon_url = StringParameter(
-            default="/ui/img/logo_24x24_deep_azure.png"
+            default="/ui/web/img/logo_24x24_deep_azure.png"
         )
         logo_url = StringParameter(
-            default="/ui/img/logo_white.svg"
+            default="/ui/web/img/logo_white.svg"
         )
         logo_width = IntParameter(default=24)
         logo_height = IntParameter(default=24)

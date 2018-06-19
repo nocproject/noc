@@ -55,7 +55,7 @@
             console.log("!!! Running NOC desktop");
             console.log("!!!");
             // Initialize loader
-            Ext.BLANK_IMAGE_URL = "/ui/img/s.gif";
+            Ext.BLANK_IMAGE_URL = "/ui/web/img/s.gif";
             Ext.namespace("NOC");
             NOC.settings = {
                 systemId: {% if setup.system_uuid %}"{{ setup.system_uuid }}"{% else %}null{% endif %},
