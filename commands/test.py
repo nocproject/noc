@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  Test framework
+# Test framework
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import print_function
-import sys
-import re
 import os
 import subprocess
+import time
+import argparse
 # Third-party modules
 from pytest import main as pytest_main
 # NOC modules
@@ -24,6 +24,16 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # Run
         run_parser = subparsers.add_parser("run")
+        run_parser.add_argument(
+            "-v", "--verbose",
+            action="store_true",
+            help="Verbose output"
+        )
+        run_parser.add_argument(
+            "tests",
+            nargs=argparse.REMAINDER,
+            help="Paths to tests"
+        )
         # Check
         check_parser = subparsers.add_parser("check")
         check_cmd_parser = check_parser.add_subparsers(dest="check_cmd")
@@ -55,8 +65,21 @@ class Command(BaseCommand):
     def handle_check_script(self, *args, **options):
         raise NotImplementedError()
 
-    def handle_run(self, *args, **options):
-        return pytest_main(["tests"])
+    def handle_run(self, tests=None, verbose=False, *args, **options):
+        db_name = "test_%d" % time.time()
+        # Override database names
+        config.pg.db = db_name
+        config.mongo.db = db_name
+        config.clickhouse.db = db_name
+        # Run tests
+        args = []
+        if verbose:
+            args += ["-v"]
+        if tests:
+            args += tests
+        else:
+            args += ["tests"]
+        return pytest_main(args)
 
     def get_dirs(self, dirs):
         """
