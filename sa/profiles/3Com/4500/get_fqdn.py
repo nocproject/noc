@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_fqdn
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_fqdn
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-#import noc.sa.script
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
@@ -23,7 +22,7 @@ class Script(BaseScript):
 
     def execute(self):
         fqdn = ''
-        v = self.cli("display current-configuration")
+        v = self.scripts.get_config()
         match = self.rx_hostname.search(v)
         if match:
             fqdn = match.group("hostname")

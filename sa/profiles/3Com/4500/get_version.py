@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -16,7 +16,6 @@ from noc.sa.interfaces.igetversion import IGetVersion
 class Script(BaseScript):
     name = "3Com.4500.get_version"
     interface = IGetVersion
-#    implements = [IGetVersion]
     cache = True
 
     rx_version_3Com = re.compile(
@@ -30,9 +29,7 @@ class Script(BaseScript):
     rx_serial = re.compile(
         r"^.*Product serial number:\s+(?P<serial>\S+)$", re.MULTILINE)
 
-    def execute(self):
-
-        # Fallback to CLI
+    def execute_cli(self):
         plat = self.cli("display version", cached=True)
         version = self.rx_version_3Com.search(plat)
         platform = self.rx_platform.search(plat)
@@ -43,12 +40,12 @@ class Script(BaseScript):
         serial = self.rx_serial.search(serial)
 
         return {
-                "vendor": '3Com',
-                "platform": platform.group("platform"),
-                "version": version.group("version"),
-                "attributes": {
-                    "Boot PROM": bootprom.group("bootprom"),
-                    "HW version": hardware.group("hardware"),
-                    "Serial Number": serial.group("serial")
-                    }
-                }
+            "vendor": '3Com',
+            "platform": platform.group("platform"),
+            "version": version.group("version"),
+            "attributes": {
+                "Boot PROM": bootprom.group("bootprom"),
+                "HW version": hardware.group("hardware"),
+                "Serial Number": serial.group("serial")
+            }
+        }

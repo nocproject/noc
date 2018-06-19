@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
-from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
@@ -21,11 +19,11 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^\s+LLDP\sneighbor-information\sof\sport\s\d+\[(?P<interface>\S+)\]:\s+"
-	r"Neighbor\sindex\s+:\s+\d+\s+Update\stime\s+:\s+\d+\sdays,\d+\shours,\d+\sminutes,\d+\sseconds\s+"
-	r"Chassis\stype\s+:\s+(?P<chassis_type>(\S+ \S+ \S+|\S+ \S+|\S+))\s+"
-	r"Chassis\sID\s+:\s+(?P<chassis_id>\S+)\s+Port ID type\s+:\s+(?P<port_type>(\S+ \S+ \S+|\S+ \S+|\S+))\s+"
-	r"Port\sID\s+:\s+(?P<port_id>\S+).\s+Port\sdescription\s+:\s+(\S+ \S+ \S+|\S+ \S+|\S+)\s+"
-	r"System\sname\s+:\s+(?P<name>\S+)",
+        r"Neighbor\sindex\s+:\s+\d+\s+Update\stime\s+:\s+\d+\sdays,\d+\shours,\d+\sminutes,\d+\sseconds\s+"
+        r"Chassis\stype\s+:\s+(?P<chassis_type>(\S+ \S+ \S+|\S+ \S+|\S+))\s+"
+        r"Chassis\sID\s+:\s+(?P<chassis_id>\S+)\s+Port ID type\s+:\s+(?P<port_type>(\S+ \S+ \S+|\S+ \S+|\S+))\s+"
+        r"Port\sID\s+:\s+(?P<port_id>\S+).\s+Port\sdescription\s+:\s+(\S+ \S+ \S+|\S+ \S+|\S+)\s+"
+        r"System\sname\s+:\s+(?P<name>\S+)",
         re.DOTALL | re.MULTILINE)
 
     rx_capabilities = re.compile(
@@ -34,15 +32,15 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-	i = {}
+        i = {}
         # Try SNMP first
-	"""
-	if self.has_snmp():
+        """
+        if self.has_snmp():
             try:
-# lldpRemLocalPortNum
-# lldpRemChassisIdSubtype lldpRemChassisId
-# lldpRemPortIdSubtype lldpRemPortId
-# lldpRemSysName lldpRemSysCapEnabled
+                # lldpRemLocalPortNum
+                # lldpRemChassisIdSubtype lldpRemChassisId
+                # lldpRemPortIdSubtype lldpRemPortId
+                # lldpRemSysName lldpRemSysCapEnabled
                 for v in self.snmp.get_tables(
                     ["1.0.8802.1.1.2.1.4.1.1.4", "1.0.8802.1.1.2.1.4.1.1.5",
                      "1.0.8802.1.1.2.1.4.1.1.6", "1.0.8802.1.1.2.1.4.1.1.7",
@@ -50,19 +48,19 @@ class Script(BaseScript):
                     ], bulk=True):
                     #local_interface = self.snmp.get(
                     #    "1.3.6.1.2.1.31.1.1.1.1." + v[1], cached=True)
-		    local_interface = "Gi 1/0/50"
-		    #local_interface = "GigabitEthernet1/0/50"
+                    local_interface = "Gi 1/0/50"
+                    #local_interface = "GigabitEthernet1/0/50"
 
                     remotechassisid = ":".join(["%02x" % ord(c) for c in v[2]])
-		    remote_chassis_id_subtype = v[1]
+                    remote_chassis_id_subtype = v[1]
                     remote_port_subtype = v[3]
                     if remote_port_subtype == 5:
                         remote_port_subtype = 3
                     remote_port = v[4]
                     remote_system_name = v[5]
                     remote_capabilities = v[6]
-		    if remote_capabilities == "(":
-			remote_capabilities = 20
+                    if remote_capabilities == "(":
+                        remote_capabilities = 20
 
                     i = {"local_interface": local_interface, "neighbors": []}
                     n = {
@@ -80,7 +78,7 @@ class Script(BaseScript):
 
             except self.snmp.TimeOutError:
                 pass
-	"""
+        """
         # Fallback to CLI
         lldp = self.cli("display lldp neighbor-information")
         lldp = lldp.splitlines()
@@ -131,10 +129,9 @@ class Script(BaseScript):
                     "remote_port_subtype": remote_port_subtype,
                     "remote_chassis_id_subtype": remote_chassis_id_subtype,
                     "remote_system_name": remote_system_name,
-                    }
+                }
 
-                i["neighbors"].append(n)
-                r.append(i)
+                i["neighbors"] += [n]
+                r += [i]
 
-	
-    	return r
+        return r
