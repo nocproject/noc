@@ -10,7 +10,6 @@
 import re
 import functools
 # Third-party modules
-import six
 import tornado.gen
 import six
 # NOC modules
