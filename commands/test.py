@@ -30,6 +30,10 @@ class Command(BaseCommand):
             help="Verbose output"
         )
         run_parser.add_argument(
+            "--coverage-report",
+            help="Write coverage report to specified directory"
+        )
+        run_parser.add_argument(
             "tests",
             nargs=argparse.REMAINDER,
             help="Paths to tests"
@@ -65,7 +69,8 @@ class Command(BaseCommand):
     def handle_check_script(self, *args, **options):
         raise NotImplementedError()
 
-    def handle_run(self, tests=None, verbose=False, *args, **options):
+    def handle_run(self, tests=None, verbose=False, coverage_report=False,
+                   *args, **options):
         db_name = "test_%d" % time.time()
         # Override database names
         config.pg.db = db_name
@@ -79,7 +84,18 @@ class Command(BaseCommand):
             args += tests
         else:
             args += ["tests"]
-        return pytest_main(args)
+        if coverage_report:
+            import coverage
+            cov = coverage.Coverage()
+            cov.start()
+            try:
+                return pytest_main(args)
+            finally:
+                cov.stop()
+                cov.save()
+                cov.html_report(directory=coverage_report)
+        else:
+            return pytest_main(args)
 
     def get_dirs(self, dirs):
         """
