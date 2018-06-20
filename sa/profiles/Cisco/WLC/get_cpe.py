@@ -45,7 +45,7 @@ class Script(BaseScript):
                 "version": ap_sw_ver,
                 "mac": mac,
                 "status": self.status_map[ap_oper_status],
-                "id": mac,
+                "id": ap_name,  # Use int command show ap inventory NAME
                 "global_id": mac,
                 "type": "ap",
                 "name": ap_name,
