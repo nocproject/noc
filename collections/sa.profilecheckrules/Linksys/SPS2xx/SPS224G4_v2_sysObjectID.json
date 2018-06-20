@@ -1,0 +1,13 @@
+{
+    "name": "Lynksis | SPS2xx | SPS224G4_v2 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "920d715b-feb5-4688-a0dd-0f12de0a4bbb",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3955.6.9.208.2",
+    "action": "match",
+    "profile__name": "Linksys.SPS2xx"
+}
