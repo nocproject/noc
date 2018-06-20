@@ -11,7 +11,6 @@ from __future__ import print_function
 import sys
 import argparse
 # NOC modules
-from noc.core.debug import error_report
 from noc.config import config
 from noc.core.tz import setup_timezone
 
@@ -87,6 +86,7 @@ class BaseCommand(object):
                 self.print("Assertion error: %s" % e)
             return 4
         except Exception:
+            from noc.core.debug import error_report
             error_report()
             return 2
         finally:

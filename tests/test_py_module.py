@@ -2,16 +2,17 @@
 # ---------------------------------------------------------------------
 # Test python module loading
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import subprocess
 import os
+import importlib
+import sys
 # Third-party modules
 import pytest
-
 
 def _git_ls():
     try:
@@ -28,7 +29,7 @@ def get_py_modules_list():
         if not path.endswith(".py"):
             continue
         parts = path.split(os.sep)
-        if parts[0] == "tests" or path == "setup.py":
+        if parts[0] == "tests" or path == "setup.py" or "tests" in parts:
             continue
         fn = parts[-1]
         if fn.startswith("."):
@@ -48,6 +49,6 @@ def py_module(request):
     return request.param
 
 
-def test_py_module_loading(py_module):
+def test_import(py_module):
     m = __import__(py_module, {}, {}, "*")
     assert m
