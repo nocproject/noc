@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # MAC address manipulation routines
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ class MAC(str):
         'AA:BB:CC:DD:EF:FF'
         >>> MAC("AA:BB:CC:DD:EE:FF").shift(257)
         'AA:BB:CC:DD:F0:00'
-        >>>MAC("AA:BB:CC:DD:EE:FF").shift(4096)
+        >>> MAC("AA:BB:CC:DD:EE:FF").shift(4096)
         'AA:BB:CC:DD:FE:FF'
 
         :param count:
