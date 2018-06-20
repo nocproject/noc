@@ -36,11 +36,13 @@ class Script(BaseScript):
         for l in vlans.split("\n"):
             match = self.rx_line.match(l.strip())
             if match:
-                r.append({
+                r += [{
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
-                    "type": {"dynamic": "D",
-                        "static": "S"}[match.group("type")],
-                })
+                    "type": {
+                        "dynamic": "D",
+                        "static": "S"
+                    }[match.group("type")],
+                }]
         return r
