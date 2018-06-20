@@ -1,8 +1,9 @@
 
 from south.db import db
-from noc.kb.models.kbentry import models
+from django.db import models
 
-class Migration:
+
+class Migration(object):
 
     def forwards(self):
 
