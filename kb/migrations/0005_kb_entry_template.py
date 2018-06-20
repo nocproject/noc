@@ -1,8 +1,8 @@
 
 from south.db import db
-from noc.kb.models.kbentry import (models, parser_registry)
+from django.db import models
 
-class Migration:
+class Migration(object):
 
     def forwards(self):
 
@@ -17,7 +17,7 @@ class Migration:
             ('subject', models.CharField("Subject",max_length=256)),
             ('body', models.TextField("Body")),
             ('language', models.ForeignKey(Language,verbose_name=Language,limit_choices_to={"is_active":True})),
-            ('markup_language', models.CharField("Markup Language",max_length="16",choices=parser_registry.choices))
+            ('markup_language', models.CharField("Markup Language",max_length="16"))
         ))
         # Mock Models
         KBEntryTemplate = db.mock_model(model_name='KBEntryTemplate', db_table='kb_kbentrytemplate', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
