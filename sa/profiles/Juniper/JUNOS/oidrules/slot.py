@@ -46,3 +46,8 @@ class SlotRule(OIDRule):
                     else [int(slotid.split(".")[1]), int(slotid.split(".")[2]), desc]
                 if oid:
                     yield oid, self.type, self.scale, path
+            else:
+                if "Environment" in metric.metric:
+                    path = [slotid.split(".")[1], slotid.split(".")[2], slotid.split(".")[3], desc]
+                    if oid:
+                        yield oid, self.type, self.scale, path
