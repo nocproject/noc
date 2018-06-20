@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Cisco.WLC.get_cdp_neighbors
+# Cisco.WLC.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Cisco.IOS.get_cdp_neighbors import Script as BaseScript
-from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "Cisco.WLC.get_cdp_neighbors"
-    interface = IGetCDPNeighbors
+    name = "Cisco.WLC.get_interfaces"
+    interface = IGetInterfaces
