@@ -28,7 +28,7 @@ def sa_script(request):
     return request.param
 
 
-def test_script(sa_script):
+def test_script_module(sa_script):
     # Test loading
     m = __import__(sa_script, {}, {}, "Script")
     assert m
