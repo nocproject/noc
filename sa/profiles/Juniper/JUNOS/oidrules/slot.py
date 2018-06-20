@@ -28,7 +28,7 @@ class SlotRule(OIDRule):
         for i, desc in script.snmp.getnext("1.3.6.1.4.1.2636.3.1.13.1.5"):
             slotid = i[len("1.3.6.1.4.1.2636.3.1.13.1.5") + 1:]
             oid = mib[self.expand(self.oid, {"hwSlotIndex": slotid})]
-            if "PIC" in desc or "MIC" in desc:
+            if "MIC" in desc:
                 path = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, int(slotid.split(".")[3]), desc] \
                     if "CPU" in metric.metric or "Environment" in metric.metric \
                     else [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, desc]
