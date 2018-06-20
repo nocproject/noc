@@ -12,11 +12,11 @@ import os
 import subprocess
 import time
 import argparse
+import sys
 # Third-party modules
 from pytest import main as pytest_main
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.config import config
 
 
 class Command(BaseCommand):
@@ -32,6 +32,10 @@ class Command(BaseCommand):
         run_parser.add_argument(
             "--coverage-report",
             help="Write coverage report to specified directory"
+        )
+        run_parser.add_argument(
+            "--test-report",
+            help="Write HTML error report to specified path"
         )
         run_parser.add_argument(
             "tests",
@@ -58,6 +62,7 @@ class Command(BaseCommand):
 
     def handle_check_eventclassificationrule(self, pull=False,
                                              *args, **options):
+        from noc.config import config
         dirs = self.get_dirs(config.tests.events_path)
         if pull:
             self.pull_repos(dirs)
@@ -70,32 +75,49 @@ class Command(BaseCommand):
         raise NotImplementedError()
 
     def handle_run(self, tests=None, verbose=False, coverage_report=False,
-                   *args, **options):
-        db_name = "test_%d" % time.time()
-        # Override database names
-        config.pg.db = db_name
-        config.mongo.db = db_name
-        config.clickhouse.db = db_name
+                   test_report=None, *args, **options):
+        def run_tests(args):
+            self.print("Running test")
+            # Must be imported within coverage
+            from noc.config import config
+            db_name = "test_%d" % time.time()
+            # Override database names
+            config.pg.db = db_name
+            config.mongo.db = db_name
+            config.clickhouse.db = db_name
+            return pytest_main(args)
+
         # Run tests
         args = []
         if verbose:
             args += ["-v"]
+        if test_report:
+            args += [
+                "--html=%s" % test_report,
+                "--self-contained-html"
+            ]
         if tests:
             args += tests
         else:
             args += ["tests"]
         if coverage_report:
+            self.print("Collecting coverage")
+            # Reset all loaded modules to return them to coverage
+            already_loaded = [m for m in sys.modules if m.startswith("noc.")]
+            for m in already_loaded:
+                del sys.modules[m]
             import coverage
             cov = coverage.Coverage()
             cov.start()
             try:
-                return pytest_main(args)
+                return run_tests(args)
             finally:
+                self.print("Writing coverage report to %s/index.html" % coverage_report)
                 cov.stop()
                 cov.save()
                 cov.html_report(directory=coverage_report)
         else:
-            return pytest_main(args)
+            return run_tests(args)
 
     def get_dirs(self, dirs):
         """
