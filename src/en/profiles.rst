@@ -164,6 +164,7 @@ Profiles
     /profiles/Tangram.GT21
     /profiles/Telindus.SHDSL
     /profiles/Terayon.BW
+    /profiles/UPVEL.UP
     /profiles/UTST.ONU
     /profiles/Ubiquiti.AirOS
     /profiles/Vitesse.VSC
