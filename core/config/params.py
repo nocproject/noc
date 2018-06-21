@@ -95,7 +95,7 @@ class BooleanParameter(BaseParameter):
     def clean(self, v):
         if isinstance(v, six.string_types):
             v = v.lower() in ["y", "t", "true", "yes"]
-        return v
+        return bool(v)
 
 
 class FloatParameter(BaseParameter):
@@ -184,11 +184,15 @@ class SecondsParameter(BaseParameter):
 
 
 class ListParameter(BaseParameter):
-    def __init__(self, default=None, help=None, lists=None):
-        self.list = lists or []
+    def __init__(self, default=None, help=None, item=None):
+        self.item = item
         super(ListParameter, self).__init__(default=default, help=help)
-        # @todo add clean method
 
+    def clean(self, v):
+        return [
+            self.item.clean(x)
+            for x in v
+        ]
 
 class ServiceItem(object):
     __slots__ = ["host", "port"]
