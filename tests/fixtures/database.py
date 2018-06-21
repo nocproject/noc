@@ -84,11 +84,13 @@ def _drop_pg_db():
     connect.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = connect.cursor()
     # Forcefully disconnect remaining connections
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT pg_terminate_backend(pid)
         FROM pg_stat_activity
         WHERE datname = %s
-    """, [config.pg.db])
+    """, [config.pg.db]
+    )
     # Drop
     cursor.execute("DROP DATABASE IF EXISTS %s" % config.pg.db)
     cursor.close()
@@ -113,6 +115,7 @@ def _drop_clickhouse_db():
     :return:
     """
 
+
 def _apply_migrations():
     """
     Apply database migrations
@@ -120,7 +123,5 @@ def _apply_migrations():
     """
     from django.core.management import call_command
 
-    call_command("syncdb", interactive=False,
-                 load_initial_data=False)
-    call_command("migrate", no_initial_data=True, noinput=True,
-                 ignore_ghosts=True)
+    call_command("syncdb", interactive=False, load_initial_data=False)
+    call_command("migrate", no_initial_data=True, noinput=True, ignore_ghosts=True)
