@@ -87,6 +87,8 @@ class Profile(BaseProfile):
             return interface.split()[1]
         if "ethernet" in interface:
             return interface[8:]
+        if "GPON" in interface:
+            return interface.split()[-1]
         if self.rx_port_name.match(interface):
             return self.rx_port_name.findall(interface)[0][1]
         return interface
