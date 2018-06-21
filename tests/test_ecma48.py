@@ -19,7 +19,7 @@ def test_c():
 def test_strip_normal():
     """
     Normal text leaved untouched
-    :return: 
+    :return:
     """
     assert strip_control_sequences("Lorem Ipsum") == "Lorem Ipsum"
 

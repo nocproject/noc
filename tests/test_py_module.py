@@ -9,10 +9,9 @@
 # Python modules
 import subprocess
 import os
-import importlib
-import sys
 # Third-party modules
 import pytest
+
 
 def _git_ls():
     try:

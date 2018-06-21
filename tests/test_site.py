@@ -13,4 +13,3 @@ from noc.lib.app.site import site
 def test_autodiscover():
     site.autodiscover()
     assert site.apps
-
