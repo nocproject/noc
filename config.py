@@ -18,7 +18,7 @@ from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
     StringParameter, MapParameter, IntParameter, BooleanParameter,
     HandlerParameter, SecondsParameter, FloatParameter,
-    ServiceParameter, SecretParameter)
+    ServiceParameter, SecretParameter, ListParameter)
 
 
 class Config(BaseConfig):
@@ -501,9 +501,8 @@ class Config(BaseConfig):
         default_ttl = SecondsParameter(default="1h")
 
     class tests(ConfigSection):
-        enable_coverage = BooleanParameter(default=False)
-        events_path = StringParameter(default="collections/test.events")
-        profilecheck_path = StringParameter(default="collections/test.profilecheck")
+        # List of pyfilesystem URLs holding event classification samples
+        events_paths = ListParameter(item=StringParameter())
 
     class peer(ConfigSection):
         enable_ripe = BooleanParameter(default=True)
