@@ -70,3 +70,65 @@ def test_int_parameter():
     config.min_integer = 42
     assert config.min_integer == 42
     # Ranged integer
+    assert config.ranged_integer is None
+    with pytest.raises(ValueError):
+        config.ranged_integer = 9
+    assert config.ranged_integer is None
+    config.ranged_integer = 10
+    assert config.ranged_integer == 10
+    config.ranged_integer = 15
+    assert config.ranged_integer == 15
+    config.ranged_integer = 20
+    assert config.ranged_integer == 20
+    with pytest.raises(ValueError):
+        config.ranged_integer = 21
+    assert config.ranged_integer == 20
+
+
+def test_bool_parameter():
+    class Config(BaseConfig):
+        boolean = BooleanParameter()
+        default_boolean = BooleanParameter(default=True)
+
+    config = Config()
+    assert config.boolean is None
+    config.boolean = False
+    assert config.boolean is False
+    config.boolean = True
+    assert config.boolean is True
+    config.boolean = 0
+    assert config.boolean is False
+    config.boolean = 1
+    assert config.boolean is True
+    config.boolean = "y"
+    assert config.boolean is True
+    config.boolean = "t"
+    assert config.boolean is True
+    config.boolean = "true"
+    assert config.boolean is True
+    config.boolean = "yes"
+    assert config.boolean is True
+    config.boolean = "no"
+    assert config.boolean is False
+    # check defaults
+    assert config.default_boolean is True
+
+
+def test_list_parameter():
+    class Config(BaseConfig):
+        str_list = ListParameter(item=StringParameter())
+        default_str_list = ListParameter(item=StringParameter(), default=[1, "2"])
+        bool_list = ListParameter(item=BooleanParameter())
+
+    config = Config()
+    # str_list
+    assert config.str_list is None
+    config.str_list = [1]
+    assert config.str_list == ["1"]
+    config.str_list += ["2"]
+    assert config.str_list == ["1", "2"]
+    # default_str_list
+    assert config.default_str_list == ["1", "2"]
+    # bool_list
+    config.bool_list = ["no", True]
+    assert config.bool_list == [False, True]
