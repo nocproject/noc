@@ -91,12 +91,25 @@ class Script(BaseScript):
                 s[name] = f(v)
 
     def get_ip_ifaces(self):
-        ip_iface = dict((l, ".".join(o.rsplit(".")[-4:])) for o, l in self.get_iftable("1.3.6.1.2.1.4.20.1.2", False))
-        ip_mask = dict((".".join(o.rsplit(".")[-4:]), l) for o, l in self.get_iftable("1.3.6.1.2.1.4.20.1.3", False))
+        ip_iface = dict((l, ".".join(o.rsplit(".")[-4:])) for o, l in
+                        self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False))
+        ip_mask = dict((".".join(o.rsplit(".")[-4:]), l) for o, l in
+                       self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False))
         r = {}
         for ip in ip_iface:
             r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
         return r
+
+    def get_aggregated_ifaces(self):
+        portchannel_members = {}
+        aggregated = []
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            aggregated += [i]
+            t = pc["type"] == "LACP"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
+        return aggregated, portchannel_members
 
     def execute_snmp(self, interface=None, last_ifname=None):
         last_ifname = self.collect_ifnames()
@@ -104,6 +117,7 @@ class Script(BaseScript):
         index = self.scripts.get_ifindexes()
         # index = self.get_ifindexes()
         ifaces = dict((index[i], {"interface": i}) for i in index)
+        aggregated, portchannel_members = self.get_aggregated_ifaces()
         # Apply ifAdminStatus
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -152,7 +166,7 @@ class Script(BaseScript):
                 iface_name, num = iface["interface"].rsplit(".", 1)
                 if num.isdigit():
                     vlan_ids = int(iface["interface"].rsplit(".", 1)[-1])
-                    if vlan_ids < 4000:
+                    if vlan_ids < 4095:
                         s["vlan_ids"] = vlan_ids
                 if l in ip_ifaces:
                     s["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]
@@ -170,6 +184,10 @@ class Script(BaseScript):
                 "oper_status": iface["oper_status"],
                 "snmp_ifindex": l,
             }
+            if i["name"] in portchannel_members:
+                i["aggregated_interface"], i["enabled_protocols"] = portchannel_members[i["name"]]
+            if i["name"] in aggregated:
+                i["type"] = "aggregated"
             if iface["mac_address"]:
                 i["mac"] = MAC(iface["mac_address"])
             # sub = {"subinterfaces": [i.copy()]}
@@ -187,4 +205,7 @@ class Script(BaseScript):
                     "oper_status": l["oper_status"],
                     "snmp_ifindex": l["snmp_ifindex"],
                 }]
+                if l["snmp_ifindex"] in ip_ifaces:
+                    l["subinterfaces"][-1]["ipv4_addresses"] = [IPv4(*ip_ifaces[l["snmp_ifindex"]])]
+                    l["subinterfaces"][-1]["enabled_afi"] = ["IPv4"]
         return [{"interfaces": r}]

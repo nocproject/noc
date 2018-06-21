@@ -20,7 +20,6 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^Physical Address\s+: (?P<mac>\S+)", re.MULTILINE)
 
-
     def execute(self):
         match = self.rx_mac.search(self.cli("stats", cached=True))
         mac = match.group("mac")

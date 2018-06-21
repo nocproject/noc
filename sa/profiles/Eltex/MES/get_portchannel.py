@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.sa.interfaces.igetportchannel import IGetPortchannel
 class Script(BaseScript):
     name = "Eltex.MES.get_portchannel"
     interface = IGetPortchannel
+    cache = True
 
     rx_lag = re.compile(
         r"^(?P<port>Po\d+)\s+(?P<type1>\S+):\s+(?P<interfaces1>\S+)+(\s+(?P<type2>\S+):\s+(?P<interfaces2>\S+)$|$)",
@@ -65,9 +66,9 @@ class Script(BaseScript):
             self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
             self.match_version(version__regex="4\.0\.[4-7]$")
         ):
-            cmd = self.cli("show interfaces channel-group")
+            cmd = self.cli("show interfaces channel-group", cached=True)
         else:
-            cmd = self.cli("show interfaces port-channel")
+            cmd = self.cli("show interfaces port-channel", cached=True)
         for match in self.rx_lag.finditer(cmd):
             members = match.group("interfaces1").split(',')
             memb = []
@@ -98,8 +99,8 @@ class Script(BaseScript):
                 l_type = "S"
             r += [{
                 "interface": match.group("port").lower(),
-#                "interface": match.group("port"),
+                # "interface": match.group("port"),
                 "type": l_type,
                 "members": memb,
-                }]
+            }]
         return r

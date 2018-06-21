@@ -18,9 +18,9 @@ class Script(BaseScript):
     name = "MikroTik.RouterOS.get_version"
     cache = True
     interface = IGetVersion
-    #Some versions of Mikrotik return parameter values in quotes
+    # Some versions of Mikrotik return parameter values in quotes
     rx_ver = re.compile(
-        r"version: (?P<q>\"?)(?P<version>\d+\.\d+(\.\d+)?)(?P=q).+board-name: (?P<qp>\"?)(?P<platform>\D+?.\S+?)(?P=qp)\n",
+        r"version: (?P<q>\"?)(?P<version>.*)(?P=q)\n.+build-time:.+architecture-name: (?P<qa>\"?)(?P<arch>.*)(?P=qa)\n.+board-name: (?P<qp>\"?)(?P<platform>.*)(?P=qp)\n.+platform: ",
         re.MULTILINE | re.DOTALL)
     rx_rb = re.compile(
         r"serial-number: (?P<qs>\"?)(?P<serial>\S+?)(?P=qs)\n.+current-firmware: "
@@ -32,7 +32,7 @@ class Script(BaseScript):
         r = {
             "vendor": "MikroTik",
             "platform": match.group("platform"),
-            "version": match.group("version"),
+            "version": match.group("version") + " " + match.group("arch"),
         }
         if r["platform"] not in ["x86", "CHR"]:
             v = self.cli("system routerboard print")
@@ -41,4 +41,5 @@ class Script(BaseScript):
                 r.update({"attributes": {}})
                 r["attributes"].update({"Serial Number": rb.group("serial")})
                 r["attributes"].update({"Boot PROM": rb.group("boot")})
+                r["attributes"].update({"Arch": match.group("arch")})
         return r

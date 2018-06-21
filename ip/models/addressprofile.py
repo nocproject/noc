@@ -17,6 +17,7 @@ import cachetools
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
+from noc.main.models.template import Template
 from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
@@ -26,7 +27,11 @@ id_lock = Lock()
 
 @bi_sync
 @on_delete_check(check=[
-    ("ip.Address", "profile")
+    ("ip.Address", "profile"),
+    ("sa.ManagedObjectProfile", "address_profile_interface"),
+    ("sa.ManagedObjectProfile", "address_profile_management"),
+    ("sa.ManagedObjectProfile", "address_profile_dhcp"),
+    ("sa.ManagedObjectProfile", "address_profile_neighbor")
 ])
 class AddressProfile(Document):
     meta = {
@@ -40,6 +45,11 @@ class AddressProfile(Document):
     # Address workflow
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
+    # Template.subject to render Address.name
+    name_template = ForeignKeyField(Template)
+    # Template.subject to render Address.fqdn
+    fqdn_template = ForeignKeyField(Template)
+    #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from

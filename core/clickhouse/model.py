@@ -13,14 +13,14 @@ import hashlib
 # Third-party modules
 import six
 # NOC modules
-from .fields import BaseField
+from .fields import BaseField, NestedField
 from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 
-__all__ = ["Model"]
+__all__ = ["Model", "NestedModel"]
 
 
 class ModelBase(type):
@@ -35,7 +35,13 @@ class ModelBase(type):
             tags=getattr(cls.Meta, "tags", None),
         )
         for k in attrs:
-            if isinstance(attrs[k], BaseField):
+            if isinstance(attrs[k], NestedField):
+                n_attrs = attrs[k].field_type._fields
+                for kk in n_attrs:
+                    field = "%s.%s" % (k, kk)
+                    cls._fields[field] = n_attrs[kk]
+                    cls._fields[field].name = field
+            elif isinstance(attrs[k], BaseField):
                 cls._fields[k] = attrs[k]
                 cls._fields[k].name = k
         cls._fields_order = sorted(
@@ -114,8 +120,14 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def get_fingerprint(cls):
-        return "%s.%s" % (cls._get_db_table(),
-                          ".".join(cls._fields_order))
+        field_list = []
+        for f in cls._fields_order:
+            if isinstance(cls._fields[f], NestedField):
+                field_list += ["%s.%s" % (f, nf) for nf in cls._fields[f].field_type._fields_order]
+            else:
+                field_list += [f]
+        return "%s|%s" % (cls._get_db_table(),
+                          "|".join(field_list))
 
     @classmethod
     def get_short_fingerprint(cls):
@@ -282,7 +294,7 @@ class Model(six.with_metaclass(ModelBase)):
             alias = f.get("alias", default_alias)
             if not f.get("hide"):
                 aliases += [alias]
-                fields_x += ["%s AS %s" % (to_sql(f["expr"]), escape_field(alias))]
+                fields_x += ["%s AS %s" % (to_sql(f["expr"], cls), escape_field(alias))]
             if "group" in f:
                 group_by[int(f["group"])] = alias
             if "order" in f:
@@ -337,3 +349,14 @@ class Model(six.with_metaclass(ModelBase)):
             "duration": dt,
             "sql": sql
         }
+
+
+class NestedModel(Model):
+
+    @classmethod
+    def get_create_sql(cls):
+        return ",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)
+
+    @classmethod
+    def get_fingerprint(cls):
+        return ["%s.%s" % (cls._fields[f].name, f) for f in cls._fields_order]

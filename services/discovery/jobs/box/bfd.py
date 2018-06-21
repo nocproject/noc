@@ -17,6 +17,7 @@ class BFDCheck(TopologyDiscoveryCheck):
     name = "bfd"
     required_script = "get_bfd_sessions"
     required_capabilities = ["Network | BFD"]
+    aliased_names_only = True
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_bfd_sessions()

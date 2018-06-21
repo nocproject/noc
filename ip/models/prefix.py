@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import operator
 from threading import Lock
+from collections import defaultdict
 # Third-party modules
 from django.db import models, connection
 from django.contrib.auth.models import User
@@ -22,7 +23,7 @@ from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
-from noc.core.model.fields import DocumentReferenceField
+from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
@@ -54,7 +55,7 @@ class Prefix(models.Model):
         verbose_name=_("Parent"),
         null=True,
         blank=True)
-    vrf = models.ForeignKey(
+    vrf = CachedForeignKey(
         VRF,
         verbose_name=_("VRF"),
         default=VRF.get_global
@@ -64,16 +65,21 @@ class Prefix(models.Model):
         max_length=1,
         choices=AFI_CHOICES)
     prefix = CIDRField(_("Prefix"))
+    name = models.CharField(
+        _("Name"),
+        max_length=255,
+        null=True, blank=True
+    )
     profile = DocumentReferenceField(
         PrefixProfile,
         null=False, blank=False
     )
-    asn = models.ForeignKey(
+    asn = CachedForeignKey(
         AS, verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
         null=True, blank=True
     )
-    project = models.ForeignKey(
+    project = CachedForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
         null=True, blank=True, related_name="prefix_set")
@@ -109,17 +115,41 @@ class Prefix(models.Model):
         null=True, blank=True,
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL)
-    enable_ip_discovery = models.CharField(
-        _("Enable IP Discovery"),
+    prefix_discovery_policy = models.CharField(
+        _("Prefix Discovery Policy"),
         max_length=1,
         choices=[
-            ("I", "Inherit"),
+            ("P", "Profile"),
             ("E", "Enable"),
             ("D", "Disable")
         ],
-        default="I",
+        default="P",
         blank=False,
         null=False
+    )
+    address_discovery_policy = models.CharField(
+        _("Address Discovery Policy"),
+        max_length=1,
+        choices=[
+            ("P", "Profile"),
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="P",
+        blank=False,
+        null=False
+    )
+    source = models.CharField(
+        "Source",
+        max_length=1,
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("w", "Whois"),
+            ("n", "Neighbor")
+        ],
+        null=False, blank=False,
+        default="M"
     )
 
     csv_ignored_fields = ["parent"]
@@ -162,21 +192,20 @@ class Prefix(models.Model):
         """
         Get nearest closing prefix
         """
-        r = list(
-            Prefix.objects.raw("""
-                SELECT id, prefix
-                FROM ip_prefix
-                WHERE
-                        vrf_id=%s
-                    AND afi=%s
-                    AND prefix >> %s
-                ORDER BY masklen(prefix) DESC
-                LIMIT 1
-            """, [vrf.id, str(afi), str(prefix)])
-        )
-        if not r:
-            return None
-        return r[0]
+        r = Prefix.objects.filter(
+            vrf=vrf,
+            afi=str(afi)
+        ).extra(
+            select={
+                "masklen": "masklen(prefix)"
+            },
+            where=["prefix >> %s"],
+            params=[str(prefix)],
+            order_by=["-masklen"]
+        )[:1]
+        if r:
+            return r[0]
+        return None
 
     @property
     def is_ipv4(self):
@@ -629,16 +658,24 @@ class Prefix(models.Model):
             yield str(fp)
 
     @property
-    def effective_ip_discovery(self):
-        if self.enable_ip_discovery == "I":
-            if self.parent:
-                return self.parent.effective_ip_discovery
-            return "E"
-        return self.enable_ip_discovery
+    def effective_address_discovery(self):
+        if self.address_discovery_policy == "P":
+            return self.profile.address_discovery_policy
+        return self.address_discovery_policy
+
+    @property
+    def effective_prefix_discovery(self):
+        if self.prefix_discovery_policy == "P":
+            return self.profile.prefix_discovery_policy
+        return self.prefix_discovery_policy
 
     @property
     def usage(self):
         if self.is_ipv4:
+            usage = getattr(self, "_usage_cache", None)
+            if usage is not None:
+                # Use update_prefixes_usage results
+                return usage
             size = IPv4(self.prefix).size
             if not size:
                 return 100.0
@@ -660,6 +697,39 @@ class Prefix(models.Model):
         if u is None:
             return ""
         return "%.2f%%" % u
+
+    @staticmethod
+    def update_prefixes_usage(prefixes):
+        """
+        Bulk calculate and update prefixes usages
+        :param prefixes: List of Prefix instances
+        :return:
+        """
+        # Filter IPv4 only
+        ipv4_prefixes = [p for p in prefixes if p.is_ipv4]
+        # Calculate nested prefixrs
+        usage = defaultdict(int)
+        for parent, prefix in Prefix.objects.filter(
+                parent__in=ipv4_prefixes
+        ).values_list("parent", "prefix"):
+            ln = int(prefix.split("/")[1])
+            usage[parent] += 2 ** (32 - ln)
+        # Calculate nested addresses
+        has_address = set()
+        for parent, count in Address.objects.filter(
+                prefix__in=ipv4_prefixes
+        ).values("prefix").annotate(
+            count=models.Count("prefix")
+        ).values_list("prefix", "count"):
+            usage[parent] += count
+            has_address.add(parent)
+        # Update usage cache
+        for p in ipv4_prefixes:
+            ln = int(p.prefix.split("/")[1])
+            size = 2 ** (32 - ln)
+            if p.id in has_address and size > 2:  # Not /31 or /32
+                size -= 2  # Exclude broadcast and network
+            p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     def is_empty(self):
         """

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
         """
         Check box has STP enabled
         """
-        cmd = self.cli("show spanning-tree")
+        cmd = self.cli("show spanning-tree", cached=True)
         return " Forwarding " in cmd
 
     @false_on_cli_error
@@ -34,7 +34,7 @@ class Script(BaseScript):
         """
         Check box has Ethernet OAM enabled
         """
-        cmd = self.cli("show link-oam")
+        cmd = self.cli("show link-oam", cached=True)
         return "  enabled  " in cmd
 
     @false_on_cli_error

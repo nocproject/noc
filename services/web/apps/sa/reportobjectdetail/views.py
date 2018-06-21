@@ -710,7 +710,7 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend([_("OBJECT_TAGS")])
         if "sorted_tags" in columns.split(","):
             tags = set()
-            for s in ManagedObject.objects.filter(is_managed=True).exclude(
+            for s in ManagedObject.objects.filter().exclude(
                     tags=None).values_list('tags', flat=True).distinct():
                 tags.update(set(s))
             tags_o = sorted([t for t in tags if "{" not in t])

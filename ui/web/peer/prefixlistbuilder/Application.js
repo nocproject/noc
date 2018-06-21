@@ -30,7 +30,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                 enableKeyEvents: true,
                 listeners: {
                     specialkey: function (field, key) {
-                        if (field.xtype != "textfield")
+                        if (field.xtype !== "textfield")
                             return;
                         switch (key.getKey()) {
                             case Ext.EventObject.ENTER:
@@ -123,7 +123,13 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
             success: function (response) {
                 var data = Ext.decode(response.responseText);
                 me.unmask();
-                me.resultField.setValue(data.prefix_list);
+                if(data.success) {
+                    NOC.info(data.message);
+                    me.resultField.setValue(data.prefix_list);
+                } else {
+                    NOC.error(data.message);
+                    me.resultField.setValue("")
+                }
             },
             failure: function () {
                 me.unmask();

@@ -580,7 +580,7 @@ class Service(object):
         addr, port = self.get_service_address()
         r = yield self.dcs.register(
             self.name, addr, port,
-            pool=config.pool or None,
+            pool=config.pool if self.pooled else None,
             lock=self.get_leader_lock_name(),
             tags=self.get_register_tags()
         )

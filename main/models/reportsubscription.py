@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ReportSubscription model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,9 @@ logger = logging.getLogger(__name__)
 @on_delete
 class ReportSubscription(Document):
     meta = {
-        "collection": "noc.reportsubscriptions"
+        "collection": "noc.reportsubscriptions",
+        "strict": False,
+        "auto_create_index": False
     }
 
     # File name without extension

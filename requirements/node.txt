@@ -42,3 +42,5 @@ XlsxWriter==0.9.3
 pylibmc==1.5.1
 demjson==2.2.4
 crontab==0.22.0
+fs==2.0.21
+

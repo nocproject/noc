@@ -2,18 +2,17 @@
 # ----------------------------------------------------------------------
 # Django's model manager for GridVCS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
+from __future__ import absolute_import
 import logging
 # Third-party modules
 import six
 # NOC modules
-from gridvcs import GridVCS
-from noc.core.fileutils import safe_rewrite
+from .gridvcs import GridVCS
 
 logger = logging.getLogger(__name__)
 
@@ -39,53 +38,40 @@ class GridVCSField(object):
     # Get diff between revision
     print o.data.diff(rev1, rev2)
     """
-    def __init__(self, repo, mirror=None):
+    def __init__(self, repo):
         self.repo = repo
         self.model = None
-        self.mirror = mirror
 
     def contribute_to_class(self, model, name):
         """
         Initialize Django's model
         """
         self.model = model
-        setattr(model, name, GridVCSObjectDescriptor(self, mirror=self.mirror))
+        setattr(model, name, GridVCSObjectDescriptor(self))
 
     def __get__(self, instance, owner):
         """
         Mongoengine shortcut
         """
         return GridVCSObjectProxy(
-            self.repo, instance.id, mirror=self.mirror)
+            self.repo, instance.id)
 
 
 class GridVCSObjectDescriptor(object):
-    def __init__(self, field, mirror=None):
+    def __init__(self, field):
         self.field = field
         self.repo = field.repo
-        self.mirror = mirror
-        if self.mirror:
-            self.mirror = os.path.realpath(self.mirror)
 
     def __get__(self, instance, instance_type=None):
-        mpath = None
-        if self.mirror:
-            mpath = os.path.join(self.mirror, unicode(instance))
-            if not os.path.realpath(mpath).startswith(self.mirror):
-                # Security violation
-                mpath = None
-        return GridVCSObjectProxy(
-            self.repo, instance.id,
-            mirror=mpath)
+        return GridVCSObjectProxy(self.repo, instance.id)
 
 
 class GridVCSObjectProxy(object):
     _cache = {}
 
-    def __init__(self, repo, id, mirror=None):
+    def __init__(self, repo, id):
         self.repo = repo
         self.id = id
-        self.mirror = mirror
 
     def get_gridvcs(self):
         g = self._cache.get(self.repo)
@@ -99,12 +85,6 @@ class GridVCSObjectProxy(object):
 
     def write(self, data):
         r = self.get_gridvcs().put(self.id, data)
-        if r and self.mirror:
-            try:
-                safe_rewrite(self.mirror, data)
-            except OSError as e:
-                logger.error("Cannot mirror file to %s: %s",
-                             self.mirror, e)
         return r
 
     def delete(self):

@@ -17,18 +17,20 @@ import cachetools
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
+from noc.main.models.template import Template
 from noc.wf.models.workflow import Workflow
 from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
-from .addressprofile import AddressProfile
 
 id_lock = Lock()
 
 
 @bi_sync
 @on_delete_check(check=[
-    ("ip.Prefix", "profile")
+    ("ip.Prefix", "profile"),
+    ("sa.ManagedObjectProfile", "prefix_profile_interface"),
+    ("sa.ManagedObjectProfile", "prefix_profile_neighbor")
 ])
 class PrefixProfile(Document):
     meta = {
@@ -47,13 +49,25 @@ class PrefixProfile(Document):
     enable_ip_ping_discovery = BooleanField(default=False)
     # Enable nested prefix prefix discovery
     enable_prefix_discovery = BooleanField(default=False)
-    # Default prefix profile for children prefixes
-    autocreated_prefix_profile = PlainReferenceField("self")
-    # Default address profile for children addresses
-    autocreated_address_profile = PlainReferenceField(AddressProfile)
     # Prefix workflow
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
+    # Template.subject to render Prefix.name
+    name_template = ForeignKeyField(Template)
+    # Discovery policies
+    prefix_discovery_policy = StringField(
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ], default="D"
+    )
+    address_discovery_policy = StringField(
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ], default="D"
+    )
+    #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from

@@ -26,7 +26,8 @@ Ext.define("NOC.peer.rir.Application", {
             name: "name",
             xtype: "textfield",
             fieldLabel: __("name"),
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "whois",

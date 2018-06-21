@@ -18,6 +18,12 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
     prefixRestUrl: "/ip/prefix/",
     enableDeleteButton: true,
 
+    viewModel: {
+        data: {
+            isNew: false
+        }
+    },
+
     initComponent: function () {
         var me = this;
 
@@ -35,15 +41,32 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "textfield",
                     fieldLabel: __("Address"),
                     allowBlank: false,
+                    uiStyle: "medium",
+                    bind: {
+                        readOnly: "{!isNew}"
+                    }
+                },
+                {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: __("Name"),
+                    allowBlank: false,
                     uiStyle: "medium"
                 },
                 {
                     name: "fqdn",
                     xtype: "textfield",
                     fieldLabel: __("FQDN"),
-                    allowBlank: false,
+                    allowBlank: true,
                     uiStyle: "medium",
                     regex: /^[0-9a-z\-]+(\.[0-9a-z\-]+)+$/
+                },
+                {
+                    name: "mac",
+                    xtype: "textfield",
+                    fieldLabel: __("MAC"),
+                    allowBlank: true,
+                    uiStyle: "medium"
                 },
                 {
                     name: "description",
@@ -79,7 +102,10 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     name: "state",
                     xtype: "statefield",
                     fieldLabel: __("State"),
-                    allowBlank: true
+                    allowBlank: true,
+                    bind: {
+                        disabled: "{isNew}"
+                    }
                 },
                 {
                     name: "project",
@@ -91,6 +117,18 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     name: "managed_object",
                     xtype: "sa.managedobject.LookupField",
                     fieldLabel: __("Managed Object"),
+                    allowBlank: true
+                },
+                {
+                    name: "subinterface",
+                    xtype: "textfield",
+                    fieldLabel: __("Interface"),
+                    allowBlank: true
+                },
+                {
+                    name: "source",
+                    xtype: "displayfield",
+                    fieldLabel: __("Source"),
                     allowBlank: true
                 }
             ]
@@ -157,6 +195,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 me.deleteButton.setDisabled(false);
+                me.getViewModel().set("isNew", false);
                 me.setTitle(__("Change address"));
                 me.setValues(data)
             },
@@ -187,6 +226,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                 } else {
                     values.address = me.app.getCommonPrefixPart(data.afi, data.prefix)
                 }
+                me.getViewModel().set("isNew", true);
                 me.deleteButton.setDisabled(true);
                 me.setTitle(__("Create new address"));
                 me.setValues(values)

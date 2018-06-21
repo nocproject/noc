@@ -20,6 +20,8 @@ from noc.lib.dateutils import total_seconds
 from noc.config import config
 from noc.lib.dateutils import hits_in_range
 from .base import BaseExtractor
+from noc.sa.models.serviceprofile import ServiceProfile
+from noc.crm.models.subscriberprofile import SubscriberProfile
 
 
 class AlarmsExtractor(BaseExtractor):
@@ -107,7 +109,12 @@ class AlarmsExtractor(BaseExtractor):
                 container=mo.container,
                 x=mo.x,
                 y=mo.y,
-                reboots=n_reboots
+                reboots=n_reboots,
+                services=[{"profile": ServiceProfile.get_by_id(ss["profile"]).bi_id,
+                           "summary": ss["summary"]} for ss in d.get("direct_services", [])],
+                subscribers=[{"profile": SubscriberProfile.get_by_id(ss["profile"]).bi_id,
+                              "summary": ss["summary"]} for ss in d.get("direct_subscribers", [])],
+                # location=mo.container.get_address_text()
             )
             nr += 1
             self.last_ts = d["clear_timestamp"]

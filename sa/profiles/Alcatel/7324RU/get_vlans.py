@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_vlans
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 class Script(BaseScript):
     name = "Alcatel.7324RU.get_vlans"
     interface = IGetVlans
+
     rx_vlan = re.compile(
         r"\s*(?P<vid>\d+)"
         r"\s*(?P<vname>[A-Za-z0-9\-\.]+)\n"
@@ -26,7 +27,7 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("switch vlan show *")
         r = []
-        for match in re.finditer(self.rx_vlan, v):
+        for match in self.rx_vlan.finditer(v):
             if match.group("vstatus") == "enabled":
                 r += [{
                     "vlan_id": int(match.group("vid")),

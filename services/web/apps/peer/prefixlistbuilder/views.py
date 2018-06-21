@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django import forms
-from django.core.validators import RegexValidator
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.peer.models.peeringpoint import PeeringPoint
@@ -16,22 +13,7 @@ from noc.peer.models.whoiscache import WhoisCache
 from noc.sa.interfaces.base import UnicodeParameter, ModelParameter
 from noc.core.translation import ugettext as _
 
-as_set_re = "^AS(?:\d+|-\S+)(:\S+)?(?:\s+AS(?:\d+|-\S+)(:\S+)?)*$"
-
-
-class PrefixListBuilderForm(forms.Form):
-    """
-    Builder form
-    """
-    peering_point = forms.ModelChoiceField(
-        queryset=PeeringPoint.objects.all())
-    name = forms.CharField(required=False)
-    as_set = forms.CharField(validators=[RegexValidator(as_set_re)])
-
-    def clean(self):
-        if not self.cleaned_data["name"] and "as_set" in self.cleaned_data:
-            self.cleaned_data["name"] = self.cleaned_data["as_set"]
-        return self.cleaned_data
+# as_set_re = "^AS(?:\d+|-\S+)(:\S+)?(?:\s+AS(?:\d+|-\S+)(:\S+)?)*$"
 
 
 class PrefixListBuilderApplication(ExtApplication):
@@ -50,10 +32,47 @@ class PrefixListBuilderApplication(ExtApplication):
         }
     )
     def api_list(self, request, peering_point, name, as_set):
+        if not WhoisCache.has_asset_members():
+            return {
+                "name": name,
+                "prefix_list": "",
+                "success": False,
+                "message": _("AS-SET members cache is empty. Please update Whois Cache")
+            }
+        if not WhoisCache.has_origin_routes():
+            return {
+                "name": name,
+                "prefix_list": "",
+                "success": False,
+                "message": _("Origin routes cache is empty. Please update Whois Cache")
+            }
+        if not WhoisCache.has_asset(as_set):
+            return {
+                "name": name,
+                "prefix_list": "",
+                "success": False,
+                "message": _("Unknown AS-SET")
+            }
         prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(as_set)
-        pl = peering_point.get_profile().generate_prefix_list(name, prefixes)
+        if not prefixes:
+            return {
+                "name": name,
+                "prefix_list": "",
+                "success": False,
+                "message": _("Cannot resolve AS-SET prefixes")
+            }
+        try:
+            pl = peering_point.profile.get_profile().generate_prefix_list(name, prefixes)
+        except NotImplementedError:
+            return {
+                "name": name,
+                "prefix_list": "",
+                "success": False,
+                "message": _("Prefix-list generator is not implemented for this profile")
+            }
         return {
             "name": name,
             "prefix_list": pl,
-            "success": True
+            "success": True,
+            "message": _("Prefix List built")
         }

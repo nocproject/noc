@@ -6,27 +6,30 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from south.db import db
 # Third-party modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
-
-        for mop in ManagedObjectProfile.objects.filter():
-            if not mop.metrics:
-                continue
-            metrics = []
-            for metric in mop.metrics:
-                if not metric:
+        # Check ManagedObjectProfile in DB
+        mop_req = db.execute("SELECT count(*) FROM sa_managedobjectprofile")
+        if mop_req[0][0] > 1:
+            for mop in ManagedObjectProfile.objects.filter():
+                if not mop.metrics:
                     continue
-                metric["enable_periodic"] = bool(metric.get("is_active", False))
-                metric["enable_box"] = False
-                if "is_active" in metric:
-                    del metric["is_active"]
-                metrics += [metric]
-            mop.metrics = metrics
-            mop.save()
+                metrics = []
+                for metric in mop.metrics:
+                    if not metric:
+                        continue
+                    metric["enable_periodic"] = bool(metric.get("is_active", False))
+                    metric["enable_box"] = False
+                    if "is_active" in metric:
+                        del metric["is_active"]
+                    metrics += [metric]
+                mop.metrics = metrics
+                mop.save()
 
     def backwards(self):
         pass

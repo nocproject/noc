@@ -17,8 +17,8 @@ from noc.sa.models.managedobject import ManagedObject
 register = template.Library()
 
 NOCTableTemplate = """
-<link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
-<script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
+<link rel="stylesheet" type="text/css" href="/ui/pkg/jquery.tablesorter/jquery.tablesorter.css" />
+<script type="text/javascript" src="/ui/pkg/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     $.tablesorter.addParser({
@@ -117,7 +117,7 @@ class NOCTableNode(template.Node):
                 if "=" in a:
                     k, v = [x.strip() for x in a.split("=", 1)]
                     if ((v[0] == "'" and v[-1] == "'") or
-                        (v[0] == '"' and v[-1] == '"')):
+                            (v[0] == '"' and v[-1] == '"')):
                         v = v[1:-1]
                 else:
                     k, v = a, None
@@ -147,10 +147,11 @@ class NOCTableNode(template.Node):
             return output
 
 
-def do_noctable(parser, token):
+def do_noctable(parser):
     nodelist = parser.parse(("endnoctable",))
     parser.delete_first_token()
     return NOCTableNode(nodelist)
+
 
 register.tag("noctable", do_noctable)
 
@@ -158,6 +159,7 @@ register.tag("noctable", do_noctable)
 def object_name(value):
     o = ManagedObject.objects.get(id=int(value))
     return o.name
+
 
 register.filter("object_name", object_name)
 
@@ -169,5 +171,6 @@ def bool_icon(value):
         return SafeString("<img src='/media/admin/img/icon-yes.gif' alt='Yes' />")
     else:
         return SafeString("<img src='/media/admin/img/icon-no.gif' alt='No' />")
+
 
 register.filter("bool_icon", bool_icon)

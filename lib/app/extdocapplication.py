@@ -305,6 +305,7 @@ class ExtDocApplication(ExtApplication):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.response(str(e), status=self.BAD_REQUEST)
 
         if self.pk in attrs:
@@ -360,6 +361,7 @@ class ExtDocApplication(ExtApplication):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.response(str(e), status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(**{self.pk: id})
@@ -445,6 +447,7 @@ class ExtDocApplication(ExtApplication):
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json({
                 "status": False,
                 "message": "Bad request",

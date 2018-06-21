@@ -9,6 +9,7 @@ console.debug("Defining NOC.peer.maintainer.Application");
 Ext.define("NOC.peer.maintainer.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.RepoPreview",
         "NOC.peer.maintainer.Model",
         "NOC.peer.person.LookupField",
         "NOC.peer.person.M2MField",
@@ -62,8 +63,6 @@ Ext.define("NOC.peer.maintainer.Application", {
         {
             xtype: "peer.person.M2MField",
             name: "admins",
-            height: 220,
-            width: 600,
             fieldLabel: __("Admin-c"),
             buttons: ['add', 'remove'],
             allowBlank: false
@@ -79,5 +78,11 @@ Ext.define("NOC.peer.maintainer.Application", {
                 fontFamily: "Courier"
             }
         }
-    ]
+    ],
+    preview: {
+        xtype: "NOC.core.RepoPreview",
+        syntax: "rpsl",
+        previewName: 'Maintainer RPSL: {0}',
+        restUrl: '/peer/maintainer/{0}/repo/rpsl/'
+    }
 });
