@@ -25,6 +25,7 @@ class Script(BaseScript):
     name = "Juniper.JUNOS.get_interfaces"
     interface = IGetInterfaces
     TIMEOUT = 240
+    BULK = False
 
     rx_phy_name = re.compile(
         r"^Physical interface: (?P<ifname>\S+)( \(\S+, \S+\))?\s*, "
