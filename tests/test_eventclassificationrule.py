@@ -10,8 +10,9 @@
 import datetime
 # Third-party modules
 import pytest
+import ujson
+from fs import open_fs
 # NOC modules
-from noc.tests.util.jsonloader import json_loader
 from noc.services.classifier.ruleset import RuleSet
 from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
@@ -29,6 +30,25 @@ MO_NAME = "test"
 MO_ID = 1
 
 
+def iter_json_loader(urls):
+    """
+    Iterate over collections and return list of (path, data) pairs
+    :param urls: List of pyfilesystem URLs
+    :return:
+    """
+    if not urls:
+        urls = []
+    for url in urls:
+        with open_fs(url) as fs:
+            for path in fs.walk.files(filter=["*.json"]):
+                with fs.open(path) as f:
+                    data = ujson.loads(f.read())
+                if not isinstance(data, list):
+                    data = [data]
+                for i in data:
+                    yield path, i
+
+
 @pytest.fixture(scope="module")
 def ruleset():
     ruleset = RuleSet()
@@ -36,7 +56,7 @@ def ruleset():
     return ruleset
 
 
-@pytest.fixture(params=json_loader(config.tests.events_path))
+@pytest.fixture(params=list(iter_json_loader(config.tests.events_paths)))
 def event(request):
     path, cfg = request.param
     coll = cfg.get("$collection", COLLECTION_NAME)
