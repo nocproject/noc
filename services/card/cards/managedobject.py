@@ -152,7 +152,7 @@ class ManagedObjectCard(BaseCard):
                     ),
                     "remote_status": "up" if ro.get_status() else "down"
                 }]
-            links = sorted(links, key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0])))
+            links = sorted(links, key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0].name)))
         # Build global services summary
         service_summary = ServiceSummary.get_object_summary(
             self.object)
