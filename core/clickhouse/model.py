@@ -39,12 +39,12 @@ class ModelBase(type):
                 cls._fields[k] = attrs[k]
                 cls._fields[k].name = k
             elif isinstance(attrs[k], NestedField):
-                n_attrs = attrs[k].field_type._fields
+                n_attrs = attrs[k].field_type._fields_order
                 for kk in n_attrs:
                     field = "%s.%s" % (k, kk)
-                    cls._fields[field] = n_attrs[kk]
+                    cls._fields[field] = attrs[k].field_type._fields[kk]
                     cls._fields[field].name = field
-                    cls._fields[field].field_number = attrs[k].field_number
+                    cls._fields[field].field_number = attrs[k].field_number + n_attrs.index(kk) + 1
                     next(attrs[k].FIELD_NUMBER)
         cls._fields_order = sorted(
             cls._fields, key=lambda x: cls._fields[x].field_number
