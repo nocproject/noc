@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+
 class BaseBIModelTest(object):
     # BI model
     model = None

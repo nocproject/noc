@@ -8,6 +8,7 @@
 
 # Python collections
 import itertools
+from functools import partial
 import socket
 import struct
 
@@ -258,6 +259,7 @@ class NestedField(ArrayField):
             cls._fields[field] = self.field_type._fields[nested_name]
             cls._fields[field].name = field
             cls._fields[field].field_number = self.field_number + n + 1
+            cls._fields[field].get_create_sql = partial(self.get_create_nested_sql, field, cls._fields[field].db_type)
 
     def to_tsv(self, value):
         out = []
@@ -271,3 +273,7 @@ class NestedField(ArrayField):
 
     def get_db_type(self):
         return "Nested (\n%s \n)" % self.field_type.get_create_sql()
+
+    @staticmethod
+    def get_create_nested_sql(name, type):
+        return "`%s` %s" % (name, type)
