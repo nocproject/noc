@@ -48,6 +48,28 @@ class ManagedObjectCard(BaseCard):
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
 
+    def get_container_path(self):		
+		# Get container path
+		if not self.object:
+            return None
+        cp = []
+        if self.object.container:
+            c = self.object.container.id
+            while c:
+                try:
+                    o = Object.objects.get(id=c)
+                    # @todo: Address data
+                    if o.container:
+                        cp.insert(0, {
+                            "id": o.id,
+                            "name": o.name
+                        })
+                    c = o.container
+                except Object.DoesNotExist:
+                    metrics["error", ("type", "no_such_object")] += 1
+                    break
+		return cp
+		
     # get data function
     def get_data(self):
         if not self.object:
@@ -77,23 +99,9 @@ class ManagedObjectCard(BaseCard):
                 current_start = outage.start
         if current_start:
             duration = now - current_start
-        # Get container path
-        cp = []
-        if self.object.container:
-            c = self.object.container.id
-            while c:
-                try:
-                    o = Object.objects.get(id=c)
-                    # @todo: Address data
-                    if o.container:
-                        cp.insert(0, {
-                            "id": o.id,
-                            "name": o.name
-                        })
-                    c = o.container
-                except Object.DoesNotExist:
-                    metrics["error", ("type", "no_such_object")] += 1
-                    break
+        
+		cp = get_container_path(self)	
+		
         # MAC addresses
         macs = []
         o_macs = DiscoveryID.macs_for_object(self.object)
