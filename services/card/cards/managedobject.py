@@ -48,9 +48,9 @@ class ManagedObjectCard(BaseCard):
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
 
-    def get_container_path(self):		
-		# Get container path
-		if not self.object:
+    def get_container_path(self):
+        # Get container path
+        if not self.object:
             return None
         cp = []
         if self.object.container:
@@ -68,8 +68,8 @@ class ManagedObjectCard(BaseCard):
                 except Object.DoesNotExist:
                     metrics["error", ("type", "no_such_object")] += 1
                     break
-		return cp
-		
+        return cp
+        
     # get data function
     def get_data(self):
         if not self.object:
@@ -100,8 +100,8 @@ class ManagedObjectCard(BaseCard):
         if current_start:
             duration = now - current_start
         
-		cp = get_container_path(self)	
-		
+        cp = get_container_path(self)    
+        
         # MAC addresses
         macs = []
         o_macs = DiscoveryID.macs_for_object(self.object)
