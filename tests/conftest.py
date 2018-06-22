@@ -9,4 +9,4 @@
 # Python modules
 from __future__ import absolute_import
 # NOC modules
-from .fixtures.database import database
+from .fixtures.database import database  # noqa

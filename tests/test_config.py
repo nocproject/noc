@@ -221,5 +221,15 @@ def test_seconds_parameter():
     assert config.default_s == 60
 
 
-def test_handler():
+def my_handler():
     pass
+
+
+def test_handler():
+    class Config():
+        handler = HandlerParameter()
+        default_handler = HandlerParameter(default="noc.tests.test_config.my_handler")
+
+    config = Config()
+    assert config.handler is None
+    assert config.default_handler == "noc.tests.test_config.my_handler"
