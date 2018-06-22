@@ -173,7 +173,7 @@ class ManagedObjectCard(BaseCard):
                         }
                     else:
                         objects_metrics.get("")[key] = {
-                            "type": metric_type_name[key], 
+                            "type": metric_type_name[key],
                             "value": objects_metrics.get("")[key]
                         }
                 meta = objects_metrics.get("")
@@ -196,9 +196,9 @@ class ManagedObjectCard(BaseCard):
                                 str(iface_get_link_name[key]),
                                 meta_type)
                         }
-                        if key in ['Interface | Load | In', 
-                            'Interface | Load | Out', 
-                            'Interface | Errors | In', 
+                        if key in ['Interface | Load | In', \
+                            'Interface | Load | Out', \
+                            'Interface | Errors | In', \
                             'Interface | Errors | Out'
                         ]:
                             try:
