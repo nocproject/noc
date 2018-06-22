@@ -94,20 +94,18 @@ class CardRequestHandler(UIHandler):
                 except ValueError:
                     pass
 
-
             # chapter title page
             if card_type == "managedobject":
                 mo = ManagedObject.objects.get(id=card_id)
                 card_name = mo.name
             elif card_type == "object":
-                obj =  Object.objects.get(id=card_id)
+                obj = Object.objects.get(id=card_id)
                 card_name = obj.name
             elif card_type == "segment":
-                segm =  NetworkSegment.objects.get(id=card_id)
+                segm = NetworkSegment.objects.get(id=card_id)
                 card_name = segm.name
             else:
                 card_name = " ".join([card_type, "CARD"])
-
 
             self.write(
                 self.get_card_template().render({
