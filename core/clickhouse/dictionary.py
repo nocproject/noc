@@ -34,8 +34,7 @@ class DictionaryBase(type):
         assert cls._meta.layout in (None, "flat", "hashed")
         for k in attrs:
             if isinstance(attrs[k], BaseField):
-                cls._fields[k] = attrs[k]
-                cls._fields[k].name = k
+                attrs[k].contribute_to_class(cls, k)
         cls._fields_order = sorted(
             cls._fields, key=lambda x: cls._fields[x].field_number
         )

@@ -32,6 +32,16 @@ class BaseField(object):
         self.description = description
         self.is_agg = False
 
+    def contribute_to_class(self, cls, name):
+        """
+        Install field to model
+        :param cls:
+        :param name:
+        :return:
+        """
+        cls._fields[name] = self
+        cls._fields[name].name = name
+
     def get_create_sql(self):
         """
         Return query for table create query. Example:
@@ -237,6 +247,17 @@ class NestedField(ArrayField):
 
     def __init__(self, field_type, description=None, *args):
         super(NestedField, self).__init__(field_type=field_type, description=description)
+        # Skip field counters for nested fields
+        for n in self.field_type._fields:
+            next(self.FIELD_NUMBER)
+
+    def contribute_to_class(self, cls, name):
+        n_attrs = self.field_type._fields_order
+        for n, nested_name in enumerate(n_attrs):
+            field = "%s.%s" % (name, nested_name)
+            cls._fields[field] = self.field_type._fields[nested_name]
+            cls._fields[field].name = field
+            cls._fields[field].field_number = self.field_number + n + 1
 
     def to_tsv(self, value):
         out = []
