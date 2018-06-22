@@ -32,7 +32,12 @@ def sa_script(request):
     return request.param
 
 
-@pytest.mark.dependency(name="script_loading")
+@pytest.mark.dependency(name="iter_scripts")
+def test_iter_scripts():
+    assert len(list(loader.iter_scripts())) > 0
+
+
+@pytest.mark.dependency(name="script_loading", depends=["iter_scripts"])
 def test_script_loading(sa_script):
     script = loader.get_script(sa_script)
     assert script is not None
@@ -57,5 +62,6 @@ def test_script_name(sa_script):
 @pytest.mark.dependency(depends=["script_loading"])
 def test_script_interface(sa_script):
     script = loader.get_script(sa_script)
-    assert getattr(script, "interface", None) is not None, "Script should has 'interface' attribute"
+    assert getattr(script, "interface",
+                   None) is not None, "Script should has 'interface' attribute"
     assert issubclass(script.interface, BaseInterface)
