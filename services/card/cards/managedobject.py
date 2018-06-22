@@ -454,7 +454,7 @@ class ManagedObjectCard(BaseCard):
         def func_to_bool(speed):
             return bool(speed)
 
-         result = speed
+        result = speed
         if not speed:
             result = "-"
         try:
