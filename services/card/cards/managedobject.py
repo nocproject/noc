@@ -247,10 +247,10 @@ class ManagedObjectCard(BaseCard):
             l2_terminators = sorted(
                 l2_terminators,
                 key=operator.attrgetter("name"))
+                
         # @todo: Administrative domain path
         # Alarms
         alarm_list = []
-
         for a in alarms:
             alarm_list += [{
                 "id": a.id,
@@ -335,7 +335,6 @@ class ManagedObjectCard(BaseCard):
             "inventory": self.flatten_inventory(inv),
             "serial_number": self.object.get_attr("Serial Number")
         }
-
         return r
 
     def get_service_glyphs(self, service):
@@ -418,43 +417,44 @@ class ManagedObjectCard(BaseCard):
                 del o["children"]
         return r
 
-    def func_to_bit(speed):
-        if not speed:
-            return "-"
-            try:
-                speed = int(speed)
-            except ValueError:
-                pass
-        if speed < 1000 and speed > 0:
-            return "%s " % speed
-        for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
-            if speed >= t:
-                if speed // t * t == speed:
-                    return "%d&nbsp;%s" % (speed // t, n)
-                else:
-                    return "%.2f&nbsp;%s" % (float(speed) / t, n)
-
-    def func_to_bytes(speed):
-        try:
-            speed = float(speed)
-        except ValueError:
-            pass
-            # speed = speed / 8.0
-        if speed < 1024:
-            return speed
-        for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
-            if speed >= t:
-                if speed // t * t == speed:
-                    return "%d% s" % (speed // t, n)
-                else:
-                    return "%.2f %s" % (float(speed) / t, n)
-
-    def func_to_bool(speed):
-        return bool(speed)
-
     @staticmethod
     def humanize_speed(speed, type_speed):
-        result = speed
+
+        def func_to_bytes(speed):
+            try:
+                speed = float(speed)
+            except ValueError:
+                pass
+                # speed = speed / 8.0
+            if speed < 1024:
+                return speed
+            for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
+                if speed >= t:
+                    if speed // t * t == speed:
+                        return "%d% s" % (speed // t, n)
+                    else:
+                        return "%.2f %s" % (float(speed) / t, n)
+
+        def func_to_bit(speed):
+            if not speed:
+                return "-"
+                try:
+                    speed = int(speed)
+                except ValueError:
+                    pass
+            if speed < 1000 and speed > 0:
+                return "%s " % speed
+            for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
+                if speed >= t:
+                    if speed // t * t == speed:
+                        return "%d&nbsp;%s" % (speed // t, n)
+                    else:
+                        return "%.2f&nbsp;%s" % (float(speed) / t, n)
+
+        def func_to_bool(speed):
+            return bool(speed)
+
+         result = speed
         if not speed:
             result = "-"
         try:
