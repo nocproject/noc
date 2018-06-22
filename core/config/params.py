@@ -142,31 +142,24 @@ class SecondsParameter(BaseParameter):
         (60, "m")
     )
 
+    SCALE = {
+        "s": 1,
+        "M": 60,
+        "h": 3600,
+        "d": 24 * 3600,
+        "w": 7 * 24 * 3600,
+        "m": 30 * 24 * 3600,
+        "y": 365 * 24 * 3600
+    }
+
     def clean(self, v):
-        m = 1
         if isinstance(v, six.integer_types):
             return v
-        if v.endswith("s"):
-            v = v[:-1]
+        m = self.SCALE.get(v[-1], None)
+        if m is None:
             m = 1
-        if v.endswith("M"):
+        else:
             v = v[:-1]
-            m = 1 * 60
-        if v.endswith("h"):
-            v = v[:-1]
-            m = 3600
-        elif v.endswith("d"):
-            v = v[:-1]
-            m = 24 * 3600
-        elif v.endswith("w"):
-            v = v[:-1]
-            m = 7 * 24 * 3600
-        elif v.endswith("m"):
-            v = v[:-1]
-            m = 30 * 24 * 3600
-        elif v.endswith("y"):
-            v = v[:-1]
-            m = 365 * 24 * 3600
         try:
             v = int(v)
         except ValueError:
@@ -193,6 +186,7 @@ class ListParameter(BaseParameter):
             self.item.clean(x)
             for x in v
         ]
+
 
 class ServiceItem(object):
     __slots__ = ["host", "port"]
