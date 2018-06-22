@@ -247,7 +247,7 @@ class ManagedObjectCard(BaseCard):
             l2_terminators = sorted(
                 l2_terminators,
                 key=operator.attrgetter("name"))
-                
+
         # @todo: Administrative domain path
         # Alarms
         alarm_list = []
@@ -438,10 +438,10 @@ class ManagedObjectCard(BaseCard):
         def func_to_bit(speed):
             if not speed:
                 return "-"
-                try:
-                    speed = int(speed)
-                except ValueError:
-                    pass
+            try:
+                speed = int(speed)
+            except ValueError:
+                pass
             if speed < 1000 and speed > 0:
                 return "%s " % speed
             for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
