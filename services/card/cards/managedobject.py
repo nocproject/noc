@@ -197,10 +197,10 @@ class ManagedObjectCard(BaseCard):
                                 meta_type)
                         }
                         if key in ['Interface | Load | In',
-                            'Interface | Load | Out',
-                            'Interface | Errors | In',
-                            'Interface | Errors | Out'
-                        ]:
+                                  'Interface | Load | Out',
+                                  'Interface | Errors | In',
+                                  'Interface | Errors | Out'
+                                  ]:
                             try:
                                 load_in = iface_get_link_name['Interface | Load | In']["value"] + \
                                     iface_get_link_name['Interface | Load | In']["type"]
