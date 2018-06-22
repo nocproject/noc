@@ -419,51 +419,59 @@ class ManagedObjectCard(BaseCard):
         return r
 
     @staticmethod
+    def func_to_bit(speed):
+        if not speed:
+            result = "-"
+            try:
+                speed = int(speed)
+            except ValueError:
+                pass
+        if speed < 1000 and speed > 0:
+            return "%s " % speed
+        for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
+            if speed >= t:            
+                if speed // t * t == speed:
+                    return "%d&nbsp;%s" % (speed // t, n)
+                else:
+                    return "%.2f&nbsp;%s" % (float(speed) / t, n)
+
+    @staticmethod
+    def func_to_bytes(speed):
+        try:
+            speed = float(speed)
+        except ValueError:
+            pass
+            # speed = speed / 8.0
+        if speed < 1024:
+            return speed
+        for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
+            if speed >= t:
+                if speed // t * t == speed:
+                    return "%d% s" % (speed // t, n)
+                else:
+                    return "%.2f %s" % (float(speed) / t, n)
+
+    @staticmethod
+    def func_to_bool(speed):
+        return bool(speed)
+
+    @staticmethod
     def humanize_speed(speed, type_speed):
         result = speed
         if not speed:
-            result = "-"
+            return "-"
         try:
             speed = int(speed)
         except ValueError:
             pass
-
         if type_speed == "bit/s":
-            speed = int(speed)
-
-            if speed < 1000 and speed > 0:
-                result = "%s " % speed
-
-            for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
-                if speed >= t:
-                    if speed // t * t == speed:
-                        result = "%d&nbsp;%s" % (speed // t, n)
-                    else:
-                        result = "%.2f&nbsp;%s" % (float(speed) / t, n)
-
+			return func_to_bit(speed)
         if type_speed == "bytes":
-            try:
-                speed = float(speed)
-            except ValueError:
-                pass
-            # speed = speed / 8.0
-
-            if speed < 1024:
-                result = speed
-
-            for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
-                if speed >= t:
-                    if speed // t * t == speed:
-                        result = "%d% s" % (speed // t, n)
-                    else:
-                        result = "%.2f %s" % (float(speed) / t, n)
-            result = str(speed)
+            return func_to_bytes(speed)
         if type_speed == "bool":
-            result = bool(speed)
-
+            return func_to_bool(speed)
         if result == speed:
-            result = speed
-        return result
+            return speed
 
     @staticmethod
     def get_root(_root):
