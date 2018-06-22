@@ -35,15 +35,8 @@ class ModelBase(type):
             tags=getattr(cls.Meta, "tags", None),
         )
         for k in attrs:
-            if isinstance(attrs[k], NestedField):
-                n_attrs = attrs[k].field_type._fields
-                for kk in n_attrs:
-                    field = "%s.%s" % (k, kk)
-                    cls._fields[field] = n_attrs[kk]
-                    cls._fields[field].name = field
-            elif isinstance(attrs[k], BaseField):
-                cls._fields[k] = attrs[k]
-                cls._fields[k].name = k
+            if isinstance(attrs[k], BaseField):
+                attrs[k].contribute_to_class(cls, k)
         cls._fields_order = sorted(
             cls._fields, key=lambda x: cls._fields[x].field_number
         )

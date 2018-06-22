@@ -8,6 +8,7 @@
 
 # Python collections
 import itertools
+from functools import partial
 import socket
 import struct
 
@@ -31,6 +32,16 @@ class BaseField(object):
         self.default = default or self.default_value
         self.description = description
         self.is_agg = False
+
+    def contribute_to_class(self, cls, name):
+        """
+        Install field to model
+        :param cls:
+        :param name:
+        :return:
+        """
+        cls._fields[name] = self
+        cls._fields[name].name = name
 
     def get_create_sql(self):
         """
@@ -237,6 +248,18 @@ class NestedField(ArrayField):
 
     def __init__(self, field_type, description=None, *args):
         super(NestedField, self).__init__(field_type=field_type, description=description)
+        # Skip field counters for nested fields
+        for n in self.field_type._fields:
+            next(self.FIELD_NUMBER)
+
+    def contribute_to_class(self, cls, name):
+        n_attrs = self.field_type._fields_order
+        for n, nested_name in enumerate(n_attrs):
+            field = "%s.%s" % (name, nested_name)
+            cls._fields[field] = self.field_type._fields[nested_name]
+            cls._fields[field].name = field
+            cls._fields[field].field_number = self.field_number + n + 1
+            cls._fields[field].get_create_sql = partial(self.get_create_nested_sql, field, cls._fields[field].db_type)
 
     def to_tsv(self, value):
         out = []
@@ -250,3 +273,7 @@ class NestedField(ArrayField):
 
     def get_db_type(self):
         return "Nested (\n%s \n)" % self.field_type.get_create_sql()
+
+    @staticmethod
+    def get_create_nested_sql(name, type):
+        return "`%s` %s" % (name, type)
