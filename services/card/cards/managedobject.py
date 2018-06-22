@@ -202,9 +202,9 @@ class ManagedObjectCard(BaseCard):
                             'Interface | Errors | Out'
                         ]:
                             try:
-                                load_in = iface_get_link_name['Interface | Load | In']["value"] +
+                                load_in = iface_get_link_name['Interface | Load | In']["value"] + \
                                     iface_get_link_name['Interface | Load | In']["type"]
-                                load_out = iface_get_link_name['Interface | Load | Out']["value"] +
+                                load_out = iface_get_link_name['Interface | Load | Out']["value"] + \
                                     iface_get_link_name['Interface | Load | Out']["type"]
                                 errors_in = iface_get_link_name['Interface | Errors | In']["value"]
                                 errors_out = iface_get_link_name['Interface | Errors | Out']["value"]
