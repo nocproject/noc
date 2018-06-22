@@ -196,9 +196,9 @@ class ManagedObjectCard(BaseCard):
                                 str(iface_get_link_name[key]),
                                 meta_type)
                         }
-                        if key in ['Interface | Load | In', \
-                            'Interface | Load | Out', \
-                            'Interface | Errors | In', \
+                        if key in ['Interface | Load | In',
+                            'Interface | Load | Out',
+                            'Interface | Errors | In',
                             'Interface | Errors | Out'
                         ]:
                             try:
