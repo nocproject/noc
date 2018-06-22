@@ -418,7 +418,6 @@ class ManagedObjectCard(BaseCard):
                 del o["children"]
         return r
 
-    # static metod description
     @staticmethod
     def humanize_speed(speed, type_speed):
         result = speed
@@ -438,9 +437,9 @@ class ManagedObjectCard(BaseCard):
             for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
                 if speed >= t:
                     if speed // t * t == speed:
-                        return "%d&nbsp;%s" % (speed // t, n)
+                        result = "%d&nbsp;%s" % (speed // t, n)
                     else:
-                        return "%.2f&nbsp;%s" % (float(speed) / t, n)
+                        result = "%.2f&nbsp;%s" % (float(speed) / t, n)
 
         if type_speed == "bytes":
             try:
@@ -455,9 +454,9 @@ class ManagedObjectCard(BaseCard):
             for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
                 if speed >= t:
                     if speed // t * t == speed:
-                        return "%d% s" % (speed // t, n)
+                        result = "%d% s" % (speed // t, n)
                     else:
-                        return "%.2f %s" % (float(speed) / t, n)
+                        result = "%.2f %s" % (float(speed) / t, n)
             result = str(speed)
         if type_speed == "bool":
             result = bool(speed)
