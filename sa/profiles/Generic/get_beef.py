@@ -9,7 +9,7 @@
 # Python modules
 import uuid
 import datetime
-from collections import defaultdict
+from collections import OrderedDict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbeef import IGetBeef
@@ -58,9 +58,12 @@ class Script(BaseScript):
         """
         r = []
         # Group by commands
-        cmd_answers = defaultdict(list)
+        cmd_answers = OrderedDict()
         for ans in spec["answers"]:
             if ans["type"] == "cli":
+                if ans["value"] not in cmd_answers:
+                    cmd_answers[ans["value"]] = [ans["name"]]
+                    continue
                 cmd_answers[ans["value"]] += [ans["name"]]
         if not cmd_answers:
             return []
