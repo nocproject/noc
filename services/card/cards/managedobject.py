@@ -418,14 +418,13 @@ class ManagedObjectCard(BaseCard):
                 del o["children"]
         return r
 
-    @staticmethod
     def func_to_bit(speed):
         if not speed:
             return "-"
             try:
                 speed = int(speed)
             except ValueError:
-                pass			
+                pass
         if speed < 1000 and speed > 0:
             return "%s " % speed
         for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
@@ -435,7 +434,6 @@ class ManagedObjectCard(BaseCard):
                 else:
                     return "%.2f&nbsp;%s" % (float(speed) / t, n)
 
-    @staticmethod
     def func_to_bytes(speed):
         try:
             speed = float(speed)
@@ -451,11 +449,10 @@ class ManagedObjectCard(BaseCard):
                 else:
                     return "%.2f %s" % (float(speed) / t, n)
 
-    @staticmethod
     def func_to_bool(speed):
         return bool(speed)
-		
-    @staticmethod	
+
+    @staticmethod
     def humanize_speed(speed, type_speed):
         result = speed
         if not speed:
@@ -465,11 +462,11 @@ class ManagedObjectCard(BaseCard):
         except ValueError:
             pass
         if type_speed == "bit/s":
-            result = self.func_to_bit(speed)
+            result = func_to_bit(speed)
         if type_speed == "bytes":
-            result = self.func_to_bytes(speed)
+            result = func_to_bytes(speed)
         if type_speed == "bool":
-            result = self.func_to_bool(speed)
+            result = func_to_bool(speed)
         if result == speed:
             result = speed
         return result
