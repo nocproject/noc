@@ -151,7 +151,10 @@ class ManagedObjectCard(BaseCard):
                     ),
                     "remote_status": "up" if ro.get_status() else "down"
                 }]
-            links = sorted(links, key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0].name)))
+            links = sorted(
+                links, 
+                key=lambda x: (x["role"] != "uplink", 
+                split_alnum(x["local_interface"][0].name)))
         # Build global services summary
         service_summary = ServiceSummary.get_object_summary(
             self.object)
@@ -176,9 +179,15 @@ class ManagedObjectCard(BaseCard):
             if objects_metrics.get("") is not None:
                 for key in objects_metrics.get("").keys():
                     if metric_type_name[key] in ["bytes", "bit/s", "bool"]:
-                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])}
+                        objects_metrics.get("")[key] = {
+                            "type": metric_type_name[key], 
+                            "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])
+                        }
                     else:
-                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": objects_metrics.get("")[key]}
+                        objects_metrics.get("")[key] = {
+                            "type": metric_type_name[key], 
+                            "value": objects_metrics.get("")[key]
+                        }
                 meta = objects_metrics.get("")
             else:
                 meta = {}
@@ -193,11 +202,18 @@ class ManagedObjectCard(BaseCard):
                 if iface_get_link_name is not None:
                     for key in iface_get_link_name.keys():
                         meta_type = metric_type_name.get(key) or metric_type_field.get(key)
-                        iface_get_link_name[key] = {"type": meta_type, "value": self.humanize_speed(str(iface_get_link_name[key]), meta_type)}
+                        iface_get_link_name[key] = {
+                            "type": meta_type, 
+                            "value": self.humanize_speed(
+                                str(iface_get_link_name[key]), 
+                                meta_type)
+                        }
                         if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
                             try:
-                                load_in = iface_get_link_name['Interface | Load | In']["value"] + iface_get_link_name['Interface | Load | In']["type"]
-                                load_out = iface_get_link_name['Interface | Load | Out']["value"] + iface_get_link_name['Interface | Load | Out']["type"]
+                                load_in = iface_get_link_name[
+                                    'Interface | Load | In']["value"] + iface_get_link_name['Interface | Load | In']["type"]
+                                load_out = iface_get_link_name[
+                                    'Interface | Load | Out']["value"] + iface_get_link_name['Interface | Load | Out']["type"]
                                 errors_in = iface_get_link_name['Interface | Errors | In']["value"]
                                 errors_out = iface_get_link_name['Interface | Errors | Out']["value"]
                             except TypeError:
@@ -221,23 +237,30 @@ class ManagedObjectCard(BaseCard):
                     "tagged_vlan": None,
                     "profile": i.profile,
                     "service": i.service,
-                    "service_summary": service_summary.get("interface").get(i.id, {})
+                    "service_summary": 
+                        service_summary.get("interface").get(i.id, {})
                 }]
 
                 si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
                 if len(si) == 1:
                     si = si[0]
                     interfaces[-1]["untagged_vlan"] = si.untagged_vlan
-                    interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
-            interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
+                    interfaces[-1]["tagged_vlans"] = 
+                    list_to_ranges(si.tagged_vlans).replace(",", ", ")
+            interfaces = sorted(
+                interfaces, 
+                key=lambda x: split_alnum(x["name"]))
 
         # Termination group
         l2_terminators = []
         if self.object.termination_group:
             l2_terminators = list(
-                ManagedObject.objects.filter(service_terminator=self.object.termination_group)
+                ManagedObject.objects.filter(
+                    service_terminator=self.object.termination_group)
             )
-            l2_terminators = sorted(l2_terminators, key=operator.attrgetter("name"))
+            l2_terminators = sorted(
+                l2_terminators, 
+                key=operator.attrgetter("name"))
         # @todo: Administrative domain path
         # Alarms
         alarm_list = []
@@ -250,7 +273,10 @@ class ManagedObjectCard(BaseCard):
                 "duration": now - a.timestamp,
                 "subject": a.subject,
                 "managed_object": a.managed_object,
-                "service_summary": {"service": SummaryItem.items_to_dict(a.total_services), "subscriber": SummaryItem.items_to_dict(a.total_subscribers)},
+                "service_summary": {
+                    "service": SummaryItem.items_to_dict(a.total_services), 
+                    "subscriber": 
+                        SummaryItem.items_to_dict(a.total_subscribers)},
                 "alarm_class": a.alarm_class
             }]
         alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
@@ -292,15 +318,20 @@ class ManagedObjectCard(BaseCard):
             "object": self.object,
             "name": self.object.name,
             "address": self.object.address,
-            "platform": platform,    # self.object.platform.name if self.object.platform else "Unknown",
-            "version": version,      # self.object.version.version if self.object.version else "",
+            "platform": platform,
+            # self.object.platform.name if self.object.platform else "Unknown",
+            "version": version,
+            # self.object.version.version if self.object.version else "",
             "description": self.object.description,
             "object_profile": self.object.object_profile.id,
             "object_profile_name": self.object.object_profile.name,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
-            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version),
-            "firmware_recommended": FirmwarePolicy.get_recommended_version(self.object.platform),
+            "firmware_status": FirmwarePolicy.get_status(
+                self.object.platform, 
+                self.object.version),
+            "firmware_recommended": 
+                FirmwarePolicy.get_recommended_version(self.object.platform),
             "service_summary": service_summary,
             #
             "container_path": cp,
@@ -437,7 +468,10 @@ class ManagedObjectCard(BaseCard):
             if speed < 1024:
                 result = speed
 
-            for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
+            for t, n in [(
+                pow(2, 30), "G"), 
+                (pow(2, 20), "M"), 
+                (pow(2, 10), "k")]:
                 if speed >= t:
                     if speed // t * t == speed:
                         return "%d% s" % (speed // t, n)
