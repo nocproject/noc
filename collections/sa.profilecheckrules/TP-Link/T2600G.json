@@ -1,0 +1,14 @@
+{
+    "name": "TP-Link | T2600G",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "31cbd9d0-7e65-46c2-80ed-f915cb5d85a4",
+    "description": "JetStream  L2 Managed Switch",
+    "preference": 500,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.11863.5",
+    "action": "match",
+    "profile__name": "TP-Link.T2600G"
+}
+
