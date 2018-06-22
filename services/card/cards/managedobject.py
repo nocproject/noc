@@ -429,7 +429,7 @@ class ManagedObjectCard(BaseCard):
         if speed < 1000 and speed > 0:
             return "%s " % speed
         for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
-            if speed >= t:            
+            if speed >= t:
                 if speed // t * t == speed:
                     return "%d&nbsp;%s" % (speed // t, n)
                 else:
@@ -455,23 +455,23 @@ class ManagedObjectCard(BaseCard):
     def func_to_bool(speed):
         return bool(speed)
 
-    @staticmethod
     def humanize_speed(speed, type_speed):
         result = speed
         if not speed:
-            return "-"
+            result = "-"
         try:
             speed = int(speed)
         except ValueError:
             pass
         if type_speed == "bit/s":
-			return func_to_bit(speed)
+            result = func_to_bit(speed)
         if type_speed == "bytes":
-            return func_to_bytes(speed)
+            result = func_to_bytes(speed)
         if type_speed == "bool":
-            return func_to_bool(speed)
+            result = func_to_bool(speed)
         if result == speed:
-            return speed
+            result = speed
+        return result
 
     @staticmethod
     def get_root(_root):
