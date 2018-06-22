@@ -151,13 +151,9 @@ class ManagedObjectCard(BaseCard):
                     ),
                     "remote_status": "up" if ro.get_status() else "down"
                 }]
-            links = sorted(
-                links, 
-                key=lambda x: (x["role"] != "uplink", 
-                split_alnum(x["local_interface"][0].name)))
+            links = sorted(links, key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0].name)))
         # Build global services summary
-        service_summary = ServiceSummary.get_object_summary(
-            self.object)
+        service_summary = ServiceSummary.get_object_summary(self.object)
 
         # Interfaces
         interfaces = []
@@ -179,15 +175,11 @@ class ManagedObjectCard(BaseCard):
             if objects_metrics.get("") is not None:
                 for key in objects_metrics.get("").keys():
                     if metric_type_name[key] in ["bytes", "bit/s", "bool"]:
-                        objects_metrics.get("")[key] = {
-                            "type": metric_type_name[key], 
-                            "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])
-                        }
+                        objects_metrics.get("")[key] = {"type": metric_type_name[key], 
+                        "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])}
                     else:
-                        objects_metrics.get("")[key] = {
-                            "type": metric_type_name[key], 
-                            "value": objects_metrics.get("")[key]
-                        }
+                        objects_metrics.get("")[key] = {"type": metric_type_name[key], 
+                            "value": objects_metrics.get("")[key]}
                 meta = objects_metrics.get("")
             else:
                 meta = {}
@@ -204,10 +196,7 @@ class ManagedObjectCard(BaseCard):
                         meta_type = metric_type_name.get(key) or metric_type_field.get(key)
                         iface_get_link_name[key] = {
                             "type": meta_type, 
-                            "value": self.humanize_speed(
-                                str(iface_get_link_name[key]), 
-                                meta_type)
-                        }
+                            "value": self.humanize_speed(str(iface_get_link_name[key]), meta_type)}
                         if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
                             try:
                                 load_in = iface_get_link_name[
@@ -237,9 +226,7 @@ class ManagedObjectCard(BaseCard):
                     "tagged_vlan": None,
                     "profile": i.profile,
                     "service": i.service,
-                    "service_summary": 
-                        service_summary.get("interface").get(i.id, {})
-                }]
+                    "service_summary": service_summary.get("interface").get(i.id, {})}]
 
                 si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
                 if len(si) == 1:
@@ -370,10 +357,9 @@ class ManagedObjectCard(BaseCard):
         r = []
         for mo in ManagedObject.objects.filter(q):
             r += [{
-                "scope": "managedobject",
-                "id": mo.id,
-                "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform)
-            }]
+                "scope": "managedobject", 
+                "id": mo.id, 
+                "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform)}]
         return r
 
     def get_nested_inventory(self, o):
