@@ -167,8 +167,7 @@ class ManagedObjectCard(BaseCard):
                 for key in objects_metrics.get("").keys():
                     if metric_type_name[key] in ["bytes", "bit/s", "bool"]:
                         objects_metrics.get("")[key] = {"type": metric_type_name[key],
-                            "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])
-                        }
+                            "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])}
                     else:
                         objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": objects_metrics.get("")[key]}
                 meta = objects_metrics.get("")
