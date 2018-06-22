@@ -42,10 +42,7 @@ class ManagedObjectCard(BaseCard):
         if self.current_user.is_superuser:
             return ManagedObject.objects.get(id=id)
         else:
-            return ManagedObject.objects.get(
-                id=id,
-                administrative_domain__in=self.get_user_domains()
-            )
+            return ManagedObject.objects.get(id=id, administrative_domain__in=self.get_user_domains())
 
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
@@ -68,18 +65,12 @@ class ManagedObjectCard(BaseCard):
                 current_state = "alarm"
             else:
                 current_state = "up"
-            uptime = Uptime.objects.filter(
-                object=self.object.id,
-                stop=None
-            ).first()
+            uptime = Uptime.objects.filter(object=self.object.id, stop=None).first()
             if uptime:
                 current_start = uptime.start
         else:
             current_state = "down"
-            outage = Outage.objects.filter(
-                object=self.object.id,
-                stop=None
-            ).first()
+            outage = Outage.objects.filter(object=self.object.id, stop=None).first()
             if outage is not None:
                 current_start = outage.start
         if current_start:
@@ -176,10 +167,9 @@ class ManagedObjectCard(BaseCard):
                 for key in objects_metrics.get("").keys():
                     if metric_type_name[key] in ["bytes", "bit/s", "bool"]:
                         objects_metrics.get("")[key] = {"type": metric_type_name[key], 
-                        "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])}
+                            "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])}
                     else:
-                        objects_metrics.get("")[key] = {"type": metric_type_name[key], 
-                            "value": objects_metrics.get("")[key]}
+                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": objects_metrics.get("")[key]}
                 meta = objects_metrics.get("")
             else:
                 meta = {}
@@ -196,7 +186,10 @@ class ManagedObjectCard(BaseCard):
                         meta_type = metric_type_name.get(key) or metric_type_field.get(key)
                         iface_get_link_name[key] = {
                             "type": meta_type, 
-                            "value": self.humanize_speed(str(iface_get_link_name[key]), meta_type)}
+                            "value": self.humanize_speed(
+                                str(iface_get_link_name[key]), 
+                                meta_type)
+                        }
                         if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
                             try:
                                 load_in = iface_get_link_name[
@@ -226,7 +219,9 @@ class ManagedObjectCard(BaseCard):
                     "tagged_vlan": None,
                     "profile": i.profile,
                     "service": i.service,
-                    "service_summary": service_summary.get("interface").get(i.id, {})}]
+                    "service_summary": 
+                        service_summary.get("interface").get(i.id, {})
+                }]
 
                 si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
                 if len(si) == 1:
@@ -238,10 +233,7 @@ class ManagedObjectCard(BaseCard):
         # Termination group
         l2_terminators = []
         if self.object.termination_group:
-            l2_terminators = list(
-                ManagedObject.objects.filter(
-                    service_terminator=self.object.termination_group)
-            )
+            l2_terminators = list(ManagedObject.objects.filter(service_terminator=self.object.termination_group))
             l2_terminators = sorted(
                 l2_terminators, 
                 key=operator.attrgetter("name"))
@@ -258,9 +250,8 @@ class ManagedObjectCard(BaseCard):
                 "subject": a.subject,
                 "managed_object": a.managed_object,
                 "service_summary": {
-                    "service": SummaryItem.items_to_dict(a.total_services), 
-                    "subscriber": SummaryItem.items_to_dict(a.total_subscribers)
-                },
+				    "service": SummaryItem.items_to_dict(a.total_services), 
+					"subscriber": SummaryItem.items_to_dict(a.total_subscribers)},
                 "alarm_class": a.alarm_class
             }]
         alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
@@ -311,8 +302,11 @@ class ManagedObjectCard(BaseCard):
             "object_profile_name": self.object.object_profile.name,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
-            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version),
-            "firmware_recommended": FirmwarePolicy.get_recommended_version(self.object.platform),
+            "firmware_status": FirmwarePolicy.get_status(
+                self.object.platform, 
+                self.object.version),
+            "firmware_recommended": 
+                FirmwarePolicy.get_recommended_version(self.object.platform),
             "service_summary": service_summary,
             "container_path": cp,
             "current_state": current_state,
@@ -357,9 +351,10 @@ class ManagedObjectCard(BaseCard):
         r = []
         for mo in ManagedObject.objects.filter(q):
             r += [{
-                "scope": "managedobject", 
-                "id": mo.id, 
-                "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform)}]
+                "scope": "managedobject",
+                "id": mo.id,
+                "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform)
+            }]
         return r
 
     def get_nested_inventory(self, o):
@@ -446,17 +441,13 @@ class ManagedObjectCard(BaseCard):
             if speed < 1024:
                 result = speed
 
-            for t, n in [(
-                pow(2, 30), "G"), 
-                (pow(2, 20), "M"), 
-                (pow(2, 10), "k")]:
+            for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
                 if speed >= t:
                     if speed // t * t == speed:
                         return "%d% s" % (speed // t, n)
                     else:
                         return "%.2f %s" % (float(speed) / t, n)
             result = str(speed)
-
         if type_speed == "bool":
             result = bool(speed)
 
