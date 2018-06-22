@@ -37,7 +37,6 @@ class Script(GetMetricsScript):
         onts = self.scripts.get_cpe()  # Getting ONT List
         self.cli("config")
         self.cli("interface gpon 0/0")  # Fix from cpes
-        r = []
         for cc in chain(onts, olt_dom):
             if "status" in cc and cc["status"] == "active":
                 frame, slot, port, cpe_id = cc["id"].split("/")

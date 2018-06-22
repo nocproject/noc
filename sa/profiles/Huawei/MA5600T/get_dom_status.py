@@ -37,4 +37,3 @@ class Script(BaseScript):
         self.cli("quit")
         self.cli("quit")
         return r
-
