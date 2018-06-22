@@ -19,6 +19,9 @@ import cachetools
 # NOC modules
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
+from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.object import Object
+from noc.inv.models.networksegment import NetworkSegment
 from noc.core.debug import error_report
 from noc.main.models import User
 from noc.config import config
@@ -90,9 +93,26 @@ class CardRequestHandler(UIHandler):
                     self.set_header("Refresh", str(refresh))
                 except ValueError:
                     pass
+
+
+            # chapter title page
+            if card_type == "managedobject":
+                mo = ManagedObject.objects.get(id=card_id)
+                card_name = mo.name
+            elif card_type == "object":
+                obj =  Object.objects.get(id=card_id)
+                card_name = obj.name
+            elif card_type == "segment":
+                segm =  NetworkSegment.objects.get(id=card_id)
+                card_name = segm.name
+            else:
+                card_name = " ".join([card_type, "CARD"])
+
+
             self.write(
                 self.get_card_template().render({
                     "card_data": data,
+                    "card_title": card_name,
                     "hashed": self.hashed,
                     "card_js": card.card_js,
                     "card_css": card.card_css
