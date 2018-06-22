@@ -7,12 +7,13 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import operator
 # Third-party modules
 from django.db.models import Q
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem
