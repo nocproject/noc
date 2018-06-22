@@ -245,11 +245,8 @@ class ManagedObjectCard(BaseCard):
                 if len(si) == 1:
                     si = si[0]
                     interfaces[-1]["untagged_vlan"] = si.untagged_vlan
-                    interfaces[-1]["tagged_vlans"] = 
-                    list_to_ranges(si.tagged_vlans).replace(",", ", ")
-            interfaces = sorted(
-                interfaces, 
-                key=lambda x: split_alnum(x["name"]))
+                    interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
+            interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
 
         # Termination group
         l2_terminators = []
@@ -275,8 +272,8 @@ class ManagedObjectCard(BaseCard):
                 "managed_object": a.managed_object,
                 "service_summary": {
                     "service": SummaryItem.items_to_dict(a.total_services), 
-                    "subscriber": 
-                        SummaryItem.items_to_dict(a.total_subscribers)},
+                    "subscriber": SummaryItem.items_to_dict(a.total_subscribers)
+                },
                 "alarm_class": a.alarm_class
             }]
         alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
@@ -327,15 +324,10 @@ class ManagedObjectCard(BaseCard):
             "object_profile_name": self.object.object_profile.name,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
-            "firmware_status": FirmwarePolicy.get_status(
-                self.object.platform, 
-                self.object.version),
-            "firmware_recommended": 
-                FirmwarePolicy.get_recommended_version(self.object.platform),
+            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version),
+            "firmware_recommended": FirmwarePolicy.get_recommended_version(self.object.platform),
             "service_summary": service_summary,
-            #
             "container_path": cp,
-            #
             "current_state": current_state,
             # Start of uptime/downtime
             "current_start": current_start,
@@ -478,6 +470,7 @@ class ManagedObjectCard(BaseCard):
                     else:
                         return "%.2f %s" % (float(speed) / t, n)
             result = str(speed)
+
         if type_speed == "bool":
             result = bool(speed)
 
