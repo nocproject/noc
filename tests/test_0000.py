@@ -9,6 +9,7 @@
 # Third-party modules
 import pytest
 
+
 @pytest.mark.usefixtures("database")
 def test_database_migrations(database):
     """

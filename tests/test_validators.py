@@ -150,6 +150,7 @@ def test_is_mac():
     assert is_mac(None) is False
     assert is_mac("123") is False
 
+
 def test_is_email():
     assert is_email("test@example.com") is True
     assert is_email("test") is False
