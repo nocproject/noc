@@ -48,7 +48,7 @@ class ManagedObjectCard(BaseCard):
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
 
-    # get data function    
+    # get data function
     def get_data(self):
         if not self.object:
             return None
@@ -418,7 +418,7 @@ class ManagedObjectCard(BaseCard):
                 del o["children"]
         return r
 
-    # static metod description    
+    # static metod description
     @staticmethod
     def humanize_speed(speed, type_speed):
         result = speed
