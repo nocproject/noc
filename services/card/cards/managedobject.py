@@ -69,7 +69,7 @@ class ManagedObjectCard(BaseCard):
                     metrics["error", ("type", "no_such_object")] += 1
                     break
         return cp
-        
+
     # get data function
     def get_data(self):
         if not self.object:
@@ -99,9 +99,9 @@ class ManagedObjectCard(BaseCard):
                 current_start = outage.start
         if current_start:
             duration = now - current_start
-        
-        cp = get_container_path(self)    
-        
+
+        cp = get_container_path(self)
+
         # MAC addresses
         macs = []
         o_macs = DiscoveryID.macs_for_object(self.object)
