@@ -172,7 +172,10 @@ class ManagedObjectCard(BaseCard):
                             "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])
                         }
                     else:
-                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": objects_metrics.get("")[key]}
+                        objects_metrics.get("")[key] = {
+                            "type": metric_type_name[key], 
+                            "value": objects_metrics.get("")[key]
+                        }
                 meta = objects_metrics.get("")
             else:
                 meta = {}
@@ -193,12 +196,18 @@ class ManagedObjectCard(BaseCard):
                                 str(iface_get_link_name[key]),
                                 meta_type)
                         }
-                        if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
+                        if key in ['Interface | Load | In', 
+						    'Interface | Load | Out', 
+							'Interface | Errors | In', 
+							'Interface | Errors | Out'
+						]:
                             try:
                                 load_in = iface_get_link_name[
-                                    'Interface | Load | In']["value"] + iface_get_link_name['Interface | Load | In']["type"]
+                                    'Interface | Load | In']["value"] +
+									    iface_get_link_name['Interface | Load | In']["type"]
                                 load_out = iface_get_link_name[
-                                    'Interface | Load | Out']["value"] + iface_get_link_name['Interface | Load | Out']["type"]
+                                    'Interface | Load | Out']["value"] +
+									    iface_get_link_name['Interface | Load | Out']["type"]
                                 errors_in = iface_get_link_name['Interface | Errors | In']["value"]
                                 errors_out = iface_get_link_name['Interface | Errors | Out']["value"]
                             except TypeError:
