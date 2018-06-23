@@ -50,7 +50,7 @@ class YAMLProtocol(BaseProtocol):
                 continue
             p = path.split(".")
             prefix = p[:-1]
-            if section and p[0] != section:
+            if section and p[0] not in set(section):
                 continue
             if prefix != current:
                 # Common part
