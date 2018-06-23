@@ -27,7 +27,7 @@ class Script(BaseScript):
 
     MAX_GETNEXT_RETIRES = 0
 
-    BULK = True
+    BULK = None
 
     INTERFACE_TYPES = {
         1: "other",
@@ -88,7 +88,8 @@ class Script(BaseScript):
             oid = mib[oid]
         for oid, v in self.snmp.getnext(oid,
                                         max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk):
+                                        max_retries=self.get_getnext_retires(),
+                                        bulk=self.get_bulk):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
