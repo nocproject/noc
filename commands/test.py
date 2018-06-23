@@ -97,8 +97,8 @@ class Command(BaseCommand):
                 cov.save()
                 if coverage_report:
                     cov.html_report(directory=coverage_report)
-            if statistics:
-                self.dump_statistics(cov)
+                if statistics:
+                    self.dump_statistics(cov)
             return result
         else:
             return run_tests(args)
@@ -111,6 +111,8 @@ class Command(BaseCommand):
         """
         from coverage.results import Numbers
         from coverage.report import Reporter
+        from noc.tests.conftest import _stats as stats
+
         self.print("---[ Test session statistics ]------")
         cov.get_data()
         reporter = Reporter(cov, cov.config)
@@ -118,6 +120,19 @@ class Command(BaseCommand):
         for fr in reporter.find_file_reporters(None):
             analysis = cov._analyze(fr)
             totals += analysis.numbers
+        n_passed = len(stats.get("passed", []))
+        n_skipped = len(stats.get("skipped", []))
+        n_error = len(stats.get("error", []))
+        n_failed = len(stats.get("failed", []))
+        if n_error or n_failed:
+            status = "Failed"
+        else:
+            status = "Passed"
+        self.print("Status              : %s" % status)
+        self.print("Tests Passed:       : %s" % n_passed)
+        self.print("Tests Skipped:      : %s" % n_skipped)
+        self.print("Tests Failed:       : %s" % n_failed)
+        self.print("Tests Error:        : %s" % n_error)
         self.print("Coverage            : %d%%" % totals.pc_covered)
         self.print("Coverage Statements : %s" % totals.n_statements)
         self.print("Coverage Missing    : %s" % totals.n_missing)
