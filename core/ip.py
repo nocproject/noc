@@ -260,6 +260,18 @@ class IP(object):
         nb = list(new_base.iter_bits()) + [0] * (base.mask - new_base.mask) + pb
         return self.from_bits(nb)
 
+    @staticmethod
+    def expand(addr):
+        """
+        Expand and normalize address for reliable key lookup
+        :param addr:
+        :return:
+        """
+        if ":" in addr:
+            return IPv6.expand(addr)
+        else:
+            return IPv4.expand(addr)
+
 
 class IPv4(IP):
     """
@@ -523,6 +535,15 @@ class IPv4(IP):
             else:
                 first = nfirst
         return r
+
+    @staticmethod
+    def expand(addr):
+        """
+        IPv6.expand compatibility stub
+        :param addr:
+        :return:
+        """
+        return addr
 
 
 class IPv6(IP):
@@ -867,6 +888,30 @@ class IPv6(IP):
         r = self.digits[origin_len:]
         r.reverse()
         return ".".join(r)
+
+    @staticmethod
+    def expand(addr):
+        """
+        Expand :: with appropriate amount of :0:
+        :param addr:
+        :return: Expanded address as string
+        """
+        ni = addr.find("::")
+        if ni < 0:
+            return addr
+        lp = addr.count(":", 0, ni)
+        if ni > 0:
+            lp += 1
+        rp = addr.count(":", ni + 2)
+        if ni + 2 < len(addr):
+            rp += 1
+        np = lp + rp
+        xs = ":".join(["0"] * (8 - np))
+        if lp:
+            xs = ":%s" % xs
+        if rp:
+            xs = "%s:" % xs
+        return addr.replace("::", xs)
 
 
 class PrefixDB(object):
