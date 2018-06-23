@@ -38,6 +38,11 @@ class Command(BaseCommand):
             help="Write HTML error report to specified path"
         )
         run_parser.add_argument(
+            "--statistics",
+            action="store_true",
+            help="Dump statistics"
+        )
+        run_parser.add_argument(
             "tests",
             nargs=argparse.REMAINDER,
             help="Paths to tests"
@@ -49,8 +54,8 @@ class Command(BaseCommand):
     def handle_check(self, check_cmd, *args, **options):
         return getattr(self, "handle_check_%s" % check_cmd)(*args, **options)
 
-    def handle_run(self, tests=None, verbose=False, coverage_report=False,
-                   test_report=None, *args, **options):
+    def handle_run(self, tests=None, verbose=False, statistics=False,
+                   coverage_report=False, test_report=None, *args, **options):
         def run_tests(args):
             self.print("Running test")
             # Must be imported within coverage
@@ -75,7 +80,7 @@ class Command(BaseCommand):
             args += tests
         else:
             args += ["tests"]
-        if coverage_report:
+        if statistics or coverage_report:
             self.print("Collecting coverage")
             # Reset all loaded modules to return them to coverage
             already_loaded = [m for m in sys.modules if m.startswith("noc.")]
@@ -85,14 +90,38 @@ class Command(BaseCommand):
             cov = coverage.Coverage()
             cov.start()
             try:
-                return run_tests(args)
+                result = run_tests(args)
             finally:
                 self.print("Writing coverage report to %s/index.html" % coverage_report)
                 cov.stop()
                 cov.save()
-                cov.html_report(directory=coverage_report)
+                if coverage_report:
+                    cov.html_report(directory=coverage_report)
+            if statistics:
+                self.dump_statistics(cov)
+            return result
         else:
             return run_tests(args)
+
+    def dump_statistics(self, cov):
+        """
+        Dump test run statistics
+        :param cov:
+        :return:
+        """
+        from coverage.results import Numbers
+        from coverage.report import Reporter
+        self.print("---[ Test session statistics ]------")
+        cov.get_data()
+        reporter = Reporter(cov, cov.config)
+        totals = Numbers()
+        for fr in reporter.find_file_reporters(None):
+            analysis = cov._analyze(fr)
+            totals += analysis.numbers
+        self.print("Coverage            : %d%%" % totals.pc_covered)
+        self.print("Coverage Statements : %s" % totals.n_statements)
+        self.print("Coverage Missing    : %s" % totals.n_missing)
+        self.print("Coverage Excluded   : %s" % totals.n_excluded)
 
     def get_dirs(self, dirs):
         """
