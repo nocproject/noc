@@ -105,6 +105,6 @@ test_noc:
   script:
     - find . -type f -name "*.py" -print0 | xargs -0 python -m py_compile
     - /usr/bin/cythonize -i speedup/*.pyx
-    - python ./commands/test.py run -v --coverage-report=/tmp/coverage --test-report=/tmp/index.html
+    - python ./commands/test.py run --coverage-report=/tmp/coverage --test-report=/tmp/index.html
   tags:
     - docker
