@@ -29,7 +29,7 @@ import ujson
 import threading
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
-from noc.core.debug import excepthook, error_report
+from noc.core.debug import excepthook, error_report, ErrorReport
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -668,9 +668,11 @@ class Service(object):
                 self.logger.debug("Cannot decode JSON message: %s", e)
                 return True  # Broken message
             if isinstance(data, dict):
-                r = handler(message, **data)
+                with ErrorReport():
+                    r = handler(message, **data)
             else:
-                r = handler(message, data)
+                with ErrorReport():
+                    r = handler(message, data)
             if r:
                 self.perf_metrics[metric_processed] += 1
             elif message.is_async():
@@ -681,7 +683,8 @@ class Service(object):
 
         def call_raw_handler(message):
             self.perf_metrics[metric_in] += 1
-            r = handler(message, message.body)
+            with ErrorReport():
+                r = handler(message, message.body)
             if r:
                 self.perf_metrics[metric_processed] += 1
             elif message.is_async():
