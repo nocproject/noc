@@ -51,7 +51,7 @@ class AccessWidget(forms.Widget):
         .perm-label {
             padding-left: 4px;
         }
-        
+
         .perm-title {
             display: flex;
             justify-content: space-between;
@@ -103,13 +103,13 @@ class AccessWidget(forms.Widget):
                             user_access = a.user_access_list(user)
                             if user_access:
                                 r += ["<br/>".join(sorted(user_access))]
-                        except:
+                        except Exception:
                             pass
                         try:
                             change_link = a.user_access_change_url(user)
                             if change_link:
                                 r += ["<br/><a href='%s'>Change...</a>" % change_link]
-                        except:
+                        except Exception:
                             pass
                     elif mode == "group":
                         group_access = a.group_access_list(group)
