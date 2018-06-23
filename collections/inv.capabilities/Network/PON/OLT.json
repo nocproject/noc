@@ -1,0 +1,8 @@
+{
+    "name": "Network | PON | OLT",
+    "$collection": "inv.capabilities",
+    "uuid": "88713cfd-925d-4d64-977a-a6fb576e6299",
+    "description": "Network PON OLT device",
+    "type": "bool",
+    "card_template": null
+}
