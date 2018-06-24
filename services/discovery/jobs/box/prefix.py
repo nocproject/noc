@@ -92,10 +92,11 @@ class PrefixCheck(DiscoveryCheck):
             vrf = vrfs[vpn_id]
             seen = set()
             for p in Prefix.objects.filter(vrf=vrf, prefix__in=vrf_prefixes[vpn_id]):
+                norm_prefix = IP.expand(p.prefix)
                 # Confirmed prefix, apply changes and touch
-                prefix = prefixes[vpn_id, p.prefix]
+                prefix = prefixes[vpn_id, norm_prefix]
                 self.apply_prefix_changes(p, prefix)
-                seen.add(prefix.prefix)
+                seen.add(norm_prefix)
             for p in set(vrf_prefixes[vpn_id]) - seen:
                 # New prefix, create
                 self.create_prefix(prefixes[vpn_id, p])
@@ -109,14 +110,15 @@ class PrefixCheck(DiscoveryCheck):
         :returns: Resulted prefixes
         """
         for prefix in discovered_prefixes:
-            old = prefixes.get((prefix.vpn_id, prefix.prefix))
+            norm_prefix = IP.expand(prefix.prefix)
+            old = prefixes.get((prefix.vpn_id, norm_prefix))
             if old:
                 if PrefixCheck.is_preferred(old.source, prefix.source):
                     # New prefix is preferable, replace
-                    prefixes[prefix.vpn_id, prefix.prefix] = prefix
+                    prefixes[prefix.vpn_id, norm_prefix] = prefix
             else:
                 # Not seen yet
-                prefixes[prefix.vpn_id, prefix.prefix] = prefix
+                prefixes[prefix.vpn_id, norm_prefix] = prefix
         return prefixes
 
     def is_enabled(self):

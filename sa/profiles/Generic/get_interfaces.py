@@ -2,12 +2,13 @@
 # ---------------------------------------------------------------------
 # Generic.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
+import time
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -25,6 +26,8 @@ class Script(BaseScript):
     MAX_REPETITIONS = 20
 
     MAX_GETNEXT_RETIRES = 0
+
+    BULK = None
 
     INTERFACE_TYPES = {
         1: "other",
@@ -46,6 +49,13 @@ class Script(BaseScript):
 
     def get_getnext_retires(self):
         return self.MAX_GETNEXT_RETIRES
+
+    # if ascii or rus text in description
+    def convert_description(self, desc):
+        return unicode(desc, "utf8", "replace").encode("utf8")
+
+    def get_bulk(self):
+        return self.BULK
 
     def get_ifindexes(self):
         r = {}
@@ -78,7 +88,8 @@ class Script(BaseScript):
             oid = mib[oid]
         for oid, v in self.snmp.getnext(oid,
                                         max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires()):
+                                        max_retries=self.get_getnext_retires(),
+                                        bulk=self.get_bulk):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
@@ -116,8 +127,8 @@ class Script(BaseScript):
         # v = self.scripts.get_interface_status_ex()
         index = self.scripts.get_ifindexes()
         # index = self.get_ifindexes()
-        ifaces = dict((index[i], {"interface": i}) for i in index)
         aggregated, portchannel_members = self.get_aggregated_ifaces()
+        ifaces = dict((index[i], {"interface": i}) for i in index)
         # Apply ifAdminStatus
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -127,6 +138,7 @@ class Script(BaseScript):
         self.apply_table(ifaces, "IF-MIB::ifType", "type")
         self.apply_table(ifaces, "IF-MIB::ifSpeed", "speed")
         self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")
+        time.sleep(10)
         self.apply_table(ifaces, "IF-MIB::ifAlias", "description")
         ip_ifaces = self.get_ip_ifaces()
         r = []
@@ -156,7 +168,7 @@ class Script(BaseScript):
             if "." in iface["interface"]:
                 s = {
                     "name": iface["interface"],
-                    "description": iface.get("description", ""),
+                    "description": self.convert_description(iface.get("description", "")),
                     "type": i_type,
                     "enabled_afi": ["BRIDGE"],
                     "admin_status": iface["admin_status"],
@@ -178,7 +190,7 @@ class Script(BaseScript):
                 continue
             i = {
                 "name": iface["interface"],
-                "description": iface.get("description", ""),
+                "description": self.convert_description(iface.get("description", "")),
                 "type": i_type,
                 "admin_status": iface["admin_status"],
                 "oper_status": iface["oper_status"],
@@ -198,7 +210,7 @@ class Script(BaseScript):
             else:
                 l["subinterfaces"] = [{
                     "name": l["name"],
-                    "description": l.get("description", ""),
+                    "description": self.convert_description(l.get("description", "")),
                     "type": "SVI",
                     "enabled_afi": ["BRIDGE"] if l["type"] in ["physical", "aggregated"] else [],
                     "admin_status": l["admin_status"],

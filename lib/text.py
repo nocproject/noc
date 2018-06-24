@@ -7,6 +7,8 @@
 # ---------------------------------------------------------------------
 import re
 import six
+import numpy as np
+from itertools import izip_longest
 
 #
 # Parse string containing table an return a list of table rows.
@@ -500,3 +502,37 @@ rx_escape = re.compile("|".join(ESC_REPLACEMENTS))
 
 def tsv_escape(text):
     return rx_escape.sub(lambda match: ESC_REPLACEMENTS[re.escape(match.group(0))], text)
+
+
+def parse_table_header(v):
+    """
+    Parse header structured multiline format:
+    Config    Current Agg     Min    Ld Share  Flags Ld Share  Agg Link  Link Up
+    Master    Master  Control Active Algorithm       Group     Mbr State Transitions
+    :param v:
+    :return: Dictionary {start column position: header}
+    {10: 'Config Master', 18: 'Current Master', 26: 'Agg Control', 33: 'Min Active',
+     43: 'Ld Share Algorithm', 49: 'Flags ', 59: 'Ld Share Group', 63: 'Agg Mbr', 69: 'Link State'}
+    """
+    head = []
+    empty_header = None
+    header = {}
+    for num, lines in enumerate(izip_longest(*v, fillvalue='-')):
+        #
+        if empty_header is None:
+            empty_header = (' ',) * len(lines)
+            head += [lines]
+            continue
+        if set(head[-1]) == {' '} and lines != empty_header:
+            head = np.array(head)
+            # Transpone list header string
+            header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])
+            header[num] = header[num].strip()
+            head = []
+        head += [lines]
+    else:
+        # last column
+        head = np.array(head)
+        header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
+        header[num] = header[num].strip()
+    return header
