@@ -21,6 +21,7 @@ class DictionaryBase(type):
     def __new__(mcs, name, bases, attrs):
         cls = type.__new__(mcs, name, bases, attrs)
         cls._fields = {}
+        cls._tsv_encoders = {}
         cls._meta = DictionaryMeta(
             name=getattr(cls.Meta, "name", None),
             layout=getattr(cls.Meta, "layout", None),

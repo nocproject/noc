@@ -290,4 +290,4 @@ class NestedField(ArrayField):
 
     @staticmethod
     def get_create_nested_sql(name, type):
-        return "`%s` %s" % (name, type)
+        return "`%s` Array(%s)" % (name, type)

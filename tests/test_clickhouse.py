@@ -11,7 +11,7 @@ import datetime
 # NOC modules
 from noc.core.clickhouse.model import Model, NestedModel
 from noc.core.clickhouse.fields import (
-    StringField, Int8Field, NestedField, DateField, DateTimeField
+    StringField, Int8Field, NestedField, DateField
 )
 
 
