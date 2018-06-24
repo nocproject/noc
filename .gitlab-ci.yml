@@ -23,6 +23,7 @@ yapf:
     - if [ ! -z "$FLIST" ]; then yapf -d -vv $FLIST; else true; fi
   tags:
     - docker
+  allow_failure: true
 
 # waiting for https://github.com/rubik/xenon/issues/21
 radon:
