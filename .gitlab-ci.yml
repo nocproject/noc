@@ -1,6 +1,5 @@
 stages:
   - lint
-  - build
   - test
 
 flake8:
@@ -15,6 +14,17 @@ flake8:
   tags:
     - docker
 
+yapf:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - set -x
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
+    - if [ ! -z "$FLIST" ]; then yapf -d -vv $FLIST; else true; fi
+  tags:
+    - docker
+  allow_failure: true
+
 # waiting for https://github.com/rubik/xenon/issues/21
 radon:
   stage: lint
@@ -24,7 +34,7 @@ radon:
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
     - x=0
     #- if [ ! -z $FLIST ]; then xenon --max-absolute B --max-modules B --max-average B  $FLIST; fi
-    - if [ ! -z "$FLIST" ]; then for i in "${FLIST}" ; do (xenon --max-absolute B --max-modules B --max-average B "${i}"; let x+=$?); done; fi
+    - if [ ! -z "$FLIST" ]; then for i in "${FLIST}" ; do (xenon --max-absolute B --max-modules B --max-average B "$i"; let x+=$?); done; fi
     - if [ "$x" -gt 0 ] ; then exit 1; fi
   except:
     - microservices
@@ -55,8 +65,8 @@ futurize:
   tags:
     - docker
 
-build:
-  stage: build
+test_migrate:
+  stage: test
   image: registry.getnoc.com/noc/nocmc/microservices:build
   variables:
     NOC_PG_DB: noc
@@ -68,14 +78,20 @@ build:
       alias: postgres
     - name: registry.getnoc.com/infrastructure/mongo:dev
       alias: mongo
+    - name: registry.getnoc.com/infrastructure/clickhouse:master
+      alias: clickhouse
   before_script:
     - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
     - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
+    - export NOC_CLICKHOUSE_RW_ADDRESSES=registry.getnoc.com-infrastructure-clickhouse:8123
+    - export PYTHONPATH=$PYTHONPATH:$CI_PROJECT_DIR:$CI_PROJECT_DIR/../
   script:
     - find . -type f -name "*.py" -print0 | xargs -0 python -m py_compile
     - /usr/bin/cythonize -i speedup/*.pyx
-    - python ./manage.py migrate
+    - python ./commands/migrate.py
+    - python ./commands/migrate-ch.py
   only:
     - microservices
   tags:
     - docker
+
