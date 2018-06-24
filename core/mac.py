@@ -158,7 +158,7 @@ class MAC(str):
         :return:
         """
         # Convert to 64-bit integer
-        v = 0L
+        v = 0
         for o in [int(x, 16) for x in self.split(":")]:
             v <<= 8
             v += o
