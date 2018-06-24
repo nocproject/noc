@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -34,3 +35,21 @@ class Script(BaseScript):
         """
         cmd = self.cli("display lacp link-aggregation summary")
         return self.rx_lacp_id.search(cmd) is not None
+
+    @false_on_cli_error
+    def has_olt_cli(self):
+        cmd = self.cli("display ont ?")
+        return bool(cmd)
+
+    @false_on_cli_error
+    def has_olt_snmp(self):
+        cmd = self.snmp.get(mib["HUAWEI-XPON-MIB::hwGponDeviceDbaAssignmentMode", 0])
+        return bool(cmd)
+
+    def execute_platform_cli(self, caps):
+        if self.has_olt_cli():
+            caps["Network | PON | OLT"] = True
+
+    def execute_platform_snmp(self, caps):
+        if self.has_olt_snmp():
+            caps["Network | PON | OLT"] = True
