@@ -106,3 +106,4 @@ test_noc:
     - python ./commands/test.py run --coverage-report=/tmp/coverage --test-report=/tmp/index.html
   tags:
     - docker
+  allow_failure: true
