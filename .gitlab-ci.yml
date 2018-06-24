@@ -106,4 +106,9 @@ test_noc:
     - python ./commands/test.py run --coverage-report=/tmp/coverage --test-report=/tmp/index.html --statistics
   tags:
     - docker
+  artifacts:
+    paths:
+      - /tmp/index.html
+    when: always
+    expire_in: 1 week
   allow_failure: true
