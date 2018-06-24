@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Clickhouse field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -42,6 +42,7 @@ class BaseField(object):
         """
         cls._fields[name] = self
         cls._fields[name].name = name
+        cls._tsv_encoders[name] = lambda record: self.to_tsv(record.get(name))
 
     def get_create_sql(self):
         """
@@ -253,6 +254,18 @@ class NestedField(ArrayField):
             next(self.FIELD_NUMBER)
 
     def contribute_to_class(self, cls, name):
+        def get_tsv_encoder(fld, name, nested_name):
+            def get(record):
+                data = record.get(name, [])
+                r = [
+                    "[",
+                    ",".join(fld.to_tsv_array(x.get(nested_name)) for x in data),
+                    "]"
+                ]
+                return "".join(r)
+
+            return get
+
         n_attrs = self.field_type._fields_order
         for n, nested_name in enumerate(n_attrs):
             field = "%s.%s" % (name, nested_name)
@@ -260,6 +273,7 @@ class NestedField(ArrayField):
             cls._fields[field].name = field
             cls._fields[field].field_number = self.field_number + n + 1
             cls._fields[field].get_create_sql = partial(self.get_create_nested_sql, field, cls._fields[field].db_type)
+            cls._tsv_encoders[field] = get_tsv_encoder(cls._fields[field], name, nested_name)
 
     def to_tsv(self, value):
         out = []
