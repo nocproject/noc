@@ -80,8 +80,8 @@ segment UInt64,
 container UInt64,
 x Float64,
 y Float64,
-`services.profile` String,
-`services.summary` UInt32,
-`subscribers.profile` String,
-`subscribers.summary` UInt32
+`services.profile` Array(String),
+`services.summary` Array(UInt32),
+`subscribers.profile` Array(String),
+`subscribers.summary` Array(UInt32)
 ) ENGINE = MergeTree(date, (ts, managed_object), 8192);"""
