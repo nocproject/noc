@@ -280,10 +280,13 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3560G-24TS-S"]
+            "part_no": ["WS-C3560G-24TS"]
         },
         "management": {
             "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
         }
     }
 }
