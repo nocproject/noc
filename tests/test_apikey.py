@@ -21,18 +21,9 @@ def test_apikey_access_active():
         is_active=True,
         key=secret,
         access=[
-            APIAccess(
-                api="api1",
-                role="*"
-            ),
-            APIAccess(
-                api="api2",
-                role="r1"
-            ),
-            APIAccess(
-                api="api2",
-                role="r2"
-            )
+            APIAccess(api="api1", role="*"),
+            APIAccess(api="api2", role="r1"),
+            APIAccess(api="api2", role="r2")
         ]
     )
     key.save()
@@ -52,18 +43,9 @@ def test_apikey_access_inactive():
         is_active=False,
         key=secret,
         access=[
-            APIAccess(
-                api="api1",
-                role="*"
-            ),
-            APIAccess(
-                api="api2",
-                role="r1"
-            ),
-            APIAccess(
-                api="api2",
-                role="r2"
-            )
+            APIAccess(api="api1", role="*"),
+            APIAccess(api="api2", role="r1"),
+            APIAccess(api="api2", role="r2")
         ]
     )
     key.save()
@@ -84,18 +66,9 @@ def test_apikey_access_non_expired():
         is_active=True,
         key=secret,
         access=[
-            APIAccess(
-                api="api1",
-                role="*"
-            ),
-            APIAccess(
-                api="api2",
-                role="r1"
-            ),
-            APIAccess(
-                api="api2",
-                role="r2"
-            )
+            APIAccess(api="api1", role="*"),
+            APIAccess(api="api2", role="r1"),
+            APIAccess(api="api2", role="r2")
         ]
     )
     key.save()
@@ -116,18 +89,9 @@ def test_apikey_access_expired():
         is_active=True,
         key=secret,
         access=[
-            APIAccess(
-                api="api1",
-                role="*"
-            ),
-            APIAccess(
-                api="api2",
-                role="r1"
-            ),
-            APIAccess(
-                api="api2",
-                role="r2"
-            )
+            APIAccess(api="api1", role="*"),
+            APIAccess(api="api2", role="r1"),
+            APIAccess(api="api2", role="r2")
         ]
     )
     key.save()
