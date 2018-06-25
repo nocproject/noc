@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 # Python modules
+from __future__ import print_function
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -47,7 +48,7 @@ class Script(BaseScript):
             if "BSC" in tp:
                 with self.profile.mml_ne(self, ip):
                     bts = self.mml("LST ALMAF:SRC=ALL;")
-                    # print bts
+                    # print(bts)
                     for r in bts.split("\r\n\r\n"):
                         for match in self.rx_alarm.finditer(r):
                             alfid = match.group("alarmid").strip()
@@ -78,9 +79,6 @@ class Script(BaseScript):
                                     }
                                     result += [res]
                             else:
-                                # match = self.rx_index.search(alinfo)
-                                # if not match:
-                                # print r
                                 for index in self.rx_index.finditer(alinfo):
                                     moindex = index.group("siteindex").strip()
                                     moname = index.group("sitename").strip()
@@ -108,7 +106,7 @@ class Script(BaseScript):
                     bts = self.mml("LST ALMAF:;")
                     if bts == "No record exists":
                         continue
-                    print bts
+                    # print(bts)
                     for r in bts.split("\r\n\r\n"):
                         for match in self.rx_alarm_lte.finditer(r):
                             alnr = match.group("syncser").strip()
@@ -135,5 +133,5 @@ class Script(BaseScript):
                             result += [res]
             else:
                 continue
-        # print len(result)
+        print(len(result))
         return result
