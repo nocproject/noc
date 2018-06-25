@@ -7,12 +7,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+# Third-party modules
+import cachetools
 # NOC modules
 from noc.core.service.ui import UIService
 from noc.services.login.auth import AuthRequestHandler
 from noc.services.login.logout import LogoutRequestHandler
 from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
+from noc.main.models.apikey import APIKey
 from noc.config import config
 
 
@@ -26,6 +31,8 @@ class LoginService(UIService):
     if config.features.traefik:
         traefik_backend = "login"
         traefik_frontend_rule = "PathPrefix:/api/login,/api/auth/auth"
+
+    _apikey_cache = cachetools.TTLCache(100, ttl=3)
 
     def get_handlers(self):
         return super(LoginService, self).get_handlers() + [
@@ -112,6 +119,10 @@ class LoginService(UIService):
                 )
             self.logger.info("Changed user credentials: %s", c)
         return r
+
+    @cachetools.cachedmethod(operator.attrgetter("_apikey_cache"))
+    def get_api_access(self, key):
+        return APIKey.get_access_str(key)
 
 
 if __name__ == "__main__":
