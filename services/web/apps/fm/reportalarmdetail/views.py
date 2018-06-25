@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportalarmdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ from noc.inv.models.object import Object
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -136,6 +137,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "duration_sec",
                 "object_name",
                 "object_address",
+                "object_hostname",
                 "object_profile",
                 "object_admdomain",
                 "object_platform",
@@ -160,6 +162,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             _("DURATION_SEC"),
             _("OBJECT_NAME"),
             _("OBJECT_ADDRESS"),
+            _("OBJECT_HOSTNAME"),
             _("OBJECT_PROFILE"),
             _("OBJECT_ADMDOMAIN"),
             _("OBJECT_PLATFORM"),
@@ -238,6 +241,8 @@ class ReportAlarmDetailApplication(ExtApplication):
             match["managed_object"] = {"$in": mos_id}
         if "maintenance" in columns.split(","):
             maintenance = Maintenance.currently_affected()
+        if "object_hostname" in columns.split(","):
+            mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
         moss = ReportAlarmObjects(mos_id).get_all()
         container_lookup = ReportContainer(mos_id)
         loc = AlarmApplication([])
@@ -286,6 +291,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     moss[a["managed_object"]][0],
                     moss[a["managed_object"]][1],
+                    mo_hostname[a["managed_object"]],
                     moss[a["managed_object"]][5],
                     moss[a["managed_object"]][6],
                     attr_res[a["managed_object"]][2] if attr else "",
@@ -338,6 +344,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     moss[a["managed_object"]][0],
                     moss[a["managed_object"]][1],
+                    mo_hostname[a["managed_object"]],
                     moss[a["managed_object"]][5],
                     moss[a["managed_object"]][6],
                     attr_res[a["managed_object"]][2] if attr else "",
