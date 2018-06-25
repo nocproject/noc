@@ -10,7 +10,7 @@ stages:
 
 test:empty:
   stage: test
-  image: registry.getnoc.com/noc/nocmc/feature_microservices:dev
+  image: registry.getnoc.com/noc/nocmc/microservices:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
@@ -39,7 +39,7 @@ test:empty:
 
 test:with data:
   stage: test
-  image: registry.getnoc.com/noc/nocmc/feature_microservices:dev
+  image: registry.getnoc.com/noc/nocmc/microservices:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
