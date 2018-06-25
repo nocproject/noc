@@ -3,27 +3,28 @@ __author__ = 'FeNikS'
 # ---------------------------------------------------------------------
 # Harmonic.DiviComElectra.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-#NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
-#Python modules
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
+# Python modules
 import re
 from xml.dom.minidom import parseString
 
-re_sub = re.compile('\n\t+\n+', re.DOTALL| re.MULTILINE)
-postfix = "cgi-bin/fullxml?addLicense=yes&addFilelist=yes&addImagelist=yes&addAlarmsCurrent=yes&addAlarmsHistory=yes&addErrors=yes&"
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Harmonic.DiviComElectra.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
+
+    postfix = "cgi-bin/fullxml?addLicense=yes&addFilelist=yes&addImagelist=yes&addAlarmsCurrent=yes&addAlarmsHistory=yes&addErrors=yes&"
+    rx_sub = re.compile('\n\t+\n+', re.DOTALL | re.MULTILINE)
 
     def execute(self):
-        data = self.http.get("/" + postfix)
+        data = self.http.get("/" + self.postfix)
         parsing = parseString(data)
         data = parsing.toprettyxml()
-        data = re_sub.sub('\n', data)
+        data = self.rx_sub.sub('\n', data)
         return data
