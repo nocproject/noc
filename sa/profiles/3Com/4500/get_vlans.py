@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_vlans
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 
@@ -20,10 +20,9 @@ class Script(BaseScript):
     rx_vlan = re.compile(r"^\s*VLAN ID: (?P<vlan>\d+)$")
     rx_name = re.compile(r"^\s*Description: (?P<name>.+)$")
 
-    def execute(self):
+    def execute_cli(self):
         r = []
 
-        # Fallback to CLI
         vlans = self.cli("display vlan all")
         vlans = vlans.splitlines()
         for i in range(len(vlans)):
@@ -33,8 +32,8 @@ class Script(BaseScript):
                 while not self.rx_name.search(vlans[i]):
                     i += 1
                 match_n = self.rx_name.search(vlans[i])
-                r.append({
+                r += [{
                     "vlan_id": int(match_v.group("vlan")),
                     "name": match_n.group("name")
-                    })
+                }]
         return r

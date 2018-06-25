@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_mac_address_table
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_mac_address_table
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 # Python modules
@@ -40,8 +40,8 @@ class Script(BaseScript):
 
         # Try SNMP first
         # No mac adresses....
-	"""
-	if self.has_snmp():
+        """
+        if self.has_snmp():
             try:
                 vlan_oid = []
                 if mac is not None:
@@ -98,7 +98,7 @@ class Script(BaseScript):
                 return r
             except self.snmp.TimeOutError:
                 pass
-	"""
+        """
         # Fallback to CLI
         for match in self.rx_line.finditer(self.cli(cmd)):
                 iface = match.group("interfaces")
@@ -106,7 +106,7 @@ class Script(BaseScript):
                 iface = iface.replace('Bridge-Aggregation', 'Po ')
                 if iface == '0':
                     continue
-                r.append({
+                r += [{
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [iface],
@@ -115,8 +115,7 @@ class Script(BaseScript):
                         "static": "S",
                         "permanent": "S",
                         "self": "S"
-                        }[match.group("type").lower()],
-                    })
-	
+                    }[match.group("type").lower()],
+                }]
 
         return r
