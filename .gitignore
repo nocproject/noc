@@ -22,6 +22,7 @@ contrib/share/*
 !/.gitignore
 !/.flake8
 !/.pylintrc
+!/.coveragerc
 !/.style.yapf
 ext_*
 etc/requirements/local.txt
