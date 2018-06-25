@@ -25,8 +25,10 @@ class SuggestCLICheck(DiscoveryCheck):
         if self.object.profile.is_generic:
             self.logger.info("Profile is not detected properly. Skipping")
             return
+        message = "Unknown"
         for user, password, super_password in self.object.auth_profile.iter_cli():
-            if self.check_login(user, password, super_password):
+            result, message = self.check_login(user, password, super_password)
+            if result:
                 if self.object._suggest_snmp:
                     ro, rw, version = self.object._suggest_snmp  # noqa
                 else:
@@ -42,7 +44,7 @@ class SuggestCLICheck(DiscoveryCheck):
         self.logger.info("Failed to guess CLI credentials")
         self.set_problem(
             alarm_class="Discovery | Guess | CLI Credentials",
-            message="Failed to guess CLI credentials",
+            message="Failed to guess CLI credentials (%s)" % message,
             fatal=True
         )
 
@@ -65,11 +67,11 @@ class SuggestCLICheck(DiscoveryCheck):
                     "path": None
                 }
             )
-            self.logger.info("Result: %s", r)
-            return bool(r)  # bool(False) == bool(None)
+            self.logger.info("Result: %s, %s", r, r["message"])
+            return bool(r["result"]), r["message"]  # bool(False) == bool(None)
         except RPCError as e:
             self.logger.debug("RPC Error: %s", e)
-            return False
+            return False, ""
 
     def set_credentials(self, user, password, super_password,
                         snmp_ro, snmp_rw):

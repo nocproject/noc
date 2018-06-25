@@ -2,31 +2,33 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 from threading import Lock
 import operator
+import six
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
-from mongoengine import signals
 import cachetools
+from pymongo import InsertOne, DeleteOne
 # NOC modules
-from connectiontype import ConnectionType
-from connectionrule import ConnectionRule
-from unknownmodel import UnknownModel
-from vendor import Vendor
+from .connectiontype import ConnectionType
+from .connectionrule import ConnectionRule
+from .unknownmodel import UnknownModel
+from .vendor import Vendor
 from noc.main.models.doccategory import category
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
 
 id_lock = Lock()
 
@@ -93,6 +95,7 @@ class ObjectModelConnection(EmbeddedDocument):
     ("inv.ModelMapping", "model"),
     ("inv.Object", "model")
 ])
+@on_save
 class ObjectModel(Document):
     """
     Equipment vendor
@@ -106,6 +109,7 @@ class ObjectModel(Document):
             ("vendor", "data.asset.order_part_no")
         ],
         "json_collection": "inv.objectmodels",
+        "json_unique_fields": ["name"],
         "json_depends_on": [
             "inv.vendors",
             "inv.connectionrules"
@@ -138,35 +142,11 @@ class ObjectModel(Document):
         v = self.data.get(interface, {})
         return v.get(key)
 
-    def save(self, *args, **kwargs):
-        try:
-            super(ObjectModel, self).save(*args, **kwargs)
-        except Exception as e:
-            raise ValueError("%s: %s" % (e.__doc__, e.message))
+    def on_save(self):
         # Update connection cache
-        # @todo: Move to signal
-        s = ObjectModel.objects.filter(id=self.id).first()
-        cache = {}
-        collection = ModelConnectionsCache._get_collection()
-        for cc in ModelConnectionsCache.objects.filter(model=s.id):
-            cache[(cc.type, cc.gender, cc.model, cc.name)] = cc.id
-        nc = []
-        for c in s.connections:
-            k = (c.type.id, c.gender, self.id, c.name)
-            if k in cache:
-                del cache[k]
-                continue
-            nc += [{
-                "type": c.type.id,
-                "gender": c.gender,
-                "model": self.id,
-                "name": c.name
-            }]
-        if cache:
-            for k in cache:
-                collection.remove(cache[k])
-        if nc:
-            collection.insert(nc)
+        ModelConnectionsCache.update_for_model(self)
+        # Exclude all part numbers from unknown models
+        self.clear_unknown_models()
 
     def has_connection(self, name):
         if self.get_model_connection(name) is None:
@@ -208,7 +188,7 @@ class ObjectModel(Document):
             * asset.part_no* value (Part numbers)
             * asset.order_part_no* value (FRU numbers)
         """
-        if type(part_no) == list:
+        if isinstance(part_no, list):
             for p in part_no:
                 m = cls._get_model(vendor, p)
                 if m:
@@ -290,6 +270,19 @@ class ObjectModel(Document):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
+    def clear_unknown_models(self):
+        """
+        Exclude model's part numbers from unknown models
+        """
+        if "asset" in self.data:
+            part_no = (self.data["asset"].get("part_no", []) +
+                       self.data["asset"].get("order_part_no", []))
+            if part_no:
+                vendor = self.vendor
+                if isinstance(vendor, six.string_types):
+                    vendor = Vendor.get_by_id(vendor)
+                UnknownModel.clear_unknown(vendor.code, part_no)
+
 
 class ModelConnectionsCache(Document):
     meta = {
@@ -323,19 +316,30 @@ class ModelConnectionsCache(Document):
         if nc:
             collection.insert(nc)
 
-
-def clear_unknown_models(sender, document, **kwargs):
-    """
-    Clear unknown part numbers
-    """
-    if "asset" in document.data:
-        part_no = (document.data["asset"].get("part_no", []) +
-                   document.data["asset"].get("order_part_no", []))
-        if part_no:
-            vendor = document.vendor
-            if isinstance(vendor, basestring):
-                vendor = Vendor.objects.get(id=vendor)
-            UnknownModel.clear_unknown(vendor.code, part_no)
-
-
-signals.post_save.connect(clear_unknown_models, sender=ObjectModel)
+    @classmethod
+    def update_for_model(cls, model):
+        """
+        Update connection cache for object model
+        :param model: ObjectModel instance
+        :return:
+        """
+        cache = {}
+        collection = ModelConnectionsCache._get_collection()
+        for cc in ModelConnectionsCache.objects.filter(model=model.id):
+            cache[(cc.type, cc.gender, cc.model, cc.name)] = cc.id
+        bulk = []
+        for c in model.connections:
+            k = (c.type.id, c.gender, model.id, c.name)
+            if k in cache:
+                del cache[k]
+                continue
+            bulk += [InsertOne({
+                "type": c.type.id,
+                "gender": c.gender,
+                "model": model.id,
+                "name": c.name
+            })]
+        if cache:
+            bulk += [DeleteOne({"_id": x}) for x in cache.values()]
+        if bulk:
+            collection.bulk_write(bulk)

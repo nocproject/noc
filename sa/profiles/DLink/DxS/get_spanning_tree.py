@@ -8,11 +8,9 @@
 
 # Python modules
 import re
-import itertools
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -181,7 +179,7 @@ class Script(BaseScript):
                     desg_priority = int(desg_priority, 16)
                 else:
                     desg_priority, desg_id = 128, self.designated_bridge
-                edge = False
+                # edge = False
                 p2p = False
                 iface = match.group("iface")
                 if int(iface) in self.iface_role:
@@ -206,7 +204,7 @@ class Script(BaseScript):
 
     def execute(self):
         try:
-            c = self.cli("show stp")
+            c = self.cli("show stp", cached=True)
         except self.CLISyntaxError:
             return {"mode": "None", "instances": []}
         match = self.rx_stp.search(c)
@@ -221,7 +219,7 @@ class Script(BaseScript):
             cmd_next="n", cmd_stop="q")
         c = self.cli(
             "show stp ports", obj_parser=self.parse_stp,
-            cmd_next="n", cmd_stop="q"
+            cmd_next="n", cmd_stop="q", cached=True
         )
         for i in c:
             inst[0]["interfaces"] += [i]

@@ -19,6 +19,39 @@ class WhoisCache(object):
     Whois cache interface
     """
     @classmethod
+    def has_asset_members(cls):
+        """
+        Returns True if cache contains asset.members
+        :return:
+        """
+        db = nosql.get_db()
+        collection = db.noc.whois.asset.members
+        return bool(collection.count())
+
+    @classmethod
+    def has_origin_routes(cls):
+        """
+        Returns True if cache contains origin.routes
+        :return:
+        """
+        db = nosql.get_db()
+        collection = db.noc.whois.origin.route
+        return bool(collection.count())
+
+    @classmethod
+    def has_asset(cls, as_set):
+        """
+        Returns true if as-set has members in cache
+        :param as_set:
+        :return:
+        """
+        if is_asn(as_set[2:]):
+            return True
+        db = nosql.get_db()
+        collection = db.noc.whois.asset.members
+        return bool(collection.find_one({"_id": as_set}, {"_id": 1}))
+
+    @classmethod
     def resolve_as_set(cls, as_set, seen=None, collection=None):
         members = set()
         if seen is None:

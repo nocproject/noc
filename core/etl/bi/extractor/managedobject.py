@@ -7,11 +7,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 from noc.lib.text import ch_escape
 from collections import defaultdict
 # NOC modules
-from base import BaseExtractor
+from .base import BaseExtractor
 from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.core.etl.bi.stream import Stream
@@ -67,7 +68,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "platform": mo.platform,
                 "version": mo.version,
                 "name": ch_escape(mo.name),
-                "address": mo.address,
+                "ip": mo.address,
                 "is_managed": mo.is_managed,
                 # subscribers
                 # services

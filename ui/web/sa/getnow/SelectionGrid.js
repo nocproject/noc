@@ -106,6 +106,9 @@ Ext.define('NOC.sa.getnow.SelectionGrid', {
             text: __('Filter'),
             glyph: NOC.glyph.filter,
             tooltip: __('Show/Hide Filter'),
+            bind: {
+                pressed: '{isFilterOpen}'
+            },
             handler: 'onShowFilter'
         },
         {

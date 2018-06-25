@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Test model loader
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ def test_model_id(model_id):
         assert real_model_id == model_id
 
 
-def test_document(model_id):
+def test_document_meta(model_id):
     model = get_model(model_id)
     assert model
     if not is_document(model):

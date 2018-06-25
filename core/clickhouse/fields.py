@@ -2,41 +2,83 @@
 # ----------------------------------------------------------------------
 # Clickhouse field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python collections
 import itertools
+from functools import partial
 import socket
 import struct
 
 
 class BaseField(object):
+    """
+    BaseField class for ClickHouse structure
+    """
     FIELD_NUMBER = itertools.count()
     db_type = None
     default_value = ""
 
     def __init__(self, default=None, description=None):
-        self.field_number = self.FIELD_NUMBER.next()
+        """
+
+        :param default: Default field value (if value not set)
+        :param description: Field description
+        """
+        self.field_number = next(self.FIELD_NUMBER)
         self.name = None
         self.default = default or self.default_value
         self.description = description
         self.is_agg = False
 
+    def contribute_to_class(self, cls, name):
+        """
+        Install field to model
+        :param cls:
+        :param name:
+        :return:
+        """
+        cls._fields[name] = self
+        cls._fields[name].name = name
+        cls._tsv_encoders[name] = lambda record: self.to_tsv(record.get(name))
+
     def get_create_sql(self):
+        """
+        Return query for table create query. Example:
+
+            CounterID UInt32,
+            StartDate Date,
+
+        :return:
+        """
         return "%s %s" % (self.name, self.get_db_type())
 
     def get_db_type(self):
+        """
+        Return Field type. Use it in create query
+        :return:
+        """
         return self.db_type
 
     def to_tsv(self, value):
+        """
+        Use method when field convert to tsv format (ex. export)
+        :param value:
+        :return:
+        """
         if value is None:
             return str(self.default_value)
         else:
             return str(value)
 
     def to_tsv_array(self, value):
+        """
+        Use method when field include in array
+        :param value:
+        :return:
+        """
         return "'%s'" % self.to_tsv(value)
 
 
@@ -200,3 +242,52 @@ class AggregatedField(BaseField):
         return self.f_expr.format(p={"field": self.name,
                                      "function": function,
                                      "f_param": f_param})
+
+
+class NestedField(ArrayField):
+    db_type = "Nested"
+
+    def __init__(self, field_type, description=None, *args):
+        super(NestedField, self).__init__(field_type=field_type, description=description)
+        # Skip field counters for nested fields
+        for n in self.field_type._fields:
+            next(self.FIELD_NUMBER)
+
+    def contribute_to_class(self, cls, name):
+        def get_tsv_encoder(fld, name, nested_name):
+            def get(record):
+                data = record.get(name, [])
+                r = [
+                    "[",
+                    ",".join(fld.to_tsv_array(x.get(nested_name)) for x in data),
+                    "]"
+                ]
+                return "".join(r)
+
+            return get
+
+        n_attrs = self.field_type._fields_order
+        for n, nested_name in enumerate(n_attrs):
+            field = "%s.%s" % (name, nested_name)
+            cls._fields[field] = self.field_type._fields[nested_name]
+            cls._fields[field].name = field
+            cls._fields[field].field_number = self.field_number + n + 1
+            cls._fields[field].get_create_sql = partial(self.get_create_nested_sql, field, cls._fields[field].db_type)
+            cls._tsv_encoders[field] = get_tsv_encoder(cls._fields[field], name, nested_name)
+
+    def to_tsv(self, value):
+        out = []
+        for field_type in self.field_type._fields_order:
+            r = ["["]
+            r += [",".join(self.field_type._fields[field_type].to_tsv_array(v[field_type]) for v in value)]
+            r += ["]"]
+            out += ["".join(r)]
+        # r = r[:-1]
+        return "\t".join(out)
+
+    def get_db_type(self):
+        return "Nested (\n%s \n)" % self.field_type.get_create_sql()
+
+    @staticmethod
+    def get_create_nested_sql(name, type):
+        return "`%s` Array(%s)" % (name, type)

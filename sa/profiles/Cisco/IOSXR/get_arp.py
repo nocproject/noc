@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,11 +16,14 @@ from noc.sa.interfaces.igetarp import IGetARP
 class Script(BaseScript):
     name = "Cisco.IOSXR.get_arp"
     interface = IGetARP
-    rx_line = re.compile(r"(?P<ip>\S+)\s+\S+\s+"
-                         r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
-                         r"Dynamic\s+"
-                         r"ARPA\s+"
-                         r"(?P<interface>\S+)", re.IGNORECASE)
+
+    rx_line = re.compile(
+        r"^(?P<ip>\S+)\s+\S+\s+"
+        r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
+        r"(?:Dynamic|DHCP|Interface|Probe|Standby)\s+"
+        r"ARPA\s+(?P<interface>\S+)",
+        re.MULTILINE
+    )
 
     def execute(self, vrf=None):
         if vrf:

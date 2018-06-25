@@ -422,6 +422,7 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json(
                 {
                     "success": False,
@@ -509,6 +510,7 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json(
                 {
                     "success": False,
@@ -611,6 +613,7 @@ class ExtModelApplication(ExtApplication):
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json({
                 "status": False,
                 "message": "Bad request",

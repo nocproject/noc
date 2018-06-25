@@ -571,16 +571,19 @@ class Object(Document):
         return root
 
     @classmethod
-    def get_by_path(cls, path):
+    def get_by_path(cls, path, hints=None):
         """
         Get object by given path.
         :param path: List of names following to path
+        :param hints: {name: object_id} dictionary for getting object in path
         :returns: Object instance. None if not found
         """
         current = cls.get_root()
         for p in path:
             if not current:
                 break
+            if hints and p in hints:
+                return Object.get_by_id(hints[p])
             current = Object.objects.filter(
                 name=p,
                 container=current.id

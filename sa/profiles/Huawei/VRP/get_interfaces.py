@@ -13,6 +13,7 @@ from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_vlan
 
 
 class Script(BaseScript):
@@ -41,10 +42,14 @@ class Script(BaseScript):
         r"\)",
         re.IGNORECASE
     )
-    rx_iftype = re.compile(r"^(\S+?)\d+.*$")
-    rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
-    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
+    rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
+    rx_dis_ip_int = re.compile(
+        r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)",
+        re.IGNORECASE)
+    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
+                       re.MULTILINE | re.IGNORECASE)
+    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+",
+                         re.MULTILINE)
     rx_ndp = re.compile(
         r"^\s*Interface: (?P<name>\S+)\s*\n"
         r"^\s*Status: Enabled", re.MULTILINE)
@@ -56,38 +61,6 @@ class Script(BaseScript):
         r"\n^\s*Interface\s(?P<name>\S+):"
         r"\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
     )
-
-    types = {
-        "Aux": "tunnel",
-        "Cellular": "tunnel",
-        "Eth-Trunk": "aggregated",
-        "Ip-Trunk": "aggregated",
-        "XGigabitEthernet": "physical",
-        "Ten-GigabitEthernet": "physical",
-        "GigabitEthernet": "physical",
-        "FastEthernet": "physical",
-        "Ethernet": "physical",
-        "Cascade": "physical",
-        "Logic-Channel": "tunnel",
-        "LoopBack": "loopback",
-        "MEth": "management",
-        "M-Ethernet": "management",
-        "MTunnel": None,
-        "Ring-if": "physical",
-        "Tunnel": "tunnel",
-        "Virtual-Ethernet": None,
-        "Virtual-Template": "template",
-        "Bridge-Template": "template",
-        "Bridge-template": "template",
-        "Vlanif": "SVI",
-        "Vlan-interface": "SVI",
-        "NULL": "null",
-        "RprPos": "unknown",
-        "Rpr": "unknown",
-        "100GE": "physical",
-        "Serial": None,
-        "Pos": None
-    }
 
     def get_ospfint(self):
         try:
@@ -146,6 +119,19 @@ class Script(BaseScript):
             lldp += [match.group("name")]
         return lldp
 
+    def execute_snmp(self):
+        vlans = self.scripts.get_switchport()
+        r = super(Script, self).execute_snmp()
+        if vlans:
+            vlans = {v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])} for v in vlans}
+            for fi in r:
+                for iface in fi["interfaces"]:
+                    if iface["name"] in vlans:
+                        if vlans[iface["name"]]["untagged"]:
+                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]]["untagged"]
+                        iface["subinterfaces"][0]["tagged_vlans"] = vlans[iface["name"]]["tagged"]
+        return r
+
     def execute_cli(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = {}
@@ -191,15 +177,14 @@ class Script(BaseScript):
         # Get LLDP interfaces
         lldps = self.get_lldpint()
 
-        v = self.cli("display interface")
+        v = self.cli("display interface", cached=True)
         il = self.rx_iface_sep.split(v)[1:]
         for full_ifname, data in zip(il[::2], il[1::2]):
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname.startswith("NULL"):
                 continue
             # I do not known, what are these
-            if ifname.startswith("DCN-Serial") \
-                    or ifname.startswith("Cpos-Trunk"):
+            if ifname.startswith("DCN-Serial") or ifname.startswith("Cpos-Trunk"):
                 continue
             sub = {
                 "name": ifname,
@@ -286,8 +271,9 @@ class Script(BaseScript):
                 if o_stat is None:
                     o_stat = False
                 match = self.rx_iftype.match(ifname)
-                iftype = self.types[match.group(1)]
+                iftype = self.profile.get_interface_type(match.group(1))
                 if iftype is None:
+                    self.logger.info("Iface name %s, type unknown", match.group(1))
                     continue  # Skip ignored interfaces
                 iface = {
                     "name": ifname,
@@ -323,7 +309,8 @@ class Script(BaseScript):
                 interfaces += [iface]
             else:
                 iface, vlan_id = ifname.split(".")
-                sub["vlan_ids"] = [vlan_id]
+                if is_vlan(vlan_id):
+                    sub["vlan_ids"] = [vlan_id]
                 interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
         vrfs = {

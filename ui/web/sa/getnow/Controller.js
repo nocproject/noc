@@ -130,6 +130,14 @@ Ext.define('NOC.sa.getnow.Controller', {
         }
     },
 
+    onCollapseFilter: function(){
+        this.getViewModel().set('isFilterOpen', false);
+    },
+
+    onExpandFilter: function(){
+        this.getViewModel().set('isFilterOpen', true);
+    },
+
     onRenderStatus: function(value) {
         var stateCodeToName = {
             W: 'Wait',

@@ -34,6 +34,8 @@ class Profile(BaseProfile):
     pattern_prompt = \
         r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)?" \
         r"(?:\(config[^\)]*\))?#"
+    # to one SNMP GET request
+    snmp_metrics_get_chunk = 10
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     INTERFACE_TYPES = {

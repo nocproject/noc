@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.profiles.DLink.DxS import get_platform
 
 
@@ -40,7 +39,7 @@ class Script(BaseScript):
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
     rx_media_type = re.compile(
-        r"^\s(?P<unit>\d+)?:?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
+        r"^\s((?P<unit>\d+):)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
         r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
         r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+\d+\s+\n"
         r"\s+Compatibility: Single Mode \(SM\),"

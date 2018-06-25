@@ -424,7 +424,7 @@
                 </td>
                 <td>
                     <a href="/api/card/view/service/{{ i["service"].id }}/">{{ i["service"].order_id }}</a>:
-                    {{ i["service"].subscriber.name }}
+                    {{ i["service"].subscriber.name if i["service"].subscriber else ""}}
                     {% if i["service_summary"] %}
                         <span class="pull-right small">
                             {{ i["service_summary"] | glyph_summary(True) }}

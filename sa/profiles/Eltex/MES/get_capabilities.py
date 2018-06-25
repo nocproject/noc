@@ -72,7 +72,7 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.cli("show version")
+        r = self.cli("show version", cached=True)
         return [e[0] for e in parse_table(r)]
 
     def execute_platform_cli(self, caps):

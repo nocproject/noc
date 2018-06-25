@@ -16,17 +16,19 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Generic.get_ifindexes"
     interface = IGetIfindexes
+    cache = True
     requires = []
 
     MAX_GETNEXT_RETIRES = 0
+    INTERFACE_NAME_OID = "IF-MIB::ifDescr"
 
     def get_getnext_retires(self):
         return self.MAX_GETNEXT_RETIRES
 
-    def execute_snmp(self):
+    def execute_snmp(self, name_oid=INTERFACE_NAME_OID):
         r = {}
         unknown_interfaces = []
-        for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"],
+        for oid, name in self.snmp.getnext(mib[name_oid],
                                            max_retries=self.get_getnext_retires()):
             try:
                 v = self.profile.convert_interface_name(name)

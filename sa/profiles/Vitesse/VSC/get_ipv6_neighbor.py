@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_ipv6_neighbor
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ class Script(BaseScript):
     def execute(self, vrf=None):
         # Get states
         cmd = "show ipv6 neighbor"
-        r =  self.cli(cmd, list_re=self.rx_line)
+        r = self.cli(cmd, list_re=self.rx_line)
         # Remap states
         for n in r:
             n["state"] = self.s_map[n["state"]]

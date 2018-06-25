@@ -5,12 +5,11 @@
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
@@ -20,11 +19,11 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
     rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\s*\.(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                         re.IGNORECASE | re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("display stp")
         match = self.rx_mac.search(v)
         if match:

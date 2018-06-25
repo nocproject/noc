@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Script loader
-#----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -15,8 +16,8 @@ import threading
 import os
 import re
 # NOC modules
-from base import BaseScript
 from noc.core.profile.loader import GENERIC_PROFILE
+from .base import BaseScript
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,7 @@ class ScriptLoader(object):
                 except Exception as e:
                     logger.error("Error in script name \"%s\": %s", name, e)
                     return None
+                is_generic = False
                 if os.path.exists(
                         os.path.join(
                             "custom", "sa", "profiles", vendor, system,
@@ -67,6 +69,7 @@ class ScriptLoader(object):
                 else:
                     # Generic script
                     module_name = "noc.sa.profiles.Generic.%s" % sn
+                    is_generic = True
                 try:
                     sm = __import__(module_name, {}, {}, "*")
                     for n in dir(sm):
@@ -76,7 +79,14 @@ class ScriptLoader(object):
                             issubclass(o, BaseScript) and
                             o.__module__ == sm.__name__
                         ):
-                            script = o
+                            if is_generic:
+                                # Create subclass with proper name
+                                script = type("Script", (o,), {
+                                    "name": name
+                                })
+                                script.__module__ = "noc.sa.profiles.%s" % name
+                            else:
+                                script = o
                             break
                     if not script:
                         logger.error("Script not found: %s", name)
@@ -171,6 +181,7 @@ class ScriptLoader(object):
         if not self.all_scripts:
             self.find_scripts()
         return name in self.all_scripts
+
 
 # Create singleton object
 loader = ScriptLoader()
