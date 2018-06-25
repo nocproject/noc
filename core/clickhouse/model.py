@@ -27,6 +27,7 @@ class ModelBase(type):
     def __new__(mcs, name, bases, attrs):
         cls = type.__new__(mcs, name, bases, attrs)
         cls._fields = {}
+        cls._tsv_encoders = {}
         cls._meta = ModelMeta(
             engine=getattr(cls.Meta, "engine", None),
             db_table=getattr(cls.Meta, "db_table", None),
@@ -40,6 +41,7 @@ class ModelBase(type):
         cls._fields_order = sorted(
             cls._fields, key=lambda x: cls._fields[x].field_number
         )
+        cls._tsv_order = [cls._tsv_encoders[f] for f in cls._fields_order]
         return cls
 
 
@@ -107,9 +109,7 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def to_tsv(cls, **kwargs):
-        return "\t".join(
-            cls._fields[f].to_tsv(kwargs.get(f)) for f in cls._fields_order
-        ) + "\n"
+        return "\t".join(f(kwargs) for f in cls._tsv_order) + "\n"
 
     @classmethod
     def get_fingerprint(cls):
