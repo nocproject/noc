@@ -1,0 +1,455 @@
+{
+    "name": "L2 Access Switches",
+    "$collection": "dev.quiz",
+    "uuid": "2ee9c4f9-35bd-4582-8108-25368bce8f1f",
+    "description": "Опросник по коммутаторам доступа уровня L2",
+    "revision": 1,
+    "disclaimer": null,
+    "changes": [],
+    "questions": [
+        {
+            "name": "vendor",
+            "question": "Vendor name",
+            "type": "str",
+            "when": ""
+        },
+        {
+            "name": "Model OID",
+            "question": "Device OID string",
+            "type": "str",
+            "when": ""
+        },
+        {
+            "name": "has.stack",
+            "question": "Device support union stack",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.version.cli",
+            "question": "Show device version number and platform by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.version.snmp",
+            "question": "Show device version number and platform by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "has.stp",
+            "question": "Device support STP protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.stp.cli",
+            "question": "Show active STP protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.stp.snmp",
+            "question": "Show active STP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.stp.cli",
+            "question": "Show active STP neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.stp.snmp",
+            "question": "Show active STP neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "has.lldp",
+            "question": "Device support STP protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.lldp.cli",
+            "question": "Show active LLDP protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.lldp.snmp",
+            "question": "Show active LLDP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.lldp.cli",
+            "question": "Show active LLDP neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.lldp.snmp",
+            "question": "Show active SNMP neighbors on device by CLI",
+            "type": "snmp-getnext",
+            "when": ""
+        },		
+        {
+            "name": "has.cdp",
+            "question": "Device support CDP (Cisco Discovery Protocol) protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.cdp.cli",
+            "question": "Show active CDP protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.cdp.snmp",
+            "question": "Show active CDP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.cdp.cli",
+            "question": "Show active CDP neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.cdp.snmp",
+            "question": "Show active CDP neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "has.ndp",
+            "question": "Device support NDP (Huawei Discovery Protocol) protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.ndp.cli",
+            "question": "Show active NDP protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.ndp.snmp",
+            "question": "Show active NDP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.ndp.cli",
+            "question": "Show active NDP neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.ndp.snmp",
+            "question": "Show active NDP neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },		
+        {
+            "name": "has.oam",
+            "question": "Device support OAM protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.oam.cli",
+            "question": "Show active OAM protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.oam.snmp",
+            "question": "Show active OAM protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.oam.cli",
+            "question": "Show active OAM neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.oam.snmp",
+            "question": "Show active OAM neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },		
+        {
+            "name": "has.udld",
+            "question": "Device support UDLD protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.udld.cli",
+            "question": "Show active UDLD protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.udld.udld.snmp",
+            "question": "Show active UDLD protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },		
+        {
+            "name": "get.neighbors.udld.cli",
+            "question": "Show active UDLD neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.udld.snmp",
+            "question": "Show active UDLD neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },		
+        {
+            "name": "has.lacp",
+            "question": "Device support LACP protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.lacp.cli",
+            "question": "Show active LACP protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.lacp.snmp",
+            "question": "Show active LACP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.lacp.cli",
+            "question": "Show active LACP neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.lacp.snmp",
+            "question": "Show active LACP neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },		
+        {
+            "name": "has.rep",
+            "question": "Device support REP protocol",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.rep.cli",
+            "question": "Show active REP protocol on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.rep.snmp",
+            "question": "Show active REP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.caps.rep.cli",
+            "question": "Show active REP neighbors on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.neighbors.rep.snmp",
+            "question": "Show active REP neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },		
+        {
+            "name": "get.stack.members.cli",
+            "question": "Show Stack members on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.chassis_id.cli",
+            "question": "Show device MAC addresses by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.fqdn.cli",
+            "question": "Show FQDN on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.config.cli",
+            "question": "Display configuration on device by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.mac_address_table.cli",
+            "question": "Show device MAC address table by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.mac_address_table.snmp",
+            "question": "Show device MAC address table by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.arp_table.cli",
+            "question": "Show ARP table by CLI. Table with IP address, Interface and MAC address.",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.arp_table.snmp",
+            "question": "Show ARP table by SNMP. Table with IP address, Interface and MAC address.",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.vlan_table.cli",
+            "question": "Show VLAN table by CLI. Table with VLAN number and VLAN name.",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.caps.stp.snmp",
+            "question": "Get active STP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.vlan_table.snmp",
+            "question": "Show VLAN table by SNMP. Table with VLAN number and VLAN name.",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.interface_name.cli",
+            "question": "Show interface list with name and description by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_name.snmp",
+            "question": "Show interface list with name and description by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.interface_ip.cli",
+            "question": "Show ip interface list with name, IP address and description by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_ip.snmp",
+            "question": "Show ip interface list with name, IP address and description by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.interface_agg.cli",
+            "question": "Show aggregated interface members by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_agg.snmp",
+            "question": "Show aggregated interface members by SNMP",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_vlans.cli",
+            "question": "Show interface-vlan binding by CLI.",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_vlans.snmp",
+            "question": "Show interface-vlan binding by SNMP.",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.interface_dom.cli",
+            "question": "Show interface DOM parameters by CLI.",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_dom.snmp",
+            "question": "Show interface DOM parameters by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.inventory.cli",
+            "question": "Show device equip info by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_transievers.cli",
+            "question": "Show device equip transievers by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.interface_transievers.snmp",
+            "question": "Show device equip transievers by SNMP",
+            "type": "snmp-getnext",
+            "when": ""
+        },
+        {
+            "name": "get.cpu_usage.cli",
+            "question": "Show CPU usage by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.cpu_usage.snmp",
+            "question": "Show CPU usage by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.memory_usage.cli",
+            "question": "Show Memory usage by CLI",
+            "type": "cli",
+            "when": ""
+        },
+        {
+            "name": "get.memory_usage.snmp",
+            "question": "Show Memory usage by SNMP",
+            "type": "snmp-get",
+            "when": ""
+        },
+        {
+            "name": "get.tech_support.cli",
+            "question": "Show tech-support by CLI.",
+            "type": "cli",
+            "when": ""
+        }
+    ]
+}
