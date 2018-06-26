@@ -39,10 +39,7 @@ class Vertex(EmbeddedDocument):
 class Transition(Document):
     meta = {
         "collection": "transitions",
-        "indexes": [
-            "from_state",
-            "to_state"
-        ],
+        "indexes": ["from_state", "to_state"],
         "strict": False,
         "auto_create_index": False
     }
@@ -109,11 +106,7 @@ class Transition(Document):
                     logger.error("Error import handler: %s" % e)
                     h = None
                 if h:
-                    logger.debug("[%s|%s|%s] Running %s",
-                                 obj, obj.state.name,
-                                 self.label, hn)
+                    logger.debug("[%s|%s|%s] Running %s", obj, obj.state.name, self.label, hn)
                     h(obj)  # @todo: Catch exceptions
                 else:
-                    logger.debug("[%s|%s|%s] Invalid handler %s, skipping",
-                                 obj, obj.state.name,
-                                 self.label, hn)
+                    logger.debug("[%s|%s|%s] Invalid handler %s, skipping", obj, obj.state.name, self.label, hn)
