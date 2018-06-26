@@ -4,6 +4,7 @@
     "uuid": "42b19590-c194-4873-bded-b417f34aea8c",
     "vendor__code": "JUNIPER",
     "description": "Multiservices MIC for MX",
+    "connection_rule__name": "Juniper | MX",
     "cr_context": "MIC",
     "connections": [
         {

@@ -4,6 +4,7 @@
     "uuid": "7392f81e-984d-4a3e-866c-959f99efd52f",
     "vendor__code": "JUNIPER",
     "description": "MPCE Type 2 3D (Two slots for MICs)",
+    "connection_rule__name": "Juniper | MX",
     "cr_context": "FPC",
     "connections": [
         {
