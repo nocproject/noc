@@ -72,7 +72,9 @@ class MACApplication(ExtApplication):
                 "managed_object__label": str(mo),
                 "interface": str(iface),
                 "interface__label": str(iface),
-                "description": getattr(iface, "description", "")
+                "description": getattr(iface, "description", ""),
+                "pool": mo.pool.name,
+                "object_profile": mo.object_profile.name
             }]
         total = len(current)
         if total == int(limit):
@@ -154,7 +156,9 @@ class MACApplication(ExtApplication):
                 "managed_object__label": str(mo),
                 "interface": str(iface),
                 "interface__label": str(iface),
-                "description": getattr(iface, "description", "")
+                "description": getattr(iface, "description", ""),
+                "pool": mo.pool.name,
+                "object_profile": mo.object_profile.name
             }]
 
         history = []
@@ -189,6 +193,8 @@ class MACApplication(ExtApplication):
                 "vlan": i.vlan,
                 "managed_object_name": str(i.managed_object_name),
                 "interface_name": str(i.interface_name),
-                "description": c
+                "description": c,
+                "pool": i.pool.name,
+                "object_profile": i.object_profile.name
             }]
         return current
