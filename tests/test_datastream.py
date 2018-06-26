@@ -235,3 +235,18 @@ def test_datastream_delete_object():
     assert doc
     assert "data" in doc
     assert "$deleted" in doc["data"]
+
+
+def test_datastream_clean_id():
+    assert ExampleDataStream.clean_id(1) == 1
+    assert ExampleDataStream.clean_id("1") == "1"
+
+
+def test_datastream_clean_id_int():
+    class DS(DataStream):
+        clean_id = DataStream.clean_id_int
+
+    assert DS.clean_id(1) == 1
+    assert DS.clean_id("1") == 1
+    with pytest.raises(ValueError):
+        DS.clean_id("z")
