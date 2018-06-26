@@ -109,6 +109,5 @@ class WorkflowApplication(ExtDocApplication):
         wf.name = name
         wf.description = description
         wf.save()
-        print transitions
         # @todo: Synchronize states
         # @todo: Synchronize transitions
