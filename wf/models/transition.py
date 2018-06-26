@@ -34,6 +34,7 @@ class Vertex(EmbeddedDocument):
     x = IntField(default=0)
     y = IntField(default=0)
 
+
 @bi_sync
 class Transition(Document):
     meta = {
