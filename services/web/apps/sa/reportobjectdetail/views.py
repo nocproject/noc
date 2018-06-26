@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -585,6 +585,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "id",
             "object_name",
             "object_address",
+            "object_hostname",
             "object_status",
             "profile_name",
             "object_profile",
@@ -611,6 +612,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "ID",
             "OBJECT_NAME",
             "OBJECT_ADDRESS",
+            "OBJECT_HOSTNAME",
             "OBJECT_STATUS",
             "PROFILE_NAME",
             "OBJECT_PROFILE",
@@ -726,6 +728,8 @@ class ReportObjectDetailApplication(ExtApplication):
             # @todo Warning - too many objects
             if "object_serial" in columns.split(","):
                 attr = ReportObjectAttributes([])
+            if "object_hostname" in columns.split(","):
+                mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
             attr_resolv = ReportAttrResolver([])
             moss = ReportObjects([])
         # @todo segment_name lookup
@@ -736,6 +740,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 mo,
                 moss[0],
                 moss[1],
+                mo_hostname[mo],
                 "managed" if moss[2] else "unmanaged",
                 attr_resolv[mo][0],
                 # Profile
