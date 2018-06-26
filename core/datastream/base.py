@@ -37,9 +37,6 @@ class DataStream(object):
 
     DEFAULT_LIMIT = 1000
 
-    def __init__(self):
-        pass
-
     @classmethod
     def get_collection_name(cls):
         return "ds_%s" % cls.name
@@ -185,3 +182,22 @@ class DataStream(object):
             limit=limit or cls.DEFAULT_LIMIT
         ):
             yield doc[cls.F_ID], doc[cls.F_CHANGEID], doc[cls.F_DATA]
+
+    @classmethod
+    def clean_id(cls, id):
+        """
+        Convert arbitrary string to id data type
+        Raise ValueError if invalid type given
+        :param id:
+        :return:
+        """
+        return id
+
+    @classmethod
+    def clean_id_int(cls, id):
+        """
+        Convert arbitrary string id to int
+        :param id:
+        :return:
+        """
+        return int(id)
