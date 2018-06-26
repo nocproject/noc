@@ -1,12 +1,14 @@
 {
-    "name": "Juniper | SRX | SRX240H2",
+    "name": "Juniper | EX | EX2200-C-12T-2G",
     "$collection": "inv.objectmodels",
-    "uuid": "635842cc-4a21-49ed-89fb-3456d1d2419a",
+    "uuid": "9d332f77-bb00-414c-aceb-dc26ce0e832d",
     "vendor__code": "JUNIPER",
-    "description": "SRX services gateway 240 with 16 x GE ports, 4xmini-PIM slots, and high memory (2GB RAM, 1GB FLASH)",
+    "description": "EX 2200, 12-port 10/100/1000BaseT with 2 combo uplink ports",
+    "connection_rule__name": "Juniper | EX2200",
+    "cr_context": "CHASSIS",
     "connections": [
         {
-            "description": "Console",
+            "description": "Console port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -15,7 +17,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/0 interface",
+            "description": "ge-X/0/0 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -24,7 +26,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/1 interface",
+            "description": "ge-X/0/1 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -33,7 +35,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/2 interface",
+            "description": "ge-X/0/2 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -42,7 +44,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/3 interface",
+            "description": "ge-X/0/3 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -51,7 +53,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/4 interface",
+            "description": "ge-X/0/4 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -60,7 +62,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/5 interface",
+            "description": "ge-X/0/5 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -69,7 +71,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/6 interface",
+            "description": "ge-X/0/6 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -78,7 +80,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/7 interface",
+            "description": "ge-X/0/7 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -87,7 +89,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/8 interface",
+            "description": "ge-X/0/8 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -96,7 +98,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/9 interface",
+            "description": "ge-X/0/9 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -105,7 +107,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/10 interface",
+            "description": "ge-X/0/10 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -114,7 +116,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/11 interface",
+            "description": "ge-X/0/11 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -123,93 +125,43 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/12 interface",
+            "description": "ge-X/1/0 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "0/12",
+            "name": "1/0",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/13 interface",
+            "description": "ge-X/1/0 SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/0",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/1/1 port",
             "direction": "s",
             "gender": "f",
             "group": "0",
-            "name": "0/13",
+            "name": "1/1",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "ge-X/0/14 interface",
-            "direction": "s",
+            "description": "ge-X/1/1 SFP",
+            "direction": "i",
             "gender": "f",
             "group": "0",
-            "name": "0/14",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "name": "1/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
-            "description": "ge-X/0/15 interface",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/15",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Mini-PIM slot #1",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "fpc1",
-            "type__name": "Juniper | J | Mini-PIM"
-        },
-        {
-            "description": "Mini-PIM slot #2",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "fpc2",
-            "type__name": "Juniper | J | Mini-PIM"
-        },
-        {
-            "description": "Mini-PIM slot #3",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "fpc3",
-            "type__name": "Juniper | J | Mini-PIM"
-        },
-        {
-            "description": "Mini-PIM slot #4",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "fpc4",
-            "type__name": "Juniper | J | Mini-PIM"
-        },
-        {
-            "description": "USB port 0",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "usb0",
-            "protocols": ["<USB10", "<USB11"],
-            "type__name": "Electrical | USB"
-        },
-        {
-            "description": "USB port 1",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "usb1",
-            "protocols": ["<USB10", "<USB11"],
-            "type__name": "Electrical | USB"
-        },
-        {
-            "description": "Power inlet",
+            "description": "Power outlet",
             "direction": "s",
             "gender": "f",
             "group": "0",
@@ -220,19 +172,23 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["SRX240H2"],
-            "part_no": ["750-043609"]
+            "description": ["EX2200-C-12T-2G"],
+            "order_part_no": ["EX2200-C-12T-2G"],
+            "part_no": ["650-036546", "EX2200-C-12T-2G"]
         },
         "dimensions": {
-            "depth": 381,
-            "height": 44.5,
-            "width": 445
+            "depth": 228,
+            "height": 44,
+            "width": 269
+        },
+        "power": {
+            "power": 30.0
         },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         },
         "stack": {
             "stackable": true
