@@ -33,7 +33,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             itemId: "inspector",
             flex: 1,
             scrollable: "vertical",
-            bodyPadding: '10',
+            bodyPadding: "10",
             // trackResetOnLoad: true,
             defaults: {
                 labelAlign: "top",
@@ -66,8 +66,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 }
             ],
             layout: {
-                type: 'hbox',
-                align: 'stretch'
+                type: "hbox",
+                align: "stretch"
             },
             items: [
                 {
@@ -153,7 +153,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     },
     //
     draw: function(data) {
-        var me = this, x = 200, y = 40;
+        var me = this, x = 200, y = 40, makeLayout = true;
         var stateByName = function(name) {
             return me.graph.getElements().filter(function(element) {
                 return element.attr("label/text") === name;
@@ -163,7 +163,12 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.workflow = me.loadData(data, "workflow");
         data.states.forEach(function(state) {
             var rect = new joint.shapes.standard.Rectangle();
-            rect.set("position", {x: x, y: y});
+            if(state.x && state.y) {
+                rect.set("position", {x: state.x, y: state.y});
+                makeLayout = false;
+            } else {
+                rect.set("position", {x: x, y: y});
+            }
             rect.resize(me.stateWidth, me.stateHeight);
             rect.attr("label/text", state.name);
             // .attr("rect/magnet", true);
@@ -189,17 +194,24 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                         }
                     });
                     link.prop({data: me.loadData(transition, "transition")});
+                    if(transition.hasOwnProperty("vertices")) {
+                        transition.vertices.forEach(function(vertex, index) {
+                            link.insertVertex(index, vertex);
+                        });
+                    }
                     link.addTo(me.graph);
                 });
             });
         });
-        joint.layout.DirectedGraph.layout(me.graph, {
-            marginX: 50,
-            marginY: 50,
-            nodeSep: 100,
-            edgeSep: 80,
-            rankDir: "TB"
-        });
+        if(makeLayout) {
+            joint.layout.DirectedGraph.layout(me.graph, {
+                marginX: 50,
+                marginY: 50,
+                nodeSep: 100,
+                edgeSep: 80,
+                rankDir: "TB"
+            });
+        }
         me.showWorkflowInspector(me.workflow);
     },
     //
@@ -536,7 +548,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             me.isIspectorDirty = false;
             if(me.currentHighlight && me.currentHighlight.model) {
                 me.currentHighlight.model.prop({data: data});
-                switch(me.currentHighlight.model.get('data').type) {
+                switch(me.currentHighlight.model.get("data").type) {
                     case "state": {
                         me.currentHighlight.model.attr("label/text", data.name);
                         break;
@@ -582,19 +594,24 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             element.to_state = states.filter(function(state) {
                 return state.id === element.target.id;
             })[0].data.name;
-            delete element.data['type'];
-            delete element.data['id'];
+            if(element.hasOwnProperty("vertices")) {
+                element.data["vertices"] = element.vertices;
+            }
+            delete element.data["type"];
+            delete element.data["id"];
             return element.data;
         });
         states = states.map(function(element) {
-            delete element.data['type'];
-            delete element.data['id'];
-            element.data.position = element.position;
+            delete element.data["type"];
+            delete element.data["id"];
+            element.data.x = element.position.x;
+            element.data.y = element.position.y;
+            delete element["position"];
             return element.data;
         });
         var ret = Ext.merge(Ext.clone(me.workflow), {states: states, transitions: transitions});
-        delete ret['type'];
-        delete ret['id'];
+        delete ret["type"];
+        delete ret["id"];
         console.log(ret);
         // console.log(JSON.stringify(ret));
         Ext.Ajax.request({
@@ -823,7 +840,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     handlers: [],
                     is_active: true,
                     event: "approve",
-                    label: "Approve"
+                    label: "Approve",
+                    vertices: [{x: 650, y: 430}, {x: 680, y: 230}, {x: 610, y: 70}]
                 },
                 {
                     from_state: "Approved",

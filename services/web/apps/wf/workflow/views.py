@@ -47,9 +47,9 @@ class WorkflowApplication(ExtDocApplication):
                 "update_expired": state.update_expired,
                 "on_enter_handlers": state.on_enter_handlers,
                 "job_handler": state.job_handler,
-                "on_leave_handlers": state.on_leave_handlers
-                # "x": state.x,
-                # "y": state.y
+                "on_leave_handlers": state.on_leave_handlers,
+                "x": state.x,
+                "y": state.y
             }
             r["states"] += [sr]
         for t in Transition.objects.filter(workflow=wf.id):
@@ -61,7 +61,8 @@ class WorkflowApplication(ExtDocApplication):
                 "label": t.label,
                 "description": t.description,
                 "enable_manual": t.enable_manual,
-                "handlers": t.handlers
+                "handlers": t.handlers,
+                "vertices": [{"x": t.x, "y": t.y} for t in t.vertices]
             }
             r["transitions"] += [tr]
         return r
@@ -82,10 +83,8 @@ class WorkflowApplication(ExtDocApplication):
                   "on_enter_handlers": StringListParameter(),
                   "job_handler": StringParameter(),
                   "on_leave_handlers": StringListParameter(),
-                  "position": DictListParameter(attrs={
-                    "x": IntParameter(),
-                    "y": IntParameter()
-                  })
+                  "x": IntParameter(),
+                  "y": IntParameter()
 
               }),
               "transitions": DictListParameter(attrs={
@@ -96,15 +95,20 @@ class WorkflowApplication(ExtDocApplication):
                   "label": StringParameter(),
                   "description": StringParameter(),
                   "enable_manual": BooleanParameter(),
-                  "handlers": StringListParameter()
+                  "handlers": StringListParameter(),
+                  "vertices": DictListParameter(attrs={
+                      "x": IntParameter(),
+                      "y": IntParameter()
+                  })
               })
           }
           )
-    def api_save_config(self, request, id, name, description, states, transitions):
+    def api_save_config(self, request, id, name, description, states, transitions, **kwargs):
         wf = self.get_object_or_404(Workflow, id)
         # Update workflow
         wf.name = name
         wf.description = description
         wf.save()
+        print transitions
         # @todo: Synchronize states
         # @todo: Synchronize transitions

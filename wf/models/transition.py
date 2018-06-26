@@ -13,9 +13,9 @@ import operator
 import logging
 from exceptions import ImportError
 # Third-party modules
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, LongField,
-                                ListField, BooleanField)
+                                ListField, BooleanField, IntField, EmbeddedDocumentField)
 import cachetools
 # NOC modules
 from .workflow import Workflow
@@ -28,6 +28,11 @@ from noc.core.handler import get_handler
 logger = logging.getLogger(__name__)
 id_lock = Lock()
 
+
+class Vertex(EmbeddedDocument):
+    # vertex coordinates
+    x = IntField(default=0)
+    y = IntField(default=0)
 
 @bi_sync
 class Transition(Document):
@@ -65,6 +70,7 @@ class Transition(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
+    vertices = ListField(EmbeddedDocumentField(Vertex))
 
     def __unicode__(self):
         return u"%s: %s" % (self.workflow.name, self.name)
