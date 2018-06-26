@@ -17,7 +17,7 @@ Ext.define("NOC.wf.workflow.Application", {
 
     initComponent: function() {
         var me = this;
-        me.WF_EDITOR = me.registerItem("NOC.wf.workflow.WFEditorII");
+        me.WF_EDITOR = me.registerItem("NOC.wf.workflow.WFEditor");
         me.editorButton = Ext.create("Ext.button.Button", {
             text: __("Editor"),
             glyph: NOC.glyph.eye,

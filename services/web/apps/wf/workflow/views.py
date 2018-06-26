@@ -47,9 +47,9 @@ class WorkflowApplication(ExtDocApplication):
                 "update_expired": state.update_expired,
                 "on_enter_handlers": state.on_enter_handlers,
                 "job_handler": state.job_handler,
-                "on_leave_handlers": state.on_leave_handlers,
-                "x": state.x,
-                "y": state.y
+                "on_leave_handlers": state.on_leave_handlers
+                # "x": state.x,
+                # "y": state.y
             }
             r["states"] += [sr]
         for t in Transition.objects.filter(workflow=wf.id):
@@ -82,8 +82,10 @@ class WorkflowApplication(ExtDocApplication):
                   "on_enter_handlers": StringListParameter(),
                   "job_handler": StringParameter(),
                   "on_leave_handlers": StringListParameter(),
-                  "x": IntParameter(),
-                  "y": IntParameter()
+                  "position": DictListParameter(attrs={
+                    "x": IntParameter(),
+                    "y": IntParameter()
+                  })
 
               }),
               "transitions": DictListParameter(attrs={
