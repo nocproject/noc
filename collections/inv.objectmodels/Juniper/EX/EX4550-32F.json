@@ -350,7 +350,7 @@
         "asset": {
             "description": ["EX4550-32F"],
             "order_part_no": ["EX4550-32F-AFO"],
-            "part_no": ["750-039067"]
+            "part_no": ["750-039067", "EX4550-32F"]
         },
         "management": {
             "managed": true

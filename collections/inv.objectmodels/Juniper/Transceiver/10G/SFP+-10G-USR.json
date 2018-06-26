@@ -1,25 +1,25 @@
 {
-    "name": "Juniper | Transceiver | 1G | SFP LX10",
+    "name": "Juniper | Transceiver | 10G | SFP+-10G-USR",
     "$collection": "inv.objectmodels",
-    "uuid": "b5deb0b0-75ba-4ba7-afd7-791959f3a62c",
+    "uuid": "5db2690e-280a-449c-a617-8284fb8c43f1",
     "vendor__code": "JUNIPER",
-    "description": "Juniper SFP LX transceiver",
+    "description": "Juniper SFP+ SR transceiver with DOM status",
     "cr_context": "XCVR",
     "connections": [
         {
-            "description": "SFP Connector",
+            "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Juniper"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [">10GBASESR"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,14 +27,14 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASELX-1310"],
+            "protocols": ["<10GBASESR"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["SFP-LX10"],
-            "part_no": ["740-011614", "740-009029"]
+            "order_part_no": ["SFP+-10G-USR"],
+            "part_no": ["740-021310"]
         }
     }
 }
