@@ -120,7 +120,7 @@ class Script(BaseScript):
 
         else:
             for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
-                if self.check_ifcfg.natch(match.group("remote_port")):
+                if self.check_ifcfg.match(match.group("remote_port")):
                     remote_if = match.group("remote_port")
                 else:
                     remote_if = self.profile.convert_interface_name_cisco(match.group("remote_port"))
