@@ -2,23 +2,27 @@
 # ---------------------------------------------------------------------
 # DNSZone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 import time
 from collections import defaultdict
 import logging
-# Django modules
+from threading import Lock
+import operator
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
+import cachetools
+import six
 # NOC modules
-from dnszoneprofile import DNSZoneProfile
 from noc.main.models import (NotificationGroup, SystemNotification,
                              SystemTemplate)
 from noc.project.models.project import Project
@@ -32,9 +36,10 @@ from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.synccache import SyncCache
+from .dnszoneprofile import DNSZoneProfile
 
 logger = logging.getLogger(__name__)
-
+id_lock = Lock()
 
 # Constants
 ZONE_FORWARD = "F"
@@ -46,7 +51,7 @@ class DNSZone(models.Model):
     """
     DNS Zone
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("DNS Zone")
         verbose_name_plural = _("DNS Zones")
         ordering = ["name"]
@@ -85,8 +90,20 @@ class DNSZone(models.Model):
     objects = models.Manager()
     zone = GridVCSField("dnszone")
 
+    # Caches
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        zone = DNSZone.objects.filter(id=id)[:1]
+        if zone:
+            return zone[0]
+        else:
+            return None
 
     def get_absolute_url(self):
         """Return link to zone preview
@@ -295,7 +312,7 @@ class DNSZone(models.Model):
     def to_idna(self, n):
         if isinstance(n, unicode):
             return n.lower().encode("idna")
-        elif isinstance(n, basestring):
+        elif isinstance(n, six.string_types):
             return unicode(n, "utf-8").lower().encode("idna")
         else:
             return n
@@ -507,8 +524,8 @@ class DNSZone(models.Model):
     def get_records(self):
         def cmp_fwd(x, y):
             sn = self.name + "."
-            return cmp(
-                (None if x[0] == sn else x[0], x[1], x[2], x[3], x[4]),
+            return (
+                (None if x[0] == sn else x[0], x[1], x[2], x[3], x[4]) <
                 (None if y[0] == sn else y[0], y[1], y[2], y[3], y[4])
             )
 
@@ -525,10 +542,10 @@ class DNSZone(models.Model):
                 return 1
             if x2 == y2 == "PTR":
                 try:
-                    return cmp(int(x1), int(y1))
+                    return int(x1) < int(y1)
                 except ValueError:
                     pass
-            return cmp(x, y)
+            return x < y
 
         def fr(r):
             name, type, content, ttl, prio = r
@@ -538,7 +555,7 @@ class DNSZone(models.Model):
                 else:
                     name = self.name + "."
             name = self.to_idna(name)
-            if (type in ("NS", "MX", "CNAME")):
+            if type in ("NS", "MX", "CNAME"):
                 if content:
                     if not content.endswith("."):
                         content += ".%s." % self.name
@@ -564,7 +581,7 @@ class DNSZone(models.Model):
         else:
             raise ValueError("Invalid zone type")
         records = (self.get_soa() +
-                   sorted(set(fr(r) for r in records), order_by))
+                   sorted(set(fr(r) for r in records), key=order_by))
         return records
 
     def get_zone_text(self):
