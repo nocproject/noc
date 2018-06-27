@@ -1,9 +1,10 @@
 {
-    "name": "Huawei | AR 1200 | AR1220V",
+    "name": "Huawei | AR 1200 | AR1220F",
     "$collection": "inv.objectmodels",
-    "uuid": "f14b69eb-5c71-40e2-b166-e93256c2e8f6",
+    "uuid": "c5a6dd25-0764-4787-a14a-fd1af42231fa",
     "vendor__code": "HUAWEI",
-    "description": "AR1220-V,AR0M012SBA,AR1220-V,2GE WAN,4FE LAN, 4FE LAN POE, 2 USB,2 SIC",
+    "description": "Assembling Components,AR1220F,AR1220F,1GE WAN,1GE COMBO,8FE LAN,2 USB,2 SIC",
+    "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -33,75 +34,11 @@
             "type__name": "Electrical | USB"
         },
         {
-            "description": "Ethernet 0/0/0 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/0",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet 0/0/1 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/1",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet 0/0/2 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/2",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet 0/0/3 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/3",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet 0/0/4 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/4",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet 0/0/5 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/5",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet 0/0/6 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/6",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "Ethernet 0/0/7 interface",
-            "direction": "s",
-            "gender": "f",
-            "name": "Ethernet/0/7",
-            "protocols": ["10BASET", "100BASETX", "<POE"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "GigabitEthernet 0/0/0 interface",
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["10BASET", "100BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -109,8 +46,83 @@
             "direction": "s",
             "gender": "f",
             "name": "GigabitEthernet0/0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/2 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/3 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/4 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/5 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/6 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/7 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/8 interface TX",
+            "direction": "s",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/0/8",
+            "name": "GigabitEthernet0/0/8",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/9 interface TX",
+            "direction": "s",
+            "gender": "f",
+            "group": "GigabitEthernetX/0/0/9",
+            "name": "GigabitEthernet0/0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/9 interface SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernet0/0/9",
+            "name": "GigabitEthernet0/0/9_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "WSIC slot",
@@ -145,7 +157,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["AR1220V", "AR0M012VBA"]
+            "part_no": ["AR1220F"]
         },
         "management": {
             "managed": true
@@ -156,7 +168,7 @@
             "width": 390
         },
         "power": {
-            "power": 160.0
+            "power": 60.0
         },
         "rackmount": {
             "units": 1.0

@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | AR 1200 | AR1220V",
+    "name": "Huawei | AR 1200 | AR1220W",
     "$collection": "inv.objectmodels",
-    "uuid": "f14b69eb-5c71-40e2-b166-e93256c2e8f6",
+    "uuid": "948a93cf-594c-468d-a0d9-64bef9844387",
     "vendor__code": "HUAWEI",
-    "description": "AR1220-V,AR0M012SBA,AR1220-V,2GE WAN,4FE LAN, 4FE LAN POE, 2 USB,2 SIC",
+    "description": "AR1220W,AR1220W Basic Configuration (Includes AR1220 Chassis,802.11b/g/n AP ETSI Complian, with Basic Software and Document),2GE WAN,8FE LAN,2 USB Interfaces,2 SIC Slots",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -145,7 +145,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["AR1220V", "AR0M012VBA"]
+            "part_no": ["AR1220W", "AR0M012WBA"]
         },
         "management": {
             "managed": true
