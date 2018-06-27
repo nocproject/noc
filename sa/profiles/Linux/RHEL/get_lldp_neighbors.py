@@ -115,12 +115,15 @@ class Script(BaseScript):
         r = []
         v = self.cli("lldpcli show neighbors summary")
         if "Permission denied" in v:
-            self.logger.info("Add <NOCuser> to _lldpd group. Like that ' # usermod -G _lldpd -a <NOCuser> . And restart lldpd daemon' ")
+            self.logger.info(
+                "Add <NOCuser> to _lldpd group. Like that ' "
+                "# usermod -G _lldpd -a <NOCuser> . And restart lldpd daemon' "
+            )
             return r
 
         else:
             for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
-                if self.check_ifcfg.natch(match.group("remote_port")):
+                if self.check_ifcfg.match(match.group("remote_port")):
                     remote_if = match.group("remote_port")
                 else:
                     remote_if = self.profile.convert_interface_name_cisco(match.group("remote_port"))
