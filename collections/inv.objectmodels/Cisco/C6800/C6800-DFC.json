@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | C6800 | C6800-DFC",
+    "$collection": "inv.objectmodels",
+    "uuid": "db232559-71cc-414e-ae16-480bc24870da",
+    "vendor__code": "CISCO",
+    "description": "C6800-DFC Distributed Forwarding Card 4 Rev. 1.2",
+    "cr_context": "DFC",
+    "connections": [
+        {
+            "description": "DFC slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 7600 | DFC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["C6800-DFC"]
+        }
+    }
+}
