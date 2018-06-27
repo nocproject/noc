@@ -39,10 +39,3 @@ class Profile(BaseProfile):
             }
         }
     }
-
-    def setup_session(self, script):
-        script.cli("terminal no prompt")
-
-    def shutdown_session(self, script):
-        script.cli("terminal no datadump")
-        script.cli("terminal prompt")
