@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    rx_mac = re.compile(r"Mac Address\s+- (?P<mac>.+)$",re.MULTILINE)
+    rx_mac = re.compile(r"Mac Address\s+- (?P<mac>.+)$", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show system-info", cached=True)
