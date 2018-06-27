@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Periodic Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ from interfacestatus import InterfaceStatusCheck
 from mac import MACCheck
 from metrics import MetricsCheck
 from noc.core.span import Span
+from noc.core.datastream.change import bulk_datastream_changes
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -27,7 +28,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     is_periodic = True
 
     def handler(self, **kwargs):
-        with Span(sample=self.object.periodic_telemetry_sample):
+        with Span(sample=self.object.periodic_telemetry_sample), bulk_datastream_changes():
             if self.object.auth_profile and self.object.auth_profile.type == "S":
                 self.logger.info("Invalid credentials. Stopping")
                 return
