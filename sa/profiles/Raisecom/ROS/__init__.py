@@ -56,6 +56,7 @@ class Profile(BaseProfile):
         r"Bootstrap Version: (?P<bootstrap>\S+)\s*\n"
         r"Software Version: (?P<version>\S+)\s*\n"
         r"PCB Version:.+\n"
+        r"(FPGA Version:.+\n)?"
         r"CPLD Version:.+\n"
         r"REAP Version:.+\n"
         r"Compiled.+\n\n"
