@@ -7,15 +7,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import random
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
-from uptime import UptimeCheck
-from interfacestatus import InterfaceStatusCheck
-from mac import MACCheck
-from metrics import MetricsCheck
 from noc.core.span import Span
 from noc.core.datastream.change import bulk_datastream_changes
+from .uptime import UptimeCheck
+from .interfacestatus import InterfaceStatusCheck
+from .mac import MACCheck
+from .metrics import MetricsCheck
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
