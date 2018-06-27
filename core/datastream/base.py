@@ -112,7 +112,7 @@ class DataStream(object):
         # Get existing object
         doc = coll.find_one({cls.F_ID: id}, {cls.F_ID: 0, cls.F_HASH: 1})
         if doc and doc.get(cls.F_HASH) == hash:
-            return False # Not changed
+            return False  # Not changed
         metrics["ds_%s_changed" % cls.name] += 1
         changeid = bson.ObjectId()
         data["change_id"] = str(changeid)
@@ -202,3 +202,14 @@ class DataStream(object):
         :return:
         """
         return int(id)
+
+    @classmethod
+    def wait(cls):
+        """
+        Block until datastream receives changes
+        :return:
+        """
+        coll = cls.get_collection()
+        with coll.watch() as stream:
+            next(stream)
+            return
