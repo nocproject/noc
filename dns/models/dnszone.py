@@ -138,9 +138,9 @@ class DNSZone(models.Model):
             if n.endswith(".in-addr.arpa"):
                 r = n[:-13].split(".")
                 r.reverse()
-                l = 4 - len(r)
-                r += ["0"] * l
-                ml = 32 - 8 * l
+                length = 4 - len(r)
+                r += ["0"] * length
+                ml = 32 - 8 * length
                 return ".".join(r) + "/%d" % ml
         elif self.type == ZONE_REVERSE_IPV6:
             # Get IPv6 prefix covering reverse zone
@@ -153,9 +153,9 @@ class DNSZone(models.Model):
                 raise Exception("Invalid IPv6 zone suffix")
             p = n.split(".")
             p.reverse()
-            l = len(p)
-            if l % 4:
-                p += [u"0"] * (4 - l % 4)
+            length = len(p)
+            if length % 4:
+                p += [u"0"] * (4 - length % 4)
             r = ""
             for i, c in enumerate(p):
                 if i and i % 4 == 0:
@@ -163,7 +163,7 @@ class DNSZone(models.Model):
                 r += c
             if len(p) != 32:
                 r += "::"
-            prefix = r + "/%d" % (l * 4)
+            prefix = r + "/%d" % (length * 4)
             return IPv6(prefix).normalized.prefix
 
     @property
@@ -243,10 +243,10 @@ class DNSZone(models.Model):
     @property
     def children(self):
         """List of next-level nested zones"""
-        l = len(self.name)
+        length = len(self.name)
         s = ".%s" % self.name
         return [z for z in DNSZone.objects.filter(name__iendswith=s)
-                if "." not in z.name[:-l - 1]]
+                if "." not in z.name[:-length - 1]]
 
     @classmethod
     def get_ns_name(cls, ns):
@@ -327,7 +327,7 @@ class DNSZone(models.Model):
         """
         ttl = self.profile.zone_ttl
         # @todo: Filter by VRF
-        l = len(self.name) + 1
+        length = len(self.name) + 1
         q = (
             Q(fqdn__iexact=self.name) |
             Q(fqdn__iendswith=".%s" % self.name)
@@ -341,7 +341,7 @@ class DNSZone(models.Model):
             )
         return [
             (
-                fqdn[:-l],
+                fqdn[:-length],
                 "A" if afi == "4" else "AAAA",
                 address,
                 ttl,
@@ -365,10 +365,10 @@ class DNSZone(models.Model):
             return "%s.in-addr.arpa" % (".".join(x))
 
         ttl = self.profile.zone_ttl
-        l = len(self.name) + 1
+        length = len(self.name) + 1
         return [
             (
-                ptr(a.address)[:-l],
+                ptr(a.address)[:-length],
                 "PTR",
                 a.fqdn + ".",
                 ttl,
@@ -429,12 +429,12 @@ class DNSZone(models.Model):
         records = [("", "NS", n, ttl, None) for n in self.ns_list]
         # Add nested NS records if nesessary
         suffix = ".%s." % self.name
-        l = len(self.name)
+        length = len(self.name)
         for z in self.children:
             nested_nses = []
             for ns in z.profile.authoritative_servers:
                 ns_name = self.get_ns_name(ns)
-                records += [(z.name[:-l - 1], "NS", ns_name,
+                records += [(z.name[:-length - 1], "NS", ns_name,
                              ttl, None)]
                 # Zone delegated to NS from the child zone
                 if ns_name.endswith(suffix) and "." in ns_name[:-len(suffix)]:
