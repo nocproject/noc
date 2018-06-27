@@ -10,7 +10,6 @@
 from __future__ import absolute_import
 # Third-party modules
 import tornado.gen
-import tornado.web
 # NOC modules
 from noc.core.service.apiaccess import APIAccessRequestHandler, authenticated
 
@@ -48,17 +47,24 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
             change_id = change_id[0]
         else:
             change_id = None
-        # @todo: block argument and long polling
+        # block argument
+        p_block = self.get_arguments("block")
+        to_block = bool(p_block) and bool(int(p_block[0]))
         first_change = None
         last_change = None
-        r = ["["]
-        for item_id, change_id, data in self.datastream.iter_data(limit=limit, filter=filter,
-                                                                  change_id=change_id):
-            if not first_change:
-                first_change = change_id
-            last_change = change_id
-            r += [data]
-        r += ["]"]
+        while True:
+            r = ["["]
+            for item_id, change_id, data in self.datastream.iter_data(limit=limit, filter=filter,
+                                                                      change_id=change_id):
+                if not first_change:
+                    first_change = change_id
+                last_change = change_id
+                r += [data]
+            r += ["]"]
+            if to_block and len(r) == 2:
+                yield self.service.wait(self.datastream.name)
+            else:
+                break
         self.set_header("Content-Type", "application/json")
         self.set_header("X-NOC-DataStream-Total", str(self.datastream.get_total()))
         self.set_header("X-NOC-DataStream-Limit", str(limit))
