@@ -19,6 +19,7 @@ from .managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
+from noc.core.datastream.decorator import datastream
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class CapsItem(EmbeddedDocument):
 
 
 @on_save
+@datastream
 class ObjectCapabilities(Document):
     meta = {
         "collection": "noc.sa.objectcapabilities"
@@ -46,6 +48,9 @@ class ObjectCapabilities(Document):
 
     def on_save(self):
         cache.delete("cred-%s" % self.object.id)
+
+    def iter_changed_datastream(self):
+        yield "managedobject", self.object.id
 
     @classmethod
     def get_capabilities(cls, object):
