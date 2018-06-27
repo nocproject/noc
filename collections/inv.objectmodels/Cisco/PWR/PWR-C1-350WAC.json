@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | PWR | PWR-C1-350WAC",
+    "$collection": "inv.objectmodels",
+    "uuid": "e4be6431-76dd-4b6a-b94b-601f3de572f0",
+    "vendor__code": "CISCO",
+    "description": "350 Watt AC PSU for Cisco Catalyst 3850 Series switches",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "m",
+            "name": "PSU",
+            "type__name": "Cisco | 3850 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PWR-C1-350WAC"]
+        }
+    }
+}
