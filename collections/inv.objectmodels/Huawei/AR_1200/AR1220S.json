@@ -145,7 +145,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["AR1220S"]
+            "part_no": ["AR1220S", "AR0M012SBA"]
         },
         "management": {
             "managed": true
