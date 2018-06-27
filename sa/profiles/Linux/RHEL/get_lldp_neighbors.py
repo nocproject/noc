@@ -115,7 +115,10 @@ class Script(BaseScript):
         r = []
         v = self.cli("lldpcli show neighbors summary")
         if "Permission denied" in v:
-            self.logger.info("Add <NOCuser> to _lldpd group. Like that ' # usermod -G _lldpd -a <NOCuser> . And restart lldpd daemon' ")
+            self.logger.info(
+                "Add <NOCuser> to _lldpd group. Like that ' "
+                "# usermod -G _lldpd -a <NOCuser> . And restart lldpd daemon' "
+            )
             return r
 
         else:
