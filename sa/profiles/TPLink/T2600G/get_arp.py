@@ -32,4 +32,3 @@ class Script(BaseScript):
                 "interface": match.group("iface")
             }]
         return r
-
