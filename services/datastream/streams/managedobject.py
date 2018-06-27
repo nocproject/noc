@@ -30,9 +30,10 @@ class ManagedObjectDataStream(DataStream):
 
     @classmethod
     def get_object(cls, id):
-        mo = ManagedObject.get_by_id(id)
+        mo = ManagedObject.objects.filter(id=id)[:1]
         if not mo:
             raise KeyError()
+        mo = mo[0]
         r = {
             "id": str(id),
             "$version": 1,
@@ -43,6 +44,8 @@ class ManagedObjectDataStream(DataStream):
         }
         if mo.address:
             r["address"] = mo.address
+        if mo.description:
+            r["description"] = mo.description
         cls._apply_remote_system(mo, r)
         cls._apply_pool(mo, r)
         cls._apply_version(mo, r)

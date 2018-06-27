@@ -12,6 +12,7 @@ import ujson
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.core.perf import metrics
+from noc.core.datastream.loader import loader
 
 
 class ExampleDataStream(DataStream):
@@ -250,3 +251,25 @@ def test_datastream_clean_id_int():
     assert DS.clean_id("1") == 1
     with pytest.raises(ValueError):
         DS.clean_id("z")
+
+
+@pytest.fixture(params=["managedobject"])
+def datastream_name(request):
+    return request.param
+
+
+def test_loader(datastream_name):
+    ds = loader.get_datastream(datastream_name)
+    assert ds is not None
+    assert issubclass(ds, DataStream)
+    assert ds.name == datastream_name
+
+
+def test_loader_invalid_name():
+    ds = loader.get_datastream("aaa..bbbb")
+    assert ds is None
+
+
+def test_loader_error():
+    ds = loader.get_datastream("invalid")
+    assert ds is None

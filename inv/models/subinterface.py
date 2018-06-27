@@ -16,6 +16,7 @@ from interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
+from noc.core.datastream.decorator import datastream
 
 
 SUBINTERFACE_AFI = (
@@ -39,6 +40,7 @@ TUNNEL_TYPES = (
 )
 
 
+@datastream
 class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",
@@ -91,6 +93,9 @@ class SubInterface(Document):
 
     def __unicode__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
+
+    def iter_changed_datastream(self):
+        yield "managedobject", self.managed_object.id
 
     @property
     def effective_vc_domain(self):

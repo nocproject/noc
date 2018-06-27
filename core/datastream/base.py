@@ -95,7 +95,7 @@ class DataStream(object):
         Generate and update object in stream
         :param id: Object id
         :param delete: Object must be marked as deleted
-        :return:
+        :return: True if obbject has been updated
         """
         metrics["ds_%s_updated" % cls.name] += 1
         coll = cls.get_collection()
@@ -112,7 +112,7 @@ class DataStream(object):
         # Get existing object
         doc = coll.find_one({cls.F_ID: id}, {cls.F_ID: 0, cls.F_HASH: 1})
         if doc and doc.get(cls.F_HASH) == hash:
-            return  # Not changed
+            return False # Not changed
         metrics["ds_%s_changed" % cls.name] += 1
         changeid = bson.ObjectId()
         data["change_id"] = str(changeid)
@@ -125,6 +125,7 @@ class DataStream(object):
                 cls.F_DATA: ujson.dumps(data)
             }
         }, upsert=True)
+        return True
 
     @classmethod
     def delete_object(cls, id):
