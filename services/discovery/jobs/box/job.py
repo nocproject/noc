@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Box Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ from .segmentation import SegmentationCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
 from noc.core.span import Span
+from noc.core.datastream.change import bulk_datastream_changes
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -70,7 +71,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
     is_box = True
 
     def handler(self, **kwargs):
-        with Span(sample=self.object.box_telemetry_sample):
+        with Span(sample=self.object.box_telemetry_sample), bulk_datastream_changes():
             has_cli = "C" in self.object.get_access_preference()
             if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestSNMPCheck(self).run()
