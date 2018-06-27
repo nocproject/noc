@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Huawei.MA5600T.get_cpe
+# Huawei.MA5600T.get_cpe_status
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -12,12 +12,11 @@ import six
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.lib.text import parse_table_header
-from noc.lib.text import parse_kv
 from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Huawei.MA5600T.get_cpe"
+    name = "Huawei.MA5600T.get_cpe_status"
     interface = IGetCPE
 
     cache = True
@@ -28,10 +27,6 @@ class Script(BaseScript):
         "online": "active",  # associated
         "offline": "inactive",  # disassociating
     }
-
-    detail_map = {"ont distance(m)": "ont_distance",
-                  "ont ip 0 address/mask": "ont_address",
-                  "last down cause": "down_cause"}
 
     def update_dict(self, s, d):
         for k in d:
@@ -62,7 +57,7 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         r = {}
         # v = self.cli("display ont info 0 all")
-        for c in ("display ont info 0 all", "display ont version 0 all"):
+        for c in ("display ont info 0 all"):
             v = self.cli(c)
             for table in v.split("\n\n"):
                 tables_data = []
@@ -83,15 +78,6 @@ class Script(BaseScript):
                         if ont_id in r:
                             r[ont_id]["description"] = t["Description"][0]
                         continue
-                    if "F/S/P/ONT-ID" in t:
-                        ont_id = t["F/S/P/ONT-ID"][0].replace(" ", "")
-                        if ont_id in r:
-                            r[ont_id].update({
-                                "vendor": t["Vendor ID"][0],
-                                "model": t["ONT"][0] + t["Model"][0] if t["Model"] else "",
-                                "version": t["Software Version"][0]
-                            })
-                        continue
                     ont_id, serial = t["ONT ID"][0].split()
                     ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), ont_id)
                     r[ont_id] = {
@@ -104,14 +90,6 @@ class Script(BaseScript):
                         "description": "",
                         "location": ""
                     }
-        for ont_id in r:
-            if r[ont_id]["status"] != "active":
-                continue
-            v = self.cli("display ont info %s %s %s %s" % tuple(ont_id.split("/")))
-            parts = self.splitter.split(v)
-            parse_result = parse_kv(self.detail_map, parts[1])
-            r[ont_id]["distance"] = float(parse_result.get("ont_distance", 0))
-            r[ont_id]["ip"] = parse_result.get("ont_address", "").split("/")[0]
         return list(six.itervalues(r))
 
     def execute_snmp(self, **kwargs):
@@ -135,14 +113,4 @@ class Script(BaseScript):
             }
         for ont_index, ont_status in self.snmp.get_tables([mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus"]]):
             r[ont_index]["status"] = "active" if ont_status == 1 else "inactive"
-        for ont_index, ont_version, ont_vendor, ont_model in self.snmp.get_tables(
-                [mib["HUAWEI-XPON-MIB::hwGponDeviceOntVersion"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntVendorId"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntProductId"]]
-        ):
-            r[ont_index].update({
-                "version": ont_version,
-                "vendor": ont_vendor,
-                "model": ont_model
-            })
         return six.itervalues(r)
