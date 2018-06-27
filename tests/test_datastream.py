@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import time
+import threading
 # Third-party modules
 import pytest
 import ujson
@@ -273,3 +276,45 @@ def test_loader_invalid_name():
 def test_loader_error():
     ds = loader.get_datastream("invalid")
     assert ds is None
+
+
+def test_wait():
+    class WaitDS(DataStream):
+        name = "wait"
+
+        @classmethod
+        def get_object(cls, id):
+            return {
+                "id": id
+            }
+
+    TIMEOUT = 0.1
+
+    def writer():
+        # Wait until main thread is ready
+        event.wait()
+        time.sleep(TIMEOUT)
+        WaitDS.update_object(2)
+
+    # Insert first object
+    WaitDS.ensure_collection()
+    WaitDS.update_object(1)
+    # Start writer thread
+    event = threading.Event()
+    thread = threading.Thread(target=writer, name="test_wait-writer")
+    thread.setDaemon(True)
+    thread.start()
+    # Ensure WaitDS contains only one item
+    assert WaitDS.get_total() == 1
+    # Allow writer thread to start
+    event.set()
+    # Hang until writer thread inserts new object
+    t0 = time.time()
+    WaitDS.wait()
+    dt = time.time() - t0
+    # Cleanup writer thread
+    thread.join()
+    # We should be waiting more, than TIMEOUT
+    assert dt > TIMEOUT
+    # We must have second object
+    assert WaitDS.get_total() == 2
