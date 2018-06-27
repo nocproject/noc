@@ -38,6 +38,8 @@ class Command(BaseCommand):
                 continue
             # Index model
             self.index_model(model_id, model)
+        # Index datastreams
+        self.index_datastreams()
         # @todo: Detect changes
         self.print("OK")
 
@@ -85,6 +87,12 @@ class Command(BaseCommand):
                 coll.drop_index(x_name[fields])
         # Apply indexes
         model.ensure_indexes()
+
+    def index_datastream(self):
+        from noc.services.datastream.streams.managedobject import ManagedObjectDataStream
+
+        self.print("[%s] Indexing datastream", ManagedObjectDataStream.name)
+        ManagedObjectDataStream.ensure_collection()
 
 
 if __name__ == "__main__":
