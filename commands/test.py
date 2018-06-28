@@ -92,7 +92,8 @@ class Command(BaseCommand):
             try:
                 result = run_tests(args)
             finally:
-                self.print("Writing coverage report to %s/index.html" % coverage_report)
+                if coverage_report:
+                    self.print("Writing coverage report to %s/index.html" % coverage_report)
                 cov.stop()
                 cov.save()
                 if coverage_report:
