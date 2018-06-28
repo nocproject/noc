@@ -9,9 +9,9 @@
 # Python modules
 from __future__ import print_function
 import pprint
-import glob
-import os
+from collections import defaultdict
 import argparse
+import uuid
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
@@ -48,6 +48,10 @@ class Command(BaseCommand):
         list_parser = subparsers.add_parser("list")  # noqa
         # test command
         test_parser = subparsers.add_parser("test")
+        test_parser.add_argument(
+            "--script",
+            help="Script name for tests. Default (get_version)"
+        )
         test_parser.add_argument(
             "beef",
             nargs=1,
@@ -156,43 +160,88 @@ class Command(BaseCommand):
         self.stdout.write("\n".join(r) + "\n")
         return
 
-    def handle_list(self, *options, **args):
-        r = ["Provider,Profile,Script,Vendor,Platform,Version,UUID"]
-        for path in glob.glob(
-            os.path.join(Beef.BEEF_ROOT, "*/*/*/*/*.json")
-        ):
-            parts = path.split(os.sep)
-            provider = parts[3]
-            b = Beef()
-            b.load(path)
-            profile, script = b.script.rsplit(".", 1)
-            r += ["%s,%s,%s,%s,%s,%s,%s" % (
-                provider, profile, script,
-                b.vendor, b.platform, b.version, b.uuid)]
+    def handle_list(self, *args, **options):
+        storage = options.get("storage")
+        if not storage:
+            storage = ExtStorage.objects.filter(enable_beef=True).first()
+        r = ["UUID,Vendor,Platform,Version,SpecUUID,Changed,Path"]
+        st_fs = storage.open_fs()
+        for step in st_fs.walk(''):
+            if not step.files:
+                continue
+            for file in step.files:
+                beef = Beef.load(storage, file.make_path(step.path))
+                r += [",".join([
+                    beef.uuid,
+                    beef.box.vendor,
+                    beef.box.platform,
+                    beef.box.version,
+                    beef.spec,
+                    beef.changed,
+                    file.make_path(step.path)
+                ])]
+
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
         return
 
-    def handle_test(self, beef, *options, **args):
-        self.run_beef(beef)
+    def handle_test(self, beef, *args, **options):
+        storage = options.get("storage")
+        script = options.get("script", "get_version")
+        if "." not in script:
+            self.print("Not setup profile in script name")
+        profile, script = script.rsplit(".", 1)
+        beefs = self.get_beef_by(storage, beef[0])
+        print(beefs)
+        for beef in beefs:
+            for storage, path in beefs[beef]:
+                self.run_beef(storage, path, beef, script_name=script, profile_name=profile)
 
-    def handle_fix(self, beef, *options, **args):
-        self.run_beef(beef, fix=True)
+    def handle_fix(self, beef, *args, **options):
+        raise NotImplementedError()
 
-    def run_beef(self, beef, fix=False):
+    def get_beef_by(self, storage, beef_s=None, vendor=None):
+        r = defaultdict(list)
+        uuid_string = None
+        path = None
+        try:
+            uuid_string = uuid.UUID(beef_s, version=4)
+            uuid_string = beef_s
+        except ValueError:
+            path = beef_s
+        if not storage:
+            storage = ExtStorage.objects.filter(enable_beef=True).first()
+        st_fs = storage.open_fs()
+        for step in st_fs.walk(''):
+            if not step.files:
+                continue
+            for file in step.files:
+                beef = Beef.load(storage, file.make_path(step.path))
+                if uuid_string and beef.uuid == uuid_string:
+                    r[beef] += [(storage, file.make_path(step.path))]
+                elif path and path in step.path:
+                    r[beef] += [(storage, file.make_path(step.path))]
+                elif vendor and beef.vendor == vendor:
+                    r[beef] += [(storage, file.make_path(step.path))]
+        return r
+
+    def run_beef(self, storage, b_path, beef, profile_name="Generic.Host",
+                 script_name="get_version", fix=False):
         from noc.core.script.loader import loader
 
-        b = Beef.load_by_id(beef[0])
-        if not b:
+        script = "%s.%s" % (profile_name, script_name)
+
+        if not beef:
             self.die("Beef not found: %s" % beef[0])
-        script_class = loader.get_script(b.script)
+        script_class = loader.get_script(script)
         if not script_class:
-            self.die("Invalid script: %s" % b.script)
+            self.die("Invalid script: %s" % script)
         # Build credentials
         credentials = {
-            "address": b.uuid,
+            "address": beef.uuid,
             "cli_protocol": "beef",
-            "beef": b
+            "beef_storage_url": storage.url,
+            "beef_path": b_path
         }
         # Get capabilities
         caps = {}
@@ -203,19 +252,20 @@ class Command(BaseCommand):
             credentials=credentials,
             capabilities=caps,
             version={
-                "vendor": b.vendor,
-                "platform": b.platform,
-                "version": b.version
+                "vendor": beef.box.vendor,
+                "platform": beef.box.platform,
+                "version": beef.box.version
             },
             timeout=3600,
-            name=b.script
+            name=script
         )
-        result = scr.run()
-        pprint.pprint(result, stream=self.stdout)
-        if fix and b.result != result:
-            self.stdout.write("Fixing %s\n" % beef[0])
-            b.result = result
-            b.save(beef[0])
+        self.print("\n".join(("", "-"*60, "Testing: %s" % beef.uuid, "-"*60, "")))
+        scr.run()
+        # pprint.pprint(result, stream=self.stdout)
+        # if fix and b.result != result:
+        #     self.stdout.write("Fixing %s\n" % beef[0])
+        #     b.result = result
+        #     b.save(beef[0])
 
 
 class ServiceStub(object):
