@@ -8,7 +8,6 @@
 
 # Python modules
 from __future__ import print_function
-import pprint
 from collections import defaultdict
 import argparse
 import uuid
@@ -259,7 +258,7 @@ class Command(BaseCommand):
             timeout=3600,
             name=script
         )
-        self.print("\n".join(("", "-"*60, "Testing: %s" % beef.uuid, "-"*60, "")))
+        self.print("\n".join(("", "-" * 60, "Testing: %s" % beef.uuid, "-" * 60, "")))
         scr.run()
         # pprint.pprint(result, stream=self.stdout)
         # if fix and b.result != result:
