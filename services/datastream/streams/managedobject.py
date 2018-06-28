@@ -14,6 +14,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.lib.text import split_alnum
 
 
@@ -52,6 +53,7 @@ class ManagedObjectDataStream(DataStream):
         cls._apply_segment(mo, r)
         cls._apply_administrative_domain(mo, r)
         cls._apply_object_profile(mo, r)
+        cls._apply_chassis_id(mo, r)
         cls._apply_interfaces(mo, r)
         return r
 
@@ -112,7 +114,7 @@ class ManagedObjectDataStream(DataStream):
     def _apply_object_profile(mo, r):
         # Object profile
         r["object_profile"] = {
-            "id": mo.object_profile.id,
+            "id": str(mo.object_profile.id),
             "name": qs(mo.object_profile.name)
         }
         if mo.object_profile.remote_system and mo.object_profile.remote_id:
@@ -224,3 +226,20 @@ class ManagedObjectDataStream(DataStream):
             "id": str(profile.id),
             "name": qs(profile.name)
         }
+
+    @staticmethod
+    def _apply_chassis_id(mo, r):
+        di = DiscoveryID.objects.filter(object=mo.id).first()
+        if not di:
+            return
+        rr = {}
+        if di.hostname:
+            rr["hostname"] = str(di.hostname)
+        if di.chassis_mac:
+            rr["macs"] = [{"first": m.first_mac, "last": m.last_mac} for m in di.chassis_mac]
+        if di.router_id:
+            rr["router_id"] = di.router_id
+        if di.udld_id:
+            rr["udld_id"] = di.router_id
+        if rr:
+            r["chassis_id"] = rr
