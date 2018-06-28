@@ -11,11 +11,12 @@ import pygments.formatters.html
 from pygments.formatters import HtmlFormatter
 from django.utils.html import escape
 
-#
-# HTML Formatter
-# Returns escaped HTML text with neat line numbers
-#
+
 class NOCHtmlFormatter(HtmlFormatter):
+    """
+    HTML Formatter
+    Returns escaped HTML text with neat line numbers
+    """
     name = 'NOC HTML'
 
     def __init__(self,**kwargs):
