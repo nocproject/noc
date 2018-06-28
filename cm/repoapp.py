@@ -118,7 +118,7 @@ class RepoApplication(ModelApplication):
             return self.response_redirect_to_object(o)
 
     view_diff.url = [
-        URL(r"^(?P<object_id>\d+)/diff/$",                                        name="diff"),
+        URL(r"^(?P<object_id>\d+)/diff/$", name="diff"),
         URL(r"^(?P<object_id>\d+)/diff/(?P<mode>[u2])/(?P<r1>\d+)/(?P<r2>\d+)/$", name="diff_rev")
     ]
     view_diff.access = HasPerm("view")
