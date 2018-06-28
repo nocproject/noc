@@ -7,9 +7,7 @@
 # ---------------------------------------------------------------------
 """
 """
-import pygments.formatters.html
 from pygments.formatters import HtmlFormatter
-from django.utils.html import escape
 
 
 class NOCHtmlFormatter(HtmlFormatter):
@@ -19,6 +17,6 @@ class NOCHtmlFormatter(HtmlFormatter):
     """
     name = 'NOC HTML'
 
-    def __init__(self,**kwargs):
-        kwargs["linenos"]="table"
-        super(NOCHtmlFormatter,self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        kwargs["linenos"] = "table"
+        super(NOCHtmlFormatter, self).__init__(**kwargs)
