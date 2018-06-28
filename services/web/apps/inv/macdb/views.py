@@ -73,9 +73,9 @@ class MACApplication(ExtApplication):
                 "interface": str(iface),
                 "interface__label": str(iface),
                 "description": getattr(iface, "description", ""),
-                "pool": mo.pool.name,
+                "pool": mo.pool,
                 "pool__label": getattr(mo.pool, "name", ""),
-                "object_profile": mo.object_profile.name,
+                "object_profile": mo.object_profile,
                 "object_profile__label": getattr(mo.object_profile, "name", "")
             }]
         total = len(current)
@@ -158,9 +158,9 @@ class MACApplication(ExtApplication):
                 "interface": str(iface),
                 "interface__label": str(iface),
                 "description": getattr(iface, "description", ""),
-                "pool": mo.pool.name,
+                "pool": mo.pool,
                 "pool__label": getattr(mo.pool, "name", ""),
-                "object_profile": mo.object_profile.name,
+                "object_profile": mo.object_profile,
                 "object_profile__label": getattr(mo.object_profile, "name", "")
             }]
 
