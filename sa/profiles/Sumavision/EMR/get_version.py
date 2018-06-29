@@ -16,7 +16,6 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 
-
 class Script(BaseScript):
     name = "Sumavision.EMR.get_version"
     interface = IGetVersion
