@@ -265,6 +265,8 @@ def excepthook(t, v, tb):
     """
     Override default exception handler
     """
+    import datetime  # Required for pytest
+    import sys
     now = datetime.datetime.now()
     r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
     r += ["Working directory: %s" % os.getcwd()]
