@@ -40,10 +40,10 @@ class Script(BaseScript):
         r"(^\s*IPv6 (address|Prefix is)\s*\.+ (?P<ipv6_address>\S+)\s*\n)?"
         r"^\s*(MAC Address|Burned In MAC Address)\s*\.+ (?P<mac>\S+)\s*\n"
         r"(^\s*Locally Administered MAC address\s*\.+ \S+\s*\n)?"
-        r"(^\s*MAC Address Types*\.+ .+\s*\n)?"
-        r"(^\s*Configured IPv4 Protocols*\.+ .+\s*\n)?"
-        r"(^\s*Configured IPv6 Protocol*\.+ .+\s*\n)?"
-        r"(^\s*IPv6 AutoConfig Mode*\.+ .+\s*\n)?"
+        r"(^\s*MAC Address Types\s*\.+ .+\s*\n)?"
+        r"(^\s*Configured IPv4 Protocols?\s*\.+ .+\s*\n)?"
+        r"(^\s*Configured IPv6 Protocols?\s*\.+ .+\s*\n)?"
+        r"(^\s*IPv6 AutoConfig Mode\s*\.+ .+\s*\n)?"
         r"^\s*Management VLAN ID\s*\.+ (?P<vlan_id>\d+)\s*\n",
         re.MULTILINE)
 
