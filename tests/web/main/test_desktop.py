@@ -36,7 +36,7 @@ class TestDesktopAPI(WebAPITest):
     def test_is_logged(self):
         code, headers, body = yield self.fetch("/main/desktop/is_logged/")
         assert code == 200
-        assert body == True
+        assert body is True
 
     @gen_test
     def test_html(self):

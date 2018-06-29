@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import sys
 import re
 import logging
@@ -373,11 +374,11 @@ def dump_stacks(thread_id=None):
     for tid, stack in sys._current_frames().items():
         if thread_id and tid != thread_id:
             continue
-        print "[THREAD #%s]" % tid
+        print("[THREAD #%s]" % tid)
         for filename, lineno, name, line in traceback.extract_stack(stack):
-            print "File: '%s', line %d, in %s" % (filename, lineno, name)
+            print("File: '%s', line %d, in %s" % (filename, lineno, name))
             if line:
-                print "    %s" % line.strip()
+                print("    %s" % line.strip())
 
 
 def BQ(s):
