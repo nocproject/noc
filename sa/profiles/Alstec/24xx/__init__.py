@@ -27,6 +27,9 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "write memory"
+    config_volatile = [
+        r"^!System Up Time.+?\n!Current SNTP Synchronized Time.+?\n"
+    ]
 
     @staticmethod
     def parse_kv_out(out):
