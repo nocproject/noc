@@ -162,9 +162,17 @@ class Script(BaseScript):
                 vlan_ids = []
                 match = self.rx_flags_vlan.search(s)
                 if match:
-                    vlan_ids = [int(match.group("vlan"))]
-                    if match.group("vlan2"):
-                        vlan_ids += [int(match.group("vlan2"))]
+                    """
+                    Found on ex4200-24f JUNOS 12.3R12.4
+
+                    Logical interface ge-0/0/13.0 (Index 143) (SNMP ifIndex 551)
+                      Flags: Up 0x0 VLAN-Tag [ 0x0000.0 ]  Encapsulation: ENET2
+                      Protocol aenet, AE bundle: ae0.0
+                    """
+                    if int(match.group("vlan")) != 0:
+                        vlan_ids = [int(match.group("vlan"))]
+                        if match.group("vlan2"):
+                            vlan_ids += [int(match.group("vlan2"))]
                 # `irb` and `vlan` interfaces display other,
                 # then `eth-switch` protocol
                 if l3_ids.get(sname):
