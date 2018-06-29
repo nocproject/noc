@@ -4,7 +4,7 @@ __author__ = 'FeNikS'
 # ---------------------------------------------------------------------
 # SUMAVISION.EMR.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ confdir = "para"
 path_to_temp_files = '/tmp/noc'
 path_to_files = 'for_sumavision'
 
+
 def check_path_existence(path):
         folders = path.split("/")
         path = '/'
@@ -29,6 +30,7 @@ def check_path_existence(path):
                 path += folder + "/"
                 if not os.path.exists(path):
                     os.mkdir(path)
+
 
 def clear_dir(path):
     if not os.path.exists(path):
@@ -41,9 +43,10 @@ def clear_dir(path):
             os.remove(full_path)
     os.rmdir(path)
 
-class Script(NOCScript):
+
+class Script(BaseScript):
     name = "Sumavision.EMR.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
 
     def execute(self):
         try:
@@ -67,7 +70,7 @@ class Script(NOCScript):
                     if name.endswith(".gz"):
                         copy_file_path = temp_dir + name
                         lf = open(copy_file_path, "wb")
-                        ftp.retrbinary("RETR " + name, lf.write, 8*1024)
+                        ftp.retrbinary("RETR " + name, lf.write, 8 * 1024)
                         copy_files.append(copy_file_path)
             finally:
                 ftp.quit()

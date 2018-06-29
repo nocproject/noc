@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
-    name = "Nateks.netxpert"
+    name = "Nateks.NetXpert"
     pattern_more = [
         (r"^ --More-- ", "\n"),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n")

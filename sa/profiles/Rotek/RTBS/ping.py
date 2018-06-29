@@ -14,7 +14,7 @@ from noc.sa.interfaces.iping import IPing
 
 
 class Script(BaseScript):
-    name = "Rotek.RTBSv1.ping"
+    name = "Rotek.RTBS.ping"
     interface = IPing
 
     rx_result = re.compile(
