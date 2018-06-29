@@ -10,12 +10,12 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces import IGetLocalUsers
+from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
 
 
 class Script(BaseScript):
     name = "3Com.4500.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     rx_name = re.compile(r"^\S+\s+The contents of local user\s+(?P<username>\S+):$", re.MULTILINE)
     rx_status = re.compile(r"^\s+State:\s+(?P<status>\S+)")

@@ -15,7 +15,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "3com.4500.get_interfaces"
+    name = "3Com.4500.get_interfaces"
     interface = IGetInterfaces
 
     rx_sh_svi = re.compile(
