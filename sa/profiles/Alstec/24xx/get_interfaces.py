@@ -32,8 +32,8 @@ class Script(BaseScript):
     rx_ip = re.compile(
         r"^\s*IP Address\s*\.+ (?P<ip_address>\S+)\s*\n"
         r"^\s*Subnet Mask\s*\.+ (?P<ip_subnet>\S+)\s*\n"
-        r"(^\s*Additional IP Address\s*\.+ \S+\s*\n)?"
-        r"(^\s*Additional Subnet Mask\s*\.+ \S+\s*\n)?"
+        r"(^\s*(Additional )?IP Address\s*\.+ \S+\s*\n)?"
+        r"(^\s*(Additional )?Subnet Mask\s*\.+ \S+\s*\n)?"
         r"(^\s*Default Gateway\s*\.+ \S+\s*\n)?"
         r"(^\s*IPv6 AutoConfig Mode\s*\.+ \S+\s*\n)?"
         r"(^\s*IPv6 Administrative Mode\s*\.+ \S+\s*\n)?"
