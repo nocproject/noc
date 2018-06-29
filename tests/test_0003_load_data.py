@@ -12,7 +12,7 @@ from fs import open_fs
 import ujson
 # NOC modules
 from noc.config import config
-from noc.models import get_model, is_document
+from noc.models import get_model
 
 
 def iter_data():
@@ -25,6 +25,7 @@ def iter_data():
                     data = [data]
                 for i in data:
                     yield path, i
+
 
 @pytest.fixture(params=list(iter_data()))
 def initial_data(request):
