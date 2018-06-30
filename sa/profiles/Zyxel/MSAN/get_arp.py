@@ -19,10 +19,12 @@ class Script(BaseScript):
 
     rx_arp1 = re.compile(
         r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+\d+\s+(?P<mac>\S+)\s+"
-        r"(?P<interface>\S+).*\n", re.MULTILINE)
+        r"(?P<interface>\S+).*\n", re.MULTILINE
+    )
     rx_arp2 = re.compile(
         r"^(arp add ether\s+)?(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
-        r"(?P<mac>\S+)(\s+#\s+\S+)?\s*\n", re.MULTILINE)
+        r"(?P<mac>\S+)(\s+#\s+\S+)?\s*\n", re.MULTILINE
+    )
 
     def execute(self):
         r = []
