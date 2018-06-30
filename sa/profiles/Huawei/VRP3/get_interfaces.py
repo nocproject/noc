@@ -2,25 +2,22 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP3.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
     name = "Huawei.VRP3.get_interfaces"
     interface = IGetInterfaces
-
-    TYPE = {
-        "ADL": "ADSL",
-        "SHDS": "SHDSL"
-    }
 
     rx_mac = re.compile(r"^\s*MAC address:\s+(?P<mac>\S+)")
     rx_ip = re.compile(
@@ -29,13 +26,13 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_vlan = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")
     rx_pvc = re.compile(
-        r"^\s*\d+\s+(?P<type>\S+)\s+(?P<ifname>\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+"
+        r"^\s*\d+\s+(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+"
         r"(?P<vci>\d+)\s+LAN\s+0/0/(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n",
         re.MULTILINE)
 
     rx_pvc2 = re.compile(
         r"\s+\d+\s+LAN\s+0/0/(?P<vlan>\d+)\s+\S+\s+\S+\s+"
-        r"(?P<type>\S+)\s+(?P<ifname>\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n",
+        r"(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n",
         re.MULTILINE)
 
     def execute(self):
@@ -67,8 +64,7 @@ class Script(BaseScript):
             c = self.cli("show pvc all")
             if self.rx_pvc.search(c):
                 for match in self.rx_pvc.finditer(c):
-
-                    ifname = "%s:%s" % (self.TYPE.get(match.group("type")), match.group("ifname"))
+                    ifname = match.group("ifname")
                     sub = {
                         "name": ifname,
                         "enabled_afi": ["BRIDGE", "ATM"],
@@ -91,7 +87,7 @@ class Script(BaseScript):
                         interfaces += [iface]
             else:
                 for match in self.rx_pvc2.finditer(c):
-                    ifname = "%s:%s" % (self.TYPE.get(match.group("type")), match.group("ifname"))
+                    ifname = match.group("ifname")
                     sub = {
                         "name": ifname,
                         "enabled_afi": ["BRIDGE", "ATM"],
