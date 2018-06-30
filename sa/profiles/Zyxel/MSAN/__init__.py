@@ -34,7 +34,7 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if interface.startswith("enet"):
             return "Enet" + interface[4:]
-        elif interface.startswith("adsl"):
+        elif interface.startswith("adsl") or interface.startswith("vdsl"):
             return interface[4:]
         else:
             return interface
