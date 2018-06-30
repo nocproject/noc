@@ -21,10 +21,8 @@ class Profile(BaseProfile):
     pattern_password = r"^>(?:\>| )(?:User )?[Pp]assword( \(<\d+ chars\))?:"
     pattern_more = [
         (r"^--More\(Enter: next line, spacebar: next page, "
-         r"any other key: quit\)--", " "),
-        (r"\[<frameId/slotId>\]", "\n"),
-        (r"\(y/n\) \[n\]", "y\n"),
-        (r"\[to\]\:", "\n")
+         r"any other key: quit\)--", " "), (r"\[<frameId/slotId>\]", "\n"),
+        (r"\(y/n\) \[n\]", "y\n"), (r"\[to\]\:", "\n")
     ]
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"

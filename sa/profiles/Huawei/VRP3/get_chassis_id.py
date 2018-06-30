@@ -18,10 +18,6 @@ class Script(BaseScript):
     rx_mac = re.compile(r"^\s*MAC address:\s+(?P<mac>\S+)")
 
     def execute(self):
-        match = self.re_search(self.rx_mac,
-            self.cli("show atmlan mac-address"))
+        match = self.re_search(self.rx_mac, self.cli("show atmlan mac-address"))
         mac = match.group("mac")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}
