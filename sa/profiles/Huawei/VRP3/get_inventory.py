@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):

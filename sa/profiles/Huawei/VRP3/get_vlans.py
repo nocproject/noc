@@ -40,6 +40,6 @@ class Script(BaseScript):
                     match = self.rx_vlan3.search(c)
                     if match:
                         r += [{"vlan_id": int(match.group('vlanid'))}]
-            except:
+            except Exception:
                 pass
         return r
