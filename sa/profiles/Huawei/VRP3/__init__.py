@@ -4,11 +4,14 @@
 # OS:     VRP3
 # Compatible: 3.1
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
+# Python modules
+import re
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -33,6 +36,8 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "save\ny\n"
+
+    rx_interface_name = re.compile(r"^(?P<type>\S+)\s+(?P<number>\d+/\d+/\d+)", re.MULTILINE)
 
     def convert_interface_name(self, s):
         """
