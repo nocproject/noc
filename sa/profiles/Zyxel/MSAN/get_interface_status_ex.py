@@ -30,15 +30,16 @@ class Script(BaseScript):
     def get_iftable(self, oid):
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid,
-                                        max_repetitions=self.get_max_repetitions(),
+        for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
                                         max_retries=self.get_getnext_retires()):
             yield int(oid.rsplit(".", 1)[-1]), v
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
+
             def f(x):
                 return x
+
         for ifindex, v in self.get_iftable(mib):
             s = r.get(ifindex)
             if s:
@@ -52,15 +53,10 @@ class Script(BaseScript):
             try:
                 v = self.profile.convert_interface_name(name)
             except InterfaceTypeError as e:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, e
-                )
+                self.logger.debug("Ignoring unknown interface %s: %s", name, e)
                 unknown_interfaces += [name]
                 continue
-            r[ifindex] = {
-                "interface": v
-            }
+            r[ifindex] = {"interface": v}
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -88,8 +84,7 @@ class Script(BaseScript):
                         r[ifindex]["out_speed"] = s * 1000
         # Log unknown interfaces
         if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
+            self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
         return r.values()
 
     def is_high_speed(self, data, speed):
