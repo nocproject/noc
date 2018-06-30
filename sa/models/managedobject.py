@@ -16,6 +16,7 @@ import re
 import itertools
 import operator
 from threading import Lock
+import datetime
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
@@ -1029,7 +1030,7 @@ class ManagedObject(Model):
             logger.debug("[%s] Path template is not configured. Skipping", self.name)
             return
         # Render path
-        path = self.object_profile.config_mirror_template.render_subject(object=self).strip()
+        path = self.object_profile.config_mirror_template.render_subject(object=self, now=datetime.datetime.now()).strip()
         if not path:
             logger.debug("[%s] Empty mirror path. Skipping", self.name)
             return
