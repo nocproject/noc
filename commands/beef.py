@@ -163,7 +163,7 @@ class Command(BaseCommand):
         storage = options.get("storage")
         if not storage:
             storage = ExtStorage.objects.filter(enable_beef=True).first()
-        r = ["UUID,Vendor,Platform,Version,SpecUUID,Changed,Path"]
+        r = ["UUID,Profile,Vendor,Platform,Version,SpecUUID,Changed,Path"]
         st_fs = storage.open_fs()
         for step in st_fs.walk(''):
             if not step.files:
@@ -172,6 +172,7 @@ class Command(BaseCommand):
                 beef = Beef.load(storage, file.make_path(step.path))
                 r += [",".join([
                     beef.uuid,
+                    beef.profile,
                     beef.box.vendor,
                     beef.box.platform,
                     beef.box.version,
@@ -186,14 +187,19 @@ class Command(BaseCommand):
 
     def handle_test(self, beef, *args, **options):
         storage = options.get("storage")
-        script = options.get("script", "get_version")
-        if "." not in script:
+        script = options.get("script")
+        profile = None
+        if not script:
+            script = "get_version"
+        if script and "." in script:
             self.print("Not setup profile in script name")
-        profile, script = script.rsplit(".", 1)
+            profile, script = script.rsplit(".", 1)
         beefs = self.get_beef_by(storage, beef[0])
         print(beefs)
         for beef in beefs:
             for storage, path in beefs[beef]:
+                if not profile:
+                    profile = beef.profile
                 self.run_beef(storage, path, beef, script_name=script, profile_name=profile)
 
     def handle_fix(self, beef, *args, **options):

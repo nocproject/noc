@@ -26,6 +26,7 @@ class Beef(object):
         self.version = None
         self.uuid = None
         self.spec = None
+        self.profile = None
         self.box = None
         self.changed = None
         self.description = None
@@ -58,6 +59,7 @@ class Beef(object):
         self.version = self.get_or_die(data, "version")
         self.uuid = self.get_or_die(data, "uuid")
         self.spec = self.get_or_die(data, "spec")
+        self.profile = self.get_or_die(data, "profile")
         box = self.get_or_die(data, "box")
         self.box = Box(
             vendor=self.get_or_die(box, "vendor"),
@@ -95,6 +97,7 @@ class Beef(object):
             "version": "1",
             "uuid": self.uuid,
             "spec": self.spec,
+            "profile": self.profile,
             "box": {
                 "vendor": self.box.vendor,
                 "platform": self.box.platform,

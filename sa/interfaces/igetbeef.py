@@ -54,6 +54,8 @@ class IGetBeef(BaseInterface):
         "uuid": StringParameter(),
         # spec.uuid
         "spec": StringParameter(),
+        # Profile
+        "profile": StringParameter(),
         #
         "box": DictParameter(attrs={
             "vendor": StringParameter(),

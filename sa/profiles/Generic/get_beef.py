@@ -32,6 +32,7 @@ class Script(BaseScript):
             "version": self.BEEF_FORMAT,
             "uuid": str(uuid.uuid4()),
             "spec": spec["uuid"],
+            "profile": spec["profile"],
             "changed": datetime.datetime.now().isoformat(),
             "cli": [],
             "cli_fsm": [],
