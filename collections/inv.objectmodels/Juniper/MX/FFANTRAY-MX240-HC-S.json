@@ -1,0 +1,24 @@
+{
+    "name": "Juniper | MX | FFANTRAY-MX240-HC-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "de2f28f3-3c38-4cdb-83b6-0601c1dbb8f9",
+    "vendor__code": "JUNIPER",
+    "description": "MX240 High Capacity fantray (upper or lower)",
+    "connection_rule__name": "Juniper | MX",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX240 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FFANTRAY-MX240-HC-S"],
+            "part_no": ["711-059360"]
+        }
+    }
+}
