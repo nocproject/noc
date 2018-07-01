@@ -8,14 +8,14 @@
     "cr_context": "FPC",
     "connections": [
         {
-            "description": "MPC0 slot",
+            "description": "MIC0 slot",
             "direction": "i",
             "gender": "f",
             "name": "mic0",
             "type__name": "Juniper | MX | MIC"
         },
         {
-            "description": "MPC1 slot",
+            "description": "MIC1 slot",
             "direction": "i",
             "gender": "f",
             "name": "mic1",

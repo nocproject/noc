@@ -1,0 +1,39 @@
+{
+    "name": "NoName | Transceiver | 10G | SFP+-10G-CU3M",
+    "$collection": "inv.objectmodels",
+    "uuid": "f9d1336d-3eec-4667-8bc0-c6f6f0b3e978",
+    "vendor__code": "NONAME",
+    "description": "SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 3m",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["SFP+-10G-CU3M"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

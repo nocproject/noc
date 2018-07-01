@@ -1,0 +1,197 @@
+{
+    "name": "Juniper | EX | EX2200-C-12P-2G",
+    "$collection": "inv.objectmodels",
+    "uuid": "b4e60624-c63d-4e02-acee-69ddfe5e565a",
+    "vendor__code": "JUNIPER",
+    "description": "EX 2200, 12-port 10/100/1000BaseT (12-ports PoE+) with 2 combo uplink ports",
+    "connection_rule__name": "Juniper | EX2200",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/0/11 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "0/11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/1/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "1/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/1/0 SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/0",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "ge-X/1/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "1/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "ge-X/1/1 SFP",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["EX2200-C-12P-2G"],
+            "order_part_no": ["EX2200-C-12P-2G"],
+            "part_no": ["EX2200-C-12P-2G"]
+        },
+        "dimensions": {
+            "depth": 228,
+            "height": 44,
+            "width": 269
+        },
+        "power": {
+            "power": 180.0
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        }
+    }
+}
