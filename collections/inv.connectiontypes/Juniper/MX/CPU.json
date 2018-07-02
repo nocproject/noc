@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | MX | CPU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "1ed5e76d-5991-4aec-8311-5e76f047cf2c",
+    "description": "Juniper MX MPS's CPU",
+    "c_group": [],
+    "genders": "mf"
+}
