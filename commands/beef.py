@@ -8,9 +8,7 @@
 
 # Python modules
 from __future__ import print_function
-from collections import defaultdict
 import argparse
-import uuid
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
@@ -46,15 +44,33 @@ class Command(BaseCommand):
         # list command
         list_parser = subparsers.add_parser("list")  # noqa
         # test command
-        test_parser = subparsers.add_parser("test")
-        test_parser.add_argument(
+        run_parser = subparsers.add_parser("run")
+        run_parser.add_argument(
             "--script",
-            help="Script name for tests. Default (get_version)"
+            help="Script name for runs. Default (get_version)"
         )
-        test_parser.add_argument(
-            "beef",
-            nargs=1,
-            help="Beef UUID or path"
+        run_parser.add_argument(
+            "--storage",
+            help="External storage name"
+        )
+        run_parser.add_argument(
+            "--path",
+            help="Path name"
+        )
+        out_group = run_parser.add_mutually_exclusive_group()
+        out_group.add_argument(
+            "--pretty",
+            action="store_true",
+            dest="pretty",
+            default=False,
+            help="Pretty-print output"
+        )
+        out_group.add_argument(
+            "--yaml",
+            action="store_true",
+            dest="yaml",
+            default=False,
+            help="YAML output"
         )
         # fix command
         fix_parser = subparsers.add_parser("fix")
@@ -117,17 +133,11 @@ class Command(BaseCommand):
             self.print("  Done")
 
     def handle_view(self, storage, path, *args, **options):
-        st = ExtStorage.get_by_name(storage)
-        if not st:
-            self.die("Invalid storage '%s'" % storage)
-        if not st.enable_beef:
-            self.die("Storage is not configured for beef")
-        try:
-            beef = Beef.load(st, path)
-        except IOError as e:
-            self.die("Failed to load beef: %s" % e)
+        st = self.get_beef_storage(storage)
+        beef = self.get_beef(st, path)
         r = [
             "UUID     : %s" % beef.uuid,
+            "Profile  : %s" % beef.box.profile,
             "Platform : %s %s Version: %s" % (
                 beef.box.vendor,
                 beef.box.platform,
@@ -149,7 +159,7 @@ class Command(BaseCommand):
         r += ["--[CLI]----------"]
         for c in beef.cli:
             r += ["---- Names: %s" % ", ".join(c.names)]
-            r += ["-------- Request: %s" % c.request]
+            r += ["-------- Request: %r" % c.request]
             for n, reply in enumerate(c.reply):
                 r += [
                     "-------- Packet #%d" % n,
@@ -184,69 +194,27 @@ class Command(BaseCommand):
         self.stdout.write("\n".join(r) + "\n")
         return
 
-    def handle_test(self, beef, *args, **options):
-        storage = options.get("storage")
-        script = options.get("script", "get_version")
-        if "." not in script:
-            self.print("Not setup profile in script name")
-        profile, script = script.rsplit(".", 1)
-        beefs = self.get_beef_by(storage, beef[0])
-        print(beefs)
-        for beef in beefs:
-            for storage, path in beefs[beef]:
-                self.run_beef(storage, path, beef, script_name=script, profile_name=profile)
-
-    def handle_fix(self, beef, *args, **options):
-        raise NotImplementedError()
-
-    def get_beef_by(self, storage, beef_s=None, vendor=None):
-        r = defaultdict(list)
-        uuid_string = None
-        path = None
-        try:
-            uuid_string = uuid.UUID(beef_s, version=4)
-            uuid_string = beef_s
-        except ValueError:
-            path = beef_s
-        if not storage:
-            storage = ExtStorage.objects.filter(enable_beef=True).first()
-        st_fs = storage.open_fs()
-        for step in st_fs.walk(''):
-            if not step.files:
-                continue
-            for file in step.files:
-                beef = Beef.load(storage, file.make_path(step.path))
-                if uuid_string and beef.uuid == uuid_string:
-                    r[beef] += [(storage, file.make_path(step.path))]
-                elif path and path in step.path:
-                    r[beef] += [(storage, file.make_path(step.path))]
-                elif vendor and beef.vendor == vendor:
-                    r[beef] += [(storage, file.make_path(step.path))]
-        return r
-
-    def run_beef(self, storage, b_path, beef, profile_name="Generic.Host",
-                 script_name="get_version", fix=False):
+    def handle_run(self, path, storage, script, pretty=False, yaml=False, *args, **options):
         from noc.core.script.loader import loader
-
-        script = "%s.%s" % (profile_name, script_name)
-
-        if not beef:
-            self.die("Beef not found: %s" % beef[0])
-        script_class = loader.get_script(script)
-        if not script_class:
-            self.die("Invalid script: %s" % script)
+        st = self.get_beef_storage(storage)
+        beef = self.get_beef(st, path)
+        if "." not in script:
+            script = "%s.%s" % (beef.box.profile, script)
+        scls = loader.get_script(script)
+        if not scls:
+            self.die("Failed to load script '%s'" % script)
         # Build credentials
         credentials = {
             "address": beef.uuid,
             "cli_protocol": "beef",
-            "beef_storage_url": storage.url,
-            "beef_path": b_path
+            "beef_storage_url": st.url,
+            "beef_path": path
         }
         # Get capabilities
         caps = {}
         # Run script
         service = ServiceStub(pool="default")
-        scr = script_class(
+        scr = scls(
             service=service,
             credentials=credentials,
             capabilities=caps,
@@ -258,13 +226,44 @@ class Command(BaseCommand):
             timeout=3600,
             name=script
         )
-        self.print("\n".join(("", "-" * 60, "Testing: %s" % beef.uuid, "-" * 60, "")))
-        scr.run()
-        # pprint.pprint(result, stream=self.stdout)
-        # if fix and b.result != result:
-        #     self.stdout.write("Fixing %s\n" % beef[0])
-        #     b.result = result
-        #     b.save(beef[0])
+        result = scr.run()
+        if pretty:
+            import pprint
+            pprint.pprint(result)
+        elif yaml:
+            import yaml
+            import sys
+            yaml.dump(result, sys.stdout, indent=2)
+        else:
+            self.stdout.write("%s\n" % result)
+
+    def handle_fix(self, beef, *args, **options):
+        raise NotImplementedError()
+
+    def get_beef_storage(self, name):
+        """
+        Get beef storage by nname
+        :param name:
+        :return:
+        """
+        st = ExtStorage.get_by_name(name)
+        if not st:
+            self.die("Invalid storage '%s'" % name)
+        if not st.enable_beef:
+            self.die("Storage is not configured for beef")
+        return st
+
+    def get_beef(self, storage, path):
+        """
+        Get beef
+        :param storage: Storage instance
+        :param path: Beef path
+        :return:
+        """
+        try:
+            return Beef.load(storage, path)
+        except IOError as e:
+            self.die("Failed to load beef: %s" % e)
 
 
 class ServiceStub(object):
