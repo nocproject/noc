@@ -1034,7 +1034,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         """
         for cmd in self.cli_tracked_data:
             self.logger.debug("Collecting %d tracked CLI items", len(self.cli_tracked_data[cmd]))
-            yield cmd, self.cli_fsm_tracked_data[cmd]
+            yield cmd, self.cli_tracked_data[cmd]
         self.cli_tracked_data = {}
 
     def iter_cli_fsm_tracking(self):
