@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# AlliedTelesis.get_interfaces
+# AlliedTelesis.AT8000S.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -13,7 +13,7 @@ import re
 
 
 class Script(BaseScript):
-    name = "AlliedTelesis.get_interfaces"
+    name = "AlliedTelesis.AT8000S.get_interfaces"
     interface = IGetInterfaces
 
     rx_port = re.compile(

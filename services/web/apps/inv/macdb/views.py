@@ -72,7 +72,11 @@ class MACApplication(ExtApplication):
                 "managed_object__label": str(mo),
                 "interface": str(iface),
                 "interface__label": str(iface),
-                "description": getattr(iface, "description", "")
+                "description": getattr(iface, "description", ""),
+                "pool": str(mo.pool),
+                "pool__label": getattr(mo.pool, "name", ""),
+                "object_profile": str(mo.object_profile),
+                "object_profile__label": getattr(mo.object_profile, "name", "")
             }]
         total = len(current)
         if total == int(limit):
@@ -125,7 +129,6 @@ class MACApplication(ExtApplication):
         :param mac:
         :return:
         """
-
         current = []
         mc = self.macdb
         mac = MAC(mac)
@@ -154,7 +157,11 @@ class MACApplication(ExtApplication):
                 "managed_object__label": str(mo),
                 "interface": str(iface),
                 "interface__label": str(iface),
-                "description": getattr(iface, "description", "")
+                "description": getattr(iface, "description", ""),
+                "pool": str(mo.pool),
+                "pool__label": mo.pool.name,
+                "object_profile": str(mo.object_profile),
+                "object_profile__label": mo.object_profile.name
             }]
 
         history = []
@@ -189,6 +196,8 @@ class MACApplication(ExtApplication):
                 "vlan": i.vlan,
                 "managed_object_name": str(i.managed_object_name),
                 "interface_name": str(i.interface_name),
-                "description": c
+                "description": c,
+                "pool": str(i.pool_name),
+                "object_profile": str(i.object_profile_name)
             }]
         return current

@@ -12,6 +12,7 @@ import six
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.lib.text import parse_table_header
+from noc.lib.text import parse_kv
 from noc.core.mib import mib
 
 
@@ -27,6 +28,10 @@ class Script(BaseScript):
         "online": "active",  # associated
         "offline": "inactive",  # disassociating
     }
+
+    detail_map = {"ont distance(m)": "ont_distance",
+                  "ont ip 0 address/mask": "ont_address",
+                  "last down cause": "down_cause"}
 
     def update_dict(self, s, d):
         for k in d:
@@ -99,6 +104,14 @@ class Script(BaseScript):
                         "description": "",
                         "location": ""
                     }
+        for ont_id in r:
+            if r[ont_id]["status"] != "active":
+                continue
+            v = self.cli("display ont info %s %s %s %s" % tuple(ont_id.split("/")))
+            parts = self.splitter.split(v)
+            parse_result = parse_kv(self.detail_map, parts[1])
+            r[ont_id]["distance"] = float(parse_result.get("ont_distance", 0))
+            r[ont_id]["ip"] = parse_result.get("ont_address", "").split("/")[0]
         return list(six.itervalues(r))
 
     def execute_snmp(self, **kwargs):

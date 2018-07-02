@@ -3,16 +3,14 @@
 # Vendor: Sencore
 # OS:     Probe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2008 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 __author__ = 'FeNikS'
 """
 """
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import HTTP
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Sencore.Probe"
-    supported_schemes = [HTTP]
