@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import socket
 # Third-party modules
 import tornado.gen
+import tornado.iostream
 from tornado.concurrent import TracebackFuture
 # NOC modules
 from .base import CLI
@@ -23,7 +24,8 @@ class BeefCLI(CLI):
 
     def create_iostream(self):
         self.state = "notconnected"
-        self.sender, receiver = socket.socketpair()
+        sender, receiver = socket.socketpair()
+        self.sender = tornado.iostream.IOStream(sender)
         return BeefIOStream(receiver, self)
 
     @tornado.gen.coroutine
@@ -34,9 +36,19 @@ class BeefCLI(CLI):
         if self.state != "prompt":
             raise tornado.gen.Return()  # Will be replied via reply_state
         beef = self.script.request_beef()
+        gen = beef.iter_cli_reply(cmd[:-len(self.profile.command_submit)])
+        self.ioloop.add_callback(self.streamer, gen)
+
+    @tornado.gen.coroutine
+    def streamer(self, gen):
+        """
+        Stream gen to sender
+        :param gen:
+        :return:
+        """
         try:
-            for reply in beef.iter_cli_reply(cmd[:-len(self.profile.command_submit)]):
-                self.sender.send(reply)
+            for reply in gen:
+                yield self.sender.write(reply)
                 yield
         except KeyError:
             # Propagate exception
@@ -60,7 +72,7 @@ class BeefCLI(CLI):
         self.logger.debug("Replying '%s' state", state)
         beef = self.script.request_beef()
         for reply in beef.iter_fsm_state_reply(state):
-            self.sender.send(reply)
+            self.sender.write(reply)
             yield
 
     def close(self):
