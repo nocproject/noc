@@ -19,9 +19,6 @@ import cachetools
 # NOC modules
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.object import Object
-from noc.inv.models.networksegment import NetworkSegment
 from noc.core.debug import error_report
 from noc.main.models import User
 from noc.config import config
