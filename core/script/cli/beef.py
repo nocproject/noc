@@ -52,7 +52,7 @@ class BeefCLI(CLI):
                 yield
         except KeyError:
             # Propagate exception
-            self.sender.send(self.SYNTAX_ERROR_CODE)
+            self.sender.write(self.SYNTAX_ERROR_CODE)
             yield
 
     def set_state(self, state):
