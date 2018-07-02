@@ -14,6 +14,8 @@ import itertools
 # Third-party modules
 import ujson
 import six
+# NOC modules
+from noc.core.script.error import CLISyntaxError
 
 Box = namedtuple("Box", ["vendor", "platform", "version"])
 CLIFSM = namedtuple("CLIFSM", ["state", "reply"])
@@ -221,7 +223,7 @@ class Beef(object):
         :param state:
         :return:
         """
-        cmd = str(command.rstrip())
+        cmd = str(command)
         found = False
         for c in self.cli:
             if c.request == cmd:
@@ -230,7 +232,7 @@ class Beef(object):
                 found = True
                 break
         if not found:
-            raise KeyError
+            raise CLISyntaxError("Command not found")
 
     @staticmethod
     def mib_decode_base64(value):

@@ -32,7 +32,7 @@ class BeefCLI(CLI):
         cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
         beef = self.script.request_beef()
-        for reply in beef.iter_cli_reply(cmd):
+        for reply in beef.iter_cli_reply(cmd[:-len(self.profile.command_submit)]):
             self.sender.send(reply)
             yield
 
