@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CARD</title>
+    <title>{{ card_title }}</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="{{ hashed("/ui/pkg/bootstrap/css/bootstrap.min.css") }}">
     <!-- Optional theme -->
@@ -12,19 +12,19 @@
     <link rel="stylesheet" href="{{ hashed("/ui/pkg/fontawesome/css/font-awesome.min.css") }}">
     <script src="{{ hashed("/ui/pkg/jquery/jquery.min.js") }}"></script>
     {% if card_js -%}
-    {% for js in card_js -%}
-    <script src="{{ hashed(js) }}"></script>
-    {%- endfor %}
+        {% for js in card_js -%}
+            <script src="{{ hashed(js) }}"></script>
+        {%- endfor %}
     {%- endif %}
     {% if card_css -%}
-    {% for css in card_css -%}
-     <link rel="stylesheet" href="{{ hashed(css) }}">
-    {%- endfor %}
+        {% for css in card_css -%}
+            <link rel="stylesheet" href="{{ hashed(css) }}">
+        {%- endfor %}
     {%- endif %}
 </head>
 <body>
-<div class="container-fluid">
-{{ card_data }}
-</div>
+    <div class="container-fluid">
+        {{ card_data }}
+    </div>
 </body>
 </html>
