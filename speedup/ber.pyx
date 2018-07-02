@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ASN.1 BER utitities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -92,8 +92,8 @@ def parse_p_oid(bytes msg):
             optr,
             1024 - (optr - out),
             "%u.%u",
-            ptr[0] // 40,
-            ptr[0] % 40
+            <unsigned int>(ptr[0] // 40),
+            <unsigned int>(ptr[0] % 40)
         )
     ptr += 1
     b = 0
