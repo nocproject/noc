@@ -503,6 +503,8 @@ class Config(BaseConfig):
     class tests(ConfigSection):
         # List of pyfilesystem URLs holding event classification samples
         events_paths = ListParameter(item=StringParameter())
+        # List of pyfilesystem URLs holding beef test cases
+        beef_paths = ListParameter(item=StringParameter())
 
     class peer(ConfigSection):
         enable_ripe = BooleanParameter(default=True)

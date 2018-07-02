@@ -324,23 +324,28 @@ class Command(BaseCommand):
                 "beef_path": beef_path,
                 "access_preference": test.get("access_preference", "SC")
             }
+            # Build version
+            version = {
+                "vendor": beef.box.vendor,
+                "platform": beef.box.platform,
+                "version": beef.box.version
+            }
             # @todo: Input
             scr = scls(
                 service=service,
                 credentials=credentials,
                 capabilities=caps,
-                version={
-                    "vendor": beef.box.vendor,
-                    "platform": beef.box.platform,
-                    "version": beef.box.version
-                },
+                version=version,
                 timeout=3600,
                 name=script
             )
             self.print("[%04d] Running %s" % (n, test["script"]))
             result = scr.run()
             tc = {
+                "script": script,
+                "capabilities": caps,
                 "credentials": credentials,
+                "version": version,
                 "input": {},
                 "result": result
             }
