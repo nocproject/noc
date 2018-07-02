@@ -48,6 +48,7 @@ class Script(BaseScript):
         result["mib"] = self.get_snmp_results(spec)
         # Process version reply
         result["box"] = self.scripts.get_version()
+        result["box"]["profile"] = self.profile.name
         return result
 
     def get_cli_results(self, spec):

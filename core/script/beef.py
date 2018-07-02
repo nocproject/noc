@@ -17,7 +17,7 @@ import six
 # NOC modules
 from noc.core.script.error import CLISyntaxError
 
-Box = namedtuple("Box", ["vendor", "platform", "version"])
+Box = namedtuple("Box", ["profile", "vendor", "platform", "version"])
 CLIFSM = namedtuple("CLIFSM", ["state", "reply"])
 CLI = namedtuple("CLI", ["names", "request", "reply"])
 MIB = namedtuple("MIB", ["oid", "value"])
@@ -62,6 +62,7 @@ class Beef(object):
         self.spec = self.get_or_die(data, "spec")
         box = self.get_or_die(data, "box")
         self.box = Box(
+            profile=self.get_or_die(box, "profile"),
             vendor=self.get_or_die(box, "vendor"),
             platform=self.get_or_die(box, "platform"),
             version=self.get_or_die(box, "version")
@@ -98,6 +99,7 @@ class Beef(object):
             "uuid": self.uuid,
             "spec": self.spec,
             "box": {
+                "profile": self.box.profile,
                 "vendor": self.box.vendor,
                 "platform": self.box.platform,
                 "version": self.box.version
