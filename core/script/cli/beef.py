@@ -31,9 +31,16 @@ class BeefCLI(CLI):
         # @todo: Apply encoding
         cmd = str(cmd)
         self.logger.debug("Send: %r", cmd)
+        if self.state != "prompt":
+            raise tornado.gen.Return()  # Will be replied via reply_state
         beef = self.script.request_beef()
-        for reply in beef.iter_cli_reply(cmd[:-len(self.profile.command_submit)]):
-            self.sender.send(reply)
+        try:
+            for reply in beef.iter_cli_reply(cmd[:-len(self.profile.command_submit)]):
+                self.sender.send(reply)
+                yield
+        except KeyError:
+            # Propagate exception
+            self.sender.send(self.SYNTAX_ERROR_CODE)
             yield
 
     def set_state(self, state):

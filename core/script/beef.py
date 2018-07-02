@@ -234,7 +234,7 @@ class Beef(object):
                 found = True
                 break
         if not found:
-            raise CLISyntaxError("Command not found")
+            raise KeyError("Command not found")
 
     @staticmethod
     def mib_decode_base64(value):
