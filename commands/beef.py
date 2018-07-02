@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import argparse
+import os
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
@@ -73,16 +74,45 @@ class Command(BaseCommand):
             default=False,
             help="YAML output"
         )
-        # fix command
-        fix_parser = subparsers.add_parser("fix")
-        fix_parser.add_argument(
-            "beef",
-            nargs=1,
-            help="Beef UUID or path"
+        # create-test-case
+        create_test_case_parser = subparsers.add_parser("create-test-case")
+        create_test_case_parser.add_argument(
+            "--storage",
+            help="External storage name"
+        )
+        create_test_case_parser.add_argument(
+            "--path",
+            help="Path name"
+        )
+        create_test_case_parser.add_argument(
+            "--test-storage",
+            help="External storage name"
+        )
+        create_test_case_parser.add_argument(
+            "--test-path",
+            help="Path name"
+        )
+        create_test_case_parser.add_argument(
+            "--config-storage",
+            help="External storage name"
+        )
+        create_test_case_parser.add_argument(
+            "--config-path",
+            help="Path name"
+        )
+        # build-test-case
+        build_test_case_parser = subparsers.add_parser("build-test-case")
+        build_test_case_parser.add_argument(
+            "--test-storage",
+            help="External storage name"
+        )
+        build_test_case_parser.add_argument(
+            "--test-path",
+            help="Path name"
         )
 
     def handle(self, cmd, *args, **options):
-        return getattr(self, "handle_%s" % cmd)(*args, **options)
+        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_collect(self, spec, objects, *args, **options):
         # Get spec data
@@ -134,7 +164,7 @@ class Command(BaseCommand):
             self.print("  Done")
 
     def handle_view(self, storage, path, *args, **options):
-        st = self.get_beef_storage(storage)
+        st = self.get_storage(storage, beef=True)
         beef = self.get_beef(st, path)
         r = [
             "UUID     : %s" % beef.uuid,
@@ -197,7 +227,7 @@ class Command(BaseCommand):
 
     def handle_run(self, path, storage, script, pretty=False, yaml=False, *args, **options):
         from noc.core.script.loader import loader
-        st = self.get_beef_storage(storage)
+        st = self.get_storage(storage, beef=True)
         beef = self.get_beef(st, path)
         # Build credentials
         credentials = {
@@ -239,20 +269,106 @@ class Command(BaseCommand):
             else:
                 self.stdout.write("%s\n" % result)
 
-    def handle_fix(self, beef, *args, **options):
-        raise NotImplementedError()
+    def handle_create_test_case(self, storage, path, config_storage, config_path,
+                                test_storage, test_path, *args, **options):
+        # Load beef
+        beef_st = self.get_storage(storage, beef=True)
+        beef = self.get_beef(beef_st, path)
+        # Load config
+        config_st = self.get_storage(config_storage, beef_test_config=True)
+        with config_st.open_fs() as fs:
+            cfg = fs.getbytes(unicode(config_path))
+        # Create test
+        test_st = self.get_storage(test_storage, beef_test=True)
+        with test_st.open_fs() as fs:
+            # Create test directory
+            self.print("Creating %s:%s" % (test_storage, test_path))
+            fs.makedirs(unicode(test_path))
+            # Write config
+            self.print("Writing %s:%s/test-config.yml" % (test_storage, test_path))
+            fs.setbytes(unicode(os.path.join(test_path, "test-config.yml")), cfg)
+        # Write beef
+        self.print("Writing %s:%s/beef.json.bz2" % (test_storage, test_path))
+        beef.save(test_st, unicode(os.path.join(test_path, "beef.json.bz2")))
 
-    def get_beef_storage(self, name):
+    def handle_build_test_case(self, test_storage, test_path, *args, **options):
+        import yaml
+        import ujson
+        import bz2
+        from noc.core.script.loader import loader
+
+        test_st = self.get_storage(test_storage, beef_test=True)
+        # Get config
+        with test_st.open_fs() as fs:
+            data = fs.getbytes(unicode(os.path.join(test_path, "test-config.yml")))
+            cfg = yaml.load(data)
+        # Get beef
+        beef_path = os.path.join(test_path, "beef.json.bz2")
+        beef = self.get_beef(test_st, beef_path)
+        # Get capabilities
+        caps = {}
+        # Run tests
+        tests = cfg.get("tests", [])
+        service = ServiceStub(pool="default")
+        for n, test in enumerate(tests):
+            # Load script
+            script = "%s.%s" % (beef.box.profile, test["script"])
+            scls = loader.get_script(script)
+            if not scls:
+                self.die("Failed to load script '%s'" % script)
+            # Build credentials
+            credentials = {
+                "address": beef.uuid,
+                "cli_protocol": "beef",
+                "beef_storage_url": test_st.url,
+                "beef_path": beef_path,
+                "access_preference": test.get("access_preference", "SC")
+            }
+            # @todo: Input
+            scr = scls(
+                service=service,
+                credentials=credentials,
+                capabilities=caps,
+                version={
+                    "vendor": beef.box.vendor,
+                    "platform": beef.box.platform,
+                    "version": beef.box.version
+                },
+                timeout=3600,
+                name=script
+            )
+            self.print("[%04d] Running %s" % (n, test["script"]))
+            result = scr.run()
+            tc = {
+                "credentials": credentials,
+                "input": {},
+                "result": result
+            }
+            data = bz2.compress(ujson.dumps(tc))
+            #
+            rn = os.path.join(test_path, "%04d.%s.json.bz2" % (n, test["script"]))
+            self.print("[%04d] Writing %s" % (n, rn))
+            with test_st.open_fs() as fs:
+                fs.setbytes(unicode(rn), data)
+
+    def get_storage(self, name, beef=False, beef_test=False, beef_test_config=False):
         """
         Get beef storage by nname
         :param name:
+        :param beef:
+        :param beef_test:
+        :param beef_test_config:
         :return:
         """
         st = ExtStorage.get_by_name(name)
         if not st:
             self.die("Invalid storage '%s'" % name)
-        if not st.enable_beef:
+        if beef and st.type != "beef":
             self.die("Storage is not configured for beef")
+        if beef_test and st.type != "beef_test":
+            self.die("Storage is not configured for beef_test")
+        if beef_test_config and st.type != "beef_test_config":
+            self.die("Storage is not configured for beef_test_config")
         return st
 
     def get_beef(self, storage, path):
