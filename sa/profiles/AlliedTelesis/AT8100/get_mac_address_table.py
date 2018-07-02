@@ -22,7 +22,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"
         if interface is not None:
             cmd += " interface %s" % interface

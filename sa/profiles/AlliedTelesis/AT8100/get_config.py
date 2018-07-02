@@ -16,6 +16,6 @@ class Script(BaseScript):
     name = "AlliedTelesis.AT8100.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self):
         config = self.cli("show running-config")
         return self.cleaned_config(config)

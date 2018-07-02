@@ -23,7 +23,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show arp")
         r = []
         for match in self.rx_line.finditer(v):

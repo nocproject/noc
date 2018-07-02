@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^MAC Address \.+ (?P<mac>\S+)\s*\n", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show switch", cached=True)
         match = self.rx_mac.search(v)
         return {

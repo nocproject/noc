@@ -30,7 +30,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show system")
         match1 = self.rx_plat.search(v)
         match2 = self.rx_boot.search(v)

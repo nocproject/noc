@@ -33,7 +33,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show interface")
         ifaces = []
         for match in self.rx_interface.finditer(v):
