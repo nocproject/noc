@@ -278,6 +278,8 @@ class CLI(object):
                     )
                 else:
                     r = yield f
+                if r == self.SYNTAX_ERROR_CODE:
+                    raise tornado.gen.Return(self.SYNTAX_ERROR_CODE)
                 if self.script.to_track:
                     self.script.push_cli_tracking(r, self.state)
             except tornado.iostream.StreamClosedError:
