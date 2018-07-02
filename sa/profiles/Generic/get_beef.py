@@ -77,11 +77,12 @@ class Script(BaseScript):
             except self.ScriptError:
                 pass
             # Append tracked data
-            r += [{
-                "names": cmd_answers[cmd],
-                "request": cmd,
-                "reply": [v.encode(self.CLI_ENCODING) for v in self.pop_cli_tracking()]
-            }]
+            for rcmd, packets in self.iter_cli_tracking():
+                r += [{
+                    "names": cmd_answers.get(rcmd, ["setup.cli"]),
+                    "request": rcmd,
+                    "reply": [v.encode(self.CLI_ENCODING) for v in packets]
+                }]
         self.stop_tracking()
         return r
 

@@ -169,7 +169,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         self.partial_result = None
         # Tracking
         self.to_track = False
-        self.cli_tracked_data = []
+        self.cli_tracked_data = {}  # command -> [packets]
+        self.cli_tracked_command = None
         # state -> [..]
         self.cli_fsm_tracked_data = {}
         #
@@ -769,6 +770,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 return format_result(r)
         command_submit = command_submit or self.profile.command_submit
         stream = self.get_cli_stream()
+        if self.to_track:
+            self.cli_tracked_command = cmd
         r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
                            cmd_next=cmd_next, cmd_stop=cmd_stop,
                            ignore_errors=ignore_errors)
@@ -1008,11 +1011,14 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     def stop_tracking(self):
         self.logger.debug("Stop tracking")
         self.to_track = False
-        self.cli_tracked_data = []
+        self.cli_tracked_data = {}
 
     def push_cli_tracking(self, r, state):
         if state == "prompt":
-            self.cli_tracked_data += [r]
+            if self.cli_tracked_command in self.cli_tracked_data:
+                self.cli_tracked_data[self.cli_tracked_command] += [r]
+            else:
+                self.cli_tracked_data[self.cli_tracked_command] = [r]
         elif state in self.cli_fsm_tracked_data:
             self.cli_fsm_tracked_data[state] += [r]
         else:
@@ -1021,11 +1027,15 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     def push_snmp_tracking(self, oid, tlv):
         self.logger.debug("PUSH SNMP %s: %r", oid, tlv)
 
-    def pop_cli_tracking(self):
-        self.logger.debug("Collecting %d tracked CLI items", len(self.cli_tracked_data))
-        r = self.cli_tracked_data
-        self.cli_tracked_data = []
-        return r
+    def iter_cli_tracking(self):
+        """
+        Yields command, packets for collected data
+        :return:
+        """
+        for cmd in self.cli_tracked_data:
+            self.logger.debug("Collecting %d tracked CLI items", len(self.cli_tracked_data[cmd]))
+            yield cmd, self.cli_fsm_tracked_data[cmd]
+        self.cli_tracked_data = {}
 
     def iter_cli_fsm_tracking(self):
         for state in self.cli_fsm_tracked_data:
