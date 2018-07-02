@@ -47,6 +47,7 @@ class Command(BaseCommand):
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
             "--script",
+            action="append",
             help="Script name for runs. Default (get_version)"
         )
         run_parser.add_argument(
@@ -198,11 +199,6 @@ class Command(BaseCommand):
         from noc.core.script.loader import loader
         st = self.get_beef_storage(storage)
         beef = self.get_beef(st, path)
-        if "." not in script:
-            script = "%s.%s" % (beef.box.profile, script)
-        scls = loader.get_script(script)
-        if not scls:
-            self.die("Failed to load script '%s'" % script)
         # Build credentials
         credentials = {
             "address": beef.uuid,
@@ -214,28 +210,34 @@ class Command(BaseCommand):
         caps = {}
         # Run script
         service = ServiceStub(pool="default")
-        scr = scls(
-            service=service,
-            credentials=credentials,
-            capabilities=caps,
-            version={
-                "vendor": beef.box.vendor,
-                "platform": beef.box.platform,
-                "version": beef.box.version
-            },
-            timeout=3600,
-            name=script
-        )
-        result = scr.run()
-        if pretty:
-            import pprint
-            pprint.pprint(result)
-        elif yaml:
-            import yaml
-            import sys
-            yaml.dump(result, sys.stdout, indent=2)
-        else:
-            self.stdout.write("%s\n" % result)
+        for s_name in script:
+            if "." not in script:
+                s_name = "%s.%s" % (beef.box.profile, s_name)
+            scls = loader.get_script(s_name)
+            if not scls:
+                self.die("Failed to load script '%s'" % script)
+            scr = scls(
+                service=service,
+                credentials=credentials,
+                capabilities=caps,
+                version={
+                    "vendor": beef.box.vendor,
+                    "platform": beef.box.platform,
+                    "version": beef.box.version
+                },
+                timeout=3600,
+                name=s_name
+            )
+            result = scr.run()
+            if pretty:
+                import pprint
+                pprint.pprint(result)
+            elif yaml:
+                import yaml
+                import sys
+                yaml.dump(result, sys.stdout, indent=2)
+            else:
+                self.stdout.write("%s\n" % result)
 
     def handle_fix(self, beef, *args, **options):
         raise NotImplementedError()
