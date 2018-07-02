@@ -20,12 +20,8 @@ Ext.define("NOC.main.extstorage.Model", {
             type: "string"
         },
         {
-            name: "enable_config_mirror",
-            type: "boolean"
-        },
-        {
-            name: "enable_beef",
-            type: "boolean"
+            name: "type",
+            type: "string"
         },
         {
             name: "name",

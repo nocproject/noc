@@ -35,8 +35,14 @@ class ExtStorage(Document):
     name = StringField(unique=True)
     url = StringField()
     description = StringField()
-    enable_config_mirror = BooleanField(default=False)
-    enable_beef = BooleanField(default=False)
+    type = StringField(
+        choices=[
+            ("config_mirror", "Config Mirror"),
+            ("beef", "Beef"),
+            ("beef_test", "Beef Test"),
+            ("beef_test_config", "Beef Test Config")
+        ]
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
