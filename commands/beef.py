@@ -59,6 +59,10 @@ class Command(BaseCommand):
             "--path",
             help="Path name"
         )
+        run_parser.add_argument(
+            "--access-preference",
+            help="Access preference"
+        )
         out_group = run_parser.add_mutually_exclusive_group()
         out_group.add_argument(
             "--pretty",
@@ -225,7 +229,8 @@ class Command(BaseCommand):
         self.stdout.write("\n".join(r) + "\n")
         return
 
-    def handle_run(self, path, storage, script, pretty=False, yaml=False, *args, **options):
+    def handle_run(self, path, storage, script, pretty=False, yaml=False, access_preference="SC",
+                   *args, **options):
         from noc.core.script.loader import loader
         st = self.get_storage(storage, beef=True)
         beef = self.get_beef(st, path)
@@ -234,7 +239,8 @@ class Command(BaseCommand):
             "address": beef.uuid,
             "cli_protocol": "beef",
             "beef_storage_url": st.url,
-            "beef_path": path
+            "beef_path": path,
+            "access-preference": access_preference
         }
         # Get capabilities
         caps = {}
