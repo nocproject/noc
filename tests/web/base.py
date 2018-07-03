@@ -22,8 +22,11 @@ from noc.core.http.client import fetch
 
 
 class APIHandler(object):
+    io_loop = None
     def __init__(self, handlers):
-        self.io_loop = tornado.ioloop.IOLoop.instance()
+        if not getattr(APIHandler, "io_loop"):
+            APIHandler.io_loop = tornado.ioloop.IOLoop()
+            APIHandler.io_loop.make_current()
         sock, port = tornado.testing.bind_unused_port()
         app = tornado.web.Application(handlers)
         self.server = tornado.httpserver.HTTPServer(app, io_loop=self.io_loop)
@@ -55,7 +58,8 @@ def gen_test(f):
         @functools.wraps(coro)
         def post_coroutine(self, *args, **kwargs):
             try:
-                return self.io_loop.run_sync(functools.partial(coro, self, *args, **kwargs))
+                return self.io_loop.run_sync(functools.partial(coro, self, *args, **kwargs),
+                                             timeout=15)
             except tornado.gen.TimeoutError as e:
                 self._test_generator.throw(e)
                 raise
@@ -97,4 +101,5 @@ class WebAPITest(BaseAPITest):
         from noc.services.web.service import WebService
         ws = WebService()
         ws.setup_test_logging()
+        ws.on_activate()
         return ws.get_handlers()
