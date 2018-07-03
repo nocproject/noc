@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # State transition
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,10 +29,16 @@ logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 
-class Vertex(EmbeddedDocument):
+class TransitionVertex(EmbeddedDocument):
     # vertex coordinates
     x = IntField(default=0)
     y = IntField(default=0)
+
+    def __unicode__(self):
+        return "%s, %s" % (self.x, self.y)
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
 
 
 @bi_sync
@@ -61,6 +67,8 @@ class Transition(Document):
     # Handler to be called on starting transitions
     # Any exception aborts transtion
     handlers = ListField(StringField())
+    # Visual vertices
+    vertices = ListField(EmbeddedDocumentField(TransitionVertex))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -68,7 +76,6 @@ class Transition(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    vertices = ListField(EmbeddedDocumentField(Vertex))
 
     def __unicode__(self):
         return u"%s: %s" % (self.workflow.name, self.name)

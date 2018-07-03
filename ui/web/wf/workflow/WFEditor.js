@@ -138,7 +138,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             me.graph.clear();
         }
         me.callParent(arguments);
-        // me.draw(me.data());
         Ext.Ajax.request({
             url: "/wf/workflow/" + me.configId + "/config/",
             method: "GET",
@@ -598,12 +597,12 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 element.data["vertices"] = element.vertices;
             }
             delete element.data["type"];
-            delete element.data["id"];
+            //delete element.data["id"];
             return element.data;
         });
         states = states.map(function(element) {
             delete element.data["type"];
-            delete element.data["id"];
+            //delete element.data["id"];
             element.data.x = element.position.x;
             element.data.y = element.position.y;
             delete element["position"];
@@ -722,191 +721,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             });
         } else {
             handler.call(me, args);
-        }
-    },
-    //
-    data: function() {
-        return {
-            states: [
-                {
-                    is_default: false,
-                    update_last_seen: false,
-                    is_productive: false,
-                    name: "Approved",
-                    ttl: 0,
-                    on_enter_handlers: ["XXX"],
-                    job_handler: null,
-                    on_leave_handlers: ["YYY"],
-                    update_expired: false,
-                    description: "Resource reservation is approved. Resource will became ready when it will be discovered"
-                },
-                {
-                    is_default: false,
-                    update_last_seen: false,
-                    is_productive: false,
-                    name: "Cooldown",
-                    ttl: 2592000,
-                    on_enter_handlers: [],
-                    job_handler: null,
-                    on_leave_handlers: [],
-                    update_expired: false,
-                    description: "Cooldown stage for released resources to prevent reuse collisions"
-                },
-                {
-                    is_default: true,
-                    update_last_seen: false,
-                    is_productive: false,
-                    name: "Free",
-                    ttl: 0,
-                    on_enter_handlers: [],
-                    job_handler: null,
-                    on_leave_handlers: [],
-                    update_expired: false,
-                    description: "Resource is free and can be used"
-                },
-                {
-                    is_default: false,
-                    update_last_seen: false,
-                    is_productive: true,
-                    name: "Ready",
-                    ttl: 604800,
-                    on_enter_handlers: [],
-                    job_handler: null,
-                    on_leave_handlers: [],
-                    update_expired: true,
-                    description: "Resource is in productive usage"
-                },
-                {
-                    is_default: false,
-                    update_last_seen: false,
-                    is_productive: false,
-                    name: "Reserved",
-                    ttl: 604800,
-                    on_enter_handlers: [],
-                    job_handler: null,
-                    on_leave_handlers: [],
-                    update_expired: false,
-                    description: "Resource is temporary reserved/booked. It must be approved explicitly during TTL to became used"
-                },
-                {
-                    is_default: false,
-                    update_last_seen: false,
-                    is_productive: false,
-                    name: "Suspended",
-                    ttl: 0,
-                    on_enter_handlers: [],
-                    job_handler: null,
-                    on_leave_handlers: [],
-                    update_expired: false,
-                    description: "Resource is temporary suspended/blocked for organisational reasons"
-                }
-            ],
-            transitions: [
-                {
-                    from_state: "Free",
-                    to_state: "Ready",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "seen",
-                    label: "Seen"
-                },
-                {
-                    from_state: "Free",
-                    to_state: "Reserved",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "reserve",
-                    label: "Reserve"
-                },
-                {
-                    from_state: "Reserved",
-                    to_state: "Free",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "expired",
-                    label: "Expired"
-                },
-                {
-                    from_state: "Reserved",
-                    to_state: "Approved",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "approve",
-                    label: "Approve",
-                    vertices: [{x: 650, y: 430}, {x: 680, y: 230}, {x: 610, y: 70}]
-                },
-                {
-                    from_state: "Approved",
-                    to_state: "Ready",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "seen",
-                    label: "Seen"
-                },
-                {
-                    from_state: "Ready",
-                    to_state: "Suspended",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "suspend",
-                    label: "Suspend"
-                },
-                {
-                    from_state: "Suspended",
-                    to_state: "Ready",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "resume",
-                    label: "Resume"
-                },
-                {
-                    from_state: "Ready",
-                    to_state: "Cooldown",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "expired",
-                    label: "Expired"
-                },
-                {
-                    from_state: "Cooldown",
-                    to_state: "Ready",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "seen",
-                    label: "Seen"
-                },
-                {
-                    from_state: "Cooldown",
-                    to_state: "Free",
-                    enable_manual: true,
-                    description: null,
-                    handlers: [],
-                    is_active: true,
-                    event: "expired",
-                    label: "Expired"
-                }
-            ],
-            name: "Default Resource",
-            is_active: true,
-            description: "Default resource workflow with external provisioning"
         }
     }
 });
