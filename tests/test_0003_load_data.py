@@ -27,7 +27,11 @@ def iter_data():
                     yield path, i
 
 
-@pytest.fixture(params=list(iter_data()))
+def get_data_name(v):
+    return "%s|%s|%s" % (v[0], v[1]["$model"], v[1]["id"])
+
+
+@pytest.fixture(params=list(iter_data()), ids=get_data_name)
 def initial_data(request):
     path, cfg = request.param
     return cfg
