@@ -63,8 +63,13 @@ Ext.define('NOC.sa.runcommands.Application', {
                             },
                             selModel: {
                                 mode: 'MULTI',
-                                // pruneRemoved: false,
-                                selType: 'checkboxmodel'
+                                pruneRemoved: false,
+                                showHeaderCheckbox: true,
+                                selType: 'checkboxmodel',
+                                selectAll: function() {
+                                    console.log(arguments);
+                                    console.log('select All');
+                                }
                             },
                             listeners: {
                                 selectionchange: 'onSelectionChange',
