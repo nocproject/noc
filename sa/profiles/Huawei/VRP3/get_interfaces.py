@@ -35,6 +35,11 @@ class Script(BaseScript):
         r"(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n", re.MULTILINE
     )
 
+    rx_pvc3 = re.compile(
+        "^\s*\d+\s+(?P<ifname>\S.*)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)"
+        "\s+LAN\s+0\s+0\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
+    )
+
     def execute(self):
         interfaces = []
         vlans = []
@@ -83,8 +88,27 @@ class Script(BaseScript):
                     if not found:
                         iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
                         interfaces += [iface]
-            else:
+            elif self.rx_pvc2.search(c):
                 for match in self.rx_pvc2.finditer(c):
+                    ifname = match.group("ifname")
+                    sub = {
+                        "name": ifname,
+                        "enabled_afi": ["BRIDGE", "ATM"],
+                        "vpi": int(match.group("vpi")),
+                        "vci": int(match.group("vci")),
+                        "vlan_ids": int(match.group("vlan"))
+                    }
+                    found = False
+                    for i in interfaces:
+                        if ifname == i["name"]:
+                            i["subinterfaces"] += [sub]
+                            found = True
+                            break
+                    if not found:
+                        iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
+                        interfaces += [iface]
+            else:
+                for match in self.rx_pvc3.finditer(c):
                     ifname = match.group("ifname")
                     sub = {
                         "name": ifname,

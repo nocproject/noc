@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_ifindexes import Script as BaseScript
 from noc.sa.interfaces.igetifindexes import IGetIfindexes
 
 

@@ -4,7 +4,7 @@
 # OS:     VRP3
 # Compatible: 3.1
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -35,21 +35,23 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     command_save_config = "save\ny\n"
 
-    rx_interface_name = re.compile(r"^(?P<type>\S+)\s+(?P<number>\d+/\d+/\d+)", re.MULTILINE)
+    rx_interface_name = re.compile(r"^(?P<type>\S+)\s+(?P<number>\S.*)", re.MULTILINE)
 
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("ADL 0/1/1")
         'ADSL:0/1/1'
+        >>> Profile().convert_interface_name("ADL   0   1   1")
+        'ADSL:0/1/1'
         """
+
         if ":" in s or "mgmt" is s:
             return s
         match = self.rx_interface_name.match(s)
         if not match:
             return s
-        return "%s:%s" % (
-            {
-                "ADL": "ADSL",
-                "HDL": "HDSL"
-            }[match.group("type")], match.group("number")
-        )
+        if "/" not in match.group("number"):
+            number = "/".join(match.group("number").split())
+        else:
+            number = match.group("number")
+        return "%s:%s" % ({"ADL": "ADSL", "HDL": "HDSL"}[match.group("type")], number)
