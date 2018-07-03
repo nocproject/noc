@@ -326,10 +326,10 @@ FTS_MODELS = [
 ]
 
 COLLECTIONS = [
-    "dev.Quiz",
-    "dev.Spec",
     "fm.SyntaxAlias",
     "sa.Profile",
+    "dev.Quiz",
+    "dev.Spec",
     "sa.Action",
     "inv.Capability",
     "pm.MetricScope",
