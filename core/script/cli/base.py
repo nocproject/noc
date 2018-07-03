@@ -229,8 +229,7 @@ class CLI(object):
                 not self.ignore_errors and
                 parser == self.read_until_prompt and
                 (self.profile.rx_pattern_syntax_error.search(self.result) or
-                 self.result == self.SYNTAX_ERROR_CODE)
-        ):
+                 self.result == self.SYNTAX_ERROR_CODE)):
             error_text = self.result
             if self.profile.send_on_syntax_error:
                 yield self.on_error_sequence(

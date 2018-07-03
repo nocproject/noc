@@ -14,8 +14,6 @@ import itertools
 # Third-party modules
 import ujson
 import six
-# NOC modules
-from noc.core.script.error import CLISyntaxError
 
 Box = namedtuple("Box", ["profile", "vendor", "platform", "version"])
 CLIFSM = namedtuple("CLIFSM", ["state", "reply"])
