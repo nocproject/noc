@@ -23,6 +23,7 @@ from noc.core.http.client import fetch
 
 class APIHandler(object):
     io_loop = None
+
     def __init__(self, handlers):
         if not getattr(APIHandler, "io_loop"):
             APIHandler.io_loop = tornado.ioloop.IOLoop()
