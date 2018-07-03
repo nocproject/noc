@@ -52,4 +52,6 @@ def test_profile_name(sa_profile):
     req_name = profile.__module__
     if req_name.startswith("noc.sa.profiles."):
         req_name = req_name[16:]
+        if req_name == "Generic":
+            pytest.skip("Generic profile")
     assert profile.name == req_name
