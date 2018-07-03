@@ -1,0 +1,188 @@
+{
+    "name": "Raisecom L2 Access Switches",
+    "$collection": "dev.specs",
+    "uuid": "94408614-79fb-4d75-989f-7ec2bf1c623e",
+    "description": "Raisecom L2 Access Switches general version",
+    "revision": 1,
+    "quiz__name": "General Switches",
+    "author": "avs",
+    "profile__name": "Raisecom.ROS",
+    "answers": [
+        {
+            "name": "vendor",
+            "type": "str",
+            "value": "Raisecom"
+        },
+        {
+            "name": "has.stack",
+            "type": "bool",
+            "value": "false"
+        },
+        {
+            "name": "has.cli",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "has.snmp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.version.cli",
+            "type": "cli",
+            "value": "show version"
+        },
+        {
+            "name": "get.version.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.1.1.0"
+        },
+        {
+            "name": "has.stp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.stp.cli",
+            "type": "cli",
+            "value": "show spanning-tree"
+        },
+        {
+            "name": "has.lldp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.lldp.cli",
+            "type": "cli",
+            "value": "show lldp local config"
+        },
+        {
+            "name": "get.neighbors.lldp.cli.1",
+            "type": "cli",
+            "value": "show lldp remote"
+        },
+        {
+            "name": "get.neighbors.lldp.cli.2",
+            "type": "cli",
+            "value": "show lldp remote detail"
+        },
+        {
+            "name": "get.chassis_id.cli",
+            "type": "cli",
+            "value": "show version"
+        },
+        {
+            "name": "get.chassis_id.snmp.1",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.17.1.1.0"
+        },
+        {
+            "name": "get.fqdn.cli",
+            "type": "cli",
+            "value": "show running-config | i hostname"
+        },
+        {
+            "name": "get.mac_address_table.cli",
+            "type": "cli",
+            "value": "show mac-address-table l2-address"
+        },
+        {
+            "name": "get.arp_table.cli",
+            "type": "cli",
+            "value": "show arp"
+        },
+        {
+            "name": "get.vlan_table.cli",
+            "type": "cli",
+            "value": "show vlan"
+        },
+        {
+            "name": "get.interface_name.cli.1",
+            "type": "cli",
+            "value": "show interface port description"
+        },
+        {
+            "name": "get.interface_name.cli.2",
+            "type": "cli",
+            "value": "show interface port"
+        },
+        {
+            "name": "get.interface_name.cli.3",
+            "type": "cli",
+            "value": "show interface description"
+        },
+        {
+            "name": "get.interface_ip.cli.1",
+            "type": "cli",
+            "value": "show interface ip description"
+        },
+        {
+            "name": "get.interface_ip.cli.2",
+            "type": "cli",
+            "value": "show interface ip 0"
+        },
+        {
+            "name": "get.interface_ip.cli.3",
+            "type": "cli",
+            "value": "show ip interface brief"
+        },
+        {
+            "name": "get.interface_vlans.cli.1",
+            "type": "cli",
+            "value": "show interface port switchport"
+        },
+        {
+            "name": "get.interface_vlans.cli.2",
+            "type": "cli",
+            "value": "show vlan detail"
+        },
+        {
+            "name": "get.interface_transceivers.cli",
+            "type": "cli",
+            "value": "show interface port transceiver information"
+        },
+        {
+            "name": "get.cpu_usage.cli",
+            "type": "cli",
+            "value": "show cpu-utilization"
+        },
+        {
+            "name": "get.cpu_usage.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.8886.1.1.1.4"
+        },
+        {
+            "name": "get.cpu_usage.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.41752.1.1.1.4"
+        },
+        {
+            "name": "get.memory_usage.cli",
+            "type": "cli",
+            "value": "show memory"
+        },
+        {
+            "name": "get.memory_usage.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.8886.1.1.3"
+        },
+        {
+            "name": "get.memory_usage.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.41752.1.1.3"
+        },
+        {
+            "name": "get.environment_temperature.snmp.1",
+            "type": "snmp-get",
+            "value": "1.3.6.1.4.1.8886.1.1.4.2.1.0"
+        },
+        {
+            "name": "get.environment_temperature.snmp.2",
+            "type": "snmp-get",
+            "value": "1.3.6.1.4.1.41752.1.1.4.2.1.0"
+        }
+    ],
+    "changes": []
+}
