@@ -37,16 +37,9 @@ Ext.define("NOC.main.extstorage.Application", {
                     }
                 },
                 {
-                    text: __("Cfg. Mirror"),
-                    dataIndex: "enable_config_mirror",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: __("Beef"),
-                    dataIndex: "enable_beef",
-                    width: 50,
-                    renderer: NOC.render.Bool
+                    text: __("Type"),
+                    dataIndex: "type",
+                    width: 120
                 }
             ],
 
@@ -72,14 +65,17 @@ Ext.define("NOC.main.extstorage.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "enable_config_mirror",
-                    xtype: "checkbox",
-                    boxLabel: __("Config Mirror")
-                },
-                {
-                    name: "enable_beef",
-                    xtype: "checkbox",
-                    boxLabel: __("Beef")
+                    name: "type",
+                    xtype: "combobox",
+                    fieldLabel: __("Type"),
+                    allowBlank: false,
+                    store: [
+                        ["config_mirror", __("Config Mirror")],
+                        ["beef", __("Beef")],
+                        ["beef_test", __("Beef Test")],
+                        ["beef_test_config", __("Beef Test Config")]
+                    ],
+                    uiStyle: "medium"
                 }
             ]
         });

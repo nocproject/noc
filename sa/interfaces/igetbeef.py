@@ -56,6 +56,7 @@ class IGetBeef(BaseInterface):
         "spec": StringParameter(),
         #
         "box": DictParameter(attrs={
+            "profile": StringParameter(),
             "vendor": StringParameter(),
             "platform": StringParameter(),
             "version": StringParameter(),
