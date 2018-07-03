@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"Mac Address\s+- (?P<mac>.+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show system-info", cached=True)
         match = self.rx_mac.search(v)
         return {

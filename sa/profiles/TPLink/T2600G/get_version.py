@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    def execute(self):
+    def execute_cli(self):
         ver = self.cli("show system-info", cached=True)
         match = rx_platform.search(ver)
         platform = match.group("platform")

@@ -27,21 +27,10 @@ class Script(BaseScript):
         raise self.NotSupportedError
 
     def execute_cli(self):
-        if self.has_snmp():
-            try:
-                # sysName.0
-                v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
-                if v:
-                    return v
-            except self.snmp.TimeOutError:
-                pass
         v = self.cli(
-            "show running-config | include ^(hostname|ip domain.name)")
+            "show running-config | include hostname")
         fqdn = []
         match = self.rx_hostname.search(v)
         if match:
             fqdn += [match.group("hostname")]
-        match = self.rx_domain_name.search(v)
-        if match:
-            fqdn += [match.group("domain")]
         return ".".join(fqdn)
