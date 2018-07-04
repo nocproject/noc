@@ -18,7 +18,6 @@ class Script(BaseScript):
     name = "Meinberg.LANTIME.get_version"
     cache = True
     interface = IGetVersion
-
     """
     Linux version 4.9.7 (root@ubuntu-server-3) (gcc version 4.2.4 (Ubuntu 4.2.4-1ubuntu4)) #1 SMP Fri Feb 3 11:02:06 UTC 2017
     """

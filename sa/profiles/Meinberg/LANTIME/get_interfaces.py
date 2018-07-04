@@ -24,7 +24,7 @@ class Script(BaseScript):
     rx_iface = re.compile(
         r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
         r"    link\/ether (?P<mac>\S+) brd", re.IGNORECASE | re.DOTALL
-     )
+    )
 
     rx_master = re.compile(
         r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ ]+ master (?P<master>\S+)\s.*\n"
@@ -54,11 +54,11 @@ class Script(BaseScript):
                         "subinterfaces": [{
                             "name": match.group("name"),
                             "enabled_afi": ["BRIDGE"]
-                            }],
+                        }],
                     }
                 ]
 
-            # Bridge: brX, vnetX, virbrX, vifX.X, vethX(XEN), xenbr0, tapX, xapiX, ovs-system
+                # Bridge: brX, vnetX, virbrX, vifX.X, vethX(XEN), xenbr0, tapX, xapiX, ovs-system
                 if (match.group("name")[:4] in ["vnet", "virb", "veth", "xenb", "xapi", "ovs-"] or
                         match.group("name")[:2] in ["br", "vi", "ta"]):
                     interfaces += [
