@@ -386,7 +386,7 @@ class Script(BaseScript):
                         except KeyError:
                             tagged[i] = [tag]
                     else:
-                            untagged[i] = tag
+                        untagged[i] = tag
                 match = self.rx_l3_iface.search(vdata)
                 if match:
                     i = match.group("iface")
