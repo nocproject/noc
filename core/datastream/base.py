@@ -180,24 +180,17 @@ class DataStream(object):
             raise ValueError(str(e))
 
     @classmethod
-    def iter_data(cls, change_id=None, limit=None, filter=None):
+    def iter_data(cls, change_id=None, limit=None, filters=None):
         """
         Iterate over data items beginning from change id
         :param change_id: Staring change id
         :param limit: Records limit
-        :param filter: List of ids to filter
+        :param filters: List of strings with filter expression
         :return: (id, change_id, data)
         """
         q = {}
-        if filter:
-            if not isinstance(filter, (list, tuple)):
-                raise ValueError("filter must be list or tuple")
-            if len(filter) == 1:
-                q[cls.F_ID] = filter[0]
-            else:
-                q[cls.F_ID] = {
-                    "$in": filter
-                }
+        if filters:
+            q.update(cls.compile_filters(filters))
         if change_id:
             q[cls.F_CHANGEID] = {
                 "$gt": cls.clean_change_id(change_id)
@@ -243,3 +236,59 @@ class DataStream(object):
         with coll.watch() as stream:
             next(stream)
             return
+
+    @classmethod
+    def _parse_filter(cls, expr):
+        """
+        Convert single filter expression to a S-expression
+        :param expr: filter expression in form name(arg1, .., argN)
+        :return: (name, arg1, argN)
+        """
+        if not isinstance(expr, six.string_types):
+            raise ValueError("Expression must be string")
+        i1 = expr.find("(")
+        if i1 < 0:
+            raise ValueError("Missed opening bracket")
+        if not expr.endswith(")"):
+            raise ValueError("Missed closing bracket")
+        return [expr[:i1]] + [x.strip() for x in expr[i1 + 1:-1].split(",")]
+
+    @classmethod
+    def compile_filters(cls, exprs):
+        """
+        Compile list of filter expressions to MongoDB query
+        :param exprs: List of strings with expressions
+        :return: dict with query
+        """
+        if not isinstance(exprs, list):
+            raise ValueError("expressions must be list of string")
+        q = {}
+        for fx in exprs:
+            pv = cls._parse_filter(fx)
+            h = getattr(cls, "filter_%s" % pv[0], None)
+            if not h:
+                raise ValueError("Invalid filter %s" % pv[0])
+            q.update(h(*pv[1:]))
+        return q
+
+    @classmethod
+    def filter_id(cls, id1, *args):
+        """
+        Filter by id. Usage:
+
+        id(id1, .., idN)
+        :param id1:
+        :param args:
+        :return:
+        """
+        ids = [cls.clean_id(id1)] + [cls.clean_id(x) for x in args]
+        if len(ids) == 1:
+            return {
+                cls.F_ID: ids[0]
+            }
+        else:
+            return {
+                cls.F_ID: {
+                    "$in": ids
+                }
+            }

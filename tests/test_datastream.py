@@ -21,6 +21,7 @@ from noc.core.datastream.loader import loader
 
 class ExampleDataStream(DataStream):
     name = "example"
+    clean_id = DataStream.clean_id_int
 
     @classmethod
     def get_object(cls, id):
@@ -153,7 +154,7 @@ def test_datastream_iter_data():
 @pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_id1():
     seen = set()
-    for id, change_id, data in ExampleDataStream.iter_data(filter=[3]):
+    for id, change_id, data in ExampleDataStream.iter_data(filters=["id(3)"]):
         assert id not in seen
         seen.add(id)
     assert seen == {3}
@@ -162,7 +163,7 @@ def test_datastream_iter_data_id1():
 @pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_id2():
     seen = set()
-    for id, change_id, data in ExampleDataStream.iter_data(filter=[3, 7]):
+    for id, change_id, data in ExampleDataStream.iter_data(filters=["id(3,7)"]):
         assert id not in seen
         seen.add(id)
     assert seen == {3, 7}
@@ -171,7 +172,7 @@ def test_datastream_iter_data_id2():
 @pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_id_type_check():
     with pytest.raises(ValueError):
-        next(ExampleDataStream.iter_data(filter=3))
+        next(ExampleDataStream.iter_data(filters=3))
     with pytest.raises(ValueError):
         next(ExampleDataStream.iter_data(change_id=3))
     with pytest.raises(ValueError):
@@ -244,7 +245,7 @@ def test_datastream_delete_object():
 
 def test_datastream_clean_id():
     assert ExampleDataStream.clean_id(1) == 1
-    assert ExampleDataStream.clean_id("1") == "1"
+    assert ExampleDataStream.clean_id("1") == 1
 
 
 def test_datastream_clean_id_int():
@@ -336,3 +337,31 @@ def test_clean_changeid():
     #
     with pytest.raises(ValueError):
         DataStream.clean_change_id("9999-99-99")
+
+
+def test_parse_filter():
+    assert DataStream._parse_filter("id(1)") == ["id", "1"]
+    assert DataStream._parse_filter("id(1,2)") == ["id", "1", "2"]
+    assert DataStream._parse_filter("id(1,2,  3   )") == ["id", "1", "2", "3"]
+    with pytest.raises(ValueError):
+        DataStream._parse_filter(1)
+    with pytest.raises(ValueError):
+        DataStream._parse_filter("id")
+    with pytest.raises(ValueError):
+        DataStream._parse_filter("id(")
+
+
+def test_filter_id():
+    assert DataStream.filter_id(10) == {"_id": 10}
+    assert DataStream.filter_id(10, 11) == {"_id": {"$in": [10, 11]}}
+
+
+def test_compile_filters():
+    assert DataStream.compile_filters(["id(1)"]) == {"_id": "1"}
+    assert DataStream.compile_filters(["id(1,2)"]) == {"_id": {"$in": ["1", "2"]}}
+    with pytest.raises(ValueError):
+        assert DataStream.compile_filters("id(1)")
+    with pytest.raises(ValueError):
+        assert DataStream.compile_filters(["id(1)", 1])
+    with pytest.raises(ValueError):
+        DataStream.compile_filters(["unknown(1)"])

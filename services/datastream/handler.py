@@ -34,13 +34,11 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         if not limit:
             limit = self.datastream.DEFAULT_LIMIT
         limit = min(limit, self.datastream.DEFAULT_LIMIT)
-        # Restrict to id
-        filter = self.get_arguments("id") or None
-        if filter:
-            # Convert id to proper type
-            filter = [self.datastream.clean_id(x) for x in filter]
-        else:
-            filter = None
+        # Collect filters
+        filters = self.get_arguments("filter") or []
+        ids = self.get_arguments("id") or None
+        if ids:
+            filters += ["id(%s)" % ",".join(ids)]
         # Start from change
         change_id = self.get_arguments("from")
         if change_id:
@@ -54,7 +52,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         last_change = None
         while True:
             r = ["["]
-            for item_id, change_id, data in self.datastream.iter_data(limit=limit, filter=filter,
+            for item_id, change_id, data in self.datastream.iter_data(limit=limit, filters=filters,
                                                                       change_id=change_id):
                 if not first_change:
                     first_change = change_id
