@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import re
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
@@ -40,7 +41,7 @@ class ReportFilterApplication(SimpleReport):
     form = ReportForm
     try:
         default_pool = Pool.objects.get(name="default")
-    except:
+    except Exception:
         default_pool = Pool.objects.all()[0]
     predefined_reports = {
         "default": PredefinedReport(
@@ -49,6 +50,8 @@ class ReportFilterApplication(SimpleReport):
             }
         )
     }
+
+    re_cli = re.compile("^Failed to guess CLI credentials")
 
     def get_data(self, request, pool=None,
                  selector=None, avail_status=None, **kwargs):
@@ -105,7 +108,7 @@ class ReportFilterApplication(SimpleReport):
              "_id": {"$in": is_managed_alive_in}})
         bad_cli_cred = get_db()["noc.joblog"].with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED).find(
-            {"problems.suggest_cli.": "Failed to guess CLI credentials",
+            {"problems.suggest_cli.": self.re_cli,
              "_id": {"$in": is_managed_ng_in}})
         mos_id = list(is_managed.values_list("id", flat=True))
         mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)

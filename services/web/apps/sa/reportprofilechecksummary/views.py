@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import re
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
@@ -27,6 +28,8 @@ class ReportFilterApplication(SimpleReport):
             _("Managed Object Profile Check Summary"), {}
         )
     }
+
+    re_cli = re.compile("^Failed to guess CLI credentials")
 
     def get_data(self, request, **kwargs):
         data = []
@@ -105,7 +108,7 @@ class ReportFilterApplication(SimpleReport):
                     "_id": {"$in": is_managed_alive_in}}).count()
             bad_cli_cred = get_db()["noc.joblog"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED
-            ).find({"problems.suggest_cli.": "Failed to guess CLI credentials",
+            ).find({"problems.suggest_cli.": self.re_cli,
                     "_id": {"$in": is_managed_ng_in}}).count()
             profile_not_found = get_db()["noc.joblog"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).find(
