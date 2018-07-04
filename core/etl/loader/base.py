@@ -103,6 +103,7 @@ class BaseLoader(object):
                               for n in
                               self.fields)  # field name -> clean function
         self.pending_deletes = []  # (id, string)
+        self.reffered_errors = []  # (id, string)
         if self.is_document:
             import mongoengine.errors
             unique_fields = [
@@ -449,6 +450,9 @@ class BaseLoader(object):
                 obj.delete()
             except self.model.DoesNotExist:
                 pass  # Already deleted
+            except ValueError as e:  # Reffered Error
+                self.logger.error("%s", str(e))
+                self.reffered_errors += [(r_id, msg)]
         self.pending_deletes = []
 
     def save_state(self):
@@ -460,6 +464,9 @@ class BaseLoader(object):
         self.logger.info(
             "Summary: %d new, %d changed, %d removed",
             self.c_add, self.c_change, self.c_delete
+        )
+        self.logger.info(
+            "Error delete by reffered: %s", "\n".join(self.reffered_errors)
         )
         t = time.localtime()
         archive_path = os.path.join(
