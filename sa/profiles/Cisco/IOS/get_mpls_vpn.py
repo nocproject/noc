@@ -202,7 +202,7 @@ class Script(BaseScript):
             r[conf_id] = {
                 "type": "VRF",
                 "status": vrf_oper,
-                "vpn_id": None,
+                "vpn_id": "",
                 "name": vrf_name,
                 "rd": vrf_rd,
                 "rt_export": [],

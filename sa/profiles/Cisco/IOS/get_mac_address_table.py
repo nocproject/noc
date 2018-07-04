@@ -8,6 +8,7 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.lib.validators import is_int
 
@@ -39,7 +40,7 @@ class Script(BaseScript):
             return True
         return False
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         def qn(s):
             s = s.strip()
             if s.startswith("Eth VLAN "):
