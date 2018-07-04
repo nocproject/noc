@@ -91,10 +91,12 @@ class Script(BaseScript):
     def get_data(self, interfaces=None):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
+        if_index = []
         unknown_interfaces = []
         if interfaces:
             for i in interfaces:
                 r[i["ifindex"]] = {"interface": i["interface"]}
+                if_index += [i["ifindex"]]
         else:
             for ifindex, name in self.get_iftable("IF-MIB::ifName"):
                 try:
@@ -104,7 +106,7 @@ class Script(BaseScript):
                     unknown_interfaces += [name]
                     continue
                 r[ifindex] = {"interface": v}
-
+                if_index += [ifindex]
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -113,7 +115,7 @@ class Script(BaseScript):
         self.apply_table(r, "EtherLike-MIB::dot3StatsDuplexStatus", "full_duplex", lambda x: x != 2)
         # Apply ifSpeed
         highspeed = set()
-        for ifindex, s in self.get_iftable("IF-MIB::ifSpeed"):
+        for ifindex, s in self.get_iftable("IF-MIB::ifSpeed", if_index):
             ri = r.get(ifindex)
             if ri:
                 s = int(s)
@@ -124,7 +126,7 @@ class Script(BaseScript):
                     ri["out_speed"] = s // 1000
         # Refer to ifHighSpeed if necessary
         if highspeed:
-            for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed"):
+            for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed", if_index):
                 if ifindex in highspeed:
                     s = int(s)
                     if s:
