@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -67,6 +69,8 @@ class Script(BaseScript):
                     break
                 except self.snmp.SNMPError as e:
                     self.logger.error("SNMP error code %s", e.code)
+                for k, v in six.iteritems(results):
+                    yield int(k.split(".")[-1]), v
         else:
             for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
                                             max_retries=self.get_getnext_retires()):
