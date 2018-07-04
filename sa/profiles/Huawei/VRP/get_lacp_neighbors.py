@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetLACPNeighbors
     split_re = re.compile(r"(\S+)'s state information is:", re.IGNORECASE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             v = self.cli("display eth-trunk")
