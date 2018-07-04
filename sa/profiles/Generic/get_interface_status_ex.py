@@ -27,40 +27,80 @@ class Script(BaseScript):
     def get_getnext_retires(self):
         return self.MAX_GETNEXT_RETIRES
 
-    def get_iftable(self, oid):
+    def get_snmp_metrics_get_timeout(self):
+        """
+        Timeout for snmp GET request
+        :return:
+        """
+        return self.profile.snmp_metrics_get_timeout
+
+    def get_snmp_metrics_get_chunk(self):
+        """
+        Aggregate up to *snmp_metrics_get_chunk* oids
+        to one SNMP GET request
+        :return:
+        """
+        return self.profile.snmp_metrics_get_chunk
+
+    def get_iftable(self, oid, ifindex=None):
+        """
+        If ifindex - collect information on the given interfaces
+        Else - collect information for all interfaces
+        :return:
+        """
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid,
-                                        max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires()):
-            yield int(oid.rsplit(".", 1)[-1]), v
+        if ifindex:
+            results = {}  # oid -> value
+            oids = ["%s.%s" % (oid, i) for i in ifindex]
+            snmp_get_chunk = self.get_snmp_metrics_get_chunk()
+            self.snmp.set_timeout_limits(self.get_snmp_metrics_get_timeout())
+            while oids:
+                chunk, oids = oids[:snmp_get_chunk], oids[snmp_get_chunk:]
+                chunk = dict((x, x) for x in chunk)
+                try:
+                    results.update(self.snmp.get(chunk))
+                except self.snmp.TimeOutError as e:
+                    self.logger.error("Failed to get SNMP OIDs %s: %s", oids, e)
+                except self.snmp.FatalTimeoutError:
+                    self.logger.error("Fatal timeout error on: %s", oids)
+                    break
+                except self.snmp.SNMPError as e:
+                    self.logger.error("SNMP error code %s", e.code)
+        else:
+            for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
+                                            max_retries=self.get_getnext_retires()):
+                yield int(oid.rsplit(".", 1)[-1]), v
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
+
             def f(x):
                 return x
-        for ifindex, v in self.get_iftable(mib):
+
+        if_index = [index for index in r]
+        for ifindex, v in self.get_iftable(mib, if_index):
             s = r.get(ifindex)
             if s:
                 s[name] = f(v)
 
-    def get_data(self):
+    def get_data(self, interfaces=None):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
         unknown_interfaces = []
-        for ifindex, name in self.get_iftable("IF-MIB::ifName"):
-            try:
-                v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError as e:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, e
-                )
-                unknown_interfaces += [name]
-                continue
-            r[ifindex] = {
-                "interface": v
-            }
+        if interfaces:
+            for i in interfaces:
+                r[i["ifindex"]] = {"interface": i["interface"]}
+        else:
+            for ifindex, name in self.get_iftable("IF-MIB::ifName"):
+                try:
+                    v = self.profile.convert_interface_name(name)
+                except InterfaceTypeError as e:
+                    self.logger.debug("Ignoring unknown interface %s: %s", name, e)
+                    unknown_interfaces += [name]
+                    continue
+                r[ifindex] = {"interface": v}
+
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -88,8 +128,7 @@ class Script(BaseScript):
                         r[ifindex]["out_speed"] = s * 1000
         # Log unknown interfaces
         if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
+            self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
         return r.values()
 
     def is_high_speed(self, data, speed):
@@ -101,6 +140,6 @@ class Script(BaseScript):
         """
         return speed == self.HIGH_SPEED
 
-    def execute_snmp(self):
-        r = self.get_data()
+    def execute(self, interfaces=None):
+        r = self.get_data(interfaces=interfaces)
         return r

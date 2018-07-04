@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface Status check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
     """
     name = "interfacestatus"
     required_script = "get_interface_status_ex"
+    required_capabilities = ["DB | Interfaces"]
 
     _ips_cache = cachetools.TTLCache(maxsize=10, ttl=60)
 
@@ -34,6 +35,21 @@ class InterfaceStatusCheck(DiscoveryCheck):
     @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=lambda _: ips_lock)
     def get_profiles(cls, x):
         return list(InterfaceProfile.objects.filter(status_discovery=True))
+
+    def get_interface_ifindexes(self):
+        """
+        Populate metrics list with interface metrics
+        :return:
+        """
+        interfaces = []
+        for i in Interface._get_collection().with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+                    {"managed_object": self.object.id, "type": "physical"},
+                    {"_id": 1, "name": 1, "ifindex": 1, "profile": 1}):
+            interfaces += [{"interface": i.get("name"), "ifindex": (i.get("ifindex"))}]
+        if not interfaces:
+            self.logger.info("Interface are not configured. Skipping")
+        return interfaces
 
     def handler(self):
         def get_interface(name):
@@ -44,21 +60,16 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 if_name = interfaces.get(iname)
                 if if_name:
                     return if_name
+
             return None
 
         has_interfaces = "DB | Interfaces" in self.object.get_caps()
         if not has_interfaces:
-            self.logger.info(
-                "No interfaces discovered. "
-                "Skipping interface status check"
-            )
+            self.logger.info("No interfaces discovered. " "Skipping interface status check")
             return
-        self.logger.info(
-            "Checking interface statuses"
-        )
+        self.logger.info("Checking interface statuses")
         interfaces = dict(
-            (i.name, i)
-            for i in Interface.objects.filter(
+            (i.name, i) for i in Interface.objects.filter(
                 managed_object=self.object.id,
                 type="physical",
                 profile__in=self.get_profiles(None),
@@ -68,7 +79,12 @@ class InterfaceStatusCheck(DiscoveryCheck):
         if not interfaces:
             self.logger.info("No interfaces with status discovery enabled. Skipping")
             return
-        result = self.object.scripts.get_interface_status_ex()
+
+        ifaces = self.get_interface_ifindexes()
+        if ifaces:
+            result = self.object.scripts.get_interface_status_ex(interfaces=ifaces)
+        else:
+            result = self.object.scripts.get_interface_status_ex()
         collection = Interface._get_collection()
         bulk = []
         for i in result:
@@ -82,19 +98,11 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "out_speed": i.get("out_speed"),
                 "bandwidth": i.get("bandwidth")
             }
-            changes = self.update_if_changed(
-                iface, kwargs,
-                ignore_empty=kwargs.keys(),
-                bulk=bulk
-            )
-            self.log_changes(
-                "Interface %s status has been changed" % i["interface"],
-                changes
-            )
+            changes = self.update_if_changed(iface, kwargs, ignore_empty=kwargs.keys(), bulk=bulk)
+            self.log_changes("Interface %s status has been changed" % i["interface"], changes)
             ostatus = i.get("oper_status")
             if iface.oper_status != ostatus and ostatus is not None:
-                self.logger.info("[%s] set oper status to %s",
-                                 i["interface"], ostatus)
+                self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
                 iface.set_oper_status(ostatus)
         if bulk:
             self.logger.info("Commiting changes to database")
