@@ -8,7 +8,6 @@
 
 # Python modules
 import time
-import datetime
 import threading
 # Third-party modules
 import pytest
