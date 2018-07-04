@@ -17,7 +17,7 @@ import tornado.ioloop
 # NOC modules
 from noc.core.service.base import Service
 from noc.services.datastream.handler import DataStreamRequestHandler
-from noc.services.datastream.streams.managedobject import ManagedObjectDataStream
+from noc.core.datastream.loader import loader
 from noc.config import config
 
 
@@ -28,7 +28,15 @@ class DataStreamService(Service):
         traefik_frontend_rule = "PathPrefix:/api/datastream"
 
     def get_datastreams(self):
-        return [ManagedObjectDataStream]
+        r = []
+        for name in loader.iter_datastreams():
+            ds = loader.get_datastream(name)
+            if ds:
+                self.logger.info("[%s] Initializing datastream", name)
+                r += [ds]
+            else:
+                self.logger.info("[%s] Failed to initialize datastream", name)
+        return r
 
     def get_handlers(self):
         return [
