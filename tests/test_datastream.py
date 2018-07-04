@@ -8,10 +8,12 @@
 
 # Python modules
 import time
+import datetime
 import threading
 # Third-party modules
 import pytest
 import ujson
+import bson
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.core.perf import metrics
@@ -318,3 +320,20 @@ def test_wait():
     assert dt > TIMEOUT
     # We must have second object
     assert WaitDS.get_total() == 2
+
+
+def test_clean_changeid():
+    oid = bson.ObjectId()
+    # ObjectId left unchanged
+    assert DataStream.clean_change_id(oid) == oid
+    # string converted to object id
+    assert DataStream.clean_change_id(str(oid)) == oid
+    # date
+    oid = DataStream.clean_change_id("2018-07-04")
+    assert oid.generation_time.strftime("%Y-%m-%d") == "2018-07-04"
+    # datetime
+    oid = DataStream.clean_change_id("2018-07-04T09:25:51")
+    assert oid.generation_time.strftime("%Y-%m-%dT%H:%M:%S") == "2018-07-04T09:25:51"
+    #
+    with pytest.raises(ValueError):
+        DataStream.clean_change_id("9999-99-99")

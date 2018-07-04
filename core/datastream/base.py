@@ -13,6 +13,9 @@ import ujson
 import bson
 import bson.errors
 import pymongo
+import six
+import dateutil.parser
+import re
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.nosql import get_db
@@ -36,6 +39,7 @@ class DataStream(object):
     HASH_LEN = 16
 
     DEFAULT_LIMIT = 1000
+    rx_ts = re.compile(r"^\d{4}-\d{2}-\d{2}")
 
     @classmethod
     def get_collection_name(cls):
@@ -145,13 +149,44 @@ class DataStream(object):
         return cls.get_collection().count()
 
     @classmethod
+    def clean_change_id(cls, change_id):
+        """
+        Convert change_id to ObjectId. Following formats are possible:
+        * ObjectId
+        * string containing ObjectId
+        * ISO 8601 timestamp either in form
+          * YYYY-DD-MM
+          * YYYY-DD-MMThh:mm:ss
+        :param change_id: Cleaned change_id
+        :return:
+        """
+        # ObjectId
+        if isinstance(change_id, bson.ObjectId):
+            return change_id
+        # String with timestamp or ObjectId
+        if not isinstance(change_id, six.string_types):
+            raise ValueError("Invalid change_id")
+        if cls.rx_ts.search(change_id):
+            # Timestamp
+            try:
+                ts = dateutil.parser.parse(change_id)
+                return bson.ObjectId.from_datetime(ts)
+            except ValueError as e:
+                raise ValueError(str(e))
+        # ObjectId
+        try:
+            return bson.ObjectId(change_id)
+        except (bson.errors.InvalidId, TypeError) as e:
+            raise ValueError(str(e))
+
+    @classmethod
     def iter_data(cls, change_id=None, limit=None, filter=None):
         """
         Iterate over data items beginning from change id
         :param change_id: Staring change id
         :param limit: Records limit
         :param filter: List of ids to filter
-        :return: (id, changeid, data)
+        :return: (id, change_id, data)
         """
         q = {}
         if filter:
@@ -164,13 +199,8 @@ class DataStream(object):
                     "$in": filter
                 }
         if change_id:
-            if not isinstance(change_id, bson.ObjectId):
-                try:
-                    change_id = bson.ObjectId(change_id)
-                except (bson.errors.InvalidId, TypeError) as e:
-                    raise ValueError(str(e))
             q[cls.F_CHANGEID] = {
-                "$gt": change_id
+                "$gt": cls.clean_change_id(change_id)
             }
         coll = cls.get_collection()
         for doc in coll.find(q, {
