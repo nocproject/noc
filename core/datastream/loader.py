@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import logging
 import inspect
 import threading
+import os
 # NOC modules
 from .base import DataStream
 
@@ -21,6 +22,7 @@ class DataStreamLoader(object):
     def __init__(self):
         self.datastreams = {}  # Load datastreams
         self.lock = threading.Lock()
+        self.all_datastreams = set()
 
     def get_datastream(self, name):
         """
@@ -56,6 +58,25 @@ class DataStreamLoader(object):
 
     def is_valid_name(self, name):
         return ".." not in name
+
+    def iter_datastreams(self):
+        with self.lock:
+            if not self.all_datastreams:
+                self.all_datastreams = self.find_datastreams()
+        for ds in sorted(self.all_datastreams):
+            yield ds
+
+    def find_datastreams(self):
+        """
+        Scan all available datastreams
+        """
+        names = set()
+        for dn in ["services/datastream/streams"]:
+            for file in os.listdir(dn):
+                if file.startswith("_") or not file.endswith(".py"):
+                    continue
+                names.add(file[:-3])
+        return names
 
 
 # Create singleton object

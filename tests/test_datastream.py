@@ -280,6 +280,11 @@ def test_loader_error():
     assert ds is None
 
 
+def test_loader_iter_datastreams(datastream_name):
+    dses = set(loader.iter_datastreams())
+    assert datastream_name in dses
+
+
 def test_wait():
     class WaitDS(DataStream):
         name = "wait"
