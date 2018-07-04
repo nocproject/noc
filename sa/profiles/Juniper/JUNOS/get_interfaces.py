@@ -62,7 +62,8 @@ class Script(BaseScript):
         r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)"
         r"(\s+0x\d+\.(?P<vlan2>\d+))?\s*\]", re.MULTILINE
     )
-    # Flags: Up SNMP-Traps 0x20004000 VLAN-Tag [ 0x8100.3637 0x8100.19 ] In(pop-swap .999) Out(swap-push 0x8100.3637 .19)
+    # Flags: Up SNMP-Traps 0x20004000 \
+    #   VLAN-Tag [ 0x8100.3637 0x8100.19 ] In(pop-swap .999) Out(swap-push 0x8100.3637 .19)
     rx_flags_unnumbered = re.compile(
         r"^\s+Flags:.+, Unnumbered", re.MULTILINE
     )
