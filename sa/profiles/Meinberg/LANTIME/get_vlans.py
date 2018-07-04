@@ -29,8 +29,7 @@ class Script(BaseScript):
     rx_iface = re.compile(
         r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
         r"    link\/ether (?P<mac>\S+) brd .*\n"
-        r"    vlan protocol 802.1Q id (?P<vlan_number>\d+)\s",
-        re.IGNORECASE | re.DOTALL
+        r"    vlan protocol 802.1Q id (?P<vlan_number>\d+)\s", re.IGNORECASE | re.DOTALL
     )
 
     def execute(self):

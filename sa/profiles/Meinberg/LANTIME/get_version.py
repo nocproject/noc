@@ -25,7 +25,8 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"\((?P<distr>[^,]+)\) \((?P<version>[^,]+)\((?P<codename>[^,]+)\)\)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
 
     def execute(self):
 

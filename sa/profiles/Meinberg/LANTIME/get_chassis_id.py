@@ -22,15 +22,14 @@ class Script(BaseScript):
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.2", cached=True)
                 if mac is not None:
-                    return {
-                        "first_chassis_mac": mac,
-                        "last_chassis_mac": mac
-                    }
+                    return {"first_chassis_mac": mac, "last_chassis_mac": mac}
                 else:
-                    return [{
-                        "first_chassis_mac": "00:00:00:00:00:00",
-                        "last_chassis_mac": "00:00:00:00:00:00"
-                    }]
+                    return [
+                        {
+                            "first_chassis_mac": "00:00:00:00:00:00",
+                            "last_chassis_mac": "00:00:00:00:00:00"
+                        }
+                    ]
 
             except self.snmp.TimeOutError:
                 pass
