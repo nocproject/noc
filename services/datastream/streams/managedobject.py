@@ -243,3 +243,15 @@ class ManagedObjectDataStream(DataStream):
             rr["udld_id"] = di.router_id
         if rr:
             r["chassis_id"] = rr
+
+    @classmethod
+    def get_meta(cls, data):
+        return {
+            "pool": data.get("pool")
+        }
+
+    @classmethod
+    def filter_pool(cls, name):
+        return {
+            "%s.pool" % cls.F_META: name
+        }
