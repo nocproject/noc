@@ -16,7 +16,6 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-
 class Script(BaseScript):
     name = "Meinberg.LANTIME.get_interfaces"
     cache = True

@@ -28,7 +28,7 @@ class Profile(BaseProfile):
     # pattern_more = [
     #    (r"Install package.*\[N/y\]\s$", "\n"),
     #    (r"Is this ok \[y/N\]: ", "y\n")
-    #]
+    # ]
     command_disable_pager = \
         "LANG=en_US.UTF-8 ; PATH=$PATH:/sbin:/usr/sbin ; PROMPT_COMMAND=''"
     command_super = "sudo bash"
