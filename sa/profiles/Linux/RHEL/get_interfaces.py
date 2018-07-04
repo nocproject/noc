@@ -17,10 +17,15 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 """
 need Iproute2
+
 see http://linux-net.osdl.org/index.php/Iproute2
+
 # yum -y install iproute
+
 or
+
 # dnf -y install iproute
+
 """
 
 
