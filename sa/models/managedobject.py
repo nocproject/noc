@@ -490,6 +490,7 @@ class ManagedObject(Model):
 
     def iter_changed_datastream(self):
         yield "managedobject", self.id
+        yield "cfgping", self.id
 
     @property
     def data(self):
