@@ -21,13 +21,19 @@ class Script(BaseScript):
     rx_domain_name = re.compile(r"^ip domain[ \-]name\s+(?P<domain>\S+)",
                                 re.MULTILINE)
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        # sysName.0
+        v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
+        if v:
+            return v
+
+    def execute_cli(self):
         if self.has_snmp():
             try:
                 # sysName.0
                 v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
                 if v:
-                   return v
+                    return v
             except self.snmp.TimeOutError:
                 pass
         if self.has_capability("Network | LLDP"):
@@ -35,7 +41,7 @@ class Script(BaseScript):
                 v2 = self.cli("display lldp local | include System name")
                 match = self.rx_hostname_lldp.search(v2)
                 if match:
-                    return    match.group("hostname")
+                    return match.group("hostname")
             except self.CLISyntaxError:
                 pass
 

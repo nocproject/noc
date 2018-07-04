@@ -40,6 +40,16 @@ class Script(BaseScript):
             and "Global status of LLDP: Disable" not in r \
                 and "LLDP enable status:           disable" not in r
 
+    def has_lldp_snmp(self):
+        """
+        Check box has LLDP enabled
+        """
+        try:
+            r = self.snmp.get("1.3.6.1.4.1.2011.5.25.134.1.1.1.0")
+        except self.snmp.TimeOutError:
+            r = 0
+        return bool(r)
+
     @false_on_cli_error
     def has_ndp_cli(self):
         """
