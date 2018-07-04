@@ -81,4 +81,4 @@ class NRICheck(TopologyDiscoveryCheck):
             seen = True
         self.seen_neighbors.add(mo)
         if not seen:
-            self.logger.info("[%s] Object has no nri interface name. Topology may be incomplete")
+            self.logger.info("[%s] Object has no nri interface name. Topology may be incomplete", mo.name)

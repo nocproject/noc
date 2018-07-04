@@ -149,7 +149,7 @@ class InterfaceCheck(DiscoveryCheck):
                 }
             )
             self.log_changes(
-                "Forwarding instance '%s' has been changed",
+                "Forwarding instance '%s' has been changed" % name,
                 changes
             )
         else:
