@@ -141,7 +141,7 @@ class DataStream(object):
         }
         if meta:
             op["$set"][cls.F_META] = meta
-        elif not "$deleted" in data:
+        elif "$deleted" not in data:
             op["$unset"] = {
                 cls.F_META: ""
             }
