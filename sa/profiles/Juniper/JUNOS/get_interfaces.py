@@ -28,7 +28,8 @@ class Script(BaseScript):
     BULK = False
 
     rx_phy_name = re.compile(
-        r"^Physical interface: (?P<ifname>\S+)( \(\S+, \S+\))?\s*, "
+        r"^Physical interface: (?P<ifname>\S+)"
+        r"( \(\S+, \S+\))?( \(Extended Port)?\s*, "
         r"(?P<admin>Enabled|Disabled|Administratively down), "
         r"Physical link is (?P<oper>Up|Down)", re.MULTILINE
     )
