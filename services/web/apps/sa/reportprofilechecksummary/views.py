@@ -176,7 +176,7 @@ class ReportFilterApplication(SimpleReport):
                 # ["name"], "%d (%d%%)" % (c, (c / float(summary[1]))*100)]]
                 data += [[s1[summary.index(c)],
                           calc[summary.index(c)]["name"],
-                          c, "%.2f %%" % ((c / float(summary[1]))*100)]]
+                          c, "%.2f %%" % ((c / float(summary[1])) * 100)]]
                 continue
             data += [[s1[summary.index(c)], calc[summary.index(c)]["name"], c, None]]
 
