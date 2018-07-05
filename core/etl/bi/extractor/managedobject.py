@@ -20,6 +20,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.capability import Capability
 from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.inv.models.discoveryid import DiscoveryID
 
 
 class ManagedObjectsExtractor(BaseExtractor):
@@ -52,6 +53,7 @@ class ManagedObjectsExtractor(BaseExtractor):
         ]
         # Extract managed objects
         for mo in ManagedObject.objects.all():
+            did = DiscoveryID.objects.filter(object=mo).first()
             r = {
                 "ts": ts,
                 "managed_object": mo,
@@ -68,8 +70,10 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "platform": mo.platform,
                 "version": mo.version,
                 "name": ch_escape(mo.name),
+                "hostname": did.hostname if did else "",
                 "ip": mo.address,
                 "is_managed": mo.is_managed,
+                "location": mo.container.get_address_text() if mo.container else ""
                 # subscribers
                 # services
             }
