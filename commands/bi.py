@@ -12,6 +12,7 @@ import os
 import datetime
 import gzip
 import time
+from pymongo.errors import OperationFailure
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
@@ -38,6 +39,7 @@ class Command(BaseCommand):
 
     # Extract by 1-day chunks
     EXTRACT_WINDOW = config.bi.extract_window
+    MIN_WINDOW = datetime.timedelta(seconds=2)
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -92,12 +94,25 @@ class Command(BaseCommand):
                     self.print("[%s] No data, skipping" % ecls.name)
                     continue
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
+            extracted_record = 0
+            is_exception = False
             while start < stop:
                 end = min(start + window, stop)
                 e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
-                self.print("[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True)
                 t0 = time.time()
-                nr = e.extract()
+                try:
+                    nr = e.extract()
+                except OperationFailure as ex:
+                    window = window // 2
+                    if window < self.MIN_WINDOW:
+                        self.print("[%s] Window less two seconds. Too many element in interval. Fix it manually" %
+                                   e.name)
+                        self.die("Too many elements per interval")
+                    self.print("[%s] Mongo Exception: %s, switch window to: %s" % (e.name, ex, window))
+                    is_exception = True
+                    continue
+
+                self.print("[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True)
                 dt = time.time() - t0
                 if dt > 0.0:
                     self.print("%d records in %.3fs (%.2frec/s)" % (
@@ -107,6 +122,13 @@ class Command(BaseCommand):
                     self.print("no records")
                 self.set_last_extract(ecls.name, e.last_ts or end)
                 start += window
+
+                if is_exception:  # Save extracted record after exception
+                    extracted_record = nr
+                    is_exception = False
+                if window != datetime.timedelta(seconds=self.EXTRACT_WINDOW) and nr < extracted_record * 0.75:
+                    self.print("[%s] Restore Window to: %s" % (e.name, window * 2))
+                    window = min(window * 2, datetime.timedelta(seconds=self.EXTRACT_WINDOW))
 
     def handle_dictionaries(self, *args, **options):
         # Extract dictionaries
