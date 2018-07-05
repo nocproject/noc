@@ -8,7 +8,7 @@
 # Python modules
 import re
 
-SRC = "static/js/noc/colors.js"
+SRC = "ui/web/js/colors.js"
 DST = "ui/web/css/colors.css"
 
 rx_expr = re.compile(
