@@ -86,12 +86,12 @@ class Script(BaseScript):
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         v = self.cli("show interface ip")
         for match in self.rx_ip_iface.finditer(v):
-            ifname = match.group("iface")
+            ifname = str(int(match.group("iface")) - 1)
             addr = match.group("ip")
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
             i = {
-                "name": "ip%s" % ifname,
+                "name": "IP%s" % ifname,
                 "type": "SVI",
                 "mac": mac,
                 "enabled_protocols": [],
