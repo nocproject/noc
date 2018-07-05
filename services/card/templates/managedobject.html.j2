@@ -6,7 +6,7 @@
         height: 1px;
     }
 </style>
-<div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
+<div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger', 'unmanaged': 'default'}[current_state] }}">
     <div class="panel-heading">
         <a target="_blank" href="/#sa.managedobject/{{ id  }}">{{ object | managed_object_title }}</a>
         <span style="float: right">
