@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_chassis_id
+# Upvel.UP.get_chassis_id
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -13,7 +13,7 @@ import re
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_chassis_id"
+    name = "Upvel.UP.get_chassis_id"
     cache = True
     interface = IGetChassisID
 

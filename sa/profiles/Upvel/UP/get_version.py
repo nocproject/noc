@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_version
+# Upvel.UP.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_version"
+    name = "Upvel.UP.get_version"
     cache = True
     interface = IGetVersion
 
@@ -29,7 +29,7 @@ class Script(BaseScript):
         match1 = self.rx_platform.search(v)
         match2 = self.rx_version.search(v)
         return {
-            "vendor": "UPVEL",
+            "vendor": "Upvel",
             "platform": match1.group("platform"),
             "version": match2.group("version")
         }

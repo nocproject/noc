@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_lldp_neighbors
+# Upvel.UP.get_lldp_neighbors
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -15,7 +15,7 @@ from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_lldp_neighbors"
+    name = "Upvel.UP.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
     rx_line = re.compile(

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.ping
+# Upvel.UP.ping
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ import re
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.ping"
+    name = "Upvel.UP.ping"
     interface = IPing
     rx_result = re.compile(
         r"Sent (?P<count>\d+) packets, received (?P<success>\d+) OK, \d+ bad")

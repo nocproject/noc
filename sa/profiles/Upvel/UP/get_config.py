@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_config
+# Upvel.UP.get_config
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_config"
+    name = "Upvel.UP.get_config"
     interface = IGetConfig
 
     def execute(self):

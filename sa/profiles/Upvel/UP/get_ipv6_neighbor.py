@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_ipv6_neighbor
+# Upvel.UP.get_ipv6_neighbor
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetipv6neighbor import IGetIPv6Neighbor
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_ipv6_neighbor"
+    name = "Upvel.UP.get_ipv6_neighbor"
     interface = IGetIPv6Neighbor
 
     rx_line = re.compile(
