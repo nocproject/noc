@@ -38,7 +38,7 @@ class Script(BaseScript):
                     vrf = {
                         "name": v["name"],
                         "addresses": [],
-                        "intefaces": []
+                        "interfaces": []
                     }
                     if "rd" in v:
                         vrf["rd"] = v["rd"]
