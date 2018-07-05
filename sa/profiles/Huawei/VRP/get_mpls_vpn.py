@@ -44,6 +44,7 @@ class Script(BaseScript):
                     "type": "VRF",
                     "status": True,
                     "vpn_id": "",
+                    "rd": None,
                     "name": match.group("vrf").strip(),
                     "interfaces": []
                 }]
@@ -81,6 +82,7 @@ class Script(BaseScript):
                 "status": True,
                 "name": match.group("vrf").strip(),
                 "vpn_id": "",
+                "rd": None,
                 "interfaces": match.group("ifaces").strip().split(" ")
             }
             description = match.group("description").strip()
