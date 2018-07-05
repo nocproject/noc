@@ -748,6 +748,17 @@ class Prefix(models.Model):
         """
         self._disable_delete_protection = True
 
+    def get_effective_as(self):
+        """
+        Return effective AS (first found upwards)
+        :return: AS instance or None
+        """
+        if self.asn:
+            return self.asn
+        if not self.parent:
+            return None
+        return self.parent.get_effective_as()
+
 
 # Avoid circular references
 from noc.dns.models.dnszone import DNSZone
