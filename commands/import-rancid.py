@@ -23,7 +23,6 @@ from noc.main.models.pool import Pool
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.gridvcs.manager import GridVCSField
 from noc.core.gridvcs.manager import GridVCS
 import noc.settings
 
@@ -113,8 +112,8 @@ class Command(BaseCommand):
         )
 
     PROFILE_MAP = {
-        "cisco": Profile["Cisco.IOS"],
-        "juniper": Profile["Juniper.JUNOS"]
+        "cisco": Profile.get_by_name("Cisco.IOS"),
+        "juniper": Profile.get_by_name("Juniper.JUNOS")
     }
 
     rx_f = re.compile(
