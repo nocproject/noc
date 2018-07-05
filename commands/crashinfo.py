@@ -104,7 +104,10 @@ class Command(BaseCommand):
             self.stdout.write("\n\n")
 
     def handle_clear(self, clear_uuids, *args, **options):
-        if clear_uuids == "all":
+        if not clear_uuids:
+            self.stdout.write("Use './noc crashninfo clear all' for clear all crashinfo or"
+                              " './noc crashinfo clear UUID1 UUID2 ...'\n")
+        if clear_uuids and clear_uuids[0] == "all":
             clear_uuids = [
                 fn[:-5]
                 for fn in os.listdir(self.PREFIX)
