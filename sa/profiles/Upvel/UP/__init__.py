@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: UPVEL
+# Vendor: Upvel
 # OS:     UP
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
@@ -12,7 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
-    name = "UPVEL.UP"
+    name = "Upvel.UP"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_prompt = r"^(?P<hostname>\S+)\s*(\((config|config-\S+)\)|)\s*#"
     pattern_syntax_error = r"\n% (Invalid|Ambiguous) word detected at"

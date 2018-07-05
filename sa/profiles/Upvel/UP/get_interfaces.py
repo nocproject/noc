@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_interfaces
+# Upvel.UP.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ import re
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_interfaces"
+    name = "Upvel.UP.get_interfaces"
     interface = IGetInterfaces
 
     rx_port = re.compile(

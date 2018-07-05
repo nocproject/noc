@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_arp
+# Upvel.UP.get_arp
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -13,7 +13,7 @@ import re
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_arp"
+    name = "Upvel.UP.get_arp"
     interface = IGetARP
     rx_line = re.compile(
         r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+via\s+(?P<interface>\S+):"

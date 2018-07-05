@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_mac_address_table
+# Upvel.UP.get_mac_address_table
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_mac_address_table"
+    name = "Upvel.UP.get_mac_address_table"
     interface = IGetMACAddressTable
 
     rx_line = re.compile(

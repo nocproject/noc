@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_vlans
+# Upvel.UP.get_vlans
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -13,7 +13,7 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_vlans"
+    name = "Upvel.UP.get_vlans"
     interface = IGetVlans
 
     rx_vlan = re.compile(

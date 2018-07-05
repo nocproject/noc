@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UPVEL.UP.get_interface_status
+# Upvel.UP.get_interface_status
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -15,7 +15,7 @@ from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 
 class Script(BaseScript):
-    name = "UPVEL.UP.get_interface_status"
+    name = "Upvel.UP.get_interface_status"
     interface = IGetInterfaceStatus
 
     rx_port = re.compile(
