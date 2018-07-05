@@ -7,7 +7,7 @@
 """
 import re
 # NOC modules
-from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.lib.validators import is_int
 
