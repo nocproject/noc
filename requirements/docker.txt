@@ -28,7 +28,7 @@ mongoengine==0.13.0
 networkx==1.11
 requests==2.2.1
 cachetools==1.1.5
-Pygments==1.2.2
+Pygments==2.2.0
 noc-pkg-pyclips==1.0.7
 markerlib>=0.6.0
 distribute>=0.7.3
