@@ -8,9 +8,7 @@
 
 # Python modules
 import threading
-import operator
 # Third-party modules
-import cachetools
 from pymongo import ReadPreference
 from pymongo.errors import BulkWriteError
 # NOC modules
@@ -29,27 +27,22 @@ class InterfaceStatusCheck(DiscoveryCheck):
     required_script = "get_interface_status_ex"
     required_capabilities = ["DB | Interfaces"]
 
-    _ips_cache = cachetools.TTLCache(maxsize=10, ttl=60)
-
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=lambda _: ips_lock)
-    def get_profiles(cls, x):
-        return list(InterfaceProfile.objects.filter(status_discovery=True))
-
     def get_interface_ifindexes(self):
         """
         Populate metrics list with interface metrics
         :return:
         """
-        interfaces = []
+        ifindexes = []
         for i in Interface._get_collection().with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).find(
-                    {"managed_object": self.object.id, "type": "physical"},
+                    {"managed_object": self.object.id, "type": "physical", "profile":
+                     {"$in": InterfaceProfile.get_with_status_discovery()}},
                     {"_id": 1, "name": 1, "ifindex": 1, "profile": 1}):
-            interfaces += [{"interface": i.get("name"), "ifindex": (i.get("ifindex"))}]
-        if not interfaces:
+            ifindexes += [{"interface": i.get("name"), "ifindex": (i.get("ifindex"))}]
+        if not ifindexes:
             self.logger.info("Interface are not configured. Skipping")
-        return interfaces
+            return None
+        return ifindexes
 
     def handler(self):
         def get_interface(name):
@@ -63,16 +56,12 @@ class InterfaceStatusCheck(DiscoveryCheck):
 
             return None
 
-        has_interfaces = "DB | Interfaces" in self.object.get_caps()
-        if not has_interfaces:
-            self.logger.info("No interfaces discovered. " "Skipping interface status check")
-            return
         self.logger.info("Checking interface statuses")
         interfaces = dict(
             (i.name, i) for i in Interface.objects.filter(
                 managed_object=self.object.id,
                 type="physical",
-                profile__in=self.get_profiles(None),
+                profile__in=self.InterfaceProfile.get_with_status_discovery(),
                 read_preference=ReadPreference.SECONDARY_PREFERRED
             )
         )
