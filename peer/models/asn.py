@@ -111,20 +111,6 @@ class AS(models.Model):
             return asn[0]
         return None
 
-    @classmethod
-    def default_as(cls):
-        try:
-            return AS.objects.get(asn=0)
-        except AS.DoesNotExist:
-            # Try to create AS0
-            rir = RIR.objects.all()[0]
-            org = Organisation.objects.all()[0]
-            a = AS(asn=0, as_name="Default",
-                   description="Default AS, do not delete",
-                   rir=rir, organisation=org)
-            a.save()
-            return a
-
     def get_rpsl(self):
         sep = "remarks: %s" % ("-" * 72)
         s = []
