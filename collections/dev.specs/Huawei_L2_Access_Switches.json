@@ -94,9 +94,14 @@
             "value": "display lldp local"
         },
         {
-            "name": "get.neighbors.lldp.cli",
+            "name": "get.neighbors.lldp.cli.1",
             "type": "cli",
             "value": "display lldp neighbor-information"
+        },
+        {
+            "name": "get.neighbors.lldp.cli.2",
+            "type": "cli",
+            "value": "display lldp neighbor"
         },
         {
             "name": "has.ndp",
