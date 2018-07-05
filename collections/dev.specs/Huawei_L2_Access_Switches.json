@@ -1,0 +1,378 @@
+{
+    "name": "Huawei L2 Access Switches",
+    "$collection": "dev.specs",
+    "uuid": "9ceea402-43ba-4c98-8a65-64d519a7dde8",
+    "description": "Huawei Switches models",
+    "revision": 1,
+    "quiz__name": "General Switches",
+    "author": "avs",
+    "profile__name": "Huawei.VRP",
+    "answers": [
+        {
+            "name": "vendor",
+            "type": "str",
+            "value": "Huawei"
+        },
+        {
+            "name": "has.stack",
+            "type": "bool",
+            "value": "false"
+        },
+        {
+            "name": "has.cli",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "has.snmp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.version.cli",
+            "type": "cli",
+            "value": "display version"
+        },
+        {
+            "name": "get.version.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.1.1.0"
+        },
+        {
+            "name": "has.stp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.stp.cli.1",
+            "type": "cli",
+            "value": "display stp global"
+        },
+        {
+            "name": "get.caps.stp.cli.2",
+            "type": "cli",
+            "value": "display stp"
+        },
+        {
+            "name": "get.caps.stp.cli.3",
+            "type": "cli",
+            "value": "display stp global | include Enabled"
+        },
+        {
+            "name": "get.caps.stp.cli.4",
+            "type": "cli",
+            "value": "display stp | include isabled"
+        },
+        {
+            "name": "get.caps.stp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.2.15"
+        },
+        {
+            "name": "get.neighbors.stp.cli.1",
+            "type": "cli",
+            "value": "display stp brief"
+        },
+        {
+            "name": "get.neighbors.stp.cli.2",
+            "type": "cli",
+            "value": "display stp region-configuration"
+        },
+        {
+            "name": "get.neighbors.stp.cli.3",
+            "type": "cli",
+            "value": "display stp instance 0"
+        },
+        {
+            "name": "has.lldp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.lldp.cli",
+            "type": "cli",
+            "value": "display lldp local"
+        },
+        {
+            "name": "get.neighbors.lldp.cli.1",
+            "type": "cli",
+            "value": "display lldp neighbor-information"
+        },
+        {
+            "name": "get.neighbors.lldp.cli.2",
+            "type": "cli",
+            "value": "display lldp neighbor"
+        },
+        {
+            "name": "has.ndp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.ndp.cli",
+            "type": "cli",
+            "value": "display ndp"
+        },
+        {
+            "name": "get.neighbors.ndp.cli",
+            "type": "cli",
+            "value": "display ndp"
+        },
+        {
+            "name": "has.oam",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.oam.cli",
+            "type": "cli",
+            "value": "display efm oam status"
+        },
+        {
+            "name": "get.neighbors.oam.cli",
+            "type": "cli",
+            "value": "display efm all"
+        },
+        {
+            "name": "has.udld",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.udld.cli",
+            "type": "cli",
+            "value": "display dldp"
+        },
+        {
+            "name": "get.neighbors.udld.cli",
+            "type": "cli",
+            "value": "display dldp"
+        },
+        {
+            "name": "has.lacp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.lacp.cli",
+            "type": "cli",
+            "value": "display lacp statistics eth-trunk"
+        },
+        {
+            "name": "get.caps.lacp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1"
+        },
+        {
+            "name": "get.neighbors.lacp.cli",
+            "type": "cli",
+            "value": "display eth-trunk"
+        },
+        {
+            "name": "get.neighbors.lacp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1"
+        },
+        {
+            "name": "get.stack.members.cli",
+            "type": "cli",
+            "value": "display stack"
+        },
+        {
+            "name": "get.stack.members.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.47.1.1.1.1"
+        },
+        {
+            "name": "get.chassis_id.cli",
+            "type": "cli",
+            "value": "display stp"
+        },
+        {
+            "name": "get.chassis_id.snmp.1",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.17.1.1"
+        },
+        {
+            "name": "get.chassis_id.snmp.2",
+            "type": "snmp-get",
+            "value": "1.0.8802.1.1.2.1.3.2"
+        },
+        {
+            "name": "get.fqdn.cli.1",
+            "type": "cli",
+            "value": "display current-configuration | include sysname"
+        },
+        {
+            "name": "get.fqdn.cli.2",
+            "type": "cli",
+            "value": "display lldp local | include System name"
+        },
+        {
+            "name": "get.fqdn.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.1.5.0"
+        },
+        {
+            "name": "get.mac_address_table.cli",
+            "type": "cli",
+            "value": "display mac-address"
+        },
+        {
+            "name": "get.arp_table.cli.1",
+            "type": "cli",
+            "value": "display arp"
+        },
+        {
+            "name": "get.arp_table.cli.2",
+            "type": "cli",
+            "value": "display arp all"
+        },
+        {
+            "name": "get.vlan_table.cli.1",
+            "type": "cli",
+            "value": "display vlan"
+        },
+        {
+            "name": "get.vlan_table.cli.2",
+            "type": "cli",
+            "value": "display vlan all"
+        },
+        {
+            "name": "get.vlan_table.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.7.1.4.2"
+        },
+        {
+            "name": "get.vlan_table.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.7.1.4.3"
+        },
+        {
+            "name": "get.interface_name.cli.1",
+            "type": "cli",
+            "value": "display interface"
+        },
+        {
+            "name": "get.interface_name.cli.2",
+            "type": "cli",
+            "value": "display interface description"
+        },
+        {
+            "name": "get.interface_name.cli.3",
+            "type": "cli",
+            "value": "display interface brief"
+        },
+        {
+            "name": "get.interface_name.cli.4",
+            "type": "cli",
+            "value": "display brief interface"
+        },
+        {
+            "name": "get.interface_name.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.2.2"
+        },
+        {
+            "name": "get.interface_ip.cli",
+            "type": "cli",
+            "value": "display ip interface"
+        },
+        {
+            "name": "get.interface_ip.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.4.20"
+        },
+        {
+            "name": "get.interface_agg.cli.1",
+            "type": "cli",
+            "value": "display eth-trunk"
+        },
+        {
+            "name": "get.interface_agg.cli.2",
+            "type": "cli",
+            "value": "display link-aggregation summary"
+        },
+        {
+            "name": "get.interface_agg.snmp",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2"
+        },
+        {
+            "name": "get.interface_proto_snmp.cli",
+            "type": "cli",
+            "value": "display rm interface"
+        },
+        {
+            "name": "get.interface_vlans.cli.1",
+            "type": "cli",
+            "value": "display port allow-vlan"
+        },
+        {
+            "name": "get.interface_vlans.cli.2",
+            "type": "cli",
+            "value": "display port vlan"
+        },
+        {
+            "name": "get.interface_vlans.cli.3",
+            "type": "cli",
+            "value": "display port trunk"
+        },
+        {
+            "name": "get.interface_vlans.cli.4",
+            "type": "cli",
+            "value": "display port hybrid"
+        },
+        {
+            "name": "get.interface_vlans.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.5.25.42.1.1.1.3"
+        },
+        {
+            "name": "get.interface_vlans.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.5.25.42.1.1.1.10"
+        },
+        {
+            "name": "get.interface_dom.cli",
+            "type": "cli",
+            "value": "display transceiver diagnosis interface"
+        },
+        {
+            "name": "get.inventory.cli.1",
+            "type": "cli",
+            "value": "display device"
+        },
+        {
+            "name": "get.inventory.cli.2",
+            "type": "cli",
+            "value": "display device manuinfo"
+        },
+        {
+            "name": "get.cpu_usage.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.6.3.4.1"
+        },
+        {
+            "name": "get.memory_usage.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.6.1.2.1"
+        },
+        {
+            "name": "get.mpls_vrf.cli",
+            "type": "cli",
+            "value": "display ip vpn-instance verbose"
+        },
+        {
+            "name": "get.mpls_vrf.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.10.166.11.1.2.2"
+        },
+        {
+            "name": "get.mpls_vrf.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.10.166.11.1.2.1"
+        }
+    ],
+    "changes": []
+}
