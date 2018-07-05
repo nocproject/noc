@@ -63,7 +63,6 @@ class CHWriterService(Service):
         self.logger.info("Sending records to %s" % self.ch_address)
 
     def get_channel(self, fields):
-        print("Getting channel")
         if fields not in self.channels:
             self.channels[fields] = Channel(
                 self,
