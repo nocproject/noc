@@ -22,7 +22,7 @@ class BaseProtocol(object):
     def load(self):
         raise NotImplementedError()
 
-    def dump(self):
+    def dump(self, section=None):
         raise NotImplementedError()
 
     def parse_url(self, url):
