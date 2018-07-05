@@ -85,19 +85,22 @@ class ManagedObjectCard(BaseCard):
 
         current_start = None
         duration = None
-        if self.object.get_status():
-            if alarms:
-                current_state = "alarm"
+        if self.object.is_managed:
+            if self.object.get_status():
+                if alarms:
+                    current_state = "alarm"
+                else:
+                    current_state = "up"
+                uptime = Uptime.objects.filter(object=self.object.id, stop=None).first()
+                if uptime:
+                    current_start = uptime.start
             else:
-                current_state = "up"
-            uptime = Uptime.objects.filter(object=self.object.id, stop=None).first()
-            if uptime:
-                current_start = uptime.start
+                current_state = "down"
+                outage = Outage.objects.filter(object=self.object.id, stop=None).first()
+                if outage is not None:
+                    current_start = outage.start
         else:
-            current_state = "down"
-            outage = Outage.objects.filter(object=self.object.id, stop=None).first()
-            if outage is not None:
-                current_start = outage.start
+            current_state = "unmanaged"
         if current_start:
             duration = now - current_start
 
