@@ -238,8 +238,6 @@ class Prefix(models.Model):
         # Set defaults
         if not self.vrf:
             self.vrf = VRF.get_global()
-        if not self.asn:
-            self.asn = AS.default_as()
         if not self.is_root:
             # Set proper parent
             self.parent = Prefix.get_parent(self.vrf, self.afi, self.prefix)
@@ -749,6 +747,17 @@ class Prefix(models.Model):
         :return:
         """
         self._disable_delete_protection = True
+
+    def get_effective_as(self):
+        """
+        Return effective AS (first found upwards)
+        :return: AS instance or None
+        """
+        if self.asn:
+            return self.asn
+        if not self.parent:
+            return None
+        return self.parent.get_effective_as()
 
 
 # Avoid circular references
