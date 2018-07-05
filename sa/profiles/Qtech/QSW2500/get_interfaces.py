@@ -51,6 +51,7 @@ class Script(BaseScript):
                 "type": "physical",
                 "admin_status": match.group("admin_status") == "enable",
                 "oper_status": match.group("admin_status") == "up",
+                "snmp_ifindex": int(match.group("port")),
                 "subinterfaces": [{
                     "name": match.group("port"),
                     "admin_status": match.group("admin_status") == "enable",
