@@ -228,7 +228,6 @@ class VRF(models.Model):
             Prefix.objects.get_or_create(
                 vrf=self, afi="4", prefix=self.IPv4_ROOT,
                 defaults={
-                    "asn": AS.default_as(),
                     "description": "IPv4 Root",
                     "profile": self.profile.default_prefix_profile
                 })
@@ -237,7 +236,6 @@ class VRF(models.Model):
             Prefix.objects.get_or_create(
                 vrf=self, afi="6", prefix=self.IPv6_ROOT,
                 defaults={
-                    "asn": AS.default_as(),
                     "description": "IPv6 Root",
                     "profile": self.profile.default_prefix_profile
                 })

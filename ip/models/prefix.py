@@ -238,8 +238,6 @@ class Prefix(models.Model):
         # Set defaults
         if not self.vrf:
             self.vrf = VRF.get_global()
-        if not self.asn:
-            self.asn = AS.default_as()
         if not self.is_root:
             # Set proper parent
             self.parent = Prefix.get_parent(self.vrf, self.afi, self.prefix)
