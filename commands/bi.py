@@ -105,7 +105,8 @@ class Command(BaseCommand):
                 except OperationFailure as ex:
                     window = window // 2
                     if window < self.MIN_WINDOW:
-                        self.print("[%s] Window less two seconds. Too many element in interval. Fix it manually" % e.name)
+                        self.print("[%s] Window less two seconds. Too many element in interval. Fix it manually" %
+                                   e.name)
                         self.die("Too many elements per interval")
                     self.print("[%s] Mongo Exception: %s, switch window to: %s" % (e.name, ex, window))
                     is_exception = True
