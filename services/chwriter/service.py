@@ -63,6 +63,7 @@ class CHWriterService(Service):
         self.logger.info("Sending records to %s" % self.ch_address)
 
     def get_channel(self, fields):
+        print("Getting channel")
         if fields not in self.channels:
             self.channels[fields] = Channel(
                 self,
@@ -113,7 +114,7 @@ class CHWriterService(Service):
             self.logger.info(
                 "Feeding speed: %.2frecords/sec, active channels: %s, buffered records: %d",
                 speed,
-                metrics["channels_active"],
+                metrics["channels_active"].value,
                 metrics["records_buffered"].value
             )
         self.last_metrics = nm
