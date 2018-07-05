@@ -42,7 +42,7 @@ class Script(BaseScript):
         r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
         r"(?P<vlan_id>\d+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         v = self.cli("show interface port")
         for match in self.rx_port.finditer(v):

@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"^\s+(?P<ip>\S+)\s+(?P<mac>[0-9a-f\.]+)\s+dynamic\s+"
         r"(?P<iface>\d+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         cmd = self.cli("show arp")
         for match in self.rx_line.finditer(cmd):

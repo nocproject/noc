@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    def execute(self):
+    def execute_cli(self):
         ver = self.cli("show version", cached=True)
         match = self.profile.rx_ver.search(ver)
         return {

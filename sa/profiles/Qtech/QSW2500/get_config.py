@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Qtech.QSW2500.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self):
         config = self.cli("show running-config")
         config = self.strip_first_lines(config, 2)
         return self.cleaned_config(config)

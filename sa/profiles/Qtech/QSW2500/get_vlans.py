@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_vlan = re.compile(r"^\s*(?P<vlanid>\d+)\s+", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         v = self.cli("show vlan")
         for match in self.rx_vlan.finditer(v):

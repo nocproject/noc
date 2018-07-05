@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"^(?P<mac>\S+)\s+(?P<iface>\d+)\s+(?P<vlan_id>\d+)\s*\S+",
         re.MULTILINE)
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         r = []
         cmd = "show mac-address-table l2-address"
         if interface is not None:
