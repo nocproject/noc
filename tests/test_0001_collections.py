@@ -14,7 +14,7 @@ import pytest
 from noc.core.collection.base import Collection
 
 
-@pytest.fixture(params=list(Collection.iter_collections()), ids=operator.attrgetter(name))
+@pytest.fixture(params=list(Collection.iter_collections()), ids=operator.attrgetter("name"))
 def collection(request):
     return request.param
 

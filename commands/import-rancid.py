@@ -428,5 +428,6 @@ class Command(BaseCommand):
         if os.path.exists(path):
             os.unlink(path)
 
+
 if __name__ == "__main__":
     Command().run()
