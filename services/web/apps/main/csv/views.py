@@ -53,8 +53,7 @@ class CSVApplication(Application):
                     )
                 else:
                     return self.response_redirect(
-                        "main:csv:import",
-                        form.cleaned_data["model"]
+                        "/main/csv/%s/" % form.cleaned_data["model"]
                     )
         else:
             form = ModelForm()
