@@ -103,6 +103,9 @@ class Command(BaseCommand):
                     nr = e.extract()
                 except OperationFailure as ex:
                     window = window // 2
+                    if window < datetime.timedelta(seconds=2):
+                        self.print("Window less two seconds. Too many alarm in interval. Fix it manual")
+                        self.die("Too many alarms per interval")
                     self.print("[%s] Mongo Exception: %s, switch window to: %s" % (e.name, ex, window))
                     is_exception = True
                     continue
