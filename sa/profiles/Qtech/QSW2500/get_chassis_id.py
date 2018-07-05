@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Qtech.QOS.get_chassis_id
+# Qtech.QSW2500.get_chassis_id
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
-    name = "Qtech.QOS.get_chassis_id"
+    name = "Qtech.QSW2500.get_chassis_id"
     interface = IGetChassisID
     cache = True
 
