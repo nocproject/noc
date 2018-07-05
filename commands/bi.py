@@ -39,6 +39,7 @@ class Command(BaseCommand):
 
     # Extract by 1-day chunks
     EXTRACT_WINDOW = config.bi.extract_window
+    MIN_WINDOW = datetime.timedelta(seconds=2)
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -103,9 +104,9 @@ class Command(BaseCommand):
                     nr = e.extract()
                 except OperationFailure as ex:
                     window = window // 2
-                    if window < datetime.timedelta(seconds=2):
-                        self.print("Window less two seconds. Too many alarm in interval. Fix it manual")
-                        self.die("Too many alarms per interval")
+                    if window < self.MIN_WINDOW:
+                        self.print("[%s] Window less two seconds. Too many element in interval. Fix it manual" % e.name)
+                        self.die("Too many elements per interval")
                     self.print("[%s] Mongo Exception: %s, switch window to: %s" % (e.name, ex, window))
                     is_exception = True
                     continue
