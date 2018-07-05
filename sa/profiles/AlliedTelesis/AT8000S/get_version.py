@@ -2,39 +2,48 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
-# coded by azhur
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.get_version"
     cache = True
     interface = IGetVersion
-    rx_ver = re.compile(r"^\s*(?:\w*\s+){1,2}\s*(?P<version>v?[\d.]+)\s",
-        re.MULTILINE | re.DOTALL)
+
+    rx_ver = re.compile(
+        r"^\s*SW version\s+(?P<version>\S+).*\n"
+        r"^\s*Boot version\s+(?P<bootprom>\S+).*\n"
+        r"(^\s*HW version\s+(?P<hardware>\S+).*\n)?", re.MULTILINE)
+    rx_platform = re.compile(
+        r"^\s*System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
+    rx_serial = re.compile(
+        r"^\s*Serial number : (?P<serial>\S+)")
 
     def execute(self):
-        if self.has_snmp():
-            try:
-                ver = self.snmp.get("1.3.6.1.4.1.89.2.4.0")
-                return {
-                    "vendor": "Allied Telesis",
-                    "platform": "AT8000S",
-                    "version": ver,
-                }
-            except self.snmp.TimeOutError:
-                pass
-        v = self.cli("show version")
-        match = self.rx_ver.search(v)
-        return {
+        v = self.cli("show version", cached=True)
+        match = self.re_search(self.rx_ver, v)
+        r = {
             "vendor": "Allied Telesis",
-            "platform": "AT8000S",
-            "version": match.group("version")
+            "version": match.group("version"),
+            "attributes": {
+                "Boot PROM": match.group("bootprom")
+            }
         }
+        if match.group("hardware"):
+            r["attributes"]["HW version"] = match.group("hardware")
+        v = self.cli("show system", cached=True)
+        match = self.re_search(self.rx_platform, v)
+        r["platform"] = match.group("platform")
+        v = self.cli("show system id", cached=True)
+        match = self.rx_serial.search(v)
+        if match:
+            r["attributes"]["Serial Number"] = match.group("serial")
+        return r

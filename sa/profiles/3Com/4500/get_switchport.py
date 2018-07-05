@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_switchport
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_switchport
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-##from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -19,7 +18,7 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     rx_iface = re.compile(
-	r"^\s+(?P<iface>(GigabitEthernet1\/0\/\S\S|Ethernet1\/0\/\S\S?))+ current state :\s+(?P<status>(UP|DOWN|ADMINISTRATIVELY DOWN))$", re.IGNORECASE)
+        r"^\s+(?P<iface>(GigabitEthernet1\/0\/\S\S|Ethernet1\/0\/\S\S?))+ current state :\s+(?P<status>(UP|DOWN|ADMINISTRATIVELY DOWN))$", re.IGNORECASE)
     rx_description = re.compile(
         r"^.*Description:\s(?P<description>\S+)$", re.MULTILINE)
     rx_type = re.compile(r"^\s*Port link-type: (?P<type>\S+)$")
@@ -39,7 +38,7 @@ class Script(BaseScript):
         for p in portchannels:
             portchannel_members += p["members"]
 
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         """
@@ -53,71 +52,73 @@ class Script(BaseScript):
         """
 
         # Try snmp first
-	if self.has_snmp():
+        if self.has_snmp():
             try:
-	
+
                 # Get interafces status
                 interface_status = {}
                 for s in self.scripts.get_interface_status():
                     interface_status[s["interface"]] = s["status"]
-	
+
                 # Get switchport index, name and description
                 iface_name = {}
                 iface_descr = {}
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.31.1.1.1.18"], bulk=True):
+                for v in self.snmp.get_tables([
+                    "1.3.6.1.2.1.31.1.1.1.1",
+                    "1.3.6.1.2.1.31.1.1.1.18"
+                ]):
                     iface = v[1].replace('GigabitEthernet', 'Gi ')
                     iface = iface.replace('Ethernet', 'Et ')
                     iface = iface.replace('Bridge-Aggregation', 'Po ')
                     iface_name.update({v[0]: iface})
                     iface_descr.update({iface: v[2]})
-	
+
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.7.1.4.3.1.1",
+                for v in self.snmp.get_tables([
+                    "1.3.6.1.2.1.17.7.1.4.3.1.1",
                     "1.3.6.1.2.1.17.7.1.4.3.1.2",
-                    "1.3.6.1.2.1.17.7.1.4.3.1.4"], bulk=True):
+                    "1.3.6.1.2.1.17.7.1.4.3.1.4"
+                ]):
                     tagged = v[2]
                     untagged = v[3]
-	
+
                     s = self.hex_to_bin(untagged)
                     un = []
                     for i in range(len(s)):
                         if i + 1 > len(iface_name):
-                           break
+                            break
                         if s[i] == '1':
                             try:
                                 iface = iface_name[str(i + 1)]
-                            except:
+                            except IndexError:
                                 continue
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
+                                port_vlans.update({
+                                    iface: {
                                         "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
+                                        "untagged": ''
+                                    }
+                                })
                             port_vlans[iface]["untagged"] = v[0]
                             un += [str(i + 1)]
-	
+
                     s = self.hex_to_bin(tagged)
                     for i in range(len(s)):
                         if s[i] == '1' and str(i + 1) not in un and i + 1 <= len(iface_name):
                             try:
                                 iface = iface_name[str(i + 1)]
-                            except:
+                            except IndexError:
                                 continue
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
+                                port_vlans.update({
+                                    iface: {
                                         "tagged": [],
                                         "untagged": '',
-                                        }
-                                    })
+                                    }
+                                })
                             port_vlans[iface]["tagged"].append(v[0])
-	
+
                 # Get switchport data and overall result
                 r = []
                 swp = {}
@@ -142,12 +143,12 @@ class Script(BaseScript):
                                 portchannels.remove(p)
                                 write = True
                                 if name not in port_vlans:
-                                    port_vlans.update(
-                                        {name: {
+                                    port_vlans.update({
+                                        name: {
                                             "tagged": port_vlans[p["members"][0]]["tagged"],
                                             "untagged": port_vlans[p["members"][0]]["untagged"],
-                                            }
-                                        })
+                                        }
+                                    })
                                 break
                     else:
                         if interface_status.get(name):
@@ -156,10 +157,10 @@ class Script(BaseScript):
                             status = False
                         try:
                             description = iface_descr[name]
-                        except:
+                        except IndexError:
                             description = None
                         if not description:
-                            #description = ''
+                            # description = ''
                             description = name + ' Interface'
                         members = []
                         write = True
@@ -169,14 +170,12 @@ class Script(BaseScript):
                         else:
                             tagged = port_vlans[name]["tagged"]
                         swp = {
-                                "status": status,
-                                "description": description,
-                                "802.1Q Enabled": len(port_vlans.get(name,
-                                                '')) > 0,
-                                "802.1ad Tunnel": vlan_stack_status.get(name,
-                                                False),
-                                "tagged": tagged,
-                                }
+                            "status": status,
+                            "description": description,
+                            "802.1Q Enabled": len(port_vlans.get(name, '')) > 0,
+                            "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                            "tagged": tagged,
+                        }
                         if name in port_vlans:
                             if port_vlans[name]["untagged"]:
                                 swp["untagged"] = port_vlans[name]["untagged"]
@@ -191,7 +190,7 @@ class Script(BaseScript):
         # Fallback to CLI
         # Make a list of tags for each interface or portchannel
         port_vlans = {}
-        port_channels = portchannels
+        # port_channels = portchannels
 
         r = []
         swp = {}
@@ -227,11 +226,12 @@ class Script(BaseScript):
                             portchannels.remove(p)
                             write = True
                             if name not in port_vlans:
-                                port_vlans.update({name: {
+                                port_vlans.update({
+                                    name: {
                                         "tagged": [],
                                         "untagged": '',
-                                        }
-                                    })
+                                    }
+                                })
                             j += 2
                             while not self.rx_type.search(ifaces[j]):
                                 j += 1
@@ -242,12 +242,12 @@ class Script(BaseScript):
                                 match = self.rx_tagged.search(ifaces[j])
                                 tagged = match.group("tagged")
                                 tagged = tagged.replace('(default vlan)', '')
-                                port_vlans[name]["tagged"] =  self.expand_rangelist(tagged)
+                                port_vlans[name]["tagged"] = self.expand_rangelist(tagged)
                             else:
                                 match = self.rx_tag.search(ifaces[j])
                                 tagged = match.group("tagged")
                                 if 'none' not in tagged:
-                                    port_vlans[name]["tagged"] =  self.expand_rangelist(tagged)
+                                    port_vlans[name]["tagged"] = self.expand_rangelist(tagged)
                                 j += 1
                                 match = self.rx_untag.search(ifaces[j])
                                 untagged = match.group("untagged")
@@ -258,11 +258,12 @@ class Script(BaseScript):
                         break
                 else:
                     if name not in port_vlans:
-                        port_vlans.update({name: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
+                        port_vlans.update({
+                            name: {
+                                "tagged": [],
+                                "untagged": '',
+                            }
+                        })
                     i += 2
                     match = self.rx_description.search(ifaces[i])
                     if match:
@@ -299,7 +300,7 @@ class Script(BaseScript):
                         "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
                         "802.1ad Tunnel": vlan_stack_status.get(name, False),
                         "tagged": port_vlans[name]["tagged"],
-                        }
+                    }
                     if port_vlans[name]["untagged"]:
                         swp["untagged"] = port_vlans[name]["untagged"]
                     swp["interface"] = name

@@ -81,6 +81,7 @@ _MCACHE = {}
 
 _MODELS = {
     # main models
+    "main.APIKey": "noc.main.models.apikey.APIKey",
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
     "main.CollectionCache": "noc.main.models.collectioncache.CollectionCache",
@@ -325,10 +326,10 @@ FTS_MODELS = [
 ]
 
 COLLECTIONS = [
-    "dev.Quiz",
-    "dev.Spec",
     "fm.SyntaxAlias",
     "sa.Profile",
+    "dev.Quiz",
+    "dev.Spec",
     "sa.Action",
     "inv.Capability",
     "pm.MetricScope",

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportalarmdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ from noc.inv.models.object import Object
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -50,8 +51,12 @@ class ReportAlarmObjects(object):
         query += "profile, op.name as object_profile, sa.container, "
         query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
-        query += "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id " \
-                 "and ad.id = sa.administrative_domain_id " % (", ".join(str(m) for m in mos_id))
+        if mos_id:
+            query += "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id " \
+                     "and ad.id = sa.administrative_domain_id " % (", ".join(str(m) for m in mos_id))
+        else:
+            query += "WHERE sa.is_managed = True and op.id = sa.object_profile_id " \
+                     "and ad.id = sa.administrative_domain_id "
         # query += "LIMIT 20"
         cursor = connection.cursor()
         cursor.execute(query)
@@ -132,6 +137,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "duration_sec",
                 "object_name",
                 "object_address",
+                "object_hostname",
                 "object_profile",
                 "object_admdomain",
                 "object_platform",
@@ -156,6 +162,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             _("DURATION_SEC"),
             _("OBJECT_NAME"),
             _("OBJECT_ADDRESS"),
+            _("OBJECT_HOSTNAME"),
             _("OBJECT_PROFILE"),
             _("OBJECT_ADMDOMAIN"),
             _("OBJECT_PLATFORM"),
@@ -234,6 +241,8 @@ class ReportAlarmDetailApplication(ExtApplication):
             match["managed_object"] = {"$in": mos_id}
         if "maintenance" in columns.split(","):
             maintenance = Maintenance.currently_affected()
+        if "object_hostname" in columns.split(","):
+            mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
         moss = ReportAlarmObjects(mos_id).get_all()
         container_lookup = ReportContainer(mos_id)
         loc = AlarmApplication([])
@@ -282,6 +291,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     moss[a["managed_object"]][0],
                     moss[a["managed_object"]][1],
+                    mo_hostname[a["managed_object"]],
                     moss[a["managed_object"]][5],
                     moss[a["managed_object"]][6],
                     attr_res[a["managed_object"]][2] if attr else "",
@@ -300,13 +310,9 @@ class ReportAlarmDetailApplication(ExtApplication):
         # Active Alarms
         if source in ["active", "both"]:
             for a in ActiveAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-                    {"$match": match},
-                    {"$addFields": {"duration": {"$divide": [{"$subtract": ["$clear_timestamp", "$timestamp"]},
-                                                             1000]}}},
-                    {"$match": match_duration},
-                    {"$sort": {"timestamp": 1}}]):
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(match).sort([("timestamp", 1)]):
 
+                dt = datetime.datetime.now() - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 total_objects = sum(
                     ss["summary"] for ss in a["total_objects"])
@@ -338,12 +344,13 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     moss[a["managed_object"]][0],
                     moss[a["managed_object"]][1],
+                    mo_hostname[a["managed_object"]],
                     moss[a["managed_object"]][5],
                     moss[a["managed_object"]][6],
                     attr_res[a["managed_object"]][2] if attr else "",
                     attr_res[a["managed_object"]][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
-                    ArchivedAlarm.objects.get(id=a["_id"]).subject,
+                    ActiveAlarm.objects.get(id=a["_id"]).subject,
                     "Yes" if a["managed_object"] in maintenance else "No",
                     total_objects,
                     total_subscribers,

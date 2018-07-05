@@ -64,8 +64,7 @@ class Script(BaseScript):
         "station": 128, "stationonly": 128
     }
 
-    @BaseScript.match()
-    def execute_other(self):
+    def execute_cli(self, **kwargs):
         """
         VRP5 style
         :return:

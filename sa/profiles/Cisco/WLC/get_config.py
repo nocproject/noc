@@ -15,6 +15,6 @@ class Script(BaseScript):
     name = "Cisco.WLC.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self):
         config = self.cli("show run-config commands")
         return self.cleaned_config(config)

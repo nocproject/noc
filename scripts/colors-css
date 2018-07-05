@@ -9,7 +9,7 @@
 import re
 
 SRC = "ui/web/js/colors.js"
-DST = "static/css/noc/colors.css"
+DST = "ui/web/css/colors.css"
 
 rx_expr = re.compile(
     r"^NOC\.colors\.(?P<name>\S+)\s*=\s*(?P<value>[^;]+);",

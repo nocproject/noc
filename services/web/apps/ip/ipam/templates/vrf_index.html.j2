@@ -276,7 +276,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                                 "<tr class='free-address' style='display:none'>" +
                                 s +
                                 "<td><img id='s_" + value +
-                                "' class='s_img' src='/static/img/blank_1x1.png'/></td>" +
+                                "' class='s_img' src='/ui/web/img/blank_1x1.png'/></td>" +
                                 "<td><a href='#' onclick='app.onAddAddress({{ prefix.id }}, \"" +
                                 value + "\")' title='Click to add new address'>" +
                                 value + "</a>" +
@@ -410,7 +410,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                             <td class="noc-ri-{% if r %}{{r.id}}{% else %}none{% endif %}"></td>
                         {% endfor %}
                     {% endif %}
-                    <td><img id="s_{{a.address}}" class="s_img" src="/static/img/blank_1x1.png"/></td>
+                    <td><img id="s_{{a.address}}" class="s_img" src="/ui/web/img/blank_1x1.png"/></td>
                     <td class="address">
                         {% if can_change %}
                             <a href="#" onclick="app.onChangeAddress({{ a.id }})">{{a.address}}</a>

@@ -12,7 +12,9 @@ Ext.define("NOC.inv.macdb.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.inv.macdb.Model",
-        "NOC.main.style.LookupField"
+        "NOC.main.style.LookupField",
+        "NOC.main.pool.LookupField",
+        "NOC.sa.managedobjectprofile.LookupField"
     ],
     model: "NOC.inv.macdb.Model",
     search: true,
@@ -38,6 +40,18 @@ Ext.define("NOC.inv.macdb.Application", {
                     text: __("VC Domain"),
                     dataIndex: "vc_domain",
                     renderer: NOC.render.Lookup("vc_domain"),
+                    flex: 1
+                },
+                {
+                    text: __("Pool"),
+                    dataIndex: "pool",
+                    renderer: NOC.render.Lookup("pool"),
+                    flex: 1
+                },
+                {
+                    text: __("Object Profile"),
+                    dataIndex: "object_profile",
+                    renderer: NOC.render.Lookup("object_profile"),
                     flex: 1
                 },
                 {

@@ -8,15 +8,18 @@
 
 # Python modules
 import re
+import six
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
     name = "Cisco.IOS.get_mpls_vpn"
     interface = IGetMPLSVPN
+    cache = True
 
     rx_line = re.compile(r"^\s+(?P<vrf>.+?)\s+"
                          r"(?P<rd>\S+:\S+|<not set>)\s+"
@@ -163,3 +166,68 @@ class Script(BaseScript):
                         interfaces += members
                     vpns[-1]["interfaces"] += interfaces
         return vpns
+
+    def execute_snmp_vrf_mib(self):
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        r = {}
+        for vrfindex, vrf_name, vrf_tag, vrf_status in self.snmp.get_tables(
+                [
+                    mib["CISCO-VRF-MIB::cvVrfName"],
+                    mib["CISCO-VRF-MIB::cvVrfVnetTag"],
+                    mib["CISCO-VRF-MIB::cvVrfOperStatus"]]):
+            # print port_num, ifindex, port_type, pvid
+            r[int(vrfindex)] = {
+                "type": "VRF",
+                "vpn_id": "",
+                "status": bool(vrf_status),
+                "name": vrf_name.strip(),
+                "rd": "0:0",
+                "interfaces": []
+            }
+        for vrfifindex, vrfif_name, vrfif_status in self.snmp.get_tables(
+                [mib["CISCO-VRF-MIB::cvVrfInterfaceType"],
+                 mib["CISCO-VRF-MIB::cvVrfInterfaceRowStatus"]]):
+            vrf_index, ifindex = vrfifindex.split(".")
+            r[int(vrf_index)]["interfaces"] += [names[int(ifindex)]]
+        return list(six.itervalues(r))
+
+    def execute_snmp_mpls_mib(self):
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        r = {}
+        for conf_id, vrf_descr, vrf_rd, vrf_oper in self.snmp.get_tables(
+                [mib["MPLS-VPN-MIB::mplsVpnVrfDescription"],
+                 mib["MPLS-VPN-MIB::mplsVpnVrfRouteDistinguisher"],
+                 mib["MPLS-VPN-MIB::mplsVpnVrfOperStatus"]]):
+            vrf_name = "".join([chr(int(x)) for x in conf_id.split(".")[1:]])
+            r[conf_id] = {
+                "type": "VRF",
+                "status": vrf_oper,
+                "vpn_id": "",
+                "name": vrf_name,
+                "rd": vrf_rd,
+                "rt_export": [],
+                "rt_import": [],
+                "description": vrf_descr,
+                "interfaces": []
+            }
+        for conf_id, row_status in self.snmp.get_tables(
+                [mib["MPLS-VPN-MIB::mplsVpnInterfaceConfRowStatus"]]):
+            conf_id, ifindex = conf_id.rsplit(".", 1)
+            r[conf_id]["interfaces"] += [names[int(ifindex)]]
+        for conf_id, vrf_rt, vrf_rt_decr in self.snmp.get_tables([
+            mib["MPLS-VPN-MIB::mplsVpnVrfRouteTarget"],
+            mib["MPLS-VPN-MIB::mplsVpnVrfRouteTargetDescr"]
+        ]):
+            # rt_type: import(1), export(2), both(3)
+            conf_id, rt_index, rt_type = conf_id.rsplit(".", 2)
+            if rt_type in {"2", "3"}:
+                r[conf_id]["rt_export"] += [vrf_rt]
+            if rt_type in {"1", "3"}:
+                r[conf_id]["rt_import"] += [vrf_rt]
+        return list(six.itervalues(r))
+
+    def execute_snmp(self, **kwargs):
+        r = self.execute_snmp_mpls_mib()
+        if r:
+            return r
+        return self.execute_snmp_vrf_mib()

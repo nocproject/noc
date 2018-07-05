@@ -25,9 +25,11 @@ class Script(BaseScript):
     name = "Juniper.JUNOS.get_interfaces"
     interface = IGetInterfaces
     TIMEOUT = 240
+    BULK = False
 
     rx_phy_name = re.compile(
-        r"^Physical interface: (?P<ifname>\S+)( \(\S+, \S+\))?\s*, "
+        r"^Physical interface: (?P<ifname>\S+)"
+        r"( \(\S+, \S+\))?( \(Extended Port)?\s*, "
         r"(?P<admin>Enabled|Disabled|Administratively down), "
         r"Physical link is (?P<oper>Up|Down)", re.MULTILINE
     )
@@ -60,7 +62,8 @@ class Script(BaseScript):
         r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)"
         r"(\s+0x\d+\.(?P<vlan2>\d+))?\s*\]", re.MULTILINE
     )
-    # Flags: Up SNMP-Traps 0x20004000 VLAN-Tag [ 0x8100.3637 0x8100.19 ] In(pop-swap .999) Out(swap-push 0x8100.3637 .19)
+    # Flags: Up SNMP-Traps 0x20004000 \
+    #   VLAN-Tag [ 0x8100.3637 0x8100.19 ] In(pop-swap .999) Out(swap-push 0x8100.3637 .19)
     rx_flags_unnumbered = re.compile(
         r"^\s+Flags:.+, Unnumbered", re.MULTILINE
     )
@@ -383,7 +386,7 @@ class Script(BaseScript):
                         except KeyError:
                             tagged[i] = [tag]
                     else:
-                            untagged[i] = tag
+                        untagged[i] = tag
                 match = self.rx_l3_iface.search(vdata)
                 if match:
                     i = match.group("iface")

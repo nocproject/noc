@@ -56,6 +56,8 @@ class CLI(object):
     patterns_lock = Lock()
     # profile name -> patterns
     patterns_cache = {}
+    #
+    SYNTAX_ERROR_CODE = "+@@@NOC:SYNTAXERROR@@@+"
 
     class InvalidPagerPattern(Exception):
         pass
@@ -226,7 +228,8 @@ class CLI(object):
         if (self.profile.rx_pattern_syntax_error and
                 not self.ignore_errors and
                 parser == self.read_until_prompt and
-                self.profile.rx_pattern_syntax_error.search(self.result)):
+                (self.profile.rx_pattern_syntax_error.search(self.result) or
+                 self.result == self.SYNTAX_ERROR_CODE)):
             error_text = self.result
             if self.profile.send_on_syntax_error:
                 yield self.on_error_sequence(
@@ -274,6 +277,8 @@ class CLI(object):
                     )
                 else:
                     r = yield f
+                if r == self.SYNTAX_ERROR_CODE:
+                    raise tornado.gen.Return(self.SYNTAX_ERROR_CODE)
                 if self.script.to_track:
                     self.script.push_cli_tracking(r, self.state)
             except tornado.iostream.StreamClosedError:

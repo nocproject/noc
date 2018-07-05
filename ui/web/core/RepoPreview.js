@@ -15,6 +15,7 @@ Ext.define('NOC.core.RepoPreview', {
     layout: 'fit',
     syntax: null,
     restUrl: null,
+    scrollable: false,
     historyHashPrefix: null,
     // preview_theme: NOC.settings.preview_theme,
     preview_theme: 'monokai',
@@ -228,16 +229,48 @@ Ext.define('NOC.core.RepoPreview', {
             items: [me.cmContainer],
             listeners: {
                 scope: me,
-                resize: me.onResize
+                resize: me.onResize,
+                afterrender: me.onAfterRender
             }
         });
         me.callParent();
     },
     //
-    afterRender: function() {
+    onAfterRender: function() {
         var me = this;
-        me.callParent(arguments);
+        // me.callParent(arguments);
         me.initViewer();
+        me.onResize();
+    },
+    onResize: function() {
+        var me = this;
+        if(me.viewer && Ext.isFunction(me.viewer.refresh)) {
+            me.viewer.refresh();
+            me.setViewerSize();
+        }
+
+        if(me.viewer instanceof CodeMirror.MergeView) {
+            me.setMergeViewSize();
+        }
+    },
+    //
+    setViewerSize: function() {
+        var me = this;
+        if(Ext.isFunction(me.viewer.setSize)) {
+            me.viewer.setSize("100%", me.cmContainer.getHeight());
+        }
+    },
+    //
+    setMergeViewSize: function() {
+        var me = this,
+            cssMirror = Ext.util.CSS.getRule('.CodeMirror'),
+            cssMerge = Ext.util.CSS.getRule('.CodeMirror-merge');
+        if(cssMirror) {
+            cssMirror.style.height = me.cmContainer.getHeight();
+        }
+        if(cssMerge) {
+            cssMerge.style.height = me.cmContainer.getHeight();
+        }
     },
     //
     initViewer: function() {
@@ -250,16 +283,16 @@ Ext.define('NOC.core.RepoPreview', {
             styleActiveLine: true
         });
         // change the codemirror css
-        var css = Ext.util.CSS.getRule('.CodeMirror');
-        if(css) {
-            css.style.height = '100%';
-            css.style.position = 'relative';
-            css.style.overflow = 'hidden';
-        }
-        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
-        if(css) {
-            css.style.height = '100%';
-        }
+        // var css = Ext.util.CSS.getRule('.CodeMirror');
+        // if(css) {
+        //     // css.style.height = '100%';
+        //     css.style.position = 'relative';
+        //     css.style.overflow = 'hidden';
+        // }
+        // css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        // if(css) {
+        //     css.style.height = '100%';
+        // }
         me.setTheme(me.preview_theme);
         me.viewer.setOption('mode', me.mode);
         me.sideBySideModeButton.setDisabled(true);
@@ -458,13 +491,11 @@ Ext.define('NOC.core.RepoPreview', {
                     '/ui/pkg/codemirror/theme/' + theme + '.css'
                 );
             }
-
             me.viewer = CodeMirror.MergeView(el, {
                 readOnly: false,
                 lineNumbers: true,
                 styleActiveLine: true,
                 origLeft: left,
-                viewportMargin: Infinity,
                 revertButtons: false,
                 allowEditingOriginals: true,
                 value: text,
@@ -486,6 +517,7 @@ Ext.define('NOC.core.RepoPreview', {
             }
             me.viewer.setValue(text);
         }
+        me.onResize();
     },
     //
     onSelectRev: function(combo, records, eOpts) {
@@ -640,13 +672,6 @@ Ext.define('NOC.core.RepoPreview', {
     //     });
     //     me.requestDiff(rev1, rev2);
     // },
-    //
-    onResize: function() {
-        var me = this;
-        if(me.viewer) {
-            me.viewer.refresh();
-        }
-    },
     //
     getCmContainer: function() {
         var me = this;

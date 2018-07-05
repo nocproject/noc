@@ -12,7 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
-    name = "3com.SuperStack3_4500"
+    name = "3Com.SuperStack3_4500"
     pattern_more = [
         (r"^\s+---- More ----$", " "),
         (r"The current configuration will be written to the device. Are you sure? [Y/N]:", "Y"),

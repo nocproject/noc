@@ -26,7 +26,9 @@ class Profile(BaseProfile):
         (r"Are you sure to modify system time?", "n\n"),
         (r"Are you sure to log out?", "y\n"),
         (r"\{ <cr>\|configuration<K>\|data<K> \}", "\n"),
-        (r"\{ <cr>\|mode<K> \}", "\n")
+        (r"\{ <cr>\|mode<K> \}", "\n"),
+        (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length 1\-15\> \}", "\n"),
+        (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n")
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \
@@ -87,6 +89,8 @@ class Profile(BaseProfile):
             return interface.split()[1]
         if "ethernet" in interface:
             return interface[8:]
+        if "GPON" in interface:
+            return interface.split()[-1]
         if self.rx_port_name.match(interface):
             return self.rx_port_name.findall(interface)[0][1]
         return interface

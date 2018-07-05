@@ -13,7 +13,7 @@ from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
 
 
 class Script(BaseScript):
-    name = "Huawei.VRF.get_bfd_sessions"
+    name = "Huawei.VRP.get_bfd_sessions"
     interface = IGetBFDSessions
 
     rx_version = re.compile(r"^-+\n"

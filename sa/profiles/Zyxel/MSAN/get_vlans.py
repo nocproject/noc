@@ -19,11 +19,10 @@ class Script(BaseScript):
     cache = True
 
     rx_vlan1 = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+\S+(\s+[XF]+)?\s*(?P<name>.*)$", re.MULTILINE)
-    rx_vlan2 = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<name>.+)\s*$", re.MULTILINE)
-    rx_vlan3 = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+V\s*$", re.MULTILINE)
+        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+\S+(\s+[XF]+)?\s*(?P<name>.*)$", re.MULTILINE
+    )
+    rx_vlan2 = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>.+)\s*$", re.MULTILINE)
+    rx_vlan3 = re.compile(r"^\s*(?P<vlan_id>\d+)\s+V\s*$", re.MULTILINE)
 
     def execute(self):
         r = []

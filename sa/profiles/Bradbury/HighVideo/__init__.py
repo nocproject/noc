@@ -1,9 +1,7 @@
 __author__ = 'FeNikS'
 
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import HTTP
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Bradbury.HighVideo"
-    supported_schemes = [HTTP]

@@ -9,7 +9,7 @@
 # Python modules
 import uuid
 import datetime
-from collections import defaultdict
+from collections import OrderedDict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbeef import IGetBeef
@@ -48,6 +48,7 @@ class Script(BaseScript):
         result["mib"] = self.get_snmp_results(spec)
         # Process version reply
         result["box"] = self.scripts.get_version()
+        result["box"]["profile"] = self.profile.name
         return result
 
     def get_cli_results(self, spec):
@@ -58,9 +59,12 @@ class Script(BaseScript):
         """
         r = []
         # Group by commands
-        cmd_answers = defaultdict(list)
+        cmd_answers = OrderedDict()
         for ans in spec["answers"]:
             if ans["type"] == "cli":
+                if ans["value"] not in cmd_answers:
+                    cmd_answers[ans["value"]] = [ans["name"]]
+                    continue
                 cmd_answers[ans["value"]] += [ans["name"]]
         if not cmd_answers:
             return []
@@ -74,11 +78,12 @@ class Script(BaseScript):
             except self.ScriptError:
                 pass
             # Append tracked data
-            r += [{
-                "names": cmd_answers[cmd],
-                "request": cmd,
-                "reply": [v.encode(self.CLI_ENCODING) for v in self.pop_cli_tracking()]
-            }]
+            for rcmd, packets in self.iter_cli_tracking():
+                r += [{
+                    "names": cmd_answers.get(rcmd, ["setup.cli"]),
+                    "request": rcmd,
+                    "reply": [v.encode(self.CLI_ENCODING) for v in packets]
+                }]
         self.stop_tracking()
         return r
 

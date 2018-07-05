@@ -23,6 +23,9 @@ class Script(BaseScript):
             self.cli("exit\n")
             if tagged_ports:
                 for port in tagged_ports:
-                    self.cli("pvc  adsl %s 0 35 lan 0/0 %d 1 disable 1483b off off 1 1" % (port, vlan_id))
+                    self.cli(
+                        "pvc  adsl %s 0 35 lan 0/0 %d 1 disable 1483b off off 1 1" %
+                        (port, vlan_id)
+                    )
         self.save_config()
         return True

@@ -44,7 +44,8 @@ class Script(BaseScript):
     )
     CHASSIS_TYPE = {
         "Mac address": 4,
-        "Network address": 5
+        "Network address": 5,
+        "Locally assigned": 7
     }
     PORT_TYPE = {
         "Interface alias": 1,

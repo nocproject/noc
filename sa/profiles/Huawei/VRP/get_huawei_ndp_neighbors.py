@@ -30,7 +30,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL
     )
 
-    def execute(self, **kwargs):
+    def execute_cli(self, **kwargs):
         data = []
         column = ("chassis_mac", "interface", "name")
         v = self.cli("display ndp")

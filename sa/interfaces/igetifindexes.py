@@ -6,8 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from __future__ import absolute_import
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from base import DictParameter
+from .base import DictParameter
 
 
 class IGetIfindexes(BaseInterface):

@@ -23,7 +23,14 @@ class Channel(object):
         self.service = service
         self.address = address
         self.db = db
-        parts = tuple(fields.split("."))
+        if "|" in fields:
+            # New format. Separated by '|'.
+            # Nested fields are possible
+            parts = tuple(fields.split("|"))
+        else:
+            # Old format. Separated by '.'.
+            # Nested fields are not possible
+            parts = tuple(fields.split("."))
         self.sql = "INSERT INTO %s(%s) FORMAT TabSeparated" % (parts[0], ",".join(parts[1:]))
         self.encoded_sql = urllib.quote(self.sql.encode('utf8'))
         self.n = 0

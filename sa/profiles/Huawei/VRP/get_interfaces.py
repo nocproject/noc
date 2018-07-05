@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+import time
 from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
@@ -42,10 +43,14 @@ class Script(BaseScript):
         r"\)",
         re.IGNORECASE
     )
-    rx_iftype = re.compile(r"^(\S+?)\d+.*$")
-    rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
-    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
+    rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
+    rx_dis_ip_int = re.compile(
+        r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)",
+        re.IGNORECASE)
+    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
+                       re.MULTILINE | re.IGNORECASE)
+    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+",
+                         re.MULTILINE)
     rx_ndp = re.compile(
         r"^\s*Interface: (?P<name>\S+)\s*\n"
         r"^\s*Status: Enabled", re.MULTILINE)
@@ -115,6 +120,37 @@ class Script(BaseScript):
             lldp += [match.group("name")]
         return lldp
 
+    def get_mpls_vpn(self):
+        imap = {}  # interface -> VRF
+        vrfs = {
+            "default": {
+                "forwarding_instance": "default",
+                "type": "ip",
+                "interfaces": []
+            }
+        }
+        try:
+            r = self.scripts.get_mpls_vpn()
+        except self.CLISyntaxError:
+            r = []
+        for v in r:
+            if v["type"] == "VRF":
+                vrfs[v["name"]] = {
+                    "forwarding_instance": v["name"],
+                    "type": "VRF",
+                    "interfaces": []
+                }
+                rd = v.get("rd")
+                if rd:
+                    vrfs[v["name"]]["rd"] = rd
+                vpn_id = v.get("vpn_id")
+                if vpn_id:
+                    vrfs[v["name"]]["vpn_id"] = vpn_id
+                for i in v["interfaces"]:
+                    imap[i] = v["name"]
+
+        return vrfs, imap
+
     def execute_snmp(self):
         vlans = self.scripts.get_switchport()
         r = super(Script, self).execute_snmp()
@@ -126,6 +162,18 @@ class Script(BaseScript):
                         if vlans[iface["name"]]["untagged"]:
                             iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]]["untagged"]
                         iface["subinterfaces"][0]["tagged_vlans"] = vlans[iface["name"]]["tagged"]
+        time.sleep(2)
+        vrfs, imap = self.get_mpls_vpn()
+        if imap:
+            for fi in r:
+                for iface in fi["interfaces"]:
+                    subs = iface["subinterfaces"]
+                    for vrf in set(imap.get(si["name"], "default") for si in subs):
+                        c = iface.copy()
+                        c["subinterfaces"] = [si for si in subs
+                                              if imap.get(si["name"], "default") == vrf]
+                        vrfs[vrf]["interfaces"] += [c]
+            return vrfs.values()
         return r
 
     def execute_cli(self):

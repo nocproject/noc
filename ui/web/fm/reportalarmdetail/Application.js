@@ -30,6 +30,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["duration_sec", __("Duration"), true],
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
+                ["object_hostname", __("Hostname"), true],
                 ["object_profile", __("Profile"), true],
                 ["object_admdomain", __("Administrative Domain"), true],
                 ["object_platform", __("Platform"), true],
