@@ -24,6 +24,10 @@ Ext.define("NOC.wf.state.Model", {
             type: "boolean"
         },
         {
+            name: "update_last_seen",
+            type: "boolean"
+        },
+        {
             name: "on_enter_handlers",
             type: "auto"
         },

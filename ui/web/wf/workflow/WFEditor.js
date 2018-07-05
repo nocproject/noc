@@ -34,7 +34,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             flex: 1,
             scrollable: "vertical",
             bodyPadding: "10",
-            // trackResetOnLoad: true,
             defaults: {
                 labelAlign: "top",
                 width: "100%"
@@ -118,13 +117,12 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             guard: function(evt) {
                 return (evt.type === "mousedown" && evt.buttons === 2);
             }
-            // interactive: Ext.bind(me.onInteractive, me)
         });
         me.paper.on("blank:pointerclick", Ext.bind(me.onSelect, me));
         me.paper.on("cell:pointerclick", Ext.bind(me.onSelect, me));
         me.paper.on("blank:contextmenu", Ext.bind(me.openBlankMenu, me));
         //
-        me.graph.on("change:position", function(element, position) {
+        me.graph.on("change:position", function(element) {
             var elementView = element.findView(me.paper);
             elementView.removeTools();
         });
@@ -170,8 +168,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             }
             rect.resize(me.stateWidth, me.stateHeight);
             rect.attr("label/text", state.name);
-            // .attr("rect/magnet", true);
-            // .attr("text/pointer-events", "none");
             rect.prop({data: me.loadData(state, "state")});
             rect.addTo(me.graph);
             y += 100;
@@ -240,20 +236,10 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         var removeButton = new joint.linkTools.Remove(),
             verticesTool = new joint.linkTools.Vertices(),
             segmentsTool = new joint.linkTools.Segments();
-        // var sourceArrowheadTool = new joint.linkTools.SourceArrowhead();
-        // var targetArrowheadTool = new joint.linkTools.TargetArrowhead();
-        // var sourceAnchorTool = new joint.linkTools.SourceAnchor();
-        // var targetAnchorTool = new joint.linkTools.TargetAnchor();
-        // var boundaryTool = new joint.linkTools.Boundary();
         var toolsView = new joint.dia.ToolsView({
             tools: [
                 verticesTool,
                 segmentsTool,
-                // sourceArrowheadTool,
-                // targetArrowheadTool,
-                // sourceAnchorTool,
-                // targetAnchorTool,
-                // boundaryTool,
                 removeButton
             ]
         });
@@ -312,14 +298,19 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             if(data.hasOwnProperty(field.name)) {
                 field.value = data[field.name];
             }
+            if(field.xtype === 'fieldset') {
+                field.items = field.items.map(function(item) {
+                    if(data.hasOwnProperty(item.name)) {
+                        item.value = data[item.name];
+                    }
+                    return item;
+                });
+            }
             return field;
         });
         me.inspector.record = record;
         me.inspector.title = title;
         inspector = Ext.create(me.inspector);
-        // inspector.getForm().getFields().each(function (field) {
-        //     field.setValue(data[field.name]);
-        // });
         me.add(inspector);
     },
     //
@@ -373,7 +364,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     ]
                 }
             ];
-
         me.showInspector(data, fields, __("Workflow Inspector"));
     },
     //
@@ -421,6 +411,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     boxLabel: __("Update Expiration")
                 },
                 {
+                    name: "job_handler",
+                    xtype: "textfield",
+                    fieldLabel: __("Job Handler")
+                },
+                {
                     xtype: "fieldset",
                     layout: "vbox",
                     title: __("Integration"),
@@ -462,7 +457,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     allowBlank: true
                 }
             ];
-
         me.showInspector(data, fields, __("State Inspector"));
     },
     //
@@ -533,7 +527,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     allowBlank: true
                 }
             ];
-
         me.showInspector(data, fields, __("Transition Inspector"));
     },
     //
@@ -546,6 +539,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             data = form.record.getData();
             me.isIspectorDirty = false;
             if(me.currentHighlight && me.currentHighlight.model) {
+                me.currentHighlight.model.removeProp("data");
                 me.currentHighlight.model.prop({data: data});
                 switch(me.currentHighlight.model.get("data").type) {
                     case "state": {
@@ -578,48 +572,59 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     //
     save: function() {
         var me = this,
-            data = me.graph.toJSON();
-        var states = data.cells.filter(function(cell) {
-            return cell.data.type === "state"
-        });
-        var transitions = data.cells
-        .filter(function(cell) {
-            return cell.data.type === "transition"
-        })
-        .map(function(element) {
-            element.from_state = states.filter(function(state) {
-                return state.id === element.source.id;
-            })[0].data.name;
-            element.to_state = states.filter(function(state) {
-                return state.id === element.target.id;
-            })[0].data.name;
-            if(element.hasOwnProperty("vertices")) {
-                element.data["vertices"] = element.vertices;
-            }
-            delete element.data["type"];
-            //delete element.data["id"];
-            return element.data;
-        });
+            data = me.graph.toJSON(),
+            findStateNameById = function(id) {
+                for(var i = 0; i < states.length; i++) {
+                    if(states[i].id === id) {
+                        return states[i].data.name;
+                    }
+                }
+                return "state not found";
+            },
+            states = data.cells.filter(function(cell) {
+                return cell.data.type === "state"
+            }),
+            transitions = data.cells
+            .filter(function(cell) {
+                return cell.data.type === "transition"
+            })
+            .map(function(element) {
+                element.from_state = findStateNameById(element.source.id);
+                element.to_state = findStateNameById(element.target.id);
+                if(element.hasOwnProperty("vertices")) {
+                    element.data["vertices"] = element.vertices;
+                }
+                delete element.data["type"];
+                return element.data;
+            });
         states = states.map(function(element) {
-            delete element.data["type"];
-            //delete element.data["id"];
             element.data.x = element.position.x;
             element.data.y = element.position.y;
+            if(element.data["job_handler"] !== null && element.data["job_handler"].length === 0) {
+                element.data["job_handler"] = null;
+            }
+            if(element.data.hasOwnProperty("remote_system") && element.data["remote_system"].length === 0) {
+                delete element.data["remote_system"];
+            }
+            if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0) {
+                delete element.data["remote_id"];
+            }
             delete element["position"];
+            delete element.data["type"];
+            delete element.data["update_ttl"];
+            delete element.data["workflow"];
+            delete element.data["workflow__label"];
             return element.data;
         });
         var ret = Ext.merge(Ext.clone(me.workflow), {states: states, transitions: transitions});
         delete ret["type"];
         delete ret["id"];
-        console.log(ret);
-        // console.log(JSON.stringify(ret));
         Ext.Ajax.request({
             url: "/wf/workflow/" + me.configId + "/config/",
             method: "POST",
             jsonData: ret,
             scope: me,
-            success: function(response) {
-                console.log(response);
+            success: function() {
                 me.onClose();
                 NOC.info(__("Config saved"));
             },
@@ -637,7 +642,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.unhighlight();
     },
     //
-    onAddState: function(item, evt) {
+    onAddState: function() {
         var stateName = "New State";
         var me = this, view,
             rect = new joint.shapes.standard.Rectangle(),
@@ -670,10 +675,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             record = Ext.create(me.getModelName(type));
         Ext.Object.each(data, function(key, value) {
             if(["states", "transitions"].indexOf(key) === -1) {
-                // if(record.get(key) !== undefined) {
                 record.set(key, value);
                 ret[key] = value;
-                // }
             }
         });
         return ret;
@@ -692,7 +695,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     //
     inspectorDirty: function() {
         var me = this;
-        console.log("inspector changed");
         me.isIspectorDirty = true;
     },
     //
