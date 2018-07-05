@@ -55,15 +55,18 @@ class Script(BaseScript):
             except (self.CLISyntaxError, self.NotSupportedError):
                 r = []
             if r:
-                vrfs["default"]["addresses"] += [
-                    {
-                        "ip": x["ip"],
-                        "afi": "6",
-                        "mac": x["mac"],
-                        "interface": x["interface"]
-                    }
-                    for x in r if x["state"] == "reachable"
-                ]
+                for x in r:
+                    if x["state"] != "reachable":
+                        continue
+                    vrf = vrf_iface_map.get(x["interface"], "default")
+                    vrfs[vrf]["addresses"] += [
+                        {
+                            "ip": x["ip"],
+                            "afi": "6",
+                            "mac": x["mac"],
+                            "interface": x["interface"]
+                        }
+                    ]
         # Iterate through VRF
         data = []
         for v in vrfs:
@@ -72,7 +75,7 @@ class Script(BaseScript):
             # Process ARP cache
             arp_cache = self.scripts.get_arp(vrf=vrf)
             for x in arp_cache:
-                if not ("mac" in x and x["mac"]):
+                if not x.get("mac"):
                     continue
                 if vrf and x["interface"] not in vrfs[v]["interfaces"]:
                     continue
