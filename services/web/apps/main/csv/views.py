@@ -24,17 +24,13 @@ import StringIO
 class CSVApplication(Application):
     title = _("CSV Export/Import")
 
-    @view(url="^$", url_name="index",
-          menu=[_("Setup"), _("CSV Export/Import")],
-          access="import")
+    @view(url="^$", url_name="index", menu=[_("Setup"), _("CSV Export/Import")], access="import")
     def view_index(self, request):
         class ModelForm(forms.Form):
             model = forms.ChoiceField(
                 choices=[
                     (get_model_id(m), get_model_id(m))
-                    for m in sorted(
-                        models.get_models(),
-                        key=lambda x: x._meta.db_table)
+                    for m in sorted(models.get_models(), key=lambda x: x._meta.db_table)
                 ]
             )
             action = forms.CharField(widget=forms.HiddenInput)
@@ -48,8 +44,7 @@ class CSVApplication(Application):
                     if not model:
                         return self.response_not_found("Invalid model")
                     return self.render_plain_text(
-                        csv_export(model),
-                        mimetype="text/csv; encoding=utf-8"
+                        csv_export(model), mimetype="text/csv; encoding=utf-8"
                     )
                 else:
                     return self.response_redirect(
@@ -64,11 +59,9 @@ class CSVApplication(Application):
         CSV import form
         """
         file = forms.FileField()
-        resolve = forms.ChoiceField(choices=[
-            (IR_FAIL, "Fail"),
-            (IR_SKIP, "Skip"),
-            (IR_UPDATE, "Update")
-        ])
+        resolve = forms.ChoiceField(
+            choices=[(IR_FAIL, "Fail"), (IR_SKIP, "Skip"), (IR_UPDATE, "Update")]
+        )
         referer = forms.CharField(widget=forms.HiddenInput)
 
     def address_in_network(self, ip, net):
@@ -79,8 +72,9 @@ class CSVApplication(Application):
         mask = (0xffffffff << (32 - int(bits))) & 0xffffffff
         return (ipaddr & mask) == (netaddr & mask)
 
-    @view(url=r"^import/(?P<model>[a-zA-Z1-9]+\.[a-zA-Z1-9]+)/$",
-          url_name="import", access="import")
+    @view(
+        url=r"^import/(?P<model>[a-zA-Z1-9]+\.[a-zA-Z1-9]+)/$", url_name="import", access="import"
+    )
     def view_import(self, request, model):
         """
         Import from CSV file
@@ -98,9 +92,9 @@ class CSVApplication(Application):
                 accepted_row = []
                 forbidden_row = []
                 if get_model_id(m) == 'ip.Address':
-                    accepted_prefixes = get_model('ip.PrefixAccess').objects.filter(user=request.user,
-                                                                                    can_change=True).values_list(
-                        'prefix', 'vrf_id')
+                    accepted_prefixes = get_model('ip.PrefixAccess').objects.filter(
+                        user=request.user, can_change=True
+                    ).values_list('prefix', 'vrf_id')
                     csv_reader = csv.DictReader(request.FILES['file'])
                     keys = None
                     for row in csv_reader:
@@ -120,7 +114,9 @@ class CSVApplication(Application):
                     dict_writer = csv.DictWriter(new_csv_file, keys)
                     dict_writer.writeheader()
                     dict_writer.writerows(accepted_row)
-                    check_msg = ", \n\nskipped because of PrefixAccess - %d IP: \n%s" % (len(forbidden_ip), "\n".join(forbidden_ip))
+                    check_msg = ", \n\nskipped because of PrefixAccess - %d IP: \n%s" % (
+                        len(forbidden_ip), "\n".join(forbidden_ip)
+                    )
                 else:
                     new_csv_file = request.FILES["file"]
                     check_msg = ""
@@ -132,21 +128,17 @@ class CSVApplication(Application):
                     resp_msg = ""
                 else:
                     csv_file, resp_msg = import_check_perms()
-                count, error = csv_import(
-                    m, csv_file,
-                    resolution=form.cleaned_data["resolve"]
-                )
+                count, error = csv_import(m, csv_file, resolution=form.cleaned_data["resolve"])
                 if count is None:
-                    self.message_user(request,
-                                      "Error importing data: %s" % error)
+                    self.message_user(request, "Error importing data: %s" % error)
                 else:
-                    return HttpResponse("%d records are imported/updated" % count + resp_msg, content_type="text/plain")
-                    # self.message_user(request, "%d records are imported/updated" % count + resp_msg)
+                    return HttpResponse(
+                        "%d records are imported/updated" % count + resp_msg,
+                        content_type="text/plain"
+                    )
                 return self.response_redirect(form.cleaned_data["referer"])
         else:
-            form = self.ImportForm({
-                "referer": request.META.get("HTTP_REFERER", "/")
-            })
+            form = self.ImportForm({"referer": request.META.get("HTTP_REFERER", "/")})
         # Prepare fields description
         fields = []
         for name, required, rel, rname in get_model_fields(m):
@@ -161,16 +153,16 @@ class CSVApplication(Application):
             else:
                 r = []
             fields += [(name, required, " or ".join(r))]
-        return self.render(request, "import.html",
-                           form=form, model=m._meta.verbose_name, fields=fields)
+        return self.render(
+            request, "import.html", form=form, model=m._meta.verbose_name, fields=fields
+        )
 
 
 #
 # Admin actions to export selected objects as CSV
 #
 def admin_csv_export(modeladmin, request, queryset):
-    return HttpResponse(csv_export(modeladmin.model, queryset),
-                        mimetype="text/csv; encoding=utf-8")
+    return HttpResponse(csv_export(modeladmin.model, queryset), mimetype="text/csv; encoding=utf-8")
 
 
 admin_csv_export.short_description = "Export selected %(verbose_name_plural)s to CSV"
