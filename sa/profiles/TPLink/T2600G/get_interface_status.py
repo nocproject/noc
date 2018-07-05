@@ -26,7 +26,7 @@ class Script(BaseScript):
                 ):  # IF-MIB
                     if n[:3] == 'AUX' or n[:4] == 'Vlan'\
                         or n[:4] == 'port':
-                        continue
+                            continue
                     n = self.profile.convert_interface_name(n)
                     if interface:
                         if n == interface:
