@@ -1,0 +1,14 @@
+{
+    "name": "MRV | FD | EM316LNXNM",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "63ebe78b-8798-46b0-8af7-72f1cb1dbbca",
+    "description": "EM316LNXNM v4.9 fdr 12 (23524) (Aug 21 2013 - 12:27:34), U-Boot 1.0.3.4 (Aug 18 2010 - 18:00:27), Linux kernel v2.6.32.1a-mrv (#5 Wed Nov 21 17:45:52 PST 2012), EM316LNXNM (firmware 5e.23) (00:20:1a:03:79:db)",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^EM316LNXNM .*",
+    "action": "match",
+    "profile__name": "MRV.FD"
+}
+
