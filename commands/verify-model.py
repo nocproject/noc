@@ -149,8 +149,6 @@ class Command(BaseCommand):
 
     def check_ct_xfp(self, c):
         self.check_direction(c, ["i", "o"])
-        # TODO: Add "TransEth10G" protocol to models
-        return
         self.check_protocols(c, [
             "TransEth10G"
         ])
