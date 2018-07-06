@@ -139,6 +139,9 @@ class ReportTTSystemStatApplication(SimpleReport):
                         row[4] = ""
                     except ManagedObject.DoesNotExist:
                         pass
+                    except ManagedObject.MultipleObjectsReturned:
+                        row[3] = ManagedObject.objects.get(tt_system_id=int(row[3]), is_managed=True)
+                        row[4] = ""
                 elif row[2] in ["change_massive_damage_outer_close"]:
                     row[2] = u"Закрытие ТТ"
                     row[4] = row[3]
