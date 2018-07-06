@@ -33,7 +33,7 @@ class Script(BaseScript):
                     }]
 
             except self.snmp.TimeOutError:
-                pass
+                # pass
                 return
 
     # TODO: use cli
