@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1GBASELX-1310"],
+            "protocols": [">1000BASELX-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,7 +27,7 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1GBASELX-1310"],
+            "protocols": ["<1000BASELX-1310"],
             "type__name": "Optical | LC"
         }
     ],
