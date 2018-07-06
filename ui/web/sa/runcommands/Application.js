@@ -64,12 +64,8 @@ Ext.define('NOC.sa.runcommands.Application', {
                             selModel: {
                                 mode: 'MULTI',
                                 pruneRemoved: false,
-                                showHeaderCheckbox: true,
-                                selType: 'checkboxmodel',
-                                selectAll: function() {
-                                    console.log(arguments);
-                                    console.log('select All');
-                                }
+                                showHeaderCheckbox: false,
+                                selType: 'checkboxmodel'
                             },
                             listeners: {
                                 selectionchange: 'onSelectionChange',
@@ -86,13 +82,25 @@ Ext.define('NOC.sa.runcommands.Application', {
                                         },
                                         handler: 'onSelectionRefresh'
                                     }, {
-                                        text: __('Select All'),
-                                        glyph: NOC.glyph.plus_circle,
-                                        tooltip: __('Select all devices on screen'),
-                                        style: {
-                                            pointerEvents: 'all'
+                                        xtype: 'combo',
+                                        editable: false,
+                                        minWidth: 225,
+                                        emptyText: __('Group select'),
+                                        store: {
+                                            fields: ['cmd', 'title'],
+                                            data: [
+                                                {'cmd': 'SCREEN', 'title': __('All devices on screen')},
+                                                {'cmd': 'FIRST_50', 'title': __('First 50')},
+                                                {'cmd': 'FIRST_100', 'title': __('First 100')},
+                                                {'cmd': 'N_ROWS', 'title': __('First N')}
+                                            ]
                                         },
-                                        handler: 'onSelectionSelectAll'
+                                        queryMode: 'local',
+                                        displayField: 'title',
+                                        valueField: 'cmd',
+                                        listeners: {
+                                            select: 'onSelectionSelectAll'
+                                        }
                                     }, {
                                         text: __('Unselect All'),
                                         glyph: NOC.glyph.minus_circle,

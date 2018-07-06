@@ -69,6 +69,12 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By SA Profile:'),
             listeners: {
                 select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
             }
         },
         {
@@ -77,6 +83,12 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Obj. Profile:'),
             listeners: {
                 select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
             }
         },
         {
@@ -105,6 +117,12 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Selector:'),
             listeners: {
                 select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
             }
         },
         {
@@ -113,6 +131,12 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Pool:'),
             listeners: {
                 select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
             }
         },
         {
@@ -121,6 +145,12 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Vendor:'),
             listeners: {
                 select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
             }
         },
         {
@@ -129,6 +159,12 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Platform:'),
             listeners: {
                 select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
             }
         },
         {
@@ -137,6 +173,12 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Version:'),
             listeners: {
                 select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
             }
         },
         {
