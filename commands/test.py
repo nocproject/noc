@@ -146,7 +146,7 @@ class Command(BaseCommand):
         :return:
         """
         from noc.tests.conftest import _stats as stats
-        failed = sorted(tr.nodeid for tr in stats["failed"])
+        failed = sorted(tr.nodeid for tr in stats.get("failed", []))
         if not failed:
             return
         self.print("---[ Failed tests ]------")
