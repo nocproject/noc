@@ -17,7 +17,7 @@ from noc.sa.models.managedobject import ManagedObject
 register = template.Library()
 
 NOCTableTemplate = """
-<link rel="stylesheet" type="text/css" href="/ui/pkg/jquery.tablesorter/jquery.tablesorter.css" />
+<link rel="stylesheet" type="text/css" href="/ui/web/css/tablesorter.css" />
 <script type="text/javascript" src="/ui/pkg/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
