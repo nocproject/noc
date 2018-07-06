@@ -413,10 +413,10 @@ class Command(BaseCommand):
                     cwd=repo,
                     shell=True
                 )
-            except subprocess.CalledProcessError, why:
+            except subprocess.CalledProcessError as e:
                 self.logger.error("Failed to import %s@%s. Skipping",
                                   name, rev)
-                self.logger.error("CVS reported: %s", why)
+                self.logger.error("CVS reported: %s", e)
                 continue
             if not self.dry_run:
                 with open(path, "r") as f:
