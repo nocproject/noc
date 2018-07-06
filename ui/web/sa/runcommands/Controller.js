@@ -160,7 +160,6 @@ Ext.define('NOC.sa.runcommands.Controller', {
     onSelectionSelectAll: function(combo, record) {
         var selectionGrid, renderPlugin, rows;
 
-        console.log(record.get('cmd'));
         switch(record.get('cmd')) {
             case 'SCREEN': {
                 selectionGrid = this.lookupReference('sa-run-commands-selection-grid');
@@ -501,7 +500,6 @@ Ext.define('NOC.sa.runcommands.Controller', {
                     me.stateInc('progressState.r', -1);
                     me.stateInc('progressState.s', 1);
                 }
-                // console.log(chunk);
             }
         };
         xhr.onload = function() {
@@ -556,7 +554,6 @@ Ext.define('NOC.sa.runcommands.Controller', {
         if(Number.isInteger(rows)) {
             params = Ext.Object.merge({}, Ext.clone(this.lookupReference('sa-run-commands-selection-grid').getStore().filterParams), {__limit: rows, __start: 0});
 
-            console.log(this.lookupReference('sa-run-commands-selection-grid').getStore().rest_url + '?' + Ext.Object.toQueryString(params, true));
             selectionGrid.mask(__('Loading'));
             Ext.Ajax.request({
                 url: this.lookupReference('sa-run-commands-selection-grid').getStore().rest_url,
