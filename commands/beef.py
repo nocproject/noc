@@ -446,6 +446,7 @@ class Command(BaseCommand):
                 args[name] = parse_json(read_file(value))
         return args
 
+
 class ServiceStub(object):
     class ServiceConfig(object):
         def __init__(self, pool, tos=None):
