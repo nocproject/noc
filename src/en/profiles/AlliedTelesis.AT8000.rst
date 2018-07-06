@@ -1,7 +1,7 @@
-.. _profile-UPVEL-UP:
+.. _profile-AlliedTelesis-AT8000:
 
 =======================================
-UPVEL.UP
+AlliedTelesis.AT8000
 =======================================
 
 .. contents:: On this page
@@ -11,4 +11,5 @@ UPVEL.UP
     :class: singlecol
 
 .. todo::
-    Describe *UPVEL.UP* profile
+    Describe *AlliedTelesis.AT8000* profile
+
