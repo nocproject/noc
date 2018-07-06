@@ -143,10 +143,6 @@ Ext.define('NOC.core.filter.FilterController', {
         this.reload();
     },
 
-    clearCombo: function(field) {
-        console.log(field.getValue());
-    },
-
     cleanFilter: function(field) {
         var fieldName = field;
 
