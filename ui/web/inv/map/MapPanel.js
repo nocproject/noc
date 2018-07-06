@@ -524,9 +524,9 @@ Ext.define("NOC.inv.map.MapPanel", {
                 var names = [], values = [];
                 Ext.each(metric.metrics, function(dat) {
                     values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
-                    names.push((dat.metric === "Interface | Load | Out" ? "Down" : "Up") + " " + __("Mb"));
+                    names.push((dat.metric === "Interface | Load | Out" ? "Out" : "In"));
                 });
-                body.push(Ext.String.format("<tr><td>{0}</td><td>|</td><td>{1}</td><td>|</td><td>{2}</td></tr>"
+                body.push(Ext.String.format("<tr><td>{0}</td><td>|</td><td>{1} Mb</td><td>|</td><td>{2}</td></tr>"
                     , values.join(" / "), names.join(" / "), nameByPort(metric.port)));
             });
             if(body.length) {
