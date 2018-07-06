@@ -10,6 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
+
 class Script(BaseScript):
     name = "Linux.RHEL.get_fqdn"
     interface = IGetFQDN
