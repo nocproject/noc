@@ -52,7 +52,7 @@ class GeocoderCache(Document):
     #
     expires = DateTimeField()
 
-    NEGATIVE_TTL = 7 * 86400
+    NEGATIVE_TTL = config.geocoding.negative_ttl
 
     rx_slash = re.compile(r"\s+/")
     rx_dots = re.compile(r"\.\.+")
