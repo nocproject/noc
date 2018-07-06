@@ -12,6 +12,7 @@
             "direction": "i",
             "gender": "f",
             "name": "xfp1",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -19,6 +20,7 @@
             "direction": "i",
             "gender": "f",
             "name": "xfp2",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -26,6 +28,7 @@
             "direction": "i",
             "gender": "f",
             "name": "xfp3",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {
@@ -33,6 +36,7 @@
             "direction": "i",
             "gender": "f",
             "name": "xfp4",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {

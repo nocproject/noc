@@ -12,6 +12,7 @@
             "direction": "i",
             "gender": "f",
             "name": "xenpak1",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XENPAK"
         },
         {
@@ -19,6 +20,7 @@
             "direction": "i",
             "gender": "f",
             "name": "xenpak2",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XENPAK"
         },
         {
