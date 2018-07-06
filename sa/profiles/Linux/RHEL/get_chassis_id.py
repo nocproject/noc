@@ -16,7 +16,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
         # Try SNMP first
         if self.snmp:
             try:
@@ -33,5 +33,8 @@ class Script(BaseScript):
                     }]
 
             except self.snmp.TimeOutError:
-                pass
+                # pass
                 return
+
+    # TODO: use cli
+    # def execute_cli(self, **kwargs):
