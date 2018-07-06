@@ -18,7 +18,9 @@ Profiles
     /profiles/Alcatel.Stinger
     /profiles/Alcatel.TIMOS
     /profiles/Alentis.NetPing
+    /profiles/AlliedTelesis.AT8000
     /profiles/AlliedTelesis.AT8000S
+    /profiles/AlliedTelesis.AT8100
     /profiles/AlliedTelesis.AT8500
     /profiles/AlliedTelesis.AT8700
     /profiles/AlliedTelesis.AT9400
@@ -143,6 +145,7 @@ Profiles
     /profiles/Protei.MediaGateway
     /profiles/Qtech.QOS
     /profiles/Qtech.QSW
+    /profiles/Qtech.QSW2500
     /profiles/Qtech.QSW2800
     /profiles/Qtech.QSW8200
     /profiles/Raisecom.RCIOS
@@ -164,6 +167,7 @@ Profiles
     /profiles/Tangram.GT21
     /profiles/Telindus.SHDSL
     /profiles/Terayon.BW
+    /profiles/TPLink.T2600G
     /profiles/UPVEL.UP
     /profiles/UTST.ONU
     /profiles/Ubiquiti.AirOS
