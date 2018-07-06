@@ -37,6 +37,3 @@ class Script(BaseScript):
                     "status": int(s) == 1
                 })
         return r
-
-        # Fallback to CLI
-        raise Exception("Not implemented")
