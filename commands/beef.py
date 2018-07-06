@@ -10,6 +10,9 @@
 from __future__ import print_function
 import argparse
 import os
+import re
+# Third-party modules
+import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
@@ -77,6 +80,11 @@ class Command(BaseCommand):
             dest="yaml",
             default=False,
             help="YAML output"
+        )
+        run_parser.add_argument(
+            "arguments",
+            nargs=argparse.REMAINDER,
+            help="Script arguments"
         )
         # create-test-case
         create_test_case_parser = subparsers.add_parser("create-test-case")
@@ -230,7 +238,7 @@ class Command(BaseCommand):
         return
 
     def handle_run(self, path, storage, script, pretty=False, yaml=False, access_preference="SC",
-                   *args, **options):
+                   arguments=None, *args, **options):
         from noc.core.script.loader import loader
         st = self.get_storage(storage, beef=True)
         beef = self.get_beef(st, path)
@@ -240,10 +248,13 @@ class Command(BaseCommand):
             "cli_protocol": "beef",
             "beef_storage_url": st.url,
             "beef_path": path,
-            "access-preference": access_preference
+            "access-preference": access_preference,
+            "snmp_ro": "public"
         }
         # Get capabilities
         caps = {}
+        # Parse arguments
+        script_args = self.get_script_args(arguments or [])
         # Run script
         service = ServiceStub(pool="default")
         for s_name in script:
@@ -262,7 +273,8 @@ class Command(BaseCommand):
                     "version": beef.box.version
                 },
                 timeout=3600,
-                name=s_name
+                name=s_name,
+                args=script_args
             )
             result = scr.run()
             if pretty:
@@ -394,6 +406,45 @@ class Command(BaseCommand):
         except IOError as e:
             self.die("Failed to load beef: %s" % e)
 
+    rx_arg = re.compile(
+        r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$"
+    )
+
+    def get_script_args(self, arguments):
+        """
+        Parse arguments and return script's
+        """
+        def read_file(path):
+            if not os.path.exists(path):
+                self.die("Cannot open file '%s'" % path)
+            with open(path) as f:
+                return f.read()
+
+        def parse_json(j):
+            try:
+                return ujson.loads(j)
+            except ValueError as e:
+                self.die("Failed to parse JSON: %s" % e)
+
+        args = {}
+        for a in arguments:
+            match = self.rx_arg.match(a)
+            if not match:
+                self.die("Malformed parameter: '%s'" % a)
+            name, op, value = match.groups()
+            if op == "=":
+                # Set parameter
+                args[name] = value
+            elif op == "=@":
+                # Read from file
+                args[name] = read_file(value)
+            elif op == ":=":
+                # Set to JSON value
+                args[name] = parse_json(value)
+            elif op == ":=@":
+                # Set to JSON value from a file
+                args[name] = parse_json(read_file(value))
+        return args
 
 class ServiceStub(object):
     class ServiceConfig(object):
