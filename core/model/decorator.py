@@ -215,6 +215,7 @@ def on_delete_check(check=None, clean=None, delete=None):
                 sender=cls,
                 weak=False  # Cannot use weak reference due to lost of internal scope
             )
+        cls._on_delete = cfg
         return cls
 
     cfg = {
