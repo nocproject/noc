@@ -501,6 +501,8 @@ class Config(BaseConfig):
         default_ttl = SecondsParameter(default="1h")
 
     class tests(ConfigSection):
+        # List of pyfilesystem URLs holding intial data
+        fixtures_paths = ListParameter(item=StringParameter(), default=["tests/data"])
         # List of pyfilesystem URLs holding event classification samples
         events_paths = ListParameter(item=StringParameter())
         # List of pyfilesystem URLs holding beef test cases

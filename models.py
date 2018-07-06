@@ -119,6 +119,7 @@ _MODELS = {
     "main.Template": "noc.main.models.template.Template",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
+    "main.User": "django.contrib.auth.models.User",
     "main.UserProfile": "noc.main.models.userprofile.UserProfile",
     "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
     "main.UserState": "noc.main.models.userstate.UserState",

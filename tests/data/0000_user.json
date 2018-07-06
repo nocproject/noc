@@ -1,0 +1,46 @@
+[
+  {
+    "$model": "main.User",
+    "id": 10,
+    "username": "superuser",
+    "password": "pbkdf2_sha256$10000$hMYlxYyy1qlY$fvwTChBOWZ9Iq+ZKKAqFneAKU4Tr9ZvpQdImtknPves=",
+    "is_active": true,
+    "is_superuser": true,
+    "email": "superuser@example.com",
+    "first_name": "Mighty",
+    "last_name": "Root"
+  },
+  {
+    "$model": "main.User",
+    "id": 11,
+    "username": "granted",
+    "password": "pbkdf2_sha256$10000$eLdZ1gnb42W3$IqRElmkuuA2QShkdBJaIzKO6LfiXpXIre6noafzNb7o=",
+    "is_active": true,
+    "is_superuser": false,
+    "email": "granted@example.com",
+    "first_name": "Granted",
+    "last_name": "User"
+  },
+  {
+    "$model": "main.User",
+    "id": 12,
+    "username": "deprived",
+    "password": "pbkdf2_sha256$10000$VNGoplizUyR0$Xzd8RET7+ke49eHuSlH7bVXGFUHj/l0avtbcRUY+mKc=",
+    "is_active": true,
+    "is_superuser": false,
+    "email": "deprived@example.com",
+    "first_name": "Deprived",
+    "last_name": "Buddy"
+  },
+  {
+    "$model": "main.User",
+    "id": 13,
+    "username": "disabled",
+    "password": "pbkdf2_sha256$10000$tfpLCCukO4j3$UnLBpwbGn+J8iA7Z6bgxx7Vf76jprJC0vjjNwDT72s0=",
+    "is_active": false,
+    "is_superuser": false,
+    "email": "disabled@example.com",
+    "first_name": "Pitty",
+    "last_name": "One"
+  }
+]

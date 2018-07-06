@@ -259,6 +259,9 @@ class Service(object):
         self.logger = logging.getLogger(self.name)
         logging.captureWarnings(True)
 
+    def setup_test_logging(self):
+        self.logger = logging.getLogger(self.name)
+
     def setup_translation(self):
         from noc.core.translation import set_translation, ugettext
 
