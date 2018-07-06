@@ -499,13 +499,21 @@ class ManagedObject(Model):
         self._data = d
         return d
 
+    def set_scripts_caller(self, caller):
+        """
+        Override default scripts caller
+        :param caller: callabler
+        :return:
+        """
+        self._scripts_caller = caller
+
     @property
     def scripts(self):
         sp = getattr(self, "_scripts", None)
         if sp:
             return sp
         else:
-            self._scripts = ScriptsProxy(self)
+            self._scripts = ScriptsProxy(self, getattr(self, "_scripts_caller", None))
             return self._scripts
 
     @property
@@ -1497,9 +1505,10 @@ class ScriptsProxy(object):
         def __call__(self, **kwargs):
             return MTManager.run(self.object, self.name, kwargs)
 
-    def __init__(self, obj):
+    def __init__(self, obj, caller=None):
         self._object = obj
         self._cache = {}
+        self._caller = caller or ScriptsProxy.CallWrapper
 
     def __getattr__(self, name):
         if name in self._cache:
@@ -1507,7 +1516,7 @@ class ScriptsProxy(object):
         if not script_loader.has_script("%s.%s" % (
                 self._object.profile.name, name)):
             raise AttributeError("Invalid script %s" % name)
-        cw = ScriptsProxy.CallWrapper(self._object, name)
+        cw = self._caller(self._object, name)
         self._cache[name] = cw
         return cw
 
