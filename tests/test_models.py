@@ -51,6 +51,17 @@ def test_model_id(model_id):
 
 
 @pytest.mark.dependency(depends=["test_model_loading"])
+def test_model_meta(model_id):
+    model = get_model(model_id)
+    assert model
+    if is_document(model):
+        pytest.skip("Not a model")
+    assert model._meta
+    assert model._meta.app_label
+    assert model._meta.db_table
+
+
+@pytest.mark.dependency(depends=["test_model_loading"])
 def test_document_meta(model_id):
     model = get_model(model_id)
     assert model
