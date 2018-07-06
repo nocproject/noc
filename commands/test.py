@@ -92,12 +92,14 @@ class Command(BaseCommand):
             try:
                 result = run_tests(args)
             finally:
-                self.print("Writing coverage report to %s/index.html" % coverage_report)
+                if coverage_report:
+                    self.print("Writing coverage report to %s/index.html" % coverage_report)
                 cov.stop()
                 cov.save()
                 if coverage_report:
                     cov.html_report(directory=coverage_report)
                 if statistics:
+                    self.dump_failed()
                     self.dump_statistics(cov)
             return result
         else:
@@ -137,6 +139,18 @@ class Command(BaseCommand):
         self.print("Coverage Statements : %s" % totals.n_statements)
         self.print("Coverage Missing    : %s" % totals.n_missing)
         self.print("Coverage Excluded   : %s" % totals.n_excluded)
+
+    def dump_failed(self):
+        """
+        Dump failed tests list
+        :return:
+        """
+        from noc.tests.conftest import _stats as stats
+        failed = sorted(tr.nodeid for tr in stats["failed"])
+        if not failed:
+            return
+        self.print("---[ Failed tests ]------")
+        self.print("\n".join(failed))
 
     def get_dirs(self, dirs):
         """
