@@ -30,6 +30,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.services.discovery.jobs.box.job import BoxDiscoveryJob
 from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.inv.models.discoveryid import DiscoveryID
 
 _root_ad_cache = {}
 _root_segment_cache = {}
@@ -183,6 +184,8 @@ def get_managedobjectprofile():
         enable_box_discovery=True,
         enable_box_discovery_version=True,
         enable_box_discovery_caps=True,
+        enable_box_discovery_id=True,
+        enable_box_discovery_interface=True,
         cli_session_policy="D"  # Must be disabled, overrides BeefCaller
     )
     mop.save()
@@ -256,7 +259,7 @@ def run_job(jcls, mo, checks):
 
 @pytest.mark.dependency(name="test_box_basic_run")
 def test_box_basic(discovery_object):
-    run_job(BoxDiscoveryJob, discovery_object, ["version", "caps"])
+    run_job(BoxDiscoveryJob, discovery_object, ["version", "caps", "id", "interface"])
 
 
 @pytest.mark.dependency(depends=["test_box_basic_run"])
@@ -295,3 +298,33 @@ def test_capabilities(discovery_object):
     for expected in xcaps:
         assert expected["name"] in caps
         assert caps[expected["name"]] == expected["value"]
+
+
+@pytest.mark.dependency(depends=["test_box_basic_run"])
+def test_id_hostname(discovery_object):
+    expected = get_by_path(discovery_object, "checks.id.hostname")
+    if not expected:
+        pytest.skip("hostname is not expected")
+    d = DiscoveryID.objects.filter(object=discovery_object.id).first()
+    assert d
+    assert d.hostname == expected
+
+
+@pytest.mark.dependency(depends=["test_box_basic_run"])
+def test_id_macs(discovery_object):
+    xmacs = get_by_path(discovery_object, "checks.id.macs")
+    if not xmacs:
+        pytest.skip("macs are not expected")
+    d = DiscoveryID.objects.filter(object=discovery_object.id).first()
+    assert d
+    for expected in xmacs:
+        f = expected["first"]
+        l = expected["last"]
+        m = [x for x in d.chassis_mac if x.first_mac == f and x.last_mac == l]
+        assert m
+        mo = DiscoveryID.find_object(mac=f)
+        assert mo
+        assert mo.id == discovery_object.id
+        mo = DiscoveryID.find_object(mac=l)
+        assert mo
+        assert mo.id == discovery_object.id
