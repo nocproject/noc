@@ -117,6 +117,13 @@ class DiscoveryID(Document):
             ]
         else:
             chassis_mac = []
+        # MAC index
+        macs = []
+        for r in chassis_mac:
+            first = MAC(r.first_mac)
+            last = MAC(r.last_mac)
+            macs += [m for m in range(int(first), int(last) + 1)]
+        #
         o = cls.objects.filter(object=object.id).first()
         if o:
             old_macs = set(m.first_mac for m in o.chassis_mac)
@@ -127,16 +134,11 @@ class DiscoveryID(Document):
             if old_macs:
                 cache.delete_many(["discoveryid-mac-%s" % m for m in old_macs])
             # MAC index
-            macs = []
-            for r in chassis_mac:
-                first = MAC(r.first_mac)
-                last = MAC(r.last_mac)
-                macs += [m for m in range(int(first), int(last) + 1)]
             o.macs = macs
             o.save()
         else:
             cls(object=object, chassis_mac=chassis_mac,
-                hostname=hostname, router_id=router_id).save()
+                hostname=hostname, router_id=router_id, macs=macs).save()
 
     @classmethod
     @cachedmethod(operator.attrgetter("_mac_cache"),
