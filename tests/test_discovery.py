@@ -318,13 +318,13 @@ def test_id_macs(discovery_object):
     d = DiscoveryID.objects.filter(object=discovery_object.id).first()
     assert d
     for expected in xmacs:
-        f = expected["first"]
-        l = expected["last"]
-        m = [x for x in d.chassis_mac if x.first_mac == f and x.last_mac == l]
+        first = expected["first"]
+        last = expected["last"]
+        m = [x for x in d.chassis_mac if x.first_mac == first and x.last_mac == last]
         assert m
-        mo = DiscoveryID.find_object(mac=f)
+        mo = DiscoveryID.find_object(mac=first)
         assert mo
         assert mo.id == discovery_object.id
-        mo = DiscoveryID.find_object(mac=l)
+        mo = DiscoveryID.find_object(mac=last)
         assert mo
         assert mo.id == discovery_object.id
