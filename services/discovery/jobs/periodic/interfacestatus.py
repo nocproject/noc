@@ -25,11 +25,11 @@ class InterfaceStatusCheck(DiscoveryCheck):
     """
     name = "interfacestatus"
     required_script = "get_interface_status_ex"
+    required_capabilities = ["DB | Interfaces"]
 
     def __init__(self, *args, **kwargs):
         super(InterfaceStatusCheck, self).__init__(*args, **kwargs)
-        self.metrics_artefact = {
-        }  # name -> {name: , admin_status:, oper_status:, duplex_status:, speed:}
+        self.metrics_artefact = {}  # name -> {name: , admin_status:, oper_status:, duplex_status:, speed:}
 
     def get_interface_ifindexes(self):
         """
@@ -38,10 +38,12 @@ class InterfaceStatusCheck(DiscoveryCheck):
         """
         ifindexes = []
         ifnames = {}
-        for i in Interface.objects.filter(managed_object=self.object.id, type="physical",
-                                          ifindex__exists=True,
-                                          profile__in=InterfaceProfile.get_with_status_discovery(),
-                                          read_preference=ReadPreference.SECONDARY_PREFERRED):
+        for i in Interface.objects.filter(
+                managed_object=self.object.id,
+                type="physical",
+                ifindex__exists=True,
+                profile__in=InterfaceProfile.get_with_status_discovery(),
+                read_preference=ReadPreference.SECONDARY_PREFERRED):
             ifindexes += [{"interface": i.name, "ifindex": i.ifindex}]
             ifnames[i.name] = i
         if not ifindexes:
@@ -60,10 +62,6 @@ class InterfaceStatusCheck(DiscoveryCheck):
                     return if_name
             return None
 
-        has_interfaces = "DB | Interfaces" in self.object.get_caps()
-        if not has_interfaces:
-            self.logger.info("No interfaces discovered. " "Skipping interface status check")
-            return
         self.logger.info("Checking interface statuses")
         interfaces, names = self.get_interface_ifindexes()
         if interfaces:
@@ -84,22 +82,21 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "bandwidth": i.get("bandwidth")
             }
             self.metrics_artefact[i["interface"]] = {
-                "ifindex":
-                [ii["ifindex"] for ii in interfaces if ii["interface"] == i["interface"]][0],
-                "status_admin":
-                i.get("admin_status"),
-                "status_oper":
-                i.get("oper_status"),
-                "status_duplex":
-                i.get("full_duplex"),
-                "speed":
-                i.get("in_speed")
+                "ifindex": [ii["ifindex"] for ii in interfaces if ii["interface"] == i["interface"]][0],
+                "status_admin": i.get("admin_status"),
+                "status_oper": i.get("oper_status"),
+                "status_duplex": i.get("full_duplex"),
+                "speed": i.get("in_speed")
             }
-            changes = self.update_if_changed(iface, kwargs, ignore_empty=kwargs.keys(), bulk=bulk)
-            self.log_changes("Interface %s status has been changed" % i["interface"], changes)
+            changes = self.update_if_changed(
+                iface, kwargs, ignore_empty=kwargs.keys(), bulk=bulk)
+            self.log_changes(
+                "Interface %s status has been changed" % i["interface"],
+                changes)
             ostatus = i.get("oper_status")
             if iface.oper_status != ostatus and ostatus is not None:
-                self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
+                self.logger.info("[%s] set oper status to %s", i["interface"],
+                                 ostatus)
                 iface.set_oper_status(ostatus)
         if bulk:
             self.logger.info("Commiting changes to database")
