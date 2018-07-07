@@ -8,35 +8,37 @@
 
 # Python modules
 from __future__ import absolute_import
-from collections import defaultdict
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportDataSource
+from .base import BaseReportStream
 from noc.lib.nosql import get_db
 
 
-class ReportContainer(BaseReportDataSource):
+class ReportContainer(BaseReportStream):
     """Report for MO Container"""
-    UNKNOWN = {}
+    name = "containeraddress"
+    unknown_value = {}
+    builtin_sorted = True
 
-    @staticmethod
-    def load(ids, attributes):
+    def extract(self):
         match = {"data.management.managed_object": {"$exists": True}}
-        if ids:
-            match = {"data.management.managed_object": {"$in": ids}}
+        if self.sync_ids:
+            match = {"data.management.managed_object": {"$in": self.sync_ids}}
         value = get_db()["noc.objects"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
             {"$match": match},
+            {"$sort": {"data.management.managed_object": 1}},
             {"$lookup": {"from": "noc.objects", "localField": "container", "foreignField": "_id", "as": "cont"}},
             {"$project": {"data": 1, "cont.data": 1}}
         ])
 
-        r = defaultdict(dict)
         for v in value:
+            r = {}
             if "asset" in v["data"]:
-                r[v["data"]["management"]["managed_object"]].update(v["data"]["asset"])
+                # r[v["data"]["management"]["managed_object"]].update(v["data"]["asset"])
+                r.update(v["data"]["asset"])
             if v["cont"]:
                 if "data" in v["cont"][0]:
-                    r[v["data"]["management"]["managed_object"]].update(v["cont"][0]["data"].get("address", {}))
-        # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
-        return r
+                    # r[v["data"]["management"]["managed_object"]].update(v["cont"][0]["data"].get("address", {}))
+                    r.update(v["cont"][0]["data"].get("address", {}))
+            yield v["data"]["management"]["managed_object"], r

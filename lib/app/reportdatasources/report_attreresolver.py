@@ -11,20 +11,20 @@ from __future__ import absolute_import
 # Third-party modules
 from django.db import connection
 # NOC modules
-from .base import BaseReportDataSource
+from .base import BaseReportStream
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 
 
-class ReportAttrResolver(BaseReportDataSource):
+class ReportAttrResolver(BaseReportStream):
+    name = "reportattrresolver"
+    unknown_value = ["", "", "", ""]
 
-    UNKNOWN = ["", "", "", ""]
     ATTRS = ["profile", "vendor", "version", "platform"]
 
-    @staticmethod
-    def load(ids, attributes):
+    def extract(self):
         """
         :param ids:
         :return: Dict tuple MO attributes mo_id -> (attrs_list)
@@ -35,19 +35,15 @@ class ReportAttrResolver(BaseReportDataSource):
         version = {str(p["_id"]): p["version"] for p in Firmware.objects.all().as_pymongo().scalar("id", "version")}
         profile = {str(p["_id"]): p["name"] for p in Profile.objects.all().as_pymongo().scalar("id", "name")}
 
-        mo_attrs_resolv = {}
         cursor = connection.cursor()
         base_select = "select id, profile, vendor, platform, version from sa_managedobject"
         query1 = base_select
         query = query1
 
         cursor.execute(query)
-        mo_attrs_resolv.update(dict([(c[0], [profile.get(c[1], ""),
-                                             vendor.get(c[2], ""),
-                                             platform.get(c[3], ""),
-                                             version.get(c[4], "")
-                                             ])
-                                     for c in cursor]))
-
-        return mo_attrs_resolv
-
+        for val in cursor:
+            yield (val[0],
+                   profile.get(val[1], ""),
+                   vendor.get(val[2], ""),
+                   platform.get(val[3], ""),
+                   version.get(val[4], ""))

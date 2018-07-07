@@ -11,13 +11,15 @@ from __future__ import absolute_import
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportDataSource
+from .base import BaseReportStream
 from noc.lib.nosql import get_db
 
 
-class ReportObjectLinkCount(BaseReportDataSource):
+class ReportObjectLinkCount(BaseReportStream):
     """Report for MO link count"""
     name = "link_count"
+    unknown_value = 0
+    builtin_sorted = False
 
     def extract(self):
         value = get_db()["noc.links"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
@@ -29,6 +31,3 @@ class ReportObjectLinkCount(BaseReportDataSource):
             if not v["_id"]:
                 continue
             yield v["_id"][0], v["count"]
-
-        # return dict((v["_id"][0], v["count"]) for v in value if v["_id"])
-

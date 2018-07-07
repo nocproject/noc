@@ -12,19 +12,19 @@ from __future__ import absolute_import
 from collections import defaultdict
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportDataSource
+from .base import BaseReportStream
 from noc.lib.nosql import get_db
 
 
-class ReportObjectIfacesStatusStat(BaseReportDataSource):
+class ReportObjectIfacesStatusStat(BaseReportStream):
     """Report for interfaces speed and status count"""
-
+    name = "reportifacesstatusstat"
     # ["1G_UP", "1G_DOWN"]
-    ATTRS = list("-")
-    UNKNOWN = [""] * len(ATTRS)
+    # ATTRS = list("-")
+    ATTRS = ["Up/10G", "Up/1G", "Up/100M", "Down/-", "-"]
+    unknown_value = [""] * len(ATTRS)
 
-    @staticmethod
-    def load(ids, attributes):
+    def extract(self):
         # @todo Make reports field
         """
         { "_id" : { "managed_object" : 6757 }, "count_in_speed" : 3 }
@@ -57,15 +57,16 @@ class ReportObjectIfacesStatusStat(BaseReportDataSource):
             group["oper_status"] = "$oper_status"
 
         match = {"type": "physical"}
-        if ids:
+        if self.sync_ids:
             match = {"type": "physical",
-                     "managed_object": {"$in": ids}}
+                     "managed_object": {"$in": self.sync_ids}}
         value = get_db()["noc.interfaces"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
             {"$match": match},
             {"$group": {"_id": group,
                         "count": {"$sum": 1}}}
         ])
-        r = defaultdict(lambda: [""] * len(attributes))
+        r = defaultdict(lambda: [""] * len(self.ATTRS))
+        # @todo Fix Down
         for v in value:
             c = {
                 True: "Up",
@@ -78,7 +79,9 @@ class ReportObjectIfacesStatusStat(BaseReportDataSource):
             else:
                 c += "/-"
             # r[v["_id"]["managed_object"]].append((c, v["count"]))
-            if c in attributes:
-                r[v["_id"]["managed_object"]][attributes.index(c)] = v["count"]
-        return r
+            if c in self.ATTRS:
+                r[v["_id"]["managed_object"]][self.ATTRS.index(c)] = v["count"]
+        for val in r:
+            yield val, r[val]
+        # return r
         # return dict((v["_id"]["managed_object"], v["count"]) for v in value["result"])

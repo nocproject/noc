@@ -11,21 +11,19 @@ from __future__ import absolute_import
 # Third-party modules
 from django.db import connection
 # NOC modules
-from .base import BaseReportDataSource
+from .base import BaseReportStream
 
 
-class ReportObjectAttributes(BaseReportDataSource):
+class ReportObjectAttributes(BaseReportStream):
+    name = "attributes"
+    unknown_value = (None, None)
 
-    UNKNOWN = ["", ""]
-
-    @staticmethod
-    def load(ids, attributes):
+    def extract(self):
         """
         :param ids:
         :return: Dict tuple MO attributes mo_id -> (attrs_list)
         :rtype: dict
         """
-        mo_attrs = {}
         attr_list = ["Serial Number", "HW version"]
         cursor = connection.cursor()
 
@@ -42,6 +40,5 @@ class ReportObjectAttributes(BaseReportDataSource):
         query2 = " ".join([value_select % tuple([al, al.replace(" ", "_"), al.replace(" ", "_")]) for al in attr_list])
         query = query1 + query2
         cursor.execute(query)
-        mo_attrs.update(dict([(c[0], c[1:6]) for c in cursor]))
-
-        return mo_attrs
+        for val in cursor:
+            yield val[0], val[1:6]
