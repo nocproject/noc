@@ -256,7 +256,7 @@ def run_job(jcls, mo, checks):
 
 @pytest.mark.dependency(name="test_box_basic_run")
 def test_box_basic(discovery_object):
-    run_job(BoxDiscoveryJob, discovery_object, ["version"])
+    run_job(BoxDiscoveryJob, discovery_object, ["version", "caps"])
 
 
 @pytest.mark.dependency(depends=["test_box_basic_run"])
@@ -284,3 +284,14 @@ def test_version_version(discovery_object):
         pytest.skip("version is not expected")
     assert discovery_object.version
     assert discovery_object.version.version == expected
+
+
+@pytest.mark.dependency(depends=["test_box_basic_run"])
+def test_capabilities(discovery_object):
+    xcaps = get_by_path(discovery_object, "checks.caps")
+    if not xcaps:
+        pytest.skip("caps are not expected")
+    caps = discovery_object.get_caps()
+    for expected in xcaps:
+        assert expected["name"] in caps
+        assert caps[expected["name"]] == expected["value"]
