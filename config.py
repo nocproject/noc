@@ -237,6 +237,8 @@ class Config(BaseConfig):
         yandex_key = SecretParameter(default="")
         google_key = SecretParameter(default="")
         google_language = StringParameter(default="en")
+        negative_ttl = SecondsParameter(default="7d",
+                                        help="Period then saving bad result")
 
     class gis(ConfigSection):
         ellipsoid = StringParameter(default="PZ-90")
