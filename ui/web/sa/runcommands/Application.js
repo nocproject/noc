@@ -61,12 +61,12 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectionStore}',
                                 selection: '{selectionRow}'
                             },
-                            selModel: {
-                                mode: 'MULTI',
-                                pruneRemoved: false,
-                                showHeaderCheckbox: false,
-                                selType: 'checkboxmodel'
-                            },
+                            // selModel: {
+                            //     mode: 'MULTI',
+                            //     pruneRemoved: false,
+                            //     showHeaderCheckbox: false,
+                            //     selType: 'checkboxmodel'
+                            // },
                             listeners: {
                                 selectionchange: 'onSelectionChange',
                                 itemdblclick: 'onSelectionDblClick',
@@ -101,33 +101,33 @@ Ext.define('NOC.sa.runcommands.Application', {
                                         listeners: {
                                             select: 'onSelectionSelectAll'
                                         }
-                                    }, {
-                                        text: __('Unselect All'),
-                                        glyph: NOC.glyph.minus_circle,
-                                        tooltip: __('Unselect all devices'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionUnselectAll'
-                                    }, '->', {
-                                        text: __('Select Checked'),
-                                        glyph: NOC.glyph.arrow_right,
-                                        tooltip: __('Move all selected devices to the right'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionAddChecked'
-                                    }, '|', {
-                                        xtype: 'box',
-                                        bind: {
-                                            html: __('Selected : {total.selection}')
-                                        }
+                                        // }, {
+                                        //     text: __('Unselect All'),
+                                        //     glyph: NOC.glyph.minus_circle,
+                                        //     tooltip: __('Unselect all devices'),
+                                        //     style: {
+                                        //         pointerEvents: 'all'
+                                        //     },
+                                        //     bind: {
+                                        //         disabled: '{!selectionGridHasSel}'
+                                        //     },
+                                        //     handler: 'onSelectionUnselectAll'
+                                        // }, '->', {
+                                        //     text: __('Select Checked'),
+                                        //     glyph: NOC.glyph.arrow_right,
+                                        //     tooltip: __('Move all selected devices to the right'),
+                                        //     style: {
+                                        //         pointerEvents: 'all'
+                                        //     },
+                                        //     bind: {
+                                        //         disabled: '{!selectionGridHasSel}'
+                                        //     },
+                                        //     handler: 'onSelectionAddChecked'
+                                        // }, '|', {
+                                        //     xtype: 'box',
+                                        //     bind: {
+                                        //         html: __('Selected : {total.selection}')
+                                        //     }
                                     }]
                                 }
                             }],
