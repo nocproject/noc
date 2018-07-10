@@ -6,8 +6,9 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-#Noc module
+# Noc module
 from noc.core.profile.base import BaseProfile
+
 
 class Profile(BaseProfile):
     name = "Rotek.RTBS"
@@ -27,6 +28,8 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
+        if name is None:
+            return None
         return cls.INTERFACE_TYPES.get(name[:2])
 
     class shell(object):
