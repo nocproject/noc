@@ -18,11 +18,8 @@ class Script(BaseScript):
     name = "Eltex.MES.get_capabilities"
 
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
-    rx_lacp_en = re.compile(r"\s+Partner"
-                            r"[\S\s]+?"
-                            r"\s+Oper Key:\s+1", re.MULTILINE)
-    rx_gvrp_en = re.compile(
-        r"GVRP Feature is currently Enabled on the device?")
+    rx_lacp_en = re.compile(r"\s+Partner" r"[\S\s]+?" r"\s+Oper Key:\s+1", re.MULTILINE)
+    rx_gvrp_en = re.compile(r"GVRP Feature is currently Enabled on the device?")
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
 
     @false_on_cli_error
@@ -78,5 +75,5 @@ class Script(BaseScript):
     def execute_platform_cli(self, caps):
         s = self.has_stack()
         if s:
-            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Members"] = len(s) if len(s) >= 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
