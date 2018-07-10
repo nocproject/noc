@@ -29,8 +29,8 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL
     )
     rx_snmp_ver = re.compile(
-        r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+"
-        r"Version\s+(?P<version>\S+)\[\S+\]"
+        r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\).+\s+Version\s+(?P<version>\S+)\[\S+\]",
+        re.MULTILINE | re.DOTALL
     )
     rx_snmp_ver2 = re.compile(
         r"Cisco IOS XR Software \((?P<platform>\S+)\), Version\s+"
