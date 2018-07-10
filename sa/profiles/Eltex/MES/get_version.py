@@ -130,6 +130,6 @@ class Script(BaseScript):
             }
         }
         if bootprom:
-            res["attributes"]["Boot PROM"] = bootprom.group("bootprom")
-            res["attributes"]["HW version"] = hardware.group("hardware")
+            res["attributes"]["Boot PROM"] = bootprom
+            res["attributes"]["HW version"] = hardware
         return res
