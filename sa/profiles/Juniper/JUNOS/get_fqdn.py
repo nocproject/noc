@@ -24,11 +24,8 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute_snmp(self):
-        try:
-            fqnd = self.snmp.get(mib["SNMPv2-MIB::sysName.0"])
-            return fqnd
-        except self.snmp.TimeOutError:
-            raise self.NotSupportedError
+        fqnd = self.snmp.get(mib["SNMPv2-MIB::sysName.0"])
+        return fqnd
 
     def execute_cli(self):
         fqdn = []
