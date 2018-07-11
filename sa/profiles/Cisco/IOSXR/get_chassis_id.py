@@ -37,7 +37,7 @@ class Script(BaseScript):
             except self.snmp.TimeOutError:
                 pass
         else:
-            #Для CRS-16/S 4.3.2 команда ниже не выводит МАС коробки, после перебора всего дерева команд show/admin show, решение было найдено только через SNMP
+            # Для CRS-16/S 4.3.2 команда ниже не выводит МАС коробки, после перебора всего дерева команд show/admin show, решение было найдено только через SNMP
             v = self.cli("admin show diag chassis eeprom-info")
             for f, t in [(mac, MAC(mac).shift(int(count) - 1))
                     for mac, count in self.rx_range.findall(v)]:
