@@ -23,6 +23,7 @@ class Script(BaseScript):
     types = {
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",
+        "hundredgige": "physical",
         "fortygige": "physical",
         "tengige": "physical",
         "gigabitethernet": "physical",
