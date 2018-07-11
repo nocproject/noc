@@ -239,6 +239,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
         me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
         me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
+        me.paper.on("link:mouseover", Ext.bind(me.onLinkOver, me));
         me.fireEvent("mapready");
     },
 
@@ -501,6 +502,41 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this;
         evt.preventDefault();
         me.segmentMenu.showAt(evt.clientX, evt.clientY);
+    },
+
+    onLinkOver: function(link, evt) {
+        var me = this, tip, data, body = [],
+            nameByPort = function(portId) {
+                var elementNameAttr = "name";
+                if(me.app.addressIPButton.pressed) {
+                    elementNameAttr = "address";
+                }
+                if(link.model.getTargetElement().get("data").id === me.portObjects[portId]) {
+                    return link.model.getTargetElement().get(elementNameAttr)
+                }
+                if(link.model.getSourceElement().get("data").id === me.portObjects[portId]) {
+                    return link.model.getSourceElement().get(elementNameAttr)
+                }
+            };
+        if(me.overlayMode === me.LO_LOAD) {
+            data = link.model.get("data");
+            Ext.each(data.metrics, function(metric) {
+                var names = [], values = [];
+                Ext.each(metric.metrics, function(dat) {
+                    values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
+                    names.push((dat.metric === "Interface | Load | Out" ? "Out" : "In"));
+                });
+                body.push(Ext.String.format("<tr><td>{0}</td><td>|</td><td>Load {1} Mb</td><td>|</td><td>{2}</td></tr>"
+                    , values.join(" / "), names.join(" / "), nameByPort(metric.port)));
+            });
+            if(body.length) {
+                tip = Ext.create("Ext.tip.ToolTip", {
+                    html: "<table style='font-size: 10px'>" + body.join("") + "</table>",
+                    dismissDelay: 2000
+                });
+                tip.showAt([evt.pageX, evt.pageY]);
+            }
+        }
     },
 
     onContextMenu: function(view, evt, x, y) {
@@ -780,7 +816,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     setOverlayMode: function(mode) {
         var me = this;
         // Stop polling when necessary
-        if(mode == me.LO_NONE && me.overlayPollingTaskId) {
+        if(mode === me.LO_NONE && me.overlayPollingTaskId) {
             Ext.TaskManager.stop(me.overlayPollingTaskId);
             me.overlayPollingTaskId = null;
         }
@@ -818,6 +854,9 @@ Ext.define("NOC.inv.map.MapPanel", {
                     } else {
                         return 0.0;
                     }
+                },
+                hasMetric = function(port, metric) {
+                    return data.hasOwnProperty(port) && data[port].hasOwnProperty(metric);
                 },
                 getStatus = function(port, status) {
                     if(data[port] && data[port][status] !== undefined) {
@@ -881,6 +920,20 @@ Ext.define("NOC.inv.map.MapPanel", {
                         link.label(0, {attrs: {text: luStyle}});
                     }
                 }
+                // save link utilization
+                var values = [];
+                Ext.each(ports, function(port) {
+                    var metrics = [], metricsName = ["Interface | Load | In", "Interface | Load | Out"];
+                    Ext.each(metricsName, function(metric) {
+                        var value = "-";
+                        if(hasMetric(port, metric)) {
+                            value = getTotal(port, metric);
+                        }
+                        metrics.push({metric: metric, value: value});
+                    });
+                    values.push({port: port, metrics: metrics});
+                });
+                link.set("data", Ext.apply({metrics: values}, link.get("data")));
             }
         });
     },
@@ -936,7 +989,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this,
             objectType = me.nodeMenuObjectType;
 
-        if('managedobject' == me.nodeMenuObjectType) objectType = 'mo';
+        if('managedobject' === me.nodeMenuObjectType) objectType = 'mo';
         window.open(
             '/ui/grafana/dashboard/script/noc.js?dashboard=' + objectType + '&id=' + me.nodeMenuObject
         );
