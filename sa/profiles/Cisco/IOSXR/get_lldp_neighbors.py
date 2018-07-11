@@ -24,11 +24,11 @@ class Script(BaseScript):
     rx_s_line = re.compile(
         r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te|Hu)\d+[\d/\.]*)\s+.+$")
     rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)",
-        re.MULTILINE | re.IGNORECASE)
+                               re.MULTILINE | re.IGNORECASE)
     rx_remote_port = re.compile("^Port id:\s*(?P<remote_if>.+?)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+                                re.MULTILINE | re.IGNORECASE)
     rx_enabled_caps = re.compile("^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+                                 re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
                            re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
@@ -112,4 +112,3 @@ class Script(BaseScript):
             i["neighbors"] += [n]
             r += [i]
         return r
-

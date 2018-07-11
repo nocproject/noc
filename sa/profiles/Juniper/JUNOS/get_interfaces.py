@@ -210,18 +210,18 @@ class Script(BaseScript):
                         bundle = match.group("bundle")
                         iface["aggregated_interface"] = bundle
                     elif (
-                        proto.lower() == "eth-switch" or
-                        proto.lower() == "multiservice"
+                            proto.lower() == "eth-switch" or
+                            proto.lower() == "multiservice"
                     ):
                         if proto.lower() == "eth-switch":
                             si["enabled_afi"] += ["BRIDGE"]
                         if not vlans_requested:
                             if (
-                                self.is_switch and (
+                                    self.is_switch and (
                                     self.profile.command_exist(self, "vlans") or
                                     # Bug on some switches
                                     self.profile.command_exist(self, "vlan")
-                                )
+                            )
                             ):
                                 v = self.cli("show vlans detail")
                                 untagged, tagged, l3_ids = \
@@ -322,6 +322,7 @@ class Script(BaseScript):
         :return: tagged map, untagged map
         :rtype: tuple
         """
+
         def clean_interface(s):
             """
             Clean interface name
