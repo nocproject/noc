@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "DLink.DxS.get_fqdn"
     interface = IGetFQDN
 
-    rx_name = re.compile(r"^System Name\s+:(?P<name>.*)$", re.MULTILINE)
+    rx_name = re.compile(r"^System [Nn]ame\s+:(?P<name>.*)$", re.MULTILINE)
 
     def execute_snmp(self):
         return self.snmp.get(mib["SNMPv2-MIB::sysName.0"])
