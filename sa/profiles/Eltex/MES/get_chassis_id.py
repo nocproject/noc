@@ -44,7 +44,10 @@ class Script(BaseScript):
             match = self.rx_mac.search(c)
             mac_begin = match.group("mac")
             match = self.rx_mac2.search(c)
-            mac_end = match.group("mac")
+            if match:
+                mac_end = match.group("mac")
+            else:
+                mac_end = mac_begin
         else:
             c = self.cli("show system", cached=True)
             match = self.rx_mac.search(c)
