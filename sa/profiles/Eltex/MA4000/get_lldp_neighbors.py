@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MA4000.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
+from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
 
 
@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     rx_neighbor = re.compile(
         r"^Device ID: (?P<chassis_id>\S+)\s*\n"
-        r"^Port ID: (?P<port_id>\S+)\s*\n"
+        r"^Port ID: (?:\S+ )?(?P<port_id>\S+)\s*\n"
         r"^Time To Live: \S+\s*\n\n"
         r"(^Port description:(?P<port_descr>.*)\n)?"
         r"(^System name:(?P<system_name>.*)\n)?"
