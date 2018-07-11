@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$",
         re.MULTILINE | re.DOTALL)
     rx_neigh = re.compile(
-        r"^(?P<local_if>.e-\S+?|me0|fxp0)\s.*?$",
+        r"^(?P<local_if>.e-\S+?|me0|fxp0|et-\S+?)\s.*?$",
         re.MULTILINE | re.IGNORECASE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
