@@ -149,6 +149,8 @@ class BeefSNMP(SNMP):
         max_repetitions = pdu[2][3]
         start_oid = pdu[2][-1][0][0]
         for oid in beef.iter_mib_oids(start_oid):
+            if oid == start_oid:
+                continue  # To next value
             r += [(oid, beef.get_mib_value(oid))]
             if len(r) >= max_repetitions:
                 break
