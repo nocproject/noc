@@ -67,7 +67,8 @@ class Script(BaseScript):
         virtual = None
         virtual = str(self.cli(
             "dmesg | grep -i -E \"(U Virtual|on KVM|Xen virtual c)\""
-            ))
+                              )
+                     )
 
         if virtual and not virtual.startswith('dmesg'):
             rx = self.find_re([
