@@ -5,14 +5,15 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
-from collections import defaultdict
+# flake8
+# from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
+# flake8
+# from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -36,21 +37,26 @@ class Script(BaseScript):
         "bridge-group virtual interface": "SVI"
     }
 
-    rx_iface = re.compile(r"^(?P<name>\S+)\s+is\s+(?P<status>up|(?:administratively )?down),\s+"
-                          r"line protocol is (?:up|(?:administratively )?down)\s*$", re.MULTILINE)
+    rx_iface = re.compile(
+        r"^(?P<name>\S+)\s+is\s+(?P<status>up|(?:administratively )?down),\s+"
+        r"line protocol is (?:up|(?:administratively )?down)\s*$", re.MULTILINE
+    )
 
     rx_ip = re.compile(r"^Internet address is (?P<ip>\S+)\s*$", re.MULTILINE)
 
     rx_hw = re.compile(r"^Hardware is (?P<hw>.+?)(?:, address is (?P<mac>\S+).*)?$")
 
-    rx_vlan_id = re.compile(r"^Encapsulation 802.1Q Virtual LAN, VLAN Id (?P<vlan>\d+),.*$",
-        re.IGNORECASE)
+    rx_vlan_id = re.compile(
+        r"^Encapsulation 802.1Q Virtual LAN, VLAN Id (?P<vlan>\d+),.*$",
+        re.IGNORECASE
+    )
 
-    rx_bundle_member = re.compile(r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$",
-        re.IGNORECASE)
+    rx_bundle_member = re.compile(
+        r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$",
+        re.IGNORECASE
+    )
 
     rx_ifindex = re.compile(r"^ifName : (?P<name>\S+)\s+ifIndex : (?P<ifindex>\d+)")
-
 
     def execute(self):
         ifaces = {}
@@ -74,7 +80,7 @@ class Script(BaseScript):
                 continue
             elif not current:
                 continue
-            l = l.strip()
+            l.strip()
             # Process description
             if l.startswith("Description:"):
                 ifaces[current]["description"] = l[13:].strip()
@@ -124,7 +130,8 @@ class Script(BaseScript):
             "name": "default",
             "type": "ip",
             "interfaces": set(ifaces) - seen
-            }] + vpns
+        }] \
+               + vpns
         # Bring result together
         for fi in vpns:
             # Forwarding instance
@@ -202,9 +209,7 @@ class Script(BaseScript):
         return r
 
     def get_ifindex_map(self):
-        """
-        Retrieve name -> ifindex map
-        """
+        # Retrieve name -> ifindex map
         m = {}
         if self.has_snmp():
             try:
