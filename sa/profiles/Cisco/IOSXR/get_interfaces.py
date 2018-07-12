@@ -9,10 +9,8 @@
 """
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -23,6 +21,7 @@ class Script(BaseScript):
     types = {
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",
+        "hundredgige": "physical",
         "fortygige": "physical",
         "tengige": "physical",
         "gigabitethernet": "physical",
@@ -43,15 +42,14 @@ class Script(BaseScript):
     rx_hw = re.compile(r"^Hardware is (?P<hw>.+?)(?:, address is (?P<mac>\S+).*)?$")
 
     rx_vlan_id = re.compile(r"^Encapsulation 802.1Q Virtual LAN, VLAN Id (?P<vlan>\d+),.*$",
-        re.IGNORECASE)
+                            re.IGNORECASE)
 
     rx_bundle_member = re.compile(r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$",
-        re.IGNORECASE)
+                                  re.IGNORECASE)
 
     rx_ifindex = re.compile(r"^ifName : (?P<name>\S+)\s+ifIndex : (?P<ifindex>\d+)")
 
-
-    def execute(self):
+    def execute_cli(self):
         ifaces = {}
         ifindex = self.get_ifindex_map()
         current = None
@@ -73,7 +71,7 @@ class Script(BaseScript):
                 continue
             elif not current:
                 continue
-            l = l.strip()
+            l.strip()
             # Process description
             if l.startswith("Description:"):
                 ifaces[current]["description"] = l[13:].strip()
@@ -123,7 +121,7 @@ class Script(BaseScript):
             "name": "default",
             "type": "ip",
             "interfaces": set(ifaces) - seen
-            }] + vpns
+        }] + vpns
         # Bring result together
         for fi in vpns:
             # Forwarding instance
@@ -206,15 +204,7 @@ class Script(BaseScript):
         """
         m = {}
         if self.has_snmp():
-            try:
-                # IF-MIB::ifDescr
-                t = self.snmp.get_table("1.3.6.1.2.1.2.2.1.2")
-                for i in t:
-                    if t[i].startswith("ControlEthernet"):
-                        continue
-                    m[self.profile.convert_interface_name(t[i])] = i
-            except self.snmp.TimeOutError:
-                pass
+            return self.get_ifindexes()
         else:
             s = self.cli("show snmp interface")
             for l in s.splitlines():
