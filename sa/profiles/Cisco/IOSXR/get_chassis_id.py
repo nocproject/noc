@@ -12,7 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
-
+from noc.core.mib import mib
 
 class Script(BaseScript):
     name = "Cisco.IOSXR.get_chassis_id"
@@ -25,7 +25,20 @@ class Script(BaseScript):
         re.DOTALL | re.IGNORECASE
     )
 
-    def execute(self):
+    def execute_snmp(self):
+        macs = set()
+        v = self.snmp.get(mib["LLDP-MIB::lldpLocChassisId.0"], cached=True)
+        return {
+            "first_chassis_mac": v,
+            "last_chassis_mac": v
+        }
+
+    def execute_cli(self):
+        # Does not work for Cisco CRS-16/S Version IOSXR 4.3.2. Impossible get chassis mac over CLI
+        # must be use SNMP method
+        if self.is_platform_crs16 and self.has_snmp():
+            return self.execute_snmp()
+
         v = self.cli("admin show diag chassis eeprom-info")
         macs = []
         for f, t in [(mac, MAC(mac).shift(int(count) - 1))
