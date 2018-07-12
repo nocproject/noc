@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Huawei.U2000.get_cpe_status
+# Huawei.U2000.get_interface_status
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 # Python modules
-from __future__ import print_function
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -17,25 +16,34 @@ class Script(BaseScript):
     name = "Huawei.U2000.get_cpe_status"
     interface = IGetCPE
 
-    rx_alarm = re.compile(r"ALARM\s+(?P<alarmid>\d+)\s+Fault\s+(?P<alarmtype>\S+)\s+"
-                          r"\S+\s+(?P<bscid>\d+)\s+(?P<alarmname>\S+)\s+"
-                          r"Sync serial No.\s+=\s+(?P<syncser>\d+)\s+"
-                          r"Alarm\sname\s+=\s+(?P<alarmsp>\S.+)\s+"
-                          r"Alarm\sraised\stime\s+=\s+(?P<alarmtime>\S.+)\s+"
-                          r"Location\sinfo\s+=\s+(?P<localinfo>[\S\s]+)", re.MULTILINE)
+    rx_alarm = re.compile(
+        r"ALARM\s+(?P<alarmid>\d+)\s+Fault\s+(?P<alarmtype>\S+)\s+"
+        r"\S+\s+(?P<bscid>\d+)\s+(?P<alarmname>\S+)\s+"
+        r"Sync serial No.\s+=\s+(?P<syncser>\d+)\s+"
+        r"Alarm\sname\s+=\s+(?P<alarmsp>\S.+)\s+"
+        r"Alarm\sraised\stime\s+=\s+(?P<alarmtime>\S.+)\s+"
+        r"Location\sinfo\s+=\s+(?P<localinfo>[\S\s]+)", re.MULTILINE)
 
+    # rx_index = re.compile(r"Site\s+No.=(?P<siteindex>\d+),\s+\S.+(\s+|\s+\S+|\s+\S.*),
+    # \s+Site\s+Name=(?P<sitename>\S.*)", re.MULTILINE)
     rx_index = re.compile(
-        r"Site\s+No.=(?P<siteindex>\d+),\s+\S.+(\s+|\s+\S+|\s+\S.*),\s+Site\s+Name=(?P<sitename>\S.*)", re.MULTILINE)
-    rx_index_cell = re.compile(r"Site\s+Index=(?P<siteindex>\S+),\s+Cell\s+Index(?P<cellindex>\S+),"
-                               r"[\S\s]+Site\s+Name=(?P<sitename>\S.*),\sCell\s+Name=(?P<cellname>\S+),", re.MULTILINE)
+        r"(?:(Site\s+No.|BTS\s+ID))=(?P<siteindex>\d+),(?:(\s+\S.+(\s+|\s+\S+|\s+\S.*),\s+|\s+))"
+        r"(?:Site|BTS)\s+Name=(?P<sitename>[A-Za-z0-9-_ \:\.\*\'\(\)\/]+)",
+        re.MULTILINE)
+    rx_index_cell = re.compile(
+        r"Site\s+Index=(?P<siteindex>\S+),\s+Cell\s+Index(?P<cellindex>\S+),"
+        r"[\S\s]+Site\s+Name=(?P<sitename>\S.*),\sCell\s+Name=(?P<cellname>\S+),",
+        re.MULTILINE)
 
-    rx_alarm_lte = re.compile(r"ALARM\s+(?P<alarmid>\d+)\s+Fault\s+(?P<alarmtype>\S+)\s+"
-                              r"\S+\s+(?P<bscid>\d+)\s+(?P<alarmname>\S+)\s+"
-                              r"Sync\sserial\sNo.\s+=\s+(?P<syncser>\d+)\s+"
-                              r"Alarm\sname\s+=\s+(?P<alarmsp>\S.*)\s+"
-                              r"Alarm\sraised\stime\s+=\s+(?P<alarmtime>\S.*)\s+"
-                              r"Location\sinfo\s+=\s+(?:\s+|(?P<localinfo>\S.*|))\s+"
-                              r"(?:Alarm changed time|Common alarm|Special info|Function)\s+", re.MULTILINE)
+    rx_alarm_lte = re.compile(
+        r"ALARM\s+(?P<alarmid>\d+)\s+Fault\s+(?P<alarmtype>\S+)\s+"
+        r"\S+\s+(?P<bscid>\d+)\s+(?P<alarmname>\S+)\s+"
+        r"Sync\sserial\sNo.\s+=\s+(?P<syncser>\d+)\s+"
+        r"Alarm\sname\s+=\s+(?P<alarmsp>\S.*)\s+"
+        r"Alarm\sraised\stime\s+=\s+(?P<alarmtime>\S.*)\s+"
+        r"Location\sinfo\s+=\s+(?:\s+|(?P<localinfo>\S.*|))\s+"
+        r"(?:Alarm changed time|Common alarm|Special info|Function)\s+",
+        re.MULTILINE)
 
     def execute(self):
         result = []
@@ -47,9 +55,13 @@ class Script(BaseScript):
             ip = line.split("   ")[2].strip()
             if "BSC" in tp:
                 with self.profile.mml_ne(self, ip):
-                    bts = self.mml("LST ALMAF:SRC=ALL;")
-                    # print(bts)
+                    bts = self.mml("LST ALMAF:SRC=ALL,CNT=1000;")
+                    # print bts
+                    # print len(bts.split("\r\n\r\n"))
                     for r in bts.split("\r\n\r\n"):
+                        # m = self.rx_alarm.search(r)
+                        # if not m:
+                        # print r
                         for match in self.rx_alarm.finditer(r):
                             alfid = match.group("alarmid").strip()
                             alnr = match.group("syncser").strip()
@@ -59,17 +71,23 @@ class Script(BaseScript):
                             altime = match.group("alarmtime").strip()
                             alinfo = match.group("localinfo").strip()
                             if "cell" in alinfo.lower():
-                                for cell_index in self.rx_index_cell.finditer(alinfo):
-                                    sitename = cell_index.group("sitename").strip()
-                                    cellname = cell_index.group("cellname").strip()
+                                for cell_index in self.rx_index_cell.finditer(
+                                        alinfo):
+                                    sitename = cell_index.group(
+                                        "sitename").strip()
+                                    if "," in sitename:
+                                        sitename = sitename.split(",")[0]
+                                    cellname = cell_index.group(
+                                        "cellname").strip()
                                     res = {
                                         "alcls": alcls.upper(),
                                         "alarm": alarm,
-                                        "bsname": "%s#%s" % (sitename, cellname),
+                                        "bsname":
+                                            "%s#%s" % (sitename, cellname),
                                         "alfid": "%s.%s" % (name, alfid),
                                         "alnr": alnr,
                                         "altime": altime,
-                                        "alinfo": alinfo,
+                                        "alinfo": r,
                                         "sp": sp,
                                         "moc": name,
                                         "moi": "%s.%s" % (sitename, cellname),
@@ -79,9 +97,14 @@ class Script(BaseScript):
                                     }
                                     result += [res]
                             else:
+                                # match = self.rx_index.search(alinfo)
+                                # if not match:
+                                # print r
                                 for index in self.rx_index.finditer(alinfo):
                                     moindex = index.group("siteindex").strip()
                                     moname = index.group("sitename").strip()
+                                    if "," in moname:
+                                        moname = moname.split(",")[0]
                                     res = {
                                         "alcls": alcls.upper(),
                                         "alarm": alarm,
@@ -89,7 +112,7 @@ class Script(BaseScript):
                                         "alfid": "%s.%s" % (name, alfid),
                                         "alnr": alnr,
                                         "altime": altime,
-                                        "alinfo": alinfo,
+                                        "alinfo": r,
                                         "sp": sp,
                                         "moc": name,
                                         "moi": moindex,
@@ -98,23 +121,28 @@ class Script(BaseScript):
                                         "global_id": None
                                     }
                                     result += [res]
-
+                        # print len(result)
             elif "BTS" in tp or "BNE" in tp:
                 with self.profile.mml_ne(self, ip) as ne:
                     if ne == "NE does not Connection" or ne == "Unknown exception":
                         continue
-                    bts = self.mml("LST ALMAF:;")
+                    bts = self.mml("LST ALMAF:CNT=100;​")
                     if bts == "No record exists":
                         continue
-                    # print(bts)
+                    # print bts
+                    print len(bts.split("\r\n\r\n"))
                     for r in bts.split("\r\n\r\n"):
+                        # m = self.rx_alarm.search(r)
+                        # if not m:
+                        # print r
                         for match in self.rx_alarm_lte.finditer(r):
+                            alfid = match.group("alarmid").strip()
                             alnr = match.group("syncser").strip()
                             alcls = match.group("alarmtype").strip()
                             sp = match.group("alarmsp").strip()
                             alarm = match.group("alarmname").upper().strip()
                             altime = match.group("alarmtime").strip()
-                            alinfo = match.group("localinfo").strip() if match.group("localinfo") else "None"
+                            # alinfo = match.group("localinfo").strip() if match.group("localinfo") else "None"
                             res = {
                                 "alcls": alcls.upper(),
                                 "alarm": alarm,
@@ -122,7 +150,7 @@ class Script(BaseScript):
                                 "alfid": "%s.%s" % (name, alfid),
                                 "alnr": alnr,
                                 "altime": altime,
-                                "alinfo": alinfo,
+                                "alinfo": r,
                                 "sp": sp,
                                 "moc": name,
                                 "moi": "".join(i for i in ip.split(".")),
@@ -131,7 +159,7 @@ class Script(BaseScript):
                                 "global_id": None
                             }
                             result += [res]
+                    # print len(result)
             else:
                 continue
-        print(len(result))
         return result
