@@ -14,6 +14,7 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 from noc.core.mib import mib
 
+
 class Script(BaseScript):
     name = "Cisco.IOSXR.get_chassis_id"
     cache = True
@@ -26,7 +27,6 @@ class Script(BaseScript):
     )
 
     def execute_snmp(self):
-        macs = set()
         v = self.snmp.get(mib["LLDP-MIB::lldpLocChassisId.0"], cached=True)
         return {
             "first_chassis_mac": v,
@@ -41,8 +41,10 @@ class Script(BaseScript):
 
         v = self.cli("admin show diag chassis eeprom-info")
         macs = []
-        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
-                for mac, count in self.rx_range.findall(v)]:
+        for f, t in [
+            (mac, MAC(mac).shift(int(count) - 1))
+            for mac, count in self.rx_range.findall(v)
+        ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
