@@ -130,7 +130,7 @@ class Script(BaseScript):
                     if bts == "No record exists":
                         continue
                     # print bts
-                    print len(bts.split("\r\n\r\n"))
+                    #print len(bts.split("\r\n\r\n"))
                     for r in bts.split("\r\n\r\n"):
                         # m = self.rx_alarm.search(r)
                         # if not m:
