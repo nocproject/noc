@@ -56,8 +56,8 @@ class Script(BaseScript):
         is_bundle = False
         ae_map = {}  # member -> bundle
         v = self.cli("show interfaces")
-        for l in v.splitlines():
-            match = self.rx_iface.match(l)
+        for line in v.splitlines():
+            match = self.rx_iface.match(line)
             if match:
                 current = self.profile.convert_interface_name(match.group("name"))
                 status = match.group("status") == "up"
@@ -71,13 +71,13 @@ class Script(BaseScript):
                 continue
             elif not current:
                 continue
-            l = l.strip()
+            line = line.strip()
             # Process description
-            if l.startswith("Description:"):
-                ifaces[current]["description"] = l[13:].strip()
+            if line.startswith("Description:"):
+                ifaces[current]["description"] = line[13:].strip()
                 continue
             # Process IP addresses
-            match = self.rx_ip.match(l)
+            match = self.rx_ip.match(line)
             if match:
                 ip = match.group("ip")
                 if ip.lower() != "unknown":
@@ -87,7 +87,7 @@ class Script(BaseScript):
                     )
                 continue
             # Process hardware type and MAC
-            match = self.rx_hw.match(l)
+            match = self.rx_hw.match(line)
             if match:
                 hw = match.group("hw").lower()
                 t = self.types.get(hw, "unknown")
@@ -98,12 +98,12 @@ class Script(BaseScript):
                 if mac:
                     ifaces[current]["mac"] = mac
             # Process VLAN id
-            match = self.rx_vlan_id.match(l)
+            match = self.rx_vlan_id.match(line)
             if match:
                 ifaces[current]["vlan_ids"] = [int(match.group("vlan"))]
             # Process ethernet bundles
             if is_bundle:
-                match = self.rx_bundle_member.match(l)
+                match = self.rx_bundle_member.match(line)
                 if match:
                     m = match.group("name")
                     ifaces[current]["members"] += [m]
