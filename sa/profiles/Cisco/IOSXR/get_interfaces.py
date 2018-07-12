@@ -71,7 +71,7 @@ class Script(BaseScript):
                 continue
             elif not current:
                 continue
-            l.strip()
+            l = l.strip()
             # Process description
             if l.startswith("Description:"):
                 ifaces[current]["description"] = l[13:].strip()

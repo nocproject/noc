@@ -45,7 +45,7 @@ class Script(BaseScript):
         lldp_interfaces = []
         # Get LLDP interfaces with neighbors
         for l in v.splitlines():
-            l.strip()
+            l = l.strip()
             if not l:
                 break
             match = self.rx_s_line.match(l)
