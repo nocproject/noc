@@ -39,7 +39,6 @@ class Profile(BaseProfile):
         },
     }
 
-
     def convert_interface_name(self, s):
         """
         MgmtEth0/1/CPU0/0
