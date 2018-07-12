@@ -91,8 +91,8 @@ class Script(BaseScript):
                 ip = match.group("ip")
                 if ip.lower() != "unknown":
                     ifaces[current]["addresses"] = (
-                        ifaces[current].get("addresses", []) +
-                        [ip]
+                            ifaces[current].get("addresses", []) +
+                            [ip]
                     )
                 continue
             # Process hardware type and MAC
@@ -130,8 +130,7 @@ class Script(BaseScript):
             "name": "default",
             "type": "ip",
             "interfaces": set(ifaces) - seen
-        }] \
-               + vpns
+        }] + vpns
         # Bring result together
         for fi in vpns:
             # Forwarding instance
@@ -221,6 +220,7 @@ class Script(BaseScript):
                     m[self.profile.convert_interface_name(t[i])] = i
             except self.snmp.TimeOutError:
                 pass
+
         else:
             s = self.cli("show snmp interface")
             for l in s.splitlines():
@@ -229,4 +229,5 @@ class Script(BaseScript):
                     if match.group("name").startswith("ControlEthernet"):
                         continue
                     m[self.profile.convert_interface_name(match.group("name"))] = match.group("ifindex")
+
         return m
