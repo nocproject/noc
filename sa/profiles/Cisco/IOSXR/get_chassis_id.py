@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 
@@ -25,11 +25,18 @@ class Script(BaseScript):
         re.DOTALL | re.IGNORECASE
     )
 
-    def execute(self):
+    def execute_cli(self):
+        # Does not work for Cisco CRS-16/S Version IOSXR 4.3.2. Impossible get chassis mac over CLI
+        # must be use SNMP method
+        if self.is_platform_crs16 and self.has_snmp():
+            return self.execute_snmp()
+
         v = self.cli("admin show diag chassis eeprom-info")
         macs = []
-        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
-                for mac, count in self.rx_range.findall(v)]:
+        for f, t in [
+            (mac, MAC(mac).shift(int(count) - 1))
+            for mac, count in self.rx_range.findall(v)
+        ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
