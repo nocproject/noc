@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 from noc.core.mib import mib
@@ -25,13 +25,6 @@ class Script(BaseScript):
         r"MAC Address block size\s*:\s*(?P<count>\d+)",
         re.DOTALL | re.IGNORECASE
     )
-
-    def execute_snmp(self):
-        v = self.snmp.get(mib["LLDP-MIB::lldpLocChassisId.0"], cached=True)
-        return {
-            "first_chassis_mac": v,
-            "last_chassis_mac": v
-        }
 
     def execute_cli(self):
         # Does not work for Cisco CRS-16/S Version IOSXR 4.3.2. Impossible get chassis mac over CLI
