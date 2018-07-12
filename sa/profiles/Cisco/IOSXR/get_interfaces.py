@@ -91,8 +91,8 @@ class Script(BaseScript):
                 ip = match.group("ip")
                 if ip.lower() != "unknown":
                     ifaces[current]["addresses"] = (
-                            ifaces[current].get("addresses", []) +
-                            [ip]
+                        ifaces[current].get("addresses", []) +
+                        [ip]
                     )
                 continue
             # Process hardware type and MAC
@@ -220,7 +220,6 @@ class Script(BaseScript):
                     m[self.profile.convert_interface_name(t[i])] = i
             except self.snmp.TimeOutError:
                 pass
-
         else:
             s = self.cli("show snmp interface")
             for l in s.splitlines():
