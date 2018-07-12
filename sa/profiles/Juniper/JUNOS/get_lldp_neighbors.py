@@ -32,7 +32,7 @@ class Script(BaseScript):
         r"Chassis type\s+:\s+(?P<ch_type>.+)\n"
         r"Chassis ID\s+:\s(?P<id>\S+)\n"
         r"Port type\s+:\s(?P<p_type>.+)\n"
-        r"Port ID\s+:\s(?P<p_id>.+)\n"
+        r"(Port ID\s+:\s(?P<p_id>.+)\n)?"
         r"(Port description\s+:\s(?P<p_descr>.+)\n)?"
         r"(System name\s+:\s(?P<name>.+)\n)?",
         re.MULTILINE
@@ -90,6 +90,9 @@ class Script(BaseScript):
             n["remote_port"] = match.group("p_id")
             if match.group("p_descr"):
                 n["remote_port_description"] = match.group("p_descr")
+            # On some devices we are not seen `Port ID`
+            if not n["remote_port"] and n["remote_port_subtype"] == 1:
+                n["remote_port"] = n["remote_port_description"]
             if match.group("name"):
                 n["remote_system_name"] = match.group("name")
             # Get capability

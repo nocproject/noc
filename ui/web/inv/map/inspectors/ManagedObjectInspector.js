@@ -16,13 +16,13 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         '<b>Address:</b>&nbsp;{address}<br/>',
         '<b>Profile:</b>&nbsp;{[Ext.htmlEncode(values.profile)]}<br/>',
         '<tpl if="platform">',
-            '<b>Platform:</b>&nbsp;{[Ext.htmlEncode(values.platform)]}<br/>',
+        '<b>Platform:</b>&nbsp;{[Ext.htmlEncode(values.platform)]}<br/>',
         '</tpl>',
         '<tpl if="external">',
-            '<b>Segment:</b>&nbsp;{[Ext.htmlEncode(values.external_segment.name)]}<br/>',
+        '<b>Segment:</b>&nbsp;{[Ext.htmlEncode(values.external_segment.name)]}<br/>',
         '</tpl>',
         '<tpl if="description">',
-            '<b>Description:</b>&nbsp;{[Ext.htmlEncode(values.description)]}<br/>',
+        '<b>Description:</b>&nbsp;{[Ext.htmlEncode(values.description)]}<br/>',
         '</tpl>'
     ],
 
@@ -90,7 +90,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     },
 
     onJumpSegment: function() {
-        this.app.loadSegment(this.externalSegmentId);
+        this.app.segmentCombo.restoreById(this.externalSegmentId);
     },
 
     onMOCard: function() {

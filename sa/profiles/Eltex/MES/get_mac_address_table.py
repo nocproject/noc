@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,8 +19,8 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)",
-        re.MULTILINE)
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)", re.MULTILINE
+    )
 
     def execute_snmp(self, interface=None, vlan=None, mac=None):
         r = []
@@ -41,10 +41,10 @@ class Script(BaseScript):
         for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"]):
             vlan_oid.append(v[0])
         # mac iface type
-        for v in self.snmp.get_tables(
-                ["1.3.6.1.2.1.17.4.3.1.1",
-                 "1.3.6.1.2.1.17.4.3.1.2",
-                 "1.3.6.1.2.1.17.4.3.1.3"]):
+        for v in self.snmp.get_tables(["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
+                                       "1.3.6.1.2.1.17.4.3.1.3"]):
+            if None in v:
+                continue
             if v[1]:
                 chassis = ":".join(["%02x" % ord(c) for c in v[1]])
                 if mac is not None:
@@ -72,12 +72,18 @@ class Script(BaseScript):
                 else:
                     continue
 
-            r.append({
-                "interfaces": [iface],
-                "mac": chassis,
-                "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
-                "vlan_id": vlan_id,
-            })
+            r.append(
+                {
+                    "interfaces": [iface],
+                    "mac": chassis,
+                    "type": {
+                        "3": "D",
+                        "2": "S",
+                        "1": "S"
+                    }[str(v[3])],
+                    "vlan_id": vlan_id,
+                }
+            )
         return r
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
@@ -94,16 +100,18 @@ class Script(BaseScript):
             interfaces = match.group("interfaces")
             if interfaces == '0':
                 continue
-            r.append({
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [interfaces],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S",
-                    "secure": "S",
-                    "permanent": "S",
-                    "self": "C"
-                }[match.group("type").lower()],
-            })
+            r.append(
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [interfaces],
+                    "type": {
+                        "dynamic": "D",
+                        "static": "S",
+                        "secure": "S",
+                        "permanent": "S",
+                        "self": "C"
+                    }[match.group("type").lower()],
+                }
+            )
         return r

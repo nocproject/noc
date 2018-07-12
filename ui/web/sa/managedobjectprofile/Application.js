@@ -1370,7 +1370,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "main.extstorage.LookupField",
                                             fieldLabel: __("Storage"),
                                             query: {
-                                                enable_config_mirror: "True"
+                                                type: "config_mirror"
                                             },
                                             allowBlank: true,
                                             tooltip: __('External storage for save config. ' +
@@ -1460,7 +1460,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "main.extstorage.LookupField",
                                             fieldLabel: __("Storage"),
                                             query: {
-                                                enable_beef: "True"
+                                                type: "beef"
                                             },
                                             allowBlank: true,
                                             bind: {

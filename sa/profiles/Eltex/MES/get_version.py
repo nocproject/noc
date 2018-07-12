@@ -125,11 +125,12 @@ class Script(BaseScript):
             "vendor": "Eltex",
             "platform": platform,
             "version": version.group("version"),
-            "attributes": {
-                "Serial Number": serial.group("serial")
-            }
-        }
+            "attributes": {}}
+
+        if serial:
+            res["attributes"]["Serial Number"] = serial.group("serial")
         if bootprom:
             res["attributes"]["Boot PROM"] = bootprom.group("bootprom")
+        if hardware:
             res["attributes"]["HW version"] = hardware.group("hardware")
         return res

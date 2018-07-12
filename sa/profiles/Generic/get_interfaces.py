@@ -52,7 +52,10 @@ class Script(BaseScript):
 
     # if ascii or rus text in description
     def convert_description(self, desc):
-        return unicode(desc, "utf8", "replace").encode("utf8")
+        if desc:
+            return unicode(desc, "utf8", "replace").encode("utf8")
+        else:
+            return desc
 
     def get_bulk(self):
         return self.BULK
@@ -68,17 +71,15 @@ class Script(BaseScript):
                     try:
                         v = self.profile.convert_interface_name(name)
                     except InterfaceTypeError as why:
-                        self.logger.debug(
-                            "Ignoring unknown interface %s: %s",
-                            name, why
-                        )
+                        self.logger.debug("Ignoring unknown interface %s: %s", name, why)
                         unknown_interfaces += [name]
                         continue
                     ifindex = int(oid.split(".")[-1])
                     r[v] = ifindex
                 if unknown_interfaces:
-                    self.logger.info("%d unknown interfaces has been ignored",
-                                     len(unknown_interfaces))
+                    self.logger.info(
+                        "%d unknown interfaces has been ignored", len(unknown_interfaces)
+                    )
             except self.snmp.TimeOutError:
                 pass
         return r
@@ -86,26 +87,30 @@ class Script(BaseScript):
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid,
-                                        max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires(),
-                                        bulk=self.get_bulk):
+        for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
+                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
+
             def f(x):
                 return x
+
         for ifindex, v in self.get_iftable(mib):
             s = r.get(ifindex)
             if s:
                 s[name] = f(v)
 
     def get_ip_ifaces(self):
-        ip_iface = dict((l, ".".join(o.rsplit(".")[-4:])) for o, l in
-                        self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False))
-        ip_mask = dict((".".join(o.rsplit(".")[-4:]), l) for o, l in
-                       self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False))
+        ip_iface = dict(
+            (l, ".".join(o.rsplit(".")[-4:]))
+            for o, l in self.get_iftable(mib["RFC1213-MIB::ipAdEntIfIndex"], False)
+        )
+        ip_mask = dict(
+            (".".join(o.rsplit(".")[-4:]), l)
+            for o, l in self.get_iftable(mib["RFC1213-MIB::ipAdEntNetMask"], False)
+        )
         r = {}
         for ip in ip_iface:
             r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
@@ -208,15 +213,18 @@ class Script(BaseScript):
             if l["name"] in subs:
                 l["subinterfaces"] = subs[l["name"]]
             else:
-                l["subinterfaces"] = [{
-                    "name": l["name"],
-                    "description": self.convert_description(l.get("description", "")),
-                    "type": "SVI",
-                    "enabled_afi": ["BRIDGE"] if l["type"] in ["physical", "aggregated"] else [],
-                    "admin_status": l["admin_status"],
-                    "oper_status": l["oper_status"],
-                    "snmp_ifindex": l["snmp_ifindex"],
-                }]
+                l["subinterfaces"] = [
+                    {
+                        "name": l["name"],
+                        "description": self.convert_description(l.get("description", "")),
+                        "type": "SVI",
+                        "enabled_afi": ["BRIDGE"]
+                        if l["type"] in ["physical", "aggregated"] else [],
+                        "admin_status": l["admin_status"],
+                        "oper_status": l["oper_status"],
+                        "snmp_ifindex": l["snmp_ifindex"],
+                    }
+                ]
                 if l["snmp_ifindex"] in ip_ifaces:
                     l["subinterfaces"][-1]["ipv4_addresses"] = [IPv4(*ip_ifaces[l["snmp_ifindex"]])]
                     l["subinterfaces"][-1]["enabled_afi"] = ["IPv4"]

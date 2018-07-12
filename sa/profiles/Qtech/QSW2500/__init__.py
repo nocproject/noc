@@ -41,7 +41,7 @@ class Profile(BaseProfile):
         r"^Product name: (?P<platform>\S+)\s*\n"
         r"^QOS\s+Version QOS_(?P<version>\S+)\.QSW.+\n"
         r"^Bootstrap\s+Version Bootstrap_(?P<bootprom>\S+)\.QSW.+\n"
-        r"^FPGA Version.+\n"
+        r"(^.*\n)?"
         r"^Hardware QSW\S+ Version Rev\.(?P<hardware>\S+)\s*\n"
         r"^\s*\n"
         r"^System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
