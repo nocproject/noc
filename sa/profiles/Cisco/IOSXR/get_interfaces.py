@@ -228,5 +228,4 @@ class Script(BaseScript):
                     if match.group("name").startswith("ControlEthernet"):
                         continue
                     m[self.profile.convert_interface_name(match.group("name"))] = match.group("ifindex")
-
         return m
