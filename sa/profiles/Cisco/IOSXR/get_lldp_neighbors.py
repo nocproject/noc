@@ -10,8 +10,7 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 
 
@@ -22,18 +21,18 @@ class Script(BaseScript):
     rx_summary_split = re.compile(r"^Device ID.+?\n",
                                   re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(
-        r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[\d/\.]*)\s+.+$")
+        r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te|Hu)\d+[\d/\.]*)\s+.+$")
     rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)",
-        re.MULTILINE | re.IGNORECASE)
+                               re.MULTILINE | re.IGNORECASE)
     rx_remote_port = re.compile("^Port id:\s*(?P<remote_if>.+?)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+                                re.MULTILINE | re.IGNORECASE)
     rx_enabled_caps = re.compile("^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
-        re.MULTILINE | re.IGNORECASE)
+                                 re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
                            re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             v = self.cli("show lldp neighbors")
@@ -112,4 +111,3 @@ class Script(BaseScript):
             i["neighbors"] += [n]
             r += [i]
         return r
-
