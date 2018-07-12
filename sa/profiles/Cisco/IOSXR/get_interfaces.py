@@ -9,7 +9,6 @@
 """
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -72,7 +71,7 @@ class Script(BaseScript):
                 continue
             elif not current:
                 continue
-            l = l.strip()
+            l.strip()
             # Process description
             if l.startswith("Description:"):
                 ifaces[current]["description"] = l[13:].strip()
@@ -83,8 +82,8 @@ class Script(BaseScript):
                 ip = match.group("ip")
                 if ip.lower() != "unknown":
                     ifaces[current]["addresses"] = (
-                            ifaces[current].get("addresses", []) +
-                            [ip]
+                            ifaces[current].get("addresses", [])
+                            + [ip]
                     )
                 continue
             # Process hardware type and MAC
