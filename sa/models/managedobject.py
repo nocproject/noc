@@ -1028,7 +1028,7 @@ class ManagedObject(Model):
         if not storage:
             logger.debug("[%s] Storage is not configured. Skipping", self.name)
             return
-        if not storage.enable_config_mirror:
+        if storage.type and storage.type != "config_mirror":
             logger.debug("[%s] Config mirroring is disabled for storage '%s'. Skipping",
                          self.name, storage.name)
             return  # No storage setting
