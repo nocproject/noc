@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$",
         re.MULTILINE | re.DOTALL)
     rx_neigh = re.compile(
-        r"^(?P<local_if>.e-\S+?|me\d(?:\.\d+)?|fxp0)\s.*?$",
+        r"^(?P<local_if>[x,g]e-\S+|me\d(\.\d)?|fxp0|et-\S+)\s.*?$",
         re.MULTILINE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
@@ -58,8 +58,7 @@ class Script(BaseScript):
     def execute_cli(self):
         if self.is_has_lldp:
             return self.execute_switch()
-        else:
-            return self.execute_other()
+        raise self.NotSupportedError()
 
     # Match mx, ex, qfx, acx
     def execute_switch(self):
@@ -117,9 +116,3 @@ class Script(BaseScript):
             if q['local_interface'].endswith(".0"):
                 q['local_interface'] = q['local_interface'][:-2]
         return r
-
-    #
-    # No lldp on M/T
-    #
-    def execute_other(self):
-        raise self.NotSupportedError()
