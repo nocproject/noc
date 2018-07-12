@@ -82,8 +82,8 @@ class Script(BaseScript):
                 ip = match.group("ip")
                 if ip.lower() != "unknown":
                     ifaces[current]["addresses"] = (
-                            ifaces[current].get("addresses", [])
-                            + [ip]
+                        ifaces[current].get("addresses", []) +
+                        [ip]
                     )
                 continue
             # Process hardware type and MAC
