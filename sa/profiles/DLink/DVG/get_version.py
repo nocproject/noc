@@ -40,28 +40,31 @@ class Script(BaseScript):
         "?.?.?": "DVG-7111S"
     }
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
+        platform = platform.split(', ')
+        line = len(platform) - 1
+        try:
+            platform = (platform[line - 2] + '.' + platform[line - 1] +
+                        '.' + platform[line])
+            platform = self.platforms_snmp.get(platform.split(')')[0],
+                                               '????')
+            version = "1.02.38.x"
+        except Exception:
+            platform = "DVG-N5402G"
+            version = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
+            version = version.split()[2]
+        return {
+            "vendor": "DLink",
+            "platform": platform,
+            "version": version,
+        }
+
+    def execute_cli(self):
         # Try SNMP first
         if self.has_snmp():
             try:
-                platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
-                platform = platform.split(', ')
-                line = len(platform) - 1
-                try:
-                    platform = (platform[line - 2] + '.' + platform[line - 1] +
-                                '.' + platform[line])
-                    platform = self.platforms_snmp.get(platform.split(')')[0],
-                                                       '????')
-                    version = "1.02.38.x"
-                except Exception:
-                    platform = "DVG-N5402G"
-                    version = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-                    version = version.split()[2]
-                return {
-                    "vendor": "DLink",
-                    "platform": platform,
-                    "version": version,
-                }
+                return self.execute_snmp()
             except self.snmp.TimeOutError:
                 pass
 
