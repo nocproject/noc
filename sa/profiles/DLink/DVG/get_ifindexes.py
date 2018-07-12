@@ -10,6 +10,7 @@
 from noc.sa.profiles.Generic.get_ifindexes import Script as BaseScript
 from noc.sa.interfaces.igetifindexes import IGetIfindexes
 
+
 class Script(BaseScript):
     name = "DLink.DVG.get_ifindexes"
     interface = IGetIfindexes
