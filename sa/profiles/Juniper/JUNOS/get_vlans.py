@@ -18,11 +18,15 @@ class Script(BaseScript):
     interface = IGetVlans
 
     rx_vlan_line = re.compile(
-        r"^((?P<routing_instance>\S+)\s+)?(?P<name>\S+)\s+(?P<vlan_id>[1-9][0-9]*)",
+        r"^((?P<routing_instance>\S+)\s+)?(?P<name>\S+)\s+(?P<vlan_id>[1-9][0-9]*)\s+",
         re.MULTILINE
     )
 
     def execute(self):
         if not self.is_switch or not self.profile.command_exist(self, "vlans"):
             return []
-        return self.cli("show vlans brief", list_re=self.rx_vlan_line)
+        r = []
+        v = self.cli("show vlans brief")
+        for match in self.rx_vlan_line.finditer(v):
+            r += [match.groupdict()]
+        return r
