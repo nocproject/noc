@@ -64,3 +64,19 @@ class ExtStorage(Document):
 
     def open_fs(self):
         return open_fs(self.url)
+
+    @property
+    def is_config_mirror(self):
+        return self.type == "config_mirror"
+
+    @property
+    def is_beef(self):
+        return self.type == "beef"
+
+    @property
+    def is_beef_test(self):
+        return self.type == "beef_test"
+
+    @property
+    def is_beef_test_config(self):
+        return self.type == "beef_test_config"
