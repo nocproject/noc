@@ -11,7 +11,7 @@ import logging
 import datetime
 # NOC modules
 from noc.fm.models.utils import get_alarm
-from escalation import tt_system_cache
+from noc.fm.models.ttsystem import TTSystem
 from noc.core.scheduler.job import Job
 from noc.config import config
 
@@ -31,7 +31,7 @@ def wait_tt(alarm_id):
         logger.info("[%s] Alarm is closed, skipping", alarm_id)
         return
     c_tt_name, c_tt_id = alarm.escalation_tt.split(":")
-    cts = tt_system_cache[c_tt_name]
+    cts = TTSystem.get_by_name(c_tt_name)
     if not cts:
         logger.error("Unknown TT system: %s", c_tt_name)
         return
