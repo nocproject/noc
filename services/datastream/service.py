@@ -52,6 +52,11 @@ class DataStreamService(Service):
     def on_activate(self):
         self.ds_queue = {}
         for ds in self.get_datastreams():
+            try:
+                ds.get_collection().watch()
+            except TypeError:
+                self.logger.warning("MongoDB less than version 3.6 not support watch.")
+                break
             self.logger.info("Starting %s waiter thread", ds.name)
             queue = Queue.Queue()
             self.ds_queue[ds.name] = queue
