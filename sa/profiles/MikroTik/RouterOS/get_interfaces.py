@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ class Script(BaseScript):
         ifname = self.cli_detail("/interface %s print detail without-paging" % iftype, cached=True)
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
-                #in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
+                # in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
                 if "local-address" in r1.keys():
                     tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
@@ -75,19 +75,16 @@ class Script(BaseScript):
             return int(r["actual-mtu"])
         return None
 
-    def execute(self):
+    def execute_cli(self):
         ifaces = {}
         misc = {}
         # Get ifIndex
         n_ifindex = {}  # number -> ifIndex
-        for n, f, r in self.cli_detail(
-                "/interface print oid without-paging"
-        ):
+        for n, f, r in self.cli_detail("/interface print oid without-paging"):
             n_ifindex[n] = int(r["name"].rsplit(".", 1)[-1])
         time.sleep(1)
         # Fill interfaces
-        a = self.cli_detail(
-            "/interface print detail without-paging")
+        a = self.cli_detail("/interface print detail without-paging")
         for n, f, r in a:
             if r["type"] in self.ignored_types:
                 continue
@@ -100,14 +97,14 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                     "subinterfaces": []
                 }
-                misc[r["name"]] = {
-                    "type": r["type"]
-                }
+                misc[r["name"]] = {"type": r["type"]}
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
-                if r["type"].startswith("ipip-") \
-                or r["type"].startswith("eoip-") \
-                or r["type"].startswith("gre-"):
+                if (
+                    r["type"].startswith("ipip-") or
+                    r["type"].startswith("eoip-") or
+                    r["type"].startswith("gre-")
+                ):
                     self.si = {
                         "name": r["name"],
                         "admin_status": "X" not in f,
@@ -126,13 +123,11 @@ class Script(BaseScript):
                     ifaces[r["name"]]["subinterfaces"] += [self.si]
         time.sleep(1)
         # Refine ethernet parameters
-        for n, f, r in self.cli_detail(
-            "/interface ethernet print detail without-paging"):
+        for n, f, r in self.cli_detail("/interface ethernet print detail without-paging"):
             iface = ifaces[r["name"]]
             ifaces[r["name"]]["mac"] = r["mac-address"]
         # Attach `vlan` subinterfaces to parent
-        for n, f, r in self.cli_detail(
-            "/interface vlan print detail without-paging"):
+        for n, f, r in self.cli_detail("/interface vlan print detail without-paging"):
             if r["interface"] in ifaces:
                 i = ifaces[r["interface"]]
                 self.si = {
@@ -151,13 +146,15 @@ class Script(BaseScript):
         vlan_tags = {}
         # "RB532", "x86", CCR1009 not support internal switch port
         try:
-            v = self.cli_detail(
-                    "/interface ethernet switch port print detail without-paging")
+            v = self.cli_detail("/interface ethernet switch port print detail without-paging")
             for n, f, r in v:
                 if "vlan-mode" not in r:
                     continue
-                if (r["vlan-mode"] in ["check", "secure"]) \
-                and (r["vlan-header"] in ["add-if-missing", "leave-as-is"]):
+                if (
+                    r["vlan-mode"] in ["check", "secure"] and
+                    r["vlan-header"] in ["add-if-missing", "leave-as-is"] and
+                    int(r["default-vlan-id"]) != 0
+                ):
                     vlan_tags[r["name"]] = True
                 else:
                     vlan_tags[r["name"]] = False
@@ -166,9 +163,8 @@ class Script(BaseScript):
         # "RB532", "x86", CCR1009 not support internal switch port
         try:
             # Attach subinterfaces with `BRIDGE` AFI to parent
-            v = self.cli_detail(
-                    "/interface ethernet switch vlan print detail without-paging")
-            for n, f, r in v: 
+            v = self.cli_detail("/interface ethernet switch vlan print detail without-paging")
+            for n, f, r in v:
                 vlan_id = int(r["vlan-id"])
                 ports = r["ports"].split(",")
                 if not ports:
@@ -192,7 +188,10 @@ class Script(BaseScript):
                         if vlan_tags[p]:
                             self.si["tagged_vlans"] += [vlan_id]
                         else:
-                            self.si["utagged_vlan"] = vlan_id
+                            if vlan_id > 0:
+                                self.si["utagged_vlan"] = vlan_id
+                            else:
+                                self.si["utagged_vlan"] = 1
                     # Try to find in already created subinterfaces
                     found = False
                     for sub in i["subinterfaces"]:
@@ -208,8 +207,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             pass
         # Refine ip addresses
-        for n, f, r in self.cli_detail(
-            "/ip address print detail without-paging"):
+        for n, f, r in self.cli_detail("/ip address print detail without-paging"):
             if "X" in f:
                 continue
             self.si = {}
@@ -227,8 +225,9 @@ class Script(BaseScript):
                     }
                     i["subinterfaces"] += [self.si]
                 else:
-                    self.logger.debug('\nError: subinterfaces already exists in ' \
-                        'interface \n%s\n' % i)
+                    self.logger.debug(
+                        '\nError: subinterfaces already exists in interface \n%s\n' % i
+                    )
                     continue
             else:
                 for i in ifaces:
@@ -273,7 +272,7 @@ class Script(BaseScript):
             if t["type"].startswith("sstp-"):
                 self.get_tunnel("SSTP", f, afi, r)
         # bridge
-        for n, f, r in self.cli_detail("/interface bridge print detail"):
+        for n, f, r in self.cli_detail("/interface bridge print detail without-paging"):
             self.si = {}
             if r["name"] in ifaces:
                 i = ifaces[r["name"]]
@@ -295,7 +294,7 @@ class Script(BaseScript):
                 if r["protocol-mode"] in ["stp", "rstp"]:
                     i["enabled_protocols"] += ["STP"]
         # bonding
-        for n, f, r in self.cli_detail("/interface bonding print detail"):
+        for n, f, r in self.cli_detail("/interface bonding print detail without-paging"):
             self.si = {}
             if r["name"] in ifaces:
                 i = ifaces[r["name"]]
@@ -321,7 +320,7 @@ class Script(BaseScript):
                             ifaces[s]["aggregated_interface"] = r["name"]
         # OSPF
         try:
-            ospf_result = self.cli_detail("/routing ospf interface print detail")
+            ospf_result = self.cli_detail("/routing ospf interface print detail without-paging")
             for n, f, r in ospf_result:
                 self.si = {}
                 if r["interface"] in ifaces:
@@ -342,7 +341,7 @@ class Script(BaseScript):
             pass
         # PIMm IGMP
         try:
-            cli_result = self.cli_detail("/routing pim interface print detail")
+            cli_result = self.cli_detail("/routing pim interface print detail without-paging")
             for n, f, r in cli_result:
                 self.si = {}
                 proto = r["protocols"].upper().split(",")
@@ -364,8 +363,9 @@ class Script(BaseScript):
                     for si in ifaces[i].get("subinterfaces", []):
                         if si["name"] == r["interface"]:
                             for p in proto:
-                                if not p in si["enabled_protocols"]:
+                                if p not in si["enabled_protocols"]:
                                     si["enabled_protocols"] += [p]
+                            break
         except self.CLISyntaxError:
             pass
 
