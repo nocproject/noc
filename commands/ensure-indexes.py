@@ -88,10 +88,10 @@ class Command(BaseCommand):
         # Apply indexes
         model.ensure_indexes()
 
-    def index_datastream(self):
+    def index_datastreams(self):
         from noc.services.datastream.streams.managedobject import ManagedObjectDataStream
 
-        self.print("[%s] Indexing datastream", ManagedObjectDataStream.name)
+        self.print("[%s] Indexing datastream" % ManagedObjectDataStream.name)
         ManagedObjectDataStream.ensure_collection()
 
 
