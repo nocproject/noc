@@ -27,6 +27,11 @@ class DataStreamService(Service):
         traefik_backend = "datastream"
         traefik_frontend_rule = "PathPrefix:/api/datastream"
 
+    def __init__(self):
+        super(DataStreamService, self).__init__()
+        self.has_block = True
+        self.ds_queue = {}
+
     def get_datastreams(self):
         r = []
         for name in loader.iter_datastreams():
@@ -55,7 +60,10 @@ class DataStreamService(Service):
             try:
                 ds.get_collection().watch()
             except TypeError:
-                self.logger.warning("MongoDB less than version 3.6 not support watch.")
+                self.logger.warning(
+                    "'block' parameter is not supported. "
+                    "MongoDB 3.6 or later and replica set are required")
+                self.has_block = False
                 break
             self.logger.info("Starting %s waiter thread", ds.name)
             queue = Queue.Queue()
