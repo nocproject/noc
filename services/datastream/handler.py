@@ -63,6 +63,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
                 yield self.service.wait(self.datastream.name)
             else:
                 break
+        self.set_header("Cache-Control", "no-cache")
         self.set_header("Content-Type", "application/json")
         self.set_header("X-NOC-DataStream-Total", str(self.datastream.get_total()))
         self.set_header("X-NOC-DataStream-Limit", str(limit))
