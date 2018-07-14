@@ -26,18 +26,6 @@
             "when": ""
         },
         {
-            "name": "has.stack",
-            "question": "Device support union stack",
-            "type": "bool",
-            "when": ""
-        },
-        {
-            "name": "max.stack",
-            "question": "Max number device in stack",
-            "type": "int",
-            "when": "has.stack"
-        },
-        {
             "name": "has.l3",
             "question": "Device support L3 features (VRF, BFD, Routing)",
             "type": "bool",
@@ -56,6 +44,12 @@
             "when": ""
         },
         {
+            "name": "get.caps.snmp",
+            "question": "Check SNMP support (Always return OIDS)",
+            "type": "snmp-getnext",
+            "when": "has.snmp"
+        },
+        {
             "name": "get.version.cli",
             "question": "Show device version number and platform by CLI",
             "type": "cli",
@@ -66,6 +60,30 @@
             "question": "Show device version number and platform by SNMP",
             "type": "snmp-get",
             "when": "has.snmp"
+        },
+        {
+            "name": "has.stack",
+            "question": "Device support union stack",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "max.stack",
+            "question": "Max number device in stack",
+            "type": "int",
+            "when": "has.stack"
+        },
+        {
+            "name": "get.stack.members.cli",
+            "question": "Show Stack members on device by CLI",
+            "type": "cli",
+            "when": "has.stack,has.cli"
+        },
+        {
+            "name": "get.stack.members.snmp",
+            "question": "Show Stack members on device by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp,has_stack"
         },
         {
             "name": "has.stp",
@@ -98,8 +116,20 @@
             "when": "has.snmp,has.stp"
         },
         {
+            "name": "get.interface_status.stp.cli",
+            "question": "Getting interfaces where activate STP proto by CLI",
+            "type": "cli",
+            "when": "has.cli,has.stp"
+        },
+        {
+            "name": "get.interface_status.stp.snmp",
+            "question": "Getting interfaces where activate STP proto by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp,has.stp"
+        },
+        {
             "name": "has.lldp",
-            "question": "Device support STP protocol",
+            "question": "Device support LLDP protocol",
             "type": "bool",
             "when": ""
         },
@@ -124,6 +154,18 @@
         {
             "name": "get.neighbors.lldp.snmp",
             "question": "Show active SNMP neighbors on device by CLI",
+            "type": "snmp-getnext",
+            "when": "has.snmp,has.lldp"
+        },
+        {
+            "name": "get.interface_status.lldp.cli",
+            "question": "Getting interfaces where activate LLDP proto by CLI",
+            "type": "cli",
+            "when": "has.cli,has.lldp"
+        },
+        {
+            "name": "get.interface_status.lldp.snmp",
+            "question": "Getting interfaces where activate LLDP proto by SNMP",
             "type": "snmp-getnext",
             "when": "has.snmp,has.lldp"
         },
@@ -155,6 +197,18 @@
             "name": "get.neighbors.cdp.snmp",
             "question": "Show active CDP neighbors on device by SNMP",
             "type": "snmp-getnext",
+            "when": "has.snmp,has.cdp"
+        },
+        {
+            "name": "get.interface_status.cdp.cli",
+            "question": "Getting interfaces where activate CDP proto by CLI",
+            "type": "cli",
+            "when": "has.cli,has.cdp"
+        },
+        {
+            "name": "get.interface_status.cdp.snmp",
+            "question": "Getting interfaces where activate CDP proto by SNMP",
+            "type": "cli",
             "when": "has.snmp,has.cdp"
         },
         {
@@ -214,6 +268,18 @@
         {
             "name": "get.neighbors.oam.snmp",
             "question": "Show active OAM neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp,has.oam"
+        },
+        {
+            "name": "get.interface_status.oam.cli",
+            "question": "Getting interfaces where activate OAM proto by CLI",
+            "type": "cli",
+            "when": "has.cli,has.oam"
+        },
+        {
+            "name": "get.interface_status.oam.snmp",
+            "question": "Getting interfaces where activate OAM proto by SNMP",
             "type": "snmp-getnext",
             "when": "has.snmp,has.oam"
         },
@@ -306,13 +372,7 @@
             "question": "Show active REP neighbors on device by SNMP",
             "type": "snmp-getnext",
             "when": "has.snmp,has.rep"
-        },
-        {
-            "name": "get.stack.members.cli",
-            "question": "Show Stack members on device by CLI",
-            "type": "cli",
-            "when": ""
-        },
+        },        
         {
             "name": "get.chassis_id.cli",
             "question": "Show device chassis MAC by CLI",
@@ -380,6 +440,66 @@
             "when": "has.snmp"
         },
         {
+            "name": "has.vtp",
+            "question": "Device support VTP (Cisco Vlan Trunking Protocol)",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.caps.vtp.cli",
+            "question": "Show active VTP (Cisco Vlan Trunking Protocol) protocol on device by CLI",
+            "type": "cli",
+            "when": "has.vtp,has.cli"
+        },
+        {
+            "name": "get.caps.vtp.snmp",
+            "question": "Show active VTP (Cisco Vlan Trunking Protocol) protocol on device by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.vtp,has.snmp"
+        },        
+        {
+            "name": "get.interface_status.vtp.cli",
+            "question": "Getting interfaces where activate VTP proto by CLI",
+            "type": "cli",
+            "when": "has.vtp,has.cli"
+        },
+        {
+            "name": "get.interface_status.vtp.snmp",
+            "question": "Getting interfaces where activate VTP proto by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.vtp,has.snmp"
+        },
+        {
+            "name": "has.gvrp",
+            "question": "Device support GVRP (GARP VLAN Registration Protocol)",
+            "type": "bool",
+            "when": ""
+        },
+        {
+            "name": "get.interface_status.gvrp.cli",
+            "question": "Getting interfaces where activate GVRP proto by CLI",
+            "type": "cli",
+            "when": "has.gvrp,has.cli"
+        },
+        {
+            "name": "get.interface_status.gvrp.snmp",
+            "question": "Getting interfaces where activate GVRP proto by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.gvrp,has.snmp"
+        },
+        {
+            "name": "get.interface_status.loopdetect.cli",
+            "question": "Getting interfaces where activate Loop Detect proto by CLI",
+            "type": "cli",
+            "when": "has.cli"
+        },
+        {
+            "name": "get.interface_status.loopdetect.snmp",
+            "question": "Getting interfaces where activate Loop Detect proto by CLI",
+            "type": "snmp-getnext",
+            "when": "has.snmp"
+        },
+        {
             "name": "get.interface_name.cli",
             "question": "Show interface list with name and description by CLI",
             "type": "cli",
@@ -440,14 +560,14 @@
             "when": "has.snmp"
         },
         {
-            "name": "get.interface_proto_stp.cli",
-            "question": "Getting ifaces where activate STP proto by CLI",
+            "name": "get.interface_status.igmp.cli",
+            "question": "Getting interfaces where activate IGMP proto by CLI",
             "type": "cli",
             "when": "has.cli"
         },
         {
-            "name": "get.interface_proto_stp.snmp",
-            "question": "Getting ifaces where activate STP proto by SNMP",
+            "name": "get.interface_status.igmp.snmp",
+            "question": "Getting interfaces where activate IGMP proto by SNMP",
             "type": "snmp-getnext",
             "when": "has.snmp"
         },
@@ -468,6 +588,12 @@
             "question": "Show device equip info by CLI",
             "type": "cli",
             "when": "has.cli"
+        },
+        {
+            "name": "get.inventory.snmp",
+            "question": "Show device equip info by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp"
         },
         {
             "name": "get.interface_transceivers.cli",
@@ -549,15 +675,99 @@
         },
         {
             "name": "get.neighbors.bfd.cli",
-            "question": "Show active BFD protocol on device by CLI",
+            "question": "Show active BFD neighbors on device by CLI",
             "type": "cli",
             "when": "has.cli,has.l3,has.bfd"
         },
         {
             "name": "get.neighbors.bfd.snmp",
-            "question": "Show active BFD protocol on device by SNMP",
+            "question": "Show active BFD neighbors on device by SNMP",
             "type": "snmp-getnext",
             "when": "has.snmp,has.l3,has.bfd"
+        },
+        {
+            "name": "has.ospf",
+            "question": "Device support OSPF routing protocol",
+            "type": "bool",
+            "when": "has.l3"
+        },
+        {
+            "name": "get.caps.ospf.cli",
+            "question": "Show active OSPF protocol on device by CLI",
+            "type": "cli",
+            "when": "has.cli,has.l3,has.ospf"
+        },
+        {
+            "name": "get.caps.ospf.snmp",
+            "question": "Show active OSPF protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": "has.snmp,has.l3,has.ospf"
+        },
+        {
+            "name": "get.neighbors.ospf.cli",
+            "question": "Show active OSPF neighbors on device by CLI",
+            "type": "cli",
+            "when": "has.cli,has.l3,has.ospf"
+        },
+        {
+            "name": "get.neighbors.ospf.snmp",
+            "question": "Show active OSPF neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp,has.l3,has.ospf"
+        },
+        {
+            "name": "get.interface_status.ospf.cli",
+            "question": "Getting interfaces where activate OSPF proto by CLI",
+            "type": "cli",
+            "when": "has.cli,has.l3,has.ospf"
+        },
+        {
+            "name": "get.interface_status.ospf.snmp",
+            "question": "Getting interfaces where activate OSPF proto by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp,has.l3,has.ospf"
+        },
+        {
+            "name": "has.bgp",
+            "question": "Device support BGP routing protocol",
+            "type": "bool",
+            "when": "has.l3"
+        },
+        {
+            "name": "get.caps.bgp.cli",
+            "question": "Show active BGP protocol on device by CLI",
+            "type": "cli",
+            "when": "has.cli,has.l3,has.bgp"
+        },
+        {
+            "name": "get.caps.bgp.snmp",
+            "question": "Show active BGP protocol on device by SNMP",
+            "type": "snmp-get",
+            "when": "has.snmp,has.l3,has.bgp"
+        },
+        {
+            "name": "get.neighbors.bgp.cli",
+            "question": "Show active BGP neighbors on device by CLI",
+            "type": "cli",
+            "when": "has.cli,has.l3,has.bgp"
+        },
+        {
+            "name": "get.neighbors.bgp.snmp",
+            "question": "Show active BGP neighbors on device by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp,has.l3,has.bgp"
+        },
+        {
+            "name": "get.interface_load.cli",
+            "question": "Show interface metrics by CLI",
+            "type": "cli",
+            "when": "has.cli"
+        },
+        {
+            "name": "get.interface_load.snmp",
+            "question": "Show interface metrics by SNMP",
+            "type": "snmp-getnext",
+            "when": "has.snmp"
         }
     ]
 }

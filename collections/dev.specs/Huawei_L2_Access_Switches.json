@@ -29,6 +29,11 @@
             "value": "true"
         },
         {
+            "name": "get.caps.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.1"
+        },
+        {
             "name": "get.version.cli",
             "type": "cli",
             "value": "display version"
@@ -82,6 +87,11 @@
             "name": "get.neighbors.stp.cli.3",
             "type": "cli",
             "value": "display stp instance 0"
+        },
+        {
+            "name": "get.neighbors.stp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.2.15"
         },
         {
             "name": "has.lldp",
@@ -229,6 +239,11 @@
             "value": "display arp all"
         },
         {
+            "name": "get.arp_table.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.4.22"
+        },
+        {
             "name": "get.vlan_table.cli.1",
             "type": "cli",
             "value": "display vlan"
@@ -294,7 +309,7 @@
             "value": "display link-aggregation summary"
         },
         {
-            "name": "get.interface_agg.snmp",
+            "name": "get.interface_agg.snmp.1",
             "type": "snmp-getnext",
             "value": "1.2.840.10006.300.43.1.2"
         },
@@ -339,6 +354,11 @@
             "value": "display transceiver diagnosis interface"
         },
         {
+            "name": "get.interface_dom.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.5.25.31.1.1.3"
+        },
+        {
             "name": "get.inventory.cli.1",
             "type": "cli",
             "value": "display device"
@@ -347,6 +367,16 @@
             "name": "get.inventory.cli.2",
             "type": "cli",
             "value": "display device manuinfo"
+        },
+        {
+            "name": "get.inventory.snmp.1",
+            "type": "snmp-getnext",
+            "value": ".1.3.6.1.2.1.47.1.1.1"
+        },
+        {
+            "name": "get.inventory.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.5.25.31.1.1.2"
         },
         {
             "name": "get.cpu_usage.snmp",
@@ -372,6 +402,51 @@
             "name": "get.mpls_vrf.snmp.2",
             "type": "snmp-getnext",
             "value": "1.3.6.1.2.1.10.166.11.1.2.1"
+        },
+        {
+            "name": "get.interface_load.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.31.1.1"
+        },
+        {
+            "name": "get.interface_status.ospf.cli",
+            "type": "snmp-getnext",
+            "value": "display ospf interface all"
+        },
+        {
+            "name": "get.interface_status.lldp.cli",
+            "type": "cli",
+            "value": "display lldp local"
+        },
+        {
+            "name": "get.neighbors.bfd.cli",
+            "type": "cli",
+            "value": "display bfd session all verbose"
+        },
+        {
+            "name": "get.caps.bfd.cli",
+            "type": "cli",
+            "value": "display bfd configuration all"
+        },
+        {
+            "name": "has.bfd",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.bfd.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.4.1.2011.5.25.38.1.2.0"
+        },
+        {
+            "name": "get.neighbors.bfd.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.4.1.2011.5.25.38.2.3"
+        },
+        {
+            "name": "get.interface_status.igmp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.3.59.1.1.1"
         }
     ],
     "changes": []

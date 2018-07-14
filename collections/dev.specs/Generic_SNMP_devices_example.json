@@ -1,0 +1,133 @@
+{
+    "name": "Generic SNMP devices example",
+    "$collection": "dev.specs",
+    "uuid": "dfe646e6-f600-4e6d-96c8-f89f28c45ad4",
+    "description": "Specs for SNMP access switches",
+    "revision": 1,
+    "quiz__name": "General Switches",
+    "author": "avs",
+    "profile__name": "Cisco.IOS",
+    "answers": [
+        {
+            "name": "vendor",
+            "type": "str",
+            "value": "Cisco"
+        },
+        {
+            "name": "has.l3",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "has.cli",
+            "type": "bool",
+            "value": "false"
+        },
+        {
+            "name": "has.snmp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.1"
+        },
+        {
+            "name": "get.version.snmp.1",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.1.1.0"
+        },
+        {
+            "name": "get.version.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.47.1.1.1"
+        },
+        {
+            "name": "has.stp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.stp.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.17.2.1.0"
+        },
+        {
+            "name": "get.neighbors.stp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.17.2.15"
+        },
+        {
+            "name": "has.lacp",
+            "type": "bool",
+            "value": "true"
+        },
+        {
+            "name": "get.caps.lacp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.1.1"
+        },
+        {
+            "name": "get.neighbors.lacp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1"
+        },
+        {
+            "name": "get.fqdn.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.1.5.0"
+        },
+        {
+            "name": "get.interface_name.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.2.2"
+        },
+        {
+            "name": "get.interface_ip.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.4.20"
+        },
+        {
+            "name": "get.interface_agg.snmp.1",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1.1.12"
+        },
+        {
+            "name": "get.interface_agg.snmp.2",
+            "type": "snmp-getnext",
+            "value": "1.2.840.10006.300.43.1.2.1.1.13"
+        },
+        {
+            "name": "get.interface_load.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.31.1.1"
+        },
+        {
+            "name": "get.interface_status.ospf.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.14.7"
+        },
+        {
+            "name": "get.caps.ospf.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.14.1"
+        },
+        {
+            "name": "get.neighbors.ospf.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.14.10"
+        },
+        {
+            "name": "get.caps.bgp.snmp",
+            "type": "snmp-get",
+            "value": "1.3.6.1.2.1.15.2.0"
+        },
+        {
+            "name": "get.neighbors.bgp.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.15.3"
+        }
+    ],
+    "changes": []
+}
