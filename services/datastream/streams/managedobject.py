@@ -78,7 +78,7 @@ class ManagedObjectDataStream(DataStream):
             if mo.platform:
                 r["platform"] = qs(mo.platform.name)
         if mo.version:
-            r["version"] = qs(mo.version.name)
+            r["version"] = qs(mo.version.version)
 
     @staticmethod
     def _apply_segment(mo, r):
