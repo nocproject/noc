@@ -97,7 +97,7 @@
             "name": "get.interface_agg.snmp.2",
             "type": "snmp-getnext",
             "value": "1.2.840.10006.300.43.1.2.1.1.13"
-        }
+        },
         {
             "name": "get.interface_load.snmp",
             "type": "snmp-getnext",
