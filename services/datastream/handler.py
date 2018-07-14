@@ -47,7 +47,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
             change_id = None
         # block argument
         p_block = self.get_arguments("block")
-        to_block = bool(p_block) and bool(int(p_block[0]))
+        to_block = bool(p_block) and bool(int(p_block[0])) and self.service.has_block
         first_change = None
         last_change = None
         while True:
