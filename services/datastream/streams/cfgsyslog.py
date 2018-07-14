@@ -36,6 +36,7 @@ class CfgSyslogDataStream(DataStream):
             r["addresses"] = [mo.syslog_source_ip]
         else:
             raise KeyError()
+        return r
 
     @classmethod
     def get_meta(cls, data):

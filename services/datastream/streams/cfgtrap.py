@@ -36,6 +36,7 @@ class CfgTrapDataStream(DataStream):
             r["addresses"] = [mo.trap_source_ip]
         else:
             raise KeyError()
+        return r
 
     @classmethod
     def get_meta(cls, data):
