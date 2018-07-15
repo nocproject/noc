@@ -423,6 +423,6 @@ def false_on_snmp_error(f):
     def wrapper_snmp(*args, **kwargs):
         try:
             return f(*args, **kwargs)
-        except (SNMPError, ):
+        except SNMPError:
             return False
     return wrapper_snmp
