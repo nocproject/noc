@@ -31,6 +31,20 @@ class Command(BaseCommand):
             help="Spec path or URL"
         )
         collect_parser.add_argument(
+            "--force",
+            action="store_true",
+            default=False,
+            help="Ignore beef policy setings in ManagedObject"
+        )
+        collect_parser.add_argument(
+            "--storage",
+            help="External storage name"
+        )
+        collect_parser.add_argument(
+            "--path",
+            help="Path name"
+        )
+        collect_parser.add_argument(
             "objects",
             nargs=argparse.REMAINDER,
             help="Object names or ids"
@@ -126,7 +140,7 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
-    def handle_collect(self, spec, objects, *args, **options):
+    def handle_collect(self, spec, force, objects, storage, path, *args, **options):
         # Get spec data
         sp = Spec.get_by_name(spec)
         if not sp:
@@ -144,24 +158,32 @@ class Command(BaseCommand):
             if mo.profile.name != sp.profile.name:
                 self.print("  Profile mismatch. Skipping")
                 continue
-            if mo.object_profile.beef_policy == "D":
+            if mo.object_profile.beef_policy == "D" and not force:
                 self.print("  Collection disabled by policy. Skipping")
                 continue
-            if not mo.object_profile.beef_storage:
+            if not mo.object_profile.beef_storage and not storage:
                 self.print("  Beef storage is not configured. Skipping")
                 continue
-            if not mo.object_profile.beef_path_template:
+            if not mo.object_profile.beef_path_template and not force:
                 self.print("  Beef path template is not configured. Skipping")
                 continue
-            storage = mo.object_profile.beef_storage
-            path = mo.object_profile.beef_path_template.render_subject(
-                object=mo,
-                spec=sp
-            )
+            elif not mo.object_profile.beef_path_template and force:
+                self.print("  Beef path template is not configured. But force set. Generate path")
+                path = u"ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json".format(mo)
+            else:
+                path = mo.object_profile.beef_path_template.render_subject(
+                    object=mo,
+                    spec=sp
+                )
+            storage = mo.object_profile.beef_storage or self.get_storage(storage, beef=True)
             if not path:
                 self.print("  Beef path is empty. Skipping")
                 continue
-            bdata = mo.scripts.get_beef(spec=req)
+            try:
+                bdata = mo.scripts.get_beef(spec=req)
+            except Exception as e:
+                self.print("Failed collect beef on %s: %s" % (mo.name, e))
+                continue
             beef = Beef.from_json(bdata)
             self.print("  Saving to %s:%s" % (storage.name, path))
             try:
@@ -212,11 +234,11 @@ class Command(BaseCommand):
         self.stdout.write("\n".join(r) + "\n")
         return
 
-    def handle_list(self, *args, **options):
-        storage = options.get("storage")
-        if not storage:
-            storage = ExtStorage.objects.filter(enable_beef=True).first()
-        r = ["UUID,Vendor,Platform,Version,SpecUUID,Changed,Path"]
+    def handle_list(self, storage, *args, **options):
+        st = self.get_storage(storage)
+        if not st:
+            storage = ExtStorage.objects.filter(type="beef").first()
+        r = ["UUID,Profile,Vendor,Platform,Version,SpecUUID,Changed,Path"]
         st_fs = storage.open_fs()
         for step in st_fs.walk(''):
             if not step.files:
@@ -225,6 +247,7 @@ class Command(BaseCommand):
                 beef = Beef.load(storage, file.make_path(step.path))
                 r += [",".join([
                     beef.uuid,
+                    beef.box.profile,
                     beef.box.vendor,
                     beef.box.platform,
                     beef.box.version,
