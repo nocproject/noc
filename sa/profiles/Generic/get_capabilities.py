@@ -416,3 +416,13 @@ def false_on_cli_error(f):
         except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError):
             return False
     return wrapper
+
+
+def false_on_snmp_error(f):
+    @functools.wraps(f)
+    def wrapper_snmp(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except SNMPError:
+            return False
+    return wrapper_snmp

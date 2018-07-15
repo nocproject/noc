@@ -8,18 +8,20 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
     name = "Cisco.WLC.get_capabilities"
 
+    @false_on_snmp_error
     def has_cdp_snmp(self):
         """
         Check box has cdp enabled
         """
         # ciscoCdpMIB::cdpGlobalRun
-        r = self.snmp.get("1.3.6.1.4.1.9.9.23.1.3.1.0")
+        r = self.snmp.get(mib["CISCO-CDP-MIB::cdpGlobalRun", "0"])
         return r == 1
 
     @false_on_cli_error
