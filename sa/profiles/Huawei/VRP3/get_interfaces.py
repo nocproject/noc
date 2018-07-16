@@ -36,7 +36,7 @@ class Script(BaseScript):
     )
 
     rx_pvc3 = re.compile(
-        r"^\s*\d+\s+(?P<ifname>\S.*)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)"
+        r"^\s*\d+\s+(?P<ifname>\S+\s+\d+\s+\d+\s+\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)"
         r"\s+LAN\s+0\s+0\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
     )
 
@@ -74,84 +74,31 @@ class Script(BaseScript):
         with self.configure():
             c = self.cli("show pvc all")
             if self.rx_pvc.search(c):
-                for match in self.rx_pvc.finditer(c):
-                    ifname = match.group("ifname")
-                    sub = {
-                        "name": ifname,
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "vpi": int(match.group("vpi")),
-                        "vci": int(match.group("vci")),
-                        "vlan_ids": int(match.group("vlan"))
-                    }
-                    found = False
-                    for i in interfaces:
-                        if ifname == i["name"]:
-                            i["subinterfaces"] += [sub]
-                            found = True
-                            break
-                    if not found:
-                        iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
-                        interfaces += [iface]
-
+                r = self.rx_pvc.finditer(c)
             elif self.rx_pvc2.search(c):
-                for match in self.rx_pvc2.finditer(c):
-                    ifname = match.group("ifname")
-                    sub = {
-                        "name": ifname,
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "vpi": int(match.group("vpi")),
-                        "vci": int(match.group("vci")),
-                        "vlan_ids": int(match.group("vlan"))
-                    }
-                    found = False
-                    for i in interfaces:
-                        if ifname == i["name"]:
-                            i["subinterfaces"] += [sub]
-                            found = True
-                            break
-                    if not found:
-                        iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
-                        interfaces += [iface]
-
+                r = self.rx_pvc2.finditer(c)
             elif self.rx_pvc3.search(c):
-                for match in self.rx_pvc2.finditer(c):
-                    ifname = match.group("ifname")
-                    sub = {
-                        "name": ifname,
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "vpi": int(match.group("vpi")),
-                        "vci": int(match.group("vci")),
-                        "vlan_ids": int(match.group("vlan"))
-                    }
-                    found = False
-                    for i in interfaces:
-                        if ifname == i["name"]:
-                            i["subinterfaces"] += [sub]
-                            found = True
-                            break
-                    if not found:
-                        iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
-                        interfaces += [iface]
-
+                r = self.rx_pvc3.finditer(c)
             else:
-                for match in self.rx_pvc4.finditer(c):
-                    ifname = match.group("ifname")
-                    sub = {
-                        "name": ifname,
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "vpi": int(match.group("vpi")),
-                        "vci": int(match.group("vci")),
-                        "vlan_ids": int(match.group("vlan"))
-                    }
-                    found = False
-                    for i in interfaces:
-                        if ifname == i["name"]:
-                            i["subinterfaces"] += [sub]
-                            found = True
-                            break
-                    if not found:
-                        iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
-                        interfaces += [iface]
+                r = self.rx_pvc4.finditer(c)
+            for match in r:
+                ifname = match.group("ifname")
+                sub = {
+                    "name": ifname,
+                    "enabled_afi": ["BRIDGE", "ATM"],
+                    "vpi": int(match.group("vpi")),
+                    "vci": int(match.group("vci")),
+                    "vlan_ids": int(match.group("vlan"))
+                }
+                found = False
+                for i in interfaces:
+                    if ifname == i["name"]:
+                        i["subinterfaces"] += [sub]
+                        found = True
+                        break
+                if not found:
+                    iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
+                    interfaces += [iface]
 
         match = self.re_search(self.rx_mac, self.cli("show atmlan mac-address"))
         mac = match.group("mac")
