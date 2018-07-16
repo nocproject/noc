@@ -27,7 +27,7 @@ class Script(BaseScript):
     rx_vlan = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")
     rx_pvc = re.compile(
         r"^\s*\d+\s+(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+"
-        r"(?P<vci>\d+)\s+LAN\s+0/0/(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
+        r"(?P<vci>\d+)\s+LAN\s+0/0/(?P<vlan>\d+)(?:\(\S+\)|)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
     )
 
     rx_pvc2 = re.compile(
