@@ -31,7 +31,7 @@ class Script(BaseScript):
     )
 
     rx_pvc2 = re.compile(
-        r"\s+\d+\s+LAN\s+0/0/(?P<vlan>\d+)\s+\S+\s+\S+\s+"
+        r"\s+\d+\s+LAN\s+0/0/(?P<vlan>\d+)(?:\(\S+\)|)\s+\S+\s+\S+\s+"
         r"(?P<ifname>\S+\s+\d+/\d+/\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n", re.MULTILINE
     )
 
