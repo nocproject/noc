@@ -188,10 +188,7 @@ class Script(BaseScript):
                         if vlan_tags[p]:
                             self.si["tagged_vlans"] += [vlan_id]
                         else:
-                            if vlan_id > 0:
-                                self.si["utagged_vlan"] = vlan_id
-                            else:
-                                self.si["utagged_vlan"] = 1
+                            self.si["untagged_vlan"] = vlan_id if vlan_id > 0 else 1
                     # Try to find in already created subinterfaces
                     found = False
                     for sub in i["subinterfaces"]:
