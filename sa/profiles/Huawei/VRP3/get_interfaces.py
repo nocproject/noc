@@ -36,9 +36,13 @@ class Script(BaseScript):
     )
 
     rx_pvc3 = re.compile(
-        "^\s*\d+\s+(?P<ifname>\S.*)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)"
-        "\s+LAN\s+0\s+0\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
+        r"^\s*\d+\s+(?P<ifname>\S.*)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)"
+        r"\s+LAN\s+0\s+0\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s*\n", re.MULTILINE
     )
+
+    rx_pvc4 = re.compile(
+        r"\s+\d+\s+LAN\s+\d+\s+\d+\s+(?P<vlan>\d+)\s+\S+\s+\S+\s+"
+        r"(?P<ifname>\S+\s+\d+\s+\d+\s+\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s.*\n", re.MULTILINE)
 
     def execute(self):
         interfaces = []
@@ -49,22 +53,22 @@ class Script(BaseScript):
             "name": "FE:0/0/1",
             "type": "physical",
             "subinterfaces":
-            [{
-                "name": "FE:0/0/1",
-                "enabled_afi": ["BRIDGE"],
-                "tagged_vlans": vlans
-            }]
+                [{
+                    "name": "FE:0/0/1",
+                    "enabled_afi": ["BRIDGE"],
+                    "tagged_vlans": vlans
+                }]
         }
         interfaces += [iface]
         iface = {
             "name": "FE:0/0/2",
             "type": "physical",
             "subinterfaces":
-            [{
-                "name": "FE:0/0/2",
-                "enabled_afi": ["BRIDGE"],
-                "tagged_vlans": vlans
-            }]
+                [{
+                    "name": "FE:0/0/2",
+                    "enabled_afi": ["BRIDGE"],
+                    "tagged_vlans": vlans
+                }]
         }
         interfaces += [iface]
         with self.configure():
@@ -88,6 +92,7 @@ class Script(BaseScript):
                     if not found:
                         iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
                         interfaces += [iface]
+
             elif self.rx_pvc2.search(c):
                 for match in self.rx_pvc2.finditer(c):
                     ifname = match.group("ifname")
@@ -107,8 +112,29 @@ class Script(BaseScript):
                     if not found:
                         iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
                         interfaces += [iface]
+
+            elif self.rx_pvc3.search(c):
+                for match in self.rx_pvc2.finditer(c):
+                    ifname = match.group("ifname")
+                    sub = {
+                        "name": ifname,
+                        "enabled_afi": ["BRIDGE", "ATM"],
+                        "vpi": int(match.group("vpi")),
+                        "vci": int(match.group("vci")),
+                        "vlan_ids": int(match.group("vlan"))
+                    }
+                    found = False
+                    for i in interfaces:
+                        if ifname == i["name"]:
+                            i["subinterfaces"] += [sub]
+                            found = True
+                            break
+                    if not found:
+                        iface = {"name": ifname, "type": "physical", "subinterfaces": [sub]}
+                        interfaces += [iface]
+
             else:
-                for match in self.rx_pvc3.finditer(c):
+                for match in self.rx_pvc4.finditer(c):
                     ifname = match.group("ifname")
                     sub = {
                         "name": ifname,
@@ -138,16 +164,11 @@ class Script(BaseScript):
             match = self.rx_vlan.search(c)
             vlan = int(match.group('vlanid'))
         iface = {
-            "name":
-            "mgmt",
-            "type":
-            "SVI",
-            "admin_status":
-            True,  # always True, since inactive
-            "oper_status":
-            True,  # SVIs aren't shown at all
-            "mac":
-            mac,
+            "name": "mgmt",
+            "type": "SVI",
+            "admin_status": True,  # always True, since inactive
+            "oper_status": True,  # SVIs aren't shown at all
+            "mac": mac,
             "subinterfaces": [
                 {
                     "name": "mgmt",
