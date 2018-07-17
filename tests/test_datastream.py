@@ -368,6 +368,10 @@ def test_filter_id():
     assert DataStream.filter_id(10) == {"_id": 10}
     assert DataStream.filter_id(10, 11) == {"_id": {"$in": [10, 11]}}
 
+def test_filter_shard():
+    assert DataStream.filter_shard(1, 3) == {"_id": {"$mod": [3, 1]}}
+    assert DataStream.filter_shard("1", "3") == {"_id": {"$mod": [3, 1]}}
+
 
 def test_compile_filters():
     assert DataStream.compile_filters(["id(1)"]) == {"_id": "1"}
