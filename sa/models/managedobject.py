@@ -1565,7 +1565,6 @@ class ActionsProxy(object):
         self._cache = {}
 
     def __getattr__(self, name):
-        from .action import Action
         if name in self._cache:
             return self._cache[name]
         a = Action.objects.filter(name=name).first()
@@ -1580,6 +1579,7 @@ class ActionsProxy(object):
 from .useraccess import UserAccess
 from .groupaccess import GroupAccess
 from .objectnotification import ObjectNotification
+from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
