@@ -51,15 +51,14 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         first_change = None
         last_change = None
         while True:
-            r = ["["]
+            r = []
             for item_id, change_id, data in self.datastream.iter_data(limit=limit, filters=filters,
                                                                       change_id=change_id):
                 if not first_change:
                     first_change = change_id
                 last_change = change_id
                 r += [data]
-            r += ["]"]
-            if to_block and len(r) == 2:
+            if to_block and not r:
                 yield self.service.wait(self.datastream.name)
             else:
                 break
@@ -71,4 +70,4 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
             self.set_header("X-NOC-DataStream-First-Change", str(first_change))
         if last_change:
             self.set_header("X-NOC-DataStream-Last-Change", str(last_change))
-        self.write("".join(r))
+        self.write("[%s]" % ",".join(r))
