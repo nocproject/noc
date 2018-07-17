@@ -63,7 +63,8 @@ def apply_changes(changes):
     :param changes: List of (datastream name, object id)
     :return:
     """
-    call_later("noc.core.datastream.change.do_changes", changes=changes)
+    if changes:
+        call_later("noc.core.datastream.change.do_changes", changes=changes)
 
 
 def update_object(ds_name, object_id):
