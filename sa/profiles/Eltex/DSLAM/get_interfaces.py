@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.DSLAM.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -27,14 +27,14 @@ class Script(BaseScript):
         "^\s+MAC address:\s+(?P<mac>\S+)\s*\n"
         "^\s+Netmask:\s+(?P<ip_subnet>\d+\S+)\s*\n", re.MULTILINE)
 
-
     def execute(self):
         interfaces = []
         cmd = self.cli("switch show port state")
         for i in self.profile.iter_items(cmd):
             for ii in i.items():
                 ifname = ii[0]
-                if ifname.startswith("p") or ifname.startswith("dsl") or ifname.startswith("sfp") or ifname.startswith("cpu"):
+                if ifname.startswith("p") or ifname.startswith("dsl") or \
+                        ifname.startswith("sfp") or ifname.startswith("cpu"):
                     if ifname == "cpu":
                         iface = {
                             "name": ifname,
@@ -53,6 +53,8 @@ class Script(BaseScript):
                         iface['mac'] = match.group("mac")
                         iface['subinterfaces'][0]["mac"] = match.group("mac")
                     else:
+                        if ifname.startswith("p"):
+                            ifname = "s%s" % ifname
                         iface = {
                             "name": ifname,
                             "type": "physical",
@@ -67,7 +69,7 @@ class Script(BaseScript):
             ifname = match.group("port")
             ifname = ifname.replace("p0", "p")
             iface = {
-                "name": ifname.replace("p", "adsl"),
+                "name": ifname,
                 "type": "physical",
                 "subinterfaces": []
             }
