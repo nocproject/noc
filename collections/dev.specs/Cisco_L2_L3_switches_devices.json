@@ -385,7 +385,7 @@
         },
         {
             "name": "get.interface_proto_snmp.cli",
-            "type": "snmp-getnext",
+            "type": "cli",
             "value": "show snmp mib ifmib ifindex"
         },
         {

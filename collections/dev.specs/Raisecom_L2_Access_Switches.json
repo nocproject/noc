@@ -119,6 +119,11 @@
             "value": "show interface description"
         },
         {
+            "name": "get.interface_name.snmp",
+            "type": "snmp-getnext",
+            "value": "1.3.6.1.2.1.2.2"
+        },
+        {
             "name": "get.interface_ip.cli.1",
             "type": "cli",
             "value": "show interface ip description"
