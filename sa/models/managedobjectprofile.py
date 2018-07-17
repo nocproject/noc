@@ -36,6 +36,7 @@ from noc.ip.models.addressprofile import AddressProfile
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
+from noc.core.datastream.decorator import datastream
 
 
 m_valid = DictListParameter(attrs={
@@ -67,6 +68,7 @@ id_lock = Lock()
 @on_init
 @on_save
 @bi_sync
+@datastream
 @on_delete_check(check=[
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
@@ -551,6 +553,13 @@ class ManagedObjectProfile(models.Model):
             return mop[0]
         else:
             return None
+
+    def iter_changed_datastream(self):
+        from noc.sa.models.managedobject import ManagedObject
+
+        for mo in ManagedObject.objects.filter(object_profile=self):
+            for c in mo.iter_changed_datastream():
+                yield c
 
     def iter_pools(self):
         """
