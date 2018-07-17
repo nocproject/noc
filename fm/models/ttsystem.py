@@ -69,11 +69,7 @@ class TTSystem(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
-        t = TTSystem.objects.filter(name=name).first()
-        if t:
-            return t.get_system()
-        else:
-            return None
+        return TTSystem.objects.filter(name=name).first()
 
     def get_system(self):
         """
