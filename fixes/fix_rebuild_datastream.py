@@ -8,8 +8,10 @@
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.datastream.change import bulk_datastream_changes
 
 
 def fix():
-    for mo in ManagedObject.objects.all():
-        mo.save()  # Force datastream rebuild
+    with bulk_datastream_changes():
+        for mo in ManagedObject.objects.all():
+            mo.save()  # Force datastream rebuild

@@ -89,5 +89,5 @@ def do_changes(changes):
     :param changes: List of datastream name, object id
     :return:
     """
-    for ds_name, object_id in changes:
+    for ds_name, object_id in sorted(changes):
         update_object(ds_name, object_id)
