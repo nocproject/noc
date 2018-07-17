@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import print_function
 import six
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -118,7 +120,6 @@ class Script(BaseScript):
             if isinstance(s, int):
                 s = s
             elif " " in str(s):
-                print s
                 s = s.split()[0]
             else:
                 s = 0
