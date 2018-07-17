@@ -13,7 +13,7 @@ from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals
 # NOC modules
 from noc.core.model.decorator import is_document
-from .change import register_change
+from .change import register_changes
 
 
 def datastream(cls):
@@ -41,10 +41,14 @@ def datastream(cls):
 
 
 def _on_model_change(sender, instance, *args, **kwargs):
-    for ds_name, object_id in instance.iter_changed_datastream():
-        register_change(ds_name, object_id)
+    _on_change(instance)
 
 
 def _on_document_change(sender, document, *args, **kwargs):
-    for ds_name, object_id in document.iter_changed_datastream():
-        register_change(ds_name, object_id)
+    _on_change(document)
+
+
+def _on_change(obj):
+    r = list(obj.iter_changed_datastream())
+    if r:
+        register_changes(r)
