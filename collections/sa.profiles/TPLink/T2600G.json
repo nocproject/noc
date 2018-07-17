@@ -1,0 +1,7 @@
+{
+    "name": "TPLink.T2600G",
+    "uuid": "4a6b708e-8714-4afe-9625-15473f981410",
+    "description": "JetStream L2 Managed Switch",
+    "$collection": "sa.profiles"
+}
+
