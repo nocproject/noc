@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import argparse
+import datetime
 import os
 import re
 # Third-party modules
@@ -173,7 +174,8 @@ class Command(BaseCommand):
             else:
                 path = mo.object_profile.beef_path_template.render_subject(
                     object=mo,
-                    spec=sp
+                    spec=sp,
+                    datetime=datetime
                 )
             storage = mo.object_profile.beef_storage or self.get_storage(storage, beef=True)
             if not path:
