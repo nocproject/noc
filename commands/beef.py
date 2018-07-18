@@ -215,7 +215,7 @@ class Command(BaseCommand):
     def handle_list(self, *args, **options):
         storage = options.get("storage")
         if not storage:
-            storage = ExtStorage.objects.filter(type="beef").first()
+            storage = ExtStorage.objects.filter(enable_beef=True).first()
         r = ["UUID,Vendor,Platform,Version,SpecUUID,Changed,Path"]
         st_fs = storage.open_fs()
         for step in st_fs.walk(''):
