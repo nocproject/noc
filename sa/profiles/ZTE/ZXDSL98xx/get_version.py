@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXDSL98xx.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,12 +26,25 @@ class Script(BaseScript):
         r"^Main version name\s+: (?P<version>\S+)",
         re.MULTILINE
     )
+    rx_ver2 = re.compile(
+        r"^SCCF\s+MVER\s+V(?P<version>\S+)\s+\d+\s+VALID\s+\d+\s+active\s+(?P<platform>\S+)v\S+",
+        re.MULTILINE
+    )
 
     def execute(self):
         v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
-        return {
-            "vendor": "ZTE",
-            "platform": match.group("platform"),
-            "version": match.group("version")
-        }
+        if match:
+            return {
+                "vendor": "ZTE",
+                "platform": match.group("platform"),
+                "version": match.group("version")
+            }
+        match = self.rx_ver2.search(v)
+        if match:
+            return {
+                "vendor": "ZTE",
+                "platform": "ZXDSL %s" % match.group("platform").upper(),
+                "version": match.group("version")
+            }
+        raise self.NotSupportedError()
