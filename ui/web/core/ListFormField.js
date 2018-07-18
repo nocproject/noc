@@ -13,19 +13,28 @@ Ext.define("NOC.core.ListFormField", {
         field: 'Ext.form.field.Field'
     },
     items: [],
-    timerHander: undefined,
+    rows: this.rows || 3,
+    timerHandler: undefined,
     initComponent: function() {
         var me = this;
 
+        // me.rows = me.rows || 3;
         me.fields = Ext.clone(me.items).map(function(item) {
             return Ext.Object.merge(item, {isListForm: true})
         });
 
-        me.addButton = Ext.create("Ext.button.Button", {
-            text: __("Add"),
+        me.addButtonEnd = Ext.create("Ext.button.Button", {
+            text: __("Append"),
             glyph: NOC.glyph.plus,
             scope: me,
-            handler: me.onAddRecord
+            handler: Ext.pass(me.onAddRecord, true)
+        });
+
+        me.addButton = Ext.create("Ext.button.Button", {
+            text: __("Insert"),
+            glyph: NOC.glyph.indent,
+            scope: me,
+            handler: Ext.pass(me.onAddRecord)
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
@@ -58,31 +67,15 @@ Ext.define("NOC.core.ListFormField", {
             handler: me.onMoveDown
         });
 
-        me.mainConfig = {
-            dockedItems: [
-                {
-                    xtype: "toolbar",
-                    dock: "top",
-                    items: [
-                        me.addButton,
-                        me.deleteButton,
-                        "-",
-                        me.cloneButton,
-                        "-",
-                        me.moveUpButton,
-                        me.moveDownButton
-                    ]
-                }
-            ],
-            items: []
-        };
         me.panel = Ext.create("Ext.form.Panel", {
+            scrollable: 'vertical',
             dockedItems: [
                 {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
                         me.addButton,
+                        me.addButtonEnd,
                         me.deleteButton,
                         "-",
                         me.cloneButton,
@@ -117,70 +110,88 @@ Ext.define("NOC.core.ListFormField", {
         } else {
             v = v || [];
         }
-        if(!Ext.isEmpty(v) && me.timerHander) {
-            clearTimeout(me.timerHander);
-            me.timerHander = undefined;
+        if(!Ext.isEmpty(v) && me.timerHandler) {
+            clearTimeout(me.timerHandler);
+            me.timerHandler = undefined;
         }
         if(me.panel.items.length) {
             me.panel.removeAll();
         }
         Ext.each(v, me.createForm, me);
-        this.disableButtons(me);
+        me.currentSelection = undefined;
+        me.disableButtons(true);
     },
     reset: function() {
         var me = this;
-        me.timerHander = setTimeout(function(scope) {
+        me.timerHandler = setTimeout(function(scope) {
             scope.removeAll();
         }, 750, me.panel);
     },
     onAddRecord: function() {
-        var me = this;
-        me.createForm();
+        var me = this, index;
+        if(Ext.isBoolean(arguments[0]) && arguments[0]) {
+            // to end
+            index = me.panel.items.length;
+        } else {
+            index = me.panel.items.findIndexBy(function(i) {
+                return i.itemId === me.currentSelection
+            }, me) + 1;
+        }
+        me.createForm(undefined, index);
     },
     onDeleteRecord: function() {
         var me = this;
         // remove by itemId
         me.panel.remove(me.currentSelection);
-        me.disableButtons();
+        me.currentSelection = undefined;
+        me.disableButtons(true);
     },
     onCloneRecord: function() {
         var me = this;
         me.createForm(me.panel.getComponent(me.currentSelection).getValues());
     },
     onMoveDown: function() {
-        var me = this, index;
+        var me = this, index, yPosition, yStep;
         index = me.panel.items.findIndexBy(function(i) {
             return i.itemId === me.currentSelection
         }, me);
         if(index < me.panel.items.getCount() - 1) {
             me.panel.moveAfter(me.panel.items.get(index), me.panel.items.get(index + 1));
+            yStep = me.panel.getScrollable().getMaxPosition().y / (me.panel.items.length - me.rows);
+            yPosition = me.panel.getScrollable().getPosition().y;
+            me.panel.getScrollable().scrollTo(null, yPosition + yStep, false);
         }
     },
     onMoveUp: function() {
-        var me = this, index;
+        var me = this, index, yPosition, yStep;
         index = me.panel.items.findIndexBy(function(i) {
             return i.itemId === me.currentSelection
         }, me);
         if(index > 0) {
             me.panel.moveBefore(me.panel.items.get(index), me.panel.items.get(index - 1));
+            if(index > me.rows) {
+                yStep = me.panel.getScrollable().getMaxPosition().y / (me.panel.items.length - me.rows);
+                yPosition = me.panel.getScrollable().getPosition().y;
+                me.panel.getScrollable().scrollTo(null, yPosition - yStep, false);
+            }
         }
     },
     createForm: function(record, index) {
         var me = this, formPanel, itemId;
-        if(!index) {
+        if(index === undefined) {
             index = me.panel.items.getCount();
         }
-        itemId = me.id + '-' + index;
+        itemId = Ext.id(null, "list-form-");
         formPanel = Ext.create('Ext.form.Panel', {
             itemId: itemId,
             items: me.fields,
             defaults: {
-                margin: "0 0 0 10"
+                margin: "0 30 0 10"
             },
             listeners: {
                 scope: me,
                 focusenter: function(self) {
-                    var me = this, label;
+                    var me = this;
                     // reset selected label
                     me.panel.items.each(function(panel) {
                         panel.setBodyStyle("border-left-width", "1px");
@@ -188,21 +199,26 @@ Ext.define("NOC.core.ListFormField", {
                     });
                     me.selected(self);
                     me.currentSelection = self.itemId;
-                    me.deleteButton.setDisabled(false);
-                    me.cloneButton.setDisabled(false);
+                    me.disableButtons(false);
+                },
+                afterrender: function(self) {
+                    var me = this;
+                    me.panel.setMaxHeight(self.getHeight() * me.rows);
                 }
             }
         });
         formPanel.setBodyStyle("margin-left", "5px");
-        formPanel.form.setValues(record);
-        me.panel.add(formPanel);
+        if(record != null) {
+            formPanel.form.setValues(record);
+        }
+        me.panel.insert(index, formPanel);
         formPanel.items.get(0).focus();
     },
-    disableButtons: function() {
+    disableButtons: function(arg) {
         var me = this;
-        me.currentSelection = undefined;
-        me.deleteButton.setDisabled(true);
-        me.cloneButton.setDisabled(true);
+        me.addButton.setDisabled(arg);
+        me.deleteButton.setDisabled(arg);
+        me.cloneButton.setDisabled(arg);
     },
     selected: function(panel) {
         panel.setBodyStyle("border-left-width", "6px");
