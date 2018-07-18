@@ -1,0 +1,70 @@
+{
+  "$metric": "Environment | Temperature",
+  "$type": "match",
+  "$matchers": {
+    "is_MXA24": {
+      "platform": {
+        "$regex": "MXA24"
+      }
+    },
+    "is_MXA32": {
+      "platform": {
+        "$regex": "MXA32"
+      }
+    },
+    "is_MXA64": {
+      "platform": {
+        "$regex": "MXA64"
+      }
+    }
+  },
+  "$match": [{
+    "$match": "is_MXA24",
+    "$type": "oids",
+      "oids": [{
+      "oid": "1.3.6.1.4.1.34300.1.6.4.2.1.3.1.0",
+      "path": ["","","", "DSL"],
+      "$type": "oid",
+      "type": "gauge",
+      "scale": 1
+      },{
+        "$type": "oid",
+        "oid": "1.3.6.1.4.1.34300.1.6.4.2.1.3.2.0",
+        "path": ["","","", "PWR"],
+        "type": "gauge",
+        "scale": 1
+    }]
+   },{
+    "$match": "is_MXA32",
+    "$type": "oids",
+    "oids": [{
+    "oid": "1.3.6.1.4.1.35265.1.28.4.2.1.3.1",
+    "path": ["","","", "DSL"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+    },{
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.35265.1.28.4.2.1.3.2",
+      "path": ["","","", "PWR"],
+      "type": "gauge",
+      "scale": 1
+    }]
+   },{
+    "$match": "is_MXA64",
+    "$type": "oids",
+    "oids": [{
+    "oid": "1.3.6.1.4.1.35265.1.33.4.2.1.3.1",
+    "path": ["","","", "DSL"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+    },{
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.35265.1.33.4.2.1.3.2",
+      "path": ["","","", "PWR"],
+      "type": "gauge",
+      "scale": 1
+    }]
+  }]
+}
