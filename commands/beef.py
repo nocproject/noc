@@ -21,6 +21,8 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.dev.models.spec import Spec
 from noc.main.models.extstorage import ExtStorage
 
+DEFAULT_BEEF_PATH_TEMPLATE = u"ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json"
+
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -141,7 +143,7 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
-    def handle_collect(self, spec, force, objects, storage, path, *args, **options):
+    def handle_collect(self, storage, path, spec, force, objects, *args, **options):
         # Get spec data
         sp = Spec.get_by_name(spec)
         if not sp:
@@ -170,7 +172,7 @@ class Command(BaseCommand):
                 continue
             elif not mo.object_profile.beef_path_template and force:
                 self.print("  Beef path template is not configured. But force set. Generate path")
-                path = u"ad-hoc/{0.profile.name}/{0.pool.name}/{0.address}.beef.json".format(mo)
+                path = DEFAULT_BEEF_PATH_TEMPLATE.format(mo)
             else:
                 path = mo.object_profile.beef_path_template.render_subject(
                     object=mo,
@@ -239,24 +241,28 @@ class Command(BaseCommand):
     def handle_list(self, storage, *args, **options):
         st = self.get_storage(storage)
         if not st:
-            storage = ExtStorage.objects.filter(type="beef").first()
+            st = ExtStorage.objects.filter(type="beef")
+        else:
+            st = [st]
         r = ["UUID,Profile,Vendor,Platform,Version,SpecUUID,Changed,Path"]
-        st_fs = storage.open_fs()
-        for step in st_fs.walk(''):
-            if not step.files:
-                continue
-            for file in step.files:
-                beef = Beef.load(storage, file.make_path(step.path))
-                r += [",".join([
-                    beef.uuid,
-                    beef.box.profile,
-                    beef.box.vendor,
-                    beef.box.platform,
-                    beef.box.version,
-                    beef.spec,
-                    beef.changed,
-                    file.make_path(step.path)
-                ])]
+        for storage in st:
+            self.print("\n%sStorage: %s%s\n" % ("=" * 20, storage.name, "=" * 20))
+            st_fs = storage.open_fs()
+            for step in st_fs.walk(''):
+                if not step.files:
+                    continue
+                for file in step.files:
+                    beef = Beef.load(storage, file.make_path(step.path))
+                    r += [",".join([
+                        beef.uuid,
+                        beef.box.profile,
+                        beef.box.vendor,
+                        beef.box.platform,
+                        beef.box.version,
+                        beef.spec,
+                        beef.changed,
+                        file.make_path(step.path)
+                    ])]
 
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
