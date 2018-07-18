@@ -12,7 +12,6 @@ import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.mib import mib
 
 
@@ -21,13 +20,11 @@ class Script(BaseScript):
     interface = IGetInterfaceStatusEx
     requires = []
 
-    HIGH_SPEED = 4294967295
-
     def get_iftable(self, oid):
         if "::" in oid:
             oid = mib[oid]
         r = {}
-        for oid, v in self.snmp.getnext(oid, max_repetitions=15):
+        for oid, v in self.snmp.getnext(oid, max_repetitions=8):
             if oid.endswith(".0"):
                 ifindex = int(oid.split(".")[-2])
             else:
@@ -47,7 +44,6 @@ class Script(BaseScript):
     def get_data(self):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
-        unknown_interfaces = []
         for ifindex, name in six.iteritems(self.get_iftable("IF-MIB::ifName")):
             if " " in name:
                 name = name.split()[2]
@@ -63,52 +59,26 @@ class Script(BaseScript):
         # Apply dot3StatsDuplexStatus
         self.apply_table(r, "EtherLike-MIB::dot3StatsDuplexStatus", "full_duplex", lambda x: x != 2)
         # Apply ifSpeed
-        highspeed = set()
         for ifindex, s in six.iteritems(self.get_iftable("IF-MIB::ifSpeed")):
             ri = r.get(ifindex)
             if ri:
                 s = int(s)
-                if self.is_high_speed(ri, s):
-                    highspeed.add(ifindex)
-                elif s:
-                    ri["in_speed"] = s // 1000
-                    ri["out_speed"] = s // 1000
-        # Refer to ifHighSpeed if necessary
-        if highspeed:
-            for ifindex, s in six.iteritems(self.get_iftable("IF-MIB::ifHighSpeed")):
-                if ifindex in highspeed:
-                    s = int(s)
-                    if s:
-                        r[ifindex]["in_speed"] = s * 1000
-                        r[ifindex]["out_speed"] = s * 1000
-        # Log unknown interfaces
-        if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
+                ri["in_speed"] = s // 1000
+                ri["out_speed"] = s // 1000
+
         return r.values()
 
-    def get_data_sw(self):
+    def get_data_sw(self, o):
         # ifIndex -> ifName mapping
-        o = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
         sw_oid = "%s.15.2.1.2" % o
         r = {}  # ifindex -> data
-        unknown_interfaces = []
         for ifindex, name in six.iteritems(self.get_iftable(sw_oid)):
             if " " in name:
                 name = name.split()[2]
             if name.startswith("p"):
                 name = "s%s" % name
-            try:
-                v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError as e:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, e
-                )
-                unknown_interfaces += [name]
-                continue
             r[ifindex] = {
-                "interface": v
+                "interface": name
             }
         # Apply ifAdminStatus
         self.apply_table(r, "%s.15.2.1.3" % o, "admin_status", lambda x: x == "UP" or "1")
@@ -127,36 +97,19 @@ class Script(BaseScript):
                 s = int(s)
                 ri["in_speed"] = s * 1000
                 ri["out_speed"] = s * 1000
-        # Log unknown interfaces
-        if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
         return r.values()
 
-    def get_data_adsl(self):
+    def get_data_adsl(self, o):
         # ifIndex -> ifName mapping
-        o = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
-        if self.match_version(platform="MXA64"):
-            o = o.replace("28", "33")
-        if (self.match_version(platform="MXA32") or self.match_version(platform="MXA64")):
+        if self.is_platform_MXA32 or self.is_platform_MXA64:
             s_oid = "%s.10.2.1.5" % o
         else:
             s_oid = "%s.10.2.1.7" % o
         adsl_oid = "%s.10.2.1.2" % o
         r = {}  # ifindex -> data
-        unknown_interfaces = []
         for ifindex, name in six.iteritems(self.get_iftable(adsl_oid)):
-            try:
-                v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError as e:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, e
-                )
-                unknown_interfaces += [name]
-                continue
             r[ifindex] = {
-                "interface": v
+                "interface": name
             }
 
         # Apply ifAdminStatus
@@ -170,27 +123,18 @@ class Script(BaseScript):
                 s = int(s)
                 ri["in_speed"] = s
                 ri["out_speed"] = s
-
-        # Log unknown interfaces
-        if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
         return r.values()
 
-    def is_high_speed(self, data, speed):
-        """
-        Detect should we check ifHighSpeed
-        :param data: dict with
-        :param speed:
-        :return:
-        """
-        return speed == self.HIGH_SPEED
-
     def execute_snmp(self):
-        if self.match_version(platform="MXA24"):
-            r = self.get_data_sw()
-            r += self.get_data_adsl()
+        if self.is_platform_MXA24:
+            o = "1.3.6.1.4.1.34300.1.6"
+        elif self.is_platform_MXA32:
+            o = "1.3.6.1.4.1.35265.1.28"
+        else:
+            o = "1.3.6.1.4.1.35265.1.33"
+        if self.is_platform_MXA24:
+            r = self.get_data_sw(o)
         else:
             r = self.get_data()
-            r += self.get_data_adsl()
+        r += self.get_data_adsl(o)
         return r

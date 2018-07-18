@@ -68,3 +68,22 @@ class Profile(BaseProfile):
                 d = parse_line(kl, vl)
         if d:
             yield d
+
+    matchers = {
+        "is_platform_MXA24": {
+            "platform": {
+                "$regex": r"^MXA24"
+            }
+        },
+        "is_platform_MXA32": {
+            "platform": {
+                "$regex": r"^MXA32"
+            }
+        },
+        "is_platform_MXA64": {
+            "platform": {
+                "$regex": r"^MXA64"
+            }
+
+        }
+    }
