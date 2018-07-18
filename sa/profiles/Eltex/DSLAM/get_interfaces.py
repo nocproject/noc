@@ -78,7 +78,7 @@ class Script(BaseScript):
             for match1 in self.rx_adsl_sub.finditer(v):
                 ifnumber += 1
                 sub = {
-                    "name": "%s.%s" % (ifname.replace("p", "adsl"), ifnumber),
+                    "name": "%s.%s" % (ifname, ifnumber),
                     "enabled_afi": ["BRIDGE", "ATM"],
                     "vpi": match1.group("vpi"),
                     "vci": match1.group("vci"),
