@@ -64,6 +64,7 @@ from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
+from noc.core.datastream.decorator import datastream
 
 # Increase whenever new field added
 MANAGEDOBJECT_CACHE_VERSION = 8
@@ -81,6 +82,7 @@ logger = logging.getLogger(__name__)
 @on_init
 @on_save
 @on_delete
+@datastream
 @on_delete_check(check=[
     # ("cm.ValidationRule.ObjectItem", ""),
     ("fm.ActiveAlarm", "managed_object"),
@@ -486,6 +488,12 @@ class ManagedObject(Model):
             return mo[0]
         else:
             return None
+
+    def iter_changed_datastream(self):
+        yield "managedobject", self.id
+        yield "cfgping", self.id
+        yield "cfgsyslog", self.id
+        yield "cfgtrap", self.id
 
     @property
     def data(self):
