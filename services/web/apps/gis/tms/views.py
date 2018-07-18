@@ -66,8 +66,7 @@ class TMSApplication(ExtApplication):
         tmsv1.appendChild(title)
         # <Abstract>
         abstract = doc.createElement("Abstract")
-        abstract.appendChild(doc.createTextNode("NOC Tile Map Service. "\
-                                                "http://nocproject.org/"))
+        abstract.appendChild(doc.createTextNode("NOC Tile Map Service. \"http://nocproject.org/\""))
         tmsv1.appendChild(abstract)
         # <TileMaps>
         tilemaps = doc.createElement("TileMaps")
