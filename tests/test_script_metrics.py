@@ -46,7 +46,7 @@ def test_percent_invert(value, total, expected):
 
 @pytest.mark.parametrize(
     "value,expected", [
-        ("09%", 9.0), ("09", 9.0), ("10%", 10.0), (None, 0)
+        ("09%", 9.0), ("09% ", 9.0), ("09", 9.0), ("10%", 10.0), (None, 0)
     ]
 )
 def test_convert_percent_str(value, expected):
