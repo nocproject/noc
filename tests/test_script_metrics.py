@@ -10,7 +10,7 @@
 import pytest
 # NOC modules
 from noc.core.script.metrics import (
-    percent, percent_invert, percent_usage, sum, subtract, is1, invert0
+    percent, percent_invert, percent_usage, convert_percent_str, sum, subtract, is1, invert0
 )
 
 
@@ -50,7 +50,7 @@ def test_percent_invert(value, total, expected):
     ]
 )
 def test_convert_percent_str(value, expected):
-    assert percent_invert(value) == expected
+    assert convert_percent_str(value) == expected
 
 
 @pytest.mark.parametrize(
