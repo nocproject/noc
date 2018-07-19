@@ -45,6 +45,15 @@ def test_percent_invert(value, total, expected):
 
 
 @pytest.mark.parametrize(
+    "value,expected", [
+        ("09%", 9.0), ("09", 9.0), ("10%", 10.0), (None, 0)
+    ]
+)
+def test_convert_percent_str(value, expected):
+    assert percent_invert(value) == expected
+
+
+@pytest.mark.parametrize(
     "values,expected", [((1.0,), 1.0), ((1.0, 2.0), 3.0), ((1.0, 2.0, 3.0), 6.0)]
 )
 def test_sum(values, expected):
