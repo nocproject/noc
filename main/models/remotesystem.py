@@ -40,6 +40,7 @@ class EnvItem(EmbeddedDocument):
     ("crm.SubscriberProfile", "remote_system"),
     ("crm.Supplier", "remote_system"),
     ("crm.SupplierProfile", "remote_system"),
+    ("fm.TTSystem", "remote_system"),
     ("inv.AllocationGroup", "remote_system"),
     ("inv.InterfaceProfile", "remote_system"),
     ("inv.NetworkSegment", "remote_system"),
