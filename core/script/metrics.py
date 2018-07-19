@@ -41,6 +41,17 @@ def percent_invert(value, total):
     return 100.0
 
 
+def convert_percent_str(x):
+    """
+    Convert 09% to 9.0 value
+    Convert 09 to 9.0 value
+    If x = None, return 0
+    """
+    if x:
+        return float(str(x).strip("% "))
+    return 0
+
+
 def sum(*args):
     """
     Returns sum of all arguments
