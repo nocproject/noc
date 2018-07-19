@@ -13,12 +13,13 @@ import datetime
 import logging
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, ListField, IntField,
+from mongoengine.fields import (StringField, ListField, IntField, ReferenceField,
                                 DateTimeField, BooleanField)
 import cachetools
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -54,6 +55,11 @@ class TTSystem(Document):
     telemetry_sample = IntField(default=0)
     #
     tags = ListField(StringField())
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
