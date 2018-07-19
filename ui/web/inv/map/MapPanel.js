@@ -189,6 +189,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
         me.nodeMenuObject = null;
         me.nodeMenuObjectType = null;
+        me.tip = Ext.create("Ext.tip.ToolTip", {
+            dismissDelay: 0,
+            saveDelay: 0,
+            // showDelay: 0,
+            // hideDelay: 100,
+            closable: true,
+            autoShow: false
+        });
         //
         me.callParent();
     },
@@ -239,7 +247,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
         me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
         me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
-        me.paper.on("link:mouseover", Ext.bind(me.onLinkOver, me));
+        me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
+        me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
         me.fireEvent("mapready");
     },
 
@@ -505,7 +514,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
 
     onLinkOver: function(link, evt) {
-        var me = this, tip, data, body = [],
+        var me = this, data, body = [],
             nameByPort = function(portId) {
                 var elementNameAttr = "name";
                 if(me.app.addressIPButton.pressed) {
@@ -518,7 +527,10 @@ Ext.define("NOC.inv.map.MapPanel", {
                     return link.model.getSourceElement().get(elementNameAttr)
                 }
             };
-        if(me.overlayMode === me.LO_LOAD) {
+        // prevent bounce
+        me.popupOffsetX = evt.offsetX;
+        me.popupOffsetY = evt.offsetY;
+        if(me.overlayMode === me.LO_LOAD && me.tip.isHidden()) {
             data = link.model.get("data");
             Ext.each(data.metrics, function(metric) {
                 var names = [], values = [];
@@ -530,12 +542,17 @@ Ext.define("NOC.inv.map.MapPanel", {
                     , values.join(" / "), names.join(" / "), nameByPort(metric.port)));
             });
             if(body.length) {
-                tip = Ext.create("Ext.tip.ToolTip", {
-                    html: "<table style='font-size: 10px'>" + body.join("") + "</table>",
-                    dismissDelay: 2000
-                });
-                tip.showAt([evt.pageX, evt.pageY]);
+                me.tip.html = "<table style='font-size: 10px'>" + body.join("") + "</table>";
+                me.tip.showAt([evt.pageX, evt.pageY]);
             }
+        }
+    },
+
+    onLinkOut: function(link, evt) {
+        var me = this;
+        // prevent bounce
+        if(me.popupOffsetX !== evt.offsetX && me.popupOffsetY !== evt.offsetY) {
+            me.tip.hide();
         }
     },
 
