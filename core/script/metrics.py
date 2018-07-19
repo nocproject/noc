@@ -49,8 +49,7 @@ def convert_percent_str(x):
     """
     if x:
         return float(str(x).strip("% "))
-    else:
-        return 0
+    return 0
 
 
 def sum(*args):
