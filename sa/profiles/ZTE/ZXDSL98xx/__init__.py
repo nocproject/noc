@@ -29,3 +29,11 @@ class Profile(BaseProfile):
     command_submit = "\r"
     command_exit = "logout"
     telnet_send_on_connect = "\n"
+
+    matchers = {
+        "is_9806h": {
+            "platform": {
+                "$regex": "9806H"
+            }
+        }
+    }

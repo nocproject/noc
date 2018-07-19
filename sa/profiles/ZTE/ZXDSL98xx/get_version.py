@@ -31,7 +31,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
         if match:
