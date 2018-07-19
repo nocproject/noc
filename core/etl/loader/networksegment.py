@@ -6,8 +6,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from __future__ import absolute_import
 # NOC modules
-from base import BaseLoader
+from .base import BaseLoader
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
 
