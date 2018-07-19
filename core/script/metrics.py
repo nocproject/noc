@@ -45,8 +45,12 @@ def convert_percent_str(x):
     """
     Convert 09% to 9.0 value
     Convert 09 to 9.0 value
+    If x = None, return 0
     """
-    return float(x.strip("% "))
+    if x:
+        return float(str(x).strip("% "))
+    else:
+        return 0
 
 
 def sum(*args):
