@@ -11,6 +11,7 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.script.error import CLIOperationError
 
 
 class Profile(BaseProfile):
@@ -343,13 +344,9 @@ class Profile(BaseProfile):
                     vlans += [self.get_vlan(script, l)]
         return vlans
 
-    rx_blocked_session = re.compile(
-        ".*System locked by other session!", re.MULTILINE | re.DOTALL)
-
     def cleaned_config(self, config):
-        # if self.rx_blocked_session.search(config):
         if "System locked by other session!" in config:
-            raise BaseException("System locked by other session!")
+            raise CLIOperationError("System locked by other session!")
         config = super(Profile, self).cleaned_config(config)
         return config
 
