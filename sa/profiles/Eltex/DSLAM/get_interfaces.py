@@ -30,7 +30,7 @@ class Script(BaseScript):
         "^\s+MAC address:\s+(?P<mac>\S+)\s*\n"
         "^\s+Netmask:\s+(?P<ip_subnet>\d+\S+)\s*\n", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         cmd = self.cli("switch show port state")
         items = self.profile.iter_items(cmd)
