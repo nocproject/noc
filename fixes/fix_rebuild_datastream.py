@@ -8,10 +8,12 @@
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.datastream.change import bulk_datastream_changes
 
 
 def fix():
-    with bulk_datastream_changes():
-        for mo in ManagedObject.objects.all():
-            mo.save()  # Force datastream rebuild
+    for model in [AdministrativeDomain, ManagedObject]:
+        with bulk_datastream_changes():
+            for obj in model.objects.all():
+                obj.save()  # Force datastream rebuild
