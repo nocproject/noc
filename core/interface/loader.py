@@ -44,17 +44,18 @@ class InterfaceLoader(object):
                 logger.error("Invalid interface name")
                 return None
             imname = name.lower()
-            if os.path.exists(
-                    os.path.join(
-                        config.path.custom_path, "sa", "interfaces", "%s.py" % imname)):
-                # Custom script
-                custom_name = os.path.basename(config.path.custom_path)
-                module_name = "%s.sa.interfaces.%s" % (custom_name, imname)
-            elif os.path.exists(
-                    os.path.join(
-                        "sa", "interfaces", "%s.py" % imname)):
-                # Common script
-                module_name = "noc.sa.interfaces.%s" % imname
+            for p in config.get_customized_paths("", prefer_custom=True):
+                if os.path.exists(
+                        os.path.join(
+                            p, "sa", "interfaces", "%s.py" % imname)):
+                    if p:
+                        # Custom script
+                        base_name = os.path.basename(config.path.custom_path)
+                    else:
+                        # Common script
+                        base_name = "noc"
+                    module_name = "%s.sa.interfaces.%s" % (base_name, imname)
+                    break
             else:
                 logger.error("Interface not found: %s", name)
                 self.interfaces[name] = None
@@ -95,9 +96,7 @@ class InterfaceLoader(object):
         Scan all available scripts
         """
         ns = set()
-        custom_path = os.path.join(config.path.custom_path, "sa", "interfaces", "*.py")
-        base_path = os.path.join("sa", "interfaces", "*.py")
-        for gx in [base_path, custom_path]:
+        for gx in config.get_customized_paths(os.path.join("sa", "interfaces", "*.py")):
             for path in glob.glob(gx):
                 if path in ("base.py", "__init__.py"):
                     continue

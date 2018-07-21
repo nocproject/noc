@@ -104,10 +104,11 @@ class BaseAuthBackend(object):
         m = None
         import logging
         logger = logging.getLogger(__name__)
-        for mm in [
-            "%s.services.login.backends.%s" % (os.path.basename(config.path.custom_path), name),
-            "noc.services.login.backends.%s" % name
-        ]:
+        for p in config.get_customized_paths(""):
+            if p:
+                mm = "%s.services.login.backends.%s" % (os.path.basename(p), name)
+            else:
+                mm = "noc.services.login.backends.%s" % name
             try:
                 m = __import__(mm, {}, {}, "*")
                 logger.debug("Successfuly imported %s", m)

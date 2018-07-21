@@ -15,7 +15,7 @@ import platform
 from noc.config import config
 
 CHANGESET_LEN = 8
-BRAND_PATH = os.path.join(config.path.custom_path, "BRAND")
+BRAND_PATH = config.get_customized_paths("BRAND", prefer_custom=True)
 
 
 class cachedproperty(object):
@@ -90,11 +90,12 @@ class Version(object):
 
     @cachedproperty
     def brand(self):
-        if os.path.exists(BRAND_PATH):
-            with open(BRAND_PATH) as f:
-                return f.read().strip()
-        else:
-            return config.brand
+        for p in BRAND_PATH:
+            if os.path.exists(p):
+                with open(p) as f:
+                    return f.read().strip()
+            else:
+                return config.brand
 
     @cachedproperty
     def os_version(self):

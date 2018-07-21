@@ -32,11 +32,11 @@ class MIBRegistry(object):
             return ".".join([self.mib[item[0]]] + [str(x) for x in item[1:]])
 
     def load_mibs(self):
-        dirs = ["cmibs"]
-        custom_path = os.path.join(config.path.custom_path, "cmibs")
-        if os.path.isdir(custom_path):
-            dirs += [custom_path]
-        for root in dirs:
+        # dirs = ["cmibs"]
+        # custom_path = os.path.join(config.path.custom_path, "cmibs")
+        # if os.path.isdir(custom_path):
+        #     dirs += [custom_path]
+        for root in config.get_customized_paths("cmibs"):
             logger.debug("Loading compiled MIBs from '%s'", root)
             for path, dirnames, filenames in os.walk(root):
                 for f in filenames:

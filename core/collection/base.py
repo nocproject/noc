@@ -29,7 +29,7 @@ from pymongo import UpdateOne
 
 class Collection(object):
     PREFIX = "collections"
-    CUSTOM_PREFIX = os.path.join(config.path.custom_path, "collections")
+    CUSTOM_PREFIX = config.get_customized_paths(PREFIX, prefer_custom=True)
     STATE_COLLECTION = "noc.collectionstates"
 
     _MODELS = {}
@@ -45,11 +45,11 @@ class Collection(object):
         self.partial_errors = {}
 
     def get_path(self):
-        path = [os.path.join(self.PREFIX, self.name)]
-        cp = os.path.join(self.CUSTOM_PREFIX, self.name)
-        if os.path.exists(cp):
-            path = [cp] + path
-        return path
+        # path = [os.path.join(self.PREFIX, self.name)]
+        # cp = os.path.join(self.CUSTOM_PREFIX, self.name)
+        # if os.path.exists(cp):
+        #     path = [cp] + path
+        return config.get_customized_paths(self.PREFIX, prefer_custom=True)
 
     @classmethod
     def iter_collections(cls):
@@ -157,6 +157,7 @@ class Collection(object):
         :return:
         """
         items = {}
+        print("Collection path", self.get_path())
         for p in self.get_path():
             for root, dirs, files in os.walk(p):
                 for cf in files:

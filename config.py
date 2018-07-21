@@ -628,7 +628,7 @@ class Config(BaseConfig):
         else:
             return CH_SHARDED
 
-    def get_customized_paths(self, prefer_custom=False, *args):
+    def get_customized_paths(self, *args, **kwargs):
         """
         Check for customized path for given repo path.
         Repo path may be given in os.path.join-style components.
@@ -638,6 +638,7 @@ class Config(BaseConfig):
         :param args: Path or path components in os.path.join-style
         :return: List of possible paths
         """
+        prefer_custom = kwargs.get("prefer_custom", False)
         rpath = os.path.join(*args)
         if not self.path.custom_path:
             return [rpath]
