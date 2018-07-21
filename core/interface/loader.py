@@ -17,6 +17,7 @@ import os
 import re
 # NOC modules
 from .base import BaseInterface
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 

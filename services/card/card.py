@@ -111,26 +111,30 @@ class CardRequestHandler(UIHandler):
     def load_cards(cls):
         if not cls.CARDS:
             cls.CARDS = {}
-            custom_path = os.path.join(config.path.custom_path, "services/card/cards")
-            for b, r in [(os.path.basename(config.path.custom_path), custom_path), ("noc", "services/card/cards")]:
-                if not os.path.isdir(r):
+            for b, r in [(config.path.custom_path, "services/card/cards"),
+                         ("noc", "services/card/cards")]:
+                path = r
+                if b != "noc":
+                    path = os.path.join(b, r)
+                if not os.path.isdir(path):
                     continue
-                for f in os.listdir(r):
+                for f in os.listdir(path):
                     if not f.endswith(".py"):
                         continue
                     mn = "%s.%s.%s" % (
-                        b,
+                        os.path.basename(b),
                         r.replace("/", ".") if not r.startswith("..")
                         else r.replace("../%s" % b, "")[1:].replace("/", "."),
                         f[:-3]
                     )
+
                     m = __import__(mn, {}, {}, "*")
                     for d in dir(m):
                         c = getattr(m, d)
                         if (
-                            inspect.isclass(c) and
-                            issubclass(c, BaseCard) and
-                            c.__module__ == m.__name__ and
-                            getattr(c, "name", None)
+                                inspect.isclass(c) and
+                                issubclass(c, BaseCard) and
+                                c.__module__ == m.__name__ and
+                                getattr(c, "name", None)
                         ):
                             cls.CARDS[c.name] = c

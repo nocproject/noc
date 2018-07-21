@@ -101,27 +101,14 @@ class BaseAuthBackend(object):
         :param name: param name
         :return: found auth method
         """
-        import logging
-        logger = logging.getLogger(__name__)
         m = None
-        custom_path = os.path.join(config.path.custom_path, "services/login/backends")
         for mm in [
-            "%s/%s.py" % (custom_path, name),
-            "services/login/backends.%s.py" % name
+            "%s.services.login.backends.%s" % (config.path.custom_path.split("/")[-1], name),
+            "noc.services.login.backends.%s" % name
         ]:
-            if not os.path.exists(mm):
-                continue
-            if mm.startswith(".."):
-                mm = mm.replace(config.path.custom_path, "")[1:]
-            mn = "%s.%s" % (
-                os.path.basename(config.path.custom_path),
-                mm.replace("/", ".")[:-3]
-            )
             try:
-                m = __import__(mn, {}, {}, "*")
-                logger.debug("Successfuly imported %s", m)
+                m = __import__(mm, {}, {}, "*")
             except ImportError as e:
-                logger.debug("There was an error importing %s with %s %s", e, m, mn)
                 pass
         if m is None:
             return None

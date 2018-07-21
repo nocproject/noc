@@ -18,6 +18,7 @@ import re
 # NOC modules
 from noc.core.profile.loader import GENERIC_PROFILE
 from .base import BaseScript
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 

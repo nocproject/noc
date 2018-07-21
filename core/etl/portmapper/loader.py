@@ -9,12 +9,13 @@
 import inspect
 import logging
 # Python modules
+from __future__ import absolute_import
 import os
 
 from noc.config import config
 
 # NOC modules
-from base import BasePortMapper
+from .base import BasePortMapper
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class PortMapperLoader(object):
                         loader = o
                         break
                     logger.error("Loader not found: %s", name)
-            except ImportError, why:
+            except ImportError as why:
                 logger.error("Failed to load: %s", why)
                 loader = None
             self.loaders[name] = loader

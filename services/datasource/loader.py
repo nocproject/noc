@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------
 # DataSource loader
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
@@ -14,12 +12,10 @@ import inspect
 from .datasources.base import BaseDataSource
 from noc.config import config
 
-custom_path = os.path.join(config.path.custom_path, "services/datasource/datasources")
 PATHS = [
-    "services/datasource/datasources",
-    custom_path,
+    ("noc", "services/datasource/datasources"),
+    (config.path.custom_path, "services/datasource/datasources")
 ]
-
 # ds name -> ds cls
 DS_MAP = {}
 
@@ -35,13 +31,21 @@ def get_datasource(name):
 def load_datasources():
     global DS_MAP, PATHS
 
-    for path in PATHS:
+    for base_path, local_path in PATHS:
+        if not base_path:
+            continue
+        path = local_path
+        if base_path != "noc":
+            path = os.path.join(base_path, local_path)
         if not os.path.exists(path):
             continue
         for f in os.listdir(path):
             if not f.endswith(".py") or f.startswith("_") or f == "base.py":
                 continue
-            mn = "noc.%s.%s" % (path.replace("/", "."), f.rsplit(".", 1)[0].replace("/", "."))
+            mn = "%s.%s.%s" % (os.path.basename(base_path),
+                               local_path.replace("/", "."),
+                               f.rsplit(".", 1)[0].replace("/", "."))
+            print mn
             m = __import__(mn, {}, {}, "*")
             for n in dir(m):
                 o = getattr(m, n)
