@@ -102,14 +102,17 @@ class BaseAuthBackend(object):
         :return: found auth method
         """
         m = None
+        import logging
+        logger = logging.getLogger(__name__)
         for mm in [
-            "%s.services.login.backends.%s" % (config.path.custom_path.split("/")[-1], name),
+            "%s.services.login.backends.%s" % (os.path.basename(config.path.custom_path), name),
             "noc.services.login.backends.%s" % name
         ]:
             try:
                 m = __import__(mm, {}, {}, "*")
+                logger.debug("Successfuly imported %s", m)
             except ImportError as e:
-                pass
+                logger.debug("There was an error importing %s with %s %s", e, m, mm)
         if m is None:
             return None
         for a in dir(m):

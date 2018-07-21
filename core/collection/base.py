@@ -104,9 +104,9 @@ class Collection(object):
         if os.path.exists(lpath):
             with open(lpath) as f:
                 reader = csv.reader(f)
-                reader.next()  # Skip header
-                for name, id, path, hash in reader:
-                    state[id] = hash
+                next(reader)  # Skip header
+                for name, uuid, path, hash in reader:
+                    state[uuid] = hash
         return state
 
     def save_state(self, state):

@@ -6,16 +6,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-import inspect
-import logging
 # Python modules
 from __future__ import absolute_import
+import inspect
+import logging
 import os
-
-from noc.config import config
 
 # NOC modules
 from .base import BasePortMapper
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 

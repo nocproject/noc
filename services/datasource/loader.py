@@ -45,7 +45,6 @@ def load_datasources():
             mn = "%s.%s.%s" % (os.path.basename(base_path),
                                local_path.replace("/", "."),
                                f.rsplit(".", 1)[0].replace("/", "."))
-            print mn
             m = __import__(mn, {}, {}, "*")
             for n in dir(m):
                 o = getattr(m, n)
