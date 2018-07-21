@@ -70,7 +70,6 @@ class ScriptLoader(object):
                     # Generic script
                     module_name = "noc.sa.profiles.Generic.%s" % sn
                     is_generic = True
-                print module_name
                 try:
                     sm = __import__(module_name, {}, {}, "*")
                     for n in dir(sm):

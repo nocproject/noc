@@ -45,13 +45,11 @@ class MIBRegistry(object):
                     else:
                         # Common script
                         base_name = "noc"
-                    print(root, dirnames, base_name)
                     # mn = "%s.%s" % (base_name, fp[:-3].replace(os.path.sep, "."))
                     mn = "%s.cmibs.%s" % (
                         base_name,
                         f[:-3]
                     )
-                    print mn
                     m = __import__(mn, {}, {}, "*")
                     if hasattr(m, "NAME") and hasattr(m, "MIB"):
                         name = m.NAME
