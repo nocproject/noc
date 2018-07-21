@@ -25,7 +25,7 @@ class PortMapperLoader(object):
 
     def get_loader(self, name):
         loader = self.loaders.get(name)
-        custom_name = os.path.basename(config.path.custom_path)
+        custom_name = os.path.basename(os.path.dirname(config.path.custom_path))
         if not loader:
             logging.info("Loading %s", name)
             mn = "%s.etl.portmappers.%s" % (custom_name, name)

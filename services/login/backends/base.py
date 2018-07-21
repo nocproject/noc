@@ -106,7 +106,7 @@ class BaseAuthBackend(object):
         logger = logging.getLogger(__name__)
         for p in config.get_customized_paths(""):
             if p:
-                mm = "%s.services.login.backends.%s" % (os.path.basename(p), name)
+                mm = "%s.services.login.backends.%s" % (os.path.basename(os.path.dirname(p)), name)
             else:
                 mm = "noc.services.login.backends.%s" % name
             try:

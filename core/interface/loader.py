@@ -50,7 +50,7 @@ class InterfaceLoader(object):
                             p, "sa", "interfaces", "%s.py" % imname)):
                     if p:
                         # Custom script
-                        base_name = os.path.basename(config.path.custom_path)
+                        base_name = os.path.basename(os.path.dirname(config.path.custom_path))
                     else:
                         # Common script
                         base_name = "noc"

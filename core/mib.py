@@ -38,8 +38,20 @@ class MIBRegistry(object):
                 for f in filenames:
                     if not f.endswith(".py") or f == "__init__.py":
                         continue
-                    fp = os.path.join(path, f)
-                    mn = "noc.%s" % fp[:-3].replace(os.path.sep, ".")
+                    # fp = os.path.join(path, f)
+                    if root != "cmibs":
+                        # Custom script
+                        base_name = os.path.basename(os.path.dirname(root))
+                    else:
+                        # Common script
+                        base_name = "noc"
+                    print(root, dirnames, base_name)
+                    # mn = "%s.%s" % (base_name, fp[:-3].replace(os.path.sep, "."))
+                    mn = "%s.cmibs.%s" % (
+                        base_name,
+                        f[:-3]
+                    )
+                    print mn
                     m = __import__(mn, {}, {}, "*")
                     if hasattr(m, "NAME") and hasattr(m, "MIB"):
                         name = m.NAME

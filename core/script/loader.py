@@ -60,7 +60,7 @@ class ScriptLoader(object):
                     ):
                         if p:
                             # Custom script
-                            base_name = os.path.basename(p)
+                            base_name = os.path.basename(os.path.dirname(p))
                         else:
                             # Common script
                             base_name = "noc"
@@ -70,6 +70,7 @@ class ScriptLoader(object):
                     # Generic script
                     module_name = "noc.sa.profiles.Generic.%s" % sn
                     is_generic = True
+                print module_name
                 try:
                     sm = __import__(module_name, {}, {}, "*")
                     for n in dir(sm):
