@@ -24,7 +24,7 @@ class Script(BaseScript):
             return "Enabled" in r
         except self.CLISyntaxError:
             try:
-                r = self.cli("display stp | include disabled")
+                r = self.cli("display stp | include isabled")
                 return "Protocol Status" not in r
             except self.CLISyntaxError:
                 r = self.cli("display stp")
@@ -39,6 +39,16 @@ class Script(BaseScript):
         return "LLDP is not enabled" not in r \
             and "Global status of LLDP: Disable" not in r \
                 and "LLDP enable status:           disable" not in r
+
+    def has_lldp_snmp(self):
+        """
+        Check box has LLDP enabled
+        """
+        try:
+            r = self.snmp.get("1.3.6.1.4.1.2011.5.25.134.1.1.1.0")
+        except self.snmp.TimeOutError:
+            r = 0
+        return bool(r)
 
     @false_on_cli_error
     def has_ndp_cli(self):
@@ -92,7 +102,6 @@ class Script(BaseScript):
                 oids = ["1.3.6.1.2.1.47.1.1.1.1.5", "1.3.6.1.2.1.47.1.1.1.1.6"]
                 s_pos = 0
                 for index, type, pos in list(self.snmp.get_tables(oids, bulk=True)):
-                    print index, type, pos
                     if type == 5:
                         s_pos = pos
                     elif type == 9:

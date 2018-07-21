@@ -21,9 +21,12 @@ class Script(BaseScript):
 
     def execute(self, interface=None):
         r = []
-        for match in self.rx_line.finditer(self.cli("show ip arp")):
-            if (interface is not None) \
-            and (interface != match.group("interface")):
+        v = self.cli("show ip arp")
+        for match in self.rx_line.finditer(v):
+            if (
+                (interface is not None) and
+                interface != match.group("interface")
+            ):
                 continue
             r += [match.groupdict()]
         return r

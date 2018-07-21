@@ -21,7 +21,7 @@ class Script(BaseScript):
                           re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):
-        device_id = self.scripts.get_fqdn()
+        device_id_own = self.scripts.get_fqdn()
         # Get neighbors
         neighbors = []
 
@@ -35,6 +35,6 @@ class Script(BaseScript):
                 "remote_interface": match.group("remote_interface")
             }]
         return {
-            "device_id": device_id,
+            "device_id": device_id_own,
             "neighbors": neighbors
         }

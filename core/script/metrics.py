@@ -35,9 +35,21 @@ def percent_invert(value, total):
     Convert avail and total values to percent
     """
     if total:
-        return (float(total) - float(value)) * 100.0 / float(total) if value <= total else 100.00
-    else:
-        return 100.0
+        v = (float(total) - float(value)) * 100.0 / float(total)
+        if v >= 0.0:
+            return v
+    return 100.0
+
+
+def convert_percent_str(x):
+    """
+    Convert 09% to 9.0 value
+    Convert 09 to 9.0 value
+    If x = None, return 0
+    """
+    if x:
+        return float(str(x).strip("% "))
+    return 0
 
 
 def sum(*args):

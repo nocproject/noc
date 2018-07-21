@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ class Script(BaseScript):
 
     PORT_STATE = {
         "bkn": "broken",
+        "blk": "blocking",
         "dsbl": "disabled",
         "dscr": "discarding",
         "frw": "forwarding",
@@ -268,7 +269,7 @@ class Script(BaseScript):
         return r
 
     def execute(self):
-        v = self.cli("show spanning-tree")
+        v = self.cli("show spanning-tree", cached=True)
         if "Spanning tree enabled mode STP" in v:
             return self.process_pvst(v, proto="STP", sep="###### STP ")
         elif "Spanning tree enabled mode RSTP" in v:

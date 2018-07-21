@@ -8,6 +8,8 @@
 
 # Python modules
 from operator import attrgetter
+# Third-party modules
+from django.http import HttpResponse
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.ip.models.vrf import VRF
@@ -92,3 +94,28 @@ class PrefixApplication(ExtModelApplication):
                     }]
                     break
         return suggestions
+
+    @view(method=["DELETE"], url="^(?P<id>\d+)/recursive/$", access="delete", api=True)
+    def api_delete_recursive(self, request, id):
+        try:
+            o = self.queryset(request).get(**{self.pk: int(id)})
+        except self.model.DoesNotExist:
+            return self.render_json({
+                "status": False,
+                "message": "Not found"
+            }, status=self.NOT_FOUND)
+        # Check permissions
+        if not self.can_delete(request.user, o):
+            return self.render_json({
+                "status": False,
+                "message": "Permission denied"
+            }, status=self.FORBIDDEN)
+        try:
+            o.delete_recursive()
+        except ValueError as e:
+            return self.render_json(
+                {
+                    "success": False,
+                    "message": "ERROR: %s" % e
+                }, status=self.CONFLICT)
+        return HttpResponse(status=self.DELETED)

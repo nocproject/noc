@@ -13,14 +13,18 @@ from noc.lib.highlight import NOCHtmlFormatter
 from noc.core.profile.loader import loader as profile_loader
 
 
-#
-# Format macro:
-# Formats and highlights text
-# Args:
-#     syntax - name of the syntax.
-#
 class Macro(MacroBase):
+    """
+    #
+    # Format macro:
+    # Formats and highlights text
+    # Args:
+    #     syntax - name of the syntax.
+    #
+
+    """
     name = "format"
+
     @classmethod
     def handle(cls, args, text):
         if "syntax" in args:
@@ -31,13 +35,13 @@ class Macro(MacroBase):
             profile_name = format[4:]
             try:
                 profile = profile_loader.get_profile(profile_name)
-            except:
+            except Exception:
                 profile = None
                 format = "text"
             if profile:
                 return profile().highlight_config(text)
         try:
             lexer = get_lexer_by_name(format)
-        except:
+        except Exception:
             lexer = get_lexer_by_name("text")
         return highlight(text, lexer, NOCHtmlFormatter())

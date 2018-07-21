@@ -154,6 +154,7 @@ class InterfaceProfile(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _status_discovery_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
 
@@ -179,3 +180,16 @@ class InterfaceProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
     def get_default_profile(cls):
         return InterfaceProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_status_discovery_cache"), lock=lambda _: id_lock)
+    def get_with_status_discovery(cls):
+        """
+        Get list of interface profile ids with status_discovery = True
+        :return:
+        """
+        return list(x["_id"] for x in InterfaceProfile._get_collection().find({
+            "status_discovery": True
+        }, {
+            "_id": 1
+        }))

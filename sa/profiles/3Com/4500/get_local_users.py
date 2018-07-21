@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_local_users
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_local_users
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetLocalUsers
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "3Com.4500.get_local_users"
-    implements = [IGetLocalUsers]
+    interface = IGetLocalUsers
 
     rx_name = re.compile(r"^\S+\s+The contents of local user\s+(?P<username>\S+):$", re.MULTILINE)
     rx_status = re.compile(r"^\s+State:\s+(?P<status>\S+)")
@@ -30,20 +30,20 @@ class Script(noc.sa.script.Script):
             if name:
                 i = i + 1
                 stat = self.rx_status.search(data[i])
-                status = stat.group("status") == 'Active'
-                i = i + 10 
+                status = bool(stat.group("status") == 'Active')
+                i = i + 10
                 priv = self.rx_priv.search(data[i])
-                try:
+                if priv:
                     privilege = priv.group("privilege")
-                except:
-                    continue
+                else:
+                    privilege = ""
                 if privilege == "3":
                     user_class = "superuser"
                 else:
                     user_class = privilege
-                r.append({
+                r += [{
                     "username": name.group("username"),
                     "class": user_class,
-                    "is_active": True
-                    })
+                    "is_active": status
+                }]
         return r

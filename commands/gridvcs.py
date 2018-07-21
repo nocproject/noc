@@ -14,7 +14,7 @@ import os
 from noc.core.management.base import BaseCommand, CommandError
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.validators import is_int
-from noc.settings import config
+from noc.config import config
 from noc.core.fileutils import safe_rewrite
 
 
@@ -33,7 +33,8 @@ class Command(BaseCommand):
                             help="Apply to repo"
                             ),
         # mirror command
-        subparsers.add_parser("mirror", help="Mirror repo")
+        sp_mirr = subparsers.add_parser("mirror", help="Mirror repo")
+        sp_mirr.add_argument("-split", help="Split config by Pool/Adm. Domain", default="")
         # get command
         sp_get = subparsers.add_parser("get", help="Get current value")
         sp_get.add_argument(
@@ -49,6 +50,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.repo = options.get("repo")
+        self.split = options.get("split")
         if not self.repo or self.repo not in ["sa.managedobject.config"]:
             raise CommandError("Invalid repo")
         return getattr(self, "handle_%s" % options["cmd"])(args)
@@ -75,7 +77,7 @@ class Command(BaseCommand):
             return object.config.read()
 
     def handle_mirror(self, *args):
-        mirror = config.get("gridvcs", "mirror.%s" % self.repo) or None
+        mirror = config.path.config_mirror_path
         if not mirror:
             raise CommandError("No mirror path set")
         mirror = os.path.realpath(mirror)
@@ -84,8 +86,12 @@ class Command(BaseCommand):
             for o in ManagedObject.objects.filter(is_managed=True):
                 v = self.get_value(o)
                 if v:
-                    mpath = os.path.realpath(
-                        os.path.join(mirror, unicode(o)))
+                    if self.split == 'pool':
+                        mpath = os.path.realpath(
+                            os.path.join(mirror, unicode(o.pool.name), unicode(o)))
+                    else:
+                        mpath = os.path.realpath(
+                            os.path.join(mirror, unicode(o)))
                     if mpath.startswith(mirror):
                         self.out("   mirroring %s" % o)
                         safe_rewrite(mpath, v)

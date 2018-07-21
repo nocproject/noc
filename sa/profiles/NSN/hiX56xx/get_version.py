@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NSN.hiX56xx.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -21,8 +21,8 @@ class Script(BaseScript):
         r"System version\s+:\s+(?P<platform>\S+)/(?P<version>\S+)")
 
     def execute(self):
-        s = self.cli("show system-version", cached=True)
-        match = self.re_search(self.rx_ver, s)
+        v = self.cli("show system-version", cached=True)
+        match = self.rx_ver.search(v)
         r = {
             "vendor": "NSN",
             "platform": match.group("platform"),

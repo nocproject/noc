@@ -6,8 +6,7 @@
         height: 1px;
     }
 </style>
-
-<div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
+<div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger', 'unmanaged': 'default'}[current_state] }}">
     <div class="panel-heading">
         <a target="_blank" href="/#sa.managedobject/{{ id  }}">{{ object | managed_object_title }}</a>
         <span style="float: right">
@@ -246,16 +245,21 @@
             {% endif %}
 
 {% if links %}
+    <div class="panel-body">
+        <div class="container-fluid">
+
     <div class="row">
         <div class="col-sm-1">
             <b>{{ _("Neighbors") }}</b>
         </div>
-        <div class="col-sm-10">
-            <table class="table table-condensed hable-hover">
+        <div class="col-sm-11">
+            <table class="table table-condensed table-hover table-bordered">
                 <thead>
-                    <th class="col-sm-1">{{ _("Local port") }}</th>
+                    <th class="col-sm-2">{{ _("Local port") }}</th>
                     <th class="col-sm-4">{{ _("Remote object") }}</th>
                     <th class="col-sm-1">{{ _("Remote port") }}</th>
+                    <th class="col-sm-3">{{ _("Local description") }}</th>
+                    <th class="col-sm-3">{{ _("Remote description") }}</th>
                 </thead>
                 <tbody>
                     {% for l in links %}
@@ -267,17 +271,31 @@
                                     <i class="fa fa-arrow-circle-down" title="Downlink"></i>
                                 {% endif %}
                                 {% for i in l["local_interface"] %}
-                                {{ i.name }}{% if not loop.first %}, {% endif %}
+                                    <small>{{ i.name }}</small>
+                                    {% if not loop.first %}, {% endif %}
                                 {% endfor %}
+                                <br><small><a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=link&id={{ l.id }}&refresh=15m&orgId=1">{{ _("LinkGraph") }}</a></small>
                             </td>
                             <td>
-                                <a href="/api/card/view/managedobject/{{ l["remote_object"].id }}/">
-                                    {{ l["remote_object"] | managed_object_title }}
-                                </a>
+                                <small><a href="/api/card/view/managedobject/{{ l["remote_object"].id }}/">
+                                    {{ l["remote_object"] | managed_object_title }}</a></small>
                             </td>
                             <td>
                                 {% for i in l["remote_interface"] %}
-                                {{ i.name }}{% if not loop.first %}, {% endif %}
+                                    <small>{{ i.name }}</small>
+                                    {% if not loop.first %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for i in l["local_interface"] %}
+                                    <small>{{ i.description }}</small>
+                                    {% if not loop.first %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for i in l["remote_interface"] %}
+                                    <small>{{ i.description }}</small>
+                                    {% if not loop.first %}, {% endif %}
                                 {% endfor %}
                             </td>
                         </tr>
@@ -286,6 +304,8 @@
             </table>
         </div>
     </div>
+</div>
+</div>
 {% endif %}
 
 <div class="row">
@@ -296,7 +316,6 @@
         N/A
     </div>
 </div>
-
 
 {% if alarms %}
 <div class="row">
@@ -424,7 +443,7 @@
                 </td>
                 <td>
                     <a href="/api/card/view/service/{{ i["service"].id }}/">{{ i["service"].order_id }}</a>:
-                    {{ i["service"].subscriber.name }}
+                    {{ i["service"].subscriber.name if i["service"].subscriber else ""}}
                     {% if i["service_summary"] %}
                         <span class="pull-right small">
                             {{ i["service_summary"] | glyph_summary(True) }}

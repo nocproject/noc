@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -18,27 +18,50 @@ class Script(BaseScript):
     name = "MikroTik.RouterOS.get_version"
     cache = True
     interface = IGetVersion
-    #Some versions of Mikrotik return parameter values in quotes
+
+    # Some versions of Mikrotik return parameter values in quotes
     rx_ver = re.compile(
-        r"version: (?P<q>\"?)(?P<version>\d+\.\d+(\.\d+)?)(?P=q).+board-name: (?P<qp>\"?)(?P<platform>\D+?.\S+?)(?P=qp)\n",
-        re.MULTILINE | re.DOTALL)
-    rx_rb = re.compile(
-        r"serial-number: (?P<qs>\"?)(?P<serial>\S+?)(?P=qs)\n.+current-firmware: "
-        r"(?P<qb>\"?)(?P<boot>\d+\.\d+)(?P=qb)", re.MULTILINE | re.DOTALL)
+        r"^\s+version: (?P<q>\"?)(?P<version>.*)(?P=q)\s*\n", re.MULTILINE
+    )
+    rx_arch = re.compile(
+        r"^\s+architecture-name: (?P<q>\"?)(?P<arch>.*)(?P=q)\s*\n", re.MULTILINE
+    )
+    rx_platform = re.compile(
+        r"^\s+board-name: (?P<q>\"?)(?P<platform>.*)(?P=q)\s*\n", re.MULTILINE
+    )
+    rx_serial = re.compile(
+        r"^\s+serial-number: (?P<q>\"?)(?P<serial>\S+?)(?P=q)\s*\n", re.MULTILINE
+    )
+    rx_boot = re.compile(
+        r"^\s+current-firmware: (?P<q>\"?)(?P<boot>\S+?)(?P=q)\s*\n", re.MULTILINE
+    )
 
     def execute(self):
         v = self.cli("system resource print")
-        match = self.re_search(self.rx_ver, v)
+        version = self.rx_ver.search(v).group("version")
+        if " " in version:
+            version = version.split(" ", 1)[0]
+        platform = self.rx_platform.search(v).group("platform")
+        match = self.rx_arch.search(v)
+        if match:
+            arch = match.group("arch")
+            # platform = "%s (%s)" % (platform, arch)
+        else:
+            arch = None
         r = {
             "vendor": "MikroTik",
-            "platform": match.group("platform"),
-            "version": match.group("version"),
+            "platform": platform,
+            "version": version,
+            "attributes": {}
         }
-        if r["platform"] not in ["x86", "CHR"]:
+        if "x86" not in platform and "CHR" not in platform:
             v = self.cli("system routerboard print")
-            rb = self.re_search(self.rx_rb, v)
-            if rb:
-                r.update({"attributes": {}})
-                r["attributes"].update({"Serial Number": rb.group("serial")})
-                r["attributes"].update({"Boot PROM": rb.group("boot")})
+            match = self.rx_serial.search(v)
+            if match:
+                r["attributes"]["Serial Number"] = match.group("serial")
+            match = self.rx_boot.search(v)
+            if match:
+                r["attributes"]["Boot PROM"] = match.group("boot")
+            if arch:
+                r["attributes"]["Arch"] = arch
         return r

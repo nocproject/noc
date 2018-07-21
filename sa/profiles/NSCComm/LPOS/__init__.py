@@ -3,7 +3,7 @@
 # Vendor: NSCComm http://www.ecitele.com/
 # OS:     LPOS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NSCComm.LPOS"
-    pattern_prompt = r"^LPOS\s+> "
+    pattern_prompt = r"^(?P<hostname>\S+)\s+> "
     pattern_more = [
         (r"^\s+Press any key to continue", "\r\n"),
         (r"Press any letter key to start filtering items", "\x03\r")

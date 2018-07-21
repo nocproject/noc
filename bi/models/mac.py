@@ -9,6 +9,7 @@
 # Python modules
 from collections import defaultdict
 import datetime
+import six
 # NOC modules
 from noc.config import config
 from noc.core.clickhouse.model import Model
@@ -48,7 +49,7 @@ class MAC(Model):
       AND uni = 1;
     """
 
-    class Meta:
+    class Meta(object):
         db_table = "mac"
         engine = MergeTree("date", ("ts", "managed_object"))
 
@@ -106,13 +107,14 @@ class MAC(Model):
                 field = "MACNumToString(mac)"
             # @todo convert mac all
             if isinstance(query[k], list) and len(query[k]) == 1:
-                arg = query[k][0]
+                arg = query[k][0].strip()
+            elif isinstance(query[k], six.string_types):
+                arg = query[k].strip()
             else:
                 arg = query[k]
-            f_filter["$and"] += [{"$eq": [{"$field": field}, arg]}]
+            f_filter["$and"] += [{"$%s" % q: [{"$field": field}, arg]}]
         if not f_filter:
             return
-        print f_filter
         fields = [{"expr": "argMax(ts, ts)", "alias": "timestamp", "order": 0},
                   {"expr": "mac", "alias": "mac", "group": 1},
                   {"expr": "vlan", "alias": "vlan", "group": 2},
@@ -123,9 +125,7 @@ class MAC(Model):
             fields[1]["expr"] = "MACNumToString(mac)"
         # @todo paging (offset and limit)
         # @todo check in list
-        ch_query = {"fields": fields,
-                    "filter": f_filter}
-        ch_query["limit"] = limit
+        ch_query = {"fields": fields, "filter": f_filter, "limit": limit}
         if offset:
             ch_query["offset"] = offset
         res = self.query(ch_query)

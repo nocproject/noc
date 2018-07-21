@@ -39,7 +39,7 @@ class Script(BaseScript):
             return True
         return False
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         def qn(s):
             s = s.strip()
             if s.startswith("Eth VLAN "):

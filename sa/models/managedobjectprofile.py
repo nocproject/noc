@@ -13,12 +13,10 @@ from threading import Lock
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.template import Template, Context
 import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from .authprofile import AuthProfile
-from noc.lib.validators import is_fqdn
 from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
@@ -33,6 +31,13 @@ from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, Boolea
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
 from noc.core.window import wf_choices
+from noc.ip.models.prefixprofile import PrefixProfile
+from noc.ip.models.addressprofile import AddressProfile
+from noc.vc.models.vpnprofile import VPNProfile
+from noc.main.models.extstorage import ExtStorage
+from noc.main.models.template import Template
+from noc.core.datastream.decorator import datastream
+
 
 m_valid = DictListParameter(attrs={
     "metric_type": ObjectIdParameter(required=True),
@@ -63,6 +68,7 @@ id_lock = Lock()
 @on_init
 @on_save
 @bi_sync
+@datastream
 @on_delete_check(check=[
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
@@ -93,7 +99,9 @@ class ManagedObjectProfile(models.Model):
                                      blank=True, null=True)
     # IPAM Synchronization
     # During ManagedObject save
+    # @todo: Remove
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
+    # @todo: Remove
     fqdn_template = models.TextField(_("FQDN template"),
                                      null=True, blank=True)
     # @todo: Name validation function
@@ -169,18 +177,28 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_config = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_asset = models.BooleanField(default=False)
-    # Collect hardware configuration
+    # Process topology from NRI
     enable_box_discovery_nri = models.BooleanField(default=False)
-    # VRF discovery
-    enable_box_discovery_vrf = models.BooleanField(default=False)
-    # IP discovery (neighbbors)
-    enable_box_discovery_address = models.BooleanField(default=False)
+    # Process NRI portmapping
+    enable_box_discovery_nri_portmap = models.BooleanField(default=False)
+    # Process NRI service binding
+    enable_box_discovery_nri_service = models.BooleanField(default=False)
+    # VPN discovery (interface)
+    enable_box_discovery_vpn_interface = models.BooleanField(default=False)
+    # VPN discovery (MPLS)
+    enable_box_discovery_vpn_mpls = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_address_interface = models.BooleanField(default=False)
+    # IP discovery (Management)
+    enable_box_discovery_address_management = models.BooleanField(default=False)
+    # IP discovery (DHCP)
+    enable_box_discovery_address_dhcp = models.BooleanField(default=False)
     # IP discovery (neighbbors)
-    enable_box_discovery_prefix = models.BooleanField(default=False)
+    enable_box_discovery_address_neighbor = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_prefix_interface = models.BooleanField(default=False)
+    # IP discovery (neighbbors)
+    enable_box_discovery_prefix_neighbor = models.BooleanField(default=False)
     # Collect static vlans
     enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD
@@ -421,6 +439,92 @@ class ManagedObjectProfile(models.Model):
         "Neighbor Cache TTL",
         default=0
     )
+    # VPN discovery profiles
+    vpn_profile_interface = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
+    vpn_profile_mpls = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
+    # Prefix discovery profiles
+    prefix_profile_interface = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    prefix_profile_neighbor = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    # Address discovery profiles
+    address_profile_interface = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_management = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_dhcp = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_neighbor = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    # Config mirror settings
+    config_mirror_storage = DocumentReferenceField(
+        ExtStorage,
+        null=True, blank=True
+    )
+    config_mirror_template = models.ForeignKey(
+        Template, verbose_name=_("Config Mirror Template"),
+        blank=True, null=True,
+        related_name="config_mirror_objects_set"
+    )
+    config_mirror_policy = models.CharField(
+        _("Config Mirror Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="C"
+    )
+    # Config validation settings
+    config_validation_policy = models.CharField(
+        _("Config Validation Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="C"
+    )
+    # Beef collection settings
+    beef_storage = DocumentReferenceField(
+        ExtStorage,
+        null=True, blank=True
+    )
+    beef_path_template = models.ForeignKey(
+        Template, verbose_name=_("Beef Path Template"),
+        blank=True, null=True,
+        related_name="beef_objects_set"
+    )
+    beef_policy = models.CharField(
+        _("Beef Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="D"
+    )
     #
     metrics = PickledField(blank=True)
     #
@@ -450,26 +554,19 @@ class ManagedObjectProfile(models.Model):
         else:
             return None
 
+    def iter_changed_datastream(self):
+        from noc.sa.models.managedobject import ManagedObject
+
+        for mo in ManagedObject.objects.filter(object_profile=self):
+            for c in mo.iter_changed_datastream():
+                yield c
+
     def iter_pools(self):
         """
         Iterate all pool instances covered by profile
         """
         for mo in self.managedobject_set.order_by("pool").distinct("pool"):
             yield mo.pool
-
-    def get_fqdn(self, object):
-        if self.fqdn_template:
-            # Render template
-            ctx = Context({"object": object})
-            f = Template(self.fqdn_template).render(ctx)
-            # Remove spaces
-            f = "".join(f.split())
-        else:
-            f = object.name
-        # Check resulting fqdn
-        if not is_fqdn(f):
-            raise ValueError("Invalid FQDN: %s" % f)
-        return f
 
     def on_save(self):
         box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery

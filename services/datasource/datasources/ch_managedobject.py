@@ -27,5 +27,7 @@ class CHManagedObjectDataSource(BaseDataSource):
                 mo.platform.name if mo.platform else "",
                 mo.version.version if mo.version else "",
                 mo.remote_id if mo.remote_id else "",
-                mo.remote_system.name if mo.remote_system else ""
+                mo.remote_system.name if mo.remote_system else "",
+                mo.administrative_domain.id,
+                mo.administrative_domain.name
             )

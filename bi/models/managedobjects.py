@@ -41,6 +41,7 @@ class ManagedObject(Model):
     administrative_domain = ReferenceField(AdministrativeDomain, description=_("Admin. Domain"))
     segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
     container = ReferenceField(Container, description=_("Container"))
+    location = StringField(description="Geo location")
     level = UInt16Field(description=_("Level"))
     # Coordinates
     x = Float64Field(description=_("Longitude"))
@@ -48,7 +49,8 @@ class ManagedObject(Model):
     # Management
     pool = ReferenceField(Pool, description=_("Pool Name"))
     name = StringField(description=_("Name"))
-    address = IPv4Field(description=_("Address"))
+    hostname = StringField(description=_("Hostaname"))
+    ip = IPv4Field(description=_("IP Address"))
     is_managed = BooleanField(description=_("Is Managed"))
     # Platform
     profile = ReferenceField(Profile, description=_("Profile"))
@@ -56,11 +58,11 @@ class ManagedObject(Model):
     platform = ReferenceField(Platform, description=_("Platform"))
     version = ReferenceField(Version, description=_("Version"))
     n_interfaces = Int32Field(description=_("Interface count"))
-    n_subscribers = Int32Field(description=_("Interface count"))
-    n_services = Int32Field(description=_("Interface count"))
+    n_subscribers = Int32Field(description=_("Subscribers count"))
+    n_services = Int32Field(description=_("Services count"))
     # Topology
     n_neighbors = Int32Field(description=_("Neighbors"))
-    n_links = Int32Field(description=_("Interface count"))
+    n_links = Int32Field(description=_("Links count"))
     nri_links = Int32Field(description=_("Links (NRI)"))
     mac_links = Int32Field(description=_("Links (MAC)"))
     stp_links = Int32Field(description=_("Links (STP)"))

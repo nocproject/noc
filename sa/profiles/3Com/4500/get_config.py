@@ -14,7 +14,8 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 class Script(BaseScript):
     name = "3Com.4500.get_config"
     interface = IGetConfig
+    cache = True
 
     def execute(self):
-        config = self.cli("display current-configuration")
+        config = self.cli("display current-configuration", cached=True)
         return self.cleaned_config(config)

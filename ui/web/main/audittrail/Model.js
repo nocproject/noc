@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.audittrail Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.audittrail.Model");
@@ -25,6 +25,10 @@ Ext.define("NOC.main.audittrail.Model", {
         },
         {
             name: "model_id",
+            type: "string"
+        },
+        {
+            name: "object_name",
             type: "string"
         },
         {

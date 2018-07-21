@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mpls_vpn import Script as BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 
 
@@ -21,6 +21,8 @@ class Script(BaseScript):
     rx_rd = re.compile(r"^\s+Route Distinguisher :\s+(?P<rd>\S+:\S+|<not set>)\s*", re.IGNORECASE)
     rx_int = re.compile(r"^(?:\s{,4}Interfaces :\s+|\s{6,})(?P<iface>.+?),?\s*$", re.IGNORECASE)
     rx_desc = re.compile(r"^\s+Description :\s+(?P<desc>.*)\s*", re.IGNORECASE)
+    rx_import = re.compile(r"^\s+Import VPN Targets :\s+(?P<rt_import>(\S+:\S+\s*){1,6}|<not set>)\s*", re.IGNORECASE)
+    rx_export = re.compile(r"^\s+Export VPN Targets :\s+(?P<rt_export>(\S+:\S+\s*){1,6}|<not set>)\s*", re.IGNORECASE)
     rx_vpn = re.compile(
         r"^VPN\-Instance :\s+(?P<vrf>\S+)\s*\n"
         r"^\s+(?P<description>.*)\n"
@@ -29,7 +31,7 @@ class Script(BaseScript):
         r"^\s+Interfaces :\s*\n"
         r"^\s+(?P<ifaces>.+)\s*\n", re.MULTILINE)
 
-    def execute(self, **kwargs):
+    def execute_cli(self, **kwargs):
         vpns = []
         try:
             v = self.cli("display ip vpn-instance verbose")
@@ -41,6 +43,7 @@ class Script(BaseScript):
                 vpns += [{
                     "type": "VRF",
                     "status": True,
+                    "vpn_id": "",
                     "name": match.group("vrf").strip(),
                     "interfaces": []
                 }]
@@ -61,6 +64,14 @@ class Script(BaseScript):
                 if match_desc:
                     vpns[-1]["description"] = match_desc.group("desc").strip()
                     continue
+                match_export = self.rx_export.match(l)
+                if match_export:
+                    vpns[-1]["rt_export"] = match_export.group("rt_export").split()
+
+                match_import = self.rx_import.match(l)
+                if match_import:
+                    vpns[-1]["rt_import"] = match_import.group("rt_import").split()
+
         if vpns:
             return vpns
         # Second attempt
@@ -69,6 +80,7 @@ class Script(BaseScript):
                 "type": "VRF",
                 "status": True,
                 "name": match.group("vrf").strip(),
+                "vpn_id": "",
                 "interfaces": match.group("ifaces").strip().split(" ")
             }
             description = match.group("description").strip()

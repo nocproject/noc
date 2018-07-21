@@ -2,20 +2,22 @@
 # ---------------------------------------------------------------------
 # SubInterface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
+from __future__ import absolute_import
 from noc.lib.nosql import (Document, PlainReferenceField,
                            ForeignKeyField, StringField,
                            ListField, IntField)
-from forwardinginstance import ForwardingInstance
-from interface import Interface
-from interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
+from noc.core.datastream.decorator import datastream
+from .forwardinginstance import ForwardingInstance
+from .interface import Interface
+from .interfaceprofile import InterfaceProfile
 
 
 SUBINTERFACE_AFI = (
@@ -39,6 +41,7 @@ TUNNEL_TYPES = (
 )
 
 
+@datastream
 class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",
@@ -62,8 +65,10 @@ class SubInterface(Document):
         ForwardingInstance, required=False)
     name = StringField()
     description = StringField(required=False)
-    profile = PlainReferenceField(InterfaceProfile,
-        default=InterfaceProfile.get_default_profile)
+    profile = PlainReferenceField(
+        InterfaceProfile,
+        default=InterfaceProfile.get_default_profile
+    )
     mtu = IntField(required=False)
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])
@@ -91,6 +96,9 @@ class SubInterface(Document):
 
     def __unicode__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
+
+    def iter_changed_datastream(self):
+        yield "managedobject", self.managed_object.id
 
     @property
     def effective_vc_domain(self):

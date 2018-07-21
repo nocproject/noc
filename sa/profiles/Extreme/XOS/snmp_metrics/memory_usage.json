@@ -1,0 +1,13 @@
+{
+  "$metric": "Memory | Usage",
+  "$type": "caplist",
+  "capability": "Stack | Member Ids",
+  "separator": " | ",
+  "default": "1",
+  "path": [0, "item", 0],
+  "oid": [
+    "1.3.6.1.4.1.1916.1.32.2.2.1.3.{{ item }}",
+    "1.3.6.1.4.1.1916.1.32.2.2.1.2.{{ item }}"
+  ],
+  "scale": "percent_invert"
+}

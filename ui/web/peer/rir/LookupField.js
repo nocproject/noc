@@ -8,5 +8,6 @@ console.debug("Defining NOC.peer.rir.LookupField");
 
 Ext.define("NOC.peer.rir.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.peer.rir.LookupField"
+    alias: "widget.peer.rir.LookupField",
+    uiStyle: "medium"
 });

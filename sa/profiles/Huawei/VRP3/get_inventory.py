@@ -5,13 +5,12 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
- 
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -21,8 +20,8 @@ class Script(BaseScript):
     rx_slot = re.compile(
         r"^\s*FrameId:0 slotId:\s*(?P<number>\d+)\s*\n"
         r"^\s*\S+ Board:\s*\n"
-        r"^\s*Pcb\s+Version:\s*(?P<part_no>\S+)\s+VER.(?P<revision>\S+)\s*\n",
-        re.MULTILINE)
+        r"^\s*Pcb\s+Version:\s*(?P<part_no>\S+)\s+VER.(?P<revision>\S+)\s*\n", re.MULTILINE
+    )
 
     def execute(self):
         r = []
@@ -35,11 +34,13 @@ class Script(BaseScript):
         }]
         v = self.cli("show version 0")
         for match in self.rx_slot.finditer(v):
-            r += [{
-                "type": "LINECARD",
-                "number": match.group("number"),
-                "vendor": "HUAWEI",
-                "part_no": match.group("part_no"),
-                "revision": match.group("revision")
-            }]
+            r += [
+                {
+                    "type": "LINECARD",
+                    "number": match.group("number"),
+                    "vendor": "HUAWEI",
+                    "part_no": match.group("part_no"),
+                    "revision": match.group("revision")
+                }
+            ]
         return r

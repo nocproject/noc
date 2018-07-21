@@ -16,7 +16,7 @@ import six
 # NOC modules
 from .params import BaseParameter
 
-DEFAULT_CONFIG = "legacy:///,yaml:///opt/noc/etc/settings.yml,env:///NOC"
+DEFAULT_CONFIG = "yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC"
 DEFAULT_DUMP_URL = "yaml://"
 
 
@@ -131,10 +131,10 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
             proto = pcls(self, p)
             proto.load()
 
-    def dump(self, url=DEFAULT_DUMP_URL):
+    def dump(self, url=DEFAULT_DUMP_URL, section=None):
         pcls = self.get_protocol(url)
         proto = pcls(self, url)
-        proto.dump()
+        proto.dump(section=section)
 
     def update(self, cfg):
         """

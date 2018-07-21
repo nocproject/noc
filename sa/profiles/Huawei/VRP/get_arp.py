@@ -11,7 +11,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_arp import Script as BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
 
@@ -20,10 +20,9 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_arp_line_vrp5 = re.compile(r"^(?P<ip>(\d+\.){3}\d+)\s+"
-        r"(?P<mac>[0-9a-f\-]+)\s+\d*\s*.{3}\s+(?P<interface>\S+)",
-        re.IGNORECASE | re.DOTALL | re.MULTILINE)
+                                  r"(?P<mac>[0-9a-f\-]+)\s+\d*\s*.{3}\s+(?P<interface>\S+)",
+                                  re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
-    @BaseScript.match(version__gte="5.0")
     def execute_vrp5(self, vrf=None):
         if self.match_version(version__startswith="5.3"):
             displayarp = "display arp"
@@ -35,10 +34,9 @@ class Script(BaseScript):
         return self.cli(displayarp, list_re=self.rx_arp_line_vrp5)
 
     rx_arp_line_vrp3 = re.compile(r"^\s*(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)"
-        r"\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+\d+\s+(?P<type>D|S)",
-        re.IGNORECASE | re.DOTALL | re.MULTILINE)
+                                  r"\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+\d+\s+(?P<type>D|S)",
+                                  re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
-    @BaseScript.match()
     def execute_vrp3(self, vrf=None):
         arp = self.cli("display arp")
         return [{
@@ -46,3 +44,9 @@ class Script(BaseScript):
             "interface": match.group("interface"),
             "mac": match.group("mac")
         } for match in self.rx_arp_line_vrp3.finditer(arp)]
+
+    def execute_cli(self):
+        if self.is_kernel_3:
+            return self.execute_vrp3
+        elif self.is_kernelgte_5:
+            return self.execute_vrp5

@@ -16,7 +16,7 @@ from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
-    name = "Cisco.ISMB.get_lldp_neighbors"
+    name = "Cisco.SMB.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
     rx_neighbor = re.compile(

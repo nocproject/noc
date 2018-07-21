@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$",
         re.MULTILINE | re.DOTALL)
     rx_neigh = re.compile(
-        r"^(?P<local_if>.e-\S+?|me\d|fxp0)\s.*?$",
+        r"^(?P<local_if>[x,g]e-\S+|me\d(\.\d)?|fxp0|et-\S+)\s.*?$",
         re.MULTILINE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
@@ -32,7 +32,7 @@ class Script(BaseScript):
         r"Chassis type\s+:\s+(?P<ch_type>.+)\n"
         r"Chassis ID\s+:\s(?P<id>\S+)\n"
         r"Port type\s+:\s(?P<p_type>.+)\n"
-        r"Port ID\s+:\s(?P<p_id>.+)\n"
+        r"(Port ID\s+:\s(?P<p_id>.+)\n)?"
         r"(Port description\s+:\s(?P<p_descr>.+)\n)?"
         r"(System name\s+:\s(?P<name>.+)\n)?",
         re.MULTILINE
@@ -44,7 +44,8 @@ class Script(BaseScript):
     )
     CHASSIS_TYPE = {
         "Mac address": 4,
-        "Network address": 5
+        "Network address": 5,
+        "Locally assigned": 7
     }
     PORT_TYPE = {
         "Interface alias": 1,
@@ -57,8 +58,7 @@ class Script(BaseScript):
     def execute_cli(self):
         if self.is_has_lldp:
             return self.execute_switch()
-        else:
-            return self.execute_other()
+        raise self.NotSupportedError()
 
     # Match mx, ex, qfx, acx
     def execute_switch(self):
@@ -89,6 +89,9 @@ class Script(BaseScript):
             n["remote_port"] = match.group("p_id")
             if match.group("p_descr"):
                 n["remote_port_description"] = match.group("p_descr")
+            # On some devices we are not seen `Port ID`
+            if not n["remote_port"] and n["remote_port_subtype"] == 1:
+                n["remote_port"] = n["remote_port_description"]
             if match.group("name"):
                 n["remote_system_name"] = match.group("name")
             # Get capability
@@ -113,9 +116,3 @@ class Script(BaseScript):
             if q['local_interface'].endswith(".0"):
                 q['local_interface'] = q['local_interface'][:-2]
         return r
-
-    #
-    # No lldp on M/T
-    #
-    def execute_other(self):
-        raise self.NotSupportedError()

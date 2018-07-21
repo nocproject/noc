@@ -497,7 +497,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["SC", __("SNMP, CLI")],
                                         ["CS", __("CLI, SNMP")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 },
                                 {
@@ -521,7 +520,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 },
                                 {
@@ -534,7 +532,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["E", __("Raise Privileges")],
                                         ["D", __("Don't Raise")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 },
                                 {
@@ -686,7 +683,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["o", __("Segmentate to existing segment")],
                                         ["c", __("Segmentate to child segment")]
                                     ],
-                                    value: "p"
                                 }
                             ]
                         }
@@ -713,7 +709,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P",
                                     allowBlank: false,
                                     tabIndex: 130,
                                     groupEdit: true
@@ -729,7 +724,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["l", __("Loopback address")],
                                         ["a", __("All interface addresses")]
                                     ],
-                                    value: "d",
                                     listeners: {
                                         scope: me,
                                         change: function(combo, newValue, oldValue, eOpts) {
@@ -762,7 +756,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["l", __("Loopback address")],
                                         ["a", __("All interface addresses")]
                                     ],
-                                    value: "d",
                                     listeners: {
                                         scope: me,
                                         change: function(combo, newValue, oldValue, eOpts) {
@@ -975,7 +968,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["D", __("Disable")],
                                         ["R", __("As Depended")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 },
                                 {
@@ -1028,7 +1020,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 }]
                         }, {
@@ -1044,7 +1035,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 }]
                         }
@@ -1073,7 +1063,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 },
                                 {
@@ -1095,7 +1084,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 },
                                 {

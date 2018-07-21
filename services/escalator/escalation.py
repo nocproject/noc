@@ -8,7 +8,6 @@
 
 # Python modules
 import logging
-import cachetools
 import datetime
 import operator
 import threading
@@ -75,7 +74,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         metrics["escalation_alarm_is_not_root"] += 1
         return
     #
-    escalation = escalation_cache[escalation_id]
+    escalation = AlarmEscalation.get_by_id(escalation_id)
     if not escalation:
         log("Escalation %s is not found, skipping",
             escalation_id)
@@ -263,7 +262,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                     # Notify consequences
                     for ca in cons_escalated:
                         c_tt_name, c_tt_id = ca.escalation_tt.split(":")
-                        cts = tt_system_id_cache[c_tt_name]
+                        cts = TTSystem.get_by_name(c_tt_name)
                         if cts:
                             tts = cts.get_system()
                             try:
@@ -333,7 +332,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
             return
         with Span(client="escalator", sample=PARENT_SAMPLE):
             c_tt_name, c_tt_id = tt_id.split(":")
-            cts = tt_system_id_cache[c_tt_name]
+            cts = TTSystem.get_by_name(c_tt_name)
             if cts:
                 tts = cts.get_system()
                 if close_tt:
@@ -386,42 +385,13 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                     tt_id)
                 metrics["escalation_tt_comment_fail"] += 1
     if notification_group_id:
-        notification_group = notification_group_cache[notification_group_id]
+        notification_group = NotificationGroup.get_by_id(notification_group_id)
         if notification_group:
             log("Sending notification to group %s", notification_group.name)
             notification_group.notify(subject, body)
             metrics["escalation_notify"] += 1
         else:
             log("Invalid notification group %s", notification_group_id)
-
-
-def get_item(model, **kwargs):
-    if not id:
-        return None
-    try:
-        return model.objects.get(**kwargs)
-    except model.DoesNotExist:
-        return None
-
-
-TTL = 60
-CACHE_SIZE = 256
-
-escalation_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(AlarmEscalation, id=x)
-)
-
-tt_system_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, id=x)
-)
-
-tt_system_id_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, name=x)
-)
-
-notification_group_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(NotificationGroup, id=x)
-)
 
 
 def get_next_retry():

@@ -2,30 +2,36 @@
 # ---------------------------------------------------------------------
 # Generic.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import time
 import os
-from threading import Lock
 import re
+import itertools
+import operator
+from collections import defaultdict
 # Third-party modules
 import six
 import ujson
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.core.script.base import BaseScript, BaseScriptMetaclass
 from noc.sa.interfaces.igetmetrics import IGetMetrics
-from noc.core.mib import mib
-from noc.core.handler import get_handler
-from noc.core.matcher import match
+from noc.core.script.oidrules.oid import OIDRule
+from noc.core.script.oidrules.bool import BooleanRule
+from noc.core.script.oidrules.capindex import CapabilityIndexRule
+from noc.core.script.oidrules.caplist import CapabilityListRule
+from noc.core.script.oidrules.caps import CapabilityRule
+from noc.core.script.oidrules.counter import CounterRule
+from noc.core.script.oidrules.hires import HiresRule
+from noc.core.script.oidrules.ifindex import InterfaceRule
+from noc.core.script.oidrules.match import MatcherRule
+from noc.core.script.oidrules.oids import OIDsRule
+from noc.core.script.oidrules.loader import load_rule, with_resolver
 
 NS = 1000000000.0
-
-OID_GENERATOR_TYPE = {}
-
-rx_rule_var = re.compile(r"{{\s*([^}]+?)\s*}}")
 
 
 class MetricConfig(object):
@@ -60,301 +66,175 @@ class BatchConfig(object):
         self.scale = scale
 
 
-class OIDRuleBase(type):
+# Internal sequence number for @metrics decorator ordering
+_mt_seq = itertools.count(0)
+
+
+def metrics(metrics, has_script=None, has_capability=None,
+            matcher=None, access=None, volatile=True):
+    """
+    Decorator to use inside get_metrics script to denote functions
+    which can return set of metrics
+
+    @metrics(["Metric Type1", "Metric Type2"])
+    def get_custom_metrics(self, metrics):
+        ...
+        self.set_metric(...)
+        ...
+
+    NB: set_metric() function applies metrics to local context.
+    @metrics decorator maps requested and applicable metrics to global result
+    Handler accepts *metrics* parameter containing list of MetricConfig
+    applicable to its types
+
+    :param metrics: string or list of metric type names
+    :param has_script: Match only if object has script
+    :param has_capability: Match only if object has capability
+    :param matcher: Match only if object fits to matcher
+    :param access: Required access. Should be
+        * S - for SNMP-only
+        * C - for CLI-only
+        * None - always match
+    :param volatile: True - Function call results may be changed over time
+        False - Function call results are persistent.
+        Function may be called only once
+    :return: None
+    """
+    def wrapper(f):
+        f.mt_seq = next(_mt_seq)
+        f.mt_metrics = metrics
+        f.mt_has_script = has_script
+        f.mt_has_capability = has_capability
+        f.mt_matcher = matcher
+        f.mt_access = access
+        f.mt_volatile = volatile
+        return f
+
+    if isinstance(metrics, six.string_types):
+        metrics = [metrics]
+    assert isinstance(metrics, list), "metrics must be string or list"
+    return wrapper
+
+
+class MetricScriptBase(BaseScriptMetaclass):
+    """
+    get_metrics metaclass. Performs @metrics decorator processing
+    """
     def __new__(mcs, name, bases, attrs):
-        m = type.__new__(mcs, name, bases, attrs)
-        OID_GENERATOR_TYPE[m.name] = m
+        m = super(MetricScriptBase, mcs).__new__(mcs, name, bases, attrs)
+        # Inject metric_type -> [handler] mappings
+        m._mt_map = defaultdict(list)
+        # Get @metrics handlers
+        for h in sorted(
+            (
+                getattr(m, n) for n in dir(m)
+                if hasattr(getattr(m, n), "mt_seq")
+            ),
+            key=operator.attrgetter("mt_seq"),
+            reverse=True
+        ):
+            for mt in h.mt_metrics:
+                m._mt_map[mt] += [h]
+        # Install oid rules
+        # Instantiate from base class' OID_RULES
+        parent_rules = getattr(bases[0], "_oid_rules", None)
+        if parent_rules:
+            m._oid_rules = parent_rules.copy()
+        else:
+            m._oid_rules = {}
+        # Append own rules from OID_RULES
+        m._oid_rules.update(dict((r.name, r) for r in m.OID_RULES))
+        # Load snmp_metrics/*.json
+        with with_resolver(m.get_oid_rule):
+            mcs.apply_snmp_rules(m)
         return m
 
-
-@six.add_metaclass(OIDRuleBase)
-class OIDRule(object):
-    """
-    SNMP OID generator for SNMP_OIDS
-    """
-    name = "oid"
-    default_type = "gauge"
-
-    def __init__(self, oid, type=None, scale=1, path=None):
-        self.oid = oid
-        self.is_complex = not isinstance(oid, six.string_types)
-        self.type = type or self.default_type
-        if isinstance(scale, six.string_types):
-            self.scale = get_handler(
-                "noc.core.script.metrics.%s" % scale
-            )
-        else:
-            self.scale = scale
-        self.path = path or []
-
-    def iter_oids(self, script, metric):
+    @classmethod
+    def apply_snmp_rules(mcs, script):
         """
-        Generator yielding oid, type, scale, path
-        :param script:
+        Initialize SNMP rules from JSON
+        :param script: Script class
+        :return:
+        """
+        pp = script.name.rsplit(".", 1)[0]
+        if pp == "Generic":
+            paths = [
+                os.path.join("sa", "profiles", "Generic", "snmp_metrics"),
+                os.path.join("custom", "sa", "profiles", "Generic", "snmp_metrics")
+            ]
+        else:
+            v, p = pp.split(".")
+            paths = [
+                os.path.join("sa", "profiles", "Generic", "snmp_metrics"),
+                os.path.join("sa", "profiles", v, p, "snmp_metrics"),
+                os.path.join("custom", "sa", "profiles", "Generic", "snmp_metrics"),
+                os.path.join("custom", "sa", v, p, "snmp_metrics")
+            ]
+
+        for path in paths:
+            if not os.path.exists(path):
+                continue
+            for root, dirs, files in os.walk(path):
+                for f in files:
+                    if f.endswith(".json"):
+                        mcs.apply_snmp_rules_from_json(
+                            script,
+                            os.path.join(root, f)
+                        )
+
+    @classmethod
+    def apply_snmp_rules_from_json(mcs, script, path):
+        # @todo: Check read access
+        with open(path) as f:
+            data = f.read()
+        try:
+            data = ujson.loads(data)
+        except ValueError as e:
+            raise ValueError(
+                "Failed to parse file '%s': %s" % (path, e)
+            )
+        if type(data) != dict:
+            raise ValueError(
+                "Error in file '%s': Must be defined as object" % path
+            )
+        if "$metric" not in data:
+            raise ValueError("$metric key is required")
+        script._mt_map[data["$metric"]] += [
+            mcs.get_snmp_handler(script, data["$metric"], load_rule(data))
+        ]
+
+    @classmethod
+    def get_snmp_handler(mcs, script, metric, rule):
+        """
+        Generate SNMP handler for @metrics
+        """
+        def f(self, metrics):
+            self.schedule_snmp_oids(rule, metric, metrics)
+
+        fn = mcs.get_snmp_handler_name(metric)
+        f.mt_has_script = None
+        f.mt_has_capability = "SNMP"
+        f.mt_matcher = None
+        f.mt_access = "S"
+        f.mt_volatile = False
+        setattr(script, fn, six.create_unbound_method(f, script))
+        ff = getattr(script, fn)
+        ff.__func__.__name__ = fn
+        return ff
+
+    rx_mt_name = re.compile("[^a-z0-9]+")
+
+    @classmethod
+    def get_snmp_handler_name(mcs, metric):
+        """
+        Generate python function name
         :param metric:
         :return:
         """
-        if self.is_complex:
-            yield tuple(self.oid), self.type, self.scale, self.path
-        else:
-            yield self.oid, self.type, self.scale, self.path
-
-    @classmethod
-    def load(cls, data):
-        """
-        Create from data structure
-        :param data:
-        :return:
-        """
-        if type(data) != dict:
-            raise ValueError("object required")
-        if "$type" not in data:
-            raise ValueError("$type key is required")
-        t = data["$type"]
-        if t not in OID_GENERATOR_TYPE:
-            raise ValueError("Invalid $type '%s'" % t)
-        return OID_GENERATOR_TYPE[t].from_json(data)
-
-    @classmethod
-    def from_json(cls, data):
-        kwargs = {}
-        for k in data:
-            if not k.startswith("$"):
-                kwargs[k] = data[k]
-        return cls(**kwargs)
-
-    @classmethod
-    def expand(cls, template, context):
-        """
-        Expand {{ var }} expressions in template with given context
-        :param template:
-        :param context:
-        :return:
-        """
-        return rx_rule_var.sub(
-            lambda x: str(context[x.group(1)]),
-            template
-        )
-
-    def expand_oid(self, **kwargs):
-        """
-        Apply kwargs to template and return resulting oid
-        :param kwargs:
-        :return:
-        """
-        if self.is_complex:
-            oids = tuple(mib[self.expand(o, kwargs)] for o in self.oid)
-            if None in oids:
-                return None
-            else:
-                return oids
-        else:
-            return mib[self.expand(self.oid, kwargs)]
+        return "get_snmp_json_%s" % mcs.rx_mt_name.sub("_", str(metric.lower()))
 
 
-class CounterRule(OIDRule):
-    """
-    SNMP OID for SNMP counters
-    """
-    name = "counter"
-    default_type = "counter"
-
-
-class BooleanRule(OIDRule):
-    """
-    SNMP OID for booleans
-    """
-    name = "bool"
-    default_type = "bool"
-
-
-@six.add_metaclass(OIDRuleBase)
-class OIDsRule(object):
-    """
-    Multiple items for single metric
-    """
-    name = "oids"
-
-    def __init__(self, oids):
-        self.oids = oids
-
-    def iter_oids(self, script, metric):
-        for rule in self.oids:
-            for r in rule.iter_oids(script, metric):
-                yield r
-
-    @classmethod
-    def from_json(cls, data):
-        if "oids" not in data:
-            raise ValueError("oids is required")
-        if type(data["oids"]) != list:
-            raise ValueError("oids must be list")
-        return OIDsRule(
-            oids=[OIDRule.from_json(d) for d in data["oids"]]
-        )
-
-
-@six.add_metaclass(OIDRuleBase)
-class MatcherRule(object):
-    """
-    Multiple items for single metric
-    """
-    name = "match"
-
-    def __init__(self, oids, matchers):
-        self.oids = oids
-        self.matchers = matchers
-
-    def iter_oids(self, script, metric):
-        ctx = script.version
-        for matcher, rule in self.oids:
-            # match(ctx, []) always True, Priority in metrics matcher config matcher
-            if (matcher is None or
-                    (match(ctx, self.matchers.get(matcher, [])) and matcher in self.matchers) or
-                    getattr(script, matcher, None)):
-                for r in rule.iter_oids(script, metric):
-                    yield r
-                else:
-                    # Only one match
-                    break
-
-    @classmethod
-    def from_json(cls, data):
-        if "$match" not in data:
-            raise ValueError("Matcher is required")
-        if type(data["$match"]) != list:
-            raise ValueError("$match must be list")
-        return MatcherRule(oids=[(d.get("$match"),
-                                  OIDRule.load(d)) for d in data["$match"]],
-                           matchers=data.get("$matchers", {}))
-
-
-@six.add_metaclass(OIDRuleBase)
-class CapabilityRule(object):
-    """
-    Capability-based selection
-
-    oids is the list of (Capability, OIDRule)
-    """
-    name = "caps"
-
-    def __init__(self, oids):
-        self.oids = oids
-
-    def iter_oids(self, script, metric):
-        for cap, oid in self.oids:
-            if script.has_capability(cap):
-                for r in oid.iter_oids(script, metric):
-                    yield r
-                break
-
-    @classmethod
-    def from_json(cls, data):
-        if "oids" not in data:
-            raise ValueError("oids is required")
-        if type(data["oids"]) != list:
-            raise ValueError("oids must be list")
-        return CapabilityRule(
-            oids=[OIDRule.load(d) for d in data["oids"]]
-        )
-
-
-@six.add_metaclass(OIDRuleBase)
-class HiresRule(object):
-    """
-    Select *hires* chain if SNMP | IF-MIB HC capability set,
-    Select *normal* capability otherwise
-    """
-    name = "hires"
-
-    def __init__(self, hires, normal):
-        self.hires = hires
-        self.normal = normal
-
-    def iter_oids(self, script, metric):
-        if script.has_capability("SNMP | IF-MIB | HC"):
-            g = self.hires.iter_oids
-        else:
-            g = self.normal.iter_oids
-        for r in g(script, metric):
-            yield r
-
-    @classmethod
-    def from_json(cls, data):
-        for v in ("hires", "normal"):
-            if v not in data:
-                raise ValueError("%s is required" % v)
-        return HiresRule(
-            hires=OIDRule.load(data["hires"]),
-            normal=OIDRule.load(data["normal"])
-        )
-
-
-class InterfaceRule(OIDRule):
-    """
-    Expand {{ifIndex}}
-    """
-    name = "ifindex"
-
-    def iter_oids(self, script, cfg):
-        if cfg.ifindex is not None:
-            oid = self.expand_oid(ifIndex=cfg.ifindex)
-            if oid:
-                yield oid, self.type, self.scale, cfg.path
-
-
-class CapabilityIndexRule(OIDRule):
-    """
-    Expand {{index}} to range given in capability
-    capability: Integer capability containing number of iterations
-    start: starting index
-    """
-    name = "capindex"
-
-    def __init__(self, oid, type=None, scale=1, start=0, capability=None):
-        super(CapabilityIndexRule, self).__init__(oid, type=type, scale=scale)
-        self.start = start
-        self.capability = capability
-
-    def iter_oids(self, script, cfg):
-        if self.capability and script.has_capability(self.capability):
-            for i in range(
-                self.start,
-                script.capabilities[self.capability] + self.start
-            ):
-                oid = self.expand_oid(index=i)
-                if oid:
-                    yield oid, self.type, self.scale, cfg.path
-
-
-class CapabilityListRule(OIDRule):
-    """
-    Expand {{item}} from capability
-    capability: String capability, separated by *separator*
-    separator: String separator, comma by default
-    strip: Strip resulting item, remove spaces from both sides
-    """
-    name = "caplist"
-
-    def __init__(self, oid, type=None, scale=1, capability=None,
-                 separator=",", strip=True):
-        super(CapabilityListRule, self).__init__(oid, type=type, scale=scale)
-        self.capability = capability
-        self.separator = separator
-        self.strip = strip
-
-    def iter_oids(self, script, cfg):
-        if self.capability and script.has_capability(self.capability):
-            for i in script.capabilities[self.capability].split(self.separator):
-                if self.strip:
-                    i = i.strip()
-                if not i:
-                    continue
-                oid = self.expand_oid(item=i)
-                if oid:
-                    yield oid, self.type, self.scale, cfg.path
-
-
+@six.add_metaclass(MetricScriptBase)
 class Script(BaseScript):
     """
     Retrieve data for topology discovery
@@ -366,14 +246,33 @@ class Script(BaseScript):
     # Define counter types
     GAUGE = "gauge"
     COUNTER = "counter"
-    #
-    _SNMP_OID_RULES = {}  # Profile -> metric type ->
-    _SNMP_OID_LOCK = Lock()
+
+    OID_RULES = [
+        OIDRule,
+        BooleanRule,
+        CapabilityIndexRule,
+        CapabilityListRule,
+        CapabilityRule,
+        CounterRule,
+        HiresRule,
+        InterfaceRule,
+        MatcherRule,
+        OIDsRule
+    ]
 
     def __init__(self, *args, **kwargs):
         super(Script, self).__init__(*args, **kwargs)
         self.metrics = []
         self.ts = None
+        # SNMP batch to be collected by collect_snmp_metrics
+        # oid -> BatchConfig
+        self.snmp_batch = {}
+        # Collected metric ids
+        self.seen_ids = set()
+        # get_path_hash(metric type, path) -> metric config
+        self.paths = {}
+        # metric type -> [metric config]
+        self.metric_configs = defaultdict(list)
 
     def get_snmp_metrics_get_timeout(self):
         """
@@ -390,6 +289,13 @@ class Script(BaseScript):
         """
         return self.profile.snmp_metrics_get_chunk
 
+    @staticmethod
+    def get_path_hash(metric, path):
+        if path:
+            return "\x00".join([metric] + [str(x) for x in path])
+        else:
+            return metric
+
     def execute(self, metrics):
         """
         Metrics is a list of:
@@ -399,47 +305,112 @@ class Script(BaseScript):
         * ifindex - optional ifindex
         * sla_test - optional sla test inventory
         """
+        # Generate list of MetricConfig from input parameters
         metrics = [MetricConfig(**m) for m in metrics]
+        # Split by metric types
+        self.paths = dict(
+            (self.get_path_hash(m.metric, m.path), m)
+            for m in metrics
+        )
+        for m in metrics:
+            self.metric_configs[m.metric] += [m]
+        # Process metrics collection
+        persistent = set()
+        for m in metrics:
+            if m.id in self.seen_ids:
+                self.logger.debug("[%s] Metric type is already collected. Skipping", m.metric)
+                continue  # Already collected
+            if m.metric not in self._mt_map:
+                self.logger.debug("[%s] Metric type is not supported. Skipping", m.metric)
+                continue
+            # Call handlers
+            for h in self.iter_handlers(m.metric):
+                hid = id(h)
+                if not h.mt_volatile and hid in persistent:
+                    continue  # persistent function already called
+                h(self, self.metric_configs[m.metric])
+                if not h.mt_volatile:
+                    persistent.add(hid)
+                if m.id in self.seen_ids:
+                    break  # Metric collected
+        # Request snmp metrics from box
+        if self.snmp_batch:
+            self.collect_snmp_metrics()
+        # Apply custom metric collection processes
         self.collect_profile_metrics(metrics)
-        if self.has_capability("SNMP"):
-            self.collect_snmp_metrics(metrics)
-        #
         return self.get_metrics()
+
+    def iter_handlers(self, metric):
+        """
+        Generator yilding possible handlers for metrics collection in order of preference
+        :param metric: Metric type name
+        :return: callable accepting *metrics*
+        """
+        def is_applicable(f):
+            if f.mt_has_script and f.mt_has_script not in self.scripts:
+                return False
+            if f.mt_has_capability and not self.has_capability(f.mt_has_capability):
+                return False
+            if f.mt_matcher and not getattr(self, f.mt_matcher, False):
+                return False
+            return True
+
+        pref = self.get_access_preference()
+        handlers = self._mt_map[metric]
+        pri = pref[0]
+        sec = pref[1] if len(pref) > 1 else None
+        # Iterate primary method
+        for h in handlers:
+            if (not h.mt_access or h.mt_access == pri) and is_applicable(h):
+                yield h
+        # Iterate secondary method
+        if sec:
+            for h in handlers:
+                if h.mt_access == sec and is_applicable(h):
+                    yield h
 
     def collect_profile_metrics(self, metrics):
         """
-        Profile extension
+        Profile extension for very custom logic
         """
         pass
 
-    def collect_snmp_metrics(self, metrics):
+    def schedule_snmp_oids(self, rule, metric, metrics):
         """
-        Collect all collectible SNMP metrics
+        Schedule SNMP oid collection for given metrics.
+        Used as partial function to build @metrics handler
+        for JSON snmp rules
+
+        :param rule: OIDRule instance
+        :param metrics: List of MetricConfig instances
+        :return:
         """
-        batch = {}
-        for m in metrics:
-            # Calculate oids
-            self.logger.debug("Make oid for metrics: %s" % m.metric)
-            snmp_rule = self.get_snmp_rule(m.metric)
-            if snmp_rule:
-                for oid, vtype, scale, path in snmp_rule.iter_oids(self, m):
-                    batch[oid] = BatchConfig(
-                        id=m.id,
-                        metric=m.metric,
-                        path=path,
-                        type=vtype,
-                        scale=scale
-                    )
-        self.logger.debug("Batch: %s" % batch)
+        for m in self.metric_configs[metric]:
+            for oid, vtype, scale, path in rule.iter_oids(self, m):
+                self.snmp_batch[oid] = BatchConfig(
+                    id=m.id,
+                    metric=m.metric,
+                    path=path,
+                    type=vtype,
+                    scale=scale
+                )
+                # Mark as seen to stop further processing
+                self.seen_ids.add(m.id)
+
+    def collect_snmp_metrics(self):
+        """
+        Collect all scheduled SNMP metrics
+        """
+
         # Run snmp batch
-        if not batch:
+        if not self.snmp_batch:
             self.logger.debug("Nothing to fetch via SNMP")
             return
         # Optimize fetching, aggregating up to GET_CHUNK
         # in single request
         snmp_get_chunk = self.get_snmp_metrics_get_chunk()
         oids = set()
-        for o in batch:
+        for o in self.snmp_batch:
             if isinstance(o, six.string_types):
                 oids.add(o)
             else:
@@ -469,7 +440,7 @@ class Script(BaseScript):
                     "SNMP error code %s", e.code
                 )
         # Process results
-        for oid in batch:
+        for oid in self.snmp_batch:
             ts = self.get_ts()
             if isinstance(oid, six.string_types):
                 if oid in results:
@@ -482,7 +453,7 @@ class Script(BaseScript):
                         oid
                     )
                     continue
-            elif callable(batch[oid].scale):
+            elif callable(self.snmp_batch[oid].scale):
                 # Multiple oids and calculated value
                 v = []
                 for o in oid:
@@ -513,7 +484,7 @@ class Script(BaseScript):
                     oid
                 )
                 continue
-            bv = batch[oid]
+            bv = self.snmp_batch[oid]
             self.set_metric(
                 id=bv.id,
                 metric=bv.metric,
@@ -535,16 +506,50 @@ class Script(BaseScript):
             self.ts = int(time.time() * NS)
         return self.ts
 
-    def set_metric(self, id, metric, value, ts=None,
-                   path=None, type="gauge", scale=1):
+    def set_metric(self, id, metric=None, value=0, ts=None,
+                   path=None, type="gauge", scale=1, multi=False):
         """
         Append metric to output
+        :param id:
+            Opaque id, as in request.
+            May be tuple of (metric, path), then it will be resolved automatically
+            and *metric* and *path* parameters may be ommited
+        :param metric: Metric type as string.
+            When None, try to get metric type from id tuple
+        :param value: Measured value
+        :param ts: Timestamp (nanoseconds precision)
+        :param path: Path. Either as requested, or refined.
+            When None, try to get from id tuple
+        :param type:
+            Measure type. Possible values:
+            "gauge"
+            "counter"
+            "delta"
+            "bool"
+        :param scale: Metric scale (Multiplier to be applied after all processing).
+            When callable, function will be called, passing value as positional argument
+        :param multi: True if single request can return several different paths.
+            When False - only first call with composite path for same path will be returned
         """
         if callable(scale):
             if not isinstance(value, list):
                 value = [value]
             value = scale(*value)
             scale = 1
+        if isinstance(id, tuple):
+            # Composite id, extract type and path and resolve
+            if not metric:
+                metric = id[0]
+            if not path:
+                path = id[1]
+            mc = self.paths.get(self.get_path_hash(*id))
+            if not mc:
+                # Not requested, ignoring
+                self.logger.info("Not requesting, ignoring")
+                return
+            id = mc.id
+            if not multi and id in self.seen_ids:
+                return  # Already seen
         self.metrics += [{
             "id": id,
             "ts": ts or self.get_ts(),
@@ -554,66 +559,46 @@ class Script(BaseScript):
             "type": type,
             "scale": scale
         }]
+        self.seen_ids.add(id)
 
     def get_metrics(self):
         return self.metrics
 
-    def get_snmp_rule(self, metric_type):
-        profile = self.profile.name
-        if profile not in self._SNMP_OID_RULES:
-            self.load_snmp_rules(profile)
-            self.logger.debug("Loading profile rules: %s" % self._SNMP_OID_RULES[profile])
-        return self._SNMP_OID_RULES[profile].get(metric_type)
-
     @classmethod
-    def load_snmp_rules(cls, profile):
+    def get_oid_rule(cls, name):
         """
-        Initialize SNMP rules from JSON
-        :param profile:
-        :return:
+        Returns OIDRule type by its name
+        :param name: oid rule type name
+        :return: OIDRule descendant or None
         """
-        with cls._SNMP_OID_LOCK:
-            if profile in cls._SNMP_OID_RULES:
-                # Load by concurrent thread
-                return
-            cls._SNMP_OID_RULES[profile] = {}
-            v, p = profile.split(".")
-            for path in [
-                os.path.join("sa", "profiles", "Generic", "snmp_metrics"),
-                os.path.join("sa", "profiles", v, p, "snmp_metrics"),
-                os.path.join("custom", "sa", "profiles", "Generic", "snmp_metrics"),
-                os.path.join("custom", "sa", v, p, "snmp_metrics")
-            ]:
-                cls.apply_rules_from_dir(
-                    cls._SNMP_OID_RULES[profile],
-                    path
-                )
+        return cls._oid_rules.get(name)
 
-    @classmethod
-    def apply_rules_from_dir(cls, rules, path):
-        if not os.path.exists(path):
-            return
-        for root, dirs, files in os.walk(path):
-            for f in files:
-                if f.endswith(".json"):
-                    cls.apply_rules_from_json(rules,
-                                              os.path.join(root, f))
-
-    @classmethod
-    def apply_rules_from_json(cls, rules, path):
-        # @todo: Check read access
-        with open(path) as f:
-            data = f.read()
-        try:
-            data = ujson.loads(data)
-        except ValueError as e:
-            raise ValueError(
-                "Failed to parse file '%s': %s" % (path, e)
-            )
-        if type(data) != dict:
-            raise ValueError(
-                "Error in file '%s': Must be defined as object" % path
-            )
-        if "$metric" not in data:
-            raise ValueError("$metric key is required")
-        rules[data["$metric"]] = OIDRule.load(data)
+    @metrics(
+        ["Interface | DOM | RxPower",
+         "Interface | DOM | Temperature", "Interface | DOM | TxPower",
+         "Interface | DOM | Voltage"],
+        has_capability="DB | Interfaces",
+        has_script="get_dom_status",
+        access="C",  # CLI version
+        volatile=False
+    )
+    def collect_dom_metrics(self, metrics):
+        r = {}
+        for m in self.scripts.get_dom_status():
+            ipath = ["", "", "", m["interface"]]
+            if m.get("temp_c") is not None:
+                self.set_metric(id=("Interface | DOM | Temperature", ipath),
+                                value=m["temp_c"])
+            if m.get("voltage_v") is not None:
+                self.set_metric(id=("Interface | DOM | Voltage", ipath),
+                                value=m["voltage_v"])
+            if m.get("optical_rx_dbm") is not None:
+                self.set_metric(id=("Interface | DOM | RxPower", ipath),
+                                value=m["optical_rx_dbm"])
+            if m.get("current_ma") is not None:
+                self.set_metric(id=("Interface | DOM | Bias Current", ipath),
+                                value=m["current_ma"])
+            if m.get("optical_tx_dbm") is not None:
+                self.set_metric(id=("Interface | DOM | TxPower", ipath),
+                                value=m["optical_tx_dbm"])
+        return r

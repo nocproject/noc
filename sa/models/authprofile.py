@@ -112,25 +112,35 @@ class AuthProfile(models.Model):
 
 class AuthProfileSuggestSNMP(models.Model):
     class Meta:
+        verbose_name = "Auth Profile Suggest SNMP"
+        verbose_name_plural = "Auth Profile Suggest SNMP"
         db_table = "sa_authprofilesuggestsnmp"
         app_label = "sa"
 
-    auth_profile = models.ForeignKey(AuthProfile)
+    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile")
     snmp_ro = models.CharField(
         "RO Community", blank=True, null=True, max_length=64)
     snmp_rw = models.CharField(
         "RW Community", blank=True, null=True, max_length=64)
 
+    def __unicode__(self):
+        return self.auth_profile.name
+
 
 class AuthProfileSuggestCLI(models.Model):
     class Meta:
+        verbose_name = "Auth Profile Suggest CLI"
+        verbose_name_plural = "Auth Profile Suggest CLI"
         db_table = "sa_authprofilesuggestcli"
         app_label = "sa"
 
-    auth_profile = models.ForeignKey(AuthProfile)
+    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile")
     user = models.CharField(
         "User", max_length=32, blank=True, null=True)
     password = models.CharField(
         "Password", max_length=32, blank=True, null=True)
     super_password = models.CharField(
         "Super Password", max_length=32, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.auth_profile.name

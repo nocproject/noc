@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -18,13 +19,12 @@ class Script(BaseScript):
     cache = True
     interface = IGetARP
 
-    def execute_snmp(self, **kwargs):
+    def execute_snmp(self, vrf=None, **kwargs):
         r = []
-        ifindexes = self.scripts.get_ifindexes()
-        ifmap = dict((ifindex, ifindexes[ifindex]) for ifindex in ifindexes)
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
         for oid, mac in self.snmp.getnext(mib["RFC1213-MIB::ipNetToMediaPhysAddress"]):
             ifindex, ip = oid[21:].split(".", 1)
-            ifname = ifmap.get(int(ifindex))
+            ifname = names.get(int(ifindex))
             if ifname:
                 r += [{
                     "ip": ip,

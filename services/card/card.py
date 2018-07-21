@@ -90,9 +90,11 @@ class CardRequestHandler(UIHandler):
                     self.set_header("Refresh", str(refresh))
                 except ValueError:
                     pass
+
             self.write(
                 self.get_card_template().render({
                     "card_data": data,
+                    "card_title": str(card.object),
                     "hashed": self.hashed,
                     "card_js": card.card_js,
                     "card_css": card.card_css

@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Link management CLI interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
@@ -32,6 +30,8 @@ class Command(BaseCommand):
             "Electrical | RJ45": self.check_ct_rj45,
             "Electrical | Power | IEC 60320 C14": self.check_ct_c14,
             "Electrical | SFF-8470": self.check_ct_sff8470,
+            "Optical | LC": self.check_optical_lc,
+            "Optical | SC": self.check_optical_lc,  # Same as 'Optical | LC'
             "Transceiver | SFP": self.check_ct_sfp,
             "Transceiver | SFP | Cisco": self.check_ct_sfp,
             "Transceiver | SFP+": self.check_ct_sfp_plus,
@@ -72,7 +72,9 @@ class Command(BaseCommand):
             for p in protocols:
                 if p in c.protocols:
                     return
-        self.e(c, "Must have one of protocols: %s" % ", ".join(protocols))
+        self.e(c, "Has \"%s\", but must have one of protocols: %s" % (
+            ", ".join(c.protocols), ", ".join(protocols)
+        ))
 
     def check_direction(self, c, directions):
         if (c.direction) and (c.direction in directions):
@@ -89,8 +91,10 @@ class Command(BaseCommand):
 
     def check_ct_rj45(self, c):
         self.check_direction(c, ["s"])
-        if not c.protocols:
-            self.e(c, "RJ45 must have at least one protocol")
+        self.check_protocols(c, [
+            "10BASET", "100BASETX", "1000BASETX", "2.5GBASET",
+            "5GBASET", "10GBASET", ">RS232", "DryContact"
+        ])
 
     def check_ct_c14(self, c):
         self.check_direction(c, ["s"])
@@ -102,6 +106,27 @@ class Command(BaseCommand):
         self.check_direction(c, ["s"])
         self.check_protocols(c, [
             "10GBASECX4"
+        ])
+
+    def check_optical_lc(self, c):
+        self.check_direction(c, ["s"])
+        self.check_protocols(c, [
+            ">100BASEFX-1310", "<100BASEFX-1310",
+            ">100BASEFX-1490", "<100BASEFX-1490",
+            ">100BASEFX-1550", "<100BASEFX-1550",
+            ">100BASELX-1310", "<100BASELX-1310",
+            ">100BASELX-1550", "<100BASELX-1550",
+            ">1000BASESX", "<1000BASESX",
+            ">1000BASELX-1310", "<1000BASELX-1310",
+            ">1000BASELX-1490", "<1000BASELX-1490",
+            ">1000BASELX-1550", "<1000BASELX-1550",
+            ">1000BASEEX-1310", "<1000BASEEX-1310",
+            ">1000BASEZX-1550", "<1000BASEZX-1550",
+            ">10GBASELR-1310", "<10GBASELR-1310",
+            ">10GBASEER-1550", "<10GBASEER-1550",
+            ">10GBASEZR-1550", "<10GBASEZR-1550",
+            ">10GBASEUSR", "<10GBASEUSR",
+            ">10GBASESR", "<10GBASESR"
         ])
 
     def check_ct_sfp(self, c):
@@ -124,8 +149,6 @@ class Command(BaseCommand):
 
     def check_ct_xfp(self, c):
         self.check_direction(c, ["i", "o"])
-        # TODO: Add "TransEth10G" protocol to models
-        return
         self.check_protocols(c, [
             "TransEth10G"
         ])
@@ -141,6 +164,7 @@ class Command(BaseCommand):
         self.check_protocols(c, [
             "TransEth10G"
         ])
+
 
 if __name__ == "__main__":
     Command().run()

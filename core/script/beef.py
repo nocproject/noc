@@ -2,168 +2,302 @@
 # ----------------------------------------------------------------------
 # Beef API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import json
-import re
-import uuid
 import os
-import glob
-import datetime
-# NOC modules
-from noc.core.fileutils import safe_rewrite
-from noc.config import config
+from collections import namedtuple
+import bisect
+import itertools
+# Third-party modules
+import ujson
+import six
+
+Box = namedtuple("Box", ["profile", "vendor", "platform", "version"])
+CLIFSM = namedtuple("CLIFSM", ["state", "reply"])
+CLI = namedtuple("CLI", ["names", "request", "reply"])
+MIB = namedtuple("MIB", ["oid", "value"])
 
 
 class Beef(object):
-    beef_args = [
-        "script", "vendor", "platform", "version", "image", "input",
-        "result", "cli", "snmp_get", "snmp_getnext", "http_get", "motd",
-        "mock_get_version", "ignore_timestamp_mismatch", "maxDiff",
-        "date", "private", "guid", "type"]
-
-    type_signature = "script::beef"
-    BEEF_ROOT = config.path.beef_prefix
-
-    def __init__(self, script=None):
-        self.guid = str(uuid.uuid4())
-        self.maxDiff = None
-        self.script = script
-        self.vendor = None
-        self.platform = None
+    def __init__(self):
         self.version = None
-        self.image = None
-        self.input = {}
-        self.result = None
-        self.motd = ""
+        self.uuid = None
+        self.spec = None
+        self.box = None
+        self.changed = None
+        self.description = None
+        self.cli_fsm = None
         self.cli = None
-        self.snmp_get = {}
-        self.snmp_getnext = {}
-        self.http_get = {}
-        self.mock_get_version = False  # Emulate get_version call
-        self.ignore_timestamp_mismatch = False
-        self.private = False
-        self.type = self.type_signature
-
-    @property
-    def uuid(self):
-        return self.guid
-
-    def load(self, path):
-        def q(s):
-            ts = type(s)
-            if ts == dict:
-                return dict((str(k), q(s[k])) for k in s)
-            elif ts == list:
-                return [q(x) for x in s]
-            elif isinstance(s, basestring):
-                return s.decode("string_escape")
-            else:
-                return s
-
-        with open(path) as f:
-            beef = json.load(f)
-        if beef.get("type") != self.type_signature:
-            raise ValueError("Signature mismatch")
-        for n in self.beef_args:
-            if n in beef:
-                setattr(self, n, q(beef[n]))
-        return self
-
-    rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
+        self.mib = None
+        self.mib_encoding = None
+        self.mib_oid_values = None
+        self.mib_oids = None
 
     @classmethod
-    def clean_timestamp(cls, r):
-        if isinstance(r, basestring):
-            # Process strings
-            if cls.rx_timestamp.match(r):
-                # Fill timestamp by zeroes
-                return "0000-00-00T00:00:00.000000"
-            else:
-                return r
-        elif isinstance(r, (list, tuple)):
-            # Iterate lists
-            return [cls.clean_timestamp(x) for x in r]
-        elif isinstance(r, dict):
-            # Iterate hashes
-            return dict([(k, cls.clean_timestamp(v)) for k, v in r.iteritems()])
-        else:
-            # Return unprocessed
-            return r
+    def from_json(cls, data):
+        if isinstance(data, six.string_types):
+            data = ujson.loads(data)
+        version = data.get("version", "1")
+        decoder = "decode_v%s" % version
+        beef = Beef()
+        if not hasattr(cls, decoder):
+            raise ValueError("Unknown beef version '%s'" % version)
+        getattr(beef, decoder)(data)
+        return beef
 
-    @classmethod
-    def load_by_id(cls, beef_id):
+    @staticmethod
+    def get_or_die(d, k):
+        if k not in d:
+            raise ValueError("Missed '%s' key" % k)
+        return d[k]
+
+    def decode_v1(self, data):
+        self.version = self.get_or_die(data, "version")
+        self.uuid = self.get_or_die(data, "uuid")
+        self.spec = self.get_or_die(data, "spec")
+        box = self.get_or_die(data, "box")
+        self.box = Box(
+            profile=self.get_or_die(box, "profile"),
+            vendor=self.get_or_die(box, "vendor"),
+            platform=self.get_or_die(box, "platform"),
+            version=self.get_or_die(box, "version")
+        )
+        self.changed = self.get_or_die(data, "changed")
+        self.description = data.get("description") or ""
+        self.cli_fsm = [
+            CLIFSM(
+                state=self.get_or_die(d, "state"),
+                reply=[str(n) for n in self.get_or_die(d, "reply")]
+            ) for d in self.get_or_die(data, "cli_fsm")
+        ]
+        self.cli = [
+            CLI(
+                names=[n for n in self.get_or_die(d, "names")],
+                request=str(self.get_or_die(d, "request")),
+                reply=[str(n) for n in self.get_or_die(d, "reply")]
+            ) for d in self.get_or_die(data, "cli")
+        ]
+        self.mib_encoding = self.get_or_die(data, "mib_encoding")
+        self.mib = [
+            MIB(
+                oid=self.get_or_die(d, "oid"),
+                value=self.get_or_die(d, "value")
+            ) for d in self.get_or_die(data, "mib")
+        ]
+        self._mib_decoder = getattr(self, "mib_decode_%s" % self.mib_encoding)
+        self.cli_encoding = self.get_or_die(data, "cli_encoding")
+        self._cli_decoder = getattr(self, "cli_decode_%s" % self.cli_encoding)
+
+    def get_data(self):
+        return {
+            "version": "1",
+            "uuid": self.uuid,
+            "spec": self.spec,
+            "box": {
+                "profile": self.box.profile,
+                "vendor": self.box.vendor,
+                "platform": self.box.platform,
+                "version": self.box.version
+            },
+            "changed": self.changed,
+            "description": self.description,
+            "cli_encoding": self.cli_encoding,
+            "cli_fsm": [{
+                "state": d.state,
+                "reply": d.reply
+            } for d in self.cli_fsm],
+            "cli": [{
+                "names": d.names,
+                "request": d.request,
+                "reply": d.reply
+            } for d in self.cli],
+            "mib_encoding": self.mib_encoding,
+            "mib": [{
+                "oid": d.oid,
+                "value": d.value
+            } for d in self.mib]
+        }
+
+    @staticmethod
+    def compress_gzip(data):
+        import gzip
+        f = six.StringIO()
+        with gzip.GzipFile(mode="wb", compresslevel=9, fileobj=f) as z:
+            z.write(data)
+        return f.getvalue()
+
+    @staticmethod
+    def compress_bz2(data):
+        import bz2
+        return bz2.compress(data)
+
+    @staticmethod
+    def decompress_gzip(data):
+        import gzip
+        f = six.StringIO(data)
+        with gzip.GzipFile(mode="rb", compresslevel=9, fileobj=f) as z:
+            return z.read()
+
+    @staticmethod
+    def decompress_bz2(data):
+        import bz2
+        return bz2.decompress(data)
+
+    def save(self, storage, path):
         """
-        Find beef by ID or by path
-        :return: Beef instance or None
+        Write beef to external storage. Compression depends on extension.
+        Following extensions are supported:
+        * .json - JSON without compression
+        * .json.gz - JSON with gzip compression
+        * .json.bz2 - JSON with bzip2 compression
+
+        :param storage: ExtStorage instance
+        :param path: Beef path
+        :return: Compressed, Uncompressed sizes
         """
-        # Load from file
-        if os.path.isfile(beef_id):
-            beef = Beef()
-            beef.load(beef_id)
-            return beef
-        # Load by UUID
+        data = ujson.dumps(self.get_data())
+        usize = len(data)
+        dir_path = os.path.dirname(path)
+        if path.endswith(".gz"):
+            data = self.compress_gzip(data)
+        elif path.endswith(".bz2"):
+            data = self.compress_bz2(data)
+        csize = len(data)
         try:
-            uuid.UUID(beef_id)
-        except ValueError:
+            with storage.open_fs() as fs:
+                if dir_path and dir_path != "/":
+                    fs.makedirs(dir_path, recreate=True)
+                fs.setbytes(path, bytes(data))
+        except storage.Error as e:
+            raise IOError(str(e))
+        return csize, usize
+
+    @classmethod
+    def load(cls, storage, path):
+        """
+        Load beef from storage
+        :param storage:
+        :param path:
+        :return:
+        """
+        if isinstance(storage, six.string_types):
+            # Load from URL
+            from fs import open_fs
+            from fs.errors import FSError
+            try:
+                with open_fs(storage) as fs:
+                    data = fs.getbytes(unicode(path))
+            except FSError as e:
+                raise IOError(str(e))
+        else:
+            # Load from external storage
+            try:
+                with storage.open_fs() as fs:
+                    data = fs.getbytes(unicode(path))
+            except storage.Error as e:
+                raise IOError(str(e))
+        if path.endswith(".gz"):
+            data = cls.decompress_gzip(data)
+        elif path.endswith(".json.bz2"):
+            data = cls.decompress_bz2(data)
+        return Beef.from_json(data)
+
+    def iter_fsm_state_reply(self, state):
+        """
+        Iterate fsm states
+        :param state:
+        :return:
+        """
+        for fsm in self.cli_fsm:
+            if fsm.state == state:
+                for reply in fsm.reply:
+                    yield self._cli_decoder(reply)
+                break
+
+    def iter_cli_reply(self, command):
+        """
+        Iterate fsm states
+        :param state:
+        :return:
+        """
+        cmd = str(command)
+        found = False
+        for c in self.cli:
+            if c.request == cmd:
+                for reply in c.reply:
+                    yield self._cli_decoder(reply)
+                found = True
+                break
+        if not found:
+            raise KeyError("Command not found")
+
+    @staticmethod
+    def mib_decode_base64(value):
+        """
+        Decode base64
+        :param value:
+        :return:
+        """
+        return value.decode("base64")
+
+    @staticmethod
+    def mib_decode_hex(value):
+        """
+        Decode base64
+        :param value:
+        :return:
+        """
+        return value.decode("hex")
+
+    @staticmethod
+    def cli_decode_quopri(value):
+        """
+        Decode quoted-printable
+        :param value:
+        :return:
+        """
+        return value.decode("quopri")
+
+    def get_mib_oid_values(self):
+        if self.mib_oid_values is None:
+            self.mib_oid_values = dict(
+                (m.oid, m.value) for m in self.mib
+            )
+        return self.mib_oid_values
+
+    def get_mib_value(self, oid):
+        """
+        Lookup mib and return oid value
+        :param oid:
+        :return: Binary OID data or None
+        """
+        v = self.get_mib_oid_values().get(oid)
+        if v is None:
             return None
-        #
-        for path in glob.glob(os.path.join(
-            cls.BEEF_ROOT, "*/*/*/*/%s.json" % beef_id
-        )):
-            beef = Beef()
-            beef.load(path)
-            return beef
-        return None
+        return self._mib_decoder(v)
 
-    def save(self, path):
-        def q(s):
-            ts = type(s)
-            if ts == datetime.datetime:
-                return s.isoformat()
-            elif ts == dict:
-                return dict((k, q(s[k])) for k in s)
-            elif ts == list:
-                return [q(x) for x in s]
-            elif ts == tuple:
-                return tuple([q(x) for x in s])
-            elif isinstance(s, basestring):
-                return str(s).encode("string_escape")
-            else:
-                return s
+    def get_mib_oids(self):
+        """
+        Return sorted list of MIB oids
+        :return:
+        """
+        if self.mib_oids is None:
+            self.mib_oids = sorted(
+                (tuple(int(c) for c in m.oid.split(".")) for m in self.mib)
+            )
+        return self.mib_oids
 
-        beef = dict((k, getattr(self, k, None)) for k in self.beef_args)
-        if not beef.get("date"):
-            beef["date"] = datetime.datetime.now()
-        if not beef.get("guid"):
-            beef["guid"] = str(uuid.uuid4())
-        beef = q(beef)
-        safe_rewrite(path, json.dumps(beef), mode=0644)
-
-    def set_version(self, vendor=None, platform=None, version=None,
-                    image=None, *args, **kwargs):
-        if vendor:
-            self.vendor = vendor
-        if platform:
-            self.platform = platform
-        if version:
-            self.version = version
-        if image:
-            self.image = image
-
-    def set_cli(self, command, result):
-        if self.cli is None:
-            self.cli = {}
-        self.cli[command] = result
-
-    def set_snmp_get(self, oid, result):
-        self.snmp_get[oid] = result
-
-    def set_result(self, result):
-        self.result = result
-
-    def set_motd(self, motd):
-        self.motd = motd
+    def iter_mib_oids(self, oid):
+        """
+        Generator yielding all consequentive oids
+        :param oid:
+        :return:
+        """
+        start = tuple(int(c) for c in oid.split("."))
+        oids = self.get_mib_oids()
+        i = bisect.bisect_left(oids, start)
+        for o in itertools.islice(oids, i, len(oids)):
+            yield ".".join(str(c) for c in o)

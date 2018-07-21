@@ -32,6 +32,7 @@ from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
 ac_lock = Lock()
+id_lock = Lock()
 
 
 class AlarmClassItem(EmbeddedDocument):
@@ -78,12 +79,18 @@ class AlarmEscalation(Document):
     pre_reasons = ListField(EmbeddedDocumentField(PreReasonItem))
     escalations = ListField(EmbeddedDocumentField(EscalationItem))
     global_limit = IntField()
-    max_escalation_retries = IntField(default=30) #@fixme make it configurable
+    max_escalation_retries = IntField(default=30)  # @fixme make it configurable
 
     _ac_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return AlarmEscalation.objects.filter(id=id).first()
 
     @property
     def delays(self):

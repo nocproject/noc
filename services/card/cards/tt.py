@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -28,6 +29,7 @@ class TTCard(BaseCard):
         if not tts:
             return None
         try:
+            tts = tts.get_system()
             tt = tts.get_tt(tt_id)
         except NotImplementedError:
             # TTSystem does not support TT preview, redirect to alarm

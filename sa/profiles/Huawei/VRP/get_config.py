@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-        self.cli("undo terminal monitor")
+        self.cli("undo terminal monitor", ignore_errors=True)
         config = self.cli("display current-configuration")
         config = self.profile.clean_spaces(config)
         return self.cleaned_config(config)

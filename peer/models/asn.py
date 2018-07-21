@@ -8,19 +8,26 @@
 
 # Python modules
 from __future__ import absolute_import
+from threading import Lock
+import operator
 # Third-party modules
 from django.db import models
+import cachetools
 # NOC modules
 from noc.project.models.project import Project
-from noc.settings import config
+from noc.config import config
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.fields import DocumentReferenceField
 from .person import Person
 from .organisation import Organisation
 from .maintainer import Maintainer
 from .rir import RIR
+from .asprofile import ASProfile
+
+id_lock = Lock()
 
 
 @on_delete_check(check=[
@@ -28,6 +35,7 @@ from .rir import RIR
     ("peer.PeeringPoint", "local_as"),
     ("ip.Prefix", "asn")
 ])
+@on_save
 class AS(models.Model):
     class Meta(object):
         verbose_name = "AS"
@@ -38,6 +46,10 @@ class AS(models.Model):
     asn = models.IntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
+    profile = DocumentReferenceField(
+        ASProfile,
+        null=False, blank=False
+    )
     project = models.ForeignKey(
         Project, verbose_name="Project",
         null=True, blank=True, related_name="as_set")
@@ -75,29 +87,31 @@ class AS(models.Model):
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
     rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
     tags = TagsField("Tags", null=True, blank=True)
+    rpsl = GridVCSField("rpsl_as")
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _asn_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return u"AS%d (%s)" % (self.asn, self.description)
 
-    def get_absolute_url(self):
-        return site.reverse("peer:as:change", self.id)
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        asn = AS.objects.filter(id=id)[:1]
+        if asn:
+            return asn[0]
+        return None
 
     @classmethod
-    def default_as(cls):
-        try:
-            return AS.objects.get(asn=0)
-        except AS.DoesNotExist:
-            # Try to create AS0
-            rir = RIR.objects.all()[0]
-            org = Organisation.objects.all()[0]
-            a = AS(asn=0, as_name="Default",
-                   description="Default AS, do not delete",
-                   rir=rir, organisation=org)
-            a.save()
-            return a
+    @cachetools.cachedmethod(operator.attrgetter("_asn_cache"), lock=lambda _: id_lock)
+    def get_by_asn(cls, asn):
+        asn = AS.objects.filter(asn=asn)[:1]
+        if asn:
+            return asn[0]
+        return None
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         sep = "remarks: %s" % ("-" * 72)
         s = []
         s += ["aut-num: AS%s" % self.asn]
@@ -137,7 +151,7 @@ class AS(models.Model):
                       peer.effective_local_pref, e_import_med, e_export_med,
                       peer.rpsl_remark)]
         # Build RPSL
-        inverse_pref = config.getboolean("peer", "rpsl_inverse_pref_style")
+        inverse_pref = config.peer.rpsl_inverse_pref_style
         for peer_group in pg:
             s += [sep]
             s += ["remarks: -- %s" % x
@@ -188,6 +202,16 @@ class AS(models.Model):
             s += ["remarks: %s" % x
                   for x in self.footer_remarks.split("\n")]
         return rpsl_format("\n".join(s))
+
+    def touch_rpsl(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+
+    def on_save(self):
+        self.touch_rpsl()
 
     @property
     def dot(self):

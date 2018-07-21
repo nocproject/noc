@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.reportalarmdetail application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.reportobjectdetail.Application");
@@ -26,6 +26,7 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["id", __("ID"), false],
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
+                ["object_hostname", __("Object Hostname"), true],
                 ["object_status", __("Object Status"), true],
                 ["profile_name", __("Profile"), true],
                 ["object_profile", __("Object Profile"), false],
@@ -33,10 +34,12 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["object_platform", __("Platform"), false],
                 ["object_version", __("SW Version"), false],
                 ["object_serial", __("Serial Number"), false],
+                ["auth_profile", __("Auth Profile"), false],
                 ["avail", __("Avail"), false],
                 ["admin_domain", __("Admin. Domain"), true],
                 ["container", __("Container"), false],
                 ["segment", __("Segment"), true],
+                ["adm_path", __("Adm Path"), true],
                 ["phys_interface_count", __("Physical Iface Count"), false],
                 ["link_count", __("Link Count"), false],
                 ["discovery_problem", __("Discovery Problem"), false],

@@ -30,11 +30,13 @@ class Command(BaseCommand):
                             help="Device profile"
                             ),
         parser.add_argument("--name", "-n",
-                            dest="output",
+                            dest="name",
                             action="store",
                             default="pl",
                             help="prefix-list name"
-                            ),
+                            )
+        parser.add_argument("args",
+                            nargs=1)
 
     def handle(self, *args, **options):
         # Check expression
@@ -59,11 +61,17 @@ class Command(BaseCommand):
         out.close()
 
     def build_prefix_list(self, out, expression, name, profile):
+        if not WhoisCache.has_asset_members():
+            self.die("AS-SET members cache is empty. Please update Whois Cache")
+        if not WhoisCache.has_origin_routes():
+            self.die("Origin routes cache is empty. Please update Whois Cache")
+        if not WhoisCache.has_asset(expression):
+            self.die("Unknown AS-SET")
         prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(expression)
         if profile is None:
             ll = "\n".join(p[0] for p in prefixes)
         else:
-            ll = profile.get_profile(profile)().generate_prefix_list(name, prefixes)
+            ll = profile.get_profile().generate_prefix_list(name, prefixes)
         if not ll.endswith("\n"):
             ll += "\n"
         out.write(ll)

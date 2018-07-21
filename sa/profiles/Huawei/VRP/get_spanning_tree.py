@@ -34,7 +34,7 @@ class Script(BaseScript):
                 continue
             R = R.split()
             interface = self.profile.convert_interface_name(R[1])
-            protection = R[-1]
+            # protection = R[-1]
             if R[0] == "(*)":
                 # Skip Last string (*) ....
                 continue
@@ -118,15 +118,15 @@ class Script(BaseScript):
                 "MSTP": {
                     "region": match.group("region"),
                     "revision": int(match.group("revision")),
-                    }
+                }
             }
         }
         iv = {}  # instance -> vlans
         instance_table = v.splitlines()[6:]
 
-        vlans = ""
+        # vlans = ""
         for row in instance_table:
-            s = row[0:13]
+            # s = row[0:13]
             if check_d.match(row[0:13]):
                 instance = int(row[0:13].strip())
                 vlans = row[14:]
@@ -161,7 +161,7 @@ class Script(BaseScript):
                     "root_priority": match.group("root_priority"),
                     "bridge_id": match.group("bridge_id"),
                     "bridge_priority": match.group("bridge_priority"),
-                    }]
+                }]
                 if instance_id not in interfaces:
                     interfaces[instance_id] = []
                 for match in v2:
@@ -187,12 +187,12 @@ class Script(BaseScript):
                         "designated_port_id": match.group("designated_port_id"),
                         "point_to_point": ptop,
                         "edge": edge
-                        }]
+                    }]
         for st in r["instances"]:
             st["interfaces"] = interfaces[st["id"]]
         return r
 
-    def execute(self):
+    def execute_cli(self):
         # Save port attributes
         # cli_stp = self.cli("display stp brief", cached=True)
         ports = self.get_ports_attrs()

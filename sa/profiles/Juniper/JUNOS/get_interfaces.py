@@ -25,9 +25,11 @@ class Script(BaseScript):
     name = "Juniper.JUNOS.get_interfaces"
     interface = IGetInterfaces
     TIMEOUT = 240
+    BULK = False
 
     rx_phy_name = re.compile(
-        r"^Physical interface: (?P<ifname>\S+)( \(\S+, \S+\))?\s*, "
+        r"^Physical interface: (?P<ifname>\S+)"
+        r"( \(\S+, \S+\))?( \(Extended Port)?\s*, "
         r"(?P<admin>Enabled|Disabled|Administratively down), "
         r"Physical link is (?P<oper>Up|Down)", re.MULTILINE
     )
@@ -60,7 +62,8 @@ class Script(BaseScript):
         r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)"
         r"(\s+0x\d+\.(?P<vlan2>\d+))?\s*\]", re.MULTILINE
     )
-    # Flags: Up SNMP-Traps 0x20004000 VLAN-Tag [ 0x8100.3637 0x8100.19 ] In(pop-swap .999) Out(swap-push 0x8100.3637 .19)
+    # Flags: Up SNMP-Traps 0x20004000 \
+    #   VLAN-Tag [ 0x8100.3637 0x8100.19 ] In(pop-swap .999) Out(swap-push 0x8100.3637 .19)
     rx_flags_unnumbered = re.compile(
         r"^\s+Flags:.+, Unnumbered", re.MULTILINE
     )
@@ -161,9 +164,20 @@ class Script(BaseScript):
                 vlan_ids = []
                 match = self.rx_flags_vlan.search(s)
                 if match:
-                    vlan_ids = [int(match.group("vlan"))]
-                    if match.group("vlan2"):
+                    # Skip like this
+
+                    #  Logical interface ge-0/0/13.0 (Index 143) (SNMP ifIndex 551)
+                    #    Flags: Up 0x0 VLAN-Tag [ 0x0000.0 ]  Encapsulation: ENET2
+                    #    Protocol aenet, AE bundle: ae0.0
+
+                    if int(match.group("vlan")) != 0:
+                        vlan_ids = [int(match.group("vlan"))]
+                    if match.group("vlan2") and int(match.group("vlan2")) != 0:
                         vlan_ids += [int(match.group("vlan2"))]
+                # `irb` and `vlan` interfaces display other,
+                # then `eth-switch` protocol
+                if l3_ids.get(sname):
+                    vlan_ids = [l3_ids[sname]]
                 # Process protocols
                 for p in self.rx_log_protocol.split(s)[1:]:
                     match = self.rx_log_pname.search(p)
@@ -209,26 +223,29 @@ class Script(BaseScript):
                         if proto.lower() == "eth-switch":
                             si["enabled_afi"] += ["BRIDGE"]
                         if not vlans_requested:
-                            if self.is_switch and self.profile.command_exist(self, "vlans"):
+                            if (
+                                self.is_switch and (
+                                    self.profile.command_exist(self, "vlans") or
+                                    # Bug on some switches
+                                    self.profile.command_exist(self, "vlan")
+                                )
+                            ):
                                 v = self.cli("show vlans detail")
                                 untagged, tagged, l3_ids = \
                                     self.get_vlan_port_mapping(v)
+                                if not l3_ids:
+                                    # Found in ex4500, Junos: 15.1R7.8
+                                    v = self.cli("show vlans extensive")
+                                    untagged1, tagged1, l3_ids = \
+                                        self.get_vlan_port_mapping(v)
                             vlans_requested = True
-                        # Set untagged
-                        try:
+                        if untagged.get(si["name"]):
                             si["untagged_vlans"] = untagged[si["name"]]
-                        except KeyError:
-                            pass
-                        # Set tagged
-                        try:
+                        if tagged.get(si["name"]):
                             si["tagged_vlans"] = sorted(tagged[si["name"]])
-                        except KeyError:
-                            pass
                         # Set vlan_ids for EX series
-                        try:
+                        if l3_ids.get(si["name"]):
                             si["vlan_ids"] = [l3_ids[si["name"]]]
-                        except KeyError:
-                            pass
                         # x = untagged.get(si["name"])
                         # if x:
                         #     si["untagged_vlans"]
@@ -272,6 +289,7 @@ class Script(BaseScript):
                     "forwarding_instance": v["name"],
                     "type": "VRF",
                     "rd": v["rd"],
+                    "vpn_id": v.get("vpn_id"),
                     "interfaces": []
                 }
                 for i in v["interfaces"]:
@@ -352,7 +370,11 @@ class Script(BaseScript):
                         i = clean_interface(i)
                         if i:
                             untagged[i] = tag
-                continue
+                match = self.rx_l3_iface.search(vdata)
+                if match:
+                    i = match.group("iface")
+                    i = clean_interface(i)
+                    l3_ids[i] = tag
         if found:
             # self.logger.debug("VLANS: %s %s" % (untagged, tagged))
             return untagged, tagged, l3_ids
@@ -371,7 +393,7 @@ class Script(BaseScript):
                         except KeyError:
                             tagged[i] = [tag]
                     else:
-                            untagged[i] = tag
+                        untagged[i] = tag
                 match = self.rx_l3_iface.search(vdata)
                 if match:
                     i = match.group("iface")

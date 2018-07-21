@@ -11,6 +11,7 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.script.error import CLIOperationError
 
 
 class Profile(BaseProfile):
@@ -28,6 +29,8 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
+    # to one SNMP GET request
+    snmp_metrics_get_chunk = 10
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
     #
     # Version comparison
@@ -87,7 +90,7 @@ class Profile(BaseProfile):
         Ports in CLI like 1:1-24,2:1-24
         """
         platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100', "DGS-3420")
-        match = self.rx_interface_name.match(s)
+        match = self.rx_interface_name.match(s.strip())
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
                 match.group("re_platform") and \
@@ -341,13 +344,9 @@ class Profile(BaseProfile):
                     vlans += [self.get_vlan(script, l)]
         return vlans
 
-    rx_blocked_session = re.compile(
-        ".*System locked by other session!", re.MULTILINE | re.DOTALL)
-
     def cleaned_config(self, config):
-        # if self.rx_blocked_session.search(config):
         if "System locked by other session!" in config:
-            raise BaseException("System locked by other session!")
+            raise CLIOperationError("System locked by other session!")
         config = super(Profile, self).cleaned_config(config)
         return config
 

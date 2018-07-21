@@ -32,10 +32,10 @@ class Script(BaseScript):
         "PROBE": "probe"
     }
 
-    def execute(self, vrf=None):
+    def execute_cli(self, vrf=None, **kwargs):
         # Get states
         cmd = "show ipv6 neighbor"
-        r =  self.cli(cmd, list_re=self.rx_line)
+        r = self.cli(cmd, list_re=self.rx_line)
         # Remap states
         for n in r:
             n["state"] = self.s_map[n["state"]]

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -57,7 +57,7 @@ class Script(BaseScript):
                     except self.CLISyntaxError:
                         v = self.cli("display mac-address port 0/%d/%d" % (i, p))
                         gpon_port = "port"
-                if (ports[i]["t"] in ["10GE", "GE", "FE"]):
+                if (ports[i]["t"] in ["10GE", "GE", "FE", "GE-Optic", "GE-Elec", "FE-Elec"]):
                     try:
                         v = self.cli("display mac-address %s 0/%d/%d" % (ethernet_port, i, p))
                     except self.CLISyntaxError:
@@ -69,8 +69,8 @@ class Script(BaseScript):
                         "mac": match.group("mac"),
                         "interfaces": [("0/%d/%d" % (i, p))],
                         "type": {
-                            "dynamic":"D",
-                            "static":"S"
+                            "dynamic": "D",
+                            "static": "S"
                         }[match.group("type")]
                     }]
                 p += 1

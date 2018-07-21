@@ -8,8 +8,6 @@
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 import re
 
 
@@ -18,24 +16,24 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_line = re.compile(r"\w*Remote LLDP Agents on Local Slot/Port\s+",
-        re.MULTILINE)
+                         re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>.+):", re.MULTILINE)
     rx_re_ent = re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",
-        re.MULTILINE | re.IGNORECASE)
+                           re.MULTILINE | re.IGNORECASE)
     rx_remote_chassis_id_subtype = re.compile(
         r"Chassis Subtype\s+=\s(?P<subtype>.\s+)\S+",
         re.MULTILINE | re.IGNORECASE)
     rx_remote_chassis_id = re.compile(r"Chassis\s+(?P<id>.+),",
-        re.MULTILINE | re.IGNORECASE)
+                                      re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id_subtype = re.compile(
         r"Port Subtype\s+=\s\d\s\((?P<subtype>.+)\)",
         re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id = re.compile(r"\w*, Port\s+(?P<port>.+):\n",
-        re.MULTILINE | re.IGNORECASE)
+                                   re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)",
-        re.IGNORECASE)
+                                    re.IGNORECASE)
     rx_remote_system_name = re.compile(r"System Name\s+= (?P<name>.+),",
-        re.MULTILINE | re.IGNORECASE)
+                                       re.MULTILINE | re.IGNORECASE)
     rx_remote_capabilities = re.compile(
         r"Capabilities Supported\s+= (?P<capabilities>.+),",
         re.MULTILINE | re.IGNORECASE)
@@ -60,13 +58,13 @@ class Script(BaseScript):
             match = self.rx_remote_chassis_id_subtype.search(s)
             if not match:
                 continue
-            remote_chassis_id_subtype = match.group("subtype").strip()
-                # remote_chassis_id
+            # remote_chassis_id_subtype = match.group("subtype").strip()
+            # remote_chassis_id
             match = self.rx_remote_chassis_id.search(s)
             if not match:
                 continue
             n["remote_chassis_id"] = match.group("id").strip()
-                # remote_port_subtype
+            # remote_port_subtype
             match = self.rx_remote_port_id_subtype.search(s)
             if not match:
                 continue
@@ -101,7 +99,7 @@ class Script(BaseScript):
                 continue
             n["remote_port"] = match.group("port").strip()
             if n["remote_port_subtype"] == 7 \
-            and n["remote_port"].lower().startswith("rmon port"):
+                    and n["remote_port"].lower().startswith("rmon port"):
                 match = self.rx_remote_port_id2.search(n["remote_port"])
                 if not match:
                     continue

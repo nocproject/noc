@@ -9,6 +9,7 @@
 
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Rotek.RTBSv1"
     pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
@@ -27,6 +28,8 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
+        if name is None:
+            return None
         return cls.INTERFACE_TYPES.get(name[:2])
 
     class shell(object):

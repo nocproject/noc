@@ -17,3 +17,11 @@ class Profile(BaseProfile):
     pattern_more = r"--More-- or \(q\)uit"
     pattern_prompt = r"^\(Cisco Controller\)\s+>"
     requires_netmask_conversion = True
+
+    matchers = {
+        "is_platform_5508": {
+            "platform": {
+                "$regex": r"AIR-CT5508.*"
+            }
+        }
+    }

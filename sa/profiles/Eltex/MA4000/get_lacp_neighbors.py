@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MA4000.get_lacp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -50,6 +48,8 @@ class Script(BaseScript):
                     "bundle": []
                 }
                 for match1 in self.rx_members.finditer(c):
+                    if match1.group("remote_sys_id") == "00:00:00:00:00:00":
+                        continue
                     bundle = {
                         "interface": match1.group("interface"),
                         "local_port_id": match1.group("local_port_id"),
@@ -58,5 +58,6 @@ class Script(BaseScript):
                     }
                     i["system_id"] = match1.group("sys_id")
                     i["bundle"] += [bundle]
-                r += [i]
+                if i["bundle"]:
+                    r += [i]
         return r

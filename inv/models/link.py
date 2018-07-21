@@ -14,10 +14,12 @@ from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
                            IntField, ObjectIdField)
 from noc.core.model.decorator import on_delete, on_save
+from noc.core.datastream.decorator import datastream
 
 
 @on_delete
 @on_save
+@datastream
 class Link(Document):
     """
     Network links.
@@ -74,7 +76,14 @@ class Link(Document):
     l3_cost = IntField(default=1)
 
     def __unicode__(self):
-        return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+        if self.interfaces:
+            return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+        else:
+            return u"Stale link (%s)" % self.id
+
+    def iter_changed_datastream(self):
+        for mo_id in self.linked_objects:
+            yield "managedobject", mo_id
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))

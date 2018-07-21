@@ -26,6 +26,7 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete
+from noc.core.datastream.decorator import datastream
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
 
@@ -43,6 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 @on_delete
+@datastream
 class Interface(Document):
     """
     Interfaces
@@ -98,6 +100,9 @@ class Interface(Document):
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
+
+    def iter_changed_datastream(self):
+        yield "managedobject", self.managed_object.id
 
     def save(self, *args, **kwargs):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:

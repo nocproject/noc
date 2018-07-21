@@ -23,6 +23,7 @@ class Profile(BaseProfile):
         (r"Press any key to continue, 'n' to nopause,'e' to exit", "n"),
         (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n"),
         (r"Using command \"stop\" to terminate", "stop"),
+        (r"continue...", " "),
     ]
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     command_more = "n"
@@ -33,6 +34,8 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if interface.startswith("enet"):
             return "Enet" + interface[4:]
+        elif interface.startswith("adsl") or interface.startswith("vdsl"):
+            return interface[4:]
         else:
             return interface
 
@@ -74,6 +77,9 @@ class Profile(BaseProfile):
                 return "IES-3000"
             if hw in ["MSC1000A"]:
                 return "IES-3000M"
+        if slot_no == 16:
+            if hw in ["MSC1000"]:
+                return "IES-3000"
         if slot_no == 17:
             if hw in ["MSC1024GB", "MSC1224GB", "MSC1024G", "MSC1224G"]:
                 return "IES-6000"

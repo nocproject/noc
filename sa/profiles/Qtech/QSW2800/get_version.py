@@ -46,7 +46,7 @@ class Script(BaseScript):
                 serial = match.group("serial")
                 return {
                     "vendor": "Qtech",
-                    "platform": platform,
+                    "platform": platform.strip(" ,"),
                     "version": version,
                     "attributes": {
                         "Boot PROM": bootprom,
@@ -90,7 +90,7 @@ class Script(BaseScript):
 
             return {
                 "vendor": "Qtech",
-                "platform": platform,
+                "platform": platform.strip(" ,"),
                 "version": version,
                 "attributes": {
                     "Boot PROM": bootprom,

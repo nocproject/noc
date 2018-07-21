@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.4500.get_copper_tdr_diag
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# 3Com.4500.get_copper_tdr_diag
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
+
 
 class Script(BaseScript):
     name = "3Com.4500.get_copper_tdr_diag"
@@ -34,14 +34,15 @@ class Script(BaseScript):
             st = 'N'
         else:
             raise self.NotSupportedError()
-        return {"pair": pair, "status": st, "distance_cm": int(distance),
-            "variance_cm": self.variance}
+        return {
+            "pair": pair, "status": st, "distance_cm": int(distance),
+            "variance_cm": self.variance
+        }
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         r = []
-        #with self.configure():
+        # with self.configure():
         if interface is None:
-            interface_status = {}
             diag = ''
             for iface in self.scripts.get_interface_status():
                 diag = self.cli("interface %s" % iface['interface'].replace('Ge ', 'GigabitEthernet '))
@@ -53,10 +54,7 @@ class Script(BaseScript):
                     pairs = []
                     for i in [1, 2, 3, 4]:
                         pairs.append(self.parce_pair(i, status, length))
-                    r.append({
-                        "interface": iface['interface'],
-                        "pairs": pairs
-                        })
+                    r += [{"interface": iface['interface'], "pairs": pairs}]
         else:
             diag = self.cli("interface %s" % interface.replace('Ge ', 'GigabitEthernet '))
             diag = self.cli("virtual-cable-test")
@@ -67,8 +65,5 @@ class Script(BaseScript):
                 pairs = []
                 for i in [1, 2, 3, 4]:
                     pairs.append(self.parce_pair(i, status, length))
-                r.append({
-                    "interface": interface,
-                    "pairs": pairs
-                    })
+                r += [{"interface": interface, "pairs": pairs}]
         return r

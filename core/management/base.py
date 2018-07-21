@@ -11,7 +11,6 @@ from __future__ import print_function
 import sys
 import argparse
 # NOC modules
-from noc.core.debug import error_report
 from noc.config import config
 from noc.core.tz import setup_timezone
 
@@ -27,6 +26,7 @@ class BaseCommand(object):
         self.verbose_level = 0
         self.stdout = stdout
         self.stderr = stderr
+        self.is_debug = False
 
     def print(self, *args, **kwargs):
         if "file" not in kwargs:
@@ -86,6 +86,7 @@ class BaseCommand(object):
                 self.print("Assertion error: %s" % e)
             return 4
         except Exception:
+            from noc.core.debug import error_report
             error_report()
             return 2
         finally:
@@ -191,3 +192,4 @@ class BaseCommand(object):
         for l in logger.manager.loggerDict.itervalues():
             if hasattr(l, "setLevel"):
                 l.setLevel(level)
+        self.is_debug = level <= logging.DEBUG

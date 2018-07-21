@@ -31,6 +31,8 @@ class Script(BaseScript):
         if vlan is not None:
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
+            if match.group("iface") == "0":
+                continue
             r += [{
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),

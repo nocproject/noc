@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  Test framework
+# Test framework
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import print_function
-import sys
-import re
 import os
 import subprocess
+import time
+import argparse
+import sys
 # Third-party modules
 from pytest import main as pytest_main
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.config import config
 
 
 class Command(BaseCommand):
@@ -24,17 +24,29 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # Run
         run_parser = subparsers.add_parser("run")
-        # Check
-        check_parser = subparsers.add_parser("check")
-        check_cmd_parser = check_parser.add_subparsers(dest="check_cmd")
-        ecr_parser = check_cmd_parser.add_parser("eventclassificationrule")
-        ecr_parser.add_argument(
-            "--pull",
+        run_parser.add_argument(
+            "-v", "--verbose",
             action="store_true",
-            help="Pull repo before check"
+            help="Verbose output"
         )
-        check_cmd_parser.add_parser("profilecheckrule")
-        check_cmd_parser.add_parser("script")
+        run_parser.add_argument(
+            "--coverage-report",
+            help="Write coverage report to specified directory"
+        )
+        run_parser.add_argument(
+            "--test-report",
+            help="Write HTML error report to specified path"
+        )
+        run_parser.add_argument(
+            "--statistics",
+            action="store_true",
+            help="Dump statistics"
+        )
+        run_parser.add_argument(
+            "tests",
+            nargs=argparse.REMAINDER,
+            help="Paths to tests"
+        )
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -42,21 +54,103 @@ class Command(BaseCommand):
     def handle_check(self, check_cmd, *args, **options):
         return getattr(self, "handle_check_%s" % check_cmd)(*args, **options)
 
-    def handle_check_eventclassificationrule(self, pull=False,
-                                             *args, **options):
-        dirs = self.get_dirs(config.tests.events_path)
-        if pull:
-            self.pull_repos(dirs)
-        return pytest_main(["tests/test_eventclassificationrule.py"])
+    def handle_run(self, tests=None, verbose=False, statistics=False,
+                   coverage_report=False, test_report=None, *args, **options):
+        def run_tests(args):
+            self.print("Running test")
+            # Must be imported within coverage
+            from noc.config import config
+            db_name = "test_%d" % time.time()
+            # Override database names
+            config.pg.db = db_name
+            config.mongo.db = db_name
+            config.clickhouse.db = db_name
+            return pytest_main(args)
 
-    def handle_check_profilecheckrule(self, *args, **options):
-        raise NotImplementedError()
+        # Run tests
+        args = []
+        if verbose:
+            args += ["-v"]
+        if test_report:
+            args += [
+                "--html=%s" % test_report,
+                "--self-contained-html"
+            ]
+        if tests:
+            args += tests
+        else:
+            args += ["tests"]
+        if statistics or coverage_report:
+            self.print("Collecting coverage")
+            # Reset all loaded modules to return them to coverage
+            already_loaded = [m for m in sys.modules if m.startswith("noc.")]
+            for m in already_loaded:
+                del sys.modules[m]
+            import coverage
+            cov = coverage.Coverage()
+            cov.start()
+            try:
+                result = run_tests(args)
+            finally:
+                if coverage_report:
+                    self.print("Writing coverage report to %s/index.html" % coverage_report)
+                cov.stop()
+                cov.save()
+                if coverage_report:
+                    cov.html_report(directory=coverage_report)
+                if statistics:
+                    self.dump_failed()
+                    self.dump_statistics(cov)
+            return result
+        else:
+            return run_tests(args)
 
-    def handle_check_script(self, *args, **options):
-        raise NotImplementedError()
+    def dump_statistics(self, cov):
+        """
+        Dump test run statistics
+        :param cov:
+        :return:
+        """
+        from coverage.results import Numbers
+        from coverage.report import Reporter
+        from noc.tests.conftest import _stats as stats
 
-    def handle_run(self, *args, **options):
-        return pytest_main(["tests"])
+        self.print("---[ Test session statistics ]------")
+        cov.get_data()
+        reporter = Reporter(cov, cov.config)
+        totals = Numbers()
+        for fr in reporter.find_file_reporters(None):
+            analysis = cov._analyze(fr)
+            totals += analysis.numbers
+        n_passed = len(stats.get("passed", []))
+        n_skipped = len(stats.get("skipped", []))
+        n_error = len(stats.get("error", []))
+        n_failed = len(stats.get("failed", []))
+        if n_error or n_failed:
+            status = "Failed"
+        else:
+            status = "Passed"
+        self.print("Status              : %s" % status)
+        self.print("Tests Passed:       : %s" % n_passed)
+        self.print("Tests Skipped:      : %s" % n_skipped)
+        self.print("Tests Failed:       : %s" % n_failed)
+        self.print("Tests Error:        : %s" % n_error)
+        self.print("Coverage            : %d%%" % totals.pc_covered)
+        self.print("Coverage Statements : %s" % totals.n_statements)
+        self.print("Coverage Missing    : %s" % totals.n_missing)
+        self.print("Coverage Excluded   : %s" % totals.n_excluded)
+
+    def dump_failed(self):
+        """
+        Dump failed tests list
+        :return:
+        """
+        from noc.tests.conftest import _stats as stats
+        failed = sorted(tr.nodeid for tr in stats.get("failed", []))
+        if not failed:
+            return
+        self.print("---[ Failed tests ]------")
+        self.print("\n".join(failed))
 
     def get_dirs(self, dirs):
         """

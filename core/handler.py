@@ -25,8 +25,6 @@ def get_handler(path):
     """
     if callable(path):
         return path
-    if path in _CCACHE:
-        return _CCACHE[path]
     try:
         mod_name, obj_name = path.rsplit(".", 1)
     except ValueError:

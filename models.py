@@ -81,6 +81,7 @@ _MCACHE = {}
 
 _MODELS = {
     # main models
+    "main.APIKey": "noc.main.models.apikey.APIKey",
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
     "main.CollectionCache": "noc.main.models.collectioncache.CollectionCache",
@@ -90,6 +91,7 @@ _MODELS = {
     "main.CustomFieldEnumValue": "noc.main.models.customfieldenumvalue.CustomFieldEnumValue",
     "main.DatabaseStorage": "noc.main.models.databasestorage.DatabaseStorage",
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
+    "main.ExtStorage": "noc.main.models.extstorage.ExtStorage",
     "main.Favorites": "noc.main.models.favorites.Favorites",
     "main.Language": "noc.main.models.language.Language",
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
@@ -117,9 +119,13 @@ _MODELS = {
     "main.Template": "noc.main.models.template.Template",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
+    "main.User": "django.contrib.auth.models.User",
     "main.UserProfile": "noc.main.models.userprofile.UserProfile",
     "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
     "main.UserState": "noc.main.models.userstate.UserState",
+    #
+    "dev.Quiz": "noc.dev.models.quiz.Quiz",
+    "dev.Spec": "noc.dev.models.spec.Spec",
     # project models
     "project.Project": "noc.project.models.project.Project",
     # gis models
@@ -172,6 +178,8 @@ _MODELS = {
     "sa.ActionCommands": "noc.sa.models.actioncommands.ActionCommands",
     "sa.AdministrativeDomain": "noc.sa.models.administrativedomain.AdministrativeDomain",
     "sa.AuthProfile": "noc.sa.models.authprofile.AuthProfile",
+    "sa.AuthProfileSuggestSNMP": "noc.sa.models.authprofile.AuthProfileSuggestSNMP",
+    "sa.AuthProfileSuggestCLI": "noc.sa.models.authprofile.AuthProfileSuggestCLI",
     "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
@@ -260,6 +268,7 @@ _MODELS = {
     "dns.DNSZoneProfile": "noc.dns.models.dnszoneprofile.DNSZoneProfile",
     "dns.DNSZoneRecord": "noc.dns.models.dnszonerecord.DNSZoneRecord",
     # peer models
+    "peer.ASProfile": "noc.peer.models.asprofile.ASProfile",
     "peer.AS": "noc.peer.models.asn.AS",
     "peer.ASSet": "noc.peer.models.asset.ASSet",
     "peer.Community": "noc.peer.models.community.Community",
@@ -320,6 +329,8 @@ FTS_MODELS = [
 COLLECTIONS = [
     "fm.SyntaxAlias",
     "sa.Profile",
+    "dev.Quiz",
+    "dev.Spec",
     "sa.Action",
     "inv.Capability",
     "pm.MetricScope",

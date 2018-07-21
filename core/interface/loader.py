@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -15,8 +16,7 @@ import threading
 import os
 import re
 # NOC modules
-from base import BaseInterface
-from noc.config import config
+from .base import BaseInterface
 
 logger = logging.getLogger(__name__)
 

@@ -20,6 +20,8 @@ from noc.core.error import NOCError, ERR_SNMP_TIMEOUT, ERR_SNMP_FATAL_TIMEOUT
 
 
 class SNMP(object):
+    name = "snmp"
+
     class TimeOutError(NOCError):
         default_code = ERR_SNMP_TIMEOUT
         default_msg = "SNMP Timeout"
@@ -30,12 +32,11 @@ class SNMP(object):
 
     SNMPError = SNMPError
 
-    def __init__(self, script, beef=None):
+    def __init__(self, script):
         self.script = script
         self.ioloop = None
         self.result = None
-        self.beef = beef
-        self.logger = PrefixLoggerAdapter(script.logger, "snmp")
+        self.logger = PrefixLoggerAdapter(script.logger, self.name)
         self.timeouts_limit = 0
         self.timeouts = 0
         self.socket = None
@@ -85,11 +86,12 @@ class SNMP(object):
             return SNMP_v1
         return SNMP_v2c
 
-    def get(self, oids, cached=False, version=None):
+    def get(self, oids, cached=False, version=None, raw_varbinds=False):
         """
         Perform SNMP GET request
         :param oid: string or list of oids
         :param cached: True if get results can be cached during session
+        :param raw_varbinds: Return value in BER encoding
         :returns: eigther result scalar or dict of name -> value
         """
         @tornado.gen.coroutine
@@ -102,12 +104,10 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
-                    version=version
+                    version=version,
+                    raw_varbinds=raw_varbinds
                 )
                 self.timeouts = self.timeouts_limit
-                if self.beef:
-                    # Restore from beef
-                    self.beef.set_snmp_get(oids, self.result)
             except SNMPError as e:
                 if e.code == TIMED_OUT:
                     if self.timeouts_limit:
@@ -188,7 +188,7 @@ class SNMP(object):
                 filter=None, cached=False,
                 only_first=False, bulk=None,
                 max_repetitions=None, version=None,
-                max_retries=0):
+                max_retries=0, timeout=10, raw_varbinds=False):
         @tornado.gen.coroutine
         def run():
             try:
@@ -204,7 +204,9 @@ class SNMP(object):
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
                     version=version,
-                    max_retries=max_retries
+                    max_retries=max_retries,
+                    timeout=timeout,
+                    raw_varbinds=raw_varbinds
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:

@@ -2,40 +2,53 @@
 # ----------------------------------------------------------------------
 # NOC CLI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-cd `dirname $0`
+cd "$(dirname "${0}")" || exit
+CMD="$1"
 
 error_exit ( ) {
-    printf "\033[1;31m$PROGNAME: ${1:-'Unknown error'}\033[0m\n" 1>&2
+    printf "\\033[1;31m%s: ${1:-'Unknown error'}\\033[0m\\n" "$PROGNAME" 1>&2
     exit 1
 }
 
 if [ -f "$PWD/.env" ]; then
+  # shellcheck disable=SC1091
     . "$PWD/.env"
 fi
 
-CMD=$1
-if [ -f "../noc_custom/commands/$CMD.sh" ]; then
+if [ ! -z "${NOC_PYTHON_INTERPRETER}" ]; then
+  export PYTHON_INTERPRETER="${NOC_PYTHON_INTERPRETER}"
+fi
+
+if [ -z "${PYTHON_INTERPRETER}" ] && [ -f "./bin/python" ]; then
+  export PYTHON_INTERPRETER="./bin/python"
+fi
+
+if [ -z "${PYTHON_INTERPRETER}" ]; then
+  export PYTHON_INTERPRETER='/usr/bin/env python'
+fi
+
+if [ -f "./custom/commands/$CMD.sh" ]; then
     shift
-    exec /bin/sh ../noc_custom/commands/$CMD.sh "$@"
+    exec /bin/sh "./custom/commands/$CMD.sh" "$@"
 fi
 
 if [ -f "../noc_custom/commands/$CMD.py" ]; then
     shift
-    exec ./bin/python ../noc_custom/commands/$CMD.py "$@"
+    exec ${PYTHON_INTERPRETER} "./custom/commands/$CMD.py" "$@"
 fi
 
 if [ -f "./commands/$CMD.sh" ]; then
     shift
-    exec /bin/sh ./commands/$CMD.sh "$@"
+    exec /bin/sh "./commands/$CMD.sh" "$@"
 fi
 
 if [ -f "./commands/$CMD.py" ]; then
     shift
-    exec ./bin/python ./commands/$CMD.py "$@"
+    exec ${PYTHON_INTERPRETER} "./commands/$CMD.py" "$@"
 fi
 
 case "$1" in
@@ -44,6 +57,6 @@ case "$1" in
         exec ./scripts/paste.py "$@"
         ;;
     *)
-        exec ./bin/python manage.py "$@"
+        exec ${PYTHON_INTERPRETER} manage.py "$@"
         ;;
 esac

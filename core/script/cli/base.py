@@ -13,7 +13,6 @@ import re
 import functools
 import datetime
 from functools import reduce
-from threading import Lock
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -52,10 +51,7 @@ class CLI(object):
     KEEP_INTVL = 10
     # Terminate connection after N keepalive failures
     KEEP_CNT = 3
-    # Patterns lock
-    patterns_lock = Lock()
-    # profile name -> patterns
-    patterns_cache = {}
+    SYNTAX_ERROR_CODE = "+@@@NOC:SYNTAXERROR@@@+"
 
     class InvalidPagerPattern(Exception):
         pass
@@ -69,7 +65,7 @@ class CLI(object):
         self.ioloop = None
         self.command = None
         self.prompt_stack = []
-        self.patterns = self.get_patterns()
+        self.patterns = self.profile.patterns.copy()
         self.buffer = ""
         self.is_started = False
         self.result = None
@@ -82,6 +78,7 @@ class CLI(object):
         self.close_timeout = None
         self.setup_complete = False
         self.to_raise_privileges = script.credentials.get("raise_privileges", True)
+        self.state = "start"
 
     def close(self):
         if self.script.session:
@@ -93,6 +90,10 @@ class CLI(object):
             self.ioloop.close(all_fds=True)
             self.ioloop = None
         self.is_closed = True
+
+    def set_state(self, state):
+        self.logger.debug("Changing state to <%s>", state)
+        self.state = state
 
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:
@@ -221,7 +222,8 @@ class CLI(object):
         if (self.profile.rx_pattern_syntax_error and
                 not self.ignore_errors and
                 parser == self.read_until_prompt and
-                self.profile.rx_pattern_syntax_error.search(self.result)):
+                (self.profile.rx_pattern_syntax_error.search(self.result) or
+                 self.result == self.SYNTAX_ERROR_CODE)):
             error_text = self.result
             if self.profile.send_on_syntax_error:
                 yield self.on_error_sequence(
@@ -269,6 +271,10 @@ class CLI(object):
                     )
                 else:
                     r = yield f
+                if r == self.SYNTAX_ERROR_CODE:
+                    raise tornado.gen.Return(self.SYNTAX_ERROR_CODE)
+                if self.script.to_track:
+                    self.script.push_cli_tracking(r, self.state)
             except tornado.iostream.StreamClosedError:
                 # Check if remote end closes connection just
                 # after connection established
@@ -350,6 +356,8 @@ class CLI(object):
         while not done:
             r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
                                                partial=True)
+            if self.script.to_track:
+                self.script.push_cli_tracking(r, self.state)
             self.logger.debug("Received: %r", r)
             buffer = self.cleaned_input(buffer + r)
             # Check for syntax error
@@ -436,7 +444,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_start(self, data=None, match=None):
-        self.logger.debug("State: <START>")
+        self.set_state("start")
         if self.profile.setup_sequence and not self.setup_complete:
             self.expect({
                 "setup": self.on_setup_sequence
@@ -452,7 +460,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_username(self, data, match):
-        self.logger.debug("State: <USERNAME>")
+        self.set_state("username")
         self.send(
             (self.script.credentials.get("user", "") or "") +
             (self.profile.username_submit or "\n")
@@ -466,7 +474,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_password(self, data, match):
-        self.logger.debug("State: <PASSWORD>")
+        self.set_state("password")
         self.send(
             (self.script.credentials.get("password", "") or "") +
             (self.profile.password_submit or "\n")
@@ -482,7 +490,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_unprivileged_prompt(self, data, match):
-        self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
+        self.set_state("unprivileged_prompt")
         if self.to_raise_privileges:
             # Start privilege raising sequence
             if not self.profile.command_super:
@@ -510,13 +518,13 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_failure(self, data, match, error_cls=None):
-        self.logger.debug("State: <FAILURE>")
+        self.set_state("failure")
         error_cls = error_cls or CLIError
         raise error_cls(self.buffer or data or None)
 
     @tornado.gen.coroutine
     def on_prompt(self, data, match):
-        self.logger.debug("State: <PROMT>")
+        self.set_state("prompt")
         if not self.is_started:
             self.resolve_pattern_prompt(match)
         d = "".join(self.collected_data + [data])
@@ -529,7 +537,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_super_username(self, data, match):
-        self.logger.debug("State: SUPER_USERNAME")
+        self.set_state("super_username")
         self.send(
             (self.script.credentials.get("user", "") or "") +
             (self.profile.username_submit or "\n")
@@ -544,6 +552,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_super_password(self, data, match):
+        self.set_state("super_password")
         self.send(
             (self.script.credentials.get("super_password", "") or "") +
             (self.profile.username_submit or "\n")
@@ -558,7 +567,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def on_setup_sequence(self, data, match):
-        self.logger.debug("State: <SETUP>")
+        self.set_state("setup")
         self.logger.debug(
             "Performing setup sequence: %s",
             self.profile.setup_sequence
@@ -577,66 +586,12 @@ class CLI(object):
                     future=self.iostream.read_bytes(4096, partial=True),
                     io_loop=self.ioloop
                 )
+                if self.script.to_track:
+                    self.script.push_cli_tracking(resp, self.state)
                 self.logger.debug("Receiving: %r", resp)
         self.logger.debug("Setup sequence complete")
         self.setup_complete = True
         yield self.on_start(data, match)
-
-    def get_patterns(self):
-        with self.patterns_lock:
-            pc = self.patterns_cache.get(self.profile.name)
-            if not pc:
-                pc = self.build_patterns()
-                self.patterns_cache[self.profile.name] = pc
-            return pc.copy()
-
-    def build_patterns(self):
-        """
-        Return dict of compiled regular expressions
-        """
-        patterns = {
-            "username": re.compile(self.profile.pattern_username,
-                                   re.DOTALL | re.MULTILINE),
-            "password": re.compile(self.profile.pattern_password,
-                                   re.DOTALL | re.MULTILINE),
-            "prompt": re.compile(self.profile.pattern_prompt,
-                                 re.DOTALL | re.MULTILINE)
-        }
-        if self.profile.pattern_unprivileged_prompt:
-            patterns["unprivileged_prompt"] = re.compile(
-                self.profile.pattern_unprivileged_prompt,
-                re.DOTALL | re.MULTILINE
-            )
-        if self.profile.pattern_super_password:
-            patterns["super_password"] = re.compile(
-                self.profile.pattern_super_password,
-                re.DOTALL | re.MULTILINE
-            )
-        if isinstance(self.profile.pattern_more, six.string_types):
-            more_patterns = [self.profile.pattern_more]
-            patterns["more_commands"] = [self.profile.command_more]
-        else:
-            # .more_patterns is a list of (pattern, command)
-            more_patterns = [x[0] for x in self.profile.pattern_more]
-            patterns["more_commands"] = [x[1] for x in self.profile.pattern_more]
-        if self.profile.pattern_start_setup:
-            patterns["setup"] = re.compile(
-                self.profile.pattern_start_setup,
-                re.DOTALL | re.MULTILINE
-            )
-        # Merge pager patterns
-        patterns["pager"] = re.compile(
-            "|".join([r"(%s)" % p for p in more_patterns]),
-            re.DOTALL | re.MULTILINE
-        )
-        patterns["more_patterns"] = [
-            re.compile(p, re.MULTILINE | re.DOTALL)
-            for p in more_patterns]
-        patterns["more_patterns_commands"] = list(zip(
-            patterns["more_patterns"],
-            patterns["more_commands"]
-        ))
-        return patterns
 
     def resolve_pattern_prompt(self, match):
         """

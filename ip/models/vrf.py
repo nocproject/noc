@@ -17,22 +17,25 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
-from noc.main.models import ResourceState
 from noc.project.models.project import Project
-from noc.peer.models.asn import AS
 from noc.lib.validators import check_rd
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
+from noc.wf.models.state import State
 from .vrfgroup import VRFGroup
+from noc.core.wf.decorator import workflow
+from noc.core.vpn import get_vpn_id
+
 
 id_lock = Lock()
 
 
 @full_text_search
 @on_init
+@workflow
 @on_delete_check(check=[
     ("ip.Address", "vrf"),
     ("ip.AddressRange", "vrf"),
@@ -62,13 +65,22 @@ class VRF(models.Model):
         help_text=_("Unique VRF Name"))
     profile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
-        VRFGroup, verbose_name=_("VRF Group"))
+        VRFGroup, verbose_name=_("VRF Group"),
+        null=True, blank=True
+    )
     rd = models.CharField(
         _("RD"),
         unique=True,
         max_length=21,
         validators=[check_rd],
         help_text=_("Route Distinguisher in form of ASN:N or IP:N"))
+    # RFC2685-compatible VPN id
+    vpn_id = models.CharField(
+        _("VPN ID"),
+        max_length=15,
+        help_text=_("RFC2685 compatible VPN ID"),
+        unique=True
+    )
     afi_ipv4 = models.BooleanField(
         _("IPv4"),
         default=True,
@@ -88,15 +100,26 @@ class VRF(models.Model):
         null=True,
         help_text=_("Ticket #"))
     tags = TagsField(_("Tags"), null=True, blank=True)
-    state = models.ForeignKey(
-        ResourceState,
-        verbose_name=_("State"),
-        default=ResourceState.get_default)
+    state = DocumentReferenceField(
+        State,
+        null=True, blank=True
+    )
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
         blank=True,
         help_text=_("VRF temporary allocated till the date"))
+    source = models.CharField(
+        "Source",
+        max_length=1,
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("m", "MPLS")
+        ],
+        null=False, blank=False,
+        default="M"
+    )
 
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"
@@ -110,28 +133,37 @@ class VRF(models.Model):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _rd_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _vpn_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_id_cache"),
         lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        mo = VRF.objects.filter(id=id)[:1]
-        if mo:
-            return mo[0]
-        else:
-            return None
+        vrf = VRF.objects.filter(id=id)[:1]
+        if vrf:
+            return vrf[0]
+        return None
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_rd_cache"),
         lock=lambda _: id_lock)
     def get_by_rd(cls, rd):
-        mo = VRF.objects.filter(rd=rd)[:1]
-        if mo:
-            return mo[0]
-        else:
-            return None
+        vrf = VRF.objects.filter(rd=rd)[:1]
+        if vrf:
+            return vrf[0]
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_vpn_id_cache"),
+        lock=lambda _: id_lock)
+    def get_by_vpn_id(cls, vpn_id):
+        vrf = VRF.objects.filter(vpn_id=vpn_id)[:1]
+        if vrf:
+            return vrf[0]
+        return None
 
     def get_absolute_url(self):
         return site.reverse("ip:vrf:change", self.id)
@@ -158,6 +190,13 @@ class VRF(models.Model):
         # Generate unique rd, if empty
         if not self.rd:
             self.rd = self.generate_rd(self.name)
+        if not self.vpn_id:
+            vdata = {
+                "type": "VRF",
+                "name": self.name,
+                "rd": self.rd
+            }
+            self.vpn_id = get_vpn_id(vdata)
         if self.initial_data["id"]:
             # Delete empty ipv4 root if AFI changed
             if self.initial_data.get("afi_ipv4") != self.afi_ipv4 and not self.afi_ipv4:
@@ -188,7 +227,6 @@ class VRF(models.Model):
             Prefix.objects.get_or_create(
                 vrf=self, afi="4", prefix=self.IPv4_ROOT,
                 defaults={
-                    "asn": AS.default_as(),
                     "description": "IPv4 Root",
                     "profile": self.profile.default_prefix_profile
                 })
@@ -197,7 +235,6 @@ class VRF(models.Model):
             Prefix.objects.get_or_create(
                 vrf=self, afi="6", prefix=self.IPv6_ROOT,
                 defaults={
-                    "asn": AS.default_as(),
                     "description": "IPv6 Root",
                     "profile": self.profile.default_prefix_profile
                 })

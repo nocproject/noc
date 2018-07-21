@@ -41,9 +41,10 @@ class ExtModelApplication(ExtApplication):
     query_condition = "startswith"  # Match method for string fields
     int_query_fields = []  # Query integer fields for exact match
     pk_field_name = None  # Set by constructor
-    clean_fields = {}  # field name -> Parameter instance
+    clean_fields = {"id": IntParameter()}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
     order_map = {}  # field name -> SQL query for ordering
+    lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = set(["id", "bi_id"])
 
     def __init__(self, *args, **kwargs):
@@ -409,7 +410,10 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
-        return self.list_data(request, self.instance_to_lookup)
+        try:
+            return self.list_data(request, self.instance_to_lookup)
+        except ValueError:
+            return self.response(self.lookup_default, status=self.OK)
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
@@ -418,6 +422,7 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json(
                 {
                     "success": False,
@@ -505,6 +510,7 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json(
                 {
                     "success": False,
@@ -525,10 +531,10 @@ class ExtModelApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         # Tags
         if hasattr(o, "tags") and attrs.get("tags"):
-            for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
+            for t in set(getattr(o, "tags") or []) - (set(attrs.get("tags", []))):
                 Tag.unregister_tag(t, repr(self.model))
                 self.logger.info("Unregister Tag: %s" % t)
-            for t in set(attrs.get("tags", [])) - (set(getattr(o, "tags", []))):
+            for t in set(attrs.get("tags", [])) - (set(getattr(o, "tags") or [])):
                 Tag.register_tag(t, repr(self.model))
                 self.logger.info("Register Tag: %s" % t)
         # Update attributes
@@ -607,6 +613,7 @@ class ExtModelApplication(ExtApplication):
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json({
                 "status": False,
                 "message": "Bad request",

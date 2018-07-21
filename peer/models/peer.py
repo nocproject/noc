@@ -12,13 +12,15 @@ from django.db import models
 from noc.project.models.project import Project
 from noc.core.model.fields import INETField, TagsField
 from noc.lib.tt import tt_url
-from noc.settings import config
-from noc.lib.app.site import site
+from noc.config import config
+from noc.core.model.decorator import on_save
+from noc.core.gridvcs.manager import GridVCSField
 from .asn import AS
 from .peergroup import PeerGroup
 from .peeringpoint import PeeringPoint
 
 
+@on_save
 class Peer(models.Model):
     """
     BGP Peering session
@@ -76,22 +78,22 @@ class Peer(models.Model):
         "Export Filter Name", max_length=64, blank=True, null=True)
     tags = TagsField("Tags", null=True, blank=True)
 
+    rpsl = GridVCSField("rpsl_peer")
+
     def __unicode__(self):
         return u" %s (%s@%s)" % (self.remote_asn, self.remote_ip,
                                  self.peering_point.hostname)
 
-    def get_absolute_url(self):
-        return site.reverse("peer:peer:change", self.id)
-
-    def save(self):
+    def save(self, *args, **kwargs):
         if (self.import_filter_name is not None and
                 not self.import_filter_name.strip()):
             self.import_filter_name = None
         if (self.export_filter_name is not None and
                 not self.export_filter_name.strip()):
             self.export_filter_name = None
-        super(Peer, self).save()
+        super(Peer, self).save(*args, **kwargs)
         self.peering_point.sync_cm_prefix_list()
+        self.touch_rpsl()
 
     @property
     def tt_url(self):
@@ -110,15 +112,14 @@ class Peer(models.Model):
         c = sorted(r.keys())
         return " ".join(c)
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         s = "import: from AS%d" % self.remote_asn
         s += " at %s" % self.peering_point.hostname
         actions = []
         local_pref = self.effective_local_pref
         if local_pref:
             # Select pref meaning
-            if config.getboolean("peer", "rpsl_inverse_pref_style"):
+            if config.peer.rpsl_inverse_pref_style:
                 pref = 65535 - local_pref  # RPSL style
             else:
                 pref = local_pref
@@ -196,3 +197,13 @@ class Peer(models.Model):
             return data[0]
         else:
             return None
+
+    def touch_rpsl(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+
+    def on_save(self):
+        self.touch_rpsl()

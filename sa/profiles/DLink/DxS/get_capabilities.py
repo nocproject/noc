@@ -11,6 +11,8 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.DLink.DxS import DES3x2x
+from noc.sa.profiles.DLink.DxS import DES30xx
 
 
 class Script(BaseScript):
@@ -26,7 +28,7 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        cmd = self.cli("show lldp")
+        cmd = self.cli("show lldp", cached=True)
         return self.rx_lldp.search(cmd) is not None
 
     def has_lldp_snmp(self):
@@ -48,7 +50,10 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         # Spanning Tree Enabled/Disabled : Enabled
-        cmd = self.cli("show stp")
+        if self.match_version(DES3x2x) or self.match_version(DES30xx):
+            cmd = self.cli("show stp\nq")
+        else:
+            cmd = self.cli("show stp", cached=True)
         return self.rx_stp.search(cmd) is not None
 
     @false_on_cli_error
