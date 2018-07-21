@@ -22,11 +22,8 @@ class BaseCard(object):
     name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
-    custom_path = os.path.join(config.path.custom_path, "services/card/templates/")
-    TEMPLATE_PATH = [
-        custom_path,
-        "services/card/templates/"
-    ]
+    TEMPLATE_PATH = config.get_customized_paths(os.path.join("services", "card", "templates"),
+                                                prefer_custom=True)
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
     DEFAULT_SERVICE_TITLE_TEMPLATE = "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> {%endif %}{{ object.profile.name }}: {{ object.order_id }}"

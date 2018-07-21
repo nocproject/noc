@@ -114,6 +114,8 @@ class CardRequestHandler(UIHandler):
             for b, r in [(config.path.custom_path, "services/card/cards"),
                          ("noc", "services/card/cards")]:
                 path = r
+                if not b:
+                    continue
                 if b != "noc":
                     path = os.path.join(b, r)
                 if not os.path.isdir(path):

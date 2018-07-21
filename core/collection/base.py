@@ -45,11 +45,12 @@ class Collection(object):
         self.partial_errors = {}
 
     def get_path(self):
-        # path = [os.path.join(self.PREFIX, self.name)]
-        # cp = os.path.join(self.CUSTOM_PREFIX, self.name)
-        # if os.path.exists(cp):
-        #     path = [cp] + path
-        return config.get_customized_paths(self.PREFIX, prefer_custom=True)
+        paths = []
+        for cp in config.get_customized_paths(self.PREFIX, prefer_custom=True):
+            path = os.path.join(cp, self.name)
+            if os.path.exists(path):
+                paths += [path]
+        return paths
 
     @classmethod
     def iter_collections(cls):
