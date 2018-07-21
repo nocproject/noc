@@ -22,7 +22,7 @@ class WelcomeApplication(ExtApplication):
     """
     title = _("Welcome")
     WELCOME_PATH = config.get_customized_paths("services/web/apps/main/welcome/templates/Welcome.html.j2",
-                                               prefer_custom = True)
+                                               prefer_custom=True)
 
     @view(url="^welcome/$", access=True, api=True)
     def api_welcome(self, request):

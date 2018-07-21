@@ -157,7 +157,6 @@ class Collection(object):
         :return:
         """
         items = {}
-        print("Collection path", self.get_path())
         for p in self.get_path():
             for root, dirs, files in os.walk(p):
                 for cf in files:
