@@ -78,8 +78,8 @@ class Alarms(Model):
     # Coordinates
     x = Float64Field(description=_("Longitude"))
     y = Float64Field(description=_("Latitude"))
-    services = NestedField(Services, description="Services")
-    subscribers = NestedField(Subscribers, description="Subscribers")
+    services = NestedField(Services, description=_("Affected Services"))
+    subscribers = NestedField(Subscribers, description=_("Affected Subscribers"))
     # location = StringField(description="Location")
 
     @classmethod
