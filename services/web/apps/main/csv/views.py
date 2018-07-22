@@ -82,7 +82,8 @@ class CSVApplication(Application):
         :param model:
         :return:
         """
-        m = get_model(model)
+        app, model = model.split(".", 1)
+        m = models.get_model(app, model)
         if not m:
             return self.response_not_found("Invalid model")
         if request.POST:
