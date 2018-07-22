@@ -34,7 +34,6 @@ class Script(BaseScript):
         for match in self.rx_lldp.finditer(v):
             if match:
                 local_port = match.group("local_port")
-                #local_port_id = match.group("local_port_id")
                 remote_chassis_id = match.group("remote_id")
                 remote_chassis_id_subtype = 4
                 remote_port = match.group("remote_port")
@@ -60,10 +59,7 @@ class Script(BaseScript):
                 }
                 i = {
                     "local_interface": local_port,
-                    #"local_interface_id": local_port_id,
                     "neighbors": [n]
                 }
-                
-                
                 r += [i]
         return r
