@@ -31,7 +31,7 @@ def get_handler(path):
         raise ImportError("%s isn't valid handler name" % path)
     # Load module
     try:
-        m = __import__(mod_name, {}, {}, [obj_name])
+        m = __import__(str(mod_name), {}, {}, [str(obj_name)])  # if unicode - TypeError
     except ImportError as e:
         raise ImportError("Cannot load handler '%s': %s" % (path, e))
     # Get attribute

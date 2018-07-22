@@ -107,36 +107,36 @@ class CardRequestHandler(UIHandler):
                 self.CARD_TEMPLATE = Template(f.read())
         return self.CARD_TEMPLATE
 
+    CARDS_PREFIX = os.path.join("services", "card", "cards")
+
     @classmethod
     def load_cards(cls):
         if not cls.CARDS:
             cls.CARDS = {}
-            for b, r in [(config.path.custom_path, "services/card/cards"),
-                         ("noc", "services/card/cards")]:
-                path = r
-                if not b:
+        for p in config.get_customized_paths(cls.CARDS_PREFIX):
+            b, _ = p.split(cls.CARDS_PREFIX)
+            if not os.path.isdir(p):
+                continue
+            if b:
+                basename = os.path.basename(os.path.dirname(b))
+            else:
+                basename = "noc"
+            for f in os.listdir(p):
+                if not f.endswith(".py"):
                     continue
-                if b != "noc":
-                    path = os.path.join(b, r)
-                if not os.path.isdir(path):
-                    continue
-                for f in os.listdir(path):
-                    if not f.endswith(".py"):
-                        continue
-                    mn = "%s.%s.%s" % (
-                        os.path.basename(b),
-                        r.replace("/", ".") if not r.startswith("..")
-                        else r.replace("../%s" % b, "")[1:].replace("/", "."),
-                        f[:-3]
-                    )
-
-                    m = __import__(mn, {}, {}, "*")
-                    for d in dir(m):
-                        c = getattr(m, d)
-                        if (
-                                inspect.isclass(c) and
-                                issubclass(c, BaseCard) and
-                                c.__module__ == m.__name__ and
-                                getattr(c, "name", None)
-                        ):
-                            cls.CARDS[c.name] = c
+                mn = "%s.%s.%s" % (
+                    basename,
+                    cls.CARDS_PREFIX.replace(os.path.sep, "."),
+                    f[:-3]
+                )
+                print mn
+                m = __import__(mn, {}, {}, "*")
+                for d in dir(m):
+                    c = getattr(m, d)
+                    if (
+                            inspect.isclass(c) and
+                            issubclass(c, BaseCard) and
+                            c.__module__ == m.__name__ and
+                            getattr(c, "name", None)
+                    ):
+                        cls.CARDS[c.name] = c
