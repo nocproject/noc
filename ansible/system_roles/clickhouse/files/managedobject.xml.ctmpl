@@ -79,6 +79,12 @@
                  <null_value>Unknown</null_value>
                  <hierarchical>false</hierarchical>
              </attribute>
+             <attribute>
+                 <name>location_address</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
         </structure>
     </dictionary>
 </dictionaries>
