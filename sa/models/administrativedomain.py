@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # AdministrativeDomain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,12 +19,14 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.datastream.decorator import datastream
 
 
 id_lock = Lock()
 
 
 @bi_sync
+@datastream
 @on_delete_check(check=[
     ("cm.ObjectNotify", "administrative_domain"),
     # ("fm.EscalationItem", "administrative_domain"),
@@ -90,6 +92,9 @@ class AdministrativeDomain(models.Model):
             return ad[0]
         else:
             return None
+
+    def iter_changed_datastream(self):
+        yield "administrativedomain", self.id
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):

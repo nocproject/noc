@@ -266,7 +266,7 @@ def test_datastream_clean_id_int():
         DS.clean_id("z")
 
 
-@pytest.fixture(params=["managedobject"])
+@pytest.fixture(params=["managedobject", "administrativedomain"])
 def datastream_name(request):
     return request.param
 
