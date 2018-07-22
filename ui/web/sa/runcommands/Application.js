@@ -61,11 +61,12 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectionStore}',
                                 selection: '{selectionRow}'
                             },
-                            selModel: {
-                                mode: 'MULTI',
-                                // pruneRemoved: false,
-                                selType: 'checkboxmodel'
-                            },
+                            // selModel: {
+                            //     mode: 'MULTI',
+                            //     pruneRemoved: false,
+                            //     showHeaderCheckbox: false,
+                            //     selType: 'checkboxmodel'
+                            // },
                             listeners: {
                                 selectionchange: 'onSelectionChange',
                                 itemdblclick: 'onSelectionDblClick',
@@ -81,40 +82,52 @@ Ext.define('NOC.sa.runcommands.Application', {
                                         },
                                         handler: 'onSelectionRefresh'
                                     }, {
-                                        text: __('Select All'),
-                                        glyph: NOC.glyph.plus_circle,
-                                        tooltip: __('Select all devices on screen'),
-                                        style: {
-                                            pointerEvents: 'all'
+                                        xtype: 'combo',
+                                        editable: false,
+                                        minWidth: 225,
+                                        emptyText: __('Group select'),
+                                        store: {
+                                            fields: ['cmd', 'title'],
+                                            data: [
+                                                {'cmd': 'SCREEN', 'title': __('All devices on screen')},
+                                                {'cmd': 'FIRST_50', 'title': __('First 50')},
+                                                {'cmd': 'FIRST_100', 'title': __('First 100')},
+                                                {'cmd': 'N_ROWS', 'title': __('First N')}
+                                            ]
                                         },
-                                        handler: 'onSelectionSelectAll'
-                                    }, {
-                                        text: __('Unselect All'),
-                                        glyph: NOC.glyph.minus_circle,
-                                        tooltip: __('Unselect all devices'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionUnselectAll'
-                                    }, '->', {
-                                        text: __('Select Checked'),
-                                        glyph: NOC.glyph.arrow_right,
-                                        tooltip: __('Move all selected devices to the right'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionAddChecked'
-                                    }, '|', {
-                                        xtype: 'box',
-                                        bind: {
-                                            html: __('Selected : {total.selection}')
+                                        queryMode: 'local',
+                                        displayField: 'title',
+                                        valueField: 'cmd',
+                                        listeners: {
+                                            select: 'onSelectionSelectAll'
                                         }
+                                        // }, {
+                                        //     text: __('Unselect All'),
+                                        //     glyph: NOC.glyph.minus_circle,
+                                        //     tooltip: __('Unselect all devices'),
+                                        //     style: {
+                                        //         pointerEvents: 'all'
+                                        //     },
+                                        //     bind: {
+                                        //         disabled: '{!selectionGridHasSel}'
+                                        //     },
+                                        //     handler: 'onSelectionUnselectAll'
+                                        // }, '->', {
+                                        //     text: __('Select Checked'),
+                                        //     glyph: NOC.glyph.arrow_right,
+                                        //     tooltip: __('Move all selected devices to the right'),
+                                        //     style: {
+                                        //         pointerEvents: 'all'
+                                        //     },
+                                        //     bind: {
+                                        //         disabled: '{!selectionGridHasSel}'
+                                        //     },
+                                        //     handler: 'onSelectionAddChecked'
+                                        // }, '|', {
+                                        //     xtype: 'box',
+                                        //     bind: {
+                                        //         html: __('Selected : {total.selection}')
+                                        //     }
                                     }]
                                 }
                             }],

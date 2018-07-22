@@ -157,11 +157,32 @@ Ext.define('NOC.sa.runcommands.Controller', {
         this.onAddObject(grid, rowIndex);
     },
     //
-    onSelectionSelectAll: function() {
-        var selectionGrid = this.lookupReference('sa-run-commands-selection-grid');
-        var renderPlugin = selectionGrid.findPlugin('bufferedrenderer');
+    onSelectionSelectAll: function(combo, record) {
+        var selectionGrid, renderPlugin, rows;
 
-        selectionGrid.getSelectionModel().selectRange(0, renderPlugin.getLastVisibleRowIndex());
+        switch(record.get('cmd')) {
+            case 'SCREEN': {
+                selectionGrid = this.lookupReference('sa-run-commands-selection-grid');
+                renderPlugin = selectionGrid.findPlugin('bufferedrenderer');
+                selectionGrid.getSelectionModel().selectRange(0, renderPlugin.getLastVisibleRowIndex());
+                this.lookupReference('sa-run-commands-selected-grid-1').getStore().loadData(
+                    this.lookupReference('sa-run-commands-selection-grid').getSelection()
+                );
+                return;
+            }
+            case 'N_ROWS': {
+                Ext.Msg.prompt(__('Select rows'), __('Please enter number:'), function(btn, text) {
+                    if(btn === 'ok') {
+                        this.getNRows(text);
+                    }
+                }, this);
+                break;
+            }
+            default: {
+                this.getNRows(record.get('cmd').slice(6));
+            }
+        }
+        combo.setValue(null);
     },
     //
     onSelectionUnselectAll: function() {
@@ -479,7 +500,6 @@ Ext.define('NOC.sa.runcommands.Controller', {
                     me.stateInc('progressState.r', -1);
                     me.stateInc('progressState.s', 1);
                 }
-                // console.log(chunk);
             }
         };
         xhr.onload = function() {
@@ -525,5 +545,33 @@ Ext.define('NOC.sa.runcommands.Controller', {
         }
         ac.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
         ac.push('<div class=\'noc-mrt-result\'>' + text + '</div>');
+    },
+    //
+    getNRows: function(n) {
+        var params, me = this,
+            selectionGrid = this.lookupReference('sa-run-commands-selection-grid'),
+            rows = Number.parseInt(n);
+        if(Number.isInteger(rows)) {
+            params = Ext.Object.merge({}, Ext.clone(this.lookupReference('sa-run-commands-selection-grid').getStore().filterParams), {__limit: rows, __start: 0});
+
+            selectionGrid.mask(__('Loading'));
+            Ext.Ajax.request({
+                url: this.lookupReference('sa-run-commands-selection-grid').getStore().rest_url,
+                method: 'POST',
+                jsonData: params,
+                scope: me,
+                success: function(response) {
+                    selectionGrid.unmask();
+                    me.lookupReference('sa-run-commands-selected-grid-1').getStore().loadData(
+                        Ext.decode(response.responseText)
+                    );
+                },
+                failure: function() {
+                    selectionGrid.unmask();
+                    NOC.error(__("Failed to get data"));
+                }
+            });
+
+        }
     }
 });
