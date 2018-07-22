@@ -29,5 +29,6 @@ class CHManagedObjectDataSource(BaseDataSource):
                 mo.remote_id if mo.remote_id else "",
                 mo.remote_system.name if mo.remote_system else "",
                 mo.administrative_domain.id,
-                mo.administrative_domain.name
+                mo.administrative_domain.name,
+                mo.container.get_address_text() or ""
             )
