@@ -129,7 +129,6 @@ class CardRequestHandler(UIHandler):
                     cls.CARDS_PREFIX.replace(os.path.sep, "."),
                     f[:-3]
                 )
-                print mn
                 m = __import__(mn, {}, {}, "*")
                 for d in dir(m):
                     c = getattr(m, d)
