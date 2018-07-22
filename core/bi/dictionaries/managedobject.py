@@ -21,3 +21,8 @@ class ManagedObject(Dictionary):
     profile = StringField()
     platform = StringField()
     version = StringField()
+    remote_id = StringField()
+    remote_system = StringField()
+    administrative_domain_id = StringField()
+    administrative_domain = StringField()
+    location_address = StringField()
