@@ -20,12 +20,13 @@ class CHContainerDataSource(BaseDataSource):
 
     def extract(self):
         o = Object._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-        for obj in o.find({}, {"_id": 1, "bi_id": 1, "name": 1, "parent": 1}, no_cursor_timeout=True):
-            location = ""
+        for obj in o.find({}, {"_id": 1, "bi_id": 1, "name": 1, "container": 1,
+                               "data.address.text": 1}, no_cursor_timeout=True):
+            data = obj.get("data", {})
             yield (
                 obj["bi_id"],
                 obj["_id"],
                 obj.get("name", ""),
                 bi_hash(obj["container"]) if obj.get("container") else "",
-                location
+                data["address"].get("text", "") if data and "address" in data else ""
             )
