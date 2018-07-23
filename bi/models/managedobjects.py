@@ -75,6 +75,8 @@ class ManagedObject(Model):
     has_snmp = BooleanField(description=_("Has SNMP"))
     has_snmp_v1 = BooleanField(description=_("Has SNMP v1"))
     has_snmp_v2c = BooleanField(description=_("Has SNMP v2c"))
+    # Counter
+    uptime = Float64Field(description=_("Uptime"))
 
     @classmethod
     def transform_query(cls, query, user):

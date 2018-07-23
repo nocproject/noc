@@ -21,6 +21,7 @@ from noc.inv.models.link import Link
 from noc.inv.models.capability import Capability
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.fm.models.uptime import Uptime
 
 
 class ManagedObjectsExtractor(BaseExtractor):
@@ -54,6 +55,7 @@ class ManagedObjectsExtractor(BaseExtractor):
         # Extract managed objects
         for mo in ManagedObject.objects.all():
             did = DiscoveryID.objects.filter(object=mo).first()
+            uptime = Uptime.objects.filter(object=mo.id, stop=None).first()
             r = {
                 "ts": ts,
                 "managed_object": mo,
@@ -73,7 +75,8 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "hostname": did.hostname if did else "",
                 "ip": mo.address,
                 "is_managed": mo.is_managed,
-                "location": mo.container.get_address_text() if mo.container else ""
+                "location": mo.container.get_address_text() if mo.container else "",
+                "uptime": uptime.last_value if uptime else 0.0
                 # subscribers
                 # services
             }
