@@ -22,6 +22,7 @@ class Script(BaseScript):
     rx_lldp = re.compile(r"^(?P<local_port>\S+)\s+\|\s+\d+\s+\|\s+(?P<remote_id>\S+|.{17})"
                          r"\s+\|\s(?P<remote_port>\S+)\s+\|\s+(?P<remote_n>\S+)\s*\|",
                          re.MULTILINE)
+
     rx_mac = re.compile(r"(?:(?:\d|\w){2}[\-\s\:]){5}(?:\d|\w){2}",
                          re.MULTILINE)
 
