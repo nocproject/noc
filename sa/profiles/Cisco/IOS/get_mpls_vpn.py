@@ -216,8 +216,7 @@ class Script(BaseScript):
             r[conf_id]["interfaces"] += [names[int(ifindex)]]
         for conf_id, vrf_rt, vrf_rt_decr in self.snmp.get_tables([
             mib["MPLS-VPN-MIB::mplsVpnVrfRouteTarget"],
-            mib["MPLS-VPN-MIB::mplsVpnVrfRouteTargetDescr"]
-        ]):
+            mib["MPLS-VPN-MIB::mplsVpnVrfRouteTargetDescr"]]):
             # rt_type: import(1), export(2), both(3)
             conf_id, rt_index, rt_type = conf_id.rsplit(".", 2)
             if rt_type in {"2", "3"}:
