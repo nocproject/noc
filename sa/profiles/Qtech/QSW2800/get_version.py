@@ -37,6 +37,8 @@ class Script(BaseScript):
     rx_vendor = re.compile(r"^DeviceOid\s+\d+\s+(?P<oid>\S+)", re.MULTILINE)
 
     def fix_platform(self, oid):
+        if oid.startswith("."):
+            oid = oid[1:]
         if oid == "1.3.6.1.4.1.6339.1.1.1.228":
             return "QSW-3450-28T-AC"
         raise self.NotSupportedError()
