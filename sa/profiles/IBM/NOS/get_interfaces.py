@@ -12,6 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
+
 class Script(BaseScript):
     name = "IBM.NOS.get_interfaces"
     interface = IGetInterfaces
@@ -56,7 +57,6 @@ class Script(BaseScript):
             if match:
                 iface = []
                 sub = []
-                #desc = match.group("desc")
                 ifindex = int(match.group("ifindex")) + 128
                 ifname = match.group("ifname")
                 iftype = "physical"
