@@ -11,8 +11,8 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
-from noc.sa.interfaces.base import MACAddressParameter, IPv4Parameter
+from noc.lib.validators import is_int, is_ipv4
+from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
@@ -23,8 +23,7 @@ class Script(BaseScript):
                          r"\s+\|\s(?P<remote_port>\S+)\s+\|\s+(?P<remote_n>\S+)\s*\|",
                          re.MULTILINE)
 
-    rx_mac = re.compile(r"(?:(?:\d|\w){2}[\-\s\:]){5}(?:\d|\w){2}",
-                         re.MULTILINE)
+    rx_mac = re.compile(r"(?:(?:\d|\w){2}[\-\s\:]){5}(?:\d|\w){2}", re.MULTILINE)
 
     def execute_cli(self):
         r = []
