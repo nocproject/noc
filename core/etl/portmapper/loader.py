@@ -43,8 +43,8 @@ class PortMapperLoader(object):
                         loader = o
                         break
                     logger.error("Loader not found: %s", name)
-            except ImportError as why:
-                logger.error("Failed to load: %s", why)
+            except ImportError as e:
+                logger.error("Failed to load: %s", e)
                 loader = None
             self.loaders[name] = loader
         return loader

@@ -6,25 +6,24 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-import csv
-import hashlib
 # Python modules
 import os
-import shutil
-import sys
-import uuid
 import zlib
+import csv
+import shutil
+import hashlib
+import uuid
 from collections import namedtuple
-
-import bson
+import sys
 # Third-party modules
 import ujson
-from mongoengine.errors import NotUniqueError
+import bson
 from mongoengine.fields import ListField, EmbeddedDocumentField
-from noc.config import config
+from mongoengine.errors import NotUniqueError
+from pymongo import UpdateOne
 # NOC modules
 from noc.core.fileutils import safe_rewrite
-from pymongo import UpdateOne
+from noc.config import config
 
 
 class Collection(object):
