@@ -31,14 +31,14 @@ if [ -z "${PYTHON_INTERPRETER}" ]; then
   export PYTHON_INTERPRETER='/usr/bin/env python'
 fi
 
-if [ -f "./custom/commands/$CMD.sh" ]; then
+if [ -f "${CUSTOM_PATH}/commands/$CMD.sh" ]; then
     shift
-    exec /bin/sh "./custom/commands/$CMD.sh" "$@"
+    exec /bin/sh "${CUSTOM_PATH}/commands/$CMD.sh" "$@"
 fi
 
-if [ -f "../noc_custom/commands/$CMD.py" ]; then
+if [ -f "${CUSTOM_PATH}/commands/$CMD.py" ]; then
     shift
-    exec ${PYTHON_INTERPRETER} "./custom/commands/$CMD.py" "$@"
+    exec ${PYTHON_INTERPRETER} "${CUSTOM_PATH}/commands/$CMD.py" "$@"
 fi
 
 if [ -f "./commands/$CMD.sh" ]; then
