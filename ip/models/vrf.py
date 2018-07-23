@@ -61,7 +61,7 @@ class VRF(models.Model):
 
     name = models.CharField(
         _("VRF"),
-        unique=True,
+        unique=False,
         max_length=64,
         help_text=_("Unique VRF Name"))
     profile = DocumentReferenceField(VPNProfile)
@@ -71,7 +71,7 @@ class VRF(models.Model):
     )
     rd = models.CharField(
         _("RD"),
-        unique=True,
+        unique=False,
         max_length=21,
         validators=[check_rd],
         help_text=_("Route Distinguisher in form of ASN:N or IP:N"))

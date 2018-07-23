@@ -61,7 +61,6 @@ class Script(BaseScript):
                     vpns += [{
                         "type": "VRF",
                         "vpn_id": "",
-                        "rd": None,
                         "status": True,
                         "name": vrf.strip(),
                         "interfaces": []
@@ -107,7 +106,6 @@ class Script(BaseScript):
                 vpns += [{
                     "type": "VRF",
                     "vpn_id": "",
-                    "rd": None,
                     "status": True,
                     "name": vrf.strip(),
                     "interfaces": []
@@ -149,7 +147,6 @@ class Script(BaseScript):
                 vpn = {
                     "type": "VRF",
                     "vpn_id": "",
-                    "rd": None,
                     "status": True,
                     "name": match.group("vrf"),
                     "interfaces": interfaces
@@ -182,9 +179,9 @@ class Script(BaseScript):
             r[int(vrfindex)] = {
                 "type": "VRF",
                 "vpn_id": "",
+                "rd": "0:0",
                 "status": bool(vrf_status),
                 "name": vrf_name.strip(),
-                "rd": None,
                 "interfaces": []
             }
         for vrfifindex, vrfif_name, vrfif_status in self.snmp.get_tables(
