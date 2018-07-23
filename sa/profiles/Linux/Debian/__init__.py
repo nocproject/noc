@@ -37,5 +37,5 @@ class Profile(BaseProfile):
     command_exit = "exit"
     command_more = "\n"
 
-    #def setup_session(self, script):
+    # def setup_session(self, script):
     #     script.cli("config", ignore_errors=True)
