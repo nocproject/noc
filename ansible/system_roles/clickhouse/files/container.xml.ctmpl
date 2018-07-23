@@ -37,6 +37,12 @@
                  <null_value>Unknown</null_value>
                  <hierarchical>true</hierarchical>
              </attribute>
+             <attribute>
+                 <name>address_text</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
         </structure>
     </dictionary>
 </dictionaries>
