@@ -63,10 +63,10 @@ class Script(BaseScript):
                 vlan = int(match.group("vlan"))
                 vlans = []
                 tag = match.group("tag")
-                a_stat = False;
-                o_stat = False;
+                a_stat = False
+                o_stat = False
                 if ifname in oper_up:
-                    o_stat = True;
+                    o_stat = True
                 if ifname == "MGT1":
                     desc = match.group("desc")
                 else:
@@ -77,7 +77,6 @@ class Script(BaseScript):
                     match1 = self.rx_desc.search(p)
                     match2 = self.rx_vlans.search(p)
                     match3 = self.rx_a_stat.search(p)
-                    
                     desc = match1.group("desc")
                     if tag == "y":
                         vlans2 = match2.group("vlans")
@@ -91,7 +90,6 @@ class Script(BaseScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "description": desc,
-#                    "mac": mac,
                     "untagged_vlan": vlan,
                     "tagged_vlans": vlans,
                     "enabled_afi": ["BRIDGE"],
@@ -104,7 +102,6 @@ class Script(BaseScript):
                     "oper_status": o_stat,
                     "description": desc,
                     "type": iftype,
-#                    "mac": mac,
                     "enabled_protocols": [],
                     "snmp_ifindex": ifindex,
                     "subinterfaces": [sub]
