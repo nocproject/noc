@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -33,20 +34,33 @@ class Script(BaseScript):
         r"^\s*(?:Device serial number |Serial No.:(?:|\s))(?P<serial>\S+)\n",
         re.MULTILINE | re.DOTALL)
 
+    rx_vendor = re.compile(r"^DeviceOid\s+\d+\s+(?P<oid>\S+)", re.MULTILINE)
+
+    def fix_platform(self, oid):
+        if oid.startswith("."):
+            oid = oid[1:]
+        if oid == "1.3.6.1.4.1.6339.1.1.1.228":
+            return "QSW-3450-28T-AC"
+        raise self.NotSupportedError()
+
     def execute_snmp(self, **kwargs):
         try:
-            ver = self.snmp.get("1.3.6.1.2.1.1.1.0")
+            ver = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
             match = self.rx_ver.search(ver)
             match2 = self.rx_ver2.search(ver)
             if match:
-                platform = match.group("platform")
+                platform = match.group("platform").strip(" ,")
                 version = match.group("version")
                 bootprom = match.group("bootprom")
                 hardware = match.group("hardware")
                 serial = match.group("serial")
+                if platform == "Switch":
+                    oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
+                    platform = self.fix_platform(oid)
+
                 return {
                     "vendor": "Qtech",
-                    "platform": platform.strip(" ,"),
+                    "platform": platform,
                     "version": version,
                     "attributes": {
                         "Boot PROM": bootprom,
@@ -82,15 +96,24 @@ class Script(BaseScript):
         ver = self.cli("show version", cached=True)
         match = self.rx_ver.search(ver)
         if match:
-            platform = match.group("platform")
+            platform = match.group("platform").strip(" ,")
             version = match.group("version")
             bootprom = match.group("bootprom")
             hardware = match.group("hardware")
             serial = match.group("serial")
+            if platform == "Switch":
+                try:
+                    # Hidden command !!!
+                    v = self.cli("show vendor")
+                    match = self.rx_vendor.search(v)
+                    if match:
+                        platform = self.fix_platform(match.group("oid"))
+                except self.CLISyntaxError:
+                    pass
 
             return {
                 "vendor": "Qtech",
-                "platform": platform.strip(" ,"),
+                "platform": platform,
                 "version": version,
                 "attributes": {
                     "Boot PROM": bootprom,
