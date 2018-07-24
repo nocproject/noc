@@ -22,12 +22,6 @@ class Profile(BaseProfile):
     "user@debian-test-virtual:~$ "
     "root@debian-test-virtual:/home/user# "
     '''
-<<<<<<< HEAD
-=======
-    # 
-    # use default BASH promt PS1='[\u@\h \W]\$ '
-    # pattern_prompt = r"^\[\S+@\S+\s\S+](#|\$)\s"
->>>>>>> 82dd005bcaecaccb471dc39bfbd15fc4a9d69697
     pattern_prompt = r"\S+@\S+(#|:\~$|\$)\s"
     pattern_syntax_error = \
         r"^(bash: \S+: command not found...\r\n|-\w+: \w+: not found|" \
@@ -43,10 +37,3 @@ class Profile(BaseProfile):
     command_exit = "exit"
     command_more = "\n"
 
-<<<<<<< HEAD
-    # def setup_session(self, script):
-    #     script.cli("config", ignore_errors=True)
-=======
-    #def setup_session(self, script):
-    #     script.cli("config", ignore_errors=True)
->>>>>>> 82dd005bcaecaccb471dc39bfbd15fc4a9d69697
