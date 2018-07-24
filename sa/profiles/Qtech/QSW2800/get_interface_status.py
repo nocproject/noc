@@ -10,33 +10,30 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_interface_status"
-    interface = IGetInterfaceStatusEx
+    interface = IGetInterfaceStatus
     cache = True
 
     rx_interface_status = re.compile(
-        r"^\s*(?P<interface>\S+)\s+is\s+(?:administratively\s+)?"
-        r"(?P<status>\S+), line protocol is \S+", re.MULTILINE)
+        r"^\s*(?P<interface>\S+)\s+is\s+(?:administratively\s+)?\S+, "
+        r"line protocol is (?P<status>\S+)", re.MULTILINE)
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         r = []
-        snmp = self.scripts.get_interface_status_ex()
-        if snmp:
-            return snmp
         if interface:
             cmd = "show interface %s" % interface
         else:
             cmd = "show interface | include line"
         for match in self.rx_interface_status.finditer(self.cli(cmd)):
             iface = match.group("interface")
-            if iface.startswith("Vlan"):
+            if iface.startswith("Vlan") or iface.startswith("l2over"):
                 continue
-            r.append({
-                    "interface": iface,
-                    "oper_status": match.group("status").lower() == "up"
-            })
+            r += [{
+                "interface": iface,
+                "status": match.group("status").lower() == "up"
+            }]
         return r
