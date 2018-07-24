@@ -36,4 +36,3 @@ class Profile(BaseProfile):
     command_super = "sudo bash"
     command_exit = "exit"
     command_more = "\n"
-
