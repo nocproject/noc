@@ -125,6 +125,7 @@ class Script(BaseScript):
         if mode == "rstp":
             r = {"mode": "RSTP", "instances": [self.process_rstp()]}
         else:
+            match = self.rx_config.search(v)
             r = {
                 "mode": "MSTP",
                 "configuration": {
