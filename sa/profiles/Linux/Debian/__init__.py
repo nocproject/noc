@@ -22,7 +22,6 @@ class Profile(BaseProfile):
     "user@debian-test-virtual:~$ "
     "root@debian-test-virtual:/home/user# "
     '''
-
     pattern_prompt = r"\S+@\S+(#|:\~$|\$)\s"
     pattern_syntax_error = \
         r"^(bash: \S+: command not found...\r\n|-\w+: \w+: not found|" \
