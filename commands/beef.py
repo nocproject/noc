@@ -238,12 +238,11 @@ class Command(BaseCommand):
         self.stdout.write("\n".join(r) + "\n")
         return
 
-    def handle_list(self, storage, *args, **options):
-        st = self.get_storage(storage)
-        if not st:
+    def handle_list(self, storage=None, *args, **options):
+        if not storage:
             st = ExtStorage.objects.filter(type="beef")
         else:
-            st = [st]
+            st = [self.get_storage(storage)]
         r = ["UUID,Profile,Vendor,Platform,Version,SpecUUID,Changed,Path"]
         for storage in st:
             self.print("\n%sStorage: %s%s\n" % ("=" * 20, storage.name, "=" * 20))
@@ -279,7 +278,7 @@ class Command(BaseCommand):
             "cli_protocol": "beef",
             "beef_storage_url": st.url,
             "beef_path": path,
-            "access-preference": access_preference,
+            "access_preference": access_preference,
             "snmp_ro": "public"
         }
         # Get capabilities
