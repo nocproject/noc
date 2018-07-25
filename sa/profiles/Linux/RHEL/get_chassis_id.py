@@ -25,9 +25,9 @@ class Script(BaseScript):
             }]
         else:
             return [{
-                    "first_chassis_mac": "00:00:00:00:00:00",
-                    "last_chassis_mac": "00:00:00:00:00:00"
-                   }]
+                "first_chassis_mac": "00:00:00:00:00:00",
+                "last_chassis_mac": "00:00:00:00:00:00"
+           }]
 
     # TODO: use cli
     def execute_cli(self, **kwargs):
