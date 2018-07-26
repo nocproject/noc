@@ -15,7 +15,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.ip import IPv4
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
