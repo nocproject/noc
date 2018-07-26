@@ -29,8 +29,6 @@ class Script(BaseScript):
 
     BULK = None
 
-    INTERFACE_NAME_OID = "IF-MIB::ifDescr"
-
     INTERFACE_TYPES = {
         1: "other",
         6: "physical",  # ethernetCsmacd
@@ -44,10 +42,6 @@ class Script(BaseScript):
     }
 
     INTERFACE_NAMES = set()
-
-    def get_interface_name_oid(self):
-        print self.INTERFACE_NAME_OID
-        return self.INTERFACE_NAME_OID
 
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
@@ -67,30 +61,6 @@ class Script(BaseScript):
 
     def get_bulk(self):
         return self.BULK
-
-    def get_ifindexes(self, name_oid):
-        r = {}
-        unknown_interfaces = []
-        if self.has_snmp():
-            try:
-                for oid, name in self.snmp.getnext(mib[name_oid],
-                                                   max_repetitions=self.get_max_repetitions(),
-                                                   max_retries=self.get_getnext_retires()):
-                    try:
-                        v = self.profile.convert_interface_name(name)
-                    except InterfaceTypeError as why:
-                        self.logger.debug("Ignoring unknown interface %s: %s", name, why)
-                        unknown_interfaces += [name]
-                        continue
-                    ifindex = int(oid.split(".")[-1])
-                    r[v] = ifindex
-                if unknown_interfaces:
-                    self.logger.info(
-                        "%d unknown interfaces has been ignored", len(unknown_interfaces)
-                    )
-            except self.snmp.TimeOutError:
-                pass
-        return r
 
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
@@ -138,9 +108,7 @@ class Script(BaseScript):
     def execute_snmp(self, interface=None, last_ifname=None, name_oid=None):
         last_ifname = self.collect_ifnames()
         # v = self.scripts.get_interface_status_ex()
-        if not name_oid:
-            name_oid = self.get_interface_name_oid()
-        index = self.scripts.get_ifindexes(name_oid=name_oid)
+        index = self.scripts.get_ifindexes()
         # index = self.get_ifindexes()
         aggregated, portchannel_members = self.get_aggregated_ifaces()
         ifaces = dict((index[i], {"interface": i}) for i in index)

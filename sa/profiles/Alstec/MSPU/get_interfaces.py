@@ -17,8 +17,6 @@ class Script(BaseScript):
     name = "Alstec.MSPU.get_interfaces"
     interface = IGetInterfaces
 
-    INTERFACE_NAME_OID = "IF-MIB::ifName"
-
     rx_iface = re.compile(
         r"^(?P<ifname>\S+\d+)\s+Link encap:Ethernet\s+HWaddr (?P<mac>\S+)",
         re.MULTILINE)
