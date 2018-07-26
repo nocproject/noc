@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Qtech.QSW.get_switchport
+# Qtech.QSW2800.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ class Script(BaseScript):
         # Get interfaces' status
         int_status = {}
         for istat in self.scripts.get_interface_status():
-            int_status[istat["interface"]] = istat["oper_status"]
+            int_status[istat["interface"]] = istat["status"]
 
         # Get tags
         # Get vlans
