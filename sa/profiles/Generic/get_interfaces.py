@@ -29,10 +29,14 @@ class Script(BaseScript):
 
     BULK = None
 
+    INTERFACE_NAME_OID = "IF-MIB::ifDescr"
+
     INTERFACE_TYPES = {
         1: "other",
         6: "physical",  # ethernetCsmacd
         24: "loopback",  # softwareLoopback
+        37: "physical",  # atm interface
+        49: "physical",  # aal5 interface
         117: "physical",  # gigabitEthernet
         135: "SVI",  # l2vlan
         161: "aggregated",  # ieee8023adLag
@@ -40,6 +44,10 @@ class Script(BaseScript):
     }
 
     INTERFACE_NAMES = set()
+
+    def get_interface_name_oid(self):
+        print self.INTERFACE_NAME_OID
+        return self.INTERFACE_NAME_OID
 
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
@@ -60,12 +68,12 @@ class Script(BaseScript):
     def get_bulk(self):
         return self.BULK
 
-    def get_ifindexes(self):
+    def get_ifindexes(self, name_oid):
         r = {}
         unknown_interfaces = []
         if self.has_snmp():
             try:
-                for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"],
+                for oid, name in self.snmp.getnext(mib[name_oid],
                                                    max_repetitions=self.get_max_repetitions(),
                                                    max_retries=self.get_getnext_retires()):
                     try:
@@ -127,10 +135,12 @@ class Script(BaseScript):
                 portchannel_members[m] = (i, t)
         return aggregated, portchannel_members
 
-    def execute_snmp(self, interface=None, last_ifname=None):
+    def execute_snmp(self, interface=None, last_ifname=None, name_oid=None):
         last_ifname = self.collect_ifnames()
         # v = self.scripts.get_interface_status_ex()
-        index = self.scripts.get_ifindexes()
+        if not name_oid:
+            name_oid = self.get_interface_name_oid()
+        index = self.scripts.get_ifindexes(name_oid=name_oid)
         # index = self.get_ifindexes()
         aggregated, portchannel_members = self.get_aggregated_ifaces()
         ifaces = dict((index[i], {"interface": i}) for i in index)

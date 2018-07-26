@@ -2,12 +2,12 @@
 # ---------------------------------------------------------------------
 # Alstec.MSPU.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 import re
@@ -16,6 +16,8 @@ import re
 class Script(BaseScript):
     name = "Alstec.MSPU.get_interfaces"
     interface = IGetInterfaces
+
+    INTERFACE_NAME_OID = "IF-MIB::ifName"
 
     rx_iface = re.compile(
         r"^(?P<ifname>\S+\d+)\s+Link encap:Ethernet\s+HWaddr (?P<mac>\S+)",
@@ -27,7 +29,7 @@ class Script(BaseScript):
         r"^\s+inet addr:(?P<ip>\S+)\s+Bcast:\S+\s+ Mask:(?P<mask>\S+)",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         for l in self.cli("context ip router ifconfig").split("\n\n"):
             match = self.rx_iface.search(l)
@@ -66,14 +68,14 @@ class Script(BaseScript):
                 ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                 sub["ipv4_addresses"] = [ip_address]
                 sub["enabled_afi"] = ['IPv4']
-            found = False
+            # found = False
             if "." in ifname:
                 parent, vlan = ifname.split(".")
                 sub["vlan_ids"] = [vlan]
                 for i in interfaces:
                     if i["name"] == parent:
                         i["subinterfaces"] += [sub]
-                        found = True
+                        # found = True
                         break
                 continue
             iface["subinterfaces"] += [sub]
