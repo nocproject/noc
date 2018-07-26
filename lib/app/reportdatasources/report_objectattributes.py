@@ -16,7 +16,7 @@ from .base import BaseReportStream
 
 class ReportObjectAttributes(BaseReportStream):
     name = "attributes"
-    unknown_value = (None, None)
+    unknown_value = ((None, None), )
 
     def extract(self):
         """

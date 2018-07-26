@@ -18,7 +18,7 @@ from noc.lib.nosql import get_db
 class ReportObjectLinkCount(BaseReportStream):
     """Report for MO link count"""
     name = "link_count"
-    unknown_value = 0
+    unknown_value = (0, )
     builtin_sorted = False
 
     def extract(self):

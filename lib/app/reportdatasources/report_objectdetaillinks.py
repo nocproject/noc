@@ -19,7 +19,7 @@ class ReportObjectDetailLinks(BaseReportStream):
     """Report for MO links detail"""
     name = "objectdetaillink"
     builtin_sorted = True
-    unknown_value = []
+    unknown_value = ([], )
     ATTRS = ["Links"]
 
     def extract(self):

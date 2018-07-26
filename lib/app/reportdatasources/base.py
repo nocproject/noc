@@ -5,6 +5,33 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+import heapq
+
+
+def iterator_to_stream(iterator):
+    """Convert an iterator into a stream (None if the iterator is empty)."""
+    try:
+        return iterator.next(), iterator
+    except StopIteration:
+        return None
+
+
+def stream_next(stream):
+    """Get (next_value, next_stream) from a stream."""
+    val, iterator = stream
+    return val, iterator_to_stream(iterator)
+
+
+def merge(iterators):
+    """Make a lazy sorted iterator that merges lazy sorted iterators."""
+    streams = map(iterator_to_stream, map(iter, iterators))
+    heapq.heapify(streams)
+    while streams:
+        stream = heapq.heappop(streams)
+        if stream is not None:
+            val, stream = stream_next(stream)
+            heapq.heappush(streams, stream)
+            yield val
 
 
 class LongestIter(object):
@@ -53,6 +80,7 @@ class BaseReportStream(object):
     fields = None  # StreamFields List
     unknown_value = None  # Fill empty value
     builtin_sorted = False  # Builtin Sorted stream
+    multiple_stream = False
 
     def __init__(self, sync_ids=None):
         self.sync_ids = sync_ids
@@ -69,6 +97,10 @@ class BaseReportStream(object):
         prev_id = 0
         if not self.builtin_sorted:
             for v in sorted(self.extract()):
+                yield v
+        elif self.multiple_stream:
+            # return {STREAM_NAME1: iterator1, ....}
+            for v in merge(self.extract()):
                 yield v
         else:
             for v in self.extract():
@@ -118,41 +150,7 @@ class BaseReportStream(object):
 
     def __getitem__(self, item):
         # @todo
-        raise NotImplementedError
-
-
-class BaseReportDataSource(object):
-    name = None  # Название
-    columns = None  # Список колонок
-    builtin_sorted = False  # поддержка сортировки
-    unknown_value = None  # Fill empty value
-    label = "?"
-
-    def __init__(self, ids):
-        self.ids = ids  # List of id for limit query
-        self.out = None  # Save all loading
-
-    def clean(self):
-        pass
-
-    def iter_data(self):
-        for r in []:
-            yield r
-
-    def extract(self):
-        """
-        Generate list of rows. Each row is a list of fields. First value - is id
-        :return:
-        """
-        raise NotImplementedError
-
-    def load(self, ids, attributes):
-        for ii in self.extract():
-            self.out.update()
-        return {i: [] for i in ids}
-
-    def __getitem__(self, item):
-        if not self.out:
-            self.load(self.ids, [])
-        # Old implementation
-        return self.out.get(item, self.unknown_value)
+        if item == self._current_id:
+            return self._value
+        return self.unknown_value
+        # raise NotImplementedError

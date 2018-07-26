@@ -18,7 +18,7 @@ from noc.lib.nosql import get_db
 class ReportObjectIfacesTypeStat(BaseReportStream):
     """Report for MO interfaces count"""
     name = "ifacestypestat"
-    unknown_value = 0
+    unknown_value = (0, )
     builtin_sorted = True
 
     def extract(self):

@@ -29,7 +29,7 @@ class ReportObjectCaps(BaseReportStream):
 
     ATTRS = dict([("c_%s" % str(key), value) for key, value in
                   Capability.objects.filter().scalar("id", "name")])
-    unknown_value = [""] * len(ATTRS)
+    unknown_value = ([""] * len(ATTRS), )
     CHUNK_SIZE = 10000
 
     def extract(self):

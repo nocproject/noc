@@ -22,7 +22,7 @@ class ReportObjectIfacesStatusStat(BaseReportStream):
     # ["1G_UP", "1G_DOWN"]
     # ATTRS = list("-")
     ATTRS = ["Up/10G", "Up/1G", "Up/100M", "Down/-", "-"]
-    unknown_value = [""] * len(ATTRS)
+    unknown_value = ([""] * len(ATTRS), )
 
     def extract(self):
         # @todo Make reports field

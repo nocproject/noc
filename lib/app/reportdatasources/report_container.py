@@ -17,8 +17,9 @@ from noc.lib.nosql import get_db
 
 class ReportContainer(BaseReportStream):
     """Report for MO Container"""
+    # @container address by container
     name = "containeraddress"
-    unknown_value = {}
+    unknown_value = ({}, )
     builtin_sorted = True
 
     def extract(self):
