@@ -31,7 +31,7 @@ class Script(BaseScript):
     rx_admin_status = re.compile(
         r"admin-status : (?P<admin_status>up|admin-up|down|admin-down|not-appl)"
     )
-    rx_oper_status = re.compile("opr-status : (?P<oper_status>up|down)")
+    rx_oper_status = re.compile("opr-status : (?P<oper_status>up|down|no-value)")
     rx_mtu = re.compile("largest-pkt-size : (?P<mtu>\d+)")
     rx_vpi_vci = re.compile("(?P<ifname>\S+\d+):(?P<vpi>\d+):(?P<vci>\d+)")
     rx_ip = re.compile(
@@ -50,6 +50,7 @@ class Script(BaseScript):
         "atm-bonding": "physical",
         "atm": "physical",
         "atm-ima": "physical",
+        "efm": "physical",
         "shdsl": "physical",
         "l2-vlan": "SVI",
         "sw-loopback": "loopback",
