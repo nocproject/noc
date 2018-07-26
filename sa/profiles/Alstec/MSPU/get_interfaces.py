@@ -17,6 +17,14 @@ class Script(BaseScript):
     name = "Alstec.MSPU.get_interfaces"
     interface = IGetInterfaces
 
+    INTERFACE_TYPES = {
+        1: "other",
+        6: "physical",  # ethernetCsmacd
+        24: "loopback",  # softwareLoopback
+        0: "physical",  # gigabitEthernet
+        53: "SVI"  # propVirtual
+    }
+
     rx_iface = re.compile(
         r"^(?P<ifname>\S+\d+)\s+Link encap:Ethernet\s+HWaddr (?P<mac>\S+)",
         re.MULTILINE)

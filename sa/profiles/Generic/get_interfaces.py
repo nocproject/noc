@@ -32,8 +32,6 @@ class Script(BaseScript):
         1: "other",
         6: "physical",  # ethernetCsmacd
         24: "loopback",  # softwareLoopback
-        37: "physical",  # atm interface
-        49: "physical",  # aal5 interface
         117: "physical",  # gigabitEthernet
         135: "SVI",  # l2vlan
         161: "aggregated",  # ieee8023adLag
@@ -41,6 +39,9 @@ class Script(BaseScript):
     }
 
     INTERFACE_NAMES = set()
+
+    def get_interface_type(self):
+        return self.INTERFACE_TYPES
 
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
@@ -146,7 +147,7 @@ class Script(BaseScript):
             """
             if last_ifname and iface["interface"] not in last_ifname:
                 continue
-            i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
+            i_type = self.get_interface_type().get(iface["type"], "other")
             if "." in iface["interface"]:
                 s = {
                     "name": iface["interface"],
