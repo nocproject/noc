@@ -11,8 +11,8 @@ from __future__ import absolute_import
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportStream
 from noc.lib.nosql import get_db
+from .base import BaseReportStream
 
 
 class ReportObjectLinkCount(BaseReportStream):
@@ -22,11 +22,12 @@ class ReportObjectLinkCount(BaseReportStream):
     builtin_sorted = False
 
     def extract(self):
-        value = get_db()["noc.links"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-            {"$unwind": "$interfaces"},
-            {"$lookup": {"from": "noc.interfaces", "localField": "interfaces", "foreignField": "_id", "as": "int"}},
-            {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}
-        ])
+        value = get_db()["noc.links"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
+                {"$unwind": "$interfaces"},
+                {"$lookup": {"from": "noc.interfaces",
+                             "localField": "interfaces", "foreignField": "_id", "as": "int"}},
+                {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}])
         for v in value:
             if not v["_id"]:
                 continue

@@ -11,7 +11,7 @@ import heapq
 def iterator_to_stream(iterator):
     """Convert an iterator into a stream (None if the iterator is empty)."""
     try:
-        return iterator.next(), iterator
+        return next(iterator), iterator
     except StopIteration:
         return None
 
@@ -143,7 +143,7 @@ class BaseReportStream(object):
         if self._current_id:
             # If _extract end before sync_ids to one element
             yield self.unknown_value
-        print("Current ID", self._current_id)
+        # print("Current ID", self._current_id)
         for _ in self.sync_ids_i:
             # raise StopIteration ?
             yield self.unknown_value
