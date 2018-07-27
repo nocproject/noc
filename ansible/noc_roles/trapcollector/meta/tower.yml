@@ -27,7 +27,7 @@ forms:
         - critial
     listen_traps:
       default: "0.0.0.0:162"
-      label: "Listen SNNP Traps"
+      label: "Listen SNMP Traps"
       type: str
     permit_firewall:
       default: True  # yamllint disable-line rule:truthy
