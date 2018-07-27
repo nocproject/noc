@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import time
 import hashlib
+from collections import OrderedDict
 # Third-party modules
 import six
 # NOC modules
@@ -27,6 +28,7 @@ class ModelBase(type):
     def __new__(mcs, name, bases, attrs):
         cls = type.__new__(mcs, name, bases, attrs)
         cls._fields = {}
+        cls._display_fields = OrderedDict()
         cls._tsv_encoders = {}
         cls._meta = ModelMeta(
             engine=getattr(cls.Meta, "engine", None),
@@ -38,6 +40,8 @@ class ModelBase(type):
         for k in attrs:
             if isinstance(attrs[k], BaseField):
                 attrs[k].contribute_to_class(cls, k)
+                cls._display_fields[k] = attrs[k]
+                cls._display_fields[k].name = k
         cls._fields_order = sorted(
             cls._fields, key=lambda x: cls._fields[x].field_number
         )

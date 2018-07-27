@@ -148,8 +148,8 @@ class BIAPI(API):
                 "sample": False,
                 "fields": []
             }
-            for fn in model._fields_order:
-                f = model._fields[fn]
+            for fn in model._display_fields:
+                f = model._display_fields[fn]
                 d = getattr(f, "dict_type", None)
                 if d:
                     d = d._meta.name
