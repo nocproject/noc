@@ -16,7 +16,7 @@ clickhouse:
   rw_password: {{ clickhouse_password }}
   ro_password: {{clickhouse_ro_password}}
 
-{% if custom_path %}
+{% if custom_path is defined %}
 path:
   custom_path: {{ custom_path }}
 {% endif %}
