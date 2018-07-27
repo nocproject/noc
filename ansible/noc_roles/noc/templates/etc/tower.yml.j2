@@ -16,6 +16,11 @@ clickhouse:
   rw_password: {{ clickhouse_password }}
   ro_password: {{clickhouse_ro_password}}
 
+{% if custom_path %}
+path:
+  custom_path: {{ custom_path }}
+{% endif %}
+
 {% for service in noc_services %}
     {%- if not service.pool %}
         {%- if service.config %}
