@@ -111,7 +111,7 @@ class ThreadPoolExecutor(object):
             self.max_workers = max_workers
 
     def stop_one_worker(self):
-        self._put((None, None, None, None, None, None))
+        self._put((None, None, None, None, None, None, None))
 
     def submit(self, fn, *args, **kwargs):
         if self.to_shutdown:
