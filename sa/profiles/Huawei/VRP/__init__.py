@@ -68,6 +68,11 @@ class Profile(BaseProfile):
             "platform": {
                 "$in": ["S5628F", "S5628F-HI"]
             }
+        },
+        "is_ne_platform": {
+            "platform": {
+                "$regex": "^NE"
+            }
         }
     }
 

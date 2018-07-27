@@ -70,8 +70,8 @@ class Script(BaseScript):
             self.rx_ver_snmp3,
             self.rx_ver_snmp5
         ]
-        if ("NetEngine" in v or "MultiserviceEngine" in v
-                or "HUAWEINE" in v or "HUAWEI NE" in v):
+        if ("NetEngine" in v or "MultiserviceEngine" in v or
+                "HUAWEINE" in v or "HUAWEI NE" in v):
             # Use specified regex for this platform
             match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
         if "Eudemon" in v:
