@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep datastream:
+    exit-status: 0
+    stdout:
+    - /datastream-.+RUNNING/
+    stderr: []
+    timeout: 10000

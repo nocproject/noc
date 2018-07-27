@@ -52,6 +52,24 @@
       vars:
         goss_service_name: mrt
 
+- name: Install NOC datastream
+  hosts: svc-datastream-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - datastream
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
+    - role: datastream
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: datastream
+
 - name: Install NOC escalator
   hosts: svc-escalator-exec
   become: "True"
