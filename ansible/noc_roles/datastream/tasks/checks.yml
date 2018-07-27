@@ -1,0 +1,21 @@
+---
+- block:
+  - name: Mongo version is too old
+    fail:
+      msg: |
+        To use datastream you have to setup at least 3.6 mongo.
+        Check https://kb.nocproject.org/x/TIHJAQ for more details.
+        Current version selected:  {{mongod_version}}
+        Otherwise you can disable datastream service on services tab
+    when:
+      - mongod_version is version_compare('3.6', operator='lt', strict=True)
+
+  - name: fail if noc is not selected
+    fail:
+      msg: "Datastream role have to be set with noc role to get own sources."
+    when:
+      - has_svc_noc is not defined
+  when:
+    - has_svc_datastream is defined
+  tags:
+    - checks

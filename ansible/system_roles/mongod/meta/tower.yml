@@ -56,7 +56,7 @@ forms:
         - wiredTiger
         - mmapv1
     version:
-      default: 3.4
+      default: 3.6
       type: str
       label: Mongo version
       common: environment
