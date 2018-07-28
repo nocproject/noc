@@ -156,7 +156,7 @@ class Script(BaseScript):
                 iface["voltage_v"] = float(res["voltage"])
             if len(iface) == 1:
                 # No metrics
-                print("No metrics", iface)
+                self.logger.info("No metrics for iface %s", iface)
                 continue
             r += [iface]
 
