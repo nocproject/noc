@@ -73,6 +73,11 @@ class Profile(BaseProfile):
             "platform": {
                 "$regex": "^NE"
             }
+        },
+        "is_ar": {
+            "platform": {
+                "$regex": "^AR\d+.+"
+            }
         }
     }
 
