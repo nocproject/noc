@@ -32,13 +32,15 @@ class Script(BaseScript):
         r"^\s+(?P<ifaces>.+)\s*\n", re.MULTILINE)
 
     def execute_cli(self, **kwargs):
-        vpns = []
         try:
             v = self.cli("display ip vpn-instance verbose")
         except self.CLISyntaxError:
             return []
-        for l in v.splitlines():
-            match = self.rx_line.search(l)
+        vpns = []
+        block = None
+        block_splitter = None
+        for line in v.splitlines():
+            match = self.rx_line.search(line)
             if match:
                 vpns += [{
                     "type": "VRF",
@@ -48,29 +50,34 @@ class Script(BaseScript):
                     "interfaces": []
                 }]
             elif vpns:
-                match_rd = self.rx_rd.match(l)
+                if block and line.startswith("    "):
+                    vpns[-1][block] += line.strip(" ,\n").split(block_splitter)
+                    continue
+                block = None
+                block_splitter = None
+                match_rd = self.rx_rd.match(line)
                 if match_rd:
                     rd = match_rd.group("rd")
                     if ":" in rd:
                         vpns[-1]["rd"] = rd
                     continue
-
-                match_int = self.rx_int.match(l)
+                match_int = self.rx_int.match(line)
                 if match_int:
-                    vpns[-1]["interfaces"] += [match_int.group("iface")]
+                    vpns[-1]["interfaces"] += [match_int.group("iface").strip("\n")]
+                    block, block_splitter = "interfaces", ","
                     continue
-
-                match_desc = self.rx_desc.match(l)
+                match_desc = self.rx_desc.match(line)
                 if match_desc:
                     vpns[-1]["description"] = match_desc.group("desc").strip()
                     continue
-                match_export = self.rx_export.match(l)
+                match_export = self.rx_export.match(line)
                 if match_export:
                     vpns[-1]["rt_export"] = match_export.group("rt_export").split()
-
-                match_import = self.rx_import.match(l)
+                    block = "rt_export"
+                match_import = self.rx_import.match(line)
                 if match_import:
                     vpns[-1]["rt_import"] = match_import.group("rt_import").split()
+                    block = "rt_import"
 
         if vpns:
             return vpns
