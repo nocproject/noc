@@ -42,6 +42,8 @@ all:
           correlator_loglevel: info
           correlator_max_threads: 10
           correlator_power: 1
+          datastream_loglevel: info
+          datastream_power: 2
           discovery_backup_power: 1
           discovery_loglevel: info
           discovery_max_threads: 10
@@ -65,6 +67,7 @@ all:
           has_svc_consul: true
           has_svc_consul_template: true
           has_svc_correlator: true
+          has_svc_datastream: true
           has_svc_discovery: true
           has_svc_escalator: true
           has_svc_goss: true
@@ -386,6 +389,27 @@ all:
                   stopwaitsecs: 5
               name: correlator
               pool: default
+            - config:
+                loglevel: info
+                power: 2
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                  - mongod
+                level: global
+                supervisord:
+                  command: ./services/datastream/service.py
+                  oom_score_adj: 999
+                  priority: 100
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 1MB
+                  stopwaitsecs: 3
+              name: datastream
+              pool: null
             - config:
                 backup_power: 1
                 loglevel: info
@@ -836,6 +860,15 @@ all:
             noc_node_freebsd11: {}
         svc-correlator-read: {}
     svc-correlator-exec:
+      hosts:
+        noc_node_freebsd11: {}
+    svc-datastream:
+      children:
+        cfg-datastream-noc_node_freebsd11:
+          hosts:
+            noc_node_freebsd11: {}
+        svc-datastream-read: {}
+    svc-datastream-exec:
       hosts:
         noc_node_freebsd11: {}
     svc-discovery:
