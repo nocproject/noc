@@ -13,6 +13,7 @@ from django import forms
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.main.models.customfield import CustomField
 from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
 from noc.sa.models.managedobject import ManagedObject
 
@@ -33,10 +34,9 @@ class ReportFilterApplication(SimpleReport):
                     ("", "All"),
                     ("4", _("IPv4")),
                     ("6", _("IPv6"))])
-            managed_object = forms.ModelChoiceField(
+            managed_object = forms.CharField(
                 label=_("Managed object"),
-                required=False,
-                queryset=ManagedObject.objects.order_by("name")
+                required=False
             )
             description = forms.CharField(
                 label=_("Description"),
@@ -67,12 +67,22 @@ class ReportFilterApplication(SimpleReport):
             r += [a.description, a]
             return r
 
+        def get_or_none(classmodel, **kwargs):
+            try:
+                return classmodel.objects.filter(**kwargs)
+            except classmodel.DoesNotExist:
+                return None
+
         q = {}
         for k in kwargs:
             v = kwargs[k]
             if v:
-                if k in ["description", "prefix", "fqdn", "name"]:
+                if k in ["description", "fqdn", "name"]:
                     q[k + "__icontains"] = v
+                elif k == 'prefix':
+                    q[k + "__in"] = get_or_none(Prefix, prefix=v)
+                elif k == 'managed_object':
+                    q[k + "__in"] = get_or_none(ManagedObject, name=v)
                 else:
                     q[k] = v
         columns = ["VRF", "Prefix", "Address", "State", "FQDN"]
