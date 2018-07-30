@@ -9,13 +9,38 @@ console.debug("Defining NOC.main.apikey.Application");
 Ext.define("NOC.main.apikey.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.apikey.Model"
+        "NOC.main.apikey.Model",
+        "NOC.core.PasswordGenerator"
     ],
     model: "NOC.main.apikey.Model",
     search: true,
 
     initComponent: function() {
         var me = this;
+        me.keyField = Ext.create({
+            name: "key",
+            xtype: "textfield",
+            fieldLabel: __("API Key"),
+            inputType: "password",
+            allowBlank: false,
+            margin: "0 5 0 0",
+            uiStyle: "medium",
+            triggers: {
+                hide: {
+                    cls: "fa fa-eye",
+                    hidden: false,
+                    scope: me,
+                    handler: me.showKey
+                },
+                show: {
+                    cls: "fa fa-eye-slash",
+                    hidden: true,
+                    scope: me,
+                    handler: me.hideKey
+                }
+            }
+        });
+        me.keyGenerator = Ext.create("NOC.core.PasswordGenerator");
         Ext.apply(me, {
             columns: [
                 {
@@ -58,12 +83,22 @@ Ext.define("NOC.main.apikey.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "key",
-                    xtype: "textfield",
-                    fieldLabel: __("API Key"),
-                    inputType: "password",
-                    allowBlank: false,
-                    uiStyle: "medium"
+                    xtype: "container",
+                    layout: {
+                        type: "hbox",
+                        align: "center"
+                    },
+                    margin: "0 0 5",
+                    items: [
+                        me.keyField,
+                        {
+                            xtype: "button",
+                            padding: "0 15 0 15",
+                            text: __("Generate key"),
+                            scope: me,
+                            handler: me.generateKey
+                        }
+                    ]
                 },
                 {
                     name: "access",
@@ -87,5 +122,21 @@ Ext.define("NOC.main.apikey.Application", {
             ]
         });
         me.callParent();
+    },
+    generateKey: function() {
+        var me = this;
+        me.keyField.setValue(me.keyGenerator.generate(24));
+    },
+    showKey: function() {
+        var me = this;
+        me.keyField.getTriggers().show.show();
+        me.keyField.getTriggers().hide.hide();
+        me.keyField.inputEl.dom.setAttribute("type", "text")
+    },
+    hideKey: function() {
+        var me = this;
+        me.keyField.getTriggers().hide.show();
+        me.keyField.getTriggers().show.hide();
+        me.keyField.inputEl.dom.setAttribute("type", "password");
     }
 });
