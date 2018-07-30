@@ -37,3 +37,5 @@ Reference
     /reference/template
     /reference/threshold-profile
     /reference/handler
+    /reference/external-system
+

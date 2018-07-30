@@ -1,3 +1,5 @@
+.. _discovery-periodic:
+
 ==================
 Periodic Discovery
 ==================

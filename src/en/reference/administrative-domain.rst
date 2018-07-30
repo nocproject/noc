@@ -1,3 +1,5 @@
+.. _reference-administrative-domain:
+
 =====================
 Administrative Domain
 =====================
