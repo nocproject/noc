@@ -11,6 +11,7 @@ import os
 import logging
 # Third-party modules
 import six
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -31,17 +32,24 @@ class MIBRegistry(object):
             return ".".join([self.mib[item[0]]] + [str(x) for x in item[1:]])
 
     def load_mibs(self):
-        dirs = ["cmibs"]
-        if os.path.isdir("custom/cmibs"):
-            dirs += ["custom/cmibs"]
-        for root in dirs:
+        for root in config.get_customized_paths("cmibs"):
             logger.debug("Loading compiled MIBs from '%s'", root)
             for path, dirnames, filenames in os.walk(root):
                 for f in filenames:
                     if not f.endswith(".py") or f == "__init__.py":
                         continue
-                    fp = os.path.join(path, f)
-                    mn = "noc.%s" % fp[:-3].replace(os.path.sep, ".")
+                    # fp = os.path.join(path, f)
+                    if root != "cmibs":
+                        # Custom script
+                        base_name = os.path.basename(os.path.dirname(root))
+                    else:
+                        # Common script
+                        base_name = "noc"
+                    # mn = "%s.%s" % (base_name, fp[:-3].replace(os.path.sep, "."))
+                    mn = "%s.cmibs.%s" % (
+                        base_name,
+                        f[:-3]
+                    )
                     m = __import__(mn, {}, {}, "*")
                     if hasattr(m, "NAME") and hasattr(m, "MIB"):
                         name = m.NAME
@@ -51,6 +59,7 @@ class MIBRegistry(object):
                         self.loaded_mibs.add(name)
                         logger.debug("Loading MIB: %s", name)
                         self.mib.update(m.MIB)
+
 
 logger.debug("Loading compiled MIBs")
 mib = MIBRegistry()

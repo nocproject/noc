@@ -439,13 +439,18 @@ class Site(object):
             logger.debug("Loading %s applications", app)
             self.menu_roots[app] = self.add_module_menu("noc.%s" % app)
             # Initialize application
-            for cs in ["custom", ""]:
+            for cs in config.get_customized_paths("", prefer_custom=True):
+                if cs:
+                    basename = os.path.basename(os.path.dirname(cs))
+                else:
+                    basename = "noc"
                 for f in glob.glob("%s/*/views.py" % os.path.join(cs, app_path)):
                     d = os.path.split(f)[0]
                     # Skip application loading if denoted by DISABLED file
                     if os.path.isfile(os.path.join(d, "DISABLED")):
                         continue
-                    __import__(".".join(["noc"] + f[:-3].split(os.path.sep)),
+                    __import__(".".join([basename] +
+                                        f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1:]),
                                {}, {}, "*")
         # Install applications
         for app_class in self.installed_applications:

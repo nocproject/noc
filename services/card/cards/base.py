@@ -14,6 +14,7 @@ from jinja2 import Template, Environment
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
+from noc.config import config
 from noc.core.perf import metrics
 
 
@@ -21,10 +22,8 @@ class BaseCard(object):
     name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
-    TEMPLATE_PATH = [
-        "custom/services/card/templates/",
-        "services/card/templates/"
-    ]
+    TEMPLATE_PATH = config.get_customized_paths(os.path.join("services", "card", "templates"),
+                                                prefer_custom=True)
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
     DEFAULT_SERVICE_TITLE_TEMPLATE = "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> {%endif %}{{ object.profile.name }}: {{ object.order_id }}"
