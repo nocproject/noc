@@ -1,3 +1,5 @@
+.. _services-login:
+
 =====
 login
 =====

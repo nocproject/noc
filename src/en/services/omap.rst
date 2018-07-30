@@ -1,3 +1,5 @@
+.. _services-omap:
+
 ====
 omap
 ====

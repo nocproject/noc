@@ -1,3 +1,5 @@
+.. _services-scheduler:
+
 =========
 scheduler
 =========
