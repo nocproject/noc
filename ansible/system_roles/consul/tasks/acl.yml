@@ -2,9 +2,9 @@
 # File: acl.yml - ACL tasks for Consul
 
 - name: ACL policy configuration
-  template:
-    src: configd_50acl_policy.hcl.j2
-    dest: "{{ consul_configd_path }}/50acl_policy.hcl"
+  file:
+    path: configd_50acl_policy.hcl.j2
+    state: absent
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
   notify:
