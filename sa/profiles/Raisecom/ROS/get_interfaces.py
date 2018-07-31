@@ -165,7 +165,7 @@ class Script(BaseScript):
 
         return [{"interfaces": ifaces}]
 
-    def execute(self):
+    def execute_cli(self):
         if self.is_iscom2624g:
             return self.execute_iscom2624g()
         lldp_ifaces = []

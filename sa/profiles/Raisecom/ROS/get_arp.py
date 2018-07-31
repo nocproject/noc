@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"(?P<interface>vlan?\d+)\s+\d+\s+dynamic\s+\d+\s+REACHABLE\s*\n",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         v = self.cli("show arp")
         if not self.is_iscom2624g:

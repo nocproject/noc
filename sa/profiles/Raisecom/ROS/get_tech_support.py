@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Raisecom.ROS.get_tech_support"
     interface = IGetTechSupport
 
-    def execute(self):
+    def execute_cli(self):
         try:
             c = self.cli("show tech-support")
         except self.CLISyntaxError:

@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_hostname = re.compile(r"^hostname (?P<hostname>\S+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         fqdn = ""
         # v = self.cli("show lldp local system-data")
         v = self.cli("show running-config | i hostname")

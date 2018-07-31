@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"(?P<vlan_id>\d+)\s*(?P<type>Hit|Static|dynamic)",
         re.MULTILINE | re.IGNORECASE)
 
-    def execute(self):
+    def execute_cli(self):
         if not self.is_iscom2624g:
             v = self.cli("show mac-address-table l2-address")
         else:

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Script(BaseScript):
         r"min/avg/max\s+=\s+(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?",
         re.MULTILINE | re.DOTALL)
 
-    def execute(self, address, count=None, source_address=None,
+    def execute_cli(self, address, count=None, source_address=None,
                 size=None, df=None):
         cmd = "ping %s" % address
         if count:

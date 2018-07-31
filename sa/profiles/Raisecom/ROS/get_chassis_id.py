@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    def execute(self):
+    def execute_cli(self):
         v = self.profile.get_version(self)
         return {
             "first_chassis_mac": v["mac"],

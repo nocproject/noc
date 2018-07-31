@@ -50,7 +50,7 @@ class Script(BaseScript):
     rx_lldp_rem = re.compile(
         r"^port(?P<port>\d+)\s+(?P<ch_id>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         r_rem = []
         v = self.cli("show lldp remote")
