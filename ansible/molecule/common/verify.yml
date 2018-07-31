@@ -20,13 +20,14 @@
     goss_format: documentation
   tasks:
 
+    - name: sleep for 60 secs to noc finish start
+      become: false
+      pause:
+        seconds: 60
+
     - name: Register test files
       shell: "ls {{ goss_test_directory }}/*.yml"
       register: test_files
-
-    - name: sleep for 60 secs to noc finish start
-      pause:
-        seconds: 60
 
     - name: Execute Goss tests
       command: "{{ goss_dst }} -g {{ item }} validate --format {{ goss_format }}"
