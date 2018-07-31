@@ -8,6 +8,7 @@
 
 # Python modules
 import six
+import string
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
@@ -32,9 +33,9 @@ class Script(BaseScript):
             r[conf_id] = {
                 "type": "VRF",
                 "status": vrf_oper,
-                "vpn_id": vrf_vpn_id or "",
+                "vpn_id": "",
                 "name": vrf_name,
-                "rd": vrf_rd,
+                "rd": filter(lambda x: x in string.printable, vrf_rd),
                 "rt_export": [],
                 "rt_import": [],
                 "description": vrf_descr,
@@ -49,6 +50,7 @@ class Script(BaseScript):
             mib["MPLS-L3VPN-STD-MIB::mplsL3VpnVrfRTDescr"]
         ]):
             # rt_type: import(1), export(2), both(3)
+            vrf_rt = filter(lambda x: x in string.printable, vrf_rt)
             conf_id, rt_index, rt_type = conf_id.rsplit(".", 2)
             if rt_type in {"2", "3"}:
                 r[conf_id]["rt_export"] += [vrf_rt]
