@@ -19,16 +19,19 @@ from noc.core.etl.bi.stream import Stream
 from noc.lib.dateutils import total_seconds
 from noc.config import config
 from noc.lib.dateutils import hits_in_range
-from .base import BaseExtractor
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
+from .archive import ArchivingExtractor
 
 
-class AlarmsExtractor(BaseExtractor):
+class AlarmsExtractor(ArchivingExtractor):
     name = "alarms"
     extract_delay = config.bi.extract_delay_alarms
     clean_delay = config.bi.clean_delay_alarms
     reboot_interval = datetime.timedelta(seconds=config.bi.reboot_interval)
+    enable_archive = config.bi.enable_alarms_archive
+    archive_batch_limit = config.bi.alarms_archive_batch_limit
+    archive_collection_template = config.bi.alarms_archive_template
 
     def __init__(self, prefix, start, stop):
         super(AlarmsExtractor, self).__init__(prefix, start, stop)
@@ -122,8 +125,11 @@ class AlarmsExtractor(BaseExtractor):
         return nr
 
     def clean(self):
+        # Archive
+        super(AlarmsExtractor, self).clean()
+        # Clean
         ArchivedAlarm._get_collection().remove({
-            "timestamp": {
+            "clear_timestamp": {
                 "$lte": self.clean_ts
             }
         })
@@ -138,3 +144,11 @@ class AlarmsExtractor(BaseExtractor):
         if not d:
             return None
         return d.get("timestamp")
+
+    def iter_archived_items(self):
+        for d in ArchivedAlarm._get_collection().find({
+            "timestamp": {
+                "$lte": self.clean_ts
+            }
+        }, no_cursor_timeout=True):
+            yield d
