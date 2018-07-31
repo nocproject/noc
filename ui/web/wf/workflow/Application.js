@@ -100,5 +100,23 @@ Ext.define("NOC.wf.workflow.Application", {
     onEditor: function() {
         var me = this;
         me.previewItem(me.WF_EDITOR, me.currentRecord);
+    },
+    onClone: function() {
+        var me = this;
+        if(me.currentRecord) {
+            Ext.Ajax.request({
+                url: "/wf/workflow/" + me.currentRecord.get("id") + "/clone/",
+                method: "POST",
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    me.restoreHistory([data.id]);
+                    NOC.info(__("Cloned"));
+                },
+                failure: function(response) {
+                    NOC.error(__("Failed to clone"))
+                }
+            });
+        }
     }
 });

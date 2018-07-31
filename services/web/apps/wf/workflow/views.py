@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import re
+from copy import deepcopy
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.wf.models.workflow import Workflow
@@ -137,21 +140,15 @@ class WorkflowApplication(ExtDocApplication):
                 changed = True
             else:
                 changed = False
-            print "State: %s" % s["name"]
             for k in s:
                 if k in ("id", "bi_id"):
                     continue
                 if getattr(state, k) != s[k]:
-                    print "  %s: %r -> %r" % (k, getattr(state, k), s[k])
                     setattr(state, k, s[k])
                     changed = True
             if changed:
-                print "  ... Saving"
                 state.save()
             state_names[state.name] = state
-        # Delete hanging state
-        for sid in set(current_states) - seen_states:
-            self.delete_state(current_states[sid])
         # Get current transitions
         current_transitions = {}  # str(id) -> transition
         for ct in Transition.objects.filter(workflow=wf.id):
@@ -170,7 +167,6 @@ class WorkflowApplication(ExtDocApplication):
                 changed = True
             else:
                 changed = False
-            print "Transition: %s --> %s" % (t["from_state"], t["to_state"])
             for k in t:
                 if k in ("id", "bi_id"):
                     continue
@@ -180,21 +176,65 @@ class WorkflowApplication(ExtDocApplication):
                     t[k] = [TransitionVertex(x=vx["x"], y=vx["y"]) for vx in t[k]]
                 old = getattr(transition, k)
                 if old != t[k]:
-                    print "  %s: %r -> %r" % (k, old, t[k])
                     setattr(transition, k, t[k])
                     changed = True
             if changed:
-                print "  ... Saving"
                 transition.save()
         # Delete hanging transitions
         for tid in set(current_transitions) - seen_transitions:
-            print "Delete %s" % tid
-            # current_transitions[tid].delete()
+            current_transitions[tid].delete()
+        # Delete hanging state
+        for sid in set(current_states) - seen_states:
+            current_states[sid].delete()
 
-    def delete_state(self, state):
-        """
-        Delete state
-        :param state:
-        :return:
-        """
-        print "Delete state: %s" % state.name
+    rx_clone_name = re.compile(r"\(Copy #(\d+)\)$")
+
+    @view("^(?P<id>[0-9a-f]{24})/clone/",
+          method=["POST"], access="write", api=True)
+    def api_clone(self, request, id):
+        wf = self.get_object_or_404(Workflow, id)
+        # Get all clone names
+        m = 0
+        for d in Workflow._get_collection().find({
+            "name": {
+                "$regex": re.compile("^%s\(Copy #\d+\)$" % re.escape(wf.name))
+            }
+        }, {
+            "_id": 0,
+            "name": 1
+        }):
+            match = self.rx_clone_name.search(d["name"])
+            if match:
+                n = int(match.group(1))
+                if n > m:
+                    m = n
+        # Generate name
+        name = "%s (Copy #%d)" % (wf.name, m + 1)
+        # Clone workflow
+        new_wf = deepcopy(wf)
+        new_wf.name = name
+        new_wf.id = None
+        new_wf.bi_id = None
+        new_wf.save()
+        # Clone states
+        smap = {}  # old id -> new state
+        for state in State.objects.filter(workflow=wf.id):
+            new_state = deepcopy(state)
+            new_state.workflow = new_wf
+            new_state.id = None
+            new_state.bi_id = None
+            new_state.save()
+            smap[state.id] = new_state
+        # Clone transitions
+        for transition in Transition.objects.filter(workflow=wf.id):
+            new_transition = deepcopy(transition)
+            new_transition.workflow = new_wf
+            new_transition.from_state = smap[transition.from_state.id]
+            new_transition.to_state = smap[transition.to_state.id]
+            new_transition.id = None
+            new_transition.bi_id = None
+            new_transition.save()
+        #
+        return {
+            "id": str(new_wf.id)
+        }
