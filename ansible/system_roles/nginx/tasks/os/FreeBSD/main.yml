@@ -36,6 +36,10 @@
          server 127.0.0.1:65535; # check consul for bi service
       }
 
+      upstream datastream {
+         server 127.0.0.1:65535; # check consul for datastream service
+      }
+
       upstream grafana {
          server 127.0.0.1:65535; # check consul for grafana service
       }
