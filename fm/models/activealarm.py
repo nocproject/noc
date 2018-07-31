@@ -247,6 +247,27 @@ class ActiveAlarm(nosql.Document):
             })
         elif ct:
             pass
+        # Set checks on all consequences
+        for d in self._get_collection().find({
+            "root": self.id
+        }, {"_id": 1, "alarm_class": 1}):
+            ac = AlarmClass.get_by_id(d["alarm_class"])
+            if not ac:
+                continue
+            t = ac.recover_time
+            if not t:
+                continue
+            call_later(
+                "noc.services.correlator.check.check_close_consequence",
+                scheduler="correlator",
+                pool=self.managed_object.pool.name,
+                delay=t,
+                alarm_id=d["_id"]
+            )
+        # Clear alarm
+        self.delete()
+        # Close TT
+        # MUST be after .delete() to prevent race conditions
         if a.escalation_tt or self.clear_template:
             if self.clear_template:
                 ctx = {
@@ -269,25 +290,6 @@ class ActiveAlarm(nosql.Document):
                 notification_group_id=self.clear_notification_group.id if self.clear_notification_group else None,
                 close_tt=self.close_tt
             )
-        # Set checks on all consequences
-        for d in self._get_collection().find({
-            "root": self.id
-        }, {"_id": 1, "alarm_class": 1}):
-            ac = AlarmClass.get_by_id(d["alarm_class"])
-            if not ac:
-                continue
-            t = ac.recover_time
-            if not t:
-                continue
-            call_later(
-                "noc.services.correlator.check.check_close_consequence",
-                scheduler="correlator",
-                pool=self.managed_object.pool.name,
-                delay=t,
-                alarm_id=d["_id"]
-            )
-        # Clear alarm
-        self.delete()
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
