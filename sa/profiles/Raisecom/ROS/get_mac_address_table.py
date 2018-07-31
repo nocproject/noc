@@ -19,12 +19,15 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
-        r"(?P<interface>(?:P|PC|port)?\d+)\s+"
+        r"(?P<interface>(?:P|PC|port|gigaethernet1/1/)?\d+)\s+"
         r"(?P<vlan_id>\d+)\s*(?P<type>Hit|Static|dynamic)",
         re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
-        v = self.cli("show mac-address-table l2-address")
+        if not self.is_iscom2624g:
+            v = self.cli("show mac-address-table l2-address")
+        else:
+            v = self.cli("show mac-address all")
         r = []
         for match in self.rx_line.finditer(v):
             r += [{

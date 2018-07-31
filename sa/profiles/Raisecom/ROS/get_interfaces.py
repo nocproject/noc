@@ -21,20 +21,22 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
-    rx_vlans = re.compile(r"""
-        \s*(?P<name>\d+)\s*\n
-        \s*Administrative\sMode:\s*(?P<adm_mode>.*)\n
-        \s*Operational\sMode:\s*(?P<op_mode>.*)\n
-        \s*Access\sMode\sVLAN:\s*(?P<untagged_vlan>.*)\n
-        \s*Administrative\sAccess\sEgress\sVLANs:\s*(?P<mvr_vlan>.*)\n
-        \s*Operational\sAccess\sEgress\sVLANs:\s*(?P<op_eg_vlan>.*)\n
-        \s*Trunk\sNative\sMode\sVLAN:\s*(?P<trunk_native_vlan>.*)\n
-        \s*Trunk\sNative\sVLAN:\s*(?P<trunk_native_vlan_mode>.*)\n
-        \s*Administrative\sTrunk\sAllowed\sVLANs:\s*(?P<adm_trunk_allowed_vlan>.*)\n
-        \s*Operational\sTrunk\sAllowed\sVLANs:\s*(?P<op_trunk_allowed_vlan>.*)\n
-        \s*Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n
-        \s*Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)
-        """, re.VERBOSE)
+    rx_vlans = re.compile(
+        r"^\s*(Interface: )?(?P<name>\d+|gigaethernet1/1/\d+)\s*\n"
+        r"(^\s*Switch Mode: switch\n)?"
+        r"(^\s*Reject frame type: \S+\n)?"
+        r"^\s*Administrative\sMode:\s*(?P<adm_mode>.*)\n"
+        r"^\s*Operational\sMode:\s*(?P<op_mode>.*)\n"
+        r"^\s*Access\sMode\sVLAN:\s*(?P<untagged_vlan>.*)\n"
+        r"^\s*Administrative\sAccess\sEgress\sVLANs:\s*(?P<mvr_vlan>.*)\n"
+        r"^\s*Operational\sAccess\sEgress\sVLANs:\s*(?P<op_eg_vlan>.*)\n"
+        r"^\s*Trunk\sNative\sMode\sVLAN:\s*(?P<trunk_native_vlan>.*)\n"
+        r"^\s*Trunk\sNative\sVLAN:\s*(?P<trunk_native_vlan_mode>.*)\n"
+        r"^\s*Administrative\sTrunk\sAllowed\sVLANs:\s*(?P<adm_trunk_allowed_vlan>.*)\n"
+        r"^\s*Operational\sTrunk\sAllowed\sVLANs:\s*(?P<op_trunk_allowed_vlan>.*)\n"
+        r"^\s*Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n"
+        r"^\s*Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)",
+        re.MULTILINE)
     rx_vlan2 = re.compile(
         r"^VLAN ID:\s+(?P<vlan_id>\d+)\s*\n"
         r"^Name:\s+\S+\s*\n"
@@ -55,8 +57,31 @@ class Script(BaseScript):
     rx_lldp = re.compile(
         "LLDP enable status:\s+enable.+\n"
         "LLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE)
+    rx_lldp_iscom2624g = re.compile(
+        r"^(?P<ifname>\S+)\s+enable\s+\S+\s*\n", re.MULTILINE)
     rx_descr = re.compile(
         r"^\s*(?P<port>port\d+)\s+(?P<descr>.+)\n", re.MULTILINE)
+    rx_iface_description = re.compile(
+        r"^\s*(?P<iface>\S+)\s+(?P<admin_status>UP|DOWN)\s+"
+        r"(?P<oper_status>UP|DOWN)\s+(?P<descr>.+)\n", re.MULTILINE)
+    rx_iface_iscom2624g = re.compile(
+        r"^\s*(?P<ifname>\S+) is (?P<oper_status>UP|DOWN), "
+        r"administrative status is (?P<admin_status>UP|DOWN)\s*\n"
+        r"(^\s*Description is \"(?P<descr>.+)\",\s*\n)?"
+        r"(^\s*Hardware is (?P<hw_type>\S+), MAC address is (?P<mac>\S+)\s*\n)?"
+        r"(^\s*Internet Address is (?P<ip>\S+)\s+primary\s*\n)?"
+        r"(^\s*Internet v6 Address is (?P<ipv6>\S+)\s+Link\s*\n)?"
+        r"(^\s*MTU (?P<mtu>\d+) bytes\s*\n)?", re.MULTILINE)
+    rx_ifunit = re.compile("\D+(?P<ifunit>\d+\S*)")
+
+    IFTYPES = {
+        "gigaethernet": "physical",
+        "fastethernet": "physical",
+        "vlan-interface": "SVI",
+        "null": "null",
+        "loopback": "loopback",
+        "unknown": "unknown"
+    }
 
     def parse_vlans(self, section):
         r = {}
@@ -65,7 +90,84 @@ class Script(BaseScript):
             r = match.groupdict()
         return r
 
+    def execute_iscom2624g(self):
+        lldp_ifaces = []
+        v = self.cli("show lldp local config")
+        lldp_ifaces_raw = self.rx_lldp_iscom2624g.findall(v)
+        for iface in lldp_ifaces_raw:
+            lldp_ifaces += [self.profile.convert_interface_name(iface)]
+        ifaces = []
+        v = self.cli("show interface")
+        for iface in v.split("\n\n"):
+            if not iface:
+                continue
+            match = self.rx_iface_iscom2624g.search("%s\n" % iface)
+            ifname = match.group("ifname")
+            if match.group("hw_type"):
+                hw_type = match.group("hw_type")
+                if ifname.startswith("NULL") and hw_type == "unknown":
+                    hw_type = "null"
+            else:
+                if ifname.startswith("loopback"):
+                    hw_type = "loopback"
+            i = {
+                "name": ifname,
+                "type": self.IFTYPES[hw_type],
+                "admin_status": match.group("admin_status") == "UP",
+                "oper_status": match.group("oper_status") == "UP",
+            }
+            sub = {
+                "name": ifname,
+                "admin_status": match.group("admin_status") == "UP",
+                "oper_status": match.group("oper_status") == "UP",
+                "enabled_afi": []
+            }
+            if match.group("descr"):
+                i["description"] = match.group("descr")
+                sub["description"] = match.group("descr")
+            if match.group("mac") and match.group("mac") != "0000.0000.0000":
+                i["mac"] = match.group("mac")
+                sub["mac"] = match.group("mac")
+            if match.group("mtu"):
+                sub["mtu"] = match.group("mtu")
+            if match.group("ip"):
+                sub["ipv4_addresses"] = [match.group("ip")]
+                sub["enabled_afi"] += ["IPv4"]
+            if match.group("ipv6"):
+                sub["ipv6_addresses"] = [match.group("ipv6")]
+                sub["enabled_afi"] += ["IPv6"]
+            if i["type"] == "physical":
+                sub["enabled_afi"] += ["BRIDGE"]
+                if ifname in lldp_ifaces:
+                    i["enabled_protocols"] = ["LLDP"]
+                match = self.rx_ifunit.search(ifname)
+                ifunit = match.group("ifunit")
+                try:
+                    v = self.cli(
+                        "show switchport interface %s %s" % (hw_type, ifunit)
+                    )
+                    vlans = self.parse_vlans(v)
+                    if vlans["op_mode"] != "trunk":
+                        sub["untagged_vlan"] = int(vlans["untagged_vlan"])
+                    else:
+                        sub["untagged_vlan"] = \
+                            int(vlans["trunk_native_vlan"])
+                        sub["tagged_vlans"] = \
+                            self.expand_rangelist(vlans["op_trunk_allowed_vlan"])
+                except self.CLISyntaxError:
+                    pass
+            if i["type"] == "SVI":
+                match = self.rx_ifunit.search(ifname)
+                ifunit = match.group("ifunit")
+                sub["vlan_ids"] = [int(ifunit)]
+            i["subinterfaces"] = [sub]
+            ifaces += [i]
+
+        return [{"interfaces": ifaces}]
+
     def execute(self):
+        if self.is_iscom2624g:
+            return self.execute_iscom2624g()
         lldp_ifaces = []
         v = self.cli("show lldp local config")
         match = self.rx_lldp.search(v)

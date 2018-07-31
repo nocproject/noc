@@ -22,11 +22,20 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_exit = "exit"
-    pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
+    pattern_syntax_error = \
+        r"% \".+\"  (?:Unknown command.)|Error input in the position marked by"
     pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
     config_volatile = [r"radius(-| accounting-server )encrypt-key \S+\n",
                        r"tacacs(-server | accounting-server )encrypt-key \S+\n"]
+
+    matchers = {
+        "is_iscom2624g": {
+            "platform": {
+                "$regex": "ISCOM2624G"
+            }
+        }
+    }
 
     # Version until ROS_4.15.1086.ISCOM2128EA-MA-AC.002.20151224
     rx_ver = re.compile(
@@ -86,6 +95,18 @@ class Profile(BaseProfile):
         r"Serial number\s*:\s*(?P<serial>\S+)\s*",
         re.MULTILINE | re.IGNORECASE)
 
+    # Version start  5.2.1_20171221
+    rx_ver_2017 = re.compile(
+        r"Product Name: (?P<platform>\S+)\s*\n"
+        r"Hardware Version: (?P<hw_rev>\S+)\s*\n"
+        r"Software Version:.+\n"
+        r"ROS Version: (?P<version>\S+)\s*\n"
+        r"REAP Version:.+\n"
+        r"Bootrom Version: (?P<bootstrap>\S+)\s*\n\n"
+        r"System MAC Address: (?P<mac>\S+)\s*\n"
+        r"Serial number: (?P<serial>\S+)\s*",
+        re.MULTILINE)
+
     def get_version(self, script):
         c = script.cli("show version", cached=True)
         if "Support ipv6" in c:
@@ -104,6 +125,10 @@ class Profile(BaseProfile):
             return match.groupdict()
         else:
             match = self.rx_ver_2015.search(c)
+        if match:
+            return match.groupdict()
+        else:
+            match = self.rx_ver_2017.search(c)
             return match.groupdict()
 
     def get_interface_names(self, name):
@@ -113,3 +138,11 @@ class Profile(BaseProfile):
         else:
             r += ["port %s" % name]
         return r
+
+    def convert_interface_name(self, interface):
+        if interface.startswith("GE"):
+            return interface.replace("GE", "gigaethernet")
+        if interface.startswith("FE"):
+            return interface.replace("FE", "fastethernet")
+        else:
+            return interface
