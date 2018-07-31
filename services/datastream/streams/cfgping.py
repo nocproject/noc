@@ -26,6 +26,7 @@ class CfgPingDataStream(DataStream):
             r = {
                 "id": str(mo.id),
                 "pool": str(mo.pool.name),
+                "address": str(mo.address),
                 "interval": mo.object_profile.ping_interval,
                 "policy": mo.object_profile.ping_policy,
                 "size": mo.object_profile.ping_size,
