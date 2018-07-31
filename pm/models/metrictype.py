@@ -41,7 +41,8 @@ class MetricType(Document):
         "json_collection": "pm.metrictypes",
         "json_depends_on": [
             "pm.metricscopes"
-        ]
+        ],
+        "json_unique_fields": ["name"]
     }
 
     # Metric type name, i.e. Interface | Load | In
