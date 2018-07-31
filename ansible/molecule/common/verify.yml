@@ -20,10 +20,10 @@
     goss_format: documentation
   tasks:
 
-    - name: sleep for 60 secs to noc finish start
+    - name: sleep for 120 secs to noc finish start
       become: false
       pause:
-        seconds: 60
+        seconds: 120
 
     - name: Register test files
       shell: "ls {{ goss_test_directory }}/*.yml"
