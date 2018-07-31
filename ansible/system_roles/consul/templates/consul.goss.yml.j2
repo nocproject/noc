@@ -87,13 +87,7 @@ command:
 {% endif %}
     stderr: []
     timeout: 10000
-  consul validate /etc/consul:
-    exit-status: 0
-    stdout:
-    - Configuration is valid!
-    stderr: []
-    timeout: 10000
-  consul validate /etc/consul.d:
+  consul validate {{ consul_config_path }} {{ consul_configd_path }}:
     exit-status: 0
     stdout:
     - Configuration is valid!
