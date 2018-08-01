@@ -57,6 +57,13 @@ Ext.define('NOC.core.RepoPreview', {
             handler: me.onSideBySide
         });
 
+        me.downloadButton = Ext.create('Ext.button.Button', {
+            text: __('Download'),
+            tooltip: __('Download config'),
+            scope: me,
+            handler: me.onDownload
+        });
+
         me.revCombo = Ext.create('Ext.form.ComboBox', {
             fieldLabel: __('Version'),
             labelWidth: 45,
@@ -216,7 +223,8 @@ Ext.define('NOC.core.RepoPreview', {
                     '-',
                     me.nextDiffButton,
                     me.prevDiffButton,
-                    me.sideBySideModeButton
+                    me.sideBySideModeButton,
+                    me.downloadButton
                     // me.lastDayButton,
                     // me.lastWeekButton,
                     // me.lastMonthButton
@@ -326,6 +334,7 @@ Ext.define('NOC.core.RepoPreview', {
         me.backItem = bi;
         me.rootUrl = Ext.String.format(me.restUrl, record.get('id'));
         me.setTitle(Ext.String.format(me.previewName, record.get('name')));
+        me.fileName = Ext.String.format("{0}_{1}", Ext.util.Format.lowercase(record.get('pool__label')), record.get('address'));
     },
     //
     preview: function(record, backItem) {
@@ -727,6 +736,13 @@ Ext.define('NOC.core.RepoPreview', {
         var me = this,
             ids = me.getIds();
         me.requestDiff(ids.leftId, ids.rightId);
+    },
+    //
+    onDownload: function() {
+        var me = this,
+            blob = new Blob([me.viewer.getValue()], {type: "text/plain;charset=utf-8"}),
+            suffix = me.revCombo.getDisplayValue().split(" ")[0].replace(/-/g, "") + ".conf.txt";
+        saveAs(blob, me.fileName + "_" + suffix);
     },
     //
     getIds: function() {
