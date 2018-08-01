@@ -187,6 +187,8 @@ class VRF(models.Model):
         """
         Create root entries for all enabled AFIs
         """
+        from .prefix import Prefix
+
         # Generate unique rd, if empty
         if not self.rd:
             self.rd = self.generate_rd(self.name)
@@ -260,7 +262,3 @@ class VRF(models.Model):
 
     def get_search_info(self, user):
         return ("ip.vrf", "history", {"args": [self.id]})
-
-
-# Avoid circular references
-from .prefix import Prefix
