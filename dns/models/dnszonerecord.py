@@ -2,21 +2,20 @@
 # ---------------------------------------------------------------------
 # DNSZoneRecord model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
 # NOC modules
 from dnszone import DNSZone
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
+from noc.core.datastream.decorator import datastream
 
 
+@datastream
 class DNSZoneRecord(models.Model):
     """
     Zone RRs
@@ -37,28 +36,8 @@ class DNSZoneRecord(models.Model):
 
     def __unicode__(self):
         return u"%s %s" % (self.zone.name,
-            " ".join([x
-                      for x
-                      in (self.name, self.type, self.content)
-                      if x
-                    ]))
+            " ".join([x for x in (self.name, self.type, self.content) if x ]))
 
-    def get_absolute_url(self):
-        """Return link to zone preview
-
-        :return: URL
-        :rtype: String
-        """
-        return site.reverse("dns:dnszone:change", self.zone.id)
-
-#
-# Signal handlers
-#
-@receiver(post_save, sender=DNSZoneRecord)
-def on_save(sender, instance, created, **kwargs):
-    instance.zone.touch(instance.zone.name)
-
-
-@receiver(pre_delete, sender=DNSZoneRecord)
-def on_delete(sender, instance, **kwargs):
-    instance.zone.touch(instance.zone.name)
+    def iter_changed_datastream(self):
+        for ds, id in self.zone.iter_changed_datastream():
+            yield ds, id
