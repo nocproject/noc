@@ -39,7 +39,7 @@
   {
     "$model": "dns.DNSZone",
     "id": 10,
-    "name": "z11.example.com",
+    "name": "example.com",
     "profile": 10
   },
   {
