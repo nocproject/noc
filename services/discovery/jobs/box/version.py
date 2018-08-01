@@ -60,7 +60,7 @@ class VersionCheck(DiscoveryCheck):
             changed = True
             # @todo: Check next_version and report upgrade
         # Sync image
-        image = result.get("image", "")
+        image = result.get("image", "") or None
         if image != self.object.software_image:
             if image:
                 image = image.strip()[:255]  # Cut to field length
