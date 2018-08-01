@@ -6,13 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
-from dnszone import DNSZone
 from noc.core.model.fields import TagsField
 from noc.core.datastream.decorator import datastream
+from .dnszone import DNSZone
 
 
 @datastream
@@ -35,8 +37,10 @@ class DNSZoneRecord(models.Model):
     tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s %s" % (self.zone.name,
-            " ".join([x for x in (self.name, self.type, self.content) if x ]))
+        return u"%s %s" % (
+            self.zone.name,
+            " ".join([x for x in (self.name, self.type, self.content) if x])
+        )
 
     def iter_changed_datastream(self):
         for ds, id in self.zone.iter_changed_datastream():
