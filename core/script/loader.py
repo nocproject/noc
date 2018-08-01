@@ -135,7 +135,8 @@ class ScriptLoader(object):
                     ns.add("%s.%s" % (GENERIC_PROFILE, gn))
         # Load custom scripts, Load common scripts
         profiles = set()
-        for gx in config.get_customized_paths(os.path.join("sa", "profiles", "*", "*", "*.py"), prefer_custom=True):
+        for gx in config.get_customized_paths(os.path.join("sa", "profiles"), prefer_custom=True):
+            gx = os.path.join(gx, "*", "*", "*.py")
             for path in glob.glob(gx):
                 vendor, system, name = path.split(os.sep)[-3:]
                 name = name[:-3]
