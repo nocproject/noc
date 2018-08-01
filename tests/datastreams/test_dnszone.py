@@ -11,6 +11,7 @@ import pytest
 # NOC modules
 from noc.services.datastream.streams.dnszone import DNSZoneDataStream
 
+
 def find_record(records, name, type, content):
     for r in records:
         if r.get("name") == name and r.get("type") == type and r.get("rdata") == content:
