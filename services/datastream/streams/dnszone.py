@@ -205,17 +205,11 @@ class DNSZoneDataStream(DataStream):
         # @todo: Get ttl from profile
         # Build query
         length = len(zone.name) + 1
-        q = (
-                Q(fqdn__iexact=zone.name) |
-                Q(fqdn__iendswith=".%s" % zone.name)
-        )
+        q = (Q(fqdn__iexact=zone.name) | Q(fqdn__iendswith=".%s" % zone.name))
         for z in DNSZone.objects.filter(
                 name__iendswith=".%s" % zone.name
         ).values_list("name", flat=True):
-            q &= ~(
-                    Q(fqdn__iexact=z) |
-                    Q(fqdn__iendswith=".%s" % z)
-            )
+            q &= ~(Q(fqdn__iexact=z) | Q(fqdn__iendswith=".%s" % z))
         for afi, fqdn, address in Address.objects.filter(q).values_list("afi", "fqdn", "address"):
             yield RR(
                 zone=zone.name,
@@ -261,7 +255,6 @@ class DNSZoneDataStream(DataStream):
         :return: (name, type, content, ttl, prio)
         :return:
         """
-        ttl = zone.profile.zone_ttl
         origin_length = (len(zone.name) - 8 + 1) // 2
         for a in Address.objects.filter(afi="6").extra(
                 where=["address << %s"], params=[zone.reverse_prefix]
@@ -282,7 +275,6 @@ class DNSZoneDataStream(DataStream):
         :return:
         """
         suffix = ".%s." % zone.name
-        ttl = zone.profile.zone_ttl
         # Create missed A records for NSses from zone
         # Find in-zone NSes
         in_zone_nses = {}
