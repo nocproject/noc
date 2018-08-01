@@ -17,15 +17,15 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_port = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po|g|e|ch)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
+        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<oper_status>Up|Down|Not Present)",
         re.MULTILINE | re.IGNORECASE)
     rx_port1 = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po|g|e|ch)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
+        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<admin_status>Up|Down)",
         re.MULTILINE | re.IGNORECASE)
     rx_descr = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po|g|e|ch)\S+)\s+(?P<descr>.+)$",
+        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+(?P<descr>.+)$",
         re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
@@ -36,10 +36,10 @@ class Script(BaseScript):
     rx_mac = re.compile(
         r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_enabled = re.compile(
-        r"^\s*(?P<port>(?:Gi|Te|Po|g|e|ch)\S+)\s+Enabled",
+        r"^\s*(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+Enabled",
         re.MULTILINE | re.IGNORECASE)
     rx_lldp = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po|g|e|ch)\S+)\s+(?:Rx|Tx)",
+        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+(?:Rx|Tx)",
         re.MULTILINE | re.IGNORECASE)
 
     def get_gvrp(self):
