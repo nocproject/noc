@@ -97,9 +97,6 @@ $TTL %(ttl)d
         # Add records
         rr = []
         for r in self.records[1:]:
-            #if not r.name.endswith(nsuffix) and r.name != suffix:
-            #    continue  # Trash
-            #name = r.name[:-lnsuffix]  # Strip domain from name
             name = r.name
             content = r.rdata
             if r.type == "CNAME" and r.rdata.endswith(nsuffix):
