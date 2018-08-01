@@ -86,4 +86,3 @@ class Script(BaseScript):
 
     def execute_snmp(self):
         return self.get_data()
-
