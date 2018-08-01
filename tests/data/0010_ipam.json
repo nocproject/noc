@@ -1,0 +1,81 @@
+[
+  {
+    "$model": "ip.PrefixProfile",
+    "id": "5b61553308e89100012150dc",
+    "name": "Private",
+    "workflow": "5a01d980b6f529000100d37a"
+  },
+  {
+    "$model": "ip.AddressProfile",
+    "id": "5b6156c808e89100012150dd",
+    "name": "Test",
+    "workflow": "5a01d980b6f529000100d37a"
+  },
+  {
+    "$model": "ip.Prefix",
+    "id": 10,
+    "prefix": "10.0.0.0/8",
+    "name": "RFC1918 Private Space",
+    "profile": "5b61553308e89100012150dc",
+    "state": "5a17f78d1bb6270001bd0346"
+  },
+  {
+    "$model": "ip.Prefix",
+    "id": 11,
+    "prefix": "10.0.0.0/24",
+    "name": "Staging Network #1",
+    "profile": "5b61553308e89100012150dc",
+    "state": "5a17f78d1bb6270001bd0346"
+  },
+  {
+    "$model": "ip.Prefix",
+    "id": 12,
+    "prefix": "10.0.1.0/24",
+    "name": "Staging Network #2",
+    "profile": "5b61553308e89100012150dc",
+    "state": "5a17f78d1bb6270001bd0346"
+  },
+  {
+    "$model": "ip.Prefix",
+    "id": 13,
+    "prefix": "2001:db8::/64",
+    "name": "Staging Network #3",
+    "profile": "5b61553308e89100012150dc",
+    "state": "5a17f78d1bb6270001bd0346"
+  },
+  {
+    "$model": "ip.Address",
+    "id": 10,
+    "address": "10.0.0.3",
+    "profile": "5b6156c808e89100012150dd",
+    "fqdn": "h1.example.com"
+  },
+  {
+    "$model": "ip.Address",
+    "id": 11,
+    "address": "10.0.0.4",
+    "profile": "5b6156c808e89100012150dd",
+    "fqdn": "h2.example.com"
+  },
+  {
+    "$model": "ip.Address",
+    "id": 12,
+    "address": "10.0.1.3",
+    "profile": "5b6156c808e89100012150dd",
+    "fqdn": "h3.example.com"
+  },
+  {
+    "$model": "ip.Address",
+    "id": 13,
+    "address": "2001:db8::1",
+    "profile": "5b6156c808e89100012150dd",
+    "fqdn": "h4.example.com"
+  },
+  {
+    "$model": "ip.Address",
+    "id": 14,
+    "address": "2001:db8::2",
+    "profile": "5b6156c808e89100012150dd",
+    "fqdn": "h5.example.com"
+  }
+]
