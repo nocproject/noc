@@ -19,9 +19,9 @@ class TestTestDnsDNSZone(BaseModelTest):
     model = DNSZone
 
     @pytest.mark.parametrize("zone,ztype", [
-        ("z11.example.com", "F"),
+        ("example.com", "F"),
         ("z12.example.com", "F"),
-        ("z12.example.com", "F"),
+        ("z21.example.com", "F"),
         ("z31.example.com", "F"),
         ("0.0.10.in-addr.arpa", "4"),
         ("1.0.10.in-addr.arpa", "4"),
