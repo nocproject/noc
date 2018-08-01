@@ -22,5 +22,6 @@ this Manual and additional editions of this text.
     /events
     /bi
     /metrics
+    /api
     /glossary
     /todos

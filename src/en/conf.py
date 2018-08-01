@@ -55,7 +55,8 @@ year = datetime.date.today().year
 extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.extlinks',
-    'sphinxcontrib.mermaid'
+    'sphinxcontrib.mermaid',
+    'sphinxcontrib.httpdomain'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
