@@ -11,11 +11,11 @@ from __future__ import absolute_import
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 from noc.lib.nosql import get_db
 
 
-class ReportContainer(BaseReportStream):
+class ReportContainer(BaseReportColumn):
     """Report for MO Container"""
     # @container address by container
     name = "containeraddress"

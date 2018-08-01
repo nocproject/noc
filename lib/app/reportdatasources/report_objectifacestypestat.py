@@ -11,11 +11,11 @@ from __future__ import absolute_import
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 from noc.lib.nosql import get_db
 
 
-class ReportObjectIfacesTypeStat(BaseReportStream):
+class ReportObjectIfacesTypeStat(BaseReportColumn):
     """Report for MO interfaces count"""
     name = "ifacestypestat"
     unknown_value = (0, )

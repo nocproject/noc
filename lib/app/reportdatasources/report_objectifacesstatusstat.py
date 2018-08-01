@@ -12,11 +12,11 @@ from __future__ import absolute_import
 from collections import defaultdict
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 from noc.lib.nosql import get_db
 
 
-class ReportObjectIfacesStatusStat(BaseReportStream):
+class ReportObjectIfacesStatusStat(BaseReportColumn):
     """Report for interfaces speed and status count"""
     name = "reportifacesstatusstat"
     # ["1G_UP", "1G_DOWN"]

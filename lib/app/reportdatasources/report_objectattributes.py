@@ -11,10 +11,10 @@ from __future__ import absolute_import
 # Third-party modules
 from django.db import connection
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 
 
-class ReportObjectAttributes(BaseReportStream):
+class ReportObjectAttributes(BaseReportColumn):
     name = "attributes"
     unknown_value = ((None, None), )
 

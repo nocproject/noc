@@ -15,10 +15,10 @@ from pymongo import ReadPreference
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from .base import BaseReportStream
+from .base import BaseReportColumn
 
 
-class ReportDiscoveryResult(BaseReportStream):
+class ReportDiscoveryResult(BaseReportColumn):
     """Report for MO links detail"""
 
     builtin_sorted = True

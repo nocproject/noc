@@ -12,10 +12,10 @@ from __future__ import absolute_import
 from pymongo import ReadPreference
 # NOC modules
 from noc.lib.nosql import get_db
-from .base import BaseReportStream
+from .base import BaseReportColumn
 
 
-class ReportObjectLinkCount(BaseReportStream):
+class ReportObjectLinkCount(BaseReportColumn):
     """Report for MO link count"""
     name = "link_count"
     unknown_value = (0, )

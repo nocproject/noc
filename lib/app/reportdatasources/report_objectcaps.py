@@ -12,12 +12,12 @@ from collections import namedtuple
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 from noc.lib.nosql import get_db
 from noc.inv.models.capability import Capability
 
 
-class ReportObjectCaps(BaseReportStream):
+class ReportObjectCaps(BaseReportColumn):
     """
     Report caps for MO
     Query: db.noc.sa.objectcapabilities.aggregate([{$unwind: "$caps"},

@@ -11,14 +11,14 @@ from __future__ import absolute_import
 # Third-party modules
 from django.db import connection
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 
 
-class ReportAttrResolver(BaseReportStream):
+class ReportAttrResolver(BaseReportColumn):
     name = "reportattrresolver"
     unknown_value = ["", "", "", ""]
 

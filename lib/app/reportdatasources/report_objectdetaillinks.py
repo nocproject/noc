@@ -11,11 +11,11 @@ from __future__ import absolute_import
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 from noc.lib.nosql import get_db
 
 
-class ReportObjectDetailLinks(BaseReportStream):
+class ReportObjectDetailLinks(BaseReportColumn):
     """Report for MO links detail"""
     name = "objectdetaillink"
     builtin_sorted = True

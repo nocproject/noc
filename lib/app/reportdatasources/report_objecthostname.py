@@ -11,12 +11,12 @@ from __future__ import absolute_import
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportStream
+from .base import BaseReportColumn
 from noc.lib.nosql import get_db
 from noc.inv.models.discoveryid import DiscoveryID
 
 
-class ReportObjectsHostname1(BaseReportStream):
+class ReportObjectsHostname1(BaseReportColumn):
     name = "hostaname"
     unknown_value = ""
     builtin_sorted = True
@@ -27,7 +27,7 @@ class ReportObjectsHostname1(BaseReportStream):
             yield val["object"], val["hostname"]
 
 
-class ReportObjectsHostname2(BaseReportStream):
+class ReportObjectsHostname2(BaseReportColumn):
     name = "hostaname2"
     unknown_value = ""
     builtin_sorted = True
