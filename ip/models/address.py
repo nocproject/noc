@@ -23,10 +23,11 @@ from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
 from .afi import AFI_CHOICES
 from .vrf import VRF
-from .prefix import Prefix
 from .addressprofile import AddressProfile
+from noc.core.datastream.decorator import datastream
 
 
+@datastream
 @full_text_search
 @workflow
 class Address(models.Model):
@@ -37,7 +38,7 @@ class Address(models.Model):
         app_label = "ip"
         unique_together = [("vrf", "afi", "address")]
 
-    prefix = models.ForeignKey(Prefix, verbose_name=_("Prefix"))
+    prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"))
     vrf = models.ForeignKey(
         VRF,
         verbose_name=_("VRF"),
@@ -130,9 +131,20 @@ class Address(models.Model):
     def __unicode__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
 
-    def get_absolute_url(self):
-        return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi,
-                            self.prefix.prefix)
+    def iter_changed_datastream(self):
+        from noc.dns.models.dnszone import DNSZone
+
+        if self.fqdn:
+            # Touch forward zone
+            fz = DNSZone.get_zone(self.fqdn)
+            if fz:
+                for ds, id in fz.iter_changed_datastream():
+                    yield ds, id
+            # Touch reverse zone
+            rz = DNSZone.get_zone(self.address)
+            if rz:
+                for ds, id in rz.iter_changed_datastream():
+                    yield ds, id
 
     @classmethod
     def get_afi(cls, address):
@@ -175,6 +187,8 @@ class Address(models.Model):
         Field validation
         :return:
         """
+        from .prefix import Prefix
+
         super(Address, self).clean()
         # Get proper AFI
         self.afi = "6" if ":" in self.address else "4"
