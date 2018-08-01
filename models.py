@@ -111,8 +111,6 @@ _MODELS = {
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
     "main.Style": "noc.main.models.style.Style",
-    "main.Sync": "noc.main.models.sync.Sync",
-    "main.SyncCache": "noc.main.models.synccache.SyncCache",
     "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
     "main.SystemTemplate": "noc.main.models.systemtemplate.SystemTemplate",
     "main.Tag": "noc.main.models.tag.Tag",
