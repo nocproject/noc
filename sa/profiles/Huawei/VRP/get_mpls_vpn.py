@@ -21,8 +21,8 @@ class Script(BaseScript):
     rx_rd = re.compile(r"^\s+Route Distinguisher :\s+(?P<rd>\S+:\S+|<not set>)\s*", re.IGNORECASE)
     rx_int = re.compile(r"^(?:\s{,4}Interfaces :\s+|\s{6,})(?P<iface>.+?),?\s*$", re.IGNORECASE)
     rx_desc = re.compile(r"^\s+Description :\s+(?P<desc>.*)\s*", re.IGNORECASE)
-    rx_import = re.compile(r"^\s+Import VPN Targets :\s+(?P<rt_import>(\S+:\S+\s*){1,6}|<not set>)\s*", re.IGNORECASE)
-    rx_export = re.compile(r"^\s+Export VPN Targets :\s+(?P<rt_export>(\S+:\S+\s*){1,6}|<not set>)\s*", re.IGNORECASE)
+    rx_import = re.compile(r"^\s+Import VPN Targets :\s+(?P<rt_import>(\S+:\S+\s*){1,}|<not set>)\s*", re.IGNORECASE)
+    rx_export = re.compile(r"^\s+Export VPN Targets :\s+(?P<rt_export>(\S+:\S+\s*){1,}|<not set>)\s*", re.IGNORECASE)
     rx_vpn = re.compile(
         r"^VPN\-Instance :\s+(?P<vrf>\S+)\s*\n"
         r"^\s+(?P<description>.*)\n"
@@ -30,6 +30,13 @@ class Script(BaseScript):
         r"^\s+(?P<rd>\S+:\S+|<not set>)\s*\n"
         r"^\s+Interfaces :\s*\n"
         r"^\s+(?P<ifaces>.+)\s*\n", re.MULTILINE)
+
+    def execute_snmp(self, **kwargs):
+        if self.is_ne_platform:
+            # NE Platform Set 3 Type for import
+            self.VRF_TYPE_MAP = {"rt_export": {"2"},
+                                 "rt_import": {"1", "3"}}
+        return super(Script, self).execute_snmp(**kwargs)
 
     def execute_cli(self, **kwargs):
         try:

@@ -21,6 +21,10 @@ class Script(BaseScript):
 
     requires = []
 
+    # rt_type: import(1), export(2), both(3)
+    VRF_TYPE_MAP = {"rt_export": {"2", "3"},
+                    "rt_import": {"1", "3"}}
+
     def execute_snmp(self):
         names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
         r = {}
@@ -52,8 +56,8 @@ class Script(BaseScript):
             # rt_type: import(1), export(2), both(3)
             vrf_rt = filter(lambda x: x in string.printable, vrf_rt)
             conf_id, rt_index, rt_type = conf_id.rsplit(".", 2)
-            if rt_type in {"2", "3"}:
+            if rt_type in self.VRF_TYPE_MAP["rt_export"]:
                 r[conf_id]["rt_export"] += [vrf_rt]
-            if rt_type in {"1", "3"}:
+            if rt_type in self.VRF_TYPE_MAP["rt_import"]:
                 r[conf_id]["rt_import"] += [vrf_rt]
         return list(six.itervalues(r))
