@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
@@ -27,6 +26,12 @@ class Script(BaseScript):
         r"Serial#:(?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL)
     rx_ver2 = re.compile(
         r"Bootloader:\s+(?P<bootprom>\S+)\s*\n\s+Runtime:\s+(?P<version>\S+)",
+        re.MULTILINE | re.DOTALL)
+    rx_ver3 = re.compile(
+        r"\s+(?P<platform>D.+?)\s+"
+        r"\s+H/W:(?P<hversion>\S+)"
+        r"\s+Bootloader:(?P<bootprom>\S+)"
+        r"\s+Runtime:(?P<version>\S+)",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
@@ -56,4 +61,17 @@ class Script(BaseScript):
                     }
                 }
             else:
-                raise self.NotSupportedError()
+                match = self.rx_ver3.search(c)
+                if match:
+                    return {
+                        "vendor": "DLink",
+                        "platform": match.group("platform"),
+                        "version": match.group("version"),
+                        "attributes": {
+                            "Boot PROM": match.group("bootprom"),
+                            "HW version": match.group("hversion")
+                        }
+                    }
+                else:
+                    raise self.NotSupportedError()
+            
