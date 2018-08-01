@@ -1,0 +1,95 @@
+[
+  {
+    "$model": "dns.DNSServer",
+    "id": 10,
+    "name": "ns1.example.com",
+    "ip": "10.0.0.1"
+  },
+  {
+    "$model": "dns.DNSServer",
+    "id": 11,
+    "name": "ns2.example.com",
+    "ip": "10.0.0.2"
+  },
+  {
+    "$model": "dns.DNSZoneProfile",
+    "id": 10,
+    "name": "p1",
+    "zone_soa": "example.com",
+    "zone_contact": "dns@example.com",
+    "masters": [10, 11]
+  },
+  {
+    "$model": "dns.DNSZoneProfile",
+    "id": 11,
+    "name": "p2",
+    "zone_soa": "example.com",
+    "zone_contact": "dns@example.com",
+    "masters": [10],
+    "slaves": [11]
+  },
+  {
+    "$model": "dns.DNSZoneProfile",
+    "id": 12,
+    "name": "p3",
+    "zone_soa": "example.com",
+    "zone_contact": "dns@example.com",
+    "masters": [10]
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 10,
+    "name": "z11.example.com",
+    "profile": 10
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 11,
+    "name": "z12.example.com",
+    "profile": 10
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 12,
+    "name": "z21.example.com",
+    "profile": 11
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 13,
+    "name": "z31.example.com",
+    "profile": 12
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 14,
+    "name": "0.0.10.in-addr.arpa",
+    "profile": 10
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 15,
+    "name": "1.0.10.in-addr.arpa",
+    "profile": 10
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 16,
+    "name": "8.b.d.0.1.0.0.2.ip6.int",
+    "profile": 10
+  },
+  {
+    "$model": "dns.DNSZone",
+    "id": 17,
+    "name": "1.9.b.d.0.1.0.0.2.ip6.int",
+    "profile": 10
+  },
+  {
+    "$model": "dns.DNSZoneRecord",
+    "id": 10,
+    "zone": 14,
+    "name": "8/29",
+    "type": "NS",
+    "content": "ns3.example.com"
+  }
+]
