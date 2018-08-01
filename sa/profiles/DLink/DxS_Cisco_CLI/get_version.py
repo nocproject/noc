@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -74,4 +74,3 @@ class Script(BaseScript):
                     }
                 else:
                     raise self.NotSupportedError()
-            
