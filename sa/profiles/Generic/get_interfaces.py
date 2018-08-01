@@ -40,8 +40,8 @@ class Script(BaseScript):
 
     INTERFACE_NAMES = set()
 
-    def get_interface_type(self):
-        return self.INTERFACE_TYPES
+    def get_interface_type(self, snmp_type):
+        return self.INTERFACE_TYPES.get(snmp_type, "other")
 
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
@@ -105,7 +105,7 @@ class Script(BaseScript):
                 portchannel_members[m] = (i, t)
         return aggregated, portchannel_members
 
-    def execute_snmp(self, interface=None, last_ifname=None, name_oid=None):
+    def execute_snmp(self, interface=None, last_ifname=None):
         last_ifname = self.collect_ifnames()
         # v = self.scripts.get_interface_status_ex()
         index = self.scripts.get_ifindexes()
@@ -147,7 +147,7 @@ class Script(BaseScript):
             """
             if last_ifname and iface["interface"] not in last_ifname:
                 continue
-            i_type = self.get_interface_type().get(iface["type"], "other")
+            i_type = self.get_interface_type(iface["type"])
             if "." in iface["interface"]:
                 s = {
                     "name": iface["interface"],

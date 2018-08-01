@@ -85,5 +85,5 @@ class Script(BaseScript):
         return r.values()
 
     def execute_snmp(self):
-        r = self.get_data()
-        return r
+        return self.get_data()
+
