@@ -20,7 +20,15 @@ def find_record(records, name, type, content):
 
 
 @pytest.mark.parametrize("zone_id,records", [
+    # example.com
     (10, [
+        ("", "NS", "ns1.example.com."),
+        ("", "NS", "ns2.example.com."),
+        ("h1", "A", "10.0.0.3"),
+        ("h2", "A", "10.0.0.4"),
+        ("h3", "A", "10.0.1.3"),
+        ("h4", "AAAA", "2001:db8::1"),
+        ("h5", "AAAA", "2001:db8::2"),
         ("ns1", "A", "10.0.0.1"),
         ("ns2", "A", "10.0.0.2"),
         ("z12", "NS", "ns1.example.com."),
@@ -29,7 +37,11 @@ def find_record(records, name, type, content):
         ("z21", "NS", "ns2.example.com."),
         ("z31", "NS", "ns1.example.com.")
     ]),
+    # 0.0.10.in-addr.arpa
     (14, [
+        ("", "NS", "ns1.example.com."),
+        ("", "NS", "ns2.example.com."),
+        ("8/29", "NS", "ns3.example.com."),
         ("8", "CNAME", "8.8/29"),
         ("9", "CNAME", "9.8/29"),
         ("10", "CNAME", "10.8/29"),
@@ -38,7 +50,8 @@ def find_record(records, name, type, content):
         ("13", "CNAME", "13.8/29"),
         ("14", "CNAME", "14.8/29"),
         ("15", "CNAME", "15.8/29"),
-        ("8/29", "NS", "ns3.example.com")
+        ("3", "PTR", "h1.example.com."),
+        ("4", "PTR", "h2.example.com.")
     ])
 ])
 def test_data(zone_id, records):
@@ -48,5 +61,7 @@ def test_data(zone_id, records):
     assert data.get("serial")
     assert data.get("records")
     assert data["records"][0]["type"] == "SOA"
+    import pprint
+    pprint.pprint(data)
     for name, type, content in records:
-        assert find_record(data["records"], name, type, content)
+        assert find_record(data["records"], name, type, content), "%s (%s) is expected but missed" % (name, type)
