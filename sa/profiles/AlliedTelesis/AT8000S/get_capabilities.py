@@ -9,6 +9,7 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -29,3 +30,15 @@ class Script(BaseScript):
         """
         cmd = self.cli("show spanning-tree active")
         return "  enabled  " in cmd
+
+    def execute_platform_cli(self, caps):
+        try:
+            s = []
+            v = self.cli("show stack", cached=True)
+            for i in parse_table(v, footer="Topology is "):
+                s += [i[0]]
+            if s:
+                caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+                caps["Stack | Member Ids"] = " | ".join(s)
+        except self.CLISyntaxError:
+            pass
