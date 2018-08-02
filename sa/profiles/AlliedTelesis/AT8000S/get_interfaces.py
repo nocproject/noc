@@ -147,8 +147,7 @@ class Script(BaseScript):
                     sub["tagged_vlans"] += [int(vlan_id)]
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
-        match = self.re_search(self.rx_mac, self.cli("show system"))
-        mac = match.group("mac")
+        mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         for l in self.cli("show ip interface").split("\n"):
             match = self.rx_vlan_ipif.match(l.strip())
             if match:

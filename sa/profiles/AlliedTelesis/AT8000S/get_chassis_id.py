@@ -22,7 +22,7 @@ class Script(BaseScript):
         r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
 
     def execute(self):
-        match = self.rx_mac.search(self.cli("show system"))
+        match = self.rx_mac.search(self.cli("show system", cached=True))
         if match:
             return {
                 "first_chassis_mac": match.group("mac"),
