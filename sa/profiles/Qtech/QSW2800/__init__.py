@@ -34,6 +34,8 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
+    username_submit = "\r\n"
+    password_submit = "\r\n"
     command_submit = "\r"
     pattern_prompt = \
         r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" \

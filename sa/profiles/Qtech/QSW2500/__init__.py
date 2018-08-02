@@ -28,6 +28,7 @@ class Profile(BaseProfile):
                            r"(?:Ambiguous|Incomplete|.+Unknown) command)|" \
                            r"Error input in the position market by"
     command_disable_pager = "terminal page-break disable"
+    telnet_send_on_connect = "\n"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"
