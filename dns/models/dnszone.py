@@ -199,7 +199,6 @@ class DNSZone(models.Model):
         DNSZone.objects.filter(id=self.id).update(serial=self.serial)
 
     @property
-    @property
     def children(self):
         """List of next-level nested zones"""
         length = len(self.name)

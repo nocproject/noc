@@ -186,8 +186,6 @@ class Address(models.Model):
         Field validation
         :return:
         """
-        from .prefix import Prefix
-
         super(Address, self).clean()
         # Get proper AFI
         self.afi = "6" if ":" in self.address else "4"
@@ -262,3 +260,7 @@ class Address(models.Model):
     @property
     def is_ipv6(self):
         return self.afi == "6"
+
+
+# Avoid django's validation failure
+from .prefix import Prefix

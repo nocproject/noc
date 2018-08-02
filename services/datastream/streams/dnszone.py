@@ -112,7 +112,8 @@ class DNSZoneDataStream(DataStream):
             cls.iter_ns(zone),
             cls.iter_rr(zone),
             cls.iter_ipam_a(zone),
-            cls.iter_missed_ns_a(zone)
+            cls.iter_missed_ns_a(zone),
+            cls.iter_nested_ns(zone)
         )
 
     @classmethod
