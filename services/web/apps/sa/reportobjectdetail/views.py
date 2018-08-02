@@ -36,6 +36,7 @@ from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.vendor import Vendor
+from noc.lib.app.reportdatasources.base import ReportModelFilter
 
 # @todo ThreadingCount
 # @todo ReportDiscovery Problem
@@ -657,8 +658,6 @@ class ReportObjectDetailApplication(ExtApplication):
         mos = ManagedObject.objects.filter()
         if request.user.is_superuser and not administrative_domain and not selector and not segment:
             mos = ManagedObject.objects.filter(pool=p)
-        if ids:
-            mos = ManagedObject.objects.filter(id__in=[ids])
         if is_managed is not None:
             mos = ManagedObject.objects.filter(is_managed=is_managed)
         if pool:
@@ -676,6 +675,12 @@ class ReportObjectDetailApplication(ExtApplication):
             if segment:
                 mos = mos.filter(segment__in=segment.get_nested_ids())
         mos_id = list(mos.values_list("id", flat=True))
+        if ids:
+            ref = ReportModelFilter()
+            ids = ref.proccessed(ids).values()
+            mos_id = list(set(mos_id).intersection(ids[0]))
+            # mos = ManagedObject.objects.filter(id__in=list(ids[0]))
+
         if len(mos_id) > 70000:
             return self.response("Request Too Large, Objects limit is 70000", status=self.TOO_LARGE)
         avail = {}
@@ -683,6 +688,7 @@ class ReportObjectDetailApplication(ExtApplication):
         attr = {}
         attr_resolv = {}
         moss = []
+        mo_hostname = {}
         iface_count = {}
         link_count = {}
         discovery_problem = {}
@@ -740,7 +746,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 mo,
                 moss[0],
                 moss[1],
-                mo_hostname[mo],
+                mo_hostname.get(mo, ""),
                 "managed" if moss[2] else "unmanaged",
                 attr_resolv[mo][0],
                 # Profile
