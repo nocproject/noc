@@ -44,8 +44,8 @@ class Script(BaseScript):
                             r_device_id = self.rx_serial_check.match(r_device_id).group(1)
                         neighbors += [{
                             "device_id": r_device_id,
-                            "local_interface": self.profile.convert_interface_name(ii[0]),
-                            "remote_interface": res[ii]['7'],
+                            "local_interface": self.profile.get_interface_names(ii[0]),
+                            "remote_interface": self.profile.get_interface_names(res[ii]['7']),
                             "platform": res[ii]['8'],
                         }]
                         try:

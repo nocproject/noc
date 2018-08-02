@@ -179,6 +179,17 @@ class Profile(BaseProfile):
             return "all"
         return self.convert_interface_name_cisco(interface)
 
+    def get_interface_names(self, name):
+        """
+        For Serial interfaces
+        Port name          : Se 0/0/1.45
+        Return            : Se 0/0/1
+        """
+        n = self.convert_interface_name(name)
+        if n.startswith("Se"):
+            return n.split(".")[0]
+        return n
+
     def generate_prefix_list(self, name, pl):
         """
         Generate prefix list _name_. pl is a list of (prefix, min_len, max_len)
