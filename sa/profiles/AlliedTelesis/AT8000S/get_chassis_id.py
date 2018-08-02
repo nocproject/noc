@@ -47,4 +47,3 @@ class Script(BaseScript):
                 "first_chassis_mac": f,
                 "last_chassis_mac": t
             } for f, t in self.macs_to_ranges(macs)]
-
