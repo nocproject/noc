@@ -29,6 +29,8 @@ class WorkflowApplication(ExtDocApplication):
     menu = [_("Setup"), _("Workflow")]
     model = Workflow
 
+    NEW_ID = "000000000000000000000000"
+
     @view("^(?P<id>[0-9a-f]{24})/config/",
           method=["GET"], access="write", api=True)
     def api_get_config(self, request, id):
@@ -116,7 +118,10 @@ class WorkflowApplication(ExtDocApplication):
           }
           )
     def api_save_config(self, request, id, name, description, states, transitions, **kwargs):
-        wf = self.get_object_or_404(Workflow, id)
+        if id == self.NEW_ID:
+            wf = Workflow()
+        else:
+            wf = self.get_object_or_404(Workflow, id)
         # Update workflow
         wf.name = name
         wf.description = description
