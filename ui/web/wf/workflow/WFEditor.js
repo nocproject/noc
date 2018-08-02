@@ -11,6 +11,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     requires: [
         "Ext.ux.form.StringsField"
     ],
+    isScriptsLoaded: false,
     initComponent: function() {
         var me = this;
 
@@ -81,7 +82,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     //
     afterRender: function() {
         var me = this;
-        me.callParent();
         new_load_scripts([
             "/ui/pkg/lodash/lodash.min.js",
             "/ui/pkg/backbone/backbone.min.js",
@@ -91,6 +91,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             "/ui/pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js",
             "/ui/web/wf/workflow/js/joint.element.Tools.js"
         ], me, me.initMap);
+        me.callParent();
     },
     // Initialize JointJS Map
     initMap: function() {
@@ -127,6 +128,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             elementView.removeTools();
         });
         me.graph.on("remove", Ext.bind(me.onRemoveCell, me));
+        me.isScriptsLoaded = true;
     },
     //
     preview: function(record, backItem) {
@@ -146,8 +148,16 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             });
         } else {
             me.configId = "000000000000000000000000";
+            me.draw({
+                id: me.configId,
+                name: "New Workflow",
+                description: "New Workflow diagram",
+                is_active: true,
+                states: [],
+                transitions: []
+            });
         }
-        if(Ext.isFunction(me.graph.clear)) {
+        if(me.graph && Ext.isFunction(me.graph.clear)) {
             me.graph.clear();
         }
         me.callParent(arguments);

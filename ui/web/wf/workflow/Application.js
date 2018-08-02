@@ -22,6 +22,8 @@ Ext.define("NOC.wf.workflow.Application", {
             text: __("Editor"),
             glyph: NOC.glyph.eye,
             scope: me,
+            formBind: true,
+            disabled: true,
             handler: me.onEditor
         });
         Ext.apply(me, {
@@ -99,7 +101,9 @@ Ext.define("NOC.wf.workflow.Application", {
     },
     onEditor: function() {
         var me = this;
-        me.previewItem(me.WF_EDITOR, me.currentRecord);
+        if(me.getRegisteredItems()[me.WF_EDITOR].isScriptsLoaded) {
+            me.previewItem(me.WF_EDITOR, me.currentRecord);
+        }
     },
     onClone: function() {
         var me = this;
@@ -117,6 +121,14 @@ Ext.define("NOC.wf.workflow.Application", {
                     NOC.error(__("Failed to clone"))
                 }
             });
+        }
+    },
+    //
+    newRecord: function(defaults) {
+        var me = this;
+        if(!me.editorButton.isDisabled()) {
+            me.editorButton.setDisabled(true);
+            me.callParent(defaults);
         }
     }
 });
