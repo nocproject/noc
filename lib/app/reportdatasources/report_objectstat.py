@@ -249,7 +249,7 @@ class StatusIsolator(IsolaterClass):
         :param value:
         :return:
         """
-        print "Is a %s, %s" % (num, value)
+        # print "Is a %s, %s" % (num, value)
         if hasattr(self, "_%d_is" % num):
             a = getattr(self, "_%d_is" % num)
             return a(value)
