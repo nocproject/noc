@@ -35,6 +35,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
 
     rx_vendor = re.compile(r"^DeviceOid\s+\d+\s+(?P<oid>\S+)", re.MULTILINE)
+    rx_version = re.compile(r"Software, Version (?P<version>\S+),")
 
     qtech_platforms = {
         "1.3.6.1.4.1.6339.1.1.1.48": "QSW-2800",
@@ -138,10 +139,14 @@ class Script(BaseScript):
                     }
                 }
             else:
+                oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
+                platform = self.fix_platform(oid)
+                match = self.rx_version.search(ver)
+                version = match.group("version")
                 return {
                     "vendor": "Qtech",
-                    "platform": "Unknown",
-                    "version": "Unknown"
+                    "platform": platform,
+                    "version": version
                 }
         except self.snmp.TimeOutError:
             raise self.NotSupportedError
