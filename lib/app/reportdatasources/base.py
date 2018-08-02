@@ -82,11 +82,11 @@ class BaseReportColumn(object):
         elif self.multiple_series and not self.builtin_sorted:
             raise NotImplementedError("Multiple series supported onl with builtin sorted")
         elif not self.builtin_sorted:
-            # Unsuported builtion sorted.
+            # Unsupported builtin sorted.
             for v in sorted(self.extract()):
                 yield v
         else:
-            # Suported builtion sorted.
+            # Supported builtin sorted.
             for v in self.extract():
                 if v[0] < prev_id:   # Todo
                     print("Detect unordered stream")
