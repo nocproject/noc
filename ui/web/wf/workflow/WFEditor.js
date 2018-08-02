@@ -131,22 +131,26 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     //
     preview: function(record, backItem) {
         var me = this;
-        me.configId = record.get("id");
+        if(record) {
+            me.configId = record.get("id");
+            Ext.Ajax.request({
+                url: "/wf/workflow/" + me.configId + "/config/",
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    me.draw(Ext.decode(response.responseText));
+                },
+                failure: function() {
+                    NOC.error(__("Failed to get data"));
+                }
+            });
+        } else {
+            me.configId = "000000000000000000000000";
+        }
         if(Ext.isFunction(me.graph.clear)) {
             me.graph.clear();
         }
         me.callParent(arguments);
-        Ext.Ajax.request({
-            url: "/wf/workflow/" + me.configId + "/config/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                me.draw(Ext.decode(response.responseText));
-            },
-            failure: function() {
-                NOC.error(__("Failed to get data"));
-            }
-        });
     },
     //
     draw: function(data) {
@@ -597,10 +601,14 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 delete element.data["type"];
                 return element.data;
             });
+        if(!me.configId) {
+            NOC.error(__("Create new diagram not implement"));
+            return;
+        }
         states = states.map(function(element) {
             element.data.x = element.position.x;
             element.data.y = element.position.y;
-            if(element.data["job_handler"] !== null && element.data["job_handler"].length === 0) {
+            if(element.data["job_handler"] != null && element.data["job_handler"].length === 0) {
                 element.data["job_handler"] = null;
             }
             if(element.data.hasOwnProperty("remote_system") && element.data["remote_system"].length === 0) {
