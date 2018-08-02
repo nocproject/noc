@@ -11,11 +11,13 @@ from __future__ import absolute_import, print_function
 import re
 import heapq
 import logging
+# NOC modules
+from django.db.models import Q as d_Q
+from noc.sa.models.managedobject import ManagedObject
 from .report_objectstat import (AttributeIsolator,
                                 CapabilitiesIsolator, StatusIsolator)
 
-from noc.sa.models.managedobject import ManagedObject
-from django.db.models import Q as d_Q
+logger = logging.getLogger(__name__)
 
 
 def iterator_to_stream(iterator):
@@ -148,8 +150,10 @@ class BaseReportColumn(object):
 class LongestIter(object):
     """
     c_did = DiscoveryID._get_collection()
-    did = c_did.find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1}).sort("object")
-        # did = DiscoveryID.objects.filter(hostname__exists=True).order_by("object").scalar("object", "hostname").no_cache()
+    did = c_did.find({"hostname": {"$exists": 1}},
+    {"object": 1, "hostname": 1}).sort("object")
+        # did = DiscoveryID.objects.filter(hostname__exists=True
+        ).order_by("object").scalar("object", "hostname").no_cache()
     hostname = LongestIter(did)
     """
     def __init__(self, it):
@@ -187,8 +191,12 @@ class LongestIter(object):
 
 
 class ReportModelFilter(object):
-
+    """
+    Getting statictics info for ManagedObject
+    """
     decode_re = re.compile(r"(\d+)(\S+)(\d+)")
+
+    model = ManagedObject  # Set on base class
 
     def __init__(self):
         self.formulas = """2is1.3hs0, 2is1.3hs0.5is1, 2is1.3hs0.5is2,
@@ -196,27 +204,35 @@ class ReportModelFilter(object):
         self.f_map = {"is": StatusIsolator(),
                       "hs": CapabilitiesIsolator(),
                       "a": AttributeIsolator()}
-        self.logger = logging.getLogger(__name__)
+        self.logger = logger
 
     def decode(self, formula):
+        """
+        Decode stat formula and return isolated set
+        :param formula:
+        :return: moss: Result Query for Object
+        :return: ids: Result id list for object
+        """
         ids = []
-        moss = ManagedObject.objects.filter()
+        moss = self.model.objects.filter()
         for f in formula.split("."):
             self.logger.info("Decoding: %s" % f)
             f_num, f_type, f_val = self.decode_re.findall(f.lower())[0]
-            ll = self.f_map[f_type]
-            ll = getattr(ll, "get_stat")(f_num, f_val)
-            if isinstance(ll, set):
-                ids += [ll]
-            elif isinstance(ll, d_Q):
-                moss = moss.filter(ll)
-        # print moss.query
+            func_stat = self.f_map[f_type]
+            func_stat = getattr(func_stat, "get_stat")(f_num, f_val)
+            if isinstance(func_stat, set):
+                ids += [func_stat]
+            # @todo remove d_Q, example changing to class
+            elif isinstance(func_stat, d_Q):
+                moss = moss.filter(func_stat)
+        self.logger.debug(moss.query)
         return moss, ids
 
     def proccessed(self, column):
         """
-
-        :param column:
+        Intersect set for result
+        :param column: comma separated string stat formula.
+        Every next - intersection prev
         :return:
         """
         r = {}

@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import six
 from collections import defaultdict
 # Third-party modules
 import cachetools
@@ -27,6 +28,11 @@ from noc.inv.models.link import Link
 
 
 class IsolaterClass(object):
+    """
+    BaseClass for isolated set.
+    Every Isolated Class split objects set by facets function.
+    Function format is: `num_name`. index parameter - index subset in isolated set.
+    """
     name = None
 
     @cachetools.func.ttl_cache(maxsize=20, ttl=600)
@@ -39,9 +45,13 @@ class IsolaterClass(object):
             return self.default(num, value)
 
     def default(self, num, index):
+        """
+        Last metthod
+        :param num:
+        :param index:
+        :return:
+        """
         raise NotImplementedError()
-    # def __getattr__(self, item):
-    #     pass
 
 
 class AttributeIsolator(IsolaterClass):
@@ -67,9 +77,9 @@ class AttributeIsolator(IsolaterClass):
 
     def f_attribute(self, num, value):
         """
-
-        :param num:
-        :param value:
+        Islated object by atribute number
+        :param num: Attribute number
+        :param value: Attribute value
         :return:
         """
         # print "Attr a %s, %s" % (num, value)
@@ -89,6 +99,7 @@ class AttributeIsolator(IsolaterClass):
 
 class CapabilitiesIsolator(IsolaterClass):
     name = "has"
+    default_set = set(ManagedObject.objects.filter().values_list("id", flat=True))
 
     @staticmethod
     def _2_has(index):
@@ -101,32 +112,34 @@ class CapabilitiesIsolator(IsolaterClass):
         return set(e["_id"] for e in c)
 
     def _3_has(self, index):
-        # Has links
+        # Has links, index - link count
         d = self.f_has_links(3, index)
         if index == "0":
-            return set(ManagedObject.objects.filter().values_list(
-                "id", flat=True)) - set(d.iterkeys())
+            return self.default_set - set(d.iterkeys())
         elif index == "1":
             return set(d.iterkeys())
         elif index == "2":
-            return set(dd for dd in d.iterkeys() if d[dd] == 1)
+            return set(dd for dd in six.iterkeys(d) if d[dd] == 1)
         elif index == "3":
-            return set(dd for dd in d.iterkeys() if d[dd] == 2)
+            return set(dd for dd in six.iterkeys(d) if d[dd] == 2)
         elif index == "4":
-            return set(dd for dd in d.iterkeys() if d[dd] >= 3)
+            return set(dd for dd in six.iterkeys(d) if d[dd] >= 3)
 
     def _4_has(self, index):
-        # Has ifaces
+        # Set has physical ifaces.
+        # Index 0 - not physical ifaces
         pipeline = [{"$match": {"type": "physical"}},
                     {"$group": {"_id": "", "ifaces": {"$addToSet": "$managed_object"}}}]
         c = next(Interface.objects.aggregate(*pipeline))
         c = set(c["ifaces"])
         if index == "0":
-            return set(ManagedObject.objects.filter().values_list("id", flat=True)) - c
+            return self.default_set - c
         elif index == "1":
             return c
 
     def _5_has(self, index):
+        # Set has Network Caps
+        # Index 0 - not Netrwork Caps
         c = ObjectCapabilities.objects.filter(m_Q(
             caps__capability__in=[cp.id for cp in Capability.objects.filter(
                 name__startswith="Network |",
@@ -134,7 +147,7 @@ class CapabilitiesIsolator(IsolaterClass):
         )).values_list("object").as_pymongo()
         c = set(e["_id"] for e in c)
         if index == "0":
-            return set(ManagedObject.objects.filter().values_list("id", flat=True)) - c
+            return self.default_set - c
         elif index == "1":
             return c
 
@@ -151,8 +164,9 @@ class CapabilitiesIsolator(IsolaterClass):
             return a(value)
         raise NotImplementedError()
 
-    def f_has_links(self, num, value):
-        # Has links
+    @staticmethod
+    def f_has_links(num, value):
+        # Has links.
         pipeline = [
             {"$unwind": "$interfaces"},
             {"$lookup": {"from": "noc.interfaces",
@@ -176,11 +190,11 @@ class StatusIsolator(IsolaterClass):
     name = "is"
 
     def _1_is(self, index):
-        # Is Managed
+        # Status - Is Managed
         return d_Q(**{"is_managed": bool(index)})
 
     def _2_is(self, index):
-        # Monitoring
+        # Status - Monitoring
         if index == "1":
             # Is Monitoring = Is managed and not Generic Profile
             return d_Q(**{"is_managed": True}) & d_Q(object_profile__enable_ping=True)
@@ -192,7 +206,7 @@ class StatusIsolator(IsolaterClass):
                     d_Q(object_profile__enable_ping=False)).values_list("id", flat=True)))
 
     def _3_is(self, index):
-        # Is Availability
+        # Status - Is Availability
         return set(ObjectStatus.objects.filter(
             status=bool(int(index) - 1),
             read_preference=ReadPreference.SECONDARY_PREFERRED).values_list("object"))
