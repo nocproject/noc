@@ -34,6 +34,8 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
+    username_submit = "\r\n"
+    password_submit = "\r\n"
     command_submit = "\r"
     pattern_prompt = \
         r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" \
@@ -128,7 +130,6 @@ class Profile(BaseProfile):
 
     @staticmethod
     def convert_sfp(sfp_type, distance, bit_rate, wavelength):
-        print sfp_type, distance, bit_rate, wavelength
         if " m" in distance:
             # convert to km
             distance = str(int(distance.split(" ")[0]) / 1000)
