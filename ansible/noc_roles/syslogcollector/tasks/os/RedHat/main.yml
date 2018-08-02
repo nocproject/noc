@@ -15,6 +15,7 @@
     state: enabled
     immediate: "True"
   when:
+    - syslogcollector_listen_syslog is defined
     - "firewalld_state.status.ActiveState == 'active'"
     - syslogcollector_permit_firewall
   tags:
