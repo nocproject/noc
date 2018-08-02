@@ -22,10 +22,14 @@ class Script(BaseScript):
         r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
 
     def execute(self):
-        macs = []
-        match = self.re_search(self.rx_mac, self.cli("show system"))
-        mac = match.group("mac")
+        match = self.rx_mac.search(self.cli("show system"))
+        if match:
+            return {
+                "first_chassis_mac": match.group("mac"),
+                "last_chassis_mac": match.group("mac")
+            }
 
+        macs = []
         try:
             v = self.cli("show stack", cached=True)
             for i in parse_table(v, footer="Topology is "):
@@ -44,7 +48,3 @@ class Script(BaseScript):
                 "last_chassis_mac": t
             } for f, t in self.macs_to_ranges(macs)]
 
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
