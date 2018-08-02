@@ -15,7 +15,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.ip import IPv4
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -41,6 +40,9 @@ class Script(BaseScript):
 
     INTERFACE_NAMES = set()
 
+    def get_interface_type(self, snmp_type):
+        return self.INTERFACE_TYPES.get(snmp_type, "other")
+
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
 
@@ -59,30 +61,6 @@ class Script(BaseScript):
 
     def get_bulk(self):
         return self.BULK
-
-    def get_ifindexes(self):
-        r = {}
-        unknown_interfaces = []
-        if self.has_snmp():
-            try:
-                for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"],
-                                                   max_repetitions=self.get_max_repetitions(),
-                                                   max_retries=self.get_getnext_retires()):
-                    try:
-                        v = self.profile.convert_interface_name(name)
-                    except InterfaceTypeError as why:
-                        self.logger.debug("Ignoring unknown interface %s: %s", name, why)
-                        unknown_interfaces += [name]
-                        continue
-                    ifindex = int(oid.split(".")[-1])
-                    r[v] = ifindex
-                if unknown_interfaces:
-                    self.logger.info(
-                        "%d unknown interfaces has been ignored", len(unknown_interfaces)
-                    )
-            except self.snmp.TimeOutError:
-                pass
-        return r
 
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
@@ -169,7 +147,7 @@ class Script(BaseScript):
             """
             if last_ifname and iface["interface"] not in last_ifname:
                 continue
-            i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
+            i_type = self.get_interface_type(iface["type"])
             if "." in iface["interface"]:
                 s = {
                     "name": iface["interface"],
