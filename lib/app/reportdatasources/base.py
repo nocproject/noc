@@ -5,7 +5,17 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from __future__ import absolute_import, print_function
+import re
 import heapq
+import logging
+from .report_objectstat import (AttributeIsolator,
+                                CapabilitiesIsolator, StatusIsolator)
+
+from noc.sa.models.managedobject import ManagedObject
+from django.db.models import Q as d_Q
 
 
 def iterator_to_stream(iterator):
@@ -174,3 +184,47 @@ class LongestIter(object):
                 self._value = val["hostname"]
             yield
         self._end_iterator = True
+
+
+class ReportModelFilter(object):
+
+    decode_re = re.compile(r"(\d+)(\S+)(\d+)")
+
+    def __init__(self):
+        self.formulas = """2is1.3hs0, 2is1.3hs0.5is1, 2is1.3hs0.5is2,
+                2is1.3hs0.5is2.4hs0, 2is1.3hs0.5is2.4hs1, 2is1.3hs0.5is2.4hs1.5hs1"""
+        self.f_map = {"is": StatusIsolator(),
+                      "hs": CapabilitiesIsolator(),
+                      "a": AttributeIsolator()}
+        self.logger = logging.getLogger(__name__)
+
+    def decode(self, formula):
+        ids = []
+        moss = ManagedObject.objects.filter()
+        for f in formula.split("."):
+            self.logger.info("Decoding: %s" % f)
+            f_num, f_type, f_val = self.decode_re.findall(f.lower())[0]
+            ll = self.f_map[f_type]
+            ll = getattr(ll, "get_stat")(f_num, f_val)
+            if isinstance(ll, set):
+                ids += [ll]
+            elif isinstance(ll, d_Q):
+                moss = moss.filter(ll)
+        # print moss.query
+        return moss, ids
+
+    def proccessed(self, column):
+        """
+
+        :param column:
+        :return:
+        """
+        r = {}
+        for c in column.split(","):
+            # print("Next column: %s" % c)
+            moss, idss = self.decode(c.strip())
+            ids = set(moss.values_list("id", flat=True))
+            for i_set in idss:
+                ids = ids.intersection(i_set)
+            r[c.strip()] = ids.copy()
+        return r
