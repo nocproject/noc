@@ -15,6 +15,7 @@
     state: enabled
     immediate: "True"
   when:
+    - trapcollector_listen_traps is defined
     - "firewalld_state.status.ActiveState == 'active'"
     - trapcollector_permit_firewall
   tags:
