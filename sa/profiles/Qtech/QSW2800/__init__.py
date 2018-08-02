@@ -130,7 +130,6 @@ class Profile(BaseProfile):
 
     @staticmethod
     def convert_sfp(sfp_type, distance, bit_rate, wavelength):
-        print sfp_type, distance, bit_rate, wavelength
         if " m" in distance:
             # convert to km
             distance = str(int(distance.split(" ")[0]) / 1000)
