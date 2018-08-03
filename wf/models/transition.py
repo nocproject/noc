@@ -67,7 +67,8 @@ class Transition(Document):
     bi_id = LongField(unique=True)
 
     def __unicode__(self):
-        return u"%s: %s" % (self.workflow.name, self.name)
+        return u"%s: %s -> %s [%s]" % (self.workflow.name, self.from_state.name,
+                                       self.to_state.name, self.label)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
