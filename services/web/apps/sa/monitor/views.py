@@ -19,9 +19,9 @@ from noc.core.translation import ugettext as _
 from noc.lib.app.modelapplication import ModelApplication
 
 
-class GetNowApplication(ObjectListApplication):
+class TaskMonitorApplication(ObjectListApplication):
     """
-    sa.getnow application
+    sa.monitor application
     """
     title = _("Monitor")
     menu = _("Monitor")
