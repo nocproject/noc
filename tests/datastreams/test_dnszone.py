@@ -19,9 +19,10 @@ def find_record(records, name, type, content):
     return False
 
 
-@pytest.mark.parametrize("zone_id,records", [
+@pytest.mark.parametrize("zone_id,masters,slaves,records", [
+    # zone_id, masters, slaves, records
     # example.com
-    (10, [
+    (10, ["ns1.example.com", "ns2.example.com"], [], [
         ("", "NS", "ns1.example.com."),
         ("", "NS", "ns2.example.com."),
         ("h1", "A", "10.0.0.3"),
@@ -38,7 +39,7 @@ def find_record(records, name, type, content):
         ("z31", "NS", "ns1.example.com.")
     ]),
     # 0.0.10.in-addr.arpa
-    (14, [
+    (14, ["ns1.example.com", "ns2.example.com"], [], [
         ("", "NS", "ns1.example.com."),
         ("", "NS", "ns2.example.com."),
         ("8/29", "NS", "ns3.example.com."),
@@ -52,16 +53,42 @@ def find_record(records, name, type, content):
         ("15", "CNAME", "15.8/29"),
         ("3", "PTR", "h1.example.com."),
         ("4", "PTR", "h2.example.com.")
+    ]),
+    # 8.b.d.0.1.0.0.2.ip6.int
+    (16, ["ns1.example.com", "ns2.example.com"], [], [
+        ("", "NS", "ns1.example.com."),
+        ("", "NS", "ns2.example.com."),
+        ("1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0", "PTR", "h4.example.com."),
+        ("2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0", "PTR", "h5.example.com.")
     ])
 ])
-def test_data(zone_id, records):
+def test_data(zone_id, masters, slaves, records):
     data = DNSZoneDataStream().get_object(zone_id)
     assert data
     assert data.get("name")
     assert data.get("serial")
+    # Test masters
+    if masters:
+        assert "masters" in data
+        assert data["masters"] == masters
+    # Test slaves
+    if slaves:
+        assert "slaves" in data
+        assert data["slaves"] == masters
+    # Test records
     assert data.get("records")
     assert data["records"][0]["type"] == "SOA"
-    import pprint
-    pprint.pprint(data)
     for name, type, content in records:
         assert find_record(data["records"], name, type, content), "%s (%s) is expected but missed" % (name, type)
+    # Test meta
+    meta = DNSZoneDataStream().get_meta(data)
+    assert meta
+    assert "servers" in meta
+    assert meta["servers"] == masters + slaves
+
+
+def test_filter_server():
+    q = DNSZoneDataStream.filter_server("ns1.example.com")
+    assert q
+    assert "meta.servers" in q
+    assert q["meta.servers"] == "ns1.example.com"
