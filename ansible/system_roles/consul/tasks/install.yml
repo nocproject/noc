@@ -61,17 +61,3 @@
     - not ansible_check_mode
   notify:
     - restart consul
-
-- block:
-    - name: rm consul config dirs
-      file:
-        state: absent
-        path: "{{item}}"
-      with_items:
-        - "{{consul_config_path}}"
-        - "{{consul_configd_path}}"
-        - "{{consul_scripts_path}}"
-
-    - name: Include dir settings
-      import_tasks: dirs.yml
-  when: consul_binary_updated is changed
