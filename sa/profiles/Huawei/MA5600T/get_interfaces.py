@@ -104,7 +104,7 @@ class Script(BaseScript):
 
     def get_stp(self):
         r = []
-        for match in self.rx_stp.finditer(self.cli("display stp\r\n")):
+        for match in self.rx_stp.finditer(self.cli("display stp")):
             port = match.group("port").replace(" ", "")
             if port not in r:
                 r += [port]
@@ -187,7 +187,7 @@ class Script(BaseScript):
                 else:
                     p_type = "adsl"
                 try:
-                    v = self.cli("display %s port state 0/%d\r\n" % (p_type, i))
+                    v = self.cli("display %s port state 0/%d" % (p_type, i))
                     for match in self.rx_adsl_state.finditer(v):
                         oper_states += [{
                             "name": "0/%d/%d" % (i, int(match.group("port"))),
@@ -202,7 +202,7 @@ class Script(BaseScript):
                     except self.CLISyntaxError:
                         display_service_port = True
                 if display_pvc:
-                    v = self.cli("display pvc 0/%d\n" % i)
+                    v = self.cli("display pvc 0/%d" % i)
                     rx_adsl = self.rx_pvc
                 elif display_service_port:
                     v = self.cli("display service-port board 0/%d\n" % i)
