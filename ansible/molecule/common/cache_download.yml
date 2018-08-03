@@ -51,9 +51,7 @@
 
 - name: check os type
   setup:
-   gather_subset: min
-
-- debug: var=ansible_facts
+    gather_subset: min
 
 - name: Enable pkg cache
   lineinfile:
