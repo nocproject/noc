@@ -49,10 +49,16 @@
 - name: download pkg cache
   command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}}"
 
+- name: check os type
+  setup:
+   gather_subset: min
+
+- debug: var=ansible_facts
+
 - name: Enable pkg cache
   lineinfile:
     dest: /etc/yum.conf
     regexp: "^keepcache=.*"
     line: "keepcache=1"
   become: "True"
-  when: ansible_os_family == 'RedHat'
+  when: os_family == 'RedHat'

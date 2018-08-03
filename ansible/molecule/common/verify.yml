@@ -12,7 +12,6 @@
 - name: Verify
   hosts: all
   gather_facts: false
-  become: true
   vars:
     goss_version: v0.3.5
     goss_arch: amd64
@@ -32,6 +31,7 @@
 
     - name: Execute Goss tests
       command: "{{ goss_dst }} -g {{ item }} validate --format {{ goss_format }}"
+      become: true
       register: test_results
       with_items: "{{ test_files.stdout_lines }}"
 
