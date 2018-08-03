@@ -37,6 +37,8 @@ class DNSZoneDataStream(DataStream):
             "id": str(zone.id),
             "name": str(zone.name),
             "serial": str(zone.serial),
+            "masters": [str(x[:-1]) for x in zone.masters],
+            "slaves": [str(x[:-1]) for x in zone.slaves],
             "records": cls.get_records(zone)
         }
 
@@ -66,8 +68,7 @@ class DNSZoneDataStream(DataStream):
         def dotted(s):
             if not s.endswith("."):
                 return s + "."
-            else:
-                return s
+            return s
 
         yield RR(
             zone=zone.name,
@@ -406,3 +407,15 @@ class DNSZoneDataStream(DataStream):
             for g in ngroups:
                 g.notify(subject, body)
         return True
+
+    @classmethod
+    def get_meta(cls, data):
+        return {
+            "servers": data.get("masters", []) + data.get("slaves", [])
+        }
+
+    @classmethod
+    def filter_server(cls, name):
+        return {
+            "%s.servers" % cls.F_META: name
+        }

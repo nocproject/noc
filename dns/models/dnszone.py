@@ -227,6 +227,30 @@ class DNSZone(models.Model):
         return sorted(self.get_ns_name(ns) for ns in self.profile.authoritative_servers)
 
     @property
+    def masters(self):
+        """
+        Sorted list of zone master NSes. NSes are properly formatted and have '.'
+        at the end.
+
+        :return: List of zone master NSes
+        :rtype: List of string
+        :return:
+        """
+        return sorted(self.get_ns_name(ns) for ns in self.profile.masters.all())
+
+    @property
+    def slaves(self):
+        """
+        Sorted list of zone slave NSes. NSes are properly formatted and have '.'
+        at the end.
+
+        :return: List of zone slave NSes
+        :rtype: List of string
+        :return:
+        """
+        return sorted(self.get_ns_name(ns) for ns in self.profile.slaves.all())
+
+    @property
     def rpsl(self):
         """
         RPSL for reverse zone. RPSL contains domain: and nserver:
