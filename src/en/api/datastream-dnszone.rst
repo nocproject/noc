@@ -25,7 +25,11 @@ Fields
 +------------+------------------+-----------------------------------------------+
 | serial     | String           | Zone's serial                                 |
 +------------+------------------+-----------------------------------------------+
-| records    | Array of Objects | List of zone's resource records               |
+| masters    | Array of String  | List of master nameservers                    |
++------------+------------------+-----------------------------------------------+
+| slaves     | Array of String  | List of slave nameservers                     |
++------------+------------------+-----------------------------------------------+
+| records    | Array of Object  | List of zone's resource records               |
 +------------+------------------+-----------------------------------------------+
 | * name     | String           | Record name                                   |
 +------------+------------------+-----------------------------------------------+
@@ -37,6 +41,15 @@ Fields
 +------------+------------------+-----------------------------------------------+
 | * priority | Integer          | (Optional) Record's priority (for MX and SRV) |
 +------------+------------------+-----------------------------------------------+
+
+Filters
+-------
+
+.. function:: server(name)
+
+    Restrict stream to zones belonging to server `name`
+
+    :param name: Server name (i.e. `ns1.example.com`)
 
 Access
 ------
