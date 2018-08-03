@@ -55,6 +55,7 @@
     dest: "{{ consul_bin_path }}/consul"
     remote_src: "True"
     mode: 0755
+  register: consul_binary_updated
   when:
     - consul_archive_extracted is changed
     - not ansible_check_mode

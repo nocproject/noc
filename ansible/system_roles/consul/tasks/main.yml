@@ -33,13 +33,13 @@
 - name: Include dir settings
   import_tasks: dirs.yml
 
-- name: Install OS packages and consul - remotely
-  import_tasks: install.yml
+- name: Install consul python bindings
+  import_tasks: control.yml
   tags:
     - requirements
 
-- name: Install consul python bindings
-  import_tasks: control.yml
+- name: Install OS packages and consul - remotely
+  import_tasks: install.yml
   tags:
     - requirements
 

@@ -3,12 +3,17 @@
     "name": "{{ name }}",
     "tags": [ "{{ consul_tags | default('')}}" ],
     "port": {{ port }},
-    "enableTagOverride": false,
+    "enable_tag_override": false,
     "check": {
+{% if check_type == 'script' %}
+        "args": ["{{ check_value }}"],
+{% else %}
         "{{ check_type }}": "{{ check_value }}",
+{% endif %}
         "timeout": "{{ check_timeout }}",
         "interval": "{{ check_interval }}"
-    }{% if check_http_skip_verify %},
-    "TLSSkipVerify": true{% endif %}
+        {% if check_http_skip_verify %},
+        "tls_skip_verify": true{% endif %}
+    }
   }
 }

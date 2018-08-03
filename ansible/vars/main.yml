@@ -8,7 +8,7 @@ etc_prefix: /etc
 grafana_version: "5.0.3"
 nsq_version: "0.3.8"
 
-consul_version: "0.9.3"
+consul_version: "1.2.2"
 consul_template_version: "0.19.5"
 
 

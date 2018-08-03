@@ -32,6 +32,56 @@
           Consul servers have to be set up on 1,3 or 5 nodes. less is better. Current count is {{consul_servers_count}}
           As a consul server counted nodes with bootstrap or server role
       when: consul_servers_count | int not in [1,3,5]
+
+    - block:
+        - name: Check consul already installed
+          stat:
+            path: "/bin/consul"
+          register: installed_version
+
+        - name: Check installed consul version
+          shell: '/bin/consul version  | grep -Po "^Consul v\K(\d.\d.\d)"'
+          register: current_consul_version
+          when:
+            - installed_version.stat.exists
+
+        - name: Fail if version is not sane
+          fail:
+            msg: |
+              Consul installed version not the same as requered. You have to update it.
+              Requested version = {{consul_version}}
+              Installed version = {{current_consul_version.stdout}}
+          when:
+            - "'stdout' in current_consul_version"
+            - current_consul_version.stdout != consul_version
+            - has_svc_migrate_consul is not defined
+      when:
+        - ansible_distribution != 'FreeBSD'
+
+    - block:
+        - name: Check consul already installed
+          stat:
+            path: "/usr/local/bin/consul"
+          register: installed_version
+
+        - name: Check installed consul version
+          shell: '/usr/local/bin/consul version  | grep -Po "^Consul v\K(\d.\d.\d)"'
+          register: current_consul_version
+          when:
+            - installed_version.stat.exists
+        - name: Fail if version is not sane
+          fail:
+            msg: |
+              Consul installed version not the same as requered. You have to update it.
+              Requested version = {{consul_version}}
+              Installed version = {{current_consul_version.stdout}}
+          when:
+            - "'stdout' in current_consul_version"
+            - current_consul_version.stdout != consul_version
+            - has_svc_migrate_consul is not defined
+      when:
+        - ansible_distribution == 'FreeBSD'
+
   when:
     - has_svc_consul is defined
   tags:
