@@ -116,6 +116,7 @@ test_noc:
     - export NOC_CLICKHOUSE_RW_ADDRESSES=registry.getnoc.com-infrastructure-clickhouse:8123
     - export PYTHONPATH=$PYTHONPATH:$CI_PROJECT_DIR:$CI_PROJECT_DIR/../
   script:
+    - mkdir /tmp/coverage
     - find . -type f -name "*.py" -print0 | xargs -0 python -m py_compile
     - /usr/bin/cythonize -i speedup/*.pyx
     - python ./commands/test.py run --coverage-report=/tmp/coverage --test-report=/tmp/coverage/test_report.html --statistics
