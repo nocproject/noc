@@ -11,6 +11,7 @@
 
 - name: Verify
   hosts: all
+  gather_facts: false
   become: true
   vars:
     goss_version: v0.3.5
