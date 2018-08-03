@@ -15,9 +15,13 @@ from django.db import models
 from .dnsserver import DNSServer
 from noc.main.models import NotificationGroup
 from noc.core.datastream.decorator import datastream
+from noc.core.model.decorator import on_delete_check
 
 
 @datastream
+@on_delete_check(check=[
+    ("dns.DNSZone", "profile")
+])
 class DNSZoneProfile(models.Model):
     """
     DNS Zone profile is a set of common parameters, shared between zones.
