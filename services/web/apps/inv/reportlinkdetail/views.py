@@ -26,7 +26,6 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjects
 
 logger = logging.getLogger(__name__)
 

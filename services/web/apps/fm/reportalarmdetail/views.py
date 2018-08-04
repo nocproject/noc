@@ -27,12 +27,13 @@ from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectpath import ObjectPath
+from noc.sa.models.profile import Profile
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
+from noc.lib.app.reportdatasources.report_container import ReportContainer
+from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -49,7 +50,8 @@ class ReportAlarmObjects(object):
     def load(mos_id):
         query = "select sa.id, sa.name, sa.address, sa.is_managed, "
         query += "profile, op.name as object_profile, sa.container, "
-        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
+        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';'), "
+        query += "platform, version "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         if mos_id:
             query += "WHERE sa.id in (%s) and sa.is_managed = True and op.id = sa.object_profile_id " \
@@ -236,18 +238,20 @@ class ReportAlarmDetailApplication(ExtApplication):
             except bson.errors.InvalidId:
                 pass
 
-        mos_id = list(mos.values_list("id", flat=True))
+        mos_id = list(mos.order_by("id").values_list("id", flat=True))
+        mo_hostname = {}
+        maintenance = []
         if mos_id:
             match["managed_object"] = {"$in": mos_id}
         if "maintenance" in columns.split(","):
             maintenance = Maintenance.currently_affected()
         if "object_hostname" in columns.split(","):
-            mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
+            mo_hostname = ReportObjectsHostname1(sync_ids=mos_id)
+            mo_hostname = mo_hostname.get_dictionary()
         moss = ReportAlarmObjects(mos_id).get_all()
-        container_lookup = ReportContainer(mos_id)
+        # container_lookup = ReportContainer(mos_id)
+        container_lookup = None
         loc = AlarmApplication([])
-        attr = ReportObjectAttributes([])
-        attr_res = ReportAttrResolver([])
         if source in ["archive", "both"]:
             # Archived Alarms
             for a in ArchivedAlarm._get_collection().with_options(
@@ -291,11 +295,11 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     moss[a["managed_object"]][0],
                     moss[a["managed_object"]][1],
-                    mo_hostname[a["managed_object"]],
-                    moss[a["managed_object"]][5],
+                    mo_hostname.get(a["managed_object"], ""),
+                    Profile.get_by_id(moss[a["managed_object"]][3]).name if moss[a["managed_object"]][5] else "",
                     moss[a["managed_object"]][6],
-                    attr_res[a["managed_object"]][2] if attr else "",
-                    attr_res[a["managed_object"]][3] if attr else "",
+                    Platform.get_by_id(moss[a["managed_object"]][9]) if moss[a["managed_object"]][9] else "",
+                    Firmware.get_by_id(moss[a["managed_object"]][10]) if moss[a["managed_object"]][10] else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     ArchivedAlarm.objects.get(id=a["_id"]).subject,
                     "",
@@ -344,11 +348,11 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     moss[a["managed_object"]][0],
                     moss[a["managed_object"]][1],
-                    mo_hostname[a["managed_object"]],
-                    moss[a["managed_object"]][5],
+                    mo_hostname.get(a["managed_object"], ""),
+                    Profile.get_by_id(moss[a["managed_object"]][3]) if moss[a["managed_object"]][5] else "",
                     moss[a["managed_object"]][6],
-                    attr_res[a["managed_object"]][2] if attr else "",
-                    attr_res[a["managed_object"]][3] if attr else "",
+                    Platform.get_by_id(moss[a["managed_object"]][9]) if moss[a["managed_object"]][9] else "",
+                    Firmware.get_by_id(moss[a["managed_object"]][10]) if moss[a["managed_object"]][10] else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     ActiveAlarm.objects.get(id=a["_id"]).subject,
                     "Yes" if a["managed_object"] in maintenance else "No",

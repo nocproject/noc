@@ -22,7 +22,7 @@ class ReportDiscoveryResult(BaseReportColumn):
     """Report for MO links detail"""
 
     builtin_sorted = True
-    multiple_stream = True
+    multiple_series = True
     COLL_NAME = "noc.schedules.discovery.%s"
     # POOLS = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
 
