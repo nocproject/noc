@@ -24,16 +24,19 @@ Ext.define("NOC.main.apikey.Application", {
             inputType: "password",
             allowBlank: false,
             margin: "0 5 0 0",
-            uiStyle: "medium",
+            maxLength: 24,
+            maxLengthText: __("The maximum length for this field is {0}"),
+            minWidth: 390,
+            uiStyle: "large",
             triggers: {
                 hide: {
-                    cls: "fa fa-eye",
+                    cls: "fas fa fa-eye",
                     hidden: false,
                     scope: me,
                     handler: me.showKey
                 },
                 show: {
-                    cls: "fa fa-eye-slash",
+                    cls: "fas fa fa-eye-slash",
                     hidden: true,
                     scope: me,
                     handler: me.hideKey
