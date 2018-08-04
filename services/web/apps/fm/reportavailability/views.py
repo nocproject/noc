@@ -8,7 +8,7 @@
 
 # Python modules
 import datetime
-from collections import defaultdict, Counter
+from collections import defaultdict
 # Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
@@ -19,7 +19,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.lib.nosql import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.useraccess import UserAccess
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
 from pymongo import ReadPreference
@@ -98,7 +98,7 @@ class ReportAvailabilityApplication(SimpleReport):
 
     @staticmethod
     def get_availability(start_date, stop_date, skip_zero_avail=False):
-        now = datetime.datetime.now()
+        # now = datetime.datetime.now()
         b = start_date
         d = stop_date
         outages = defaultdict(list)
