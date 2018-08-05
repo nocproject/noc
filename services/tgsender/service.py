@@ -31,11 +31,11 @@ class TgSenderService(Service):
             self.url = None
         else:
             self.url = API + config.tgsender.token
-        self.subscribe(
-            topic=self.name,
-            channel="sender",
-            handler=self.on_message
-        )
+            self.subscribe(
+                topic=self.name,
+                channel="sender",
+                handler=self.on_message
+            )
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(
@@ -83,7 +83,7 @@ class TgSenderService(Service):
                 metrics["telegram_proxy_failed_httperror"] += 1
                 return False
         else:
-            self.logger.info("No token defined")
+            self.logger.info("No token, no Url.")
             return False
 
 
