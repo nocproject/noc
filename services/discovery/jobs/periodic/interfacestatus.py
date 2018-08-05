@@ -29,7 +29,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
 
     def __init__(self, *args, **kwargs):
         super(InterfaceStatusCheck, self).__init__(*args, **kwargs)
-        self.metrics_artefact = {}  # name -> {name: , admin_status:, oper_status:, duplex_status:, speed:}
+        # self.metrics_artefact = {}  # name -> {name: , admin_status:, oper_status:, duplex_status:, speed:}
 
     def get_interface_ifindexes(self):
         """
@@ -81,6 +81,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "out_speed": i.get("out_speed"),
                 "bandwidth": i.get("bandwidth")
             }
+            """
+            # For artefact
             self.metrics_artefact[i["interface"]] = {
                 "ifindex": [ii["ifindex"] for ii in interfaces if ii["interface"] == i["interface"]][0],
                 "status_admin": i.get("admin_status"),
@@ -88,6 +90,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "status_duplex": i.get("full_duplex"),
                 "speed": i.get("in_speed")
             }
+            """
             changes = self.update_if_changed(
                 iface, kwargs, ignore_empty=kwargs.keys(), bulk=bulk)
             self.log_changes(
@@ -106,4 +109,6 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 self.logger.info("Database has been synced")
             except BulkWriteError as e:
                 self.logger.error("Bulk write error: '%s'", e.details)
-        self.set_artefact("metrics_status", self.metrics_artefact)
+
+        # Artefact for metrics
+        # self.set_artefact("metrics_status", self.metrics_artefact)

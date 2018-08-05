@@ -422,23 +422,14 @@ class Script(BaseScript):
             chunk, oids = oids[:snmp_get_chunk], oids[snmp_get_chunk:]
             chunk = dict((x, x) for x in chunk)
             try:
-                results.update(
-                    self.snmp.get(chunk)
-                )
+                results.update(self.snmp.get(chunk))
             except self.snmp.TimeOutError as e:
-                self.logger.error(
-                    "Failed to get SNMP OIDs %s: %s",
-                    oids, e
-                )
+                self.logger.error("Failed to get SNMP OIDs %s: %s", oids, e)
             except self.snmp.FatalTimeoutError:
-                self.logger.error(
-                    "Fatal timeout error on: %s", oids
-                )
+                self.logger.error("Fatal timeout error on: %s", oids)
                 break
             except self.snmp.SNMPError as e:
-                self.logger.error(
-                    "SNMP error code %s", e.code
-                )
+                self.logger.error("SNMP error code %s", e.code)
         # Process results
         for oid in self.snmp_batch:
             ts = self.get_ts()

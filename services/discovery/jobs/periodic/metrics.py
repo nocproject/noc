@@ -256,6 +256,8 @@ class MetricsCheck(DiscoveryCheck):
                 res[k] = metric
         return res
 
+    """
+    # For artefact
     def get_check_metrics(self, m_artefact, m):
         metrics = []
         res = {}
@@ -269,31 +271,23 @@ class MetricsCheck(DiscoveryCheck):
                     if s not in k:
                         continue
                     metric = k[s]
-                    if mm["ifindex"] == values["ifindex"] and mm["metric"] == metric and mm["path"][
-                            3
-                    ] == ifname:
+                    if mm["ifindex"] == values["ifindex"] and mm["metric"] == metric and mm["path"][3] == ifname:
                         res = (
-                            {
-                                "ifindex": values["ifindex"],
-                                "path": ["", "", "", ifname],
-                                "metric": metric,
-                                "id": mm["id"]
-                            }
-                        )
-                        self.res_artefact += [
-                            {
-                                "id": mm["id"],
-                                "ts": int(time.time() * NS),
-                                "metric": metric,
-                                "path": ["", "", "", ifname],
-                                "value": values[s],
-                                "type": "gauge",
-                                "scale": 1
-                            }
-                        ]
+                        {"ifindex": values["ifindex"], "path": ["", "", "", ifname], "metric": metric, "id": mm["id"]})
+                        self.res_artefact += [{
+                            "id": mm["id"],
+                            "ts": int(time.time() * NS),
+                            "metric": metric,
+                            "path": ["", "", "", ifname],
+                            "value": values[s],
+                            "type": "gauge",
+                            "scale": 1
+                        }]
             if res != mm:
+                self.logger.debug("Interface metrics not in Status metrics")
                 metrics += [mm]
         return metrics
+    """
 
     def get_interface_metrics(self):
         """
@@ -472,9 +466,13 @@ class MetricsCheck(DiscoveryCheck):
         # Build get_metrics input parameters
         metrics = self.get_object_metrics()
         metrics += self.get_interface_metrics()
+        """
+        # For artefact
         metrics_status = self.get_artefact("metrics_status")
         if metrics_status:
+            self.logger.info("Use metric discovery status")
             metrics = self.get_check_metrics(metrics_status, metrics)
+        """
         metrics += self.get_sla_metrics()
         if not metrics:
             self.logger.info("No metrics configured. Skipping")
@@ -483,9 +481,11 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.debug("Collecting metrics: %s", metrics)
 
         result = [MData(**r) for r in self.object.scripts.get_metrics(metrics=metrics)]
+        """
         if metrics_status:
             for rr in self.res_artefact:
                 result.append(MData(**rr))
+        """
         if not result:
             self.logger.info("No metrics found")
             return
