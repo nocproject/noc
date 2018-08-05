@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # tgsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,7 +27,8 @@ class TgSenderService(Service):
 
     def on_activate(self):
         if not config.tgsender.token:
-            self.die("no token defined")
+            self.logger.info("No token defined")
+            self.url = None
         else:
             self.url = API + config.tgsender.token
         self.subscribe(
