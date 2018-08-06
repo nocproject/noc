@@ -19,11 +19,12 @@ def dictionary(request):
 
 @pytest.mark.dependency(name="test_dictionary_cls")
 def test_cls(dictionary):
-    assert Dictionary.get_dictionary_class(dictionary)
+    assert hasattr(dictionary, "_meta")
+    assert dictionary._meta.name
+    assert dictionary._meta.layout
 
 
 @pytest.mark.dependency(depends=["test_dictionary_cls"])
 def test_config(dictionary):
-    d = Dictionary.get_dictionary_class(dictionary)
     # @todo: Check result
-    assert d.get_config()
+    assert dictionary.get_config()
