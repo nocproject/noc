@@ -36,6 +36,8 @@ Access to :ref:`api-datastream`
 +-----------------------------------+-----------------------------------------------------------------------------------+
 | `datastream:managedobject`        | ref:`managedobject datastream<api-datastream-managedobject>` access               |
 +-----------------------------------+-----------------------------------------------------------------------------------+
+| `datastream:dnszone`              | ref:`dnszone datastream<api-datastream-dnszone>` access                           |
++-----------------------------------+-----------------------------------------------------------------------------------+
 | `datastream:cfgping`              | ref:`cfgping datastream<api-datastream-cfgping>` access                           |
 +-----------------------------------+-----------------------------------------------------------------------------------+
 | `datastream:cfgsyslog`            | ref:`cfgsyslog datastream<api-datastream-cfgsyslog>` access                       |

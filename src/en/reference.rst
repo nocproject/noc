@@ -22,6 +22,7 @@ Reference
     /reference/prefix-profile
     /reference/vlan
     /reference/vlan-profile
+    /reference/dns-zone
     /reference/allocation-group
     /reference/vc-filter
     /reference/dialplan
