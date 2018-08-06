@@ -38,4 +38,5 @@ Reference
     /reference/threshold-profile
     /reference/handler
     /reference/external-system
+    /reference/apikey
 
