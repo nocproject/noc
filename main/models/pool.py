@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Pool model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,9 @@ id_lock = threading.Lock()
 
 @bi_sync
 @on_delete_check(check=[
+    ('sa.AdministrativeDomain', 'default_pool'),
     ("sa.ManagedObject", "pool"),
+    ("sa.ManagedObjectSelector", "filter_pool")
     # ("fm.EscalationItem", "administrative_domain")
 ])
 class Pool(Document):
