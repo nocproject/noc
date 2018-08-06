@@ -30,7 +30,7 @@ class CDPCheck(TopologyDiscoveryCheck):
             yield (
                 mo.get_profile().get_interface_names(n["local_interface"]),
                 device_id,
-                mo.get_profile().get_interface_names(n["remote_interface"])
+                n["remote_interface"]
             )
 
     def get_neighbor(self, n):
