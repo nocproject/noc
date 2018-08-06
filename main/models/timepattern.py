@@ -27,7 +27,8 @@ id_lock = Lock()
     ("main.Schedule", "time_pattern"),
     ("main.TimePatternTerm", "time_pattern"),
     ("maintenance.Maintenance", "time_pattern"),
-    ("sa.ManagedObject", "time_pattern")
+    ("sa.ManagedObject", "time_pattern"),
+    ("main.UserProfileContact", "time_pattern")
 ])
 class TimePattern(models.Model):
     """

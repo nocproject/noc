@@ -49,7 +49,8 @@ class VLANTranslation(EmbeddedDocument):
 @bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "segment"),
-    ("inv.NetworkSegment", "parent")
+    ("inv.NetworkSegment", "parent"),
+    ("vc.VLAN", "segment")
 ])
 @on_save
 class NetworkSegment(Document):
