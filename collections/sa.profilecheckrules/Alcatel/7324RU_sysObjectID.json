@@ -3,7 +3,7 @@
     "$collection": "sa.profilecheckrules",
     "uuid": "5dab22a4-5121-4cb8-8142-d05d7a2d2fc4",
     "description": null,
-    "preference": 1000,
+    "preference": 10,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
     "match_method": "eq",
