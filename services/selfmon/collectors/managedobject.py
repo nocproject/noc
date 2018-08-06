@@ -16,9 +16,9 @@ from .base import BaseCollector
 class ManagedObjectCollector(BaseCollector):
     name = "managedobject"
 
-    SQL_POOL_MO = """SELECT 
-      pool AS pool_id, 
-      COUNT(CASE WHEN is_managed THEN 1 END) AS pool_managed, 
+    SQL_POOL_MO = """SELECT
+      pool AS pool_id,
+      COUNT(CASE WHEN is_managed THEN 1 END) AS pool_managed,
       COUNT(CASE WHEN NOT is_managed THEN 1 END) AS pool_unmanaged
     FROM sa_managedobject
     GROUP BY pool
