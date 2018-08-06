@@ -187,6 +187,8 @@ class DNSZoneDataStream(DataStream):
         for zr in DNSZoneRecord.objects.filter(zone=zone):
             if "/" in zr.name:
                 continue
+            if not zr.type or not zr.content:
+                continue
             yield RR(
                 zone=zone.name,
                 name=zr.name,
