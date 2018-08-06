@@ -28,10 +28,13 @@ id_lock = Lock()
 @bi_sync
 @on_delete_check(check=[
     ("wf.State", "workflow"),
+    ("wf.Transition", "workflow"),
     ("ip.AddressProfile", "workflow"),
     ("ip.PrefixProfile", "workflow"),
     ("crm.SubscriberProfile", "workflow"),
-    ("crm.SupplierProfile", "workflow")
+    ("crm.SupplierProfile", "workflow"),
+    ("vc.VPNProfile", "workflow"),
+    ("vc.VLANProfile", "workflow")
 ])
 class Workflow(Document):
     meta = {

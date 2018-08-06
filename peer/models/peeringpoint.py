@@ -2,22 +2,27 @@
 # ---------------------------------------------------------------------
 # PeeringPoint model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
-# Django modules
+# Third-party modules
 from django.db import models
 # NOC modules
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.profile import Profile
 from noc.core.model.fields import DocumentReferenceField
-from .asn import AS
 from noc.lib.rpsl import rpsl_format
+from noc.core.model.decorator import on_delete_check
+from .asn import AS
 
 
+@on_delete_check(check=[
+    ("peer.Peer", "peering_point"), 
+    ("peer.PrefixListCache", "peering_point")
+])
 class PeeringPoint(models.Model):
     class Meta:
         verbose_name = "Peering Point"

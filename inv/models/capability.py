@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Capability model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,10 +18,14 @@ import cachetools
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("pm.MetricType", "required_capability")
+])
 @category
 class Capability(Document):
     meta = {

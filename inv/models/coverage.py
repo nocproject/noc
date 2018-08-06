@@ -2,15 +2,22 @@
 # ---------------------------------------------------------------------
 # Coverage
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField)
+from mongoengine.fields import StringField
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("inv.Interface", "coverage"),
+    ("inv.CoveredBuilding", "coverage"),
+    ("inv.CoveredObject", "coverage")
+])
 class Coverage(Document):
     meta = {
         "collection": "noc.coverage",
