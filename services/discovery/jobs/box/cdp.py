@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CDP check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,9 +28,9 @@ class CDPCheck(TopologyDiscoveryCheck):
             if device_id in self.RESERVED_NAMES and n.get("remote_ip"):
                 device_id = n["remote_ip"]
             yield (
-                n["local_interface"],
+                mo.get_profile().get_interface_names(n["local_interface"]),
                 device_id,
-                n["remote_interface"]
+                mo.get_profile().get_interface_names(n["remote_interface"])
             )
 
     def get_neighbor(self, n):
