@@ -154,7 +154,6 @@ class ReportAvailabilityApplication(SimpleReport):
 
         a = self.get_availability(start_date=from_date, stop_date=to_date, skip_zero_avail=skip_zero_avail)
         rb = self.get_reboots(start_date=from_date, stop_date=to_date)
-        print("Reboots: %s" % rb)
         r = [SectionRow("Report from %s to %s" % (from_date, to_date))]
         mos = ManagedObject.objects.filter(is_managed=True)
 

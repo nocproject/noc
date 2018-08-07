@@ -41,6 +41,28 @@ from noc.core.translation import ugettext as _
 logger = logging.getLogger(__name__)
 
 
+class ReportAdPath(object):
+    """
+    Return AD path
+    """
+
+    def __init__(self):
+        self.out = self.load()
+
+    def load(self):
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("""SELECT ad.id, ad.name, r.name, ad2.name
+                          FROM sa_administrativedomain r
+                          JOIN sa_administrativedomain ad ON ad.parent_id = r.id
+                          JOIN sa_administrativedomain ad2 ON r.parent_id = ad2.id;
+                """)
+        return {r[1]: (r[2], r[3]) for r in cursor}
+
+    def __getitem__(self, item):
+        return self.out.get(item, [])
+
+
 class ReportObjectDetailApplication(ExtApplication):
     menu = _("Reports") + "|" + _("Object Detail")
     title = _("Object Detail")
@@ -129,7 +151,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "segment",
             "phys_interface_count",
             "link_count",
-            "discovery_problem"
+            # "discovery_problem"
             # "object_tags"
             # "sorted_tags"
             # "object_caps"
@@ -154,9 +176,9 @@ class ReportObjectDetailApplication(ExtApplication):
             "CONTAINER",
             "SEGMENT",
             "PHYS_INTERFACE_COUNT",
-            "LINK_COUNT",
-            "DISCOVERY_PROBLEM"
+            "LINK_COUNT"
         ]
+        # "DISCOVERY_PROBLEM"
         # "ADM_PATH
         # "DISCOVERY_PROBLEM"
         # "OBJECT_TAGS"
@@ -194,10 +216,12 @@ class ReportObjectDetailApplication(ExtApplication):
         link_count = iter(ReportObjectLinkCount(mos_id))
         iface_count = iter(ReportObjectIfacesTypeStat(mos_id))
         container_lookup = iter(ReportContainer(mos_id))
-        dp = iter(ReportDiscoveryResult(mos_id))
         iss = iter(ReportObjectIfacesStatusStat(mos_id))
         hn = iter(ReportObjectsHostname1(mos_id))
         # ccc = iter(ReportObjectCaps(mos_id))
+        if "adm_path" in columns.split(","):
+            ad_path = ReportAdPath()
+            r[-1].extend([_("ADM_PATH1"), _("ADM_PATH1"), _("ADM_PATH1")])
         if "object_caps" in columns.split(","):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.ATTRS.values()
@@ -212,7 +236,12 @@ class ReportObjectDetailApplication(ExtApplication):
                 tags.update(set(s))
             tags_o = sorted([t for t in tags if "{" not in t])
             r[-1].extend(tags_o)
-
+        if "discovery_problem" in columns.split(","):
+            discovery_result = ReportDiscoveryResult(mos_id)
+            discovery_result.unknown_value = ([""] * len(discovery_result.ATTRS),)
+            dp_columns = discovery_result.ATTRS
+            dp = iter(discovery_result)
+            r[-1].extend(dp_columns)
         for (mo_id, name, address, is_managed,
              sa_profile, o_profile, auth_profile, ad, m_segment,
              vendor, platform, version, tags
@@ -228,7 +257,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 mo_id,
                 name,
                 address,
-                next(hn),
+                next(hn)[0],
                 "managed" if is_managed else "unmanaged",
                 Profile.get_by_id(sa_profile),
                 o_profile,
@@ -242,22 +271,28 @@ class ReportObjectDetailApplication(ExtApplication):
                 ad,
                 mo_continer[0].get("text", ""),
                 NetworkSegment.get_by_id(m_segment) if m_segment else "",
-                next(iface_count),
-                next(link_count),
-                next(dp)
+                next(iface_count)[0],
+                next(link_count)[0],
             ]), cmap)]
+            if "adm_path" in columns.split(","):
+                r[-1].extend([ad] + list(ad_path[ad]))
             if "interface_type_count" in columns.split(","):
                 r[-1].extend(next(iss)[0])
             if "object_caps" in columns.split(","):
                 r[-1].extend(next(ccc)[0])
             if "object_tags" in columns.split(","):
-                r[-1].extend([tags] if tags else [])
+                r[-1].append(",".join(tags if tags else []))
             if "sorted_tags" in columns.split(","):
                 out_tags = [""] * len(tags_o)
-                if tags:
-                    for m in tags:
-                        out_tags[tags_o.index(m)] = m
+                try:
+                    if tags:
+                        for m in tags:
+                            out_tags[tags_o.index(m)] = m
+                except ValueError:
+                    logger.warning("Bad value for tag: %s", m)
                 r[-1].extend(out_tags)
+            if "discovery_problem" in columns.split(","):
+                r[-1].extend(next(dp)[0])
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":

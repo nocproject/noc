@@ -32,7 +32,6 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
-from noc.lib.app.reportdatasources.report_container import ReportContainer
 from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
 from noc.sa.models.useraccess import UserAccess
