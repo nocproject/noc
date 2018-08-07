@@ -119,7 +119,7 @@ test_noc:
     - mkdir -p ./var/coverage ./var/report
     - find . -type f -name "*.py" -print0 | xargs -0 python -m py_compile
     - /usr/bin/cythonize -i speedup/*.pyx
-    - python ./commands/test.py run --coverage-report=./var/coverage --test-report=./var/coverage/test_report.html --statistics
+    - python ./commands/test.py run --coverage-report=./var/coverage --test-report=./var/report/index.html --statistics
   tags:
     - docker
   artifacts:
