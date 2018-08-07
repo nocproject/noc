@@ -73,6 +73,7 @@
           fail:
             msg: |
               Consul installed version not the same as requered. You have to update it.
+              Read more https://code.getnoc.com/ansible-roles/ansible-role-migrate-consul/tree/master
               Requested version = {{consul_version}}
               Installed version = {{current_consul_version.stdout}}
           when:
