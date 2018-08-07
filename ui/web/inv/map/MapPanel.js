@@ -57,9 +57,9 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     // Link bandwidth style
     bwStyle: [
-        [995000000000, {"stroke-width": "5px"}],  // 100G >= STM-640
-        [395000000000, {"stroke-width": "4px"}],  // 40G >= STM-256
-        [95000000000, {"stroke-width": "3px"}],  // 10G >= STM-64
+        [99500000000, {"stroke-width": "5px"}],  // 100G >= STM-640
+        [39500000000, {"stroke-width": "4px"}],  // 40G >= STM-256
+        [9500000000, {"stroke-width": "3px"}],  // 10G >= STM-64
         [1000000000, {"stroke-width": "2px"}],  // 1G
         [100000000, {"stroke-width": "1px"}],  // 100M
         [0, {"stroke-width": "1px", "stroke-dasharray": "10 5"}]
