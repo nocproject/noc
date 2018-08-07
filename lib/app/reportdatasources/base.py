@@ -90,7 +90,7 @@ class BaseReportColumn(object):
             for v in self.extract():
                 if v[0] < prev_id:   # Todo
                     print("Detect unordered stream")
-                    raise StopIteration
+                    raise StopIteration("Detect unordered stream")
                 yield v
                 prev_id = v[0]
 
@@ -138,6 +138,16 @@ class BaseReportColumn(object):
         for _ in self.sync_ids_i:
             # raise StopIteration ?
             yield self.unknown_value
+
+    def get_dictionary(self):
+        """
+        return Dictionary id: value
+        :return:
+        """
+        r = {}
+        for _ in self:
+            r[self._current_id] = _[0]
+        return r
 
     def __getitem__(self, item):
         # @todo use column as dict
@@ -216,7 +226,7 @@ class ReportModelFilter(object):
         ids = []
         moss = self.model.objects.filter()
         for f in formula.split("."):
-            self.logger.info("Decoding: %s" % f)
+            self.logger.debug("Decoding: %s" % f)
             f_num, f_type, f_val = self.decode_re.findall(f.lower())[0]
             func_stat = self.f_map[f_type]
             func_stat = getattr(func_stat, "get_stat")(f_num, f_val)

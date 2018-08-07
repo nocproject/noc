@@ -22,8 +22,14 @@ class ReportDiscoveryResult(BaseReportColumn):
     """Report for MO links detail"""
 
     builtin_sorted = True
-    multiple_stream = True
+    multiple_series = True
     COLL_NAME = "noc.schedules.discovery.%s"
+    # @todo from managedobjectprofile
+    ATTRS = ["profile", "suggest_cli", "suggest_snmp",
+             "version", "caps", "interface", "id", "asset",
+             "config", "lldp", "lacp", "stp", "huawei_ndp", "cdp",
+             "mac", "uptime", "segmentation", "interfacestatus", "prefix",
+             "metrics", "nri", "nri_portmap", "nri_service", "hk", "sla"]
     # POOLS = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
 
     @staticmethod
@@ -72,12 +78,9 @@ class ReportDiscoveryResult(BaseReportColumn):
                 break
         return r.values()
 
-    @staticmethod
-    def convert(val):
-        dresult = namedtuple("DResult", ["profile", "suggest_cli", "suggest_snmp",
-                                         "version", "caps", "interface", "id",
-                                         "config", "lldp", "lacp", "stp", "huawei_ndp",
-                                         "mac", "uptime"])
+    def convert(self, val):
+        dresult = namedtuple("DResult", self.ATTRS)
         dresult.__new__.__defaults__ = ("",) * len(dresult._fields)
         for x in val:
-            yield int(x["key"]), dresult(**x["job"][0].get("problems"))
+            yield int(x["key"]), dresult(**{xx: x["job"][0].get("problems")[xx].get("", x["job"][0].get("problems")[xx])
+                                            for xx in x["job"][0].get("problems")})

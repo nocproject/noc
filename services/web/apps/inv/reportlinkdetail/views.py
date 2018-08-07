@@ -26,7 +26,6 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjects
 
 logger = logging.getLogger(__name__)
 
@@ -169,19 +168,21 @@ class ReportLinkDetailApplication(ExtApplication):
         mos_id = list(mos.values_list("id", flat=True))
 
         rld = ReportLinksDetail(mos_id)
-
-        ro = ReportObjects()
-        mo_resolv = ro.get_all()
+        mo_resolv = dict((mo[0], mo[1:]) for mo in ManagedObject.objects.filter().values_list(
+            "id", "administrative_domain__name", "name", "address"))
 
         for link in rld.out:
+            if len(rld.out[link]) != 2:
+                # Multilink or bad link
+                continue
             s1, s2 = rld.out[link]
             r += [translate_row(row([
-                mo_resolv[s1["mo"][0]][5],
                 mo_resolv[s1["mo"][0]][0],
                 mo_resolv[s1["mo"][0]][1],
+                mo_resolv[s1["mo"][0]][2],
                 s1["iface_n"][0],
-                mo_resolv[s2["mo"][0]][0],
                 mo_resolv[s2["mo"][0]][1],
+                mo_resolv[s2["mo"][0]][2],
                 s2["iface_n"][0],
                 s1.get("dis_method", ""),
                 s1.get("last_seen", "")

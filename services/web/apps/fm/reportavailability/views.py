@@ -8,7 +8,7 @@
 
 # Python modules
 import datetime
-from collections import defaultdict, Counter
+from collections import defaultdict
 # Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
@@ -19,11 +19,11 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.lib.nosql import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.useraccess import UserAccess
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
 from pymongo import ReadPreference
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
+from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.core.translation import ugettext as _
 
 
@@ -98,7 +98,7 @@ class ReportAvailabilityApplication(SimpleReport):
 
     @staticmethod
     def get_availability(start_date, stop_date, skip_zero_avail=False):
-        now = datetime.datetime.now()
+        # now = datetime.datetime.now()
         b = start_date
         d = stop_date
         outages = defaultdict(list)
@@ -154,7 +154,6 @@ class ReportAvailabilityApplication(SimpleReport):
 
         a = self.get_availability(start_date=from_date, stop_date=to_date, skip_zero_avail=skip_zero_avail)
         rb = self.get_reboots(start_date=from_date, stop_date=to_date)
-        print("Reboots: %s" % rb)
         r = [SectionRow("Report from %s to %s" % (from_date, to_date))]
         mos = ManagedObject.objects.filter(is_managed=True)
 
@@ -163,7 +162,7 @@ class ReportAvailabilityApplication(SimpleReport):
                 administrative_domain__in=UserAccess.get_domains(request.user))
         if skip_avail:
             mos = mos.filter(id__in=list(a))
-        mos_id = list(mos.values_list("id", flat=True))
+        mos_id = list(mos.order_by("id").values_list("id", flat=True))
         if filter_zero_access:
             iface_p = InterfaceProfile.objects.get(name="Клиентский порт")
             match = {
@@ -181,12 +180,13 @@ class ReportAvailabilityApplication(SimpleReport):
             data = [d["_id"] for d in data]
             mos = mos.exclude(id__in=data)
 
-        mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
+        mo_hostname = ReportObjectsHostname1(sync_ids=mos_id)
+        mo_hostname = mo_hostname.get_dictionary()
         for o in mos:
             s = [
                 o.administrative_domain.name,
                 o.name,
-                mo_hostname[o.id],
+                mo_hostname.get(o.id, ""),
                 o.address,
                 o.profile.name,
                 round(a.get(o.id, (100.0, 0, 0))[0], 2)
