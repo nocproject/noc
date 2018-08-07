@@ -139,13 +139,15 @@ class BaseReportColumn(object):
             # raise StopIteration ?
             yield self.unknown_value
 
-    def get_dictionary(self):
+    def get_dictionary(self, filter_unknown=False):
         """
         return Dictionary id: value
         :return:
         """
         r = {}
         for _ in self:
+            if filter_unknown and _[0] is self.unknown_value:
+                continue
             r[self._current_id] = _[0]
         return r
 

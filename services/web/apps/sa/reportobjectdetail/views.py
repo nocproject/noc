@@ -238,6 +238,7 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend(tags_o)
         if "discovery_problem" in columns.split(","):
             discovery_result = ReportDiscoveryResult(mos_id)
+            discovery_result.safe_output = True
             discovery_result.unknown_value = ([""] * len(discovery_result.ATTRS),)
             dp_columns = discovery_result.ATTRS
             dp = iter(discovery_result)

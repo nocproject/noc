@@ -23,12 +23,13 @@ class ReportDiscoveryResult(BaseReportColumn):
 
     builtin_sorted = True
     multiple_series = True
+    safe_output = False  # Convert outpur object to string
     COLL_NAME = "noc.schedules.discovery.%s"
     # @todo from managedobjectprofile
-    ATTRS = ["profile", "suggest_cli", "suggest_snmp",
-             "version", "caps", "interface", "id", "asset",
-             "config", "lldp", "lacp", "stp", "huawei_ndp", "cdp",
-             "mac", "uptime", "segmentation", "interfacestatus", "prefix",
+    ATTRS = ["profile", "suggest_cli", "suggest_snmp", "version",
+             "caps", "interface", "id", "asset", "cpe", "vlan", "vpn",
+             "config", "lldp", "lacp", "stp", "huawei_ndp", "cdp", "bfd", "oam", "udld",
+             "mac", "uptime", "segmentation", "interfacestatus", "prefix", "address",
              "metrics", "nri", "nri_portmap", "nri_service", "hk", "sla"]
     # POOLS = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
 
@@ -82,5 +83,6 @@ class ReportDiscoveryResult(BaseReportColumn):
         dresult = namedtuple("DResult", self.ATTRS)
         dresult.__new__.__defaults__ = ("",) * len(dresult._fields)
         for x in val:
-            yield int(x["key"]), dresult(**{xx: x["job"][0].get("problems")[xx].get("", x["job"][0].get("problems")[xx])
-                                            for xx in x["job"][0].get("problems")})
+            r = x["job"][0].get("problems")
+            yield int(x["key"]), dresult(**{xx: r[xx].get("", str(r[xx]) if self.safe_output else r[xx])
+                                            for xx in r})
