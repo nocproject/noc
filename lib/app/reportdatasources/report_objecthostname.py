@@ -18,7 +18,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 
 class ReportObjectsHostname1(BaseReportColumn):
     name = "hostaname"
-    unknown_value = ""
+    unknown_value = ("", )
     builtin_sorted = True
 
     def extract(self):
@@ -29,7 +29,7 @@ class ReportObjectsHostname1(BaseReportColumn):
 
 class ReportObjectsHostname2(BaseReportColumn):
     name = "hostaname2"
-    unknown_value = ""
+    unknown_value = ("", )
     builtin_sorted = True
 
     def extract(self):
