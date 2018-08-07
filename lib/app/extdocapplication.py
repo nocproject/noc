@@ -370,12 +370,14 @@ class ExtDocApplication(ExtApplication):
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
         if hasattr(o, "tags") and attrs.get("tags"):
-            for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
-                Tag.unregister_tag(t, repr(self.model))
+            old_tags = set(o.tags) if o.tags else set()
+            new_tags = set(attrs["tags"]) if attrs["tags"] else set()
+            for t in old_tags - new_tags:
                 self.logger.info("Unregister Tag: %s" % t)
-            for t in set(attrs.get("tags", [])) - (set(getattr(o, "tags", []))):
-                Tag.register_tag(t, repr(self.model))
+                Tag.unregister_tag(t, repr(self.model))
+            for t in new_tags - old_tags:
                 self.logger.info("Register Tag: %s" % t)
+                Tag.register_tag(t, repr(self.model))
         # @todo: Check for duplicates
         for k in attrs:
             if k != self.pk and "__" not in k:
