@@ -77,8 +77,20 @@ class PlainReferenceField(BaseField):
                 raise ValidationError("Argument to PlainReferenceField constructor "
                                       "must be a document class or a string")
         self.document_type_obj = document_type
-        self.has_get_by_id = None
+        self.dereference = None
         super(PlainReferenceField, self).__init__(*args, **kwargs)
+
+    def dereference_cached(self, value):
+        return self.document_type.get_by_id(value)
+
+    def dereference_uncached(self, value):
+        return self.document_type.objects.filter(pk=value).first()
+
+    def set_dereference(self):
+        if hasattr(self.document_type, "get_by_id"):
+            self.dereference = self.dereference_cached
+        else:
+            self.dereference = self.dereference_uncached
 
     @property
     def document_type(self):
@@ -100,12 +112,9 @@ class PlainReferenceField(BaseField):
         value = instance._data.get(self.name)
         # Dereference DBRefs
         if isinstance(value, ObjectId) or (isinstance(value, six.string_types) and len(value) == 24):
-            if self.has_get_by_id is None:
-                self.has_get_by_id = hasattr(self.document_type, "get_by_id")
-            if self.has_get_by_id:
-                v = self.document_type.get_by_id(value)
-            else:
-                v = self.document_type.objects.filter(pk=value).first()
+            if self.dereference is None:
+                self.set_dereference()
+            v = self.dereference(value)
             if v is not None:
                 instance._data[self.name] = v
             else:
@@ -203,8 +212,23 @@ class ForeignKeyField(BaseField):
             raise ValidationError("Argument to ForeignKeyField constructor "
                                   "must be a Model class")
         self.document_type = model
-        self.has_get_by_id = hasattr(self.document_type, "get_by_id")
+        self.set_dereference()
         super(ForeignKeyField, self).__init__(**kwargs)
+
+    def dereference_cached(self, value):
+        return self.document_type.get_by_id(value)
+
+    def dereference_uncached(self, value):
+        o = self.document_type.objects.filter(pk=value)[:1]
+        if o:
+            return o[0]
+        return None
+
+    def set_dereference(self):
+        if hasattr(self.document_type, "get_by_id"):
+            self.dereference = self.dereference_cached
+        else:
+            self.dereference = self.dereference_uncached
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -216,12 +240,12 @@ class ForeignKeyField(BaseField):
         value = instance._data.get(self.name)
         # Dereference
         if isinstance(value, int):
-            if self.has_get_by_id:
-                value = self.document_type.get_by_id(value)
+            v = self.dereference(value)
+            if v is not None:
+                instance._data[self.name] = v
             else:
-                value = self.document_type.objects.get(pk=value)
-            if value is not None:
-                instance._data[self.name] = value
+                raise ValidationError("Unable to dereference %s:%s" % (
+                    self.document_type, value))
         return super(ForeignKeyField, self).__get__(instance, owner)
 
     def __set__(self, instance, value):
