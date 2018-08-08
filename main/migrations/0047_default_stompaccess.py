@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # Default stomp users
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# NOC modules
 from noc.lib.nosql import get_db
 
-class Migration:
+
+class Migration(object):
     def forwards(self):
         s = get_db().noc.stomp_access
         if not s.count_documents():

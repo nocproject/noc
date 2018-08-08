@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ip.reportfilter
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,9 +18,10 @@ from noc.core.translation import ugettext as _
 
 class ReportForm(forms.Form):
     sel = forms.ModelChoiceField(
-            label=_("Managed Object Selector"),
-            required=True,
-            queryset=ManagedObjectSelector.objects.order_by("name"))
+        label=_("Managed Object Selector"),
+        required=True,
+        queryset=ManagedObjectSelector.objects.order_by("name")
+    )
 
 
 class ReportFilterApplication(SimpleReport):

@@ -8,7 +8,6 @@
 
 # Python modules
 import datetime
-import itertools
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.nosql import get_db

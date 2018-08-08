@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.monitor application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -125,7 +125,7 @@ class FMMonitorApplication(ExtApplication):
         seq = itertools.count()
         return [
             {
-                "id": seq.next(),
+                "id": next(seq),
                 "group": g,
                 "key": k,
                 "value": v
