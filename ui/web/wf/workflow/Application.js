@@ -18,14 +18,6 @@ Ext.define("NOC.wf.workflow.Application", {
     initComponent: function() {
         var me = this;
         me.WF_EDITOR = me.registerItem("NOC.wf.workflow.WFEditor");
-        me.editorButton = Ext.create("Ext.button.Button", {
-            text: __("Editor"),
-            glyph: NOC.glyph.eye,
-            scope: me,
-            formBind: true,
-            disabled: true,
-            handler: me.onEditor
-        });
         Ext.apply(me, {
             columns: [
                 {
@@ -91,19 +83,16 @@ Ext.define("NOC.wf.workflow.Application", {
                         }
                     ]
                 }
-            ],
-
-            formToolbar: [
-                me.editorButton
             ]
         });
+        console.log(me.getRegisteredItems());
+        me.getRegisteredItems()[me.WF_EDITOR].on("scriptsLoaded", function() {
+            var me = this;
+            if(me.openPreview){
+                me.openDiagram(me.record);
+            }
+        }, me);
         me.callParent();
-    },
-    onEditor: function() {
-        var me = this;
-        if(me.getRegisteredItems()[me.WF_EDITOR].isScriptsLoaded) {
-            me.previewItem(me.WF_EDITOR, me.currentRecord);
-        }
     },
     onClone: function() {
         var me = this;
@@ -130,5 +119,24 @@ Ext.define("NOC.wf.workflow.Application", {
             me.editorButton.setDisabled(true);
             me.callParent(defaults);
         }
+    },
+    // Show Form
+    onEditRecord: function(record) {
+        var me = this;
+        // Check permissions
+        if(!me.hasPermission("read") && !me.hasPermission("update"))
+            return;
+        if(me.getRegisteredItems()[me.WF_EDITOR].getScriptsLoaded()) {
+            me.openDiagram(record);
+        } else {
+            me.openPreview = true;
+            me.record = record;
+        }
+    },
+    //
+    openDiagram: function(record) {
+        var me = this;
+        me.previewItem(me.WF_EDITOR, record);
+        me.setHistoryHash(record.get("id"));
     }
 });

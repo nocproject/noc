@@ -133,6 +133,9 @@
                             data: {
                                 type: "transition",
                                 label: defaultName,
+                                enable_manual: false,
+                                handlers: [],
+                                event: null,
                                 from_state: source.get('data').name,
                                 to_state: targets[0].model.get('data').name
                             }

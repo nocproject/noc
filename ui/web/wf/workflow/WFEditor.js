@@ -11,7 +11,20 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     requires: [
         "Ext.ux.form.StringsField"
     ],
-    isScriptsLoaded: false,
+    config: {
+        scriptsLoaded: false
+    },
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
+    constructor: function(config) {
+        this.mixins.observable.constructor.call(this, config);
+        this.callParent();
+    },
+    updateScriptsLoaded: function(newValue, oldValue) {
+        var me = this;
+        me.fireEvent("scriptsLoaded", newValue);
+    },
     initComponent: function() {
         var me = this;
 
@@ -128,7 +141,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             elementView.removeTools();
         });
         me.graph.on("remove", Ext.bind(me.onRemoveCell, me));
-        me.isScriptsLoaded = true;
+        me.setScriptsLoaded(true);
     },
     //
     preview: function(record, backItem) {
@@ -354,7 +367,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     title: __("Integration"),
                     defaults: {
                         padding: 4,
-                        labelAlign: "top"
+                        labelAlign: "top",
+                        disabled: true
                     },
                     items: [
                         {
@@ -435,7 +449,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     title: __("Integration"),
                     defaults: {
                         padding: 4,
-                        labelAlign: "top"
+                        labelAlign: "top",
+                        disabled: true
                     },
                     items: [
                         {
@@ -471,6 +486,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     allowBlank: true
                 }
             ];
+        me.stateNamePrev = data.name;
         me.showInspector(data, fields, __("State Inspector"));
     },
     //
@@ -511,7 +527,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     title: __("Integration"),
                     defaults: {
                         padding: 4,
-                        labelAlign: "top"
+                        labelAlign: "top",
+                        disabled: true
                     },
                     items: [
                         {
@@ -551,6 +568,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         if(form.isValid()) {
             form.updateRecord(form.record);
             data = form.record.getData();
+            if(data.type === "state" && data.name !== me.stateNamePrev) {
+                me.changeStatenameInTransition(me.stateNamePrev, data.name);
+            }
             me.isIspectorDirty = false;
             if(me.currentHighlight && me.currentHighlight.model) {
                 me.currentHighlight.model.removeProp("data");
@@ -605,9 +625,20 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             .map(function(element) {
                 element.from_state = findStateNameById(element.source.id);
                 element.to_state = findStateNameById(element.target.id);
+                element.data["vertices"] = [];
                 if(element.hasOwnProperty("vertices")) {
                     element.data["vertices"] = element.vertices;
                 }
+                if(element.data.hasOwnProperty("remote_system") && element.data["remote_system"].length === 0) {
+                    delete element.data["remote_system"];
+                }
+                if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0) {
+                    delete element.data["remote_id"];
+                }
+                delete element.data["remote_system__label"];
+                delete element.data["workflow__label"];
+                delete element.data["from_state__label"];
+                delete element.data["to_state__label"];
                 delete element.data["type"];
                 return element.data;
             });
@@ -666,7 +697,10 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             rect = new joint.shapes.standard.Rectangle(),
             data = {
                 type: "state",
-                name: stateName
+                name: stateName,
+                on_enter_handlers: [],
+                on_leave_handlers: [],
+                job_handler: null
             };
         rect.prop({data: data});
         rect.set("position", me.menuPosition);
@@ -741,6 +775,34 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             });
         } else {
             handler.call(me, args);
+        }
+    },
+    //
+    onClose: function() {
+        var me = this;
+        me.app.onClose();
+    },
+    //
+    changeStatenameInTransition: function(prevName, newName) {
+        var me = this, i, data, cloned,
+            cells = me.graph.getCells(),
+            len = cells.length,
+            replaceProp = function(cell, data) {
+                cell.removeProp("data");
+                cell.prop({data: data});
+            };
+        for(i = 0; i < len; i++) {
+            data = cells[i].get("data");
+            if(data.type === "transition") {
+                if(data.from_state === prevName) {
+                    cloned = Ext.merge({}, Ext.clone(data), {from_state: newName});
+                    replaceProp(cells[i], cloned);
+                }
+                if(data.to_state === prevName) {
+                    cloned = Ext.Object.merge({}, Ext.clone(data), {to_state: newName});
+                    replaceProp(cells[i], cloned);
+                }
+            }
         }
     }
 });

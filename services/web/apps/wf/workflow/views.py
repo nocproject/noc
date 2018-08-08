@@ -34,7 +34,7 @@ class WorkflowApplication(ExtDocApplication):
     @view("^(?P<id>[0-9a-f]{24})/config/",
           method=["GET"], access="write", api=True)
     def api_get_config(self, request, id):
-        wf = self.get_object_or_404(Workflow, id)
+        wf = self.get_object_or_404(Workflow, id=id)
         r = {
             "id": str(wf.id),
             "name": wf.name,
@@ -121,7 +121,7 @@ class WorkflowApplication(ExtDocApplication):
         if id == self.NEW_ID:
             wf = Workflow()
         else:
-            wf = self.get_object_or_404(Workflow, id)
+            wf = self.get_object_or_404(Workflow, id=id)
         # Update workflow
         wf.name = name
         wf.description = description
@@ -139,6 +139,8 @@ class WorkflowApplication(ExtDocApplication):
                 # Existing state
                 seen_states.add(s["id"])
                 state = current_states.get(s["id"])
+            if not hasattr(s, "workflow"):
+                s["workflow"] = wf.id
             # Update state attributes
             if not state:
                 state = State()
@@ -197,7 +199,7 @@ class WorkflowApplication(ExtDocApplication):
     @view("^(?P<id>[0-9a-f]{24})/clone/",
           method=["POST"], access="write", api=True)
     def api_clone(self, request, id):
-        wf = self.get_object_or_404(Workflow, id)
+        wf = self.get_object_or_404(Workflow, id=id)
         # Get all clone names
         m = 0
         for d in Workflow._get_collection().find({
