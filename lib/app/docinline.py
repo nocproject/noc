@@ -2,22 +2,23 @@
 # ---------------------------------------------------------------------
 # ModelInline
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from functools import reduce
 # NOC modules
-from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
-                               FloatParameter, ModelParameter,
-                               StringParameter, TagsParameter,
-                               NoneParameter, InterfaceTypeError,
-                               DocumentParameter)
+from noc.sa.interfaces.base import (
+    BooleanParameter, IntParameter, FloatParameter, ModelParameter, TagsParameter,
+    InterfaceTypeError, DocumentParameter
+)
 from noc.lib.validators import is_int
 from noc.lib.nosql import *
 
 
 class DocInline(object):
-    ## HTTP Result Codes
+    # HTTP Result Codes
     OK = 200
     CREATED = 201
     DELETED = 204
@@ -29,7 +30,7 @@ class DocInline(object):
     INTERNAL_ERROR = 500
     NOT_IMPLEMENTED = 501
     THROTTLED = 503
-    ## Recognized GET parameters
+    # Recognized GET parameters
     ignored_params = ["_dc"]
     page_param = "__page"
     start_param = "__start"
@@ -61,9 +62,11 @@ class DocInline(object):
                 self.clean_fields[name] = DocumentParameter(f.document_type)
         #
         if not self.query_fields:
-            self.query_fields = ["%s__%s" % (n, self.query_condition)
-                                 for n, f in self.model._fields.items()
-                                 if f.unique and isinstance(f, StringField)]
+            self.query_fields = [
+                "%s__%s" % (n, self.query_condition)
+                for n, f in self.model._fields.items()
+                if f.unique and isinstance(f, StringField)
+            ]
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -73,30 +76,50 @@ class DocInline(object):
 
     def contribute_to_class(self, app, name):
         # Add List handler
-        app.add_view("api_%s_list" % name, self.api_list,
+        app.add_view(
+            "api_%s_list" % name,
+            self.api_list,
             method=["GET"],
             url="^(?P<parent>[^/]+)/%s/$" % name,
-            access="read", api=True)
+            access="read",
+            api=True
+        )
         # Add Create handler
-        app.add_view("api_%s_create" % name, self.api_create,
+        app.add_view(
+            "api_%s_create" % name,
+            self.api_create,
             method=["POST"],
             url="^(?P<parent>[^/]+)/%s/$" % name,
-            access="create", api=True)
+            access="create",
+            api=True
+        )
         # Add Read Handler
-        app.add_view("api_%s_read" % name, self.api_read,
+        app.add_view(
+            "api_%s_read" % name,
+            self.api_read,
             method=["GET"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>[^/]+)/?$" % name,
-            access="read", api=True)
+            access="read",
+            api=True
+        )
         # Add Update Handler
-        app.add_view("api_%s_update" % name, self.api_update,
+        app.add_view(
+            "api_%s_update" % name,
+            self.api_update,
             method=["PUT"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>[^/]+)/?$" % name,
-            access="update", api=True)
+            access="update",
+            api=True
+        )
         # Add Delete Handler
-        app.add_view("api_%s_delete" % name, self.api_delete,
+        app.add_view(
+            "api_%s_delete" % name,
+            self.api_delete,
             method=["DELETE"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>[^/]+)/?$" % name,
-            access="delete", api=True)
+            access="delete",
+            api=True
+        )
 
     def set_app(self, app):
         self.app = app
@@ -134,8 +157,7 @@ class DocInline(object):
             return TagsParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
-            return ModelParameter(field.rel.to,
-                required=not field.null)
+            return ModelParameter(field.rel.to, required=not field.null)
         else:
             return None
 
@@ -143,15 +165,17 @@ class DocInline(object):
         """
         Prepare Q statement for query
         """
+
         def get_q(f):
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
             else:
                 return f
 
-        q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
-            self.query_fields[1:],
-            Q(**{get_q(self.query_fields[0]): query}))
+        q = reduce(
+            lambda x, y: x | Q(**{get_q(y): query}), self.query_fields[1:],
+            Q(**{get_q(self.query_fields[0]): query})
+        )
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -198,10 +222,10 @@ class DocInline(object):
             else:
                 np, lt = p, None
                 # Skip ignored params
-            if np in self.ignored_params or p in (
-                self.limit_param, self.page_param, self.start_param,
-                self.format_param, self.sort_param, self.query_param,
-                self.only_param):
+            if np in self.ignored_params or p in (self.limit_param, self.page_param,
+                                                  self.start_param, self.format_param,
+                                                  self.sort_param, self.query_param,
+                                                  self.only_param):
                 continue
             v = q[p]
             if v == "\x00":
@@ -213,9 +237,8 @@ class DocInline(object):
                 model = self.app.site.apps[app].model
                 extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
                     self.model._meta.db_table, self.model._meta.pk.name,
-                    model._meta.get_field_by_name(fn)[0].attname,
-                    model._meta.db_table
-                    )
+                    model._meta.get_field_by_name(fn)[0].attname, model._meta.db_table
+                )
                 if None in nq:
                     nq[None] += [extra_where]
                 else:
@@ -274,8 +297,7 @@ class DocInline(object):
         Returns a list of requested object objects
         """
         # Todo: Fix
-        q = dict((str(k), v[0] if len(v) == 1 else v)
-            for k, v in request.GET.lists())
+        q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -310,56 +332,54 @@ class DocInline(object):
             data = data[int(start):int(start) + int(limit)]
         out = [formatter(o, fields=only) for o in data]
         if format == "ext":
-            out = {
-                "total": total,
-                "success": True,
-                "data": out
-            }
+            out = {"total": total, "success": True, "data": out}
         return self.app.response(out, status=self.OK)
 
     def api_list(self, request, parent):
-        return self.list_data(request, self.instance_to_dict,
-            parent=str(parent))
+        return self.list_data(request, self.instance_to_dict, parent=str(parent))
 
     def api_create(self, request, parent):
-        parent = self.app.get_object_or_404(
-            self.parent_model, id=ObjectId(parent))
+        parent = self.app.get_object_or_404(self.parent_model, id=ObjectId(parent))
         try:
             attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
-        except ValueError, why:
+        except ValueError as e:
             return self.app.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.app.BAD_REQUEST)
-        except InterfaceTypeError, why:
+                {
+                    "status": False,
+                    "message": "Bad request",
+                    "traceback": str(e)
+                },
+                status=self.app.BAD_REQUEST
+            )
+        except InterfaceTypeError as e:
             return self.app.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.BAD_REQUEST)
+                {
+                    "status": False,
+                    "message": "Bad request",
+                    "traceback": str(e)
+                },
+                status=self.BAD_REQUEST
+            )
         try:
             # Exclude callable values from query
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
-            qattrs = dict((k, attrs[k])
-                for k in attrs if not callable(attrs[k]))
+            qattrs = dict((k, attrs[k]) for k in attrs if not callable(attrs[k]))
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.app.render_json(
                 {
                     "status": False,
                     "message": "Duplicated record"
-                },
-                status=self.CONFLICT)
+                }, status=self.CONFLICT
+            )
         except self.model.MultipleObjectsReturned:
             return self.app.render_json(
                 {
                     "status": False,
                     "message": "Duplicated record"
-                }, status=self.CONFLICT)
+                }, status=self.CONFLICT
+            )
         except self.model.DoesNotExist:
             attrs[self.parent_rel] = parent
             o = self.model(**attrs)
@@ -370,13 +390,11 @@ class DocInline(object):
                     {
                         "status": False,
                         "message": "Integrity error"
-                    }, status=self.CONFLICT)
+                    }, status=self.CONFLICT
+                )
             format = request.GET.get(self.format_param)
             if format == "ext":
-                r = {
-                    "success": True,
-                    "data": self.instance_to_dict(o)
-                }
+                r = {"success": True, "data": self.instance_to_dict(o)}
             else:
                 r = self.instance_to_dict(o)
             return self.app.response(r, status=self.CREATED)
@@ -386,35 +404,36 @@ class DocInline(object):
         Returns dict with object's fields and values
         """
         try:
-            o = self.queryset(request).get(
-                id=int(id), parent=ObjectId(parent))
+            o = self.queryset(request).get(id=int(id), parent=ObjectId(parent))
         except self.model.DoesNotExist:
             return self.app.response("", status=self.NOT_FOUND)
         only = request.GET.get(self.only_param)
         if only:
             only = only.split(",")
-        return self.app.response(self.instance_to_dict(o, fields=only),
-            status=self.OK)
+        return self.app.response(self.instance_to_dict(o, fields=only), status=self.OK)
 
     def api_update(self, request, parent, id):
-        parent = self.app.get_object_or_404(
-            self.parent_model, id=ObjectId(parent))
+        parent = self.app.get_object_or_404(self.parent_model, id=ObjectId(parent))
         try:
             attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
-        except ValueError, why:
+        except ValueError as e:
             return self.app.render_json(
                 {
                     "status": False,
                     "message": "Bad request",
-                    "traceback": str(why)
-                }, status=self.BAD_REQUEST)
-        except InterfaceTypeError, why:
+                    "traceback": str(e)
+                },
+                status=self.BAD_REQUEST
+            )
+        except InterfaceTypeError as e:
             return self.app.render_json(
                 {
                     "status": False,
                     "message": "Bad request",
-                    "traceback": str(why)
-                }, status=self.BAD_REQUEST)
+                    "traceback": str(e)
+                },
+                status=self.BAD_REQUEST
+            )
         try:
             o = self.queryset(request).get(id=ObjectId(id))
         except self.model.DoesNotExist:
@@ -429,20 +448,20 @@ class DocInline(object):
                 {
                     "status": False,
                     "message": "Integrity error"
-                }, status=self.CONFLICT)
+                }, status=self.CONFLICT
+            )
         return self.app.response(status=self.OK)
 
     def api_delete(self, request, parent, id):
         try:
-            q = {
-                "id": ObjectId(id),
-                self.parent_rel: ObjectId(parent)
-            }
+            q = {"id": ObjectId(id), self.parent_rel: ObjectId(parent)}
             o = self.queryset(request).get(**q)
         except self.model.DoesNotExist:
-            return self.app.render_json({
-                "status": False,
-                "message": "Not found"
-            }, status=self.NOT_FOUND)
+            return self.app.render_json(
+                {
+                    "status": False,
+                    "message": "Not found"
+                }, status=self.NOT_FOUND
+            )
         o.delete()  # @todo: Detect errors
         return self.app.response("", status=self.DELETED)
