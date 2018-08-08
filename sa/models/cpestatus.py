@@ -12,7 +12,7 @@ from __future__ import absolute_import
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
 # NOC modules
-from noc.lib.nosql import PlainReferenceField
+from noc.lib.nosql import ForeignKeyField
 from .managedobject import ManagedObject
 
 
@@ -26,7 +26,7 @@ class CPEStatus(Document):
         ]
     }
 
-    managed_object = PlainReferenceField(ManagedObject)
+    managed_object = ForeignKeyField(ManagedObject)
     interface = StringField()
     local_id = StringField()
     global_id = StringField(unique=True)
