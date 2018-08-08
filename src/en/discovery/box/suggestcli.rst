@@ -12,4 +12,6 @@ suggestcli check
 
 Requirements
 ------------
-* login
+* :ref:`script-login`
+* suggestcli check is enabled in :ref:`reference-managed-object-profile`
+

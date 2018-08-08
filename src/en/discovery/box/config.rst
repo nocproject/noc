@@ -12,4 +12,5 @@ config check
 
 Requirements
 ------------
-* get_config
+* :ref:`script-get_config`
+* config check is enabled in :ref:`reference-managed-object-profile`

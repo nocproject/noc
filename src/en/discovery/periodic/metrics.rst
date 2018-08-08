@@ -12,4 +12,5 @@ metrics check
 
 Requirements
 ------------
-* get_metrics
+* :ref:`script-get_metrics`
+* Metrics check is enabled in :ref:`reference-managed-object-profile`

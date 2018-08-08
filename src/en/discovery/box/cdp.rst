@@ -12,5 +12,6 @@ cdp check
 
 Requirements
 ------------
-* get_cdp_neighbors
+* :ref:`script-get_cdp_neighbors`
 * :ref:`caps-network-cdp`
+* CDP check is enabled in :ref:`reference-managed-object-profile`

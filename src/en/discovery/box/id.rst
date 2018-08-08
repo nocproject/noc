@@ -12,4 +12,5 @@ id check
 
 Requirements
 ------------
-* get_discovery_id
+* :ref:`script-get_discovery_id`
+* id check is enabled in :ref:`reference-managed-object-profile`

@@ -12,5 +12,6 @@ udld check
 
 Requirements
 ------------
-* get_udld_neighbors
+* :ref:`script-get_udld_neighbors`
 * :ref:`caps-network-udld`
+* UDLD check is enabled in :ref:`reference-managed-object-profile`

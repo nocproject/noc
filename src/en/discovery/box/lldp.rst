@@ -12,5 +12,6 @@ lldp check
 
 Requirements
 ------------
-* get_lldp_neighbors
+* :ref:`script-get_lldp_neighbors`
 * :ref:`caps-network-lldp`
+* LLDP check is enabled in :ref:`reference-managed-object-profile`

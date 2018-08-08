@@ -12,7 +12,9 @@ sla check
 
 Requirements
 ------------
-* get_sla_probes
+* :ref:`script-get_sla_probes`
+* sla check is enabled in :ref:`reference-managed-object-profile`
+* Any of following capabilities
 
 ============== ===================================
 Profile        Capability

@@ -13,4 +13,5 @@ caps check
 
 Requirements
 ------------
-* get_capabilities
+* :ref:`script-get_capabilities`
+* caps check is enabled in :ref:`reference-managed-object-profile`

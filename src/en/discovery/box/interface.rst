@@ -1,8 +1,8 @@
 .. _discovery-box-interface:
 
-=============================
+=========
 interface
-=============================
+=========
 
 .. toctree::
     :titlesonly:
@@ -12,4 +12,5 @@ interface
 
 Requirements
 ------------
-* get_interfaces
+* :ref:`script-get_interfaces`
+* interface check is enabled in :ref:`reference-managed-object-profile`

@@ -8,3 +8,4 @@ Discovery
     /discovery/box
     /discovery/periodic
     /discovery/segment
+    /discovery/as

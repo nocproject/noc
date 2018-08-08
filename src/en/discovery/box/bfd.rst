@@ -15,5 +15,6 @@ bfd check
 
 Requirements
 ------------
-* get_bfd_sessions
+* :ref:`script-get_bfd_sessions`
 * :ref:`caps-network-bfd`
+* bfd check is enabled in :ref:`reference-managed-object-profile`

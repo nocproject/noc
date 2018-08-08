@@ -12,5 +12,6 @@ rep check
 
 Requirements
 ------------
-* get_rep_neighbors
+* :ref:`script-get_rep_neighbors`
 * :ref:`caps-network-rep`
+* REP check is enabled in :ref:`reference-managed-object-profile`

@@ -12,5 +12,6 @@ lacp check
 
 Requirements
 ------------
-* get_lacp_neighbors
+* :ref:`script-get_lacp_neighbors`
 * :ref:`caps-network-lacp`
+* LACP check is enabled in :ref:`reference-managed-object-profile`

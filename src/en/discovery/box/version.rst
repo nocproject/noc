@@ -12,4 +12,5 @@ version check
 
 Requirements
 ------------
-* get_version
+* :ref:`script-get_version`
+* version check is enabled in :ref:`reference-managed-object-profile`

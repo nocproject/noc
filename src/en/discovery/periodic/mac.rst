@@ -12,4 +12,5 @@ mac check
 
 Requirements
 ------------
-* get_mac_address_table
+* :ref:`script-get_mac_address_table`
+* MAC check is enabled in :ref:`reference-managed-object-profile`
