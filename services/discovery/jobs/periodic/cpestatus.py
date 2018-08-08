@@ -47,7 +47,7 @@ class CPEStatusCheck(DiscoveryCheck):
         Get current statuses from equipment
         :return: dict of global_id -> status
         """
-        return dict((x["global_id"], x) for x in self.object.scripes.get_cpe_status())
+        return dict((x["global_id"], x) for x in self.object.scripts.get_cpe_status())
 
     def get_last_statuses(self, data):
         """
