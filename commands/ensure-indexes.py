@@ -18,7 +18,7 @@ class Command(BaseCommand):
         from noc.lib.nosql import get_db
 
         db = get_db()
-        collections = set(db.collection_names())
+        collections = set(db.list_collection_names())
         for model_id in iter_model_id():
             model = get_model(model_id)
             if not model:

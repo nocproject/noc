@@ -59,13 +59,13 @@ class InvMonitorApplication(ExtApplication):
                 lag = (now - t0["ts"]).total_seconds()
             else:
                 lag = 0
-            late_count = sc.find(late_q).count()
+            late_count = sc.find(late_q).count_documents()
             #
             r[p.name.lower()] = {
                 "pool": p.name.lower(),
-                "total_tasks": sc.count(),
-                "exception_tasks": sc.find(exp_q).count(),
-                "running_tasks": sc.find({Job.ATTR_STATUS: Job.S_RUN}).count(),
+                "total_tasks": sc.count_documents(),
+                "exception_tasks": sc.find(exp_q).count_documents(),
+                "running_tasks": sc.find({Job.ATTR_STATUS: Job.S_RUN}).count_documents(),
                 "late_tasks": late_count,
                 "lag": lag,
                 "avg_box_tasks": ldur[0]["avg"] if ldur else 0,
