@@ -11,6 +11,7 @@ from collections import defaultdict
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
@@ -128,94 +129,106 @@ class ManagedObjectDataStream(DataStream):
     def _apply_interfaces(mo, r):
         # Get interfaces
         interfaces = sorted(
-            Interface.objects.filter(managed_object=mo.id),
-            key=lambda x: split_alnum(x.name)
+            Interface._get_collection().find({"managed_object": mo.id}),
+            key=lambda x: split_alnum(x["name"])
         )
         # Get subs
         subs = defaultdict(list)
-        for s in SubInterface.objects.filter(managed_object=mo.id):
-            subs[s.interface.id] += [s]
+        for s in SubInterface._get_collection().find({"managed_object": mo.id}):
+            subs[s["interface"]] += [s]
         # Get links
         links = defaultdict(list)
-        for l in Link.objects.filter(linked_objects=mo.id):
-            for li in l.interfaces:
-                links[li.id] += [l]
+        for l in Link._get_collection().find({"linked_objects": mo.id}):
+            for li in l.get("interfaces", []):
+                links[li] += [l]
+        # Resolve linked interfaces
+        ifcache = {}
+        if links:
+            for i in Interface._get_collection().find({
+                "_id": {"$in": list(links)}
+            }, {
+                "_id": 1,
+                "managed_object": 1,
+                "name": 1
+            }):
+                ifcache[i["_id"]] = (i["managed_object"], i["name"])
         # Populate
         r["interfaces"] = [
-            ManagedObjectDataStream._get_interface(i, subs[i.id], links[i.id])
+            ManagedObjectDataStream._get_interface(i, subs[i["_id"]], links[i["_id"]], ifcache)
             for i in interfaces
         ]
 
     @staticmethod
-    def _get_interface(iface, subs, links):
+    def _get_interface(iface, subs, links, ifcache):
         r = {
-            "name": qs(iface.name),
-            "type": iface.type,
-            "description": qs(iface.description),
-            "enabled_protocols": iface.enabled_protocols
+            "name": qs(iface["name"]),
+            "type": iface["type"],
+            "description": qs(iface.get("description")),
+            "enabled_protocols": iface.get("enabled_protocols") or []
         }
-        if iface.ifindex:
-            r["snmp_ifindex"] = iface.ifindex
-        if iface.mac:
-            r["mac"] = iface.mac
-        if iface.aggregated_interface:
-            r["aggregated_interface"] = iface.aggregated_interface
+        if iface.get("ifindex"):
+            r["snmp_ifindex"] = iface["ifindex"]
+        if iface.get("mac"):
+            r["mac"] = iface["mac"]
+        if iface.get("aggregated_interface"):
+            r["aggregated_interface"] = iface["aggregated_interface"]
         # Apply profile
-        if iface.profile:
-            r["profile"] = ManagedObjectDataStream._get_interface_profile(iface.profile)
+        if iface.get("profile"):
+            profile = InterfaceProfile.get_by_id(iface["profile"])
+            r["profile"] = ManagedObjectDataStream._get_interface_profile(profile)
         # Apply subinterfaces
-        subs = sorted(subs, key=lambda x: split_alnum(x.name))
         r["subinterfaces"] = [
             ManagedObjectDataStream._get_subinterface(s)
-            for s in subs
+            for s in sorted(subs, key=lambda x: split_alnum(x["name"]))
         ]
         # Apply links
         if links:
-            r["link"] = ManagedObjectDataStream._get_link(iface, links)
+            r["link"] = ManagedObjectDataStream._get_link(iface, links, ifcache)
         return r
 
     @staticmethod
     def _get_subinterface(sub):
         r = {
-            "name": qs(sub.name),
-            "description": qs(sub.description),
-            "enabled_afi": sub.enabled_afi,
-            "enabled_protocols": sub.enabled_protocols
+            "name": qs(sub["name"]),
+            "description": qs(sub.get("description")),
+            "enabled_afi": sub.get("enabled_afi") or [],
+            "enabled_protocols": sub.get("enabled_protocols") or []
         }
-        if sub.ifindex:
-            r["snmp_ifindex"] = sub.ifindex
-        if sub.mac:
-            r["mac"] = sub.mac
-        if sub.ipv4_addresses:
-            r["ipv4_addresses"] = sub.ipv4_addresses
-        if sub.ipv6_addresses:
-            r["ipv6_addresses"] = sub.ipv6_addresses
-        if sub.iso_addresses:
-            r["iso_addresses"] = sub.iso_addresses
-        if sub.vlan_ids:
-            r["vlan_ids"] = sub.vlan_ids
-        if sub.vpi is not None:
-            r["vpi"] = sub.vpi
-        if sub.vci is not None:
-            r["vci"] = sub.vci
-        if sub.untagged_vlan:
-            r["untagged_vlan"] = sub.untagged_vlan
-        if sub.tagged_vlans:
-            r["tagged_vlans"] = sub.tagged_vlans
+        if sub.get("ifindex"):
+            r["snmp_ifindex"] = sub["ifindex"]
+        if sub.get("mac"):
+            r["mac"] = sub["mac"]
+        if sub.get("ipv4_addresses"):
+            r["ipv4_addresses"] = sub["ipv4_addresses"]
+        if sub.get("ipv6_addresses"):
+            r["ipv6_addresses"] = sub["ipv6_addresses"]
+        if sub.get("iso_addresses"):
+            r["iso_addresses"] = sub["iso_addresses"]
+        if sub.get("vlan_ids"):
+            r["vlan_ids"] = sub["vlan_ids"]
+        if sub.get("vpi") is not None:
+            r["vpi"] = sub["vpi"]
+        if sub.get("vci") is not None:
+            r["vci"] = sub["vci"]
+        if sub.get("untagged_vlan"):
+            r["untagged_vlan"] = sub["untagged_vlan"]
+        if sub.get("tagged_vlans"):
+            r["tagged_vlans"] = sub["tagged_vlans"]
         return r
 
     @staticmethod
-    def _get_link(iface, links):
+    def _get_link(iface, links, ifcache):
         r = []
         for link in links:
             rr = []
-            for i in link.interfaces:
-                if i.managed_object.id == iface.managed_object.id:
+            for i in link["interfaces"]:
+                ro, rname = ifcache[i]
+                if ro == iface["managed_object"]:
                     continue
                 rr += [{
-                    "object": str(i.managed_object.id),
-                    "interface": qs(i.name),
-                    "method": link.discovery_method
+                    "object": str(ro),
+                    "interface": qs(rname),
+                    "method": link.get("discovery_method") or ""
                 }]
             r += [rr]
         return r

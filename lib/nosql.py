@@ -104,7 +104,9 @@ class PlainReferenceField(BaseField):
         return self.document_type_obj
 
     def __get__(self, instance, owner):
-        """Descriptor to allow lazy dereferencing."""
+        """
+        Descriptor to allow lazy dereferencing
+        """
         if instance is None:
             # Document class being used rather than a document object
             return self
@@ -117,10 +119,11 @@ class PlainReferenceField(BaseField):
             v = self.dereference(value)
             if v is not None:
                 instance._data[self.name] = v
+                return v
             else:
                 raise ValidationError("Unable to dereference %s:%s" % (
                     self.document_type, value))
-        return super(PlainReferenceField, self).__get__(instance, owner)
+        return value
 
     def to_mongo(self, document):
         if isinstance(document, Document):
@@ -243,10 +246,11 @@ class ForeignKeyField(BaseField):
             v = self.dereference(value)
             if v is not None:
                 instance._data[self.name] = v
+                return v
             else:
                 raise ValidationError("Unable to dereference %s:%s" % (
                     self.document_type, value))
-        return super(ForeignKeyField, self).__get__(instance, owner)
+        return value
 
     def __set__(self, instance, value):
         if not value:
