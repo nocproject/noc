@@ -669,6 +669,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("MAC")
                                         },
                                         {
+                                            name: "enable_box_discovery_cpestatus",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("CPE status")
+                                        },
+                                        {
                                             name: "enable_box_discovery_metrics",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Metrics")
@@ -1266,6 +1271,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_periodic_discovery_interface_status",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Interface status")
+                                        },
+                                        {
+                                            name: "enable_periodic_discovery_cpestatus",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("CPE status")
                                         },
                                         {
                                             name: "enable_periodic_discovery_mac",
