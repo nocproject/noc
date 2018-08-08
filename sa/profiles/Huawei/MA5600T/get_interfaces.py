@@ -205,7 +205,7 @@ class Script(BaseScript):
                     v = self.cli("display pvc 0/%d" % i)
                     rx_adsl = self.rx_pvc
                 elif display_service_port:
-                    v = self.cli("display service-port board 0/%d\n" % i)
+                    v = self.cli("display service-port board 0/%d" % i)
                     rx_adsl = self.rx_sp
                 else:
                     v = ""

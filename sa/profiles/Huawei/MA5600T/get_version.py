@@ -31,7 +31,7 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
-        v = self.cli("display version\n")
+        v = self.cli("display version")
         match = self.rx_ver1.search(v)
         if match:
             platform = match.group("platform")

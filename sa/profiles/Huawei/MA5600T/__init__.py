@@ -28,7 +28,8 @@ class Profile(BaseProfile):
         (r"\{ <cr>\|configuration<K>\|data<K> \}", "\n"),
         (r"\{ <cr>\|mode<K> \}", "\n"),
         (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length 1\-15\> \}", "\n"),
-        (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n")
+        (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
+        (r"\{ groupindex\<K\>\|<cr> \}\:", "\n")
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \
