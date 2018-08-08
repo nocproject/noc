@@ -92,7 +92,7 @@ class ReportFilterApplication(SimpleReport):
                 read_preference=ReadPreference.SECONDARY_PREFERRED).find(
                 {"object": {"$in": is_managed_undef_in},
                  "status": False},
-                {"_id": 1, "object": 1}).count()
+                {"_id": 1, "object": 1}).count_documents()
 
             is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                    m["object"] for m in is_alive_id]
@@ -105,15 +105,15 @@ class ReportFilterApplication(SimpleReport):
             bad_snmp_cred = get_db()["noc.joblog"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED
             ).find({"problems.suggest_snmp.": "Failed to guess SNMP community",
-                    "_id": {"$in": is_managed_alive_in}}).count()
+                    "_id": {"$in": is_managed_alive_in}}).count_documents()
             bad_cli_cred = get_db()["noc.joblog"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED
             ).find({"problems.suggest_cli.": self.re_cli,
-                    "_id": {"$in": is_managed_ng_in}}).count()
+                    "_id": {"$in": is_managed_ng_in}}).count_documents()
             profile_not_found = get_db()["noc.joblog"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).find(
                 {"problems.profile.": {"$regex": "^Not find profile for OID:.*"},
-                 "_id": {"$in": is_managed_g_in}}).count()
+                 "_id": {"$in": is_managed_g_in}}).count_documents()
 
             # profile_not_detect = get_db()["noc.joblog"].find({
             #    "problems.profile": {"$regex": "^Cannot find profile in.*"},

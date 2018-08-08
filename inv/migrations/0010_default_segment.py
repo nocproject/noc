@@ -16,7 +16,7 @@ class Migration(object):
         # Initialize container models
         collection = db.noc.networksegments
 
-        if collection.count() == 0:
+        if collection.count_documents() == 0:
             print "    Create default network segment"
             collection.insert({
                 "name": "ALL",

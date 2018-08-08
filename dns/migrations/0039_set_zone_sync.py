@@ -32,7 +32,7 @@ class Migration:
                 "sync_id": str(sync_id),
                 "model_id": "dns.DNSZone",
                 "object_id": str(zone_id)
-            }).count():
+            }).count_documents():
                 sc.insert({
                     "uuid": str(uuid.uuid4()),
                     "model_id": "dns.DNSZone",

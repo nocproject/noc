@@ -42,7 +42,7 @@ class ReportFilterApplication(SimpleReport):
 
         for mo in mos_list:
             q = Object._get_collection().find({"data.management.managed_object": {"$in": [mo.id]}})
-            if q.count() == 0:
+            if q.count_documents() == 0:
                 data += [[mo.name,
                           mo.address,
                           mo.vendor or None,

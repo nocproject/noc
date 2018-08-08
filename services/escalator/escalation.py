@@ -116,12 +116,12 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 "escalation_ts": {
                     "$gte": ets
                 }
-            }).count()
+            }).count_documents()
             ae += ArchivedAlarm._get_collection().find({
                 "escalation_ts": {
                     "$gte": ets
                 }
-            }).count()
+            }).count_documents()
             if ae >= config.escalator.tt_escalation_limit:
                 logger.error(
                     "Escalation limit exceeded (%s/%s). Skipping",

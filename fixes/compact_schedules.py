@@ -15,7 +15,7 @@ def fix():
     for p in Pool.objects.all():
         s = Scheduler("discovery", pool=p.name)
         c = s.get_collection()
-        if not c.count():
+        if not c.count_documents():
             continue
         # Remove unused schedules fields
         c.update_many({
