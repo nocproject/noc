@@ -38,7 +38,7 @@ class Migration(object):
             sources[d["_id"]] = "interface"
 
         CHUNK = 500
-        data = [convert(d) for d in old_caps.find({}) if d.get("object")]
+        data = [convert(x) for x in old_caps.find({}) if x.get("object")]
         while data:
             chunk, data = data[:CHUNK], data[CHUNK:]
             new_caps.insert(chunk)
