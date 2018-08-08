@@ -127,11 +127,16 @@ class ManagedObjectDataStream(DataStream):
 
     @staticmethod
     def _apply_interfaces(mo, r):
+        # id -> (object id, name)
+        ifcache = {}
         # Get interfaces
         interfaces = sorted(
             Interface._get_collection().find({"managed_object": mo.id}),
             key=lambda x: split_alnum(x["name"])
         )
+        # Populate cache
+        for i in interfaces:
+            ifcache[i["_id"]] = (i["managed_object"], i["name"])
         # Get subs
         subs = defaultdict(list)
         for s in SubInterface._get_collection().find({"managed_object": mo.id}):
@@ -141,8 +146,7 @@ class ManagedObjectDataStream(DataStream):
         for l in Link._get_collection().find({"linked_objects": mo.id}):
             for li in l.get("interfaces", []):
                 links[li] += [l]
-        # Resolve linked interfaces
-        ifcache = {}
+        # Populate cache with linked interfaces
         if links:
             for i in Interface._get_collection().find({
                 "_id": {"$in": list(links)}
@@ -171,7 +175,7 @@ class ManagedObjectDataStream(DataStream):
         if iface.get("mac"):
             r["mac"] = iface["mac"]
         if iface.get("aggregated_interface"):
-            r["aggregated_interface"] = iface["aggregated_interface"]
+            r["aggregated_interface"] = ifcache[iface["aggregated_interface"]]
         # Apply profile
         if iface.get("profile"):
             profile = InterfaceProfile.get_by_id(iface["profile"])
