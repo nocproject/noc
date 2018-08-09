@@ -83,13 +83,13 @@ class Script(BaseScript):
     def execute(self):
         r = {"mode": "None", "instances": []}
         try:
-            c = self.cli("display current-configuration section config\r\n")
+            c = self.cli("display current-configuration section config")
         except self.CLISyntaxError:
             return r
         if "stp enable" not in c:
             return r
 
-        v = self.cli("display stp\r\n")
+        v = self.cli("display stp")
         if "IEEE Multiple Spanning Tree Protocol" in v:
             r["mode"] = "MSTP"
             match = self.rx_region.search(c)
