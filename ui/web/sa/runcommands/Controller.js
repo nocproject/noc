@@ -173,13 +173,21 @@ Ext.define('NOC.sa.runcommands.Controller', {
             case 'N_ROWS': {
                 Ext.Msg.prompt(__('Select rows'), __('Please enter number:'), function(btn, text) {
                     if(btn === 'ok') {
-                        this.getNRows(text);
+                        this.getNRows('0', text);
+                    }
+                }, this);
+                break;
+            }
+            case 'PERIOD': {
+                Ext.Msg.prompt(__('Select period'), __('Please enter period (start,qty), first pos is 0:'), function(btn, text) {
+                    if(btn === 'ok') {
+                        this.getNRows(text.split(',')[0], text.split(',')[1]);
                     }
                 }, this);
                 break;
             }
             default: {
-                this.getNRows(record.get('cmd').slice(6));
+                this.getNRows('0', record.get('cmd').slice(6));
             }
         }
         combo.setValue(null);
@@ -547,12 +555,13 @@ Ext.define('NOC.sa.runcommands.Controller', {
         ac.push('<div class=\'noc-mrt-result\'>' + text + '</div>');
     },
     //
-    getNRows: function(n) {
+    getNRows: function(m, n) {
         var params, me = this,
             selectionGrid = this.lookupReference('sa-run-commands-selection-grid'),
-            rows = Number.parseInt(n);
-        if(Number.isInteger(rows)) {
-            params = Ext.Object.merge({}, Ext.clone(this.lookupReference('sa-run-commands-selection-grid').getStore().filterParams), {__limit: rows, __start: 0});
+            limit = Number.parseInt(n),
+            start = Number.parseInt(m);
+        if(Number.isInteger(limit) && Number.isInteger(start)) {
+            params = Ext.Object.merge({}, Ext.clone(this.lookupReference('sa-run-commands-selection-grid').getStore().filterParams), {__limit: limit, __start: start});
 
             selectionGrid.mask(__('Loading'));
             Ext.Ajax.request({
