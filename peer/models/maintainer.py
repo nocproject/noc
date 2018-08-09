@@ -15,10 +15,14 @@ from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.decorator import on_delete_check
 from .rir import RIR
 from .person import Person
 
 
+@on_delete_check(check=[
+    ("peer.Organisation", "mnt_ref")
+])
 @on_save
 class Maintainer(models.Model):
     class Meta(object):
