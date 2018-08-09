@@ -31,13 +31,13 @@ class Script(BaseScript):
         r"(?P<pvid>\d+)\s+", re.MULTILINE
     )
     rx_sub_pvc1 = re.compile(
-        r"^\s*(?P<sub>\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+(?P<pvid>\d+)", re.MULTILINE
+        r"^\s*(?P<sub>\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+(?P<pvid>\-|\d+)", re.MULTILINE
     )
     rx_sub_pvc2 = re.compile(
         r"^\s*(?P<sub>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+(?P<pvid>\S+)\s+", re.MULTILINE
     )
     rx_sub_o = re.compile(r"^\s*(?P<sub>\d+\s*\-\s*\d+)\s+(?P<admin_status>V|\-)", re.MULTILINE)
-    rx_sub_o1 = re.compile(r"^\s*(?P<sub>\d+)\s+(?P<admin_status>V|\-)", re.MULTILINE)
+    rx_sub_o1 = re.compile(r"^\s*(?P<sub>\d+)\s+(?P<admin_status>V|\-)(\s+\S+\s+(?P<pvid>\d+))?", re.MULTILINE)
     rx_sub_o2 = re.compile(r"^\s*Port (?P<sub>\d+): (?P<admin_status>Up|Down)", re.MULTILINE)
     rx_sub_o3 = re.compile(
         r"^\s*(?P<sub>\d+)\s.+(?P<admin_status>Enabled|Disabled)\s*/(?P<oper_status>Up|Down)\s*\n",
@@ -58,7 +58,8 @@ class Script(BaseScript):
         r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*"
         r"(?P<name>.*)$", re.MULTILINE
     )
-    rx_vlan1 = re.compile(r"^\s*\d+\s+msc\s+(?P<ports>[FX]+)\s+(?P<mode>[TU]+)", re.MULTILINE)
+    rx_vlan1 = re.compile(
+        r"^\s*\d+\s+(?:\-|msc)\s+(?P<ports>[\-FX]+)\s+(?P<mode>[TU]+)", re.MULTILINE)
     rx_vlan2 = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s.+\n(^.+\n)?^\s+enabled\s+.+\n"
         r"^\s*(?P<ports>\S+) (?P<eports>\S+)\s*\n"
@@ -90,6 +91,7 @@ class Script(BaseScript):
         interfaces = []
         iface_mac = []
         vlans = []
+        if_pvid = {}
         stps = self.get_stp()
         if slots > 1:
             try:
@@ -193,6 +195,8 @@ class Script(BaseScript):
                     ifname = sub.replace(" ", "")
                     if not port_show:
                         ifname = "%s/%s" % (i, ifname)
+                    if "pvid" in match.groupdict() and match.group("pvid"):
+                        if_pvid[ifname] = match.group("pvid")
                     iface = {
                         "name": ifname,
                         "admin_status": admin_status,
@@ -217,12 +221,16 @@ class Script(BaseScript):
                         ifname = "%s/%s" % (i, match.group("sub"))
                     for iface in interfaces:
                         if iface["name"] == ifname:
+                            if match.group("pvid") == "-":
+                                pvid = if_pvid.get(ifname, 1)
+                            else:
+                                pvid = int(match.group("pvid"))
                             iface["subinterfaces"] += [
                                 {
                                     "name": "%s.%s" % (ifname, match.group("pvid")),
                                     "admin_status": iface["admin_status"],
                                     "enabled_afi": ["BRIDGE", "ATM"],
-                                    "vlan_ids": int(match.group("pvid")),
+                                    "vlan_ids": pvid,
                                     "vpi": int(match.group("vpi")),
                                     "vci": int(match.group("vci"))
                                 }
