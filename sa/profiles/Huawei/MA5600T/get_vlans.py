@@ -17,7 +17,8 @@ class Script(BaseScript):
     interface = IGetVlans
     rx_vlan1 = re.compile(
         r"^\s+(?P<vlanid>\d+)\s+(?P<type>\S+)\s+", re.MULTILINE)
-    rx_vlan2 = re.compile(r"^\s+\d+\s+(?P<vlanid>\d+)\s+\d+\s+\d+",
+    rx_vlan2 = re.compile(
+        r"^\s+\d+\s+(?P<vlanid>\d+)\s+\d+\s+\d+",
         re.MULTILINE | re.DOTALL)
     rx_vlan3 = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")
 
@@ -41,6 +42,6 @@ class Script(BaseScript):
                     match = self.rx_vlan3.search(c)
                     if match:
                         r += [{"vlan_id": int(match.group('vlanid'))}]
-            except:
+            except self.CLISyntaxError:
                 pass
         return r
