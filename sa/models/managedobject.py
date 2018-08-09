@@ -632,7 +632,8 @@ class ManagedObject(Model):
             "version" in self.changed_fields or
             "pool" in self.changed_fields or
             "access_preference" in self.changed_fields or
-            "cli_privilege_policy" in self.changed_fields
+            "cli_privilege_policy" in self.changed_fields or
+            "remote_path" in self.changed_fields
         ):
             deleted_cache_keys += ["cred-%s" % self.id]
         # Rebuild paths
