@@ -1144,7 +1144,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             stpNodes = [];
         // Get STP nodes
         Ext.Object.each(me.objectNodes, function(k, v) {
-            if(v.attributes.data.caps.indexOf(me.CAP_STP) !== -1) {
+            if(v.attributes.data.hasOwnProperty("caps") && v.attributes.data.caps.indexOf(me.CAP_STP) !== -1) {
                 stpNodes.push(k);
             }
         });
