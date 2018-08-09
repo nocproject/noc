@@ -113,12 +113,9 @@ Ext.define("NOC.wf.workflow.Application", {
         }
     },
     //
-    newRecord: function(defaults) {
+    newRecord: function() {
         var me = this;
-        if(!me.editorButton.isDisabled()) {
-            me.editorButton.setDisabled(true);
-            me.callParent(defaults);
-        }
+        me.openDiagram(null);
     },
     // Show Form
     onEditRecord: function(record) {
@@ -137,6 +134,8 @@ Ext.define("NOC.wf.workflow.Application", {
     openDiagram: function(record) {
         var me = this;
         me.previewItem(me.WF_EDITOR, record);
-        me.setHistoryHash(record.get("id"));
+        if(record) {
+            me.setHistoryHash(record.get("id"));
+        }
     }
 });

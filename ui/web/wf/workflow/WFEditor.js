@@ -69,9 +69,19 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         Ext.apply(me, {
             tbar: [
                 me.getCloseButton(),
+                // "-",
+                // {
+                //     xtype: "button",
+                //     tooltip: __("Delete Workflow"),
+                //     text: __("Delete"),
+                //     glyph: NOC.glyph.remove,
+                //     scope: me,
+                //     handler: me.onDeleteClick
+                // },
                 "-",
                 {
                     xtype: "button",
+                    tooltip: __("Save Workflow"),
                     text: __("Save"),
                     glyph: NOC.glyph.save,
                     scope: me,
@@ -597,6 +607,24 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             return true;
         }
         return false;
+    },
+    //
+    onDeleteClick: function() {
+        var me = this;
+        Ext.Msg.show({
+            title: __("Delete Workflow?"),
+            msg: __("Do you wish to delete Workflow? This operation cannot be undone!"),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.window.MessageBox.QUESTION,
+            modal: true,
+            fn: function(button) {
+                if(button === "yes") {
+                    // ToDo need backend!
+                    me.app.deleteRecord();
+                    me.onClose();
+                }
+            }
+        });
     },
     //
     onSaveClick: function() {
