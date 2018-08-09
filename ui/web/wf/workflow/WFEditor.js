@@ -69,15 +69,15 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         Ext.apply(me, {
             tbar: [
                 me.getCloseButton(),
-                // "-",
-                // {
-                //     xtype: "button",
-                //     tooltip: __("Delete Workflow"),
-                //     text: __("Delete"),
-                //     glyph: NOC.glyph.remove,
-                //     scope: me,
-                //     handler: me.onDeleteClick
-                // },
+                "-",
+                {
+                    xtype: "button",
+                    tooltip: __("Delete Workflow"),
+                    text: __("Delete"),
+                    glyph: NOC.glyph.remove,
+                    scope: me,
+                    handler: me.onDeleteClick
+                },
                 "-",
                 {
                     xtype: "button",

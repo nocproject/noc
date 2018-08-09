@@ -89,7 +89,7 @@ Ext.define("NOC.wf.workflow.Application", {
         me.getRegisteredItems()[me.WF_EDITOR].on("scriptsLoaded", function() {
             var me = this;
             if(me.openPreview){
-                me.openDiagram(me.record);
+                me.openDiagram(me.currentRecord);
             }
         }, me);
         me.callParent();
@@ -123,11 +123,11 @@ Ext.define("NOC.wf.workflow.Application", {
         // Check permissions
         if(!me.hasPermission("read") && !me.hasPermission("update"))
             return;
+        me.currentRecord = record;
         if(me.getRegisteredItems()[me.WF_EDITOR].getScriptsLoaded()) {
-            me.openDiagram(record);
+            me.openDiagram(me.currentRecord);
         } else {
             me.openPreview = true;
-            me.record = record;
         }
     },
     //

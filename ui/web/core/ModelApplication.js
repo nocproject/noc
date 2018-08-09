@@ -931,15 +931,16 @@ Ext.define("NOC.core.ModelApplication", {
                 NOC.error(message);
                 me.unmask();
             };
-
-        me.mask("Deleting ...");
-        Ext.Ajax.request({
-            url: me.base_url + me.currentRecord.get(me.idField) + "/",
-            method: "DELETE",
-            scope: me,
-            success: onSuccess,
-            failure: onFailure
-        });
+        if(me.currentRecord) {
+            me.mask("Deleting ...");
+            Ext.Ajax.request({
+                url: me.base_url + me.currentRecord.get(me.idField) + "/",
+                method: "DELETE",
+                scope: me,
+                success: onSuccess,
+                failure: onFailure
+            });
+        }
     },
     // Reload store with current query
     reloadStore: function() {
