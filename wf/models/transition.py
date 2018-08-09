@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # State transition
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,9 +13,9 @@ import operator
 import logging
 from exceptions import ImportError
 # Third-party modules
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, LongField,
-                                ListField, BooleanField)
+                                ListField, BooleanField, IntField, EmbeddedDocumentField)
 import cachetools
 # NOC modules
 from .workflow import Workflow
@@ -29,14 +29,23 @@ logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 
+class TransitionVertex(EmbeddedDocument):
+    # vertex coordinates
+    x = IntField(default=0)
+    y = IntField(default=0)
+
+    def __unicode__(self):
+        return "%s, %s" % (self.x, self.y)
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+
 @bi_sync
 class Transition(Document):
     meta = {
         "collection": "transitions",
-        "indexes": [
-            "from_state",
-            "to_state"
-        ],
+        "indexes": ["from_state", "to_state"],
         "strict": False,
         "auto_create_index": False
     }
@@ -58,6 +67,8 @@ class Transition(Document):
     # Handler to be called on starting transitions
     # Any exception aborts transtion
     handlers = ListField(StringField())
+    # Visual vertices
+    vertices = ListField(EmbeddedDocumentField(TransitionVertex))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -103,11 +114,7 @@ class Transition(Document):
                     logger.error("Error import handler: %s" % e)
                     h = None
                 if h:
-                    logger.debug("[%s|%s|%s] Running %s",
-                                 obj, obj.state.name,
-                                 self.label, hn)
+                    logger.debug("[%s|%s|%s] Running %s", obj, obj.state.name, self.label, hn)
                     h(obj)  # @todo: Catch exceptions
                 else:
-                    logger.debug("[%s|%s|%s] Invalid handler %s, skipping",
-                                 obj, obj.state.name,
-                                 self.label, hn)
+                    logger.debug("[%s|%s|%s] Invalid handler %s, skipping", obj, obj.state.name, self.label, hn)

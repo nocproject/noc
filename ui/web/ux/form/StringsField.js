@@ -79,6 +79,9 @@ Ext.define("Ext.ux.form.StringsField", {
             ]
         });
         me.currentSelection = undefined;
+        if(me.value) {
+            me.setValue(me.value);
+        }
         me.callParent();
     },
 
@@ -116,8 +119,9 @@ Ext.define("Ext.ux.form.StringsField", {
         var me = this,
             rowEditing = me.grid.plugins[0];
         rowEditing.cancelEdit();
-        me.grid.store.insert(0, {});
+        me.grid.store.insert(0, {value: ""});
         rowEditing.startEdit(0, 0);
+        me.fireEvent("dirtychange", me);
     },
     //
     onDeleteRecord: function() {
@@ -131,6 +135,7 @@ Ext.define("Ext.ux.form.StringsField", {
         } else {
             me.deleteButton.setDisabled(true);
         }
+        me.fireEvent("dirtychange", me);
     },
     //
     onCellEdit: function(editor, e) {
@@ -139,5 +144,6 @@ Ext.define("Ext.ux.form.StringsField", {
         if(editor.rawValue) {
             e.record.set(e.field + "__label", editor.rawValue);
         }
+        me.fireEvent("dirtychange", me);
     }
 });

@@ -14,16 +14,20 @@
       "version": "2.1.2"
     },
     {
+      "name": "joint.layout.directedgraph",
+      "version": "2.1.2"
+    },
+    {
+      "name": "dagre",
+      "version": "0.7.4"
+    },
+    {
+      "name": "graphlib",
+      "version": "1.0.7"
+    },
+    {
       "name": "jquery",
       "version": "3.1.1"
-    },
-    {
-      "name": "jquery.tablesorter",
-      "version": "1.0.0"
-    },
-    {
-      "name": "jquery.table2csv",
-      "version": "1.0.0"
     },
     {
       "name": "lodash",
