@@ -77,7 +77,7 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
     //
     onSave: function() {
         var me = this,
-            value = me.editField.getValue();
+            value = me.editField.getValue().replace(/<a href/gi, "<a target='_blank' href");
         Ext.Ajax.request({
             url: "/inv/inv/" + me.currentId + "/plugin/comment/",
             method: "POST",
