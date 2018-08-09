@@ -27,6 +27,8 @@ class Profile(BaseProfile):
         (r"Are you sure to log out?", "y\n"),
         (r"\{ <cr>\|configuration<K>\|data<K> \}", "\n"),
         (r"\{ <cr>\|mode<K> \}", "\n"),
+        (r"\{ <cr>\|frameid\/slotid\<S\>\<Length 1\-15\>\|spm\<K\> \}\:", "\n"),
+        (r"\{ spm\<K\>\|\<cr\>\|frameid/slotid\<S\>\<1,15\> \}\:", "\n"),
         (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length 1\-15\> \}", "\n"),
         (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
         (r"\{ groupindex\<K\>\|<cr> \}\:", "\n")

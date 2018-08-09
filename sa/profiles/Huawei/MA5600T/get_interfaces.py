@@ -103,8 +103,12 @@ class Script(BaseScript):
         return index
 
     def get_stp(self):
+        try:
+            v = self.cli("display stp")
+        except self.CLISyntaxError:
+            return []
         r = []
-        for match in self.rx_stp.finditer(self.cli("display stp")):
+        for match in self.rx_stp.finditer(v):
             port = match.group("port").replace(" ", "")
             if port not in r:
                 r += [port]
@@ -205,11 +209,16 @@ class Script(BaseScript):
                     v = self.cli("display pvc 0/%d" % i)
                     rx_adsl = self.rx_pvc
                 elif display_service_port:
-                    v = self.cli("display service-port board 0/%d" % i)
-                    rx_adsl = self.rx_sp
+                    try:
+                        v = self.cli("display service-port board 0/%d" % i)
+                        rx_adsl = self.rx_sp
+                    except self.CLISyntaxError:
+                        display_service_port = False
+                        v = ""
+                        rx_adsl = self.rx_pvc
                 else:
                     v = ""
-                    rx_adsl = ""
+                    rx_adsl = self.rx_pvc
                 for match in rx_adsl.finditer(v):
                     port = int(match.group("port"))
                     ifname = "0/%d/%d" % (i, port)
@@ -248,7 +257,7 @@ class Script(BaseScript):
                                 iface["oper_status"] = o["oper_state"]
                                 break
                         interfaces += [iface]
-        v = self.cli("display interface\n")
+        v = self.cli("display interface")
         rx = self.find_re([self.rx_if1, self.rx_if2], v)
         for match in rx.finditer(v):
             ifname = "%s%s" % (match.group("ifname"), match.group("ifnum"))
@@ -297,7 +306,7 @@ class Script(BaseScript):
         if not vlans_found:
             for vlan in self.scripts.get_vlans():
                 for match in self.rx_vlan2.finditer(
-                    self.cli("display vlan %s\n" % vlan["vlan_id"])
+                    self.cli("display vlan %s" % vlan["vlan_id"])
                 ):
                     ifname = match.group("ifname").replace(" ", "")
                     for i in interfaces:

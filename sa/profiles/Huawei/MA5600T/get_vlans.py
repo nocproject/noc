@@ -24,7 +24,7 @@ class Script(BaseScript):
     def execute(self):
         r = []
         try:
-            c = self.cli("display vlan all\n")
+            c = self.cli("display vlan all")
             for match in self.rx_vlan1.finditer(c):
                 if int(match.group('vlanid')) == 1:
                     continue
