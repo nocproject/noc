@@ -77,7 +77,7 @@ class Script(GetMetricsScript):
                     value=bool(result["success"]),
                     multi=True
                 )
-                if result["success"] and check_rtt == 998:
+                if result["success"] and check_rtt != 998:
                     self.set_metric(
                         id=check_rtt,
                         metric="Check | RTT",
