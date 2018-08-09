@@ -29,9 +29,9 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL
     )
     CAPS = {
-        "": 0, "O": 1, "Repeater": 2,
+        "": 0, "Other": 1, "Repeater": 2,
         "Bridge": 4, "W": 8, "Router": 16,
-        "T": 32, "D": 64, "H": 128
+        "Telephone": 32, "D": 64, "H": 128
     }
 
     def execute_cli(self):
