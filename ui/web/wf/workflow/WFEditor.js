@@ -619,7 +619,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             modal: true,
             fn: function(button) {
                 if(button === "yes") {
-                    // ToDo need backend!
                     me.app.deleteRecord();
                     me.onClose();
                 }
