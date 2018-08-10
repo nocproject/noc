@@ -25,8 +25,12 @@ class CPEStatusCheck(DiscoveryCheck):
     UNKNOWN_STATUS = "unknown"
 
     def handler(self):
+        if self.is_box:
+            policy = self.object.profile.box_discovery_cpestatus_policy
+        else:
+            policy = self.object.profile.periodic_discovery_cpestatus_policy
         # Collect CPE statuses
-        if self.object.profile.periodic_discovery_cpestatus_policy == "S":
+        if policy == "S":
             # @todo if script is not supported
             current = self.get_current_statuses()
         else:

@@ -235,6 +235,16 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable CPE status
     enable_box_discovery_cpestatus = models.BooleanField(default=False)
+    # Enable Box CPE status policy
+    box_discovery_cpestatus_policy = models.CharField(
+        _("CPE Status Policy"),
+        max_length=1,
+        choices=[
+            ("S", "Status Only"),
+            ("F", "Full")
+        ],
+        default="S"
+    )
     # Enable periodic discovery.
     # Periodic discovery launched repeatedly
     enable_periodic_discovery = models.BooleanField(default=True)

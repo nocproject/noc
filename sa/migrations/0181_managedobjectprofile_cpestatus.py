@@ -21,6 +21,19 @@ class Migration(object):
         )
         db.add_column(
             "sa_managedobjectprofile",
+            "box_discovery_cpestatus_policy",
+            models.CharField(
+                "CPE discovery mode (full or status only)",
+                max_length=1,
+                choices=[
+                    ("S", "Status Only"),
+                    ("F", "Full")
+                ],
+                default="S"
+            )
+        )
+        db.add_column(
+            "sa_managedobjectprofile",
             "enable_periodic_discovery_cpestatus",
             models.BooleanField(default=False)
         )
