@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "DLink.DxS_Industrial_CLI.get_arp"
     interface = IGetARP
 
-    def execute_cli(self, interface=None):
+    def execute(self, interface=None):
         cmd = "show arp"
         if interface is not None:
             cmd += " interface %s" % interface
