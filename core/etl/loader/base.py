@@ -20,6 +20,8 @@ import itertools
 # Third party modules
 import six
 # NOC modules
+# from noc.lib.nosql import MultipleObjectsReturned
+# from django.core.exceptions import MultipleObjectsReturned as MultipleObjectsReturnedD
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
@@ -103,6 +105,7 @@ class BaseLoader(object):
                               for n in
                               self.fields)  # field name -> clean function
         self.pending_deletes = []  # (id, string)
+        self.reffered_errors = []  # (id, string)
         if self.is_document:
             import mongoengine.errors
             unique_fields = [
@@ -305,13 +308,21 @@ class BaseLoader(object):
         :param v:
         :return:
         """
-        rs = v.get("remote_system")
-        rid = v.get("remote_id")
-        if not rs or not rid:
+        if not v.get("remote_system") or not v.get("remote_id"):
             self.logger.warning("RS or RID not found")
             return None
+        find_query = {"remote_system": v.get("remote_system"),
+                      "remote_id": v.get("remote_id")}
         try:
-            return self.model.objects.get(remote_system=rs, remote_id=rid)
+            return self.model.objects.get(**find_query)
+        except self.model.MultipleObjectsReturned:
+            if self.unique_field:
+                find_query[self.unique_field] = v.get(self.unique_field)
+                r = self.model.objects.filter(**find_query)
+                if not r:
+                    r = self.model.objects.filter(**find_query)
+                return list(r)[-1]
+            raise self.model.MultipleObjectsReturned
         except self.model.DoesNotExist:
             return None
 
@@ -447,6 +458,9 @@ class BaseLoader(object):
             try:
                 obj = self.model.objects.get(pk=self.mappings[r_id])
                 obj.delete()
+            except ValueError as e:  # Reffered Error
+                self.logger.error("%s", str(e))
+                self.reffered_errors += [(r_id, msg)]
             except self.model.DoesNotExist:
                 pass  # Already deleted
         self.pending_deletes = []
@@ -460,6 +474,9 @@ class BaseLoader(object):
         self.logger.info(
             "Summary: %d new, %d changed, %d removed",
             self.c_add, self.c_change, self.c_delete
+        )
+        self.logger.info(
+            "Error delete by reffered: %s", "\n".join(self.reffered_errors)
         )
         t = time.localtime()
         archive_path = os.path.join(
