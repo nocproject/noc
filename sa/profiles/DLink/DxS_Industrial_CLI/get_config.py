@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "DLink.DxS_Industrial_CLI.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self):
         config = self.cli("show running-config")
         if "System locked by other session" in config:
             raise CLIOperationError("System locked by other session!")

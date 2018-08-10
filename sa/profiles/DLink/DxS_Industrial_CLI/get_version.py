@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"^\s+Runtime:(?P<version>\S+)\s*\n",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         c = self.cli("show version", cached=True)
         match = self.rx_ver.search(c)
         return {

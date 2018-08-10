@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^System MAC Address: (?P<mac>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show version", cached=True)
         match = self.rx_mac.search(v)
         return {
