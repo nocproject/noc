@@ -385,6 +385,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "periodic_discovery_cpestatus_policy",
+            type: "string",
+            defaultValue: "S"
+        },
+        {
             name: "periodic_discovery_alarm_policy",
             type: "string"
         },

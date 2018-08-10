@@ -250,6 +250,16 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_metrics = models.BooleanField(default=False)
     # Enable CPE status
     enable_periodic_discovery_cpestatus = models.BooleanField(default=False)
+    # CPE status discovery settings
+    periodic_discovery_cpestatus_policy = models.CharField(
+        _("CPE Status Policy"),
+        max_length=1,
+        choices=[
+            ("S", "Status Only"),
+            ("F", "Full")
+        ],
+        default="S"
+    )
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
     #

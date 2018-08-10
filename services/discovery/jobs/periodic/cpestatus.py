@@ -26,7 +26,11 @@ class CPEStatusCheck(DiscoveryCheck):
 
     def handler(self):
         # Collect CPE statuses
-        current = self.get_current_statuses()
+        if self.object.profile.periodic_discovery_cpestatus_policy == "S":
+            # @todo if script is not supported
+            current = self.get_current_statuses()
+        else:
+            current = self.get_current_cpe()
         # Collect last statuses
         last = self.get_last_statuses(current)
         # Apply changes
@@ -41,6 +45,13 @@ class CPEStatusCheck(DiscoveryCheck):
             ", ".join("'%s'" % c for c in self.possible_capabilities)
         )
         return False
+
+    def get_current_cpe(self):
+        """
+        Get full CPE attributes from equipment
+        :return: dict of global_id -> status
+        """
+        return dict((x["global_id"], x) for x in self.object.scripts.get_cpe())
 
     def get_current_statuses(self):
         """

@@ -24,6 +24,19 @@ class Migration(object):
             "enable_periodic_discovery_cpestatus",
             models.BooleanField(default=False)
         )
+        db.add_column(
+            "sa_managedobjectprofile",
+            "periodic_discovery_cpestatus_policy",
+            models.CharField(
+                "CPE discovery mode (full or status only)",
+                max_length=1,
+                choices=[
+                    ("S", "Status Only"),
+                    ("F", "Full")
+                ],
+                default="S"
+            )
+        )
 
     def backwards(self):
         pass
