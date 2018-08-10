@@ -43,6 +43,8 @@ class Script(BaseScript):
                 continue
             for bun in out["Local"]["table"]:
                 # print("Bundle %s" % bun)
+                if len(bun["ActorPortName"]) == 0:
+                    continue
                 partner = [o for o in out["Partner"]["table"] if o["ActorPortName"][0] == bun["ActorPortName"][0]]
                 if not partner:
                     continue
