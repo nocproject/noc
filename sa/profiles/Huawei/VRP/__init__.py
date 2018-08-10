@@ -449,7 +449,7 @@ class Profile(BaseProfile):
                     v = line[left:right].strip()
                     field[ph[num]] = [v] if v else []
                     i = num
-                if not field[ph[min(ph)]]:
+                if not field[ph[min(ph)]] and r[part_name]["table"]:
                     self.update_dict(r[part_name]["table"][-1], field)
                 else:
                     r[part_name]["table"] += [field]
