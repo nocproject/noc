@@ -308,19 +308,21 @@ class BaseLoader(object):
         :param v:
         :return:
         """
-        rs = v.get("remote_system")
-        rid = v.get("remote_id")
-        name = v.get("name")
-        if not rs or not rid:
+        if not v.get("remote_system") or not v.get("remote_id"):
             self.logger.warning("RS or RID not found")
             return None
+        find_query = {"remote_system": v.get("remote_system"),
+                      "remote_id": v.get("remote_id")}
         try:
-            return self.model.objects.get(remote_system=rs, remote_id=rid)
+            return self.model.objects.get(**find_query)
         except self.model.MultipleObjectsReturned:
-            r = self.model.objects.filter(remote_system=rs, remote_id=rid, name=name)
-            if not r:
-                r = self.model.objects.filter(remote_system=rs, remote_id=rid)
-            return list(r)[-1]
+            if self.unique_field:
+                find_query[self.unique_field] = v.get(self.unique_field)
+                r = self.model.objects.filter(**find_query)
+                if not r:
+                    r = self.model.objects.filter(**find_query)
+                return list(r)[-1]
+            raise self.model.MultipleObjectsReturned
         except self.model.DoesNotExist:
             return None
 
