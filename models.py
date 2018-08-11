@@ -171,6 +171,7 @@ _MODELS = {
     "inv.Platform": "noc.inv.models.platform.Platform",
     "inv.SubInterface": "noc.inv.models.subinterface.SubInterface",
     "inv.Technology": "noc.inv.models.technology.Technology",
+    "inv.ResourceGroup": "noc.inv.models.resourcegroup.ResourceGroup",
     "inv.UnknownModel": "noc.inv.models.unknownmodel.UnknownModel",
     "inv.Vendor": "noc.inv.models.vendor.Vendor",
     # sa models
