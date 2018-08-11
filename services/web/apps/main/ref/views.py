@@ -25,6 +25,7 @@ from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
 from noc.core.window import wf_choices
+from noc.models import iter_model_id
 
 
 class RefAppplication(ExtApplication):
@@ -212,6 +213,9 @@ class RefAppplication(ExtApplication):
             } for r_id, r in site.iter_predefined_reports()),
             key=operator.itemgetter("label")
         )
+
+    def build_modelid(self):
+        return [{"id": x, "label": x} for x in sorted(iter_model_id())]
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
