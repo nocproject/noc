@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.technology application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.technology.Application");
@@ -9,7 +9,8 @@ console.debug("Defining NOC.inv.technology.Application");
 Ext.define("NOC.inv.technology.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.inv.technology.Model"
+        "NOC.inv.technology.Model",
+        "NOC.main.ref.modelid.LookupField"
     ],
     model: "NOC.inv.technology.Model",
     search: true,
@@ -32,9 +33,32 @@ Ext.define("NOC.inv.technology.Application", {
                     width: 150
                 },
                 {
-                    text: __("Description"),
-                    dataIndex: "description",
-                    flex: 1
+                    text: __("Service Model"),
+                    dataIndex: "service_model",
+                    width: 150
+                },
+                {
+                    text: __("Client Model"),
+                    dataIndex: "client_model",
+                    width: 150
+                },
+                {
+                    text: __("Single Service"),
+                    dataIndex: "single_service",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Single Client"),
+                    dataIndex: "single_client",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Allow Children"),
+                    dataIndex: "allow_children",
+                    width: 50,
+                    renderer: NOC.render.Bool
                 }
             ],
             fields: [
@@ -42,7 +66,8 @@ Ext.define("NOC.inv.technology.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "uuid",
@@ -55,6 +80,33 @@ Ext.define("NOC.inv.technology.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    name: "service_model",
+                    xtype: "main.ref.modelid.LookupField",
+                    fieldLabel: __("Service Model"),
+                    allowBlank: true
+                },
+                {
+                    name: "client_model",
+                    xtype: "main.ref.modelid.LookupField",
+                    fieldLabel: __("Client Model"),
+                    allowBlank: true
+                },
+                {
+                    name: "single_service",
+                    xtype: "checkbox",
+                    boxLabel: __("Single Service")
+                },
+                {
+                    name: "single_client",
+                    xtype: "checkbox",
+                    boxLabel: __("Single Client")
+                },
+                {
+                    name: "allow_children",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Children")
                 }
             ],
             formToolbar: [
