@@ -48,7 +48,7 @@ class Migration(object):
                 "UPDATE sa_managedobject "
                 "SET "
                 "  static_client_groups = array_cat(static_client_groups, ARRAY[%s]::CHAR(24)[]), "
-                "  effective_client_groups = array_cat(effective_client_groups, ARRAY[%s]::CHAR(24)[]) "                
+                "  effective_client_groups = array_cat(effective_client_groups, ARRAY[%s]::CHAR(24)[]) "
                 "WHERE termination_group_id = %s",
                 [rg_map[tg_id], rg_map[tg_id], tg_id]
             )
@@ -58,7 +58,7 @@ class Migration(object):
                 "UPDATE sa_managedobject "
                 "SET "
                 "  static_service_groups = array_cat(static_service_groups, ARRAY[%s]::CHAR(24)[]), "
-                "  effective_service_groups = array_cat(effective_service_groups, ARRAY[%s]::CHAR(24)[]) "                
+                "  effective_service_groups = array_cat(effective_service_groups, ARRAY[%s]::CHAR(24)[]) "
                 "WHERE service_terminator_id = %s",
                 [rg_map[tg_id], rg_map[tg_id], tg_id]
             )
