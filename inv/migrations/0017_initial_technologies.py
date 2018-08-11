@@ -20,8 +20,8 @@ class Migration(object):
         bulk = [
             UpdateOne({
                 "_id": bson.ObjectId("5b6d6819d706360001a0b716"),
-            }, {"$set":
-                {
+            }, {
+                "$set": {
                     "name": "Group",
                     "uuid": UUID("8874518c-effd-41fe-81bf-d67f1519ccf2"),
                     "description": "Grouping element",
