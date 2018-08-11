@@ -31,7 +31,10 @@ id_lock = threading.Lock()
     ("sa.ManagedObject", "static_service_groups"),
     ("sa.ManagedObject", "effective_service_groups"),
     ("sa.ManagedObject", "static_client_groups"),
-    ("sa.ManagedObject", "effective_client_groups")
+    ("sa.ManagedObject", "effective_client_groups"),
+    # sa.ManagedObjectSelector
+    ("sa.ManagedObjectSelector", "filter_service_group"),
+    ("sa.ManagedObjectSelector", "filter_client_group"),
 ])
 class ResourceGroup(Document):
     """

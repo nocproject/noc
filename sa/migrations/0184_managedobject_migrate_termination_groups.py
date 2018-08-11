@@ -30,8 +30,6 @@ class Migration(object):
                 "WHERE service_terminator_id IS NOT NULL"
             )
         ]
-        if not tg_ids and not st_ids:
-            return  # Nothing to migrate
         mdb = get_db()
         rg_map = dict(
             (x["_legacy_id"], str(x["_id"]))
