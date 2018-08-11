@@ -395,5 +395,31 @@ class CachedForeignKey(models.ForeignKey):
                 CachedForeignKeyDescriptor(self))
 
 
+class ObjectIDArrayField(models.Field):
+    """
+    ObjectIDArrayField maps to PostgreSQL CHAR[] type
+    """
+    __metaclass__ = models.SubfieldBase
+
+    def db_type(self, connection):
+        return "CHAR(24)[]"
+
+    def to_python(self, value):
+        if isinstance(value, list):
+            return value
+        elif value == "{}":
+            return []
+        elif value is None:
+            return None
+        return value[1:-1].split(",")
+
+    def get_db_prep_value(self, value, connection, prepared=False):
+        if value is None:
+            return None
+        if isinstance(value, six.string_types):
+            value = [value]
+        return "{ %s }" % ", ".join(value)
+
+
 add_introspection_rules([], ["^noc\.core\.model\.fields\."])
 from django.contrib.admin.widgets import AdminTextInputWidget

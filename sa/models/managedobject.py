@@ -31,7 +31,6 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 from .objectmap import ObjectMap
 from .objectdata import ObjectData
-from .terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
@@ -42,7 +41,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
-from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
+from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey, ObjectIDArrayField
 from noc.lib.db import SQL
 from noc.lib.app.site import site
 from noc.core.stencil import stencil_registry
@@ -66,8 +65,8 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.datastream.decorator import datastream
 
-# Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 8
+# Increase whenever new field added or removed
+MANAGEDOBJECT_CACHE_VERSION = 9
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -255,19 +254,6 @@ class ManagedObject(Model):
         "Last Seen",
         blank=True, null=True
     )
-    # For service terminators
-    # Name of service termination group (i.e. BRAS, SBC)
-    termination_group = ForeignKey(
-        TerminationGroup, verbose_name="Termination Group",
-        blank=True, null=True,
-        related_name="termination_set"
-    )
-    # For access switches -- L3 terminator
-    service_terminator = ForeignKey(
-        TerminationGroup, verbose_name="Service termination",
-        blank=True, null=True,
-        related_name="access_set"
-    )
     # Stencils
     shape = CharField(
         "Shape", blank=True, null=True,
@@ -440,6 +426,11 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Resource groups
+    static_service_groups = ObjectIDArrayField(db_index=True, default=[])
+    effective_service_groups = ObjectIDArrayField(db_index=True, default=[])
+    static_client_groups = ObjectIDArrayField(db_index=True, default=[])
+    effective_client_groups = ObjectIDArrayField(db_index=True, default=[])
     #
     tags = TagsField("Tags", null=True, blank=True)
 
