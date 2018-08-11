@@ -19,6 +19,7 @@ class Migration(object):
     depends_on = [
         ("inv", "0017_initial_technologies")
     ]
+
     def forwards(self):
         # Get existing termination groups
         tg_data = db.execute(
