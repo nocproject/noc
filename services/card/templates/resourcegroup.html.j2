@@ -1,0 +1,59 @@
+<table class="table table-condensed table-hover">
+<tbody>
+</tbody>
+<tr>
+    <th colspan="2">
+        {{ object.name }}
+    </th>
+</tr>
+{% if object.parent %}
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Parent") }}
+    </th>
+    <td>
+        <a href="/api/card/view/resourcegroup/{{ object.parent.id }}/">{{ object.parent.name }}</a>
+    </td>
+</tr>
+{% endif %}
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Technology") }}
+    </th>
+    <td>
+        <a href="/api/card/view/technology/{{ technology.id }}/">{{ technology.name }}</a>
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Description") }}
+    </th>
+    <td>
+        {% if object.description %} {{ object.description }} {% endif %}
+    </td>
+</tr>
+{% if allow_services %}
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Provide Resources") }}
+    </th>
+    <td>
+        {% for g in services %}
+        <a href="/api/card/view/{{ g["card"] }}/{{ g["id"] }}/">{{ g["label"] }}</a><br>
+        {% endfor %}
+    </td>
+</tr>
+{% endif %}
+{% if allow_clients %}
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Consume Resources") }}
+    </th>
+    <td>
+        {% for g in clients %}
+        <a href="/api/card/view/{{ g["card"] }}/{{ g["id"] }}/">{{ g["label"] }}</a><br>
+        {% endfor %}
+    </td>
+</tr>
+{% endif %}
+</table>
