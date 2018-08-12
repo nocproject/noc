@@ -24,7 +24,13 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
         });
 
         me.editField = Ext.create("Ext.form.field.HtmlEditor", {
-            hidden: true
+            hidden: true,
+            createLink: function() {
+                var url = prompt(this.createLinkText, this.defaultLinkValue);
+                if(url && url !== 'http:/' + '/') {
+                    this.relayCmd('insertHTML', "<a href='" + url + "' target='_blank'>" + url + "</a>");
+                }
+            }
         });
 
         me.editButton = Ext.create("Ext.button.Button", {
@@ -77,7 +83,7 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
     //
     onSave: function() {
         var me = this,
-            value = me.editField.getValue().replace(/<a href/gi, "<a target='_blank' href");
+            value = me.editField.getValue();
         Ext.Ajax.request({
             url: "/inv/inv/" + me.currentId + "/plugin/comment/",
             method: "POST",
