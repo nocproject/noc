@@ -31,7 +31,7 @@ class Script(BaseScript):
             # Some ASR100X do not have this command
             # raise self.NotSupportedError
             return []
-        for i in parse_table(s, allow_wrap=True, max_width=80):
+        for i in parse_table(s, allow_wrap=True, max_width=120):
             iface = {
                 "interface": self.extract_iface(i[1]),
                 "members": []
