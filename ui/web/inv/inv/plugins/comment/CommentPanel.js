@@ -25,9 +25,10 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
 
         me.editField = Ext.create("Ext.form.field.HtmlEditor", {
             hidden: true,
+            defaultLinkValue: "https://",
             createLink: function() {
                 var url = prompt(this.createLinkText, this.defaultLinkValue);
-                if(url && url !== 'http:/' + '/') {
+                if(url && url !== this.defaultLinkValue) {
                     this.relayCmd('insertHTML', "<a href='" + url + "' target='_blank'>" + url + "</a>");
                 }
             }
