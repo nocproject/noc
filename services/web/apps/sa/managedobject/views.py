@@ -98,14 +98,75 @@ class ManagedObjectApplication(ExtModelApplication):
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
-    def field_interface_count(self, o):
-        return Interface.objects.filter(
-            managed_object=o.id,
-            type="physical"
-        ).count()
+    def bulk_field_interface_count(self, data):
+        """
+        Apply interface_count fields
+        :param data:
+        :return:
+        """
+        mo_ids = [x["id"] for x in data]
+        if not mo_ids:
+            return data
+        # Collect interface counts
+        r = Interface._get_collection().aggregate([
+            {
+                "$match": {
+                    "managed_object": {
+                        "$in": mo_ids
+                    },
+                    "type": "physical"
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$managed_object",
+                    "total": {
+                        "$sum": 1
+                    }
+                }
+            }
+        ])
+        ifcount = dict((x["_id"], x["total"]) for x in r)
+        # Apply interface counts
+        for x in data:
+            x["interface_count"] = ifcount.get(x["id"]) or 0
+        return data
 
-    def field_link_count(self, o):
-        return Link.object_links_count(o)
+    def bulk_field_link_count(self, data):
+        """
+        Apply link_count fields
+        :param data:
+        :return:
+        """
+        mo_ids = [x["id"] for x in data]
+        if not mo_ids:
+            return data
+        # Collect interface counts
+        r = Link._get_collection().aggregate([
+            {
+                "$match": {
+                    "linked_objects": {
+                        "$in": mo_ids
+                    }
+                }
+            },
+            {
+                "$unwind": "$linked_objects"
+            },
+            {
+                "$group": {
+                    "_id": "$linked_objects",
+                    "total": {
+                        "$sum": 1
+                    }
+                }
+            }
+        ])
+        links_count = dict((x["_id"], x["total"]) for x in r)
+        # Apply interface counts
+        for x in data:
+            x["link_count"] = links_count.get(x["id"]) or 0
+        return data
 
     def cleaned_query(self, q):
         if "administrative_domain" in q:
