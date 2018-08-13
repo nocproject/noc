@@ -19,3 +19,5 @@ class ResourceGroupApplication(ExtDocApplication):
     title = "ResourceGroup"
     menu = [_("Setup"), _("Resource Groups")]
     model = ResourceGroup
+    query_fields = ["name"]
+    query_condition = "icontains"
