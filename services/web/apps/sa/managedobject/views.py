@@ -191,7 +191,6 @@ class ManagedObjectApplication(ExtModelApplication):
         return data
 
     def clean(self, data):
-        print ">>>>", data
         # Clean resource groups
         for fn in self.resource_group_fields:
             if fn.startswith("effective_") and fn in data:
