@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class Script(BaseScript):
             # Some ASR100X do not have this command
             # raise self.NotSupportedError
             return []
-        for i in parse_table(s, allow_wrap=True):
+        for i in parse_table(s, allow_wrap=True, max_width=80):
             iface = {
                 "interface": self.extract_iface(i[1]),
                 "members": []
