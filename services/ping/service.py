@@ -183,7 +183,7 @@ class PingService(Service):
         """
         address = ps.address
         t0 = time.time()
-        if address not in self.probes:
+        if ps.id not in self.probes:
             return
         self.perf_metrics["ping_check_total"] += 1
         if ps.time_cond:
