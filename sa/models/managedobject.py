@@ -64,6 +64,7 @@ from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.datastream.decorator import datastream
+from noc.core.resourcegroup.decorator import resourcegroup
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 9
@@ -82,6 +83,7 @@ logger = logging.getLogger(__name__)
 @on_save
 @on_delete
 @datastream
+@resourcegroup
 @on_delete_check(check=[
     # ("cm.ValidationRule.ObjectItem", ""),
     ("fm.ActiveAlarm", "managed_object"),
@@ -427,10 +429,10 @@ class ManagedObject(Model):
         default="P"
     )
     # Resource groups
-    static_service_groups = ObjectIDArrayField(db_index=True, default=[])
-    effective_service_groups = ObjectIDArrayField(db_index=True, default=[])
-    static_client_groups = ObjectIDArrayField(db_index=True, default=[])
-    effective_client_groups = ObjectIDArrayField(db_index=True, default=[])
+    static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    static_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    effective_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
