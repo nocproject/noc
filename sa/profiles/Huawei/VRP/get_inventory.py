@@ -36,6 +36,10 @@ class Script(BaseScript):
         r"\[(?:Main_Board|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
+    rx_mainboard_ne = re.compile(
+        r"\[Board\sProperties\](?P<body>.*?)\n\n",
+        re.DOTALL | re.MULTILINE | re.VERBOSE
+    )
     rx_subitem = re.compile(
         r"\[(?P<type>Port|Daughter_Board)_(?P<number>.*?)\]"
         r"(?P<body>.*?)"
@@ -132,19 +136,33 @@ class Script(BaseScript):
             v_cli = "display elabel unit %s %s"
         elif self.match_version(platform__regex="^(S93..|AR[12].+)$"):
             v_cli = "display elabel %s %s"
-        try:
-            v = self.cli(v_cli % (slot_num, subcard_num))
-        except self.CLISyntaxError:
-            return []
+        if self.is_ne_platform:
+            try:
+                v = self.cli("display elabel %s" % slot_num)
+            except self.CLISyntaxError:
+                return []
+        else:
+            try:
+                v = self.cli(v_cli % (slot_num, subcard_num))
+            except self.CLISyntaxError:
+                return []
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
 
-        if i_type == "CHASSIS":
-            f = self.rx_mainboard.search(v)
-            r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+        if self.is_ne_platform:
+            if i_type == "CHASSIS":
+                v = self.cli("display elabel backplane")
+                f = self.rx_mainboard_ne.search(v)
+                r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+            else:
+                r.append(self.parse_item_content(v, slot_num, i_type))
         else:
-            r.append(self.parse_item_content(v, subcard_num, i_type))
+            if i_type == "CHASSIS":
+                f = self.rx_mainboard.search(v)
+                r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+            else:
+                r.append(self.parse_item_content(v, subcard_num, i_type))
 
         for f in self.rx_port.finditer(v):
             # port block, search XCVR
@@ -182,6 +200,8 @@ class Script(BaseScript):
             # Detect slot number
             if "Slot" in i:
                 i_slot = i["Slot"]
+            elif "Slot#" in i:
+                i_slot = i["Slot#"]
             elif "Unit#" in i:
                 i_slot = i["Unit#"]
             elif "SlotNo." in i:
