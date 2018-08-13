@@ -80,7 +80,7 @@ class BaseReportColumn(object):
             for v in merge(self.extract()):
                 yield v
         elif self.multiple_series and not self.builtin_sorted:
-            raise NotImplementedError("Multiple series supported onl with builtin sorted")
+            raise NotImplementedError("Multiple series supported only with builtin sorted")
         elif not self.builtin_sorted:
             # Unsupported builtin sorted.
             for v in sorted(self.extract()):
