@@ -849,6 +849,15 @@ Ext.define("NOC.core.ModelApplication", {
             r = {},
             field,
             data;
+        if(record.get("name")) {
+            var toolBar = me.up().up().getRefItems()[0];
+            Ext.each(toolBar.getRefItems(), function(item) {
+                if(item.active === true) {
+                    item.setTooltip(record.get("name"));
+                    return false;
+                }
+            });
+        }
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
@@ -1138,11 +1147,18 @@ Ext.define("NOC.core.ModelApplication", {
     // "close" button pressed
     onClose: function() {
         var me = this,
-            toReload = me.idField in me.currentQuery;
+            toReload = me.idField in me.currentQuery,
+            toolBar = me.up().up().getRefItems()[0];
         if(toReload) {
             // Remove filter set by loadById
             delete me.currentQuery[me.idField];
         }
+        Ext.each(toolBar.getRefItems(), function(item) {
+            if(item.active === true) {
+                item.setTooltip(undefined);
+                return false;
+            }
+        });
         // Apply updated filter
         me.store.setFilterParams(me.currentQuery);
         me.showGrid();
