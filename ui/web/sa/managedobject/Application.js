@@ -1200,6 +1200,18 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "inv.networksegment"
         },
         {
+            title: __("By Service Group"),
+            name: "effective_service_groups",
+            ftype: "lookup",
+            lookup: "inv.resourcegroup"
+        },
+        {
+            title: __("By Client Group"),
+            name: "effective_client_groups",
+            ftype: "lookup",
+            lookup: "inv.resourcegroup"
+        },
+        {
             title: __("By Selector"),
             name: "selector",
             ftype: "lookup",
