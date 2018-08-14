@@ -29,27 +29,26 @@ class CfgPingDataStream(DataStream):
             raise KeyError()
         (mo_id, name, bi_id, pool, address, time_pattern, enable_ping, ping_interval,
          ping_policy, ping_size, ping_count, ping_timeout_ms, report_ping_rtt, report_ping_attempts) = mo[0]
-        if address and enable_ping and ping_interval and ping_interval > 0:
-            r = {
-                "id": str(mo_id),
-                "pool": str(Pool.get_by_id(pool).name),
-                "address": str(address),
-                "interval": ping_interval,
-                "policy": ping_policy,
-                "size": ping_size,
-                "count": ping_count,
-                "timeout": ping_timeout_ms,
-                "report_rtt": report_ping_rtt,
-                "report_attempts": report_ping_attempts,
-                "status": None,
-                "name": name,
-                "bi_id": bi_id
-            }
-            if time_pattern:
-                r["time_expr"] = TimePattern.get_code(time_pattern)
-            return r
-        else:
+        if not address or not enable_ping or not ping_interval or ping_interval < 0:
             raise KeyError()
+        r = {
+            "id": str(mo_id),
+            "pool": str(Pool.get_by_id(pool).name),
+            "address": str(address),
+            "interval": ping_interval,
+            "policy": ping_policy,
+            "size": ping_size,
+            "count": ping_count,
+            "timeout": ping_timeout_ms,
+            "report_rtt": report_ping_rtt,
+            "report_attempts": report_ping_attempts,
+            "status": None,
+            "name": name,
+            "bi_id": bi_id
+        }
+        if time_pattern:
+            r["time_expr"] = TimePattern.get_code(time_pattern)
+        return r
 
     @classmethod
     def get_meta(cls, data):
