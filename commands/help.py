@@ -13,6 +13,7 @@ import subprocess
 import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
+from noc.core.handler import get_handler
 from noc.config import config
 
 
@@ -34,12 +35,22 @@ class Command(BaseCommand):
         commands = set()
         for root in config.get_customized_paths("commands"):
             for f in os.listdir(root):
+                help = ""
                 if f.startswith("_") or f.startswith("."):
                     continue
-                if f.endswith(".py") or f.endswith(".sh"):
-                    commands.add(f[:-3])
+                elif f.endswith(".py"):
+                    if root == "commands":
+                        h = get_handler("noc.commands.%s" % f[:-3])
+                    else:
+                        h = get_handler("noc.custom.commands.%s" % f[:-3])
+                    ha = getattr(h, "Command", "")
+                    if ha:
+                        help = ha.help
+                    commands.add((f[:-3], help))
+                elif f.endswith(".sh"):
+                    commands.add((f[:-3], help))
         for cmd in sorted(commands):
-            self.print(cmd)
+            self.print("%-20s %s" % cmd)
         return 0
 
     def help_command(self, cmd):

@@ -22,6 +22,7 @@ class CommandError(Exception):
 
 class BaseCommand(object):
     LOG_FORMAT = config.log_format
+    help = ""  # Help text (shows ./noc help)
 
     def __init__(self, stdout=sys.stdout, stderr=sys.stderr):
         self.verbose_level = 0
