@@ -79,7 +79,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 columnWidth: 0.5
             };
 
-        me.configPreviewButton = Ext.create("Ext.button.Button", {
+        me.configPreviewButton = Ext.create("Ext.menu.Item", {
             text: __("Config"),
             glyph: NOC.glyph.file,
             textAlign: "left",
@@ -87,7 +87,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onConfig
         });
 
-        me.cardButton = Ext.create("Ext.button.Button", {
+        me.cardButton = Ext.create("Ext.menu.Item", {
             text: __("Card"),
             glyph: NOC.glyph.eye,
             textAlign: "left",
@@ -95,7 +95,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onCard
         });
 
-        me.dashboardButton = Ext.create("Ext.button.Button", {
+        me.dashboardButton = Ext.create("Ext.menu.Item", {
             text: __("Dashboard"),
             glyph: NOC.glyph.line_chart,
             textAlign: "left",
@@ -104,7 +104,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onDashboard
         });
 
-        me.showMapButton = Ext.create("Ext.button.Button", {
+        me.showMapButton = Ext.create("Ext.menu.Item", {
             text: __("Show Map"),
             glyph: NOC.glyph.globe,
             textAlign: "left",
@@ -112,7 +112,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onShowMap
         });
 
-        me.consoleButton = Ext.create("Ext.button.Button", {
+        me.consoleButton = Ext.create("Ext.menu.Item", {
             text: __("Console"),
             glyph: NOC.glyph.terminal,
             textAlign: "left",
@@ -120,7 +120,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onConsole
         });
 
-        me.scriptsButton = Ext.create("Ext.button.Button", {
+        me.scriptsButton = Ext.create("Ext.menu.Item", {
             text: __("Scripts"),
             glyph: NOC.glyph.play,
             textAlign: "left",
@@ -129,7 +129,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onScripts
         });
 
-        me.interfacesButton = Ext.create("Ext.button.Button", {
+        me.interfacesButton = Ext.create("Ext.menu.Item", {
             text: __("Interfaces"),
             glyph: NOC.glyph.reorder,
             textAlign: "left",
@@ -137,7 +137,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInterfaces
         });
 
-        me.linksButton = Ext.create("Ext.button.Button", {
+        me.linksButton = Ext.create("Ext.menu.Item", {
             text: __("Links"),
             glyph: NOC.glyph.link,
             textAlign: "left",
@@ -145,7 +145,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onLinks
         });
 
-        me.discoveryButton = Ext.create("Ext.button.Button", {
+        me.discoveryButton = Ext.create("Ext.menu.Item", {
             text: __("Discovery"),
             glyph: NOC.glyph.search,
             textAlign: "left",
@@ -153,7 +153,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onDiscovery
         });
 
-        me.alarmsButton = Ext.create("Ext.button.Button", {
+        me.alarmsButton = Ext.create("Ext.menu.Item", {
             text: __("Alarms"),
             glyph: NOC.glyph.exclamation_triangle,
             textAlign: "left",
@@ -161,7 +161,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onAlarm
         });
 
-        me.maintainceButton = Ext.create("Ext.button.Button", {
+        me.maintainceButton = Ext.create("Ext.menu.Item", {
             text: __("New Maintaince"),
             glyph: NOC.glyph.wrench,
             textAlign: "left",
@@ -169,7 +169,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onMaintaince
         });
 
-        me.inventoryButton = Ext.create("Ext.button.Button", {
+        me.inventoryButton = Ext.create("Ext.menu.Item", {
             text: __("Inventory"),
             glyph: NOC.glyph.list,
             textAlign: "left",
@@ -177,7 +177,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInventory
         });
 
-        me.interactionsButton = Ext.create("Ext.button.Button", {
+        me.interactionsButton = Ext.create("Ext.menu.Item", {
             text: __("Command Log"),
             glyph: NOC.glyph.film,
             textAlign: "left",
@@ -185,7 +185,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInteractions
         });
 
-        me.validationSettingsButton = Ext.create("Ext.button.Button", {
+        me.validationSettingsButton = Ext.create("Ext.menu.Item", {
             text: __("Validation"),
             glyph: NOC.glyph.file,
             textAlign: "left",
@@ -193,7 +193,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onValidationSettings
         });
 
-        me.capsButton = Ext.create("Ext.button.Button", {
+        me.capsButton = Ext.create("Ext.menu.Item", {
             text: __("Capabilities"),
             glyph: NOC.glyph.file,
             textAlign: "left",
@@ -201,7 +201,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onCaps
         });
 
-        me.factsButton = Ext.create("Ext.button.Button", {
+        me.factsButton = Ext.create("Ext.menu.Item", {
             text: __("Facts"),
             glyph: NOC.glyph.file,
             textAlign: "left",
@@ -1152,8 +1152,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 }
             ]
-        })
-        ;
+        });
         me.callParent();
     },
     filters: [
