@@ -95,7 +95,7 @@ class DataStream(object):
         :return:
         """
         return {
-            "id": id,
+            "id": str(id),
             "$deleted": True
         }
 
