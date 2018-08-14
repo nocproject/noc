@@ -31,7 +31,8 @@ class Profile(BaseProfile):
         (r"\{ spm\<K\>\|\<cr\>\|frameid/slotid\<S\>\<1,15\> \}\:", "\n"),
         (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length 1\-15\> \}", "\n"),
         (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
-        (r"\{ groupindex\<K\>\|<cr> \}\:", "\n")
+        (r"\{ groupindex\<K\>\|<cr> \}\:", "\n"),
+        (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n")
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \
