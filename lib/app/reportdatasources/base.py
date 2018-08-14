@@ -51,6 +51,7 @@ class BaseReportColumn(object):
     Base report column class.
     Column is dataseries: ((id1: value1), (id2: value2)) - id - index sorted by asc
     """
+    MAX_ITERATOR = 500000
     name = None  # ColumnName
     fields = None  # RowFields List
     unknown_value = (None, )  # Fill this if empty value
@@ -65,9 +66,12 @@ class BaseReportColumn(object):
         """
         self.sync_ids = sync_ids  # Sorted Index list
         self.sync_ids_i = iter(self.sync_ids)
-        self._current_id = next(self.sync_ids_i)  # Current id
+        self._current_id = next(self.sync_ids_i, None)  # Current id
         self._value = None  #
         self._end_series = False  # Tre
+
+    def safe_next(self):
+        return next(self.sync_ids_i, None)
 
     def _extract(self):
         """
@@ -103,6 +107,8 @@ class BaseReportColumn(object):
 
     def __iter__(self):
         for row in self._extract():
+            if not self._current_id:
+                break
             # Row: (row_id, row1, ....)
             row_id, row_value = row[0], row[1:]
             if row_id == self._current_id:
@@ -116,7 +122,7 @@ class BaseReportColumn(object):
                 # row_id more than sync_id, go to next sync_id
                 while row_id > self._current_id:
                     # fill row unknown_value
-                    self._current_id = next(self.sync_ids_i)
+                    self._current_id = self.safe_next()
                     yield self.unknown_value
                 if row_id == self._current_id:
                     # Match sync_id and row_id = set value
@@ -125,7 +131,7 @@ class BaseReportColumn(object):
                     # Step over current sync_id, set  unknown_value
                     self._value = self.unknown_value
             yield self._value  # return current value
-            self._current_id = next(self.sync_ids_i)  # Next sync_id
+            self._current_id = self.safe_next()  # Next sync_id
         self._end_series = True
         # @todo Variant:
         # 1. if sync_ids use to filter in _extract - sync_ids and _extract ending together
@@ -145,6 +151,8 @@ class BaseReportColumn(object):
         :return:
         """
         r = {}
+        if not self._current_id:
+            return r
         for _ in self:
             if filter_unknown and _[0] is self.unknown_value:
                 continue
