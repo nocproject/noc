@@ -1,0 +1,13 @@
+{
+    "name": "DLink | DGS-3130 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ba2b6fd3-3d0e-4ccb-b2ef-6cee66c371f5",
+    "description": "D-Link DGS-3130 Series",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.171.10.154",
+    "action": "match",
+    "profile__name": "DLink.DxS_Industrial_CLI"
+}
