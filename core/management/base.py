@@ -2,13 +2,14 @@
 # ----------------------------------------------------------------------
 # CLI Command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import print_function
 import sys
+import os
 import argparse
 # NOC modules
 from noc.config import config
@@ -21,6 +22,7 @@ class CommandError(Exception):
 
 class BaseCommand(object):
     LOG_FORMAT = config.log_format
+    help = ""  # Help text (shows ./noc help)
 
     def __init__(self, stdout=sys.stdout, stderr=sys.stderr):
         self.verbose_level = 0
@@ -110,7 +112,10 @@ class BaseCommand(object):
                     self.print("%40s : %s" % (k, d[k]))
 
     def create_parser(self):
-        return argparse.ArgumentParser()
+        cmd = os.path.basename(sys.argv[0])
+        if cmd.endswith(".py"):
+            cmd = "noc %s" % cmd[:-3]
+        return argparse.ArgumentParser(prog=cmd)
 
     def handle(self, *args, **options):
         """
