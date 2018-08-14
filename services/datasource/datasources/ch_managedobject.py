@@ -15,16 +15,16 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
-# from noc.lib.app.reportdatasources.report_container import ReportContainerData
+from noc.lib.app.reportdatasources.report_container import ReportContainerData
 
 
 class CHManagedObjectDataSource(BaseDataSource):
     name = "ch_managedobject"
 
     def extract(self):
-        # containers = ReportContainerData(list(ManagedObject.objects.all().order_by(
-        #     "container").values_list("container", flat=True)))
-        # containers = containers.get_dictionary()
+        containers = ReportContainerData(sorted(set(ManagedObject.objects.all().order_by(
+            "container").values_list("container", flat=True))))
+        containers = containers.get_dictionary()
         for (mo_id, bi_id, name, address, profile,
              platform, version, remote_id, remote_system,
              adm_id, adm_name, container) in \
@@ -44,6 +44,5 @@ class CHManagedObjectDataSource(BaseDataSource):
                 RemoteSystem.get_by_id(remote_system).name if remote_system else "",
                 adm_id,
                 adm_name,
-                # containers.get(container, ("",))[0] if container else ("",)
-                ""
+                containers.get(container, ("",))[0] if container else ""
             )
