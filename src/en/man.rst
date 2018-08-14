@@ -17,6 +17,7 @@ Command Reference
     /man/csv-export
     /man/csv-import
     /man/ctl
+    /man/datastream
     /man/discovery
     /man/dump-addr
     /man/dump-crashinfo
