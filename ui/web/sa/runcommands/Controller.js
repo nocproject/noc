@@ -571,7 +571,8 @@ Ext.define('NOC.sa.runcommands.Controller', {
                 scope: me,
                 success: function(response) {
                     selectionGrid.unmask();
-                    me.lookupReference('sa-run-commands-selected-grid-1').getStore().loadData(
+                    me.lookupReference('sa-run-commands-selected-grid-1').getStore().insert(
+                        0,
                         Ext.decode(response.responseText)
                     );
                 },
