@@ -1,0 +1,11 @@
+{
+    "name": "Network | CGNAT Termination",
+    "$collection": "inv.technologies",
+    "uuid": "911ff0fb-f0e7-41ef-868f-e1d95aa4321c",
+    "description": "CGNAT Temination (access equipment -> NAT equipment)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

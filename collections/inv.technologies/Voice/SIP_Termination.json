@@ -1,0 +1,11 @@
+{
+    "name": "Voice | SIP Termination",
+    "$collection": "inv.technologies",
+    "uuid": "3e15a3ea-f4c1-49a1-a183-d61dd79531c2",
+    "description": "SIP Temination (media gateway -> softswitch)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

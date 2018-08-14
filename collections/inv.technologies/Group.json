@@ -1,0 +1,9 @@
+{
+    "name": "Group",
+    "$collection": "inv.technologies",
+    "uuid": "8874518c-effd-41fe-81bf-d67f1519ccf2",
+    "description": "Grouping element",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": true
+}
