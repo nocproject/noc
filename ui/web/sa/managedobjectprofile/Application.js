@@ -179,10 +179,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     xtype: "tabpanel",
                     layout: "fit",
                     autoScroll: true,
+                    tabPosition: "left",
+                    tabBar: {
+                        tabRotation: 0,
+                        layout: {
+                            align: "stretch"
+                        }
+                    },
                     anchor: "-0, -50",
                     defaults: {
                         autoScroll: true,
                         layout: "anchor",
+                        textAlign: "right",
                         padding: 10
                     },
                     items: [

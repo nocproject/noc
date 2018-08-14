@@ -82,6 +82,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.configPreviewButton = Ext.create("Ext.button.Button", {
             text: __("Config"),
             glyph: NOC.glyph.file,
+            textAlign: "left",
             scope: me,
             handler: me.onConfig
         });
@@ -89,6 +90,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.cardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
             glyph: NOC.glyph.eye,
+            textAlign: "left",
             scope: me,
             handler: me.onCard
         });
@@ -96,6 +98,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.dashboardButton = Ext.create("Ext.button.Button", {
             text: __("Dashboard"),
             glyph: NOC.glyph.line_chart,
+            textAlign: "left",
             scope: me,
             tooltip: __("Show dashboard"),
             handler: me.onDashboard
@@ -104,6 +107,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.showMapButton = Ext.create("Ext.button.Button", {
             text: __("Show Map"),
             glyph: NOC.glyph.globe,
+            textAlign: "left",
             scope: me,
             handler: me.onShowMap
         });
@@ -111,6 +115,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.consoleButton = Ext.create("Ext.button.Button", {
             text: __("Console"),
             glyph: NOC.glyph.terminal,
+            textAlign: "left",
             scope: me,
             handler: me.onConsole
         });
@@ -118,6 +123,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.scriptsButton = Ext.create("Ext.button.Button", {
             text: __("Scripts"),
             glyph: NOC.glyph.play,
+            textAlign: "left",
             disabled: true,
             scope: me,
             handler: me.onScripts
@@ -126,6 +132,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.interfacesButton = Ext.create("Ext.button.Button", {
             text: __("Interfaces"),
             glyph: NOC.glyph.reorder,
+            textAlign: "left",
             scope: me,
             handler: me.onInterfaces
         });
@@ -133,6 +140,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.linksButton = Ext.create("Ext.button.Button", {
             text: __("Links"),
             glyph: NOC.glyph.link,
+            textAlign: "left",
             scope: me,
             handler: me.onLinks
         });
@@ -140,6 +148,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.discoveryButton = Ext.create("Ext.button.Button", {
             text: __("Discovery"),
             glyph: NOC.glyph.search,
+            textAlign: "left",
             scope: me,
             handler: me.onDiscovery
         });
@@ -147,6 +156,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.alarmsButton = Ext.create("Ext.button.Button", {
             text: __("Alarms"),
             glyph: NOC.glyph.exclamation_triangle,
+            textAlign: "left",
             scope: me,
             handler: me.onAlarm
         });
@@ -154,6 +164,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.maintainceButton = Ext.create("Ext.button.Button", {
             text: __("New Maintaince"),
             glyph: NOC.glyph.wrench,
+            textAlign: "left",
             scope: me,
             handler: me.onMaintaince
         });
@@ -161,6 +172,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.inventoryButton = Ext.create("Ext.button.Button", {
             text: __("Inventory"),
             glyph: NOC.glyph.list,
+            textAlign: "left",
             scope: me,
             handler: me.onInventory
         });
@@ -168,6 +180,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.interactionsButton = Ext.create("Ext.button.Button", {
             text: __("Command Log"),
             glyph: NOC.glyph.film,
+            textAlign: "left",
             scope: me,
             handler: me.onInteractions
         });
@@ -175,6 +188,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.validationSettingsButton = Ext.create("Ext.button.Button", {
             text: __("Validation"),
             glyph: NOC.glyph.file,
+            textAlign: "left",
             scope: me,
             handler: me.onValidationSettings
         });
@@ -182,6 +196,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.capsButton = Ext.create("Ext.button.Button", {
             text: __("Capabilities"),
             glyph: NOC.glyph.file,
+            textAlign: "left",
             scope: me,
             handler: me.onCaps
         });
@@ -189,6 +204,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.factsButton = Ext.create("Ext.button.Button", {
             text: __("Facts"),
             glyph: NOC.glyph.file,
+            textAlign: "left",
             scope: me,
             handler: me.onFacts
         });
@@ -1098,22 +1114,43 @@ Ext.define("NOC.sa.managedobject.Application", {
                 }
             ],
             formToolbar: [
-                me.cardButton,
-                me.dashboardButton,
-                me.showMapButton,
-                me.consoleButton,
-                me.scriptsButton,
-                me.configPreviewButton,
-                me.inventoryButton,
-                me.interfacesButton,
-                me.linksButton,
-                me.discoveryButton,
-                me.alarmsButton,
-                me.maintainceButton,
-                me.interactionsButton,
-                me.validationSettingsButton,
-                me.capsButton,
-                me.factsButton
+                {
+                    text: __("group 1"),
+                    arrowAlign: "right",
+                    glyph: NOC.glyph.bars,
+                    menu: [
+                        me.consoleButton,
+                        me.discoveryButton
+                    ]
+                },
+                {
+                    text: __("group 2"),
+                    glyph: NOC.glyph.bars,
+                    arrowAlign: "right",
+                    menu: [
+                        me.cardButton,
+                        me.dashboardButton,
+                        me.showMapButton,
+                        me.configPreviewButton
+                    ]
+                },
+                {
+                    text: __("group 3"),
+                    glyph: NOC.glyph.bars,
+                    arrowAlign: "right",
+                    menu: [
+                        me.scriptsButton,
+                        me.inventoryButton,
+                        me.interfacesButton,
+                        me.linksButton,
+                        me.alarmsButton,
+                        me.maintainceButton,
+                        me.interactionsButton,
+                        me.validationSettingsButton,
+                        me.capsButton,
+                        me.factsButton
+                    ]
+                }
             ]
         })
         ;
