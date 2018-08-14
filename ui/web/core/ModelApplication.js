@@ -563,7 +563,8 @@ Ext.define("NOC.core.ModelApplication", {
                                 listeners: {
                                     scope: me,
                                     beforeedit: me.onInlineBeforeEdit,
-                                    edit: me.onInlineEdit
+                                    edit: me.onInlineEdit,
+                                    canceledit: me.onInlineCancel
                                 }
                             })
                         ],
@@ -1251,6 +1252,12 @@ Ext.define("NOC.core.ModelApplication", {
     //
     onInlineBeforeEdit: function(editor, context, eOpts) {
         var me = this;
+    },
+    //
+    onInlineCancel: function(editor, context) {
+        if(Ext.isEmpty(context.originalValue)){
+            context.grid.store.removeAt(context.rowIdx);
+        }
     },
     // Admin action selected
     onAction: function(menu, item, e) {
