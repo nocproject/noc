@@ -24,7 +24,7 @@ class ReportMetrics(BaseReportColumn):
                                                       "errors_in", "errors_out"]])
     KEY_FIELDS = ["path"]
     # QUERY_MAP = {["avg(%s) AS %s" % (self.select_column[field], field) for field in ATTRS[1:]]}
-    unknown_value = ([""] * len(ATTRS.keys()),)
+    # unknown_value = ([""] * len(ATTRS.keys()),)
 
     def __init__(self, mos_ids, f_date, to_date):
         super(ReportMetrics, self).__init__(mos_ids)
@@ -46,7 +46,6 @@ class ReportMetrics(BaseReportColumn):
         ts_from_date = time.mktime(from_date.timetuple())
         ts_to_date = time.mktime(to_date.timetuple())
         def_map = {"q_select": ["managed_object"],
-                   "q_from": [],  # q_from = "from %s" % map_table[reporttype]
                    "q_where": ["managed_object IN (%s)",
                                "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" %
                                (ts_from_date, ts_from_date, ts_to_date)],
@@ -60,7 +59,7 @@ class ReportMetrics(BaseReportColumn):
                           "from %s" % self.TABLE_NAME,
                           "where %s" % " and ".join(def_map["q_where"]),
                           "group by %s" % ",".join(def_map["q_group"]),
-                          "order by managed_object"])
+                          "order by %s" % ",".join(def_map["q_order_by"])])
         return query % ", ".join([str(c) for c in ids])
 
     def extract(self):
