@@ -14,7 +14,7 @@ DEFAULT_PREF = 100
 
 
 class RR(object):
-    __slots__ = ["zone", "name", "ttl", "type", "priority", "rdata", "_idna", "_content", "_order"]
+    __slots__ = ["zone", "name", "ttl", "type", "priority", "rdata", "_idna", "_content", "_order", "_sorder"]
 
     def __init__(self, zone, name, ttl, type, rdata, priority=None):
         self.zone = zone
@@ -35,6 +35,11 @@ class RR(object):
             self._content = rdata
         if type == "PTR":
             self._order = tuple(int(x) for x in name.split("."))
+        l_suffix = len(self.to_idna(zone)) + 1
+        self._sorder = self._idna[:-l_suffix]
+
+    def __repr__(self):
+        return "<RR %s %s %s>" % (self.name, self.type, self.rdata)
 
     def __lt__(self, other):
         # Check type preferences
@@ -46,9 +51,9 @@ class RR(object):
         if self.type == "PTR" and other.type == "PTR":
             return self._order < other._order
         # Compare by name
-        if self._idna < other._idna:
+        if self._sorder < other._sorder:
             return True
-        elif self._idna > other._idna:
+        elif self._sorder > other._sorder:
             return False
         # Compare by type
         if self.type < other.type:
