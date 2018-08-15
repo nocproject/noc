@@ -158,10 +158,9 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onAlarm
         });
 
-        me.maintainceButton = Ext.create("Ext.menu.Item", {
+        me.maintainceButton = Ext.create("Ext.button.Button", {
             text: __("New Maintaince"),
             glyph: NOC.glyph.wrench,
-            textAlign: "left",
             scope: me,
             handler: me.onMaintaince
         });
@@ -1144,7 +1143,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 },
                 {
-                    text: __("Assets"),
+                    text: __("Inventory"),
                     glyph: NOC.glyph.bars,
                     arrowAlign: "right",
                     menu: [
@@ -1154,16 +1153,16 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 },
                 {
-                    text: __("Assets"),
+                    text: __("Status"),
                     glyph: NOC.glyph.bars,
                     arrowAlign: "right",
                     menu: [
                         me.discoveryButton,
                         me.alarmsButton,
-                        me.interactionsButton,
-                        me.maintainceButton
+                        me.interactionsButton
                     ]
-                }
+                },
+                me.maintainceButton
             ]
         });
         me.callParent();
