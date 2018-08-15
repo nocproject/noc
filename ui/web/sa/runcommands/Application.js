@@ -61,12 +61,6 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectionStore}',
                                 selection: '{selectionRow}'
                             },
-                            // selModel: {
-                            //     mode: 'MULTI',
-                            //     pruneRemoved: false,
-                            //     showHeaderCheckbox: false,
-                            //     selType: 'checkboxmodel'
-                            // },
                             listeners: {
                                 selectionchange: 'onSelectionChange',
                                 itemdblclick: 'onSelectionDblClick',
@@ -92,7 +86,8 @@ Ext.define('NOC.sa.runcommands.Application', {
                                                 {'cmd': 'SCREEN', 'title': __('All devices on screen')},
                                                 {'cmd': 'FIRST_50', 'title': __('First 50')},
                                                 {'cmd': 'FIRST_100', 'title': __('First 100')},
-                                                {'cmd': 'N_ROWS', 'title': __('First N')}
+                                                {'cmd': 'N_ROWS', 'title': __('First N')},
+                                                {'cmd': 'PERIOD', 'title': __('Period start,qty')}
                                             ]
                                         },
                                         queryMode: 'local',
