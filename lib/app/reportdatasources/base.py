@@ -10,6 +10,7 @@
 from __future__ import absolute_import, print_function
 import re
 import heapq
+import itertools
 import logging
 # NOC modules
 from django.db.models import Q as d_Q
@@ -65,12 +66,15 @@ class BaseReportColumn(object):
         :param sync_ids:
         """
         self.sync_ids = sync_ids  # Sorted Index list
+        self.sync_count = itertools.count()
         self.sync_ids_i = iter(self.sync_ids)
         self._current_id = next(self.sync_ids_i, None)  # Current id
         self._value = None  #
         self._end_series = False  # Tre
 
     def safe_next(self):
+        if next(self.sync_count) > self.MAX_ITERATOR:
+            raise StopIteration
         return next(self.sync_ids_i, None)
 
     def _extract(self):
@@ -120,7 +124,7 @@ class BaseReportColumn(object):
                 continue
             elif row_id > self._current_id:
                 # row_id more than sync_id, go to next sync_id
-                while row_id > self._current_id:
+                while self._current_id and row_id > self._current_id:
                     # fill row unknown_value
                     self._current_id = self.safe_next()
                     yield self.unknown_value
@@ -157,6 +161,8 @@ class BaseReportColumn(object):
             if filter_unknown and _[0] is self.unknown_value:
                 continue
             r[self._current_id] = _[0]
+            if self._end_series:
+                break
         return r
 
     def __getitem__(self, item):
