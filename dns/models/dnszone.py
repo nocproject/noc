@@ -89,6 +89,7 @@ class DNSZone(models.Model):
 
     # Caches
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -99,8 +100,15 @@ class DNSZone(models.Model):
         zone = DNSZone.objects.filter(id=id)[:1]
         if zone:
             return zone[0]
-        else:
-            return None
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        zone = DNSZone.objects.filter(name=name)[:1]
+        if zone:
+            return zone[0]
+        return None
 
     def iter_changed_datastream(self):
         yield "dnszone", self.id
@@ -176,6 +184,51 @@ class DNSZone(models.Model):
                 r += "::"
             prefix = r + "/%d" % (length * 4)
             return IPv6(prefix).normalized.prefix
+
+    @classmethod
+    def get_reverse_for_address(cls, address):
+        """
+        Return reverse zone holding address
+        :param address: Address (as a string)
+        :return: DNSZone instance or None
+        """
+        if ":" in address:
+            return cls._get_reverse_for_ipv6_address(address)
+        return cls._get_reverse_for_ipv4_address(address)
+
+    @classmethod
+    def _get_reverse_for_ipv4_address(cls, address):
+        """
+        Get reverze zone holding IPv4 address
+        :param address: Address (as a string)
+        :return: DNSZone instance or None
+        """
+        parts = list(reversed(address.split(".")))[1:]
+        while parts:
+            name = "%s.in-addr.arpa" % ".".join(parts)
+            zone = DNSZone.get_by_name(name)
+            if zone:
+                return zone
+            parts.pop(0)
+        return None
+
+    @classmethod
+    def _get_reverse_for_ipv6_address(cls, address):
+        """
+        Get reverze zone holding IPv6 address
+        :param address: Address (as a string)
+        :return: DNSZone instance or None
+        """
+        # @todo: Impelement properly
+        parts = [str(x) for x in reversed(IPv6(address).iter_bits())][1:]
+        while parts:
+            for suffix in (".ip6.int", ".ip6.arpa"):
+                name = "%s.%s" % (".".join(parts), suffix)
+                zone = DNSZone.get_by_name(name)
+                if zone:
+                    return zone
+            parts.pop(0)  # Remove first par
+        return None
 
     def get_next_serial(self):
         """
