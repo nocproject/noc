@@ -94,18 +94,23 @@ class ReportObjectDetailApplication(ExtApplication):
 
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
-
+        print columns
         cols = [
             "id",
             "object_name",
             "object_address",
+            "iface_name"
+            # "cpu_usage",
+            # "memory_usage",
+            "load_in",
+            "load_out",
+            "errors_in",
+            "errors_out",
             # "object_hostname",
             # "object_status",
             # "profile_name",
             # "object_profile",
             # "object_vendor",
-            "managed",
-            "cpu"
             ]
 
         if columns:
@@ -126,9 +131,10 @@ class ReportObjectDetailApplication(ExtApplication):
 
         start = datetime.datetime.strptime(from_date, "%d.%m.%Y")
         stop = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
-
-        rf = iter(ReportMetrics(mos_id, start, stop))
-        rc = iter(ReportCPUMetrics(mos_id, start, stop))
+        report = ReportMetrics(mos_id, start, stop)
+        if "cpu_usage" in columns.split(","):
+            report = ReportCPUMetrics(mos_id, start, stop)
+        report = iter(report)
 
         for (mo_id, bi_id, name, address, is_managed,
              sa_profile, o_profile, auth_profile,
@@ -141,9 +147,8 @@ class ReportObjectDetailApplication(ExtApplication):
                 mo_id,
                 name,
                 address,
-                "managed" if is_managed else "unmanaged",
-                next(rc)[0]
-            ]), cmap)]
+                # "managed" if is_managed else "unmanaged",
+            ] + next(report)[0]), cmap)]
 
         filename = "mo_metrics_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
