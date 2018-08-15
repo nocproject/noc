@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IGetCPE - interface to query ARP cache
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from __future__ import absolute_import
 from noc.core.interface.base import BaseInterface
 from .base import (StringParameter, InterfaceNameParameter,
                    IPv4Parameter, MACAddressParameter, DictListParameter,
-                   FloatParameter)
+                   IntParameter)
 
 
 class IGetCPE(BaseInterface):
@@ -73,5 +73,5 @@ class IGetCPE(BaseInterface):
         "modulation": StringParameter(required=False),
         "description": StringParameter(required=False),
         "location": StringParameter(required=False),
-        "distance": FloatParameter(required=False)
+        "distance": IntParameter(required=False)
     })

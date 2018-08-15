@@ -179,6 +179,7 @@ _MODELS = {
     "sa.AuthProfileSuggestSNMP": "noc.sa.models.authprofile.AuthProfileSuggestSNMP",
     "sa.AuthProfileSuggestCLI": "noc.sa.models.authprofile.AuthProfileSuggestCLI",
     "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
+    "sa.CPEStatus": "noc.sa.models.cpestatus.CPEStatus",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
     "sa.ManagedObject": "noc.sa.models.managedobject.ManagedObject",
