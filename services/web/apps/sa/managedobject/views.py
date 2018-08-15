@@ -23,6 +23,7 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.profile import Profile
+from noc.sa.models.cpestatus import CPEStatus
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -807,3 +808,45 @@ class ManagedObjectApplication(ExtModelApplication):
         link.delete()
         iface1.link_ptp(iface2, method="macfix")
         return success_status("Relinked")
+
+    @view(url="^(?P<id>\d+)/cpe/$", method=["GET"],
+          access="read", api=True)
+    def api_cpe(self, request, id):
+        """
+        GET CPEs
+        :param request:
+        :param id:
+        :return:
+        """
+        def sorted_iname(s):
+            return sorted(s, key=lambda x: split_alnum(x["name"]))
+
+        # Get object
+        o = self.get_object_or_404(ManagedObject, id=int(id))
+        if not o.has_access(request.user):
+            return self.response_forbidden("Permission denied")
+        # CPE
+        # @todo: proper ordering
+        # default_state = ResourceState.get_default()
+        # style_cache = {}  # profile_id -> css_style
+        l1 = [
+            {
+                "global_id": str(c.global_id),
+                "name": c.name,
+                "interface": c.interface,
+                "loca_id": c.local_id,
+                "serial": c.serial,
+                "status": c.status,
+                "description": c.description,
+                "address": c.ip,
+                "model": c.model,
+                "version": c.version,
+                "mac": c.mac,
+                "location": c.location
+                # "row_class": get_style(i)
+            } for c in CPEStatus.objects.filter(
+                managed_object=o.id)]
+
+        return {
+            "cpe": sorted_iname(l1)
+        }
