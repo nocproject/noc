@@ -12,4 +12,5 @@ interfacestatus check
 
 Requirements
 ------------
-* get_interface_status_ex
+* :ref:`script-get_interface_status_ex`
+* interfacestatus check is enabled in :ref:`reference-managed-object-profile`

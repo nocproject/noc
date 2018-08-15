@@ -13,4 +13,5 @@ cpe check
 Requirements
 ------------
 * :ref:`caps-cpe-controller`
-* get_cpe
+* :ref:`script-get_cpe`
+* CPE check is enabled in :ref:`reference-managed-object-profile`

@@ -9,3 +9,7 @@ segmentation
 
 .. todo::
     Describe *segmentation* check
+
+Requirements
+------------
+* segmentation check is enabled in :ref:`reference-managed-object-profile`

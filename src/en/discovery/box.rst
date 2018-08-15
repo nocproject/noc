@@ -19,6 +19,7 @@ Box Discovery
     /discovery/box/vlan
     /discovery/box/nri
     /discovery/box/cpe
+    /discovery/periodic/cpestatus
     /discovery/periodic/mac
     /discovery/box/segmentation
     /discovery/box/oam

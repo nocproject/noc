@@ -13,4 +13,6 @@ asset check
 Requirements
 ------------
 * :ref:`script-get_inventory`
+* asset check is enabled in :ref:`reference-managed-object-profile`
+
 

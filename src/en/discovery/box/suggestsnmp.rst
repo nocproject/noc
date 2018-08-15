@@ -9,3 +9,7 @@ suggestsnmp check
 
 .. todo::
     Describe *suggestsnmp* check
+
+Requirements
+------------
+* suggestsnmp check is enabled in :ref:`reference-managed-object-profile`

@@ -12,6 +12,7 @@ huawei_ndp check
 
 Requirements
 ------------
-* get_huawei_ndp_neighbors
+* :ref:`get_huawei_ndp_neighbors`
 * :ref:`caps-huawei-ndp`
+* Huawei NDP check is enabled in :ref:`reference-managed-object-profile`
 

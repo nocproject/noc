@@ -15,4 +15,5 @@ uptime check
 
 Requirements
 ------------
-* get_uptime
+* :ref:`script-get_uptime`
+* Uptime check is enabled in :ref:`reference-managed-object-profile`

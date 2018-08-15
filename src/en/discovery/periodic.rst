@@ -9,5 +9,6 @@ Periodic Discovery
 
     /discovery/periodic/uptime
     /discovery/periodic/interfacestatus
+    /discovery/periodic/cpestatus
     /discovery/periodic/mac
     /discovery/periodic/metrics
