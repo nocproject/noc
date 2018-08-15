@@ -87,10 +87,9 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onConfig
         });
 
-        me.cardButton = Ext.create("Ext.menu.Item", {
+        me.cardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
             glyph: NOC.glyph.eye,
-            textAlign: "left",
             scope: me,
             handler: me.onCard
         });
@@ -104,10 +103,9 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onDashboard
         });
 
-        me.showMapButton = Ext.create("Ext.menu.Item", {
+        me.showMapButton = Ext.create("Ext.button.Button", {
             text: __("Show Map"),
             glyph: NOC.glyph.globe,
-            textAlign: "left",
             scope: me,
             handler: me.onShowMap
         });
@@ -129,10 +127,9 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onScripts
         });
 
-        me.interfacesButton = Ext.create("Ext.menu.Item", {
+        me.interfacesButton = Ext.create("Ext.button.Button", {
             text: __("Interfaces"),
             glyph: NOC.glyph.reorder,
-            textAlign: "left",
             scope: me,
             handler: me.onInterfaces
         });
@@ -1114,41 +1111,57 @@ Ext.define("NOC.sa.managedobject.Application", {
                 }
             ],
             formToolbar: [
+                me.cardButton,
                 {
-                    text: __("group 1"),
+                    text: __("Graph"),
                     arrowAlign: "right",
                     glyph: NOC.glyph.bars,
+                    menu: [
+                        // General
+                        // Ifaces
+                        me.dashboardButton
+                    ]
+                },
+                me.showMapButton,
+                {
+                    text: __("Interactive"),
+                    glyph: NOC.glyph.bars,
+                    arrowAlign: "right",
                     menu: [
                         me.consoleButton,
-                        me.discoveryButton
+                        me.scriptsButton
                     ]
                 },
+                me.interfacesButton,
                 {
-                    text: __("group 2"),
+                    text: __("Config"),
                     glyph: NOC.glyph.bars,
                     arrowAlign: "right",
                     menu: [
-                        me.cardButton,
-                        me.dashboardButton,
-                        me.showMapButton,
-                        me.configPreviewButton
-                    ]
-                },
-                {
-                    text: __("group 3"),
-                    glyph: NOC.glyph.bars,
-                    arrowAlign: "right",
-                    menu: [
-                        me.scriptsButton,
-                        me.inventoryButton,
-                        me.interfacesButton,
-                        me.linksButton,
-                        me.alarmsButton,
-                        me.maintainceButton,
-                        me.interactionsButton,
                         me.validationSettingsButton,
-                        me.capsButton,
+                        me.configPreviewButton,
                         me.factsButton
+                    ]
+                },
+                {
+                    text: __("Assets"),
+                    glyph: NOC.glyph.bars,
+                    arrowAlign: "right",
+                    menu: [
+                        me.linksButton,
+                        me.inventoryButton,
+                        me.capsButton
+                    ]
+                },
+                {
+                    text: __("Assets"),
+                    glyph: NOC.glyph.bars,
+                    arrowAlign: "right",
+                    menu: [
+                        me.discoveryButton,
+                        me.alarmsButton,
+                        me.interactionsButton,
+                        me.maintainceButton
                     ]
                 }
             ]
