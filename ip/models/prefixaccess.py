@@ -21,7 +21,6 @@ from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
 from noc.lib.db import SQL
 from .afi import AFI_CHOICES
 from .vrf import VRF
-from .prefix import Prefix
 
 
 class PrefixAccess(models.Model):
@@ -157,3 +156,7 @@ class PrefixAccess(models.Model):
                     "%s.%s" % (table, field) if table else field, p
                 )]
         return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))
+
+
+# Avoid circular references
+from .prefix import Prefix

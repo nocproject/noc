@@ -14,14 +14,15 @@ from django.db import models
 from django.template import Template, Context
 # NOC modules
 from noc.core.model.fields import TagsField, CIDRField
-from noc.lib.app.site import site
 from noc.core.ip import IP
 from noc.lib.validators import check_ipv4, check_ipv6
+from noc.core.datastream.decorator import datastream
 from .afi import AFI_CHOICES
 from .vrf import VRF
 from .address import Address
 
 
+@datastream
 class AddressRange(models.Model):
     class Meta(object):
         verbose_name = _("Address Range")
@@ -80,6 +81,14 @@ class AddressRange(models.Model):
             self.to_address
         )
 
+    def iter_changed_datastream(self):
+        from noc.dns.models.dnszone import DNSZone
+
+        if self.action == "D":
+            zone = DNSZone.get_reverse_for_address(self.from_address)
+            if zone:
+                yield "dnszone", zone.id
+
     def clean(self):
         """
         Field validation
@@ -92,9 +101,6 @@ class AddressRange(models.Model):
         elif self.afi == "6":
             check_ipv6(self.from_address)
             check_ipv6(self.to_address)
-
-    def get_absolute_url(self):
-        return site.reverse("ip:addressrange:change", self.id)
 
     def save(self, **kwargs):
         def generate_fqdns():

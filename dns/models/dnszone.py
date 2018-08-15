@@ -10,32 +10,25 @@
 from __future__ import absolute_import
 import re
 import time
-from collections import defaultdict
 import logging
 from threading import Lock
 import operator
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models import Q
-from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
 import cachetools
 import six
 # NOC modules
-from noc.main.models import (NotificationGroup, SystemNotification,
-                             SystemTemplate)
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.systemnotification import SystemNotification
 from noc.project.models.project import Project
-from noc.ip.models.address import Address
-from noc.ip.models.addressrange import AddressRange
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
 from noc.core.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6
 from noc.lib.rpsl import rpsl_format
-from noc.dns.utils.zonefile import ZoneFile
 from noc.core.gridvcs.manager import GridVCSField
-from noc.main.models.synccache import SyncCache
+from noc.core.datastream.decorator import datastream
+from noc.core.model.decorator import on_delete_check
 from .dnszoneprofile import DNSZoneProfile
 
 logger = logging.getLogger(__name__)
@@ -47,6 +40,10 @@ ZONE_REVERSE_IPV4 = "4"
 ZONE_REVERSE_IPV6 = "6"
 
 
+@datastream
+@on_delete_check(check=[
+    ("dns.DNSZoneRecord", "zone")
+])
 class DNSZone(models.Model):
     """
     DNS Zone
@@ -92,6 +89,7 @@ class DNSZone(models.Model):
 
     # Caches
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -102,21 +100,25 @@ class DNSZone(models.Model):
         zone = DNSZone.objects.filter(id=id)[:1]
         if zone:
             return zone[0]
-        else:
-            return None
+        return None
 
-    def get_absolute_url(self):
-        """Return link to zone preview
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        zone = DNSZone.objects.filter(name=name)[:1]
+        if zone:
+            return zone[0]
+        return None
 
-        :return: URL
-        :rtype: String
-        """
-        return site.reverse("dns:dnszone:change", self.id)
+    def iter_changed_datastream(self):
+        yield "dnszone", self.id
+
+    def clean(self):
+        super(DNSZone, self).clean()
+        self.type = self.get_type_for_zone(self.name or "")
 
     def save(self, *args, **kwargs):
-        # Set .type
-        self.type = self.get_type_for_zone(self.name or "")
-        # Rest of save
+        self.clean()
         super(DNSZone, self).save(*args, **kwargs)
 
     @staticmethod
@@ -183,8 +185,52 @@ class DNSZone(models.Model):
             prefix = r + "/%d" % (length * 4)
             return IPv6(prefix).normalized.prefix
 
-    @property
-    def next_serial(self):
+    @classmethod
+    def get_reverse_for_address(cls, address):
+        """
+        Return reverse zone holding address
+        :param address: Address (as a string)
+        :return: DNSZone instance or None
+        """
+        if ":" in address:
+            return cls._get_reverse_for_ipv6_address(address)
+        return cls._get_reverse_for_ipv4_address(address)
+
+    @classmethod
+    def _get_reverse_for_ipv4_address(cls, address):
+        """
+        Get reverze zone holding IPv4 address
+        :param address: Address (as a string)
+        :return: DNSZone instance or None
+        """
+        parts = list(reversed(address.split(".")))[1:]
+        while parts:
+            name = "%s.in-addr.arpa" % ".".join(parts)
+            zone = DNSZone.get_by_name(name)
+            if zone:
+                return zone
+            parts.pop(0)
+        return None
+
+    @classmethod
+    def _get_reverse_for_ipv6_address(cls, address):
+        """
+        Get reverze zone holding IPv6 address
+        :param address: Address (as a string)
+        :return: DNSZone instance or None
+        """
+        # @todo: Impelement properly
+        parts = [str(x) for x in reversed(IPv6(address).iter_bits())][1:]
+        while parts:
+            for suffix in (".ip6.int", ".ip6.arpa"):
+                name = "%s.%s" % (".".join(parts), suffix)
+                zone = DNSZone.get_by_name(name)
+                if zone:
+                    return zone
+            parts.pop(0)  # Remove first par
+        return None
+
+    def get_next_serial(self):
         """
         Next zone serial number. Next serial is greater
         than current one. Serial is built using current data
@@ -203,59 +249,11 @@ class DNSZone(models.Model):
 
     def set_next_serial(self):
         old_serial = self.serial
-        self.serial = self.next_serial
+        self.serial = self.get_next_serial()
         logger.info("Zone %s serial change: %s -> %s",
                     self.name, old_serial, self.serial)
-        # self.save()
         # Hack to not send post_save signal
         DNSZone.objects.filter(id=self.id).update(serial=self.serial)
-
-    @property
-    def records(self):
-        """
-        All zone records. Zone records returned as list of tuples
-        (name, type, content), where type is RR type.
-
-        :return: Zone records
-        :trype: List of tuples
-        """
-        # @todo: deprecated
-        def f(name, type, content, ttl, prio):
-            name = name[:-lnsuffix]  # Strip domain from name
-            if type == "CNAME" and content.endswith(nsuffix):
-                # Strip domain from content
-                content = content[:-lnsuffix]
-            if prio:
-                content = "%s %s" % (prio, content)
-            return name, type, content
-
-        suffix = self.name + "."
-        nsuffix = "." + suffix
-        lnsuffix = len(nsuffix)
-        return [f(a, b, c, d, e)
-                for a, b, c, d, e in self.get_records()
-                if b != "SOA"]
-
-    def zonedata(self, ns):
-        """
-        Return zone data formatted for given nameserver.
-
-        :param ns: DNS Server
-        :type ns: DNSServer
-        :return: Zone data
-        :rtype: str
-        """
-        # @todo: deprecated
-        return ns.generator_class().get_zone(self)
-
-    @property
-    def distribution_list(self):
-        """List of DNSServers to distribute zone
-
-        :return: List of DNSServers
-        :rtype: List of DNSServer instances
-        """
-        return self.profile.masters.filter(provisioning__isnull=False)
 
     @property
     def children(self):
@@ -286,6 +284,30 @@ class DNSZone(models.Model):
         return sorted(self.get_ns_name(ns) for ns in self.profile.authoritative_servers)
 
     @property
+    def masters(self):
+        """
+        Sorted list of zone master NSes. NSes are properly formatted and have '.'
+        at the end.
+
+        :return: List of zone master NSes
+        :rtype: List of string
+        :return:
+        """
+        return sorted(self.get_ns_name(ns) for ns in self.profile.masters.all())
+
+    @property
+    def slaves(self):
+        """
+        Sorted list of zone slave NSes. NSes are properly formatted and have '.'
+        at the end.
+
+        :return: List of zone slave NSes
+        :rtype: List of string
+        :return:
+        """
+        return sorted(self.get_ns_name(ns) for ns in self.profile.slaves.all())
+
+    @property
     def rpsl(self):
         """
         RPSL for reverse zone. RPSL contains domain: and nserver:
@@ -309,288 +331,14 @@ class DNSZone(models.Model):
                                           for ns in self.ns_list]
         return rpsl_format("\n".join(s))
 
-    def to_idna(self, n):
+    @staticmethod
+    def to_idna(n):
         if isinstance(n, unicode):
             return n.lower().encode("idna")
         elif isinstance(n, six.string_types):
             return unicode(n, "utf-8").lower().encode("idna")
         else:
             return n
-
-    def get_soa(self):
-        """
-        SOA record
-        :return:
-        """
-        def dotted(s):
-            if not s.endswith("."):
-                return s + "."
-            else:
-                return s
-
-        return [(dotted(self.to_idna(self.name)),
-                 "SOA", "%s %s %d %d %d %d %d" % (
-            dotted(self.profile.zone_soa),
-            dotted(self.profile.zone_contact),
-            self.serial,
-            self.profile.zone_refresh, self.profile.zone_retry,
-            self.profile.zone_expire,
-            self.profile.zone_ttl), self.profile.zone_ttl, None)]
-
-    def get_ipam_a(self):
-        """
-        Fetch A/AAAA records from IPAM
-        :return: (name, type, content, ttl, prio)
-        """
-        ttl = self.profile.zone_ttl
-        # @todo: Filter by VRF
-        length = len(self.name) + 1
-        q = (
-            Q(fqdn__iexact=self.name) |
-            Q(fqdn__iendswith=".%s" % self.name)
-        )
-        for z in DNSZone.objects.filter(
-                name__iendswith=".%s" % self.name
-        ).values_list("name", flat=True):
-            q &= ~(
-                Q(fqdn__iexact=z) |
-                Q(fqdn__iendswith=".%s" % z)
-            )
-        return [
-            (
-                fqdn[:-length],
-                "A" if afi == "4" else "AAAA",
-                address,
-                ttl,
-                None
-            ) for afi, fqdn, address in Address.objects.filter(
-                q
-            ).values_list("afi", "fqdn", "address")
-        ]
-
-    def get_ipam_ptr4(self):
-        """
-        Fetch IPv4 PTR records from IPAM
-        :return: (name, type, content, ttl, prio)
-        """
-        def ptr(a):
-            """
-            Convert address to full PTR record
-            """
-            x = a.split(".")
-            x.reverse()
-            return "%s.in-addr.arpa" % (".".join(x))
-
-        ttl = self.profile.zone_ttl
-        length = len(self.name) + 1
-        return [
-            (
-                ptr(a.address)[:-length],
-                "PTR",
-                a.fqdn + ".",
-                ttl,
-                None
-            ) for a in Address.objects.filter(afi="4").extra(
-                where=["address << %s"], params=[self.reverse_prefix]
-            )
-        ]
-
-    def get_ipam_ptr6(self):
-        """
-        Fetch IPv6 PTR records from IPAM
-        :return: (name, type, content, ttl, prio)
-        :return:
-        """
-        ttl = self.profile.zone_ttl
-        origin_length = (len(self.name) - 8 + 1) // 2
-        return [
-            (
-                IPv6(a.address).ptr(origin_length),
-                "PTR",
-                a.fqdn + ".",
-                ttl,
-                None
-            ) for a in Address.objects.filter(afi="6").extra(
-                where=["address << %s"], params=[self.reverse_prefix]
-            )
-        ]
-
-    def get_missed_ns_a(self):
-        """
-        Returns missed A record for NS'es
-        :param records:
-        :return:
-        """
-        suffix = ".%s." % self.name
-        ttl = self.profile.zone_ttl
-        # Create missed A records for NSses from zone
-        # Find in-zone NSes
-        in_zone_nses = {}
-        for ns in self.profile.authoritative_servers:
-            if not ns.ip:
-                continue
-            ns_name = self.get_ns_name(ns)
-            # NS server from zone
-            if ns_name.endswith(suffix) and "." not in ns_name[:-len(suffix)]:
-                in_zone_nses[ns_name[:-len(suffix)]] = ns.ip
-        # Find missed in-zone NSes
-        return [
-            (name, "A", in_zone_nses[name], ttl, None)
-            for name in in_zone_nses
-            if not (name in in_zone_nses and type in ("A", "IN A"))
-        ]
-
-    def get_ns(self):
-        ttl = self.profile.zone_ttl
-        # Zone NSes
-        records = [("", "NS", n, ttl, None) for n in self.ns_list]
-        # Add nested NS records if nesessary
-        suffix = ".%s." % self.name
-        length = len(self.name)
-        for z in self.children:
-            nested_nses = []
-            for ns in z.profile.authoritative_servers:
-                ns_name = self.get_ns_name(ns)
-                records += [(z.name[:-length - 1], "NS", ns_name,
-                             ttl, None)]
-                # Zone delegated to NS from the child zone
-                if ns_name.endswith(suffix) and "." in ns_name[:-len(suffix)]:
-                    r = (ns_name[:-len(suffix)], ns.ip)
-                    if r not in nested_nses:
-                        nested_nses += [r]
-            if nested_nses:  # Create A records for nested NSes
-                for name, ip in nested_nses:
-                    records += [(name, "A", ip, ttl, None)]
-        return records
-
-    def get_rr(self):
-        """
-        Get RRs from database
-        :return:
-        """
-        ttl = self.profile.zone_ttl
-        return [
-            (r.name, r.type, r.content,
-             r.ttl if r.ttl else ttl, r.priority)
-            for r in self.dnszonerecord_set.exclude(name__contains="/")
-        ]
-
-    def get_classless_delegation(self):
-        """
-        Classless reverse zone delegation
-        :return:
-        """
-        records = []
-        ttl = self.profile.zone_ttl
-        # Range delegations
-        for r in AddressRange.objects.filter(action="D").extra(
-            where=["from_address << %s", "to_address << %s"],
-            params=[self.reverse_prefix, self.reverse_prefix]
-        ):
-            nses = [ns.strip() for ns in r.reverse_nses.split(",")]
-            for a in r.addresses:
-                n = a.address.split(".")[-1]
-                records += [(n, "CNAME", "%s.%s/32" % (n, n), ttl, None)]
-                for ns in nses:
-                    if not ns.endswith("."):
-                        ns += "."
-                    records += [("%s/32" % n, "NS", ns, ttl, None)]
-        # Subnet delegation macro
-        delegations = defaultdict(list)
-        for d in [r for r in self.dnszonerecord_set.filter(
-                type="NS", name__contains="/")]:
-            delegations[d.name] += [d.content]
-        # Perform classless reverse zone delegation
-        for d in delegations:
-            nses = delegations[d]
-            net, mask = [int(x) for x in d.split("/")]
-            if net < 0 or net > 255 or mask <= 24 or mask > 32:
-                continue  # Invalid record
-            for ns in nses:
-                ns = str(ns)
-                if not ns.endswith("."):
-                    ns += "."
-                records += [(d, "NS", ns, ttl, None)]
-            m = mask - 24
-            bitmask = ((1 << m) - 1) << (8 - m)
-            if net & bitmask != net:
-                continue  # Invalid network
-            records += [
-                (str(i), "CNAME", "%d.%s" % (i, d), ttl, None)
-                for i in range(net, net + (1 << (8 - m)))
-            ]
-        return records
-
-    def get_records(self):
-        def cmp_fwd(x, y):
-            sn = self.name + "."
-            return (
-                (None if x[0] == sn else x[0], x[1], x[2], x[3], x[4]) <
-                (None if y[0] == sn else y[0], y[1], y[2], y[3], y[4])
-            )
-
-        def cmp_ptr(x, y):
-            """
-            Compare two RR tuples. PTR records are compared as integer,
-            other records - as strings.
-            """
-            x1, x2, _, _, _ = x
-            y1, y2, _, _, _ = y
-            if x2 == "NS" and y2 != "NS":
-                return -1
-            if x2 != "NS" and y2 == "NS":
-                return 1
-            if x2 == y2 == "PTR":
-                try:
-                    return int(x1) < int(y1)
-                except ValueError:
-                    pass
-            return x < y
-
-        def fr(r):
-            name, type, content, ttl, prio = r
-            if not name.endswith("."):
-                if name:
-                    name += ".%s." % self.name
-                else:
-                    name = self.name + "."
-            name = self.to_idna(name)
-            if type in ("NS", "MX", "CNAME"):
-                if content:
-                    if not content.endswith("."):
-                        content += ".%s." % self.name
-                else:
-                    content = self.name + "."
-                content = self.to_idna(content)
-            return name, type, content, ttl, prio
-
-        records = []
-        records += self.get_rr()
-        records += self.get_ns()
-        if self.type == ZONE_FORWARD:
-            records += self.get_ipam_a()
-            records += self.get_missed_ns_a()
-            order_by = cmp_fwd
-        elif self.type == ZONE_REVERSE_IPV4:
-            records += self.get_ipam_ptr4()
-            records += self.get_classless_delegation()
-            order_by = cmp_ptr
-        elif self.type == ZONE_REVERSE_IPV6:
-            records += self.get_ipam_ptr6()
-            order_by = cmp_ptr
-        else:
-            raise ValueError("Invalid zone type")
-        records = (self.get_soa() +
-                   sorted(set(fr(r) for r in records), key=order_by))
-        return records
-
-    def get_zone_text(self):
-        """
-        BIND-style zone text for configuration management
-        :return:
-        """
-        zf = ZoneFile(zone=self.name, records=self.get_records())
-        return zf.get_text()
 
     @classmethod
     def get_zone(cls, name):
@@ -627,33 +375,6 @@ class DNSZone(models.Model):
         else:
             return get_closest(name)
 
-    @classmethod
-    def touch(cls, name):
-        """
-        Mark zone as dirty
-        :param cls:
-        :param name:
-        :return:
-        """
-        z = cls.get_zone(name)
-        if z and z.is_auto_generated:
-            z._touch()
-
-    def _touch(self, is_new=False):
-        logger.debug("Touching zone %s", self.name)
-        SyncCache.expire_object(self)
-
-    def ensure_sync(self):
-        ss = set(s.sync for s in self.profile.authoritative_servers if s.sync)
-        SyncCache.ensure_syncs(self, ss)
-
-    @property
-    def channels(self):
-        return sorted(
-            set("dns/zone/%s" % c for c in
-                self.profile.masters.filter(sync_channel__isnull=False)
-                .values_list("sync_channel", flat=True)))
-
     def get_notification_groups(self):
         """
         Get a list of notification groups to notify
@@ -670,122 +391,43 @@ class DNSZone(models.Model):
         else:
             return []
 
-    def refresh_zone(self):
-        """
-        Compare zone state with stored one.
-        Increase serial and store new version on change
-        :return: True if zone has been changed
-        """
-        logger.debug("Refreshing zone %s", self.name)
-        # Stored version
-        cz = self.zone.read()
-        # Generated version
-        nz = self.get_zone_text()
-        if cz == nz:
-            logger.debug("Zone not changed: %s", self.name)
-            return False  # Not changed
-        # Step serial
-        self.set_next_serial()
-        # Generate new zone again
-        # Because serial has been changed
-        zt = self.get_zone_text()
-        self.zone.write(zt)
-        # Set change notifications
-        groups = self.get_notification_groups()
-        if groups:
-            ctx = {"name": self.name}
-            if cz:
-                revs = self.zone.get_revisions()[-2:]
-                stpl = "dns.zone.change"
-                ctx["diff"] = self.zone.diff(revs[0], revs[1])
-            else:
-                stpl = "dns.zone.new"
-                ctx["data"] = zt
-            try:
-                t = SystemTemplate.objects.get(name=stpl)
-            except SystemTemplate.DoesNotExist:
-                return True
-            subject = t.render_subject(**ctx)
-            body = t.render_body(**ctx)
-            for g in groups:
-                g.notify(subject, body)
-        return True
-
-    def get_sync_data(self):
-        """
-        Returns sync daemon configuration
-        {
-            records: [5-tuple]
-        }
-        """
-        self.refresh_zone()
-        return {
-            "records": self.get_records()
-        }
-
-
-#
-# Signal handlers
-#
-@receiver(post_save, sender=DNSZoneProfile)
-def on_save_zone_profile(sender, instance, created, **kwargs):
-    if not created:
-        for z in instance.dnszone_set.all():
-            z.ensure_sync()
-
-# @todo: DNSServer change
-# @todo: Sync change
-
-
-@receiver(post_save, sender=DNSZone)
-def on_save(sender, instance, created, **kwargs):
-    if created:
-        instance.ensure_sync()
-    else:
-        instance._touch(is_new=created)
-
-
-@receiver(pre_delete, sender=DNSZone)
-def on_delete(sender, instance, **kwargs):
-    SyncCache.delete_object(instance)
-
-
-@receiver(post_save, sender=Address)
-def on_address_save(sender, instance, created, **kwargs):
-    """
-    Fires after Address.save()
-    """
-    if created:
-        old_address = None
-        old_fqdn = None
-    elif hasattr(instance, "_old_values"):
-        # Set by audit trail
-        old_address = instance._old_values.get("address")
-        old_fqdn = instance._old_values.get("fqdn")
-    else:
-        old = Address.objects.get(pk=instance.pk)
-        old_address = old.address
-        old_fqdn = old.fqdn
-
-    to_update = False
-    if old_address != instance.address:
-        logger.debug("Register address change %s -> %s",
-                     old_address, instance.address)
-        to_update = True
-
-    if old_fqdn != instance.fqdn:
-        logger.debug("Register FQDN change %s -> %s",
-                     old_fqdn, instance.fqdn)
-        to_update = True
-
-    if to_update:
-        DNSZone.touch(old_address)
-        DNSZone.touch(instance.address)
-        DNSZone.touch(old_fqdn)
-        DNSZone.touch(instance.fqdn)
-
-
-@receiver(pre_delete, sender=Address)
-def on_address_delete(sender, instance, **kwargs):
-    DNSZone.touch(instance.fqdn)
-    DNSZone.touch(instance.address)
+    # def refresh_zone(self):
+    #     """
+    #     Compare zone state with stored one.
+    #     Increase serial and store new version on change
+    #     :return: True if zone has been changed
+    #     """
+    #     logger.debug("Refreshing zone %s", self.name)
+    #     # Stored version
+    #     cz = self.zone.read()
+    #     # Generated version
+    #     nz = self.get_zone_text()
+    #     if cz == nz:
+    #         logger.debug("Zone not changed: %s", self.name)
+    #         return False  # Not changed
+    #     # Step serial
+    #     self.set_next_serial()
+    #     # Generate new zone again
+    #     # Because serial has been changed
+    #     zt = self.get_zone_text()
+    #     self.zone.write(zt)
+    #     # Set change notifications
+    #     groups = self.get_notification_groups()
+    #     if groups:
+    #         ctx = {"name": self.name}
+    #         if cz:
+    #             revs = self.zone.get_revisions()[-2:]
+    #             stpl = "dns.zone.change"
+    #             ctx["diff"] = self.zone.diff(revs[0], revs[1])
+    #         else:
+    #             stpl = "dns.zone.new"
+    #             ctx["data"] = zt
+    #         try:
+    #             t = SystemTemplate.objects.get(name=stpl)
+    #         except SystemTemplate.DoesNotExist:
+    #             return True
+    #         subject = t.render_subject(**ctx)
+    #         body = t.render_body(**ctx)
+    #         for g in groups:
+    #             g.notify(subject, body)
+    #     return True

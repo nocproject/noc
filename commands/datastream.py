@@ -14,6 +14,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.datastream.loader import loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.dns.models.dnszone import DNSZone
 from noc.models import is_document
 
 
@@ -23,7 +24,8 @@ class Command(BaseCommand):
         "administrativedomain": AdministrativeDomain,
         "cfgping": ManagedObject,
         "cfgsyslog": ManagedObject,
-        "cfgtrap": ManagedObject
+        "cfgtrap": ManagedObject,
+        "dnszone": DNSZone
     }
 
     def add_arguments(self, parser):

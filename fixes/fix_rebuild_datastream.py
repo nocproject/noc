@@ -9,11 +9,12 @@
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.dns.models.dnszone import DNSZone
 from noc.core.datastream.change import bulk_datastream_changes
 
 
 def fix():
-    for model in [AdministrativeDomain, ManagedObject]:
+    for model in [AdministrativeDomain, ManagedObject, DNSZone]:
         with bulk_datastream_changes():
             for obj in model.objects.all():
                 obj.save()  # Force datastream rebuild

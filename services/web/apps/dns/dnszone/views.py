@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from noc.dns.models.dnszone import DNSZone
@@ -26,9 +26,3 @@ class DNSZoneApplication(ExtModelApplication):
 
     records = ModelInline(DNSZoneRecord)
     zone = RepoInline("zone")
-
-    @view(url="^(?P<zone_id>\d+)/text/$", method=["GET"],
-          access="read", api=True)
-    def api_text(self, request, zone_id):
-        zone = self.get_object_or_404(DNSZone, id=int(zone_id))
-        return zone.get_zone_text()
