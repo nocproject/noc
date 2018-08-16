@@ -156,13 +156,17 @@ class Script(BaseScript):
                 f = self.rx_mainboard_ne.search(v)
                 r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
             else:
-                r.append(self.parse_item_content(v, slot_num, i_type))
+                # Do not parse empty lines
+                if v.strip():
+                    r.append(self.parse_item_content(v, slot_num, i_type))
         else:
             if i_type == "CHASSIS":
                 f = self.rx_mainboard.search(v)
                 r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
             else:
-                r.append(self.parse_item_content(v, subcard_num, i_type))
+                # Do not parse empty lines
+                if v.strip():
+                    r.append(self.parse_item_content(v, subcard_num, i_type))
 
         for f in self.rx_port.finditer(v):
             # port block, search XCVR
