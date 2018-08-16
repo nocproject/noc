@@ -8,14 +8,19 @@
 
 # Python modules
 from __future__ import absolute_import
+from threading import Lock
+import operator
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+import cachetools
 # NOC modules
 from .dnsserver import DNSServer
 from noc.main.models import NotificationGroup
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
+
+id_lock = Lock()
 
 
 @datastream
@@ -63,8 +68,29 @@ class DNSZoneProfile(models.Model):
         help_text=_("Notification group to use when zone group is not set"))
     description = models.TextField(_("Description"), blank=True, null=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        mo = DNSZoneProfile.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        mo = DNSZoneProfile.objects.filter(name=name)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
 
     def iter_changed_datastream(self):
         for z in self.dnszone_set.all():
