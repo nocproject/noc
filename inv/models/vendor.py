@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vendor model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,7 +29,8 @@ id_lock = threading.Lock()
     ("inv.ObjectModel", "vendor"),
     ("inv.Platform", "vendor"),
     ("inv.Firmware", "vendor"),
-    ("sa.ManagedObject", "vendor")
+    ("sa.ManagedObject", "vendor"),
+    ("sa.ManagedObjectSelector", "filter_vendor")
 ])
 class Vendor(Document):
     """

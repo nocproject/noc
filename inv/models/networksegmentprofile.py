@@ -57,7 +57,8 @@ class SegmentTopologySettings(EmbeddedDocument):
 
 @bi_sync
 @on_delete_check(check=[
-    ("inv.NetworkSegment", "profile")
+    ("inv.NetworkSegment", "profile"),
+    ("inv.NetworkSegmentProfile", "autocreated_profile")
 ])
 @on_save
 class NetworkSegmentProfile(Document):

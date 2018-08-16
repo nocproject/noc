@@ -121,6 +121,8 @@ def test_on_delete(model_refs):
     x_checks = set(model._on_delete["check"])
     x_checks |= set(model._on_delete["clean"])
     x_checks |= set(model._on_delete["delete"])
-
+    for c in x_checks:
+        assert isinstance(c, tuple), "@on_delete_check decorator must contain only tuples"
+        assert len(c) == 2, "@on_delete_check decorator must contain only two-item tuples"
     for mn, fn in refs:
-        assert (mn, fn) in x_checks, "@on_delete decorator must refer to (%s, %s)" % (mn, fn)
+        assert (mn, fn) in x_checks, "@on_delete_check decorator must refer to (\"%s\", \"%s\")" % (mn, fn)
