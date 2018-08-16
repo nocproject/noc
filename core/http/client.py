@@ -168,6 +168,8 @@ def fetch(url, method="GET",
         try:
             if proxy:
                 connect_address = proxy
+            elif isinstance(addr, tuple):
+                connect_address = addr
             else:
                 connect_address = (addr, port)
 

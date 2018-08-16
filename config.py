@@ -409,6 +409,8 @@ class Config(BaseConfig):
         send_buffer = IntParameter(default=4 * 1048576)
         # Recommended receive buffer size, 4M by default
         receive_buffer = IntParameter(default=4 * 1048576)
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class pmwriter(ConfigSection):
         batch_size = IntParameter(default=2500)
