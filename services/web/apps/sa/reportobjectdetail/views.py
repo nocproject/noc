@@ -72,15 +72,15 @@ class ReportObjectDetailApplication(ExtApplication):
 
     def get_report_object(self, user=None, is_managed=None, adm=None, selector=None,
                           pool=None, segment=None, ids=None):
-        p = Pool.get_by_name(pool or "default")
         mos = ManagedObject.objects.filter()
         if user.is_superuser and not adm and not selector and not segment:
-            mos = ManagedObject.objects.filter(pool=p)
+            mos = ManagedObject.objects.filter()
         if ids:
             mos = ManagedObject.objects.filter(id__in=[ids])
         if is_managed is not None:
             mos = ManagedObject.objects.filter(is_managed=is_managed)
         if pool:
+            p = Pool.get_by_name(pool or "default")
             mos = mos.filter(pool=p)
         if not user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(user))
