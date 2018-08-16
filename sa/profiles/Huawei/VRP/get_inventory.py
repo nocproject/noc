@@ -136,7 +136,7 @@ class Script(BaseScript):
             v_cli = "display elabel unit %s %s"
         elif self.match_version(platform__regex="^(S93..|AR[12].+)$"):
             v_cli = "display elabel %s %s"
-        if self.is_ne_platform:
+        if self.is_ne_platform and i_type != "CHASSIS":
             try:
                 v = self.cli("display elabel %s" % slot_num)
             except self.CLISyntaxError:
@@ -359,7 +359,7 @@ class Script(BaseScript):
         :return: type, number, part_no
         :rtype: list
         """
-        cx_600_t = ["LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
+        cx_600_t = ["IPU", "LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
         self.logger.info("Getting type %s, %s, %s", slot, sub, part_no)
 
         try:
