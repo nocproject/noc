@@ -401,6 +401,10 @@ class Script(BaseScript):
             return part_no, slot, None
         elif part_no.startswith("LE0"):
             return "FRU", slot, part_no
+        elif part_no.startswith("SAE"):
+            return "FRU", slot, part_no
+        elif part_no.startswith("SRU"):
+            return "SRU", slot, part_no
         elif part_no.startswith("AR"):
             # AR Series ISR, Examples:
             # "SIC": ["AR0MSEG1CA00"], "WSIC": ["AR01WSX220A"], "XSIC": ["AR01XSX550A"], "SRU": ["AR01SRU2C"],
