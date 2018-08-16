@@ -145,7 +145,13 @@ class Script(BaseScript):
             try:
                 v = self.cli(v_cli % (slot_num, subcard_num))
             except self.CLISyntaxError:
-                return []
+                if slot_num == 0:
+                    try:
+                        # found on AR0B0024BA model
+                        v = self.cli("display elabel backplane")
+                        i_type = "CHASSIS"
+                    except self.CLISyntaxError:
+                        return []
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
