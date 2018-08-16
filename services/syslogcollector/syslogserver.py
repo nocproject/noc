@@ -22,8 +22,8 @@ class SyslogServer(UDPServer):
 
     def on_read(self, data, address):
         self.service.perf_metrics["syslog_msg_in"] += 1
-        object = self.service.lookup_object(address[0])
-        if not object:
+        cfg = self.service.lookup_config(address[0])
+        if not cfg:
             return  # Invalid event source
         # Convert data to valid UTF8
         data = unicode(data, "utf8", "ignore").encode("utf8")
@@ -42,7 +42,7 @@ class SyslogServer(UDPServer):
         ts = int(time.time())
         #
         self.service.register_message(
-            object, ts, data,
+            cfg.id, ts, data,
             facility=priority >> 3,
             severity=priority & 7
         )
