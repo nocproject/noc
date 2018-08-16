@@ -11,13 +11,15 @@ import logging
 import datetime
 import csv
 import StringIO
+from collections import OrderedDict
 # Third-party modules
 import xlsxwriter
 from django.http import HttpResponse
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.lib.app.reportdatasources.report_metrics import ReportMetrics, ReportCPUMetrics
+from noc.lib.app.reportdatasources.report_metrics import (ReportMetrics, ReportCPUMetrics,
+                                                          ReportMemoryMetrics, ReportInterfaceFlapMetrics)
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
@@ -99,13 +101,14 @@ class ReportObjectDetailApplication(ExtApplication):
             "id",
             "object_name",
             "object_address",
-            "iface_name"
-            # "cpu_usage",
-            # "memory_usage",
+            "iface_name",
             "load_in",
             "load_out",
             "errors_in",
             "errors_out",
+            "cpu_usage",
+            "memory_usage",
+            "interface_flap"
             # "object_hostname",
             # "object_status",
             # "profile_name",
@@ -126,15 +129,21 @@ class ReportObjectDetailApplication(ExtApplication):
         r = []
         mos = self.get_report_object(request.user, is_managed, administrative_domain,
                                      selector, pool, segment, ids)
-
         mos_id = tuple(mos.order_by("bi_id").values_list("bi_id", flat=True))
-
         start = datetime.datetime.strptime(from_date, "%d.%m.%Y")
         stop = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
-        report = ReportMetrics(mos_id, start, stop)
-        if "cpu_usage" in columns.split(","):
-            report = ReportCPUMetrics(mos_id, start, stop)
-        report = iter(report)
+        # ["load_in", "load_out", "errors_in", "errors_out"]
+        a = OrderedDict([(a, "avg(%s)" % a) for a in set(cols[4:]).intersection(set(columns.split(",")))])
+        iface_report = ReportMetrics(mos_id, start, stop, columns=a)
+        cpu_report = ReportCPUMetrics(mos_id, start, stop)
+        memory_report = ReportMemoryMetrics(mos_id, start, stop)
+        if "cpu_usage" not in columns.split(","):
+            cpu_report = ReportCPUMetrics(mos_id, start, stop).unknown_value
+        elif "memory_usage" not in columns.split(","):
+            memory_report = ReportMemoryMetrics(mos_id, start, stop).unknown_value
+        elif "interface_flap" not in columns.split(","):
+            flap_report = ReportInterfaceFlapMetrics(mos_id, start, stop).unknown_value
+        # report = iter(report)
 
         for (mo_id, bi_id, name, address, is_managed,
              sa_profile, o_profile, auth_profile,
@@ -142,13 +151,20 @@ class ReportObjectDetailApplication(ExtApplication):
                 "id", "bi_id", "name", "address", "is_managed",
                 "profile", "object_profile__name", "auth_profile__name",
                 "administrative_domain__name", "segment").order_by("bi_id"):
-
-            r += [translate_row(row([
-                mo_id,
-                name,
-                address,
-                # "managed" if is_managed else "unmanaged",
-            ] + next(report)[0]), cmap)]
+            # # o_metrics = next(report)[0]
+            c_metrics = next(cpu_report)[0]
+            m_metrics = next(memory_report)[0]
+            # print cmap
+            # print o_metrics
+            # for o in o_metrics:
+            #     # print o_metrics
+            #     k = [
+            #         mo_id,
+            #         name,
+            #         address,
+            #         # "managed" if is_managed else "unmanaged",
+            #     ] + list(o)
+            #     r += [translate_row(row(k), cmap)]
 
         filename = "mo_metrics_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
