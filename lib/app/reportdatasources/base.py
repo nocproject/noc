@@ -16,7 +16,7 @@ import logging
 from django.db.models import Q as d_Q
 from noc.sa.models.managedobject import ManagedObject
 from .report_objectstat import (AttributeIsolator,
-                                CapabilitiesIsolator, StatusIsolator)
+                                CapabilitiesIsolator, StatusIsolator, ProblemIsolator)
 
 logger = logging.getLogger(__name__)
 
@@ -229,7 +229,8 @@ class ReportModelFilter(object):
                 2is1.3hs0.5is2.4hs0, 2is1.3hs0.5is2.4hs1, 2is1.3hs0.5is2.4hs1.5hs1"""
         self.f_map = {"is": StatusIsolator(),
                       "hs": CapabilitiesIsolator(),
-                      "a": AttributeIsolator()}
+                      "a": AttributeIsolator(),
+                      "isp": ProblemIsolator()}
         self.logger = logger
 
     def decode(self, formula):

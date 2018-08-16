@@ -27,7 +27,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 
 
-class IsolaterClass(object):
+class IsolatorClass(object):
     """
     BaseClass for isolated set.
     Every Isolated Class split objects set by facets function.
@@ -54,7 +54,7 @@ class IsolaterClass(object):
         raise NotImplementedError()
 
 
-class AttributeIsolator(IsolaterClass):
+class AttributeIsolator(IsolatorClass):
     name = "attribute"
 
     OP_ATTR_MAP = {
@@ -97,7 +97,7 @@ class AttributeIsolator(IsolaterClass):
             return d_Q(**{field: self.OP_ATTR_MAP[num][value]})
 
 
-class CapabilitiesIsolator(IsolaterClass):
+class CapabilitiesIsolator(IsolatorClass):
     name = "has"
     default_set = set(ManagedObject.objects.filter().values_list("id", flat=True))
 
@@ -186,12 +186,12 @@ class CapabilitiesIsolator(IsolaterClass):
         return d
 
 
-class StatusIsolator(IsolaterClass):
+class StatusIsolator(IsolatorClass):
     name = "is"
 
     def _1_is(self, index):
         # Status - Is Managed
-        return d_Q(**{"is_managed": bool(index)})
+        return d_Q(**{"is_managed": index == "2"})
 
     def _2_is(self, index):
         # Status - Monitoring
@@ -214,11 +214,7 @@ class StatusIsolator(IsolaterClass):
     def _4_is(self, index):
         # Is Problem perhaps
         # Suggests SNMP Problems
-        c = set(self.is_p("suggest_snmp", "Failed to guess SNMP community"))
-        if index == "0":
-            return set(ManagedObject.objects.filter().values_list("id", flat=True)) - c
-        if index == "1":
-            return c
+        return self.is_p("1", "0", inverse=index == "0")
 
     def _5_is(self, index):
         if index == "1":
@@ -256,14 +252,89 @@ class StatusIsolator(IsolaterClass):
         raise NotImplementedError()
 
     # @todo split to CLI porblem, SNMP (Access Problem) ... etc
-    def is_p(self, discovery, problem):
+    def is_p(self, num, value, inverse=False):
         """
         Problem match
         :param discovery: Discovery name
         :param problem: Problem text
         :return:
         """
-        match = {"problems": {"$exists": True}, "problems.%s." % discovery: {
-            "$regex": problem, "$options": "i"}}
-        return [int(r["_id"].rsplit("-")[-1]) for r in get_db()["noc.joblog"].with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED).find(match)]
+        match = {"problems": {"$exists": True}}
+        if num == "1":
+            # SNMP Problem
+            match = {"problems": {"$exists": True}, "problems.suggest_snmp.": {
+                "$regex": "Failed to guess SNMP community", "$options": "i"}}
+        if num == "2":
+            # CLI Problem
+            match = {"$and": [{"problems.profile.": {"$ne": "Cannot fetch snmp data, check device for SNMP access"}},
+                              {"problems.profile.": {"$ne": "Cannot detect profile"}},
+                              {"problems.version.": {"$regex": "/Remote error code \d+/"}}]}
+
+        c = set(int(r["_id"].rsplit("-")[-1]) for r in get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(match))
+        if inverse:
+            return set(ManagedObject.objects.filter().values_list("id", flat=True)) - c
+        else:
+            return c
+
+
+class ProblemIsolator(IsolatorClass):
+    name = "isp"
+    common_filter = set(ManagedObject.objects.filter().values_list("id", flat=True))
+
+    def _0_isp(self, index):
+        # Common Problem
+        match = {"problems": {"$exists": True}}
+        c = set(int(r["_id"].rsplit("-")[-1]) for r in get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(match))
+        if index == "0":
+            return self.common_filter - c
+        else:
+            return c
+
+    def _1_isp(self, index):
+        # SNMP Problem
+        match = {"$or": [
+            {"problems.suggest_snmp.": {"$regex": "Failed to guess SNMP community", "$options": "i"}},
+            {"problems.profile.": "Cannot fetch snmp data, check device for SNMP access"}]
+        }
+        c = set(int(r["_id"].rsplit("-")[-1]) for r in get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(match))
+        if index == "0":
+            return self.common_filter - c
+        else:
+            return c
+
+    def _2_isp(self, index):
+        # CLI Problem
+        match = {"$and": [{"problems.profile.": {"$ne": "Cannot fetch snmp data, check device for SNMP access"}},
+                          {"problems.profile.": {"$ne": "Cannot detect profile"}},
+                          {"$or": [{"problems.version.": {"$regex": "Remote error code \d+"}},
+                                   {"problems.suggest_cli.": {"$regex": "Failed to guess CLI credentials",
+                                                              "$options": "i"}}]}
+                          ]}
+        c = set(int(r["_id"].rsplit("-")[-1]) for r in get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(match))
+        if index == "0":
+            return self.common_filter - c
+        return c
+
+    def _3_isp(self, index):
+        # Profiles detect problems
+        match = {"$or": [{"problems.suggest_snmp.": {"$regex": "Failed to guess SNMP community", "$options": "i"}},
+                         {"problems.profile.": "Cannot fetch snmp data, check device for SNMP access"},
+                         {"problems.profile.": "Cannot detect profile"}]}
+        c = set(int(r["_id"].rsplit("-")[-1]) for r in get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(match))
+        if index == "0":
+            return self.common_filter - c
+        return c
+
+    def _4_isp(self, index):
+        # Undefined profiles
+        match = {"problems.profile.": {"$regex": "Not find profile for OID"}}
+        c = set(int(r["_id"].rsplit("-")[-1]) for r in get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(match))
+        if index == "0":
+            return self.common_filter - c
+        return c
