@@ -91,8 +91,7 @@ class ReportFilterApplication(SimpleReport):
             is_not_alived_c = get_db()["noc.cache.object_status"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).count_documents(
                 {"object": {"$in": is_managed_undef_in},
-                 "status": False},
-                {"_id": 1, "object": 1})
+                 "status": False})
 
             is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                    m["object"] for m in is_alive_id]
