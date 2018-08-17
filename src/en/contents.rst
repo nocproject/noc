@@ -23,5 +23,6 @@ this Manual and additional editions of this text.
     /bi
     /metrics
     /api
+    /technologies
     /glossary
     /todos
