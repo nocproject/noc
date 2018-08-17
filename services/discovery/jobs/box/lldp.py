@@ -82,7 +82,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         """
         # Some platforms emits wierd LLDP neighbor information.
         # Try to retrieve usable parts and fix packets
-        port_id = remote_object.get_profile().clean_lldp_neighbor(port_id)
+        port_id = remote_object.get_profile().clean_lldp_neighbor(remote_object, port_id)
         # Resolve interface according port subtype
         port_subtype = port_id["remote_port_subtype"]
         port = port_id["remote_port"]
