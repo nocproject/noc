@@ -22,21 +22,13 @@ class Script(BaseScript):
         r"\s+(?P<tag>\w)(?:\s+\w){3}\s+(?P<vlan>\d+)\s+(?P<desc>\S+)\s+(?P<vlans>(?:(?:\d+\s+)+))",
         re.MULTILINE)
 
-    rx_desc = re.compile(
-        r"Description\s(?P<desc>.*)",
-        re.MULTILINE)
+    rx_desc = re.compile(r"Description\s(?P<desc>.*)")
 
-    rx_vlans = re.compile(
-        r"VLANs\:(?P<vlans>.*)",
-        re.MULTILINE)
+    rx_vlans = re.compile(r"VLANs\:(?P<vlans>.*)")
 
-    rx_a_stat = re.compile(
-        r"configuration\:\s(?P<admin_status>\w+)",
-        re.MULTILINE)
+    rx_a_stat = re.compile(r"configuration\:\s(?P<admin_status>\w+)")
 
-    rx_o_stat = re.compile(
-        r"^(?P<port>\S+)\s+\d+",
-        re.MULTILINE)
+    rx_o_stat = re.compile(r"^(?P<port>\S+)\s+\d+")
 
     def get_interfaces_up(self):
         try:
@@ -45,8 +37,7 @@ class Script(BaseScript):
             return []
         r = []
         for match in self.rx_o_stat.finditer(v):
-            if match:
-                r += [match.group("port").strip()]
+            r += [match.group("port")]
         return r
 
     def execute_cli(self):
@@ -55,8 +46,6 @@ class Script(BaseScript):
         v = self.cli("show interface information")
         for match in self.rx_int.finditer(v):
             if match:
-                iface = []
-                sub = []
                 ifindex = int(match.group("ifindex")) + 128
                 ifname = match.group("ifname")
                 iftype = "physical"
@@ -64,9 +53,7 @@ class Script(BaseScript):
                 vlans = []
                 tag = match.group("tag")
                 a_stat = False
-                o_stat = False
-                if ifname in oper_up:
-                    o_stat = True
+                o_stat = ifname in oper_up
                 if ifname == "MGT1":
                     desc = match.group("desc")
                 else:
@@ -74,17 +61,18 @@ class Script(BaseScript):
                         p = self.cli("show interface port %s" % ifname)
                     except self.CLISyntaxError:
                         pass
-                    match1 = self.rx_desc.search(p)
-                    match2 = self.rx_vlans.search(p)
-                    match3 = self.rx_a_stat.search(p)
-                    desc = match1.group("desc")
-                    if tag == "y":
-                        vlans2 = match2.group("vlans")
-                        if vlans2 != "":
-                            vlans2 = vlans2.strip()
-                            vlans3 = vlans2.split(" ")
-                            vlans = map(int, vlans3)
-                    a_stat = match3.group("admin_status").lower() == "enabled"
+                    if p:
+                        match1 = self.rx_desc.search(p)
+                        match2 = self.rx_vlans.search(p)
+                        match3 = self.rx_a_stat.search(p)
+                        desc = match1.group("desc")
+                        if tag == "y":
+                            vlans2 = match2.group("vlans")
+                            if vlans2 != "":
+                                vlans2 = vlans2.strip()
+                                vlans3 = vlans2.split(" ")
+                                vlans = map(int, vlans3)
+                        a_stat = match3.group("admin_status").lower() == "enabled"
                 sub = {
                     "name": ifname,
                     "admin_status": a_stat,
