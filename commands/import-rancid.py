@@ -24,6 +24,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.gridvcs.manager import GridVCS
+from noc.core.script.scheme import TELNET, SSH
 import noc.settings
 
 
@@ -361,7 +362,7 @@ class Command(BaseCommand):
                         object_profile=object_profile,
                         administrative_domain=domain,
                         pool=pool,
-                        scheme=1 if method == "ssh" else 0,
+                        scheme=SSH if method == "ssh" else TELNET,
                         address=address,
                         profile=profile,
                         user=user,
