@@ -64,6 +64,7 @@ from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
+from noc.core.matcher import match
 from noc.core.datastream.decorator import datastream
 
 # Increase whenever new field added
@@ -520,13 +521,23 @@ class ManagedObject(Model):
         sp = getattr(self, "_scripts", None)
         if sp:
             return sp
-        else:
-            self._scripts = ScriptsProxy(self, getattr(self, "_scripts_caller", None))
-            return self._scripts
+        self._scripts = ScriptsProxy(self, getattr(self, "_scripts_caller", None))
+        return self._scripts
 
     @property
     def actions(self):
         return ActionsProxy(self)
+
+    @property
+    def matchers(self):
+        mp = getattr(self, "_matchers", None)
+        if mp:
+            return mp
+        self._matchers = MatchersProxy(self)
+        return self._matchers
+
+    def reset_matchers(self):
+        self._matchers = None
 
     def get_absolute_url(self):
         return site.reverse("sa:managedobject:change", self.id)
@@ -599,6 +610,14 @@ class ManagedObject(Model):
                 key=self.id,
                 pool=pool_name
             )
+        # Reset matchers
+        if (
+            "vendor" in self.changed_fields or
+            "platform" in self.changed_fields or
+            "version" in self.changed_fields or
+            "software_image" in self.changed_fields
+        ):
+            self.reset_matchers()
         # Rebuild object maps
         if (
             self.initial_data["id"] is None or
@@ -1574,6 +1593,41 @@ class ActionsProxy(object):
         cw = ActionsProxy.CallWrapper(self._object, name, a)
         self._cache[name] = cw
         return cw
+
+
+class MatchersProxy(object):
+    def __init__(self, obj):
+        self._object = obj
+        self._data = None
+
+    def _rebuild(self):
+        # Build version structure
+        version = {}
+        if self._object.vendor:
+            version["verndor"] = self._object.vendor.code
+        if self._object.platform:
+            version["platform"] = self._object.platform.name
+        if self._object.version:
+            version["version"] = self._object.version.version
+        if self._object.software_image:
+            version["image"] = self._object.software_image
+        # Compile matchers
+        matchers = self._object.get_profile().matchers
+        self._data = dict(
+            (m, match(version, matchers[m]))
+            for m in matchers
+        )
+
+    def __getattr__(self, name):
+        if self._data is None:
+            # Rebuild matchers
+            self._rebuild()
+        return self._data[name]
+
+    def __contains__(self, item):
+        if self._data is None:
+            self._rebuild()
+        return item in self._data
 
 
 # Avoid circular references
