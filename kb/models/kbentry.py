@@ -16,11 +16,20 @@ from django.db import models
 from noc.lib.app.site import site
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers import parser_registry
-
+from noc.core.model.decorator import on_delete_check
 
 parser_registry.register_all()
 
 
+@on_delete_check(
+    delete=[
+        ("kb.KBUserBookmark", "kb_entry"),
+        ("kb.KBEntryHistory", "kb_entry"),
+        ("kb.KBEntryPreviewLog", "kb_entry"),
+        ("kb.KBGlobalBookmark", "kb_entry"),
+        ("kb.KBEntryAttachment", "kb_entry")
+    ]
+)
 class KBEntry(models.Model):
     """
     KB Entry
