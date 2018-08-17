@@ -13,7 +13,7 @@ DEFAULT_NAME = "default"
 class Migration(object):
     def forwards(self):
         c = get_db().noc.interface_profiles
-        if not c.find({"name": DEFAULT_NAME}).count_documents():
+        if not c.count_documents({"name": DEFAULT_NAME}):
             c.insert({
                 "name": DEFAULT_NAME,
                 "description": "Fallback interface profile.\n"

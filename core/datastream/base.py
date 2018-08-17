@@ -167,7 +167,7 @@ class DataStream(object):
         Return total amount of items in datastream
         :return:
         """
-        return cls.get_collection().count_documents()
+        return cls.get_collection().count_documents({})
 
     @classmethod
     def clean_change_id(cls, change_id):

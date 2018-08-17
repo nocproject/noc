@@ -327,7 +327,7 @@ class DocInline(object):
         if ordering:
             data = data.order_by(*ordering)
         if format == "ext":
-            total = data.count_documents()
+            total = data.count()
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
         out = [formatter(o, fields=only) for o in data]

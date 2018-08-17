@@ -28,11 +28,11 @@ class Migration:
             "    z.is_auto_generated = TRUE "
             "    AND s.sync IS NOT NULL"
         ):
-            if not sc.find({
+            if not sc.count_documents({
                 "sync_id": str(sync_id),
                 "model_id": "dns.DNSZone",
                 "object_id": str(zone_id)
-            }).count_documents():
+            }):
                 sc.insert({
                     "uuid": str(uuid.uuid4()),
                     "model_id": "dns.DNSZone",

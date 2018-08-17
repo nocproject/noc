@@ -11,7 +11,7 @@ from noc.lib.nosql import get_db
 class Migration(object):
     def forwards(self):
         areas = get_db().noc.gis.areas
-        if not areas.find({"name": "World"}).count_documents():
+        if not areas.count_documents({"name": "World"}):
             areas.insert({
                 "name": "World",
                 "is_active": True,

@@ -28,7 +28,7 @@ class ReportFilterApplication(SimpleReport):
     title = _("Managed Object Serial Number")
     form = ReportForm
 
-    def get_data(self, request, sel):
+    def get_data(self, request, sel=None):
 
         qs = ManagedObject.objects
         if not request.user.is_superuser:
@@ -42,8 +42,8 @@ class ReportFilterApplication(SimpleReport):
         data = []
 
         for mo in mos_list:
-            q = Object._get_collection().find({"data.management.managed_object": {"$in": [mo.id]}})
-            if q.count_documents() == 0:
+            q = Object._get_collection().count_documents({"data.management.managed_object": {"$in": [mo.id]}})
+            if q == 0:
                 data += [[mo.name,
                           mo.address,
                           mo.vendor or None,
@@ -54,7 +54,7 @@ class ReportFilterApplication(SimpleReport):
                           None
                           ]]
             else:
-                for x in q:
+                for x in Object._get_collection().find({"data.management.managed_object": {"$in": [mo.id]}}):
                     data += [[x["name"],
                               mo.address,
                               mo.vendor or None,

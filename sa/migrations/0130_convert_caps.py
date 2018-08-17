@@ -27,7 +27,7 @@ class Migration(object):
 
         db = get_db()
         caps = db["noc.sa.objectcapabilities"]
-        if not caps.count_documents():
+        if not caps.count_documents({}):
             return
         caps.rename("noc.sa.objectcapabilities_old", dropTarget=True)
         old_caps = db["noc.sa.objectcapabilities_old"]

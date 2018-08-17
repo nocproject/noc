@@ -6,7 +6,7 @@ class Migration(object):
     def forwards(self):
         db = get_db()
         coll = db["noc.dialplans"]
-        if not coll.count_documents():
+        if not coll.count_documents({}):
             coll.insert({
                 "name": "E.164",
                 "description": "E.164 numbering plan",
