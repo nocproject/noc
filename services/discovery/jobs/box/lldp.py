@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # LLDP check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,12 @@ from noc.lib.validators import is_ipv4, is_int
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_UNSPECIFIED
+)
 
 
 class LLDPCheck(TopologyDiscoveryCheck):
@@ -21,16 +27,6 @@ class LLDPCheck(TopologyDiscoveryCheck):
     name = "lldp"
     required_script = "get_lldp_neighbors"
     required_capabilities = ["Network | LLDP"]
-
-    CHASSIS_SUBTYPE_MAC = 4
-    CHASSIS_SUBTYPE_NETWORK_ADDRESS = 5
-    CHASSIS_SUBTYPE_LOCAL = 7
-
-    PORT_SUBTYPE_ALIAS = 1
-    PORT_SUBTYPE_MAC = 3
-    PORT_SUBTYPE_NAME = 5
-    PORT_SUBTYPE_LOCAL = 7
-    PORT_SUBTYPE_UNSPECIFIED = 128
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_lldp_neighbors()
@@ -46,11 +42,11 @@ class LLDPCheck(TopologyDiscoveryCheck):
         """
         chassis_subtype = neighbor_id["remote_chassis_id_subtype"]
         chassis_id = neighbor_id["remote_chassis_id"]
-        if chassis_subtype == self.CHASSIS_SUBTYPE_MAC:
+        if chassis_subtype == LLDP_CHASSIS_SUBTYPE_MAC:
             return self.get_neighbor_by_mac(chassis_id)
-        elif chassis_subtype == self.CHASSIS_SUBTYPE_NETWORK_ADDRESS:
+        elif chassis_subtype == LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS:
             return self.get_neighbor_by_ip(chassis_id)
-        elif chassis_subtype == self.CHASSIS_SUBTYPE_LOCAL:
+        elif chassis_subtype == LLDP_CHASSIS_SUBTYPE_LOCAL:
             return self.get_neighbor_by_local(chassis_id)
         else:
             self.logger.debug(
@@ -82,19 +78,23 @@ class LLDPCheck(TopologyDiscoveryCheck):
 
     def get_remote_interface(self, remote_object, port_id):
         """
-        port id is a lldp neighbor dict
+        port id is a LLDP neighbor dict
         """
+        # Some platforms emits wierd LLDP neighbor information.
+        # Try to retrieve usable parts and fix packets
+        port_id = remote_object.get_profile().clean_lldp_neighbor(port_id)
+        # Resolve interface according port subtype
         port_subtype = port_id["remote_port_subtype"]
         port = port_id["remote_port"]
-        if port_subtype == self.PORT_SUBTYPE_ALIAS:
+        if port_subtype == LLDP_PORT_SUBTYPE_ALIAS:
             rp = self.get_interface_by_description(port, remote_object)
-        elif port_subtype == self.PORT_SUBTYPE_MAC:
+        elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
             rp = self.get_interface_by_mac(port, remote_object)
-        elif port_subtype == self.PORT_SUBTYPE_NAME:
+        elif port_subtype == LLDP_PORT_SUBTYPE_NAME:
             rp = self.get_interface_by_name(port, remote_object)
-        elif port_subtype == self.PORT_SUBTYPE_LOCAL:
+        elif port_subtype == LLDP_PORT_SUBTYPE_LOCAL:
             rp = self.get_interface_by_local(port, remote_object)
-        elif port_subtype == self.PORT_SUBTYPE_UNSPECIFIED:
+        elif port_subtype == LLDP_PORT_SUBTYPE_UNSPECIFIED:
             rp = None  # Process below
         else:
             self.logger.debug(
@@ -129,7 +129,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
                 return i[0]
             else:
                 return None
-        except:
+        except Exception:
             return None
 
     def get_interface_by_ifindex(self, ifindex, object):

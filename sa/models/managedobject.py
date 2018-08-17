@@ -68,7 +68,7 @@ from noc.core.matcher import match
 from noc.core.datastream.decorator import datastream
 
 # Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 8
+MANAGEDOBJECT_CACHE_VERSION = 9
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])

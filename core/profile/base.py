@@ -388,7 +388,20 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         # Prevent serialization errors
         return unicode(cfg, "utf8", "ignore").encode("utf8")
 
-    def add_script_method(self, script, name, method):
+    def clean_lldp_neighbor(self, obj, neighbor):
+        """
+        Normalize and rewrite IGetLLDPNeighbors.neighbors structure
+        in LLDP topology discovery.
+        Remote object profile's .clean_lldp_neighbor() used
+
+        :param obj: Managed Object reference
+        :param neighbor: IGetLLDPNeighbors.neighbors item
+        :return: IGetLLDPNeighbors.neighbors item
+        """
+        return neighbor
+
+    @staticmethod
+    def add_script_method(script, name, method):
         f = functools.partial(method, script)
         if not hasattr(f, "__name__"):
             setattr(f, "__name__", name)
