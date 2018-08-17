@@ -26,7 +26,7 @@ class WhoisCache(object):
         """
         db = nosql.get_db()
         collection = db.noc.whois.asset.members
-        return bool(collection.count())
+        return bool(collection.count_documents({}))
 
     @classmethod
     def has_origin_routes(cls):
@@ -36,7 +36,7 @@ class WhoisCache(object):
         """
         db = nosql.get_db()
         collection = db.noc.whois.origin.route
-        return bool(collection.count())
+        return bool(collection.count_documents({}))
 
     @classmethod
     def has_asset(cls, as_set):

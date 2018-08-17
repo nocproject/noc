@@ -112,16 +112,16 @@ def escalate(alarm_id, escalation_id, escalation_delay,
             # @todo: Move into escalator service
             # @todo: Process per-ttsystem limits
             ets = datetime.datetime.now() - datetime.timedelta(seconds=config.escalator.ets)
-            ae = ActiveAlarm._get_collection().find({
+            ae = ActiveAlarm._get_collection().count_documents({
                 "escalation_ts": {
                     "$gte": ets
                 }
-            }).count()
-            ae += ArchivedAlarm._get_collection().find({
+            })
+            ae += ArchivedAlarm._get_collection().count_documents({
                 "escalation_ts": {
                     "$gte": ets
                 }
-            }).count()
+            })
             if ae >= config.escalator.tt_escalation_limit:
                 logger.error(
                     "Escalation limit exceeded (%s/%s). Skipping",

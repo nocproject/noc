@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from south.db import db
+# NOC modules
 from noc.lib.nosql import get_db
 
-class Migration:
 
+class Migration(object):
     def forwards(self):
         areas = get_db().noc.gis.areas
-        if not areas.find({"name": "World"}).count():
+        if not areas.count_documents({"name": "World"}):
             areas.insert({
                 "name": "World",
                 "is_active": True,

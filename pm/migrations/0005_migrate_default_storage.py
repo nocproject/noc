@@ -5,7 +5,7 @@ from noc.lib.nosql import get_db
 class Migration:
     def forwards(self):
         db = get_db()
-        scount = db.noc.pm.storages.count()
+        scount = db.noc.pm.storages.count_documents({})
         if scount == 0:
             db.noc.pm.storages.insert({
                 "name": "default",

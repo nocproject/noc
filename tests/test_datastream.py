@@ -68,7 +68,7 @@ def test_datastream_collection():
     ExampleDataStream.ensure_collection()
     # Test collection exists
     coll = ExampleDataStream.get_collection()
-    assert "ds_example" in coll.database.collection_names()
+    assert "ds_example" in coll.database.list_collection_names()
     # Test collection indexes
     ii = coll.index_information()
     assert "change_id_1" in ii
