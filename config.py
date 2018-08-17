@@ -464,12 +464,6 @@ class Config(BaseConfig):
     class sentry(ConfigSection):
         url = StringParameter(default="")
 
-    class sync(ConfigSection):
-        config_ttl = SecondsParameter(default="1d")
-        ttl_jitter = FloatParameter(default=0.1)
-        expired_refresh_timeout = IntParameter(default=25)
-        expired_refresh_chunk = IntParameter(default=100)
-
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
 
