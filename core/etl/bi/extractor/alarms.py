@@ -33,9 +33,25 @@ class AlarmsExtractor(ArchivingExtractor):
     archive_batch_limit = config.bi.alarms_archive_batch_limit
     archive_collection_template = config.bi.alarms_archive_template
 
-    def __init__(self, prefix, start, stop):
+    def __init__(self, prefix, start, stop, use_archive=False):
+        self.use_archive = use_archive
         super(AlarmsExtractor, self).__init__(prefix, start, stop)
         self.alarm_stream = Stream(Alarms, prefix)
+
+    def iter_data(self):
+        if self.use_archive:
+            coll = [self.archive_db.get_collection(coll_name) for
+                    coll_name in self.find_archived_collections(self.start, self.stop)]
+        else:
+            coll = [ArchivedAlarm._get_collection()]
+        for c in coll:
+            for d in c.find({
+                "clear_timestamp": {
+                    "$gt": self.start,
+                    "$lte": self.stop
+                }
+            }, no_cursor_timeout=True).sort("clear_timestamp"):
+                yield d
 
     def extract(self):
         nr = 0
@@ -66,12 +82,7 @@ class AlarmsExtractor(ArchivingExtractor):
         # object -> [ts1, .., tsN]
         reboots = dict((d["_id"], d["reboots"]) for d in r)
         #
-        for d in ArchivedAlarm._get_collection().find({
-            "clear_timestamp": {
-                "$gt": self.start,
-                "$lte": self.stop
-            }
-        }, no_cursor_timeout=True).sort("clear_timestamp"):
+        for d in self.iter_data():
             mo = ManagedObject.get_by_id(d["managed_object"])
             if not mo:
                 continue
@@ -128,11 +139,11 @@ class AlarmsExtractor(ArchivingExtractor):
         # Archive
         super(AlarmsExtractor, self).clean()
         # Clean
-        ArchivedAlarm._get_collection().remove({
-            "clear_timestamp": {
-                "$lte": self.clean_ts
-            }
-        })
+        # ArchivedAlarm._get_collection().remove({
+        #     "clear_timestamp": {
+        #         "$lte": self.clean_ts
+        #     }
+        # })
 
     @classmethod
     def get_start(cls):
@@ -147,7 +158,7 @@ class AlarmsExtractor(ArchivingExtractor):
 
     def iter_archived_items(self):
         for d in ArchivedAlarm._get_collection().find({
-            "timestamp": {
+            "clear_timestamp": {
                 "$lte": self.clean_ts
             }
         }, no_cursor_timeout=True):
