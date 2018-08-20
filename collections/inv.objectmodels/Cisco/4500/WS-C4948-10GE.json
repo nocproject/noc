@@ -31,7 +31,7 @@
             "gender": "f",
             "group": "0",
             "name": "Gi1",
-            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -40,7 +40,7 @@
             "gender": "f",
             "group": "0",
             "name": "Gi2",
-            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -49,7 +49,7 @@
             "gender": "f",
             "group": "0",
             "name": "Gi3",
-            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -58,7 +58,7 @@
             "gender": "f",
             "group": "0",
             "name": "Gi4",
-            "protocols": ["10BASET,100BASETX,1000BASETX"],
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
