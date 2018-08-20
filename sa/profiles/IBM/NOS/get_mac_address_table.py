@@ -16,8 +16,7 @@ class Script(BaseScript):
     name = "IBM.NOS.get_mac_address_table"
     interface = IGetMACAddressTable
 
-    rx_mac = re.compile(
-        r"^\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<port>\S+)\s+(?P<state>\S+)\s+$", re.MULTILINE)
+    rx_mac = re.compile(r"^\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<port>\S+)\s+(?P<state>\S+)\s+$")
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-address-table"
