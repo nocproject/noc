@@ -52,13 +52,14 @@ Ext.define("NOC.crm.subscriber.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "large"
+                    uiStyle: "medium"
                 },
                 {
                     name: "profile",
                     xtype: "crm.subscriberprofile.LookupField",
                     fieldLabel: __("Profile"),
-                    allowBlank: true
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "state",
