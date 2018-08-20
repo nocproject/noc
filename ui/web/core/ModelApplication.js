@@ -37,13 +37,6 @@ Ext.define("NOC.core.ModelApplication", {
     formLayout: "anchor",
     formMinWidth: undefined,
     formMaxWidth: undefined,
-    navTooltipTemplate: new Ext.XTemplate(
-        '<tpl if="data.name">',
-        '{data.name}',
-        // '<tpl else>',
-        // '',
-        '</tpl>'
-    ),
     //
     initComponent: function() {
         var me = this;
@@ -55,6 +48,13 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentQuery = me.currentQuery || {};
         // Create store
         var bs = Math.ceil(screen.height / 24);
+        me.navTooltipTemplate = new Ext.XTemplate(
+            '<tpl if="data.name">',
+            '{data.name}',
+            // '<tpl else>',
+            // '',
+            '</tpl>'
+        );
         me.store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
             customFields: me.noc.cust_model_fields || [],
@@ -858,7 +858,7 @@ Ext.define("NOC.core.ModelApplication", {
             field,
             data;
         me.currentRecord = record;
-        NOC.app.app.setActiveNavTabTooltip(me.navTooltipTemplate.apply(me.currentRecord));
+        NOC.app.app.setActiveNavTabTooltip(me.currentRecord);
         me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
         data = record.getData();

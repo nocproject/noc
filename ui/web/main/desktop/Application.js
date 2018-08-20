@@ -431,16 +431,14 @@ Ext.define("NOC.main.desktop.Application", {
         }
     },
     //
-    setActiveNavTabTooltip: function(text) {
+    setActiveNavTabTooltip: function(context) {
         var me = this;
-        // if(context.get("name")) {
-            Ext.each(me.workplacePanel.tabBar.getRefItems(), function(btn) {
-                if(btn.active === true) {
-                    btn.setTooltip(text);
-                    return false;
-                }
-            });
-        // }
+        Ext.each(me.workplacePanel.tabBar.getRefItems(), function(btn) {
+            if(btn.active === true) {
+                btn.setTooltip(me.workplacePanel.getApp().navTooltipTemplate.apply(context));
+                return false;
+            }
+        });
     },
     //
     clearActiveNavTabTooltip: function() {
