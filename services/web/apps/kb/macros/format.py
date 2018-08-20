@@ -2,26 +2,27 @@
 # ---------------------------------------------------------------------
 # format macro
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
-
-from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
+# NOC modules
 from noc.lib.highlight import NOCHtmlFormatter
 from noc.core.profile.loader import loader as profile_loader
+from .base import BaseMacro
 
 
-class Macro(MacroBase):
+class FormatMacro(BaseMacro):
     """
-    #
-    # Format macro:
-    # Formats and highlights text
-    # Args:
-    #     syntax - name of the syntax.
-    #
-
+    Format macro:
+    Formats and highlights text
+    Args:
+        syntax - name of the syntax.
     """
     name = "format"
 

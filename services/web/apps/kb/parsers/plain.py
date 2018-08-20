@@ -3,13 +3,17 @@
 # Plain text parser.
 # Returns Raw Text
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from noc.services.web.apps.kb.parsers import Parser
+
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from .base import BaseParser
 
 
-class Parser(Parser):
+class PlainTextParser(BaseParser):
     """Creole Parser"""
     name = "Plain Text"
 
