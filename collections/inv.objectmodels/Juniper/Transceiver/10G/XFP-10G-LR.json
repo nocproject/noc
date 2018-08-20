@@ -11,21 +11,24 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Transceiver | XFP"
+            "type__name": "Transceiver | XFP",
+            "protocols": ["TransEth10G"]
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": [">10GBASELR-1310"]
         },
         {
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": [">10GBASELR-1310"]
         }
     ],
     "data": {

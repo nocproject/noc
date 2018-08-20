@@ -246,11 +246,11 @@
         },
         {
             "description": "Fiber port 27",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "27",
             "name": "sfp27",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -264,11 +264,11 @@
         },
         {
             "description": "Fiber port 28",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "28",
             "name": "sfp28",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {

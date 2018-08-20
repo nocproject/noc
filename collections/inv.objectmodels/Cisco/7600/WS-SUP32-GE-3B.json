@@ -12,7 +12,7 @@
             "direction": "s",
             "gender": "f",
             "name": "Gi9",
-            "protocols": ["Eth1G"],
+            "protocols": ["100BASET", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
