@@ -9,6 +9,9 @@
 
 # Python modules
 from __future__ import print_function
+import argparse
+# Third-party modules
+import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.datastream.loader import loader
@@ -37,6 +40,22 @@ class Command(BaseCommand):
         rebuild_parser.add_argument(
             "--datastream",
             help="Datastream name"
+        )
+        # get
+        get_parser = subparsers.add_parser("get")
+        get_parser.add_argument(
+            "--datastream",
+            help="Datastream name"
+        )
+        get_parser.add_argument(
+            "--filter",
+            action="append",
+            help="Datastream filter"
+        )
+        get_parser.add_argument(
+            "objects",
+            nargs=argparse.REMAINDER,
+            help="Object ids"
         )
 
     def handle(self, cmd, *args, **options):
@@ -71,6 +90,20 @@ class Command(BaseCommand):
                 self.print("[%02d%%]" % ((n * 100) // total))
                 next_report += report_interval
         self.print("Done")
+
+    def handle_get(self, datastream, objects, filter, *args, **kwargs):
+        ds = loader.get_datastream(datastream)
+        if not ds:
+            self.die("Cannot initialize datastream")
+        filter = filter or []
+        filters = filter[:]
+        if objects:
+            filters += ["id(%s)" % ",".join(objects)]
+        for obj_id, change_id, data in ds.iter_data(filters=filters):
+            gt = change_id.generation_time.strftime("%Y-%m-%d %H:%M:%S")
+            self.print("===[id: %s, change id: %s, time: %s]================" % (obj_id, change_id, gt))
+            d = ujson.loads(data)
+            self.print(ujson.dumps(d, indent=2))
 
 
 if __name__ == "__main__":
