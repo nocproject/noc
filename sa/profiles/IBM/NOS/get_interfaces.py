@@ -43,9 +43,12 @@ class Script(BaseScript):
     def execute_cli(self):
         interfaces = []
         oper_up = self.get_interfaces_up()
-        v = self.cli("show interface information")
-        for match in self.rx_int.finditer(v):
-            if match:
+        try:
+            v = self.cli("show interface information")
+        except self.CLISyntaxError:
+            return []
+        if v:
+            for match in self.rx_int.finditer(v):
                 ifindex = int(match.group("ifindex")) + 128
                 ifname = match.group("ifname")
                 iftype = "physical"
