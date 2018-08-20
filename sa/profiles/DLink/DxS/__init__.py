@@ -38,7 +38,10 @@ class Profile(BaseProfile):
         # LLDP neighbor information should replace port_id to remote_port_description
         "is_lldp_convert_mac_to_name": {
             "platform": {
-                "$in": ["DGS-3627"]
+                "$in": [
+                    "DGS-3426", "DGS-3426G", "DGS-3426P", "DGS-3427", "DGS-3450",
+                    "DGS-3612", "DGS-3612G", "DGS-3627", "DGS-3627G", "DGS-3650"
+                ]
             }
         }
     }
@@ -70,7 +73,7 @@ class Profile(BaseProfile):
         r"^((?P<re_vendor>(RMON|D-Link))\s)?"
         r"((?P<re_platform>(D[EXG]S\S+))\s)?"
         r"((?P<re_firmware>R\S+)\s)?"
-        r"Port\s+(?P<re_port>\d+)?"
+        r"Port\s*(?P<re_port>\d+)?"
         r"( on Unit (?P<re_slot>\d+))?$"
     )
 
