@@ -42,7 +42,8 @@ class Command(BaseCommand):
             "Transceiver | XFP": self.check_ct_xfp,
             "Transceiver | XFP | Cisco": self.check_ct_xfp,
             "Transceiver | GBIC": self.check_ct_gbic,
-            "Transceiver | XENPAK | Cisco": self.check_ct_xenpak
+            "Transceiver | XENPAK | Cisco": self.check_ct_xenpak,
+            "Transceiver | CFP": self.check_ct_cfp
         }
         for m in ObjectModel.objects.all():
             self.errors = []
@@ -110,24 +111,74 @@ class Command(BaseCommand):
 
     def check_optical_lc(self, c):
         self.check_direction(c, ["s"])
-        self.check_protocols(c, [
-            ">100BASEFX-1310", "<100BASEFX-1310",
-            ">100BASEFX-1490", "<100BASEFX-1490",
-            ">100BASEFX-1550", "<100BASEFX-1550",
-            ">100BASELX-1310", "<100BASELX-1310",
-            ">100BASELX-1550", "<100BASELX-1550",
-            ">1000BASESX", "<1000BASESX",
-            ">1000BASELX-1310", "<1000BASELX-1310",
-            ">1000BASELX-1490", "<1000BASELX-1490",
-            ">1000BASELX-1550", "<1000BASELX-1550",
-            ">1000BASEEX-1310", "<1000BASEEX-1310",
-            ">1000BASEZX-1550", "<1000BASEZX-1550",
-            ">10GBASELR-1310", "<10GBASELR-1310",
-            ">10GBASEER-1550", "<10GBASEER-1550",
-            ">10GBASEZR-1550", "<10GBASEZR-1550",
-            ">10GBASEUSR", "<10GBASEUSR",
-            ">10GBASESR", "<10GBASESR"
-        ])
+        if any("100BASEFX" in s for s in c.protocols):
+            self.check_protocols(c, [
+                ">100BASEFX-1310", "<100BASEFX-1310",
+                ">100BASEFX-1490", "<100BASEFX-1490",
+                ">100BASEFX-1550", "<100BASEFX-1550",
+            ])
+        elif any("100BASELX" in s for s in c.protocols):
+            self.check_protocols(c, [
+                ">100BASELX-1310", "<100BASELX-1310",
+                ">100BASELX-1550", "<100BASELX-1550",
+            ])
+        elif any("1000BASEZX" in s for s in c.protocols):
+            self.check_protocols(c, [
+                ">1000BASEZX-1350", "<1000BASEZX-1350",
+                ">1000BASEZX-1370", "<1000BASEZX-1370",
+                ">1000BASEZX-1390", "<1000BASEZX-1390",
+                ">1000BASEZX-1410", "<1000BASEZX-1410",
+                ">1000BASEZX-1430", "<1000BASEZX-1430",
+                ">1000BASEZX-1450", "<1000BASEZX-1450",
+                ">1000BASEZX-1470", "<1000BASEZX-1470",
+                ">1000BASEZX-1490", "<1000BASEZX-1490",
+                ">1000BASEZX-1510", "<1000BASEZX-1510",
+                ">1000BASEZX-1530", "<1000BASEZX-1530",
+                ">1000BASEZX-1550", "<1000BASEZX-1550",
+                ">1000BASEZX-1570", "<1000BASEZX-1570",
+                ">1000BASEZX-1590", "<1000BASEZX-1590",
+                ">1000BASEZX-1610", "<1000BASEZX-1610",
+            ])
+        elif any("10GBASE" in s for s in c.protocols):
+            self.check_protocols(c, [
+                ">10GBASELR-1310", "<10GBASELR-1310",
+                ">10GBASEER-1550", "<10GBASEER-1550",
+                ">10GBASEZR-1550", "<10GBASEZR-1550",
+                ">10GBASEUSR", "<10GBASEUSR",
+                ">10GBASESR-850", "<10GBASESR-850",
+            ])
+        else:
+            self.check_protocols(c, [
+                ">100BASEFX-1310", "<100BASEFX-1310",
+                ">100BASEFX-1490", "<100BASEFX-1490",
+                ">100BASEFX-1550", "<100BASEFX-1550",
+                ">100BASELX-1310", "<100BASELX-1310",
+                ">100BASELX-1550", "<100BASELX-1550",
+                ">1000BASESX", "<1000BASESX",
+                ">1000BASELX-1310", "<1000BASELX-1310",
+                ">1000BASELX-1490", "<1000BASELX-1490",
+                ">1000BASELX-1550", "<1000BASELX-1550",
+                ">1000BASEEX-1310", "<1000BASEEX-1310",
+                ">1000BASEZX-1350", "<1000BASEZX-1350",
+                ">1000BASEZX-1370", "<1000BASEZX-1370",
+                ">1000BASEZX-1390", "<1000BASEZX-1390",
+                ">1000BASEZX-1410", "<1000BASEZX-1410",
+                ">1000BASEZX-1430", "<1000BASEZX-1430",
+                ">1000BASEZX-1450", "<1000BASEZX-1450",
+                ">1000BASEZX-1470", "<1000BASEZX-1470",
+                ">1000BASEZX-1490", "<1000BASEZX-1490",
+                ">1000BASEZX-1510", "<1000BASEZX-1510",
+                ">1000BASEZX-1530", "<1000BASEZX-1530",
+                ">1000BASEZX-1550", "<1000BASEZX-1550",
+                ">1000BASEZX-1570", "<1000BASEZX-1570",
+                ">1000BASEZX-1590", "<1000BASEZX-1590",
+                ">1000BASEZX-1610", "<1000BASEZX-1610",
+                ">10GBASELR-1310", "<10GBASELR-1310",
+                ">10GBASEER-1550", "<10GBASEER-1550",
+                ">10GBASEZR-1550", "<10GBASEZR-1550",
+                ">10GBASEUSR", "<10GBASEUSR",
+                ">10GBASESR-850", "<10GBASESR-850",
+            ])
 
     def check_ct_sfp(self, c):
         self.check_direction(c, ["i", "o"])
@@ -163,6 +214,12 @@ class Command(BaseCommand):
         self.check_direction(c, ["i", "o"])
         self.check_protocols(c, [
             "TransEth10G"
+        ])
+
+    def check_ct_cfp(self, c):
+        self.check_direction(c, ["i", "o"])
+        self.check_protocols(c, [
+            "TransEth100G"
         ])
 
 
