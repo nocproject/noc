@@ -52,6 +52,11 @@ class Profile(BaseProfile):
                 "$regex": r"7200|7301"
             }
         },
+        "is_platform_7600": {
+            "platform": {
+                "$regex": r"76(0[3459](\-S)?|13)"
+            }
+        },
         "is_isr_router": {
             "platform": {
                 "$regex": r"^(19\d\d|29\d\d|39\d\d)$"
