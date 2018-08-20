@@ -37,6 +37,13 @@ Ext.define("NOC.core.ModelApplication", {
     formLayout: "anchor",
     formMinWidth: undefined,
     formMaxWidth: undefined,
+    navTooltipTemplate: new Ext.XTemplate(
+        '<tpl if="data.name">',
+        '{data.name}',
+        // '<tpl else>',
+        // '',
+        '</tpl>'
+    ),
     //
     initComponent: function() {
         var me = this;
@@ -851,7 +858,7 @@ Ext.define("NOC.core.ModelApplication", {
             field,
             data;
         me.currentRecord = record;
-        me.addTabTooltip(me.currentRecord);
+        NOC.app.app.setActiveNavTabTooltip(me.navTooltipTemplate.apply(me.currentRecord));
         me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
         data = record.getData();
@@ -1145,7 +1152,7 @@ Ext.define("NOC.core.ModelApplication", {
             // Remove filter set by loadById
             delete me.currentQuery[me.idField];
         }
-        me.clearTabTooltip();
+        NOC.app.app.clearActiveNavTabTooltip();
         // Apply updated filter
         me.store.setFilterParams(me.currentQuery);
         me.showGrid();
@@ -1905,29 +1912,5 @@ Ext.define("NOC.core.ModelApplication", {
                 html: element.tooltip
             });
         }
-    },
-    //
-    addTabTooltip: function(record) {
-        var me = this,
-            toolBar = me.up().up().getRefItems()[0];
-        if(record.get("name")) {
-            Ext.each(toolBar.getRefItems(), function(item) {
-                if(item.active === true) {
-                    item.setTooltip(record.get("name"));
-                    return false;
-                }
-            });
-        }
-    },
-    //
-    clearTabTooltip: function() {
-        var me = this,
-            toolBar = me.up().up().getRefItems()[0];
-        Ext.each(toolBar.getRefItems(), function(item) {
-            if(item.active === true) {
-                item.setTooltip(undefined);
-                return false;
-            }
-        });
     }
 });
