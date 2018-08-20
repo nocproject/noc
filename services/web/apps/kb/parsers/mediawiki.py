@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import re
 try:
     import xml.etree.ElementTree as ET
-except:
+except Exception:
     from elementtree import ElementTree as ET
 # Third-party modules
 from mwlib import siteinfo

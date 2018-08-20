@@ -10,7 +10,6 @@
 from __future__ import absolute_import
 from noc.lib.validators import is_int
 from noc.settings import config
-from ..macros.loader import loader as macro_loader
 
 
 class BaseParser(object):
