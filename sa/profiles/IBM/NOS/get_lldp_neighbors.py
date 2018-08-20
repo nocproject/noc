@@ -31,34 +31,35 @@ class Script(BaseScript):
             v = self.cli("show lldp remote-device | begin LocalPort")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        for match in self.rx_lldp.finditer(v):
-            local_port = match.group("local_port")
-            remote_chassis_id = match.group("remote_id")
-            remote_chassis_id_subtype = 4
-            remote_port = match.group("remote_port")
-            rn = match.group("remote_n")
-            remote_port_subtype = 5
-            if self.rx_mac.match(remote_port):
-                remote_port = MACAddressParameter().clean(remote_port)
-                remote_port_subtype = 3
-            elif is_ipv4(remote_port):
-                remote_port_subtype = 4
-            elif is_int(remote_port):
-                remote_port_subtype = 7
-            if self.rx_mac.match(remote_chassis_id):
-                remote_chassis_id = remote_chassis_id.replace(" ", "-")
-                remote_chassis_id = MACAddressParameter().clean(remote_chassis_id)
-                remote_chassis_id_subtype = 3
-            n = {
-                "remote_port": remote_port,
-                "remote_port_subtype": remote_port_subtype,
-                "remote_chassis_id": remote_chassis_id,
-                "remote_chassis_id_subtype": remote_chassis_id_subtype,
-                "remote_system_name": rn
-            }
-            i = {
-                "local_interface": local_port,
-                "neighbors": [n]
-            }
-            r += [i]
+        if v:
+            for match in self.rx_lldp.finditer(v):
+                local_port = match.group("local_port")
+                remote_chassis_id = match.group("remote_id")
+                remote_chassis_id_subtype = 4
+                remote_port = match.group("remote_port")
+                rn = match.group("remote_n")
+                remote_port_subtype = 5
+                if self.rx_mac.match(remote_port):
+                    remote_port = MACAddressParameter().clean(remote_port)
+                    remote_port_subtype = 3
+                elif is_ipv4(remote_port):
+                    remote_port_subtype = 4
+                elif is_int(remote_port):
+                    remote_port_subtype = 7
+                if self.rx_mac.match(remote_chassis_id):
+                    remote_chassis_id = remote_chassis_id.replace(" ", "-")
+                    remote_chassis_id = MACAddressParameter().clean(remote_chassis_id)
+                    remote_chassis_id_subtype = 3
+                n = {
+                    "remote_port": remote_port,
+                    "remote_port_subtype": remote_port_subtype,
+                    "remote_chassis_id": remote_chassis_id,
+                    "remote_chassis_id_subtype": remote_chassis_id_subtype,
+                    "remote_system_name": rn
+                }
+                i = {
+                    "local_interface": local_port,
+                    "neighbors": [n]
+                }
+                r += [i]
         return r
