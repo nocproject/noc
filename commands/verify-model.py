@@ -124,6 +124,7 @@ class Command(BaseCommand):
             ])
         elif any("1000BASEZX" in s for s in c.protocols):
             self.check_protocols(c, [
+                ">1000BASEZX",  # 1270~1620
                 ">1000BASEZX-1350", "<1000BASEZX-1350",
                 ">1000BASEZX-1370", "<1000BASEZX-1370",
                 ">1000BASEZX-1390", "<1000BASEZX-1390",
@@ -154,11 +155,13 @@ class Command(BaseCommand):
                 ">100BASEFX-1550", "<100BASEFX-1550",
                 ">100BASELX-1310", "<100BASELX-1310",
                 ">100BASELX-1550", "<100BASELX-1550",
+                ">1000BASEX", "<1000BASEX",
                 ">1000BASESX", "<1000BASESX",
                 ">1000BASELX-1310", "<1000BASELX-1310",
                 ">1000BASELX-1490", "<1000BASELX-1490",
                 ">1000BASELX-1550", "<1000BASELX-1550",
                 ">1000BASEEX-1310", "<1000BASEEX-1310",
+                ">1000BASEZX",  # 1270~1620
                 ">1000BASEZX-1350", "<1000BASEZX-1350",
                 ">1000BASEZX-1370", "<1000BASEZX-1370",
                 ">1000BASEZX-1390", "<1000BASEZX-1390",
