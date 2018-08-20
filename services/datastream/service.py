@@ -124,7 +124,7 @@ class DataStreamService(Service):
         :return:
         """
         while True:
-            with coll.watch() as stream:
+            with coll.watch(pipeline=[{"$project": {"_id": 1}}]) as stream:
                 try:
                     for _ in stream:
                         # Change received, call all pending callback
