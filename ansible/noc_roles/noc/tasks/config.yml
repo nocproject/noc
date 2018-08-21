@@ -22,6 +22,7 @@
     src: "etc/tower.yml.j2"
     dest: "{{ noc_etc }}/tower.yml"
     mode: "0640"
+    group: "{{noc_group}}"
     owner: "{{noc_user}}"
   no_log: "{{tower_show_secrets}}"
   when:
@@ -34,6 +35,7 @@
     dest: "{{ noc_etc }}/pool-{{item.name}}.yml"
     mode: "0640"
     owner: "{{noc_user}}"
+    group: "{{noc_group}}"
   no_log: "{{tower_show_secrets}}"
   when:
     - noc_services is defined
@@ -48,6 +50,7 @@
     src: "etc/pools.yml.j2"
     dest: "{{noc_root}}/etc/noc.yml"
     owner: "{{noc_user}}"
+    group: "{{noc_group}}"
     mode: "0640"
 
 - name: install .env file
@@ -55,5 +58,6 @@
     src: "env.j2"
     dest: "{{noc_root}}/.env"
     owner: "{{noc_user}}"
+    group: "{{noc_group}}"
     mode: "0644"
   no_log: "{{tower_show_secrets}}"
