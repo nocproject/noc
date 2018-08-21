@@ -18,8 +18,9 @@ class Script(BaseScript):
     rx_lag = re.compile(
         r"^(?P<number>\d+)\s+up\s+(?P<opr>up|down)\s+",
         re.MULTILINE)
+        
     rx_port = re.compile(
-        r"^(\d+\(e\))?\s+(?P<port>\d+/\d+/\d+)\s+(?P<adm>up|down)",
+        r"^(\d+\(e\))?(\s+)?(?P<port>\d+\/\d+\/\d+)\s+(?P<adm>up|down)",
         re.MULTILINE)
 
     def execute(self):
@@ -34,7 +35,16 @@ class Script(BaseScript):
                 "members": [],
                 "type": "L"
             }
-            c = self.cli("show lag %s port" % match.group("number"))
+            if not self.match_version(version__startswith=r"B-4"):
+                try:
+                    c = self.cli("show lag %s port" % match.group("number"))
+                except self.CLISyntaxError:
+                    raise self.NotSupportedError()
+            else:
+                try:
+                    c = self.cli("show lag %s detail" % match.group("number"))
+                except self.CLISyntaxError:
+                    raise self.NotSupportedError()            
             for match1 in self.rx_port.finditer(c):
                 i["members"] += [match1.group("port")]
             r += [i]
