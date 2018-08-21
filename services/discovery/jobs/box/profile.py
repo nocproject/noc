@@ -43,7 +43,8 @@ class ProfileCheck(DiscoveryCheck):
                 "Fixing database, resetting platform info",
                 self.object.profile.name, profile.name
             )
-            self.invalidate_neighbor_cache()
+            if self.object.object_profile.neighbor_cache_ttl:
+                self.invalidate_neighbor_cache()
             self.object.profile = profile
             self.object.vendor = None
             self.object.plarform = None
