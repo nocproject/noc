@@ -26,7 +26,6 @@ from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
-from .objectmap import ObjectMap
 from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
@@ -608,19 +607,6 @@ class ManagedObjectProfile(models.Model):
                 periodic_changed=periodic_changed
             )
 
-        if (
-            self.initial_data["report_ping_rtt"] != self.report_ping_rtt or
-            self.initial_data["enable_ping"] != self.enable_ping or
-            self.initial_data["ping_interval"] != self.ping_interval or
-            self.initial_data["ping_policy"] != self.ping_policy or
-            self.initial_data["ping_size"] != self.ping_size or
-            self.initial_data["ping_count"] != self.ping_count or
-            self.initial_data["ping_timeout_ms"] != self.ping_timeout_ms or
-            self.initial_data["report_ping_attempts"] != self.ping_interval or
-            self.initial_data["event_processing_policy"] != self.event_processing_policy
-        ):
-            for pool in self.iter_pools():
-                ObjectMap.invalidate(pool)
         if access_changed:
             cache.delete_many([
                 "cred-%s" % x
