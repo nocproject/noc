@@ -86,8 +86,7 @@ class Command(BaseCommand):
             }
         }, upsert=True)
 
-    def handle_extract(self, *args, **options):
-        print(options)
+    def handle_extract(self, use_archive=False, *args, **options):
         now = datetime.datetime.now()
         window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
@@ -106,7 +105,7 @@ class Command(BaseCommand):
             while start < stop:
                 end = min(start + window, stop)
                 e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX,
-                         use_archive=options.get("use_archive"))
+                         use_archive=use_archive)
                 t0 = time.time()
                 try:
                     nr = e.extract()

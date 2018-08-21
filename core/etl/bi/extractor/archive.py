@@ -8,7 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 # Third-party modules
 import bisect
 import pymongo
@@ -122,4 +122,4 @@ class ArchivingExtractor(BaseExtractor):
         # Spool remaining incomplete batches
         for cname in data:
             if data[cname]:
-                result = spool(cname)
+                spool(cname)
