@@ -406,9 +406,26 @@ TABLE {
  * Safari 11 fieldset title issue
  */
 .x-fieldset-header-default > .x-fieldset-header-text {
-    position:static;
+    position: static;
 }
 
 .x-fieldset {
-  overflow: visible;
+    overflow: visible;
+}
+
+.fas {
+    position: relative;
+}
+
+.fas:before {
+    position: absolute;
+    left: calc(50% - .5em);
+    top: calc(50% - .5em);
+}
+
+.fas.fa-icon {
+    width: 60px;
+    height: 60px;
+    color: #f8f8f8;
+    background-color: black;
 }
