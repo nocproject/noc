@@ -84,6 +84,7 @@ class ParserLoader(object):
         for s in sorted(self.all_parsers):
             yield s
 
+    @property
     def choices(self):
         if self._choices is None:
             self._choices = []
