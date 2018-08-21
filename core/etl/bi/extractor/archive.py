@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 from collections import defaultdict
 # Third-party modules
 import bisect
