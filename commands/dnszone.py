@@ -302,7 +302,7 @@ class Command(BaseCommand):
                     if z and z != "@":
                         zone = z
                     yield RR(
-                        zone=zone,
+                        zone=zone.strip("."),
                         name="",
                         type="SOA",
                         rdata=" ".join(match.groups()[-7:]),
