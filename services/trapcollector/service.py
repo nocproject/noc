@@ -131,7 +131,7 @@ class TrapCollectorService(Service):
         while True:
             try:
                 yield client.query(
-                    limit=config.syslogcollector.ds_limit,
+                    limit=config.trapcollector.ds_limit,
                     filters=[
                         "pool(%s)" % config.pool
                     ],
