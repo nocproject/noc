@@ -41,8 +41,8 @@ class CapabilityApplication(ExtDocApplication):
             { text: 'buy lottery tickets', leaf: true }
         ]
         }
-        :param request: 
-        :return: 
+        :param request:
+        :return:
         """
         root_c = {"text": "root", "children": []}
 
@@ -59,7 +59,7 @@ class CapabilityApplication(ExtDocApplication):
                          "leaf": True,
                          "checked": False} for f in caps_d[e]]
             if not e:
-                print("Not e: %s, children: %s" % (caps_d[e], children))
+                self.logger.warning("Not e: %s, children: %s" % (caps_d[e], children))
                 # @todo Update inside list
                 context[children[0]["text"]] += children
             for b in reversed(e):
