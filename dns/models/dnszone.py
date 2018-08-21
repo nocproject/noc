@@ -391,43 +391,14 @@ class DNSZone(models.Model):
         else:
             return []
 
-    # def refresh_zone(self):
-    #     """
-    #     Compare zone state with stored one.
-    #     Increase serial and store new version on change
-    #     :return: True if zone has been changed
-    #     """
-    #     logger.debug("Refreshing zone %s", self.name)
-    #     # Stored version
-    #     cz = self.zone.read()
-    #     # Generated version
-    #     nz = self.get_zone_text()
-    #     if cz == nz:
-    #         logger.debug("Zone not changed: %s", self.name)
-    #         return False  # Not changed
-    #     # Step serial
-    #     self.set_next_serial()
-    #     # Generate new zone again
-    #     # Because serial has been changed
-    #     zt = self.get_zone_text()
-    #     self.zone.write(zt)
-    #     # Set change notifications
-    #     groups = self.get_notification_groups()
-    #     if groups:
-    #         ctx = {"name": self.name}
-    #         if cz:
-    #             revs = self.zone.get_revisions()[-2:]
-    #             stpl = "dns.zone.change"
-    #             ctx["diff"] = self.zone.diff(revs[0], revs[1])
-    #         else:
-    #             stpl = "dns.zone.new"
-    #             ctx["data"] = zt
-    #         try:
-    #             t = SystemTemplate.objects.get(name=stpl)
-    #         except SystemTemplate.DoesNotExist:
-    #             return True
-    #         subject = t.render_subject(**ctx)
-    #         body = t.render_body(**ctx)
-    #         for g in groups:
-    #             g.notify(subject, body)
-    #     return True
+    @property
+    def is_forward(self):
+        return self.type == ZONE_FORWARD
+
+    @property
+    def is_reverse_ipv4(self):
+        return self.type == ZONE_REVERSE_IPV4
+
+    @property
+    def is_reverse_ipv6(self):
+        return self.type == ZONE_REVERSE_IPV6
