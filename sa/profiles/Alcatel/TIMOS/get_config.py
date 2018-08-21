@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.TIMOS.get_config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,27 +15,31 @@ class Script(BaseScript):
     name = "Alcatel.TIMOS.get_config"
     interface = IGetConfig
 
-    def execute(self):
-        configs = []
+    def execute_cli(self):
+        conf = ""
+        try:
+            conf = self.cli("admin display")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        conf = self.strip_first_lines(conf, 6)
+        conf = self.cleaned_config(conf)
+        configs = conf
 
-        conf = {}
-        conf['name'] = "admin display"
-        conf['config'] = self.cli("admin display")
-        conf['config'] = self.strip_first_lines(conf['config'], 6)
-        conf['config'] = self.cleaned_config(conf['config'])
-        configs.append(conf)
+        try:
+            conf = self.cli("show bof")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        conf = self.cleaned_config(conf)
+        configs += conf
 
-        conf = {}
-        conf['name'] = "show bof"
-        conf['config'] = self.cli("show bof")
-        conf['config'] = self.cleaned_config(conf['config'])
-        configs.append(conf)
-
-        conf = {}
-        conf['name'] = "li"
-        conf['config'] = self.cli("configure li")
-        conf['config'] = self.cli("info")
-        conf['config'] = self.cleaned_config(conf['config'])
-        configs.append(conf)
+        if not self.match_version(version__startswith=r"B-4"):
+            try:
+                self.cli("configure li")
+            except self.CLISyntaxError:
+                raise self.NotSupportedError()
+            conf = self.cli("info")
+            self.cli("exit")
+            conf = self.cleaned_config(conf)
+            configs += conf
 
         return configs
