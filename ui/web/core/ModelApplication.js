@@ -171,6 +171,15 @@ Ext.define("NOC.core.ModelApplication", {
             }
         });
 
+        me.listHelpButton = Ext.create("Ext.button.Button", {
+                itemId: "listHelp",
+                glyph: NOC.glyph.question,
+                tooltip: __("Application Help"),
+                scope: me,
+                handler: Ext.pass(NOC.helpURL, "listHelpId")
+            }
+        );
+
         gridToolbar.push(me.searchField, me.refreshButton, me.createButton, me.exportButton);
         // admin actions
         if(me.actions || me.hasGroupEdit) {
@@ -178,8 +187,12 @@ Ext.define("NOC.core.ModelApplication", {
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
         gridToolbar.push("->");
-        me.totalField = Ext.create("Ext.form.field.Display");
+        me.totalField = Ext.create("Ext.button.Button", {
+        });
         gridToolbar.push(me.totalField);
+        if(me.helpId || me.listHelpId) {
+            gridToolbar = gridToolbar.concat("-", me.listHelpButton);
+        }
         // Initialize panels
         // Filters
         var grid_rbar = null;
@@ -506,6 +519,15 @@ Ext.define("NOC.core.ModelApplication", {
             scope: me,
             handler: me.onClone
         });
+        //
+        me.formHelpButton = Ext.create("Ext.button.Button", {
+                itemId: "formHelp",
+                glyph: NOC.glyph.question,
+                tooltip: __("Form Help"),
+                scope: me,
+                handler: Ext.pass(NOC.helpURL, "formHelpId")
+            }
+        );
         // Default toolbar items
         var formToolbar = [
             me.saveButton,
@@ -534,6 +556,10 @@ Ext.define("NOC.core.ModelApplication", {
             formToolbar.push("-");
         }
         formToolbar = formToolbar.concat(me.formToolbar);
+        //
+        if(me.helpId || me.formHelpId){
+            formToolbar = formToolbar.concat("->", me.formHelpButton);
+        }
         // Prepare inlines grid
         var formInlines = [];
         me.inlineStores = [];
@@ -1255,7 +1281,7 @@ Ext.define("NOC.core.ModelApplication", {
     },
     //
     onInlineCancel: function(editor, context) {
-        if(Ext.isEmpty(context.originalValue)){
+        if(Ext.isEmpty(context.originalValue)) {
             context.grid.store.removeAt(context.rowIdx);
         }
     },
@@ -1396,7 +1422,7 @@ Ext.define("NOC.core.ModelApplication", {
     onLoad: function() {
         var me = this,
             total = me.store.getTotalCount();
-        me.totalField.setValue(__("Total: ") + total);
+        me.totalField.setText(__("Total: ") + total);
         if(me.rendered) {
             me.refreshButton.setDisabled(false);
         }
