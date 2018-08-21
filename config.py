@@ -76,6 +76,9 @@ class Config(BaseConfig):
         enable_alarms = BooleanParameter(default=False)
         enable_reboots = BooleanParameter(default=False)
         enable_managedobjects = BooleanParameter(default=False)
+        enable_alarms_archive = BooleanParameter(default=False)
+        alarms_archive_template = StringParameter(default="alarms.{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}")
+        alarms_archive_batch_limit = IntParameter(default=10000)
 
     brand = StringParameter(default="NOC")
 
