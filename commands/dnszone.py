@@ -126,81 +126,81 @@ class Command(BaseCommand):
         self.print("Parsing zone file using BIND parser")
         with open(path) as f:
             rrs = self.iter_bind_zone_rr(f)
-        try:
-            soa = next(rrs)
-        except StopIteration:
-            raise CommandError("Unable to parse zone file from %s" % path)
-        zone = self.from_idna(soa.zone)
-        z = DNSZone.get_by_name(zone)
-        if z:
-            self.print("Using existing zone '%s'" % zone)
-        else:
-            self.print("Creating zone '%s'" % zone)
-            z = DNSZone(
-                name=zone,
-                profile=zone_profile
-            )
-            clean = False  # Nothing to clean
-        if z.profile.id != zone_profile.id:
-            self.print("Setting profile to '%s'" % zone_profile.name)
-            z.profile = zone_profile
-        # Apply changes
-        if not dry_run:
-            z.save()
-        #  Clean zone when necessary
-        if clean:
-            self.print("Cleaning zone")
-            for rr in DNSZoneRecord.objects.filter(zone=z):
-                self.print("Removing %s %s" % (rr.type, rr.name))
-                if not dry_run:
-                    rr.delete()
-        # Populate zone
-        vrf = VRF.get_global()
-        zz = zone + "."
-        lz = len(zz)
-        if z.is_forward:
-            zp = None
-        elif z.is_reverse_ipv4:
-            # Calculate prefix for reverse zone
-            zp = ".".join(reversed(zone[:-13].split("."))) + "."
-        elif z.is_reverse_ipv6:
-            raise CommandError("IPv6 reverse import is not implemented")
-        else:
-            raise CommandError("Unknown zone type")
-        for rr in rrs:
-            name = rr.name
-            if name.endswith(zz):
-                name = name[:-lz]
-            if name.endswith("."):
-                name = name[:-1]
-            rr = None
-            # Skip zone NS
-            if rr.type == "NS" and not name:
-                continue
-            if rr.type in ("A", "AAAA"):
-                self.create_address(
-                    zone, vrf, rr.rdata,
-                    "%s.%s" % (name, zone) if name else zone,
-                    address_profile,
-                    dry_run=dry_run,
-                    force=force
-                )
-            elif zone.type == "PTR":
-                address = zp + name
-                self.create_address(
-                    zone, vrf, address,
-                    rr.rdata,
-                    address_profile,
-                    dry_run=dry_run, force=force)
+            try:
+                soa = next(rrs)
+            except StopIteration:
+                raise CommandError("Unable to parse zone file from %s" % path)
+            zone = self.from_idna(soa.zone)
+            z = DNSZone.get_by_name(zone)
+            if z:
+                self.print("Using existing zone '%s'" % zone)
             else:
-                zrr = DNSZoneRecord(
-                    zone=z, name=name, type=rr.type,
-                    ttl=rr.ttl, priority=rr.priority,
-                    content=rr.rdata
+                self.print("Creating zone '%s'" % zone)
+                z = DNSZone(
+                    name=zone,
+                    profile=zone_profile
                 )
-                self.print("Creating %s %s" % (rr.type, rr.name))
-                if not dry_run:
-                    zrr.save()
+                clean = False  # Nothing to clean
+            if z.profile.id != zone_profile.id:
+                self.print("Setting profile to '%s'" % zone_profile.name)
+                z.profile = zone_profile
+            # Apply changes
+            if not dry_run:
+                z.save()
+            #  Clean zone when necessary
+            if clean:
+                self.print("Cleaning zone")
+                for rr in DNSZoneRecord.objects.filter(zone=z):
+                    self.print("Removing %s %s" % (rr.type, rr.name))
+                    if not dry_run:
+                        rr.delete()
+            # Populate zone
+            vrf = VRF.get_global()
+            zz = zone + "."
+            lz = len(zz)
+            if z.is_forward:
+                zp = None
+            elif z.is_reverse_ipv4:
+                # Calculate prefix for reverse zone
+                zp = ".".join(reversed(zone[:-13].split("."))) + "."
+            elif z.is_reverse_ipv6:
+                raise CommandError("IPv6 reverse import is not implemented")
+            else:
+                raise CommandError("Unknown zone type")
+            for rr in rrs:
+                name = rr.name
+                if name.endswith(zz):
+                    name = name[:-lz]
+                if name.endswith("."):
+                    name = name[:-1]
+                rr = None
+                # Skip zone NS
+                if rr.type == "NS" and not name:
+                    continue
+                if rr.type in ("A", "AAAA"):
+                    self.create_address(
+                        zone, vrf, rr.rdata,
+                        "%s.%s" % (name, zone) if name else zone,
+                        address_profile,
+                        dry_run=dry_run,
+                        force=force
+                    )
+                elif zone.type == "PTR":
+                    address = zp + name
+                    self.create_address(
+                        zone, vrf, address,
+                        rr.rdata,
+                        address_profile,
+                        dry_run=dry_run, force=force)
+                else:
+                    zrr = DNSZoneRecord(
+                        zone=z, name=name, type=rr.type,
+                        ttl=rr.ttl, priority=rr.priority,
+                        content=rr.rdata
+                    )
+                    self.print("Creating %s %s" % (rr.type, rr.name))
+                    if not dry_run:
+                        zrr.save()
 
     def create_address(self, zone, vrf, address, fqdn, address_profile,
                        dry_run=False, force=False):
