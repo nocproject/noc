@@ -74,6 +74,8 @@ class Command(BaseCommand):
                 yield id
 
     def handle_rebuild(self, datastream, *args, **kwargs):
+        if not datastream:
+            self.die("--datastream is not set. Set one from list: %s" % self.MODELS.keys())
         model = self.MODELS.get(datastream)
         if not model:
             self.die("Unsupported datastream")
@@ -92,6 +94,8 @@ class Command(BaseCommand):
         self.print("Done")
 
     def handle_get(self, datastream, objects, filter, *args, **kwargs):
+        if not datastream:
+            self.die("--datastream is not set. Set one from list: %s" % self.MODELS.keys())
         ds = loader.get_datastream(datastream)
         if not ds:
             self.die("Cannot initialize datastream")
