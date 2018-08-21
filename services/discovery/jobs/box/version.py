@@ -48,8 +48,7 @@ class VersionCheck(DiscoveryCheck):
             if self.object.object_profile.clear_links_on_platform_change:
                 self.clear_links()
             # Invalidate neighbor cache
-            if self.object.object_profile.neighbor_cache_ttl:
-                self.invalidate_neighbor_cache()
+            self.invalidate_neighbor_cache()
         # Sync version
         version = Firmware.ensure_firmware(self.object.profile, vendor, result["version"])
         if not self.object.version or version.id != self.object.version.id:

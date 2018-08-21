@@ -683,6 +683,9 @@ class DiscoveryCheck(object):
         :param obj: Managed Object instance, jobs object if ommited
         :return:
         """
+        if not obj.object_profile.neighbor_cache_ttl:
+            # Disabled cache
+            return
         obj = obj or self.object
         keys = ["mo-neighbors-%s-%s" % (x, obj.id)
                 for x in obj.segment.profile.get_topology_methods()]
