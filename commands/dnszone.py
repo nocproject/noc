@@ -104,8 +104,8 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_load(self, paths, force=False, clean=False, dry_run=False,
-                    zone_profile=None, address_profile=None):
+    def handle_import(self, paths, force=False, clean=False, dry_run=False,
+                      zone_profile=None, address_profile=None):
         if not zone_profile:
             self.die("--zone-profile is not set")
         if not address_profile:
