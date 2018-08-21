@@ -466,6 +466,14 @@ Ext.define('NOC.sa.runcommands.Application', {
                             pointerEvents: 'all'
                         },
                         handler: 'toPrev'
+                    },
+                    {
+                        glyph: NOC.glyph.download,
+                        tooltip: __('Download results'),
+                        style: {
+                            pointerEvents: 'all'
+                        },
+                        handler: 'onDownload'
                     }
                 ]
             }]
