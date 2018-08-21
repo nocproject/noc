@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Basic MO discovery job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -675,6 +675,24 @@ class DiscoveryCheck(object):
         """
         return self.job.has_artefact(name)
 
+    def invalidate_neighbor_cache(self, obj=None):
+        """
+        Reset cached neighbors for object.
+
+        NB: May be called by non-topology checks
+        :param obj: Managed Object instance, jobs object if ommited
+        :return:
+        """
+        if not obj.object_profile.neighbor_cache_ttl:
+            # Disabled cache
+            return
+        obj = obj or self.object
+        keys = ["mo-neighbors-%s-%s" % (x, obj.id)
+                for x in obj.segment.profile.get_topology_methods()]
+        if keys:
+            self.logger.info("Invalidating neighor cache: %s" % ", ".join(keys))
+            cache.delete_many(keys, TopologyDiscoveryCheck.NEIGHBOR_CACHE_VERSION)
+
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
     NEIGHBOR_CACHE_VERSION = 1
@@ -840,28 +858,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     path=i,
                     message=problems[i]
                 )
-
-    def cached_iter_neighbors(self, mo):
-        """
-        Apply caching policy to *iter_neighbbors*
-        :param mo:
-        :return: Cached result of iter_neighbors
-        """
-        ttl = mo.object_profile.neighbor_cache_ttl
-        if not ttl:
-            # Disabled cache
-            return list(self.iter_neighbors(mo))
-        # Cached version
-        key = "mo-neighbors-%s-%s" % (self.name, mo.id)
-        neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
-        if neighbors is None:
-            neighbors = list(self.iter_neighbors(mo))
-            cache.set(key, neighbors, ttl=ttl,
-                      version=self.NEIGHBOR_CACHE_VERSION)
-            metrics["neighbor_cache_misses"] += 1
-        else:
-            metrics["neighbor_cache_hits"] += 1
-        return neighbors
 
     def cached_neighbors(self, mo, key, iter_neighbors):
         """

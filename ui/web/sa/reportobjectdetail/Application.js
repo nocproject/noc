@@ -39,14 +39,14 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["admin_domain", __("Admin. Domain"), true],
                 ["container", __("Container"), false],
                 ["segment", __("Segment"), true],
-                ["adm_path", __("Adm Path"), true],
                 ["phys_interface_count", __("Physical Iface Count"), false],
                 ["link_count", __("Link Count"), false],
-                ["discovery_problem", __("Discovery Problem"), false],
+                ["adm_path", __("Adm Path"), true],
                 ["interface_type_count", __("Interface count by type"), false],
                 ["object_caps", __("Object capabilities"), false],
                 ["object_tags", __("Object Tags"), false],
-                ["sorted_tags", __("Sorted Tags"), false]
+                ["sorted_tags", __("Sorted Tags"), false],
+                ["discovery_problem", __("Discovery Problem"), false]
             ]
         });
 

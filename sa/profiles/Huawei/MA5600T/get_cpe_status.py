@@ -57,7 +57,7 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         r = {}
         # v = self.cli("display ont info 0 all")
-        for c in ("display ont info 0 all"):
+        for c in ["display ont info 0 all"]:
             v = self.cli(c)
             for table in v.split("\n\n"):
                 tables_data = []

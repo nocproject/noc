@@ -41,7 +41,8 @@ class Script(BaseScript):
         "network address": 5,
         "interfacename": 6,
         "interface name": 6,
-        "local": 7
+        "local": 7,
+        "locally assigned": 7
     }
 
     PORT_TYPES = {

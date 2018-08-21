@@ -321,6 +321,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_cpestatus",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "box_discovery_cpestatus_policy",
+            type: "string",
+            defaultValue: "S"
+        },
+        {
             name: "box_discovery_alarm_policy",
             type: "string"
         },
@@ -373,6 +383,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "enable_periodic_discovery_metrics",
             type: "boolean",
             defaultValue: false
+        },
+        {
+            name: "enable_periodic_discovery_cpestatus",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "periodic_discovery_cpestatus_policy",
+            type: "string",
+            defaultValue: "S"
         },
         {
             name: "periodic_discovery_alarm_policy",

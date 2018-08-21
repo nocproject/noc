@@ -409,6 +409,8 @@ class Config(BaseConfig):
         send_buffer = IntParameter(default=4 * 1048576)
         # Recommended receive buffer size, 4M by default
         receive_buffer = IntParameter(default=4 * 1048576)
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class pmwriter(ConfigSection):
         batch_size = IntParameter(default=2500)
@@ -462,14 +464,10 @@ class Config(BaseConfig):
     class sentry(ConfigSection):
         url = StringParameter(default="")
 
-    class sync(ConfigSection):
-        config_ttl = SecondsParameter(default="1d")
-        ttl_jitter = FloatParameter(default=0.1)
-        expired_refresh_timeout = IntParameter(default=25)
-        expired_refresh_chunk = IntParameter(default=100)
-
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class tgsender(ConfigSection):
         token = SecretParameter()
@@ -489,6 +487,8 @@ class Config(BaseConfig):
 
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)

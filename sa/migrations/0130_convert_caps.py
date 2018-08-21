@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
+# NOC modules
 from noc.lib.nosql import get_db
 
-class Migration:
+
+class Migration(object):
     def forwards(self):
         def convert(doc):
             def convert_caps(ci):
@@ -19,7 +27,7 @@ class Migration:
 
         db = get_db()
         caps = db["noc.sa.objectcapabilities"]
-        if not caps.count():
+        if not caps.count_documents({}):
             return
         caps.rename("noc.sa.objectcapabilities_old", dropTarget=True)
         old_caps = db["noc.sa.objectcapabilities_old"]
@@ -30,11 +38,11 @@ class Migration:
             sources[d["_id"]] = "interface"
 
         CHUNK = 500
-        data = [convert(d) for d in old_caps.find({}) if d.get("object")]
+        data = [convert(x) for x in old_caps.find({}) if x.get("object")]
         while data:
             chunk, data = data[:CHUNK], data[CHUNK:]
             new_caps.insert(chunk)
-        #old_caps.drop()
+        # old_caps.drop()
 
     def backwards(self):
         pass

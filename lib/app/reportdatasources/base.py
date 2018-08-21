@@ -10,12 +10,13 @@
 from __future__ import absolute_import, print_function
 import re
 import heapq
+import itertools
 import logging
 # NOC modules
 from django.db.models import Q as d_Q
 from noc.sa.models.managedobject import ManagedObject
 from .report_objectstat import (AttributeIsolator,
-                                CapabilitiesIsolator, StatusIsolator)
+                                CapabilitiesIsolator, StatusIsolator, ProblemIsolator)
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,7 @@ class BaseReportColumn(object):
     Base report column class.
     Column is dataseries: ((id1: value1), (id2: value2)) - id - index sorted by asc
     """
+    MAX_ITERATOR = 500000
     name = None  # ColumnName
     fields = None  # RowFields List
     unknown_value = (None, )  # Fill this if empty value
@@ -64,10 +66,16 @@ class BaseReportColumn(object):
         :param sync_ids:
         """
         self.sync_ids = sync_ids  # Sorted Index list
+        self.sync_count = itertools.count()
         self.sync_ids_i = iter(self.sync_ids)
-        self._current_id = next(self.sync_ids_i)  # Current id
+        self._current_id = next(self.sync_ids_i, None)  # Current id
         self._value = None  #
         self._end_series = False  # Tre
+
+    def safe_next(self):
+        if next(self.sync_count) > self.MAX_ITERATOR:
+            raise StopIteration
+        return next(self.sync_ids_i, None)
 
     def _extract(self):
         """
@@ -90,7 +98,7 @@ class BaseReportColumn(object):
             for v in self.extract():
                 if v[0] < prev_id:   # Todo
                     print("Detect unordered stream")
-                    raise StopIteration
+                    raise StopIteration("Detect unordered stream")
                 yield v
                 prev_id = v[0]
 
@@ -103,6 +111,8 @@ class BaseReportColumn(object):
 
     def __iter__(self):
         for row in self._extract():
+            if not self._current_id:
+                break
             # Row: (row_id, row1, ....)
             row_id, row_value = row[0], row[1:]
             if row_id == self._current_id:
@@ -114,9 +124,9 @@ class BaseReportColumn(object):
                 continue
             elif row_id > self._current_id:
                 # row_id more than sync_id, go to next sync_id
-                while row_id > self._current_id:
+                while self._current_id and row_id > self._current_id:
                     # fill row unknown_value
-                    self._current_id = next(self.sync_ids_i)
+                    self._current_id = self.safe_next()
                     yield self.unknown_value
                 if row_id == self._current_id:
                     # Match sync_id and row_id = set value
@@ -125,7 +135,7 @@ class BaseReportColumn(object):
                     # Step over current sync_id, set  unknown_value
                     self._value = self.unknown_value
             yield self._value  # return current value
-            self._current_id = next(self.sync_ids_i)  # Next sync_id
+            self._current_id = self.safe_next()  # Next sync_id
         self._end_series = True
         # @todo Variant:
         # 1. if sync_ids use to filter in _extract - sync_ids and _extract ending together
@@ -138,6 +148,22 @@ class BaseReportColumn(object):
         for _ in self.sync_ids_i:
             # raise StopIteration ?
             yield self.unknown_value
+
+    def get_dictionary(self, filter_unknown=False):
+        """
+        return Dictionary id: value
+        :return:
+        """
+        r = {}
+        if not self._current_id:
+            return r
+        for _ in self:
+            if filter_unknown and _[0] is self.unknown_value:
+                continue
+            r[self._current_id] = _[0]
+            if self._end_series:
+                break
+        return r
 
     def __getitem__(self, item):
         # @todo use column as dict
@@ -203,7 +229,8 @@ class ReportModelFilter(object):
                 2is1.3hs0.5is2.4hs0, 2is1.3hs0.5is2.4hs1, 2is1.3hs0.5is2.4hs1.5hs1"""
         self.f_map = {"is": StatusIsolator(),
                       "hs": CapabilitiesIsolator(),
-                      "a": AttributeIsolator()}
+                      "a": AttributeIsolator(),
+                      "isp": ProblemIsolator()}
         self.logger = logger
 
     def decode(self, formula):
@@ -216,7 +243,7 @@ class ReportModelFilter(object):
         ids = []
         moss = self.model.objects.filter()
         for f in formula.split("."):
-            self.logger.info("Decoding: %s" % f)
+            self.logger.debug("Decoding: %s" % f)
             f_num, f_type, f_val = self.decode_re.findall(f.lower())[0]
             func_stat = self.f_map[f_type]
             func_stat = getattr(func_stat, "get_stat")(f_num, f_val)

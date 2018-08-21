@@ -45,8 +45,8 @@ class Script(BaseScript):
             "mac": match.group("mac")
         } for match in self.rx_arp_line_vrp3.finditer(arp)]
 
-    def execute_cli(self):
+    def execute_cli(self, vrf=None):
         if self.is_kernel_3:
-            return self.execute_vrp3
+            return self.execute_vrp3(vrf)
         elif self.is_kernelgte_5:
-            return self.execute_vrp5
+            return self.execute_vrp5(vrf)

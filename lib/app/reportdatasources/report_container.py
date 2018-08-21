@@ -18,7 +18,7 @@ from noc.lib.nosql import get_db
 class ReportContainer(BaseReportColumn):
     """Report for MO Container"""
     # @container address by container
-    name = "containeraddress"
+    name = "container"
     unknown_value = ({}, )
     builtin_sorted = True
 
@@ -43,3 +43,33 @@ class ReportContainer(BaseReportColumn):
                     # r[v["data"]["management"]["managed_object"]].update(v["cont"][0]["data"].get("address", {}))
                     r.update(v["cont"][0]["data"].get("address", {}))
             yield v["data"]["management"]["managed_object"], r
+
+
+class ReportContainerData(BaseReportColumn):
+    """Report for MO Container"""
+    # @container address by container
+    name = "containerdata"
+    unknown_value = ("", )
+    builtin_sorted = False
+
+    def extract(self):
+        match = {"data.address.text": {"$exists": True}}
+        # if self.sync_ids:
+        #     match = {"data.management.managed_object": {"$in": self.sync_ids}}
+        value = get_db()["noc.objects"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
+            {"$match": match},
+            {"$sort": {"_id": 1}},
+            {"$lookup": {"from": "noc.objects", "localField": "container", "foreignField": "_id", "as": "cont"}},
+            {"$project": {"data": 1, "cont.data": 1}}
+        ])
+
+        for v in value:
+            address = ""
+            if "address" in v["data"]:
+                address = v["data"]["address"]["text"]
+            elif v["cont"]:
+                if "data" in v["cont"][0]:
+                    address = v["cont"][0]["data"].get("address", "")
+                    if address:
+                        address = address["text"]
+            yield str(v["_id"]), (address.strip(), )

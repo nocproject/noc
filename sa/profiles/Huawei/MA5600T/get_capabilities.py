@@ -25,7 +25,7 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         # Spanning Tree Enabled/Disabled : Enabled
-        cmd = self.cli("display current-configuration section config\r\n")
+        cmd = self.cli("display current-configuration section config")
         return "stp enable" in cmd
 
     @false_on_cli_error

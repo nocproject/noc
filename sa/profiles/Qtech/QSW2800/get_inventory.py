@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import datetime
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -36,11 +35,16 @@ class Script(BaseScript):
         v = self.scripts.get_version()
         if "platform" not in v:
             return []
-        r.update({
-            "part_no": [v["platform"]],
-            "revision": v["attributes"]["HW version"],
-            "serial": v["attributes"]["Serial Number"]
-        })
+        if "attributes" in v:
+            r.update({
+                "part_no": [v["platform"]],
+                "revision": v["attributes"]["HW version"],
+                "serial": v["attributes"]["Serial Number"]
+            })
+        else:
+            r.update({
+                "part_no": [v["platform"]],
+            })
         r = [r]
 
         v = self.cli("show interface")
@@ -49,7 +53,6 @@ class Script(BaseScript):
                 continue
             num = iface.split()[0].split("/")[-1]
             for t in self.rx_trans.finditer(iface):
-                description = ""
                 part_no = self.profile.convert_sfp(t.group("sfp_type"),
                                                    t.group("link_length"),
                                                    t.group("bit_rate"),

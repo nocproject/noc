@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.DSLAM.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ class Script(BaseScript):
     rx_ipif = re.compile(
         r"^\s*(?P<ifname>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s*(?P<vid>\d+|\-)?\s*", re.MULTILINE)
+    rx_ipif_vlan = re.compile(r"^\s*host join vlan: (?P<vid>\d+)\s*\n", re.MULTILINE)
     rx_vlan1 = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s.+\n(^.+\n)?^\s+enabled\s+.+\n"
         r"^\s*(?P<ports>\S+) (?P<eports>\S+)\s*\n"
@@ -49,11 +50,9 @@ class Script(BaseScript):
             tagged = []
             ifname = self.profile.convert_interface_name(match.group("port"))
             for v in vlans:
-                if v["ports"][port_num] == "F" \
-                and v["mode"][port_num] == "U":
+                if v["ports"][port_num] == "F" and v["mode"][port_num] == "U":
                     untagged = v["vid"]
-                if v["ports"][port_num] == "F" \
-                and v["mode"][port_num] == "T":
+                if v["ports"][port_num] == "F" and v["mode"][port_num] == "T":
                     tagged += [v["vid"]]
             iface = {
                 "name": ifname,

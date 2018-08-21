@@ -21,11 +21,11 @@ class Script(BaseScript):
                             r"^-+", re.MULTILINE)
 
     rx_neigh = re.compile(r"^-+\n"
-                          r".+MIndex\s*:\s*(?P<mindex>\d+).+State\s*:\s*(?P<state>(Up|Down))\s+Name\s*:\s*(?P<name>\S+)\s*\n"
+                          r".+State\s*:\s*(?P<state>(Up|Down))\s+Name\s*:\s*(?P<name>\S+)\s*\n"
                           r"^-+\n"
                           r"^\s*Local\s*Discriminator\s*:\s*(?P<local_discriminator>\d+)\s*Remote\s*Discriminator\s*:\s*(?P<remote_discriminator>\d+)\s*\n"
                           r"(.+\n)+\s+Bind\sPeer\sIP\sAddress\s*:\s*(?P<remote_address>\S+)\s*\n"
-                          r"(.+\n)\s+Bind\sInterface\s*:\s*(?P<local_interface>.+)\s*\n"
+                          r"(.+\n)?\s+Bind\sInterface\s*:\s*(?P<local_interface>.+)\s*\n"
                           r"(.+\n)+\s+Min\sTx\sInterval\s\(ms\)\s*:\s*(?P<tx_interval>\d+)\s*Min\sRx\sInterval\s\(ms\)\s*:\s*(?P<rx_interval>\d+)\s*\n"
                           r"(.+\n)+\s+Local\sDetect\sMulti\s*:\s*(?P<multiplier>\d+)\s+Detect\sInterval\s\(ms\)\s*:\s*(?P<detect_time>\d+)\s*\n"
                           r"(.+\n)+\s+Bind\sApplication\s*:\s*(?P<clients>.+)\s*\n"
@@ -37,10 +37,11 @@ class Script(BaseScript):
         "OSPF": "OSPF",
         "BGP": "BGP",
         "EIGRP": "EIGRP",
-        "IFNET": "IFNET"
+        "IFNET": "IFNET",
+        "BFD": "BFD"
     }
 
-    client_ignored = ["CEF"]
+    client_ignored = ["CEF", "AUTO"]
 
     def execute_cli(self, **kwargs):
         r = []

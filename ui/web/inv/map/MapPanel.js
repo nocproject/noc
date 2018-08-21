@@ -57,7 +57,9 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     // Link bandwidth style
     bwStyle: [
-        [10000000000, {"stroke-width": "4px"}],  // 10G
+        [99500000000, {"stroke-width": "5px"}],  // 100G >= STM-640
+        [39500000000, {"stroke-width": "4px"}],  // 40G >= STM-256
+        [9500000000, {"stroke-width": "3px"}],  // 10G >= STM-64
         [1000000000, {"stroke-width": "2px"}],  // 1G
         [100000000, {"stroke-width": "1px"}],  // 100M
         [0, {"stroke-width": "1px", "stroke-dasharray": "10 5"}]
@@ -1142,7 +1144,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             stpNodes = [];
         // Get STP nodes
         Ext.Object.each(me.objectNodes, function(k, v) {
-            if(v.attributes.data.caps.indexOf(me.CAP_STP) !== -1) {
+            if(v.attributes.data.hasOwnProperty("caps") && v.attributes.data.caps.indexOf(me.CAP_STP) !== -1) {
                 stpNodes.push(k);
             }
         });

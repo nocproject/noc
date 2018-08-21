@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ./noc wipe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from contextlib import contextmanager
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.lib.validators import is_int
+from noc.core.datastream.change import bulk_datastream_changes
 
 
 class Command(BaseCommand):
@@ -48,14 +49,15 @@ class Command(BaseCommand):
             objects += [o]
         # Wipe objects
         from noc.core.debug import error_report
-        for o in objects:
-            with self.log("Wiping '%s':" % unicode(o), True):
-                try:
-                    wiper(o)
-                except KeyboardInterrupt:
-                    raise CommandError("Interrupted. Wiping is not complete")
-                except Exception:
-                    error_report()
+        with bulk_datastream_changes():
+            for o in objects:
+                with self.log("Wiping '%s':" % unicode(o), True):
+                    try:
+                        wiper(o)
+                    except KeyboardInterrupt:
+                        raise CommandError("Interrupted. Wiping is not complete")
+                    except Exception:
+                        error_report()
 
     @contextmanager
     def log(self, message, newline=False):

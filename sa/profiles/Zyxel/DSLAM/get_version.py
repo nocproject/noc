@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.DSLAM.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -20,7 +20,7 @@ class Script(BaseScript):
     cache = True
 
     rx_ver = re.compile(
-        r"^\s*Model: \S+ / (?P<platform>\S+)\s*\n"
+        r"^\s*Model: (\S+ / )?(?P<platform>\S+)\s*\n"
         r"^\s*ZyNOS version: (?P<version>\S+) \| \S+\s*\n"
         r".+?\n"
         r"^\s*Bootbase version: (?P<bootprom>\S+) \| \S+\s*\n"

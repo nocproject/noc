@@ -27,7 +27,7 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        v = self.cli("display arp all\n")
+        v = self.cli("display arp all")
         for match in self.rx_arp1.finditer(v):
             r += [{
                 "ip": match.group("ip"),

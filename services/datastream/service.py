@@ -10,10 +10,13 @@
 # Python modules
 import threading
 import Queue
+import time
+import random
 # Third-party modules
 import tornado.gen
 import tornado.locks
 import tornado.ioloop
+import pymongo.errors
 # NOC modules
 from noc.core.service.base import Service
 from noc.services.datastream.handler import DataStreamRequestHandler
@@ -29,7 +32,6 @@ class DataStreamService(Service):
 
     def __init__(self):
         super(DataStreamService, self).__init__()
-        self.has_block = True
         self.ds_queue = {}
 
     def get_datastreams(self):
@@ -55,35 +57,95 @@ class DataStreamService(Service):
 
     @tornado.gen.coroutine
     def on_activate(self):
+        # Detect we have working .watch() implementation
+        if self.has_watch():
+            waiter = self.watch_waiter
+        else:
+            self.logger.warning(
+                "Realtime change tracking is not available, using polling emulation."
+            )
+            waiter = self.sleep_waiter
+        # Start watcher threads
         self.ds_queue = {}
         for ds in self.get_datastreams():
-            try:
-                ds.get_collection().watch()
-            except TypeError:
-                self.logger.warning(
-                    "'block' parameter is not supported. "
-                    "MongoDB 3.6 or later and replica set are required")
-                self.has_block = False
-                break
             self.logger.info("Starting %s waiter thread", ds.name)
             queue = Queue.Queue()
             self.ds_queue[ds.name] = queue
             thread = threading.Thread(
-                target=self.waiter, args=(ds.get_collection(), queue), name="waiter-%s" % ds.name
+                target=waiter, args=(ds.get_collection(), queue), name="waiter-%s" % ds.name
             )
             thread.setDaemon(True)
             thread.start()
 
-    def waiter(self, coll, queue):
-        with coll.watch() as stream:
-            for _ in stream:
-                # Change received, call all pending callback
-                while True:
-                    try:
-                        cb = queue.get(block=False)
-                    except Queue.Empty:
-                        break  # No pending callbacks
-                    cb()
+    def has_watch(self):
+        """
+        Detect cluster has working .watch() implementation
+
+        :return: True if .watch() is working
+        """
+        # Get one datastream collection
+        dsn = next(loader.iter_datastreams())
+        ds = loader.get_datastream(dsn)
+        coll = ds.get_collection()
+        # Check pymongo has .watch
+        if not hasattr(coll, "watch"):
+            self.logger.error("pymongo does not support .watch() method")
+            return False
+        # Check connection is member of replica set
+        if not config.mongo.rs:
+            self.logger.error("MongoDB must be in replica set mode to use .watch()")
+            return False
+        # Check version, MongoDB 3.6.0 or later required
+        client = coll.database.client
+        sv = tuple(int(x) for x in client.server_info()["version"].split("."))
+        if sv < (3, 6, 0):
+            self.logger.error("MongoDB 3.6 or later require to use .watch()")
+            return False
+        return True
+
+    def _run_callbacks(self, queue):
+        """
+        Execute callbacks from queue
+        :param queue:
+        :return:
+        """
+        while True:
+            try:
+                cb = queue.get(block=False)
+            except Queue.Empty:
+                break
+            cb()
+
+    def watch_waiter(self, coll, queue):
+        """
+        Waiter thread tracking mongo's ChangeStream
+        :param coll:
+        :param queue:
+        :return:
+        """
+        while True:
+            with coll.watch(pipeline=[{"$project": {"_id": 1}}]) as stream:
+                try:
+                    for _ in stream:
+                        # Change received, call all pending callback
+                        self._run_callbacks(queue)
+                except pymongo.errors.PyMongoError as e:
+                    self.logger.error("Unrecoverable watch error: %s", e)
+                    time.sleep(1)
+
+    def sleep_waiter(self, coll, queue):
+        """
+        Simple timeout waiter
+        :param coll:
+        :param queue:
+        :return:
+        """
+        TIMEOUT = 60
+        JITER = 0.1
+        while True:
+            # Sleep timeout is random of [TIMEOUT - TIMEOUT * JITTER, TIMEOUT + TIMEOUT * JITTER]
+            time.sleep(TIMEOUT + (random.random() - 0.5) * TIMEOUT * 2 * JITER)
+            self._run_callbacks(queue)
 
     @tornado.gen.coroutine
     def wait(self, ds_name):

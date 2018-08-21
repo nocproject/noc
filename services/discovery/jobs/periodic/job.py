@@ -17,6 +17,7 @@ from .uptime import UptimeCheck
 from .interfacestatus import InterfaceStatusCheck
 from .mac import MACCheck
 from .metrics import MetricsCheck
+from .cpestatus import CPEStatusCheck
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -45,6 +46,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             UptimeCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_interface_status:
             InterfaceStatusCheck(self).run()
+        if self.object.object_profile.enable_periodic_discovery_cpestatus:
+            CPEStatusCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_mac:
             MACCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_metrics:

@@ -31,6 +31,10 @@ class BaseModelTest(object):
         )
         return c.fetchall()[0][0] == 1
 
+    def test_uncode(self):
+        for o in self.model.objects.all():
+            assert unicode(o)
+
 
 @pytest.mark.usefixtures("database")
 class BaseDocumentTest(object):
@@ -38,3 +42,7 @@ class BaseDocumentTest(object):
 
     def get_collection(self):
         return self.model._get_collection()
+
+    def test_uncode(self):
+        for o in self.model.objects.all():
+            assert unicode(o)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ class Script(BaseScript):
             return self.execute_c3900()
         elif self.is_iosxe:
             return self.execute_IOSXE()
-        elif self.is_cat6000:
+        elif self.is_cat6000 or self.is_platform_7600:
             return self.execute_cat6000()
         elif self.is_cat4000:
             return self.execute_cat4000()

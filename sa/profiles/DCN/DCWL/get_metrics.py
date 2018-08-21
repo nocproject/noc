@@ -2,229 +2,42 @@
 # ----------------------------------------------------------------------
 # DCN.DCWL.get_metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import division
+import six
+from collections import defaultdict
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.lib.validators import is_ipv4
 
 
 class Script(GetMetricsScript):
     name = "DCN.DCWL.get_metrics"
 
-    ALL_METRICS = set(["Radio | TxPower", "Radio | Quality",
-                       "Interface | Load | In", "Interface | Load | Out", "Interface | Packets | In",
-                       "Interface | Packets | OUT", "Interface | Errors | In", "Interface | Errors | Out",
-                       "Radio | Channel | Util", "Radio | Channel | Free", "Radio | Channel | Busy",
-                       "Radio | Channel | TxFrame", "Radio | Channel | RxFrame"])
-    MEMORY = set(["Memory | Usage"])
-    CPU = set(["CPU | Usage"])
-    CHECKS = set(["Check | Avail"])
+    @metrics(
+        ["CPU | Usage"],
+        volatile=False,
+        access="C"  # CLI version
+    )
+    def get_cpu_metrics(self, metrics):
+        with self.profile.shell(self):
+            c = self.cli("cat /proc/loadavg")
+            cpu = c.split(" ")[1].strip()
+            self.set_metric(
+                id=("CPU | Usage", None),
+                value=round(float(cpu) + 0.5)
+            )
 
-    TYPE = {
-        "Check | Avail": "gauge",
-        "Radio | TxPower": "gauge",
-        "Radio | Quality": "gauge",
-        "Interface | Load | In": "counter",
-        "Interface | Load | Out": "counter",
-        "Radio | Channel | Util": "gauge",
-        "Radio | Channel | Free": "gauge",
-        "Radio | Channel | Busy": "gauge",
-        "Radio | Channel | TxFrame": "gauge",
-        "Radio | Channel | RxFrame": "gauge",
-        "Interface | Packets | In": "counter",
-        "Interface | Packets | Out": "counter",
-        "Interface | Errors | In": "counter",
-        "Interface | Errors | Out": "counter"
-    }
-
-    @classmethod
-    def get_metric_type(cls, name):
-        return cls.TYPE.get(name)
-
-    def collect_profile_metrics(self, metrics):
-        self.logger.debug("Merics %s" % metrics)
-        if self.ALL_METRICS.intersection(set(m.metric for m in metrics)):
-            # check
-            self.collect_cli_metrics(metrics)
-        if self.MEMORY.intersection(set(m.metric for m in metrics)):
-            # check
-            self.collect_memory_metrics(metrics)
-        if self.CPU.intersection(set(m.metric for m in metrics)):
-            # check
-            self.collect_cpu_metrics(metrics)
-        if self.CHECKS.intersection(set(m.metric for m in metrics)) and self.credentials.get("path"):
-            # check
-            self.collect_avail_metrics(metrics)
-
-    def collect_cli_metrics(self, metrics):
-        ts = self.get_ts()
-        m = self.get_cli_metrics()
-        for bv in metrics:
-            if bv.metric in self.ALL_METRICS:
-                id = tuple(bv.path + [bv.metric])
-                if id in m:
-                    self.set_metric(
-                        id=bv.id,
-                        metric=bv.metric,
-                        value=m[id],
-                        type=self.get_metric_type(bv.metric),
-                        ts=ts,
-                        path=bv.path,
-                    )
-
-    def collect_memory_metrics(self, metrics):
-        ts = self.get_ts()
-        m = self.get_memory_metrics()
-        for bv in metrics:
-            if bv.metric in self.MEMORY:
-                for slot in m:
-                    self.set_metric(
-                        id=bv.id,
-                        metric=bv.metric,
-                        value=m[slot],
-                        ts=ts,
-                        # path=["", slot, ""]
-                    )
-
-    def collect_cpu_metrics(self, metrics):
-        ts = self.get_ts()
-        m = self.get_cpu_metrics()
-        for bv in metrics:
-            if bv.metric in self.CPU:
-                for slot in m:
-                    self.set_metric(
-                        id=bv.id,
-                        metric=bv.metric,
-                        value=m[slot],
-                        ts=ts,
-                        # path=["", slot, ""]
-                    )
-
-    def collect_avail_metrics(self, metrics):
-        ts = self.get_ts()
-        m = self.get_avail_metrics()
-        for bv in metrics:
-            if bv.metric in self.CHECKS:
-                for slot in m:
-                    self.set_metric(
-                        id=bv.id,
-                        metric=bv.metric,
-                        value=m[slot],
-                        ts=ts,
-                        path=slot[:-1]
-                    )
-
-    def get_cli_metrics(self):
-        res = {}
-        wres = {}
-        name = None
-        ssid = None
-        w = self.cli("get radio all detail")
-        for wline in w.splitlines():
-            wr = wline.split(" ", 1)
-            if wr[0] == "name":
-                wname = wr[1].strip()
-            elif wr[0] == "tx-power":
-                txpower = ((27 / 100) * int(wr[1].strip()))  # Max TxPower 27dBm, convert % -> dBm
-            elif wr[0] == "channel-util":
-                channelutil = wr[1].strip()
-                wres[wname] = {"txpower": txpower, "channelutil": channelutil}
-        c = self.cli("get interface all detail")
-        for vline in c.splitlines():
-            rr = vline.split(' ', 1)
-            if rr[0] == "name":
-                name = rr[1].strip()
-            elif rr[0] == "rx-bytes":
-                rxbytes = rr[1].strip()
-            elif rr[0] == "rx-packets":
-                rxpackets = rr[1].strip()
-            elif rr[0] == "rx-errors":
-                rxerrors = rr[1].strip()
-            elif rr[0] == "tx-bytes":
-                txbytes = rr[1].strip()
-            elif rr[0] == "tx-packets":
-                txpackets = rr[1].strip()
-            elif rr[0] == "tx-errors":
-                txerrors = rr[1].strip()
-                res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes, "txpackets": txpackets, "txerrors": txerrors}
-            elif rr[0] == "ssid":
-                ssid = rr[1].strip().replace(" ", "").replace("Managed", "")
-                if ssid.startswith("2a2d"):
-                    # 2a2d - hex string
-                    ssid = ssid.decode("hex")
-            elif rr[0] == "bss":
-                bss = rr[1].strip()
-            if ssid:
-                res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes, "txpackets": txpackets, "txerrors": txerrors, "iface": "%s.%s" % (name, ssid), "bss": bss}
-        for s in res.items():
-            if "bss" not in s[1]:
-                continue
-            v = self.cli("get bss %s detail" % s[1]["bss"])
-            for vline in v.splitlines():
-                rr = vline.split(' ', 1)
-                if rr[0] == "status":
-                    status = rr[1].strip()
-                elif rr[0] == "radio":
-                    radio = rr[1].strip()
-                elif rr[0] == "beacon-interface":
-                    name = rr[1].strip()
-                    if name in res.keys():
-                        res[name].update({"radio": radio, "status": status})
-        r = {}
-        for o in res.items():
-            if "status" in o[1]:
-                if o[1]["status"] == "down":
-                    continue
-                wiface = o[1]["iface"]
-                iface = o[0]
-                for w in wres.items():
-                    if w[0] in o[1]["radio"]:
-                        txpower = w[1]["txpower"]
-                        cu = w[1]["channelutil"]
-                        txbytes = o[1]["txbytes"]
-                        rxbytes = o[1]["rxbytes"]
-                        rxpackets = o[1]["rxpackets"]
-                        txpackets = o[1]["txpackets"]
-                        rxerrors = o[1]["rxerrors"]
-                        txerrors = o[1]["txerrors"]
-                        r[("", "", "", wiface, "Radio | TxPower")] = txpower
-                        r[("", "", "", wiface, "Radio | Quality")] = cu
-                        r[("", "", "", wiface, "Interface | Load | In")] = rxbytes
-                        r[("", "", "", wiface, "Interface | Load | Out")] = txbytes
-                        r[("", "", "", wiface, "Interface | Packets | In")] = rxpackets
-                        r[("", "", "", wiface, "Interface | Packets | Out")] = txpackets
-                        r[("", "", "", wiface, "Interface | Errors | In")] = rxerrors
-                        r[("", "", "", wiface, "Interface | Errors | Out")] = txerrors
-                        r[("", "", "", iface, "Interface | Load | In")] = rxbytes
-                        r[("", "", "", iface, "Interface | Load | Out")] = txbytes
-                        r[("", "", "", iface, "Interface | Packets | In")] = rxpackets
-                        r[("", "", "", iface, "Interface | Packets | Out")] = txpackets
-                        r[("", "", "", iface, "Interface | Errors | In")] = rxerrors
-                        r[("", "", "", iface, "Interface | Errors | Out")] = txerrors
-            else:
-                iface = o[0]
-                rxbytes = o[1]["rxbytes"]
-                txbytes = o[1]["txbytes"]
-                rxpackets = o[1]["rxpackets"]
-                txpackets = o[1]["txpackets"]
-                rxerrors = o[1]["rxerrors"]
-                txerrors = o[1]["txerrors"]
-                r[("", "", "", iface, "Interface | Load | In")] = rxbytes
-                r[("", "", "", iface, "Interface | Load | Out")] = txbytes
-                r[("", "", "", iface, "Interface | Packets | In")] = rxpackets
-                r[("", "", "", iface, "Interface | Packets | Out")] = txpackets
-                r[("", "", "", iface, "Interface | Errors | In")] = rxerrors
-                r[("", "", "", iface, "Interface | Errors | Out")] = txerrors
-
-        return r
-
-    def get_memory_metrics(self):
-        r = {}
+    @metrics(
+        ["Memory | Usage"],
+        volatile=False,
+        access="C"  # CLI version
+    )
+    def get_memory_metrics(self, metrics):
         with self.profile.shell(self):
             m = self.cli("cat /proc/meminfo")
             for mline in m.splitlines():
@@ -234,22 +47,127 @@ class Script(GetMetricsScript):
                 if mr[0] == "MemFree":
                     mfree = mr[1].strip().split(" ")[0]
                     memory = (100 / int(mtotal)) * int(mfree)
-                    r[("Memory | Usage", )] = memory
-            return r
+                    self.set_metric(
+                        id=("Memory | Usage", None),
+                        value=memory
+                    )
 
-    def get_cpu_metrics(self):
-        with self.profile.shell(self):
-            c = self.cli("cat /proc/loadavg")
-            cpu = c.split(" ")[1].strip()
-            r = {("CPU | Usage", ): round(float(cpu) + 0.5)}
-            return r
-
-    def get_avail_metrics(self):
-        r = {}
+    @metrics(
+        ["Check | Result", "Check | RTT"],
+        volatile=False,
+        access="C"  # CLI version
+    )
+    def get_avail_metrics(self, metrics):
+        if not self.credentials["path"]:
+            return
+        check_id = 999
+        check_rtt = 998
+        for m in metrics:
+            if m.metric == "Check | Result":
+                check_id = m.id
+            if m.metric == "Check | RTT":
+                check_rtt = m.id
         for ip in self.credentials["path"].split(","):
             if is_ipv4(ip.strip()):
                 result = self.scripts.ping(address=ip)
-                r[("ping", ip, "Check | Result")] = bool(result["success"])
-                if result["success"]:
-                    r[("ping", ip, "Check | RTT")] = float(result["avg"])
-        return r
+                self.set_metric(
+                    id=check_id,
+                    metric="Check | Result",
+                    path=("ping", ip),
+                    value=bool(result["success"]),
+                    multi=True
+                )
+                if result["success"] and check_rtt != 998:
+                    self.set_metric(
+                        id=check_rtt,
+                        metric="Check | RTT",
+                        path=("ping", ip),
+                        value=bool(result["success"])
+                    )
+
+    def get_beacon_iface(self, ifaces):
+        """
+        Beacon iface. Add Status and mapping for SSID <-> Radio interface
+        :param ifaces:
+        :return:
+        """
+        for s in ifaces:
+            if "bss" not in s:
+                continue
+            v = self.cli("get bss %s detail" % s["bss"])
+            for block in v.split("\n\n"):
+                data = dict(line.split(None, 1) for line in block.splitlines()
+                            if len(line.split(None, 1)) == 2)
+                s["status"] = data["status"]
+                s["radio"] = data["radio"]
+
+    @metrics(
+        ["Interface | Load | In", "Interface | Load | Out",
+         "Interface | Packets | In", "Interface | Packets | Out",
+         "Interface | Errors | In", "Interface | Errors | Out"],
+        has_capability="DB | Interfaces",
+        volatile=False,
+        access="C"  # CLI version
+    )
+    def get_interface_metrics(self, metrics):
+        ifaces = []
+        radio_metrics = self.get_radio_metrics(metrics)
+        iface_metric_map = {"rx-bytes": "Interface | Load | In",
+                            "tx-bytes": "Interface | Load | Out",
+                            "rx-packets": "Interface | Packets | In",
+                            "tx-packets": "Interface | Packets | Out",
+                            "rx-errors": "Interface | Errors | In",
+                            "tx-errors": "Interface | Errors | Out"}
+        c = self.cli("get interface all detail")
+        for block in c.split("\n\n"):
+            ifaces += [dict(line.split(None, 1) for line in block.splitlines()
+                            if len(line.split(None, 1)) == 2)]
+        self.get_beacon_iface(ifaces)
+        for data in ifaces:
+            if data.get("status", "up") == "down":
+                # Skip if interface is down
+                continue
+            if "ssid" in data:
+                ssid = data["ssid"].strip().replace(" ", "").replace("Managed", "")
+                if ssid.startswith("2a2d"):
+                    # 2a2d - hex string
+                    ssid = ssid.decode("hex")
+                iface = "%s.%s" % (data["name"], ssid)
+            else:
+                iface = data["name"]
+            for field, metric in six.iteritems(iface_metric_map):
+                if data.get(field) is not None:
+                        self.set_metric(id=(metric, ["", "", "", iface]), value=data[field])
+            # LifeHack. Set Radio interface metrics to SSID
+            if "radio" in data and data["radio"] in radio_metrics:
+                self.set_metric(id=("Radio | TxPower", ["", "", "", iface]),
+                                value=radio_metrics[data["radio"]]["tx-power"])
+            if "radio" in data and data["radio"] in radio_metrics:
+                self.set_metric(id=("Radio | Channel | Util", ["", "", "", iface]),
+                                value=radio_metrics[data["radio"]]["channel-util"])
+
+    @metrics(
+        ["Radio | TxPower", "Radio | Quality",
+         "Radio | Channel | Util", "Radio | Channel | Free",
+         "Radio | Channel | Busy", "Radio | Channel | TxFrame",
+         "Radio | Channel | RxFrame"],
+        has_capability="DB | Interfaces",
+        volatile=True,
+        access="C"  # CLI version
+    )
+    def get_radio_metrics(self, metrics):
+        r_metrics = defaultdict(dict)
+        w = self.cli("get radio all detail")
+        for block in w.split("\n\n"):
+            data = dict(line.split(None, 1) for line in block.splitlines()
+                        if len(line.split(None, 1)) == 2)
+            iface = data["name"].strip()
+            if data.get("tx-power") is not None:
+                self.set_metric(id=("Radio | TxPower", ["", "", "", iface]),
+                                # Max TxPower 27dBm, convert % -> dBm
+                                value=(27 / 100) * int(data["tx-power"].strip()))
+                r_metrics[iface]["tx-power"] = (27 / 100) * int(data["tx-power"].strip())
+            if data.get("channel-util") is not None:
+                self.set_metric(id=("Radio | Channel | Util", ["", "", "", iface]), value=data["channel-util"])
+                r_metrics[iface]["channel-util"] = (27 / 100) * int(data["channel-util"].strip())
+        return r_metrics

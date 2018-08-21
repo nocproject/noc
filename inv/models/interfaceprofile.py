@@ -152,6 +152,7 @@ class InterfaceProfile(Document):
     bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _status_discovery_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -172,7 +173,7 @@ class InterfaceProfile(Document):
         return InterfaceProfile.objects.filter(bi_id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return InterfaceProfile.objects.filter(name=name).first()
 

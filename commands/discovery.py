@@ -31,13 +31,13 @@ class Command(BaseCommand):
         "box": [
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri", "udld",
-            "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe",
+            "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe", "cpestatus",
             "lacp", "hk", "mac", "bfd", "fdp", "vpn", "prefix", "address",
-            "nri_portmap", "nri_service"
+            "nri_portmap", "nri_service", "metrics"
         ],
         "periodic": [
             "uptime", "interfacestatus",
-            "mac", "metrics"
+            "mac", "metrics", "cpestatus"
         ]
     }
 

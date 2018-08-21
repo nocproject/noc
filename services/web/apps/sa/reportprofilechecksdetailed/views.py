@@ -17,7 +17,7 @@ from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
+from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.core.profile.loader import GENERIC_PROFILE
@@ -110,8 +110,9 @@ class ReportFilterApplication(SimpleReport):
             read_preference=ReadPreference.SECONDARY_PREFERRED).find(
             {"problems.suggest_cli.": self.re_cli,
              "_id": {"$in": is_managed_ng_in}})
-        mos_id = list(is_managed.values_list("id", flat=True))
-        mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
+        mos_id = list(is_managed.order_by("id").values_list("id", flat=True))
+        mo_hostname = ReportObjectsHostname1(sync_ids=mos_id)
+        mo_hostname = mo_hostname.get_dictionary()
         for b in is_not_alived_c:
             mo = ManagedObject.get_by_id(b["object"])
             data += [(
@@ -119,7 +120,7 @@ class ReportFilterApplication(SimpleReport):
                 mo.address,
                 mo.profile.name,
                 mo.administrative_domain.name,
-                mo_hostname[mo.id],
+                mo_hostname.get(mo.id, ""),
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -134,7 +135,7 @@ class ReportFilterApplication(SimpleReport):
                 mo.address,
                 mo.administrative_domain.name,
                 mo.profile.name,
-                mo_hostname[mo.id],
+                mo_hostname.get(mo.id, ""),
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -148,7 +149,7 @@ class ReportFilterApplication(SimpleReport):
                 mo.address,
                 mo.administrative_domain.name,
                 mo.profile.name,
-                mo_hostname[mo.id],
+                mo_hostname.get(mo.id, ""),
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,

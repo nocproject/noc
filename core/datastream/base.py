@@ -95,7 +95,7 @@ class DataStream(object):
         :return:
         """
         return {
-            "id": id,
+            "id": str(id),
             "$deleted": True
         }
 
@@ -129,6 +129,8 @@ class DataStream(object):
         doc = coll.find_one({cls.F_ID: id}, {cls.F_ID: 0, cls.F_HASH: 1})
         if doc and doc.get(cls.F_HASH) == hash:
             return False  # Not changed
+        if cls.on_change(data):
+            hash = cls.get_hash(data)
         metrics["ds_%s_changed" % cls.name] += 1
         changeid = bson.ObjectId()
         data["change_id"] = str(changeid)
@@ -165,7 +167,7 @@ class DataStream(object):
         Return total amount of items in datastream
         :return:
         """
-        return cls.get_collection().count()
+        return cls.get_collection().count_documents({})
 
     @classmethod
     def clean_change_id(cls, change_id):
@@ -225,6 +227,15 @@ class DataStream(object):
             limit=limit or cls.DEFAULT_LIMIT
         ):
             yield doc[cls.F_ID], doc[cls.F_CHANGEID], doc[cls.F_DATA]
+
+    @classmethod
+    def on_change(cls, data):
+        """
+        Called when datastream changed. May alter data
+        :param data:
+        :return: True, if data is altered and hash must be recalculated
+        """
+        return False
 
     @classmethod
     def clean_id(cls, id):

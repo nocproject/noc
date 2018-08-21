@@ -483,7 +483,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Address"),
                                     allowBlank: false,
                                     tabIndex: 50,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    vtype: "IPv4"
                                 },
                                 {
                                     name: "access_preference",

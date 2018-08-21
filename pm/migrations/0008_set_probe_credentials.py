@@ -13,7 +13,7 @@ class Migration:
         PROBEUSER = "noc-probe"
         mdb = get_db()
         # Check probe has no storage and credentials
-        if mdb.noc.pm.probe.count() != 1:
+        if mdb.noc.pm.probe.count_documents({}) != 1:
             return
         p = mdb.noc.pm.probe.find_one({})
         if p.get("storage") or p.get("user"):

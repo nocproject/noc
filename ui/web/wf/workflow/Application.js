@@ -17,6 +17,7 @@ Ext.define("NOC.wf.workflow.Application", {
 
     initComponent: function() {
         var me = this;
+        me.WF_EDITOR = me.registerItem("NOC.wf.workflow.WFEditor");
         Ext.apply(me, {
             columns: [
                 {
@@ -84,6 +85,57 @@ Ext.define("NOC.wf.workflow.Application", {
                 }
             ]
         });
+        console.log(me.getRegisteredItems());
+        me.getRegisteredItems()[me.WF_EDITOR].on("scriptsLoaded", function() {
+            var me = this;
+            if(me.openPreview){
+                me.openDiagram(me.currentRecord);
+            }
+        }, me);
         me.callParent();
+    },
+    onClone: function() {
+        var me = this;
+        if(me.currentRecord) {
+            Ext.Ajax.request({
+                url: "/wf/workflow/" + me.currentRecord.get("id") + "/clone/",
+                method: "POST",
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    me.restoreHistory([data.id]);
+                    NOC.info(__("Cloned"));
+                },
+                failure: function(response) {
+                    NOC.error(__("Failed to clone"))
+                }
+            });
+        }
+    },
+    //
+    newRecord: function() {
+        var me = this;
+        me.openDiagram(null);
+    },
+    // Show Form
+    onEditRecord: function(record) {
+        var me = this;
+        // Check permissions
+        if(!me.hasPermission("read") && !me.hasPermission("update"))
+            return;
+        me.currentRecord = record;
+        if(me.getRegisteredItems()[me.WF_EDITOR].getScriptsLoaded()) {
+            me.openDiagram(me.currentRecord);
+        } else {
+            me.openPreview = true;
+        }
+    },
+    //
+    openDiagram: function(record) {
+        var me = this;
+        me.previewItem(me.WF_EDITOR, record);
+        if(record) {
+            me.setHistoryHash(record.get("id"));
+        }
     }
 });

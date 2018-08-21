@@ -563,7 +563,8 @@ Ext.define("NOC.core.ModelApplication", {
                                 listeners: {
                                     scope: me,
                                     beforeedit: me.onInlineBeforeEdit,
-                                    edit: me.onInlineEdit
+                                    edit: me.onInlineEdit,
+                                    canceledit: me.onInlineCancel
                                 }
                             })
                         ],
@@ -931,15 +932,16 @@ Ext.define("NOC.core.ModelApplication", {
                 NOC.error(message);
                 me.unmask();
             };
-
-        me.mask("Deleting ...");
-        Ext.Ajax.request({
-            url: me.base_url + me.currentRecord.get(me.idField) + "/",
-            method: "DELETE",
-            scope: me,
-            success: onSuccess,
-            failure: onFailure
-        });
+        if(me.currentRecord) {
+            me.mask("Deleting ...");
+            Ext.Ajax.request({
+                url: me.base_url + me.currentRecord.get(me.idField) + "/",
+                method: "DELETE",
+                scope: me,
+                success: onSuccess,
+                failure: onFailure
+            });
+        }
     },
     // Reload store with current query
     reloadStore: function() {
@@ -1250,6 +1252,12 @@ Ext.define("NOC.core.ModelApplication", {
     //
     onInlineBeforeEdit: function(editor, context, eOpts) {
         var me = this;
+    },
+    //
+    onInlineCancel: function(editor, context) {
+        if(Ext.isEmpty(context.originalValue)){
+            context.grid.store.removeAt(context.rowIdx);
+        }
     },
     // Admin action selected
     onAction: function(menu, item, e) {

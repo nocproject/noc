@@ -2,15 +2,24 @@
 # ---------------------------------------------------------------------
 # Coverage
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField)
+from mongoengine.fields import StringField
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("inv.Interface", "coverage"),
+    ("inv.CoveredBuilding", "coverage"),
+    ("inv.CoveredObject", "coverage")
+])
 class Coverage(Document):
     meta = {
         "collection": "noc.coverage",
@@ -30,7 +39,7 @@ class Coverage(Document):
         Returns list of interfaces providing coverage.
         Coverage can be limited to particular technology
         """
-        from interface import Interface
+        from .interface import Interface
         q = Interface.objects.filter(coverage=self.id)
         if technology:
             q = q.filter(technologies=technology)
@@ -41,7 +50,7 @@ class Coverage(Document):
         """
         Returns list of coverages for inventory object
         """
-        from coveredobject import CoveredObject
+        from .coveredobject import CoveredObject
         if hasattr(object, "id"):
             object = object.id
         r = []
@@ -60,7 +69,7 @@ class Coverage(Document):
         """
         Returns list of coverages for building
         """
-        from coveredbuilding import CoveredBuilding
+        from .coveredbuilding import CoveredBuilding
         if hasattr(building, "id"):
             building = building.id
         # Get building coverage
