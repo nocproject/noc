@@ -173,7 +173,7 @@ class Command(BaseCommand):
                     name = name[:-lz]
                 if name.endswith("."):
                     name = name[:-1]
-                rr = None
+                # rr = None
                 # Skip zone NS
                 if rr.type == "NS" and not name:
                     continue
