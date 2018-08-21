@@ -466,6 +466,8 @@ class Config(BaseConfig):
 
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class tgsender(ConfigSection):
         token = SecretParameter()
