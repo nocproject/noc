@@ -33,7 +33,11 @@ class Script(BaseScript):
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard = re.compile(
-        r"\[(?:Main_Board|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        r"\[(?:Main_Board|BackPlane_\d)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        re.DOTALL | re.MULTILINE | re.VERBOSE
+    )
+    rx_mainboard_ne = re.compile(
+        r"\[Board\sProperties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_subitem = re.compile(
@@ -132,19 +136,50 @@ class Script(BaseScript):
             v_cli = "display elabel unit %s %s"
         elif self.match_version(platform__regex="^(S93..|AR[12].+)$"):
             v_cli = "display elabel %s %s"
-        try:
-            v = self.cli(v_cli % (slot_num, subcard_num))
-        except self.CLISyntaxError:
-            return []
+        if self.is_ne_platform and i_type != "CHASSIS":
+            try:
+                v = self.cli("display elabel %s" % slot_num)
+            except self.CLISyntaxError:
+                return []
+        else:
+            try:
+                v = self.cli(v_cli % (slot_num, subcard_num))
+            except self.CLISyntaxError:
+                if slot_num == 0:
+                    try:
+                        # found on AR0B0024BA model
+                        v = self.cli("display elabel backplane")
+                        i_type = "CHASSIS"
+                    except self.CLISyntaxError:
+                        return []
+                else:
+                    try:
+                        # found on `Quidway S9312` 5.130 (V200R003C00SPC500)
+                        v = self.cli("display elabel %s" % slot_num)
+                    except self.CLISyntaxError:
+                        return []
+
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
 
-        if i_type == "CHASSIS":
-            f = self.rx_mainboard.search(v)
-            r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+        if self.is_ne_platform:
+            if i_type == "CHASSIS":
+                v = self.cli("display elabel backplane")
+                f = self.rx_mainboard_ne.search(v)
+                r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+            else:
+                # Do not parse empty lines
+                if v.strip():
+                    r.append(self.parse_item_content(v, slot_num, i_type))
         else:
-            r.append(self.parse_item_content(v, subcard_num, i_type))
+            if i_type == "CHASSIS":
+                f = self.rx_mainboard.search(v)
+                r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+            else:
+                # Do not parse empty lines
+                if v.strip():
+                    r.append(self.parse_item_content(v, subcard_num, i_type))
 
         for f in self.rx_port.finditer(v):
             # port block, search XCVR
@@ -182,6 +217,8 @@ class Script(BaseScript):
             # Detect slot number
             if "Slot" in i:
                 i_slot = i["Slot"]
+            elif "Slot#" in i:
+                i_slot = i["Slot#"]
             elif "Unit#" in i:
                 i_slot = i["Unit#"]
             elif "SlotNo." in i:
@@ -335,7 +372,7 @@ class Script(BaseScript):
         :return: type, number, part_no
         :rtype: list
         """
-        cx_600_t = ["LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
+        cx_600_t = ["IPU", "LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
         self.logger.info("Getting type %s, %s, %s", slot, sub, part_no)
 
         try:
@@ -371,6 +408,12 @@ class Script(BaseScript):
             return part_no, slot, None
         elif part_no.startswith("LE0"):
             return "FRU", slot, part_no
+        elif part_no.startswith("SAE"):
+            return "FRU", slot, part_no
+        elif part_no.startswith("CMU"):
+            return "FRU", slot, part_no
+        elif part_no.startswith("SRU"):
+            return "SRU", slot, part_no
         elif part_no.startswith("AR"):
             # AR Series ISR, Examples:
             # "SIC": ["AR0MSEG1CA00"], "WSIC": ["AR01WSX220A"], "XSIC": ["AR01XSX550A"], "SRU": ["AR01SRU2C"],
