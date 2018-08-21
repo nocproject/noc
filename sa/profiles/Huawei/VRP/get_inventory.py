@@ -152,6 +152,13 @@ class Script(BaseScript):
                         i_type = "CHASSIS"
                     except self.CLISyntaxError:
                         return []
+                else:
+                    try:
+                        # found on `Quidway S9312` 5.130 (V200R003C00SPC500)
+                        v = self.cli("display elabel %s" % slot_num)
+                    except self.CLISyntaxError:
+                        return []
+
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
@@ -402,6 +409,8 @@ class Script(BaseScript):
         elif part_no.startswith("LE0"):
             return "FRU", slot, part_no
         elif part_no.startswith("SAE"):
+            return "FRU", slot, part_no
+        elif part_no.startswith("CMU"):
             return "FRU", slot, part_no
         elif part_no.startswith("SRU"):
             return "SRU", slot, part_no
