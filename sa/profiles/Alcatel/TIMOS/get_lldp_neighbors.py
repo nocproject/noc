@@ -62,7 +62,7 @@ class Script(BaseScript):
     @staticmethod
     def fixport(port, port_type):
         # fix alcatel encode port like hex string
-        remote_port = "u"
+        remote_port = port
         if port_type == '5' and "\n " in port:
             remote_port = port.replace("\n                        ", "")
             remote_port = remote_port.replace(":", "").replace("\n", "")
@@ -79,24 +79,29 @@ class Script(BaseScript):
         return remote_port
 
     def get_port_info(self, port):
+        pri = []
         try:
             v = self.cli("show port %s ethernet lldp remote-info" % port)
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         else:
             match_obj = self.rx_remote_info.search(v)
-            pri = match_obj.groupdict()
-            pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
-            pri["remote_port"] = self.fixport(pri["remote_port"],
+            if match_obj:
+                pri = match_obj.groupdict()
+                pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
+                pri["remote_port"] = self.fixport(pri["remote_port"],
                                               pri["remote_port_subtype"])
-            if 'n/a' in pri['remote_system_name']:
-                del pri['remote_system_name']
-            return pri
+                if 'n/a' in pri['remote_system_name']:
+                    del pri['remote_system_name']
+        return pri
 
-    def execute(self):
+    def execute_cli(self):
         r = []
+        cmd = "show system lldp neighbor"
+        if self.match_version(version__startswith=r"B-4"):
+            cmd = "show port detail | match Yes"
         try:
-            v = self.cli("show system lldp neighbor")
+            v = self.cli(cmd)
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for line in v.splitlines():
@@ -110,9 +115,10 @@ class Script(BaseScript):
                 continue
             local_interface_id = str(lldp_match.group('local_interface_id'))
             pri = self.get_port_info(port)
-            r += [{
-                "local_interface": port,
-                "local_interface_id": local_interface_id,
-                "neighbors": [pri]
-            }]
+            if pri != []:
+                r += [{
+                    "local_interface": port,
+                    "local_interface_id": local_interface_id,
+                    "neighbors": [pri]
+                }]
         return r
