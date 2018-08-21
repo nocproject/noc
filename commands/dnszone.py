@@ -185,7 +185,7 @@ class Command(BaseCommand):
                         dry_run=dry_run,
                         force=force
                     )
-                elif z.type == "PTR":
+                elif rr.type == "PTR":
                     address = zp + name
                     self.create_address(
                         zone, vrf, address,
