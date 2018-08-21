@@ -485,6 +485,8 @@ class Config(BaseConfig):
 
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
