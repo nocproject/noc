@@ -244,7 +244,7 @@ class Command(BaseCommand):
         :param f: File object
         :return:
         """
-        enclosed_line = None
+        enclosed_line = []
         for line in f:
             # Strip one-line comments
             if ";" in line:
@@ -261,7 +261,7 @@ class Command(BaseCommand):
                     # Close enclosed line
                     enclosed_line += [line.split(")", 1)[0].rstrip()]
                     yield " ".join(enclosed_line)
-                    enclosed_line = None
+                    enclosed_line = []
                 else:
                     # Collect data
                     enclosed_line += [line]
