@@ -61,6 +61,7 @@ class Script(BaseScript):
         "Giga-FX": "physical",
         "Giga-FX-SFP": "physical",
         "Giga-Combo-TX": "physical",
+        "Giga-Combo-FX": "physical",
         "EtherSVI": "SVI",
         "Null": "null"
     }
