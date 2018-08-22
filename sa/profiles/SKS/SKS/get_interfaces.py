@@ -172,7 +172,6 @@ class Script(BaseScript):
                 except self.CLISyntaxError:
                     self.logger.info("Model not supported switchport information")
                     switchport_support = False
-                    pass
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
