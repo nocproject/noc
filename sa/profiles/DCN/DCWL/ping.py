@@ -18,7 +18,8 @@ class Script(BaseScript):
     interface = IPing
 
     rx_result = re.compile(
-        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss$",
+        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
+        r"(packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss$",
         re.MULTILINE)
     rx_stat = re.compile(
         r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)\s.",
