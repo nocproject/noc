@@ -12,6 +12,7 @@
     path: "{{item}}"
     state: "directory"
     owner: "{{noc_user}}"
+    group: "{{noc_group}}"
     mode: 0755
   with_items:
     - "{{noc_etc}}"             # /opt/noc/etc
