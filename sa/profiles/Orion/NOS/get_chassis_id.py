@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -17,7 +16,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def execute(self):
+    def execute_cli(self):
         v = self.profile.get_version(self)
         return {
             "first_chassis_mac": v["mac"],

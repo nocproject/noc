@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -19,9 +19,9 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_port = re.compile(
-        r"^\s*(?P<port>\d+)\s+\S+\s+(?P<oper_status>\S+)",re.MULTILINE)
+        r"^\s*(?P<port>\d+)\s+\S+\s+(?P<oper_status>\S+)", re.MULTILINE)
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         r = []
         for match in self.rx_port.finditer(self.cli("show interface port")):
             if (interface is not None) and (interface == match.group('port')):
