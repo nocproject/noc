@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Ericsson.BSC.get_cpe
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -58,8 +58,8 @@ class Script(BaseScript):
                     "swveract": swveract,
                     "swverrepl": swverrepl,
                     "platform": platform,
-                    "id": bsid,
-                    "global_id": sn,
+                    "id": "%s:%s" % (bsid, sn),
+                    "global_id": bsname,
                     "type": "bs",
                     "name": bsname,
                     "ip": ip,

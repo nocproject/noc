@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     command_submit = "\r"
     command_enter_config = "configure"
     command_leave_config = "end"
-    pattern_prompt = r"^\S*[><]"
+    pattern_prompt = r"^(\S*[><]|\S+:\$)"
     rx_header = re.compile("(\S+)")
 
     class mml(object):
