@@ -38,7 +38,8 @@ class Script(BaseScript):
         "BGP": "BGP",
         "EIGRP": "EIGRP",
         "IFNET": "IFNET",
-        "BFD": "BFD"
+        "BFD": "BFD",
+        "RSVP": "RSVP"
     }
 
     client_ignored = ["CEF", "AUTO"]
