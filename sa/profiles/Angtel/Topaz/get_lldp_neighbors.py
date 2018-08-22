@@ -30,7 +30,7 @@ class Script(BaseScript):
     )
     CAPS = {
         "": 0, "Other": 1, "Repeater": 2,
-        "Bridge": 4, "W": 8, "Router": 16,
+        "Bridge": 4, "Wlan-Access-Point": 8, "Router": 16,
         "Telephone": 32, "D": 64, "H": 128
     }
 
