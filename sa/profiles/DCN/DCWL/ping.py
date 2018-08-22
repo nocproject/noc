@@ -38,6 +38,20 @@ class Script(BaseScript):
         #    cmd+=" df-bit"
         ping = self.cli(cmd)
         result = self.rx_result.search(ping)
+        """
+        Workaround for this incident
+
+        PING 10.218.217.227 (10.218.217.227): 56 data bytes
+        64 bytes from 10.218.217.227: seq=0 ttl=61 time=15.436 ms
+        64 bytes from 10.218.217.227: seq=1 ttl=61 time=15.265 ms
+        64 bytes from 10.218.217.227: seq=2 ttl=61 time=15.365 ms
+        ping: sendto: Network is unreachable
+        Invalid command.
+
+        """
+        if not result:
+            return {"success": 0, "count": 0}
+
         r = {
             "success": result.group("success"),
             "count": result.group("count"),
