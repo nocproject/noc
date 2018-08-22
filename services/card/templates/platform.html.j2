@@ -1,0 +1,43 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2">
+            Platform: {{ object.vendor.code }} {{ object.vendor.na,e }}
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Description") }}</th>
+        <td>{{object.descriotion}}</td>
+    <tr>
+    {% if object.start_of_sale %}
+    <tr>
+        <th scope="row">{{ _("Start of Sale") }}</th>
+        <td>{{object.start_of_sale}}</td>
+    <tr>
+    {% endif %}
+    {% if object.end_of_sale %}
+    <tr>
+        <th scope="row">{{ _("End of Sale") }}</th>
+        <td>{{object.end_of_sale}}</td>
+    <tr>
+    {% endif %}
+    {% if object.end_of_support %}
+    <tr>
+        <th scope="row">{{ _("End of Support") }}</th>
+        <td>{{object.end_of_support}}</td>
+    <tr>
+    {% endif %}
+    {% if object.end_of_xsupport %}
+    <tr>
+        <th scope="row">{{ _("End of Ext. Support") }}</th>
+        <td>{{object.end_of_xsupport}}</td>
+    <tr>
+    {% endif %}
+    {% if object.snmp_sysobjectid %}
+    <tr>
+        <th scope="row">{{ _("SNMP sysObjectId") }}</th>
+        <td>{{object.snmp_sysobjectid}}</td>
+    <tr>
+    {% endif %}
+</tbody>
+</table>
