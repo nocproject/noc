@@ -100,6 +100,7 @@ class Script(BaseScript):
                     "self": "C",
                     "secured": "D",
                     "securec": "S",
+                    "secures": "S",
                 }[match.group("type").lower()],
             }
             if iface == 'CPU':
