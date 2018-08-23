@@ -59,7 +59,7 @@ class Script(BaseScript):
     }
 
     CAPS = {
-        "na": 0, "other": 1, "repeater": 2, "bridge": 4,
+        "--": 0, "na": 0, "other": 1, "repeater": 2, "bridge": 4,
         "wlan": 8, "wlanaccesspoint": 8, "access point": 8,
         "router": 16, "telephone": 32, "cable": 64, "docsiscabledevice": 64,
         "station": 128, "stationonly": 128
@@ -113,11 +113,11 @@ class Script(BaseScript):
                 n["remote_port_subtype"] = self.PORT_TYPES[n["remote_port_subtype"].lower()]
                 if n["remote_port_subtype"] == 3:
                     n["remote_port"] = MACAddressParameter().clean(n["remote_port"])
-                if n.get("remote_port_description") in ["NA", "N/A"]:
+                if n.get("remote_port_description") in ["--", "NA", "N/A"]:
                     del n["remote_port_description"]
-                if n.get("remote_system_description") in ["NA", "N/A"]:
+                if n.get("remote_system_description") in ["--", "NA", "N/A"]:
                     del n["remote_system_description"]
-                if n.get("remote_system_name") in ["NA", "N/A"]:
+                if n.get("remote_system_name") in ["--", "NA", "N/A"]:
                     del n["remote_system_name"]
                 # Process capabilities
                 caps = 0
