@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Supplier
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,12 +21,16 @@ from noc.lib.nosql import PlainReferenceField
 from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
 @bi_sync
 @workflow
+@on_delete_check(check=[
+    ("phone.PhoneRange", "supplier")
+])
 class Supplier(Document):
     meta = {
         "collection": "noc.suppliers",
