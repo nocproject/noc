@@ -80,6 +80,11 @@ class BeefCLI(CLI):
         self.sender = None
         super(BeefCLI, self).close()
 
+    def send_pager_reply(self, data, match):
+        """
+        Beef do not need pagers
+        """
+        pass
 
 class BeefIOStream(TelnetIOStream):
     def connect(self, *args, **kwargs):
