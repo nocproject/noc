@@ -77,10 +77,7 @@ class KBEntry(models.Model):
         """
         Returns latest KBEntryHistory record
         """
-        d = KBEntryHistory.objects.filter(kb_entry=self).order_by("-timestamp")[:1]
-        if d:
-            return d[0]
-        return None
+        return self.kbentryhistory_set.order_by("-timestamp")[0]
 
     @classmethod
     def last_modified(self, num=20):
