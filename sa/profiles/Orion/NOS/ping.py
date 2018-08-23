@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-from noc.lib.validators import is_ipv4, is_ipv6
 import re
 
 
@@ -22,8 +21,9 @@ class Script(BaseScript):
         r"^round-trip \(ms\)  min/avg/max = "
         r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE)
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+    def execute_cli(
+        self, address, count=None, source_address=None, size=None, df=None, vrf=None
+    ):
         cmd = "ping %s" % address
         if count:
             cmd += " count %d" % int(count)
