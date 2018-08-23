@@ -86,6 +86,7 @@ class BeefCLI(CLI):
         """
         pass
 
+
 class BeefIOStream(TelnetIOStream):
     def connect(self, *args, **kwargs):
         """
