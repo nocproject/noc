@@ -104,8 +104,11 @@ class Command(BaseCommand):
             is_exception = False
             while start < stop:
                 end = min(start + window, stop)
-                e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX,
-                         use_archive=use_archive)
+                if hasattr(ecls, "use_archive"):
+                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX,
+                             use_archive=use_archive)
+                else:
+                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
                 t0 = time.time()
                 try:
                     nr = e.extract()
