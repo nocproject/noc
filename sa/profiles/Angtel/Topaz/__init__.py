@@ -18,9 +18,11 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% Unrecognized command|% Wrong number of parameters"
     command_super = "enable"
     command_disable_pager = "terminal datadump"
+    # rogue_chars = [re.compile(r"\[\x1b\[1mN\x1b\[0m\]")]
     pattern_more = [
         (r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
-        (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n")
+        (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n"),
+        (r"^\s*This action will cause loss of configuration.Proceed\?\s*\(Y/N\)", "Y\n")
     ]
     command_exit = "exit"
 
