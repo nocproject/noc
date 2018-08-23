@@ -82,9 +82,9 @@ class BeefCLI(CLI):
 
     def send_pager_reply(self, data, match):
         """
-        Beef do not need pagers
+        Beef need no pagers
         """
-        pass
+        self.collected_data += [data]
 
 
 class BeefIOStream(TelnetIOStream):
