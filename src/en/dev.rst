@@ -6,6 +6,7 @@ Developer's Guide
     :titlesonly:
 
     /dev/modelinterfaces
+    /dev/inventory-protocols
     /dev/i18n
     /dev/caching
     /dev/workflow-integration

@@ -14,6 +14,9 @@ Glossary
 .. glossary::
     :sorted:
 
+    AC
+        `Alternating Current<https://en.wikipedia.org/wiki/Alternating_current>`_
+
     BFD
         Bidirectional Forwarding Detection
 
@@ -41,11 +44,17 @@ Glossary
         .. todo::
             Describe periodic discovery
 
+    DC
+        `Direct Current<https://en.wikipedia.org/wiki/Direct_current>`_
+
     discovery
         See :doc:`/reference/discovery`.
 
     FRU
         Field Replaceable Unit. Vendor's identification
+
+    G.703
+        `ITU-T G.703 standard<https://en.wikipedia.org/wiki/G.703>`_
 
     LACP
         .. todo::
@@ -102,6 +111,9 @@ Glossary
         .. todo::
             Describe
 
+    PoE
+        `Power over Ethernet<https://en.wikipedia.org/wiki/Power_over_Ethernet>`_
+
     pool
         See :doc:`/reference/pool`.
 
@@ -110,6 +122,12 @@ Glossary
 
     postgres
         See :doc:`/reference/postgres`.
+
+    RS-232
+        `RS-232 serial communications standard<https://en.wikipedia.org/wiki/RS-232>`_
+
+    RS-485
+        `RS-485 serial communications standard<https://en.wikipedia.org/wiki/RS-485>`_
 
     selector
         See :doc:`/reference/selector`.
