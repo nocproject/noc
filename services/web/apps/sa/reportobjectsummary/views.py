@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Objects Summary Report
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
+
 # Third-party modules
 from django import forms
 # NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
+from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
-from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
-#
-#
-#
+
 report_types = [
     ("profile", _("By Profile")),
     ("domain", _("By Administrative Domain")),
@@ -31,9 +28,6 @@ report_types = [
 
 class ReportForm(forms.Form):
     report_type = forms.ChoiceField(label=_("Report Type"), choices=report_types)
-#
-#
-#
 
 
 class ReportObjectsSummary(SimpleReport):
@@ -73,9 +67,9 @@ class ReportObjectsSummary(SimpleReport):
 
     }
 
-    def get_data(self, request, report_type, **kwargs):
+    def get_data(self, request, report_type=None, **kwargs):
         wr = ("", "",)
-        wr_and = ("", "",)
+        # wr_and = ("", "",)
         wr_and2 = ("", "",)
         platform = {str(p["_id"]): p["name"] for p in Platform.objects.all().as_pymongo().scalar("id", "name")}
         version = {str(p["_id"]): p["version"] for p in Firmware.objects.all().as_pymongo().scalar("id", "version")}
@@ -84,11 +78,11 @@ class ReportObjectsSummary(SimpleReport):
         if not request.user.is_superuser:
             ad = tuple(UserAccess.get_domains(request.user))
             wr = ("WHERE administrative_domain_id in ", ad)
-            wr_and = ("AND sam.administrative_domain_id in ", ad)
+            # wr_and = ("AND sam.administrative_domain_id in ", ad)
             wr_and2 = ("AND administrative_domain_id in ", ad)
             if len(ad) == 1:
                 wr = ("WHERE administrative_domain_id in (%s)" % ad, "")
-                wr_and = ("AND sam.administrative_domain_id in (%s)" % ad, "")
+                # wr_and = ("AND sam.administrative_domain_id in (%s)" % ad, "")
                 wr_and2 = ("AND administrative_domain_id in (%s)" % ad, "")
         # By Profile
         if report_type == "profile":
@@ -141,7 +135,7 @@ class ReportObjectsSummary(SimpleReport):
             raise Exception("Invalid report type: %s" % report_type)
         for r, t in report_types:
             if r == report_type:
-                title = self.title+": "+t
+                title = self.title + ": " + t
                 break
         columns += [TableColumn(_("Quantity"), align="right", total="sum", format="integer")]
 
