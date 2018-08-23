@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # Profile loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -14,7 +15,7 @@ import inspect
 import os
 import threading
 # NOC modules
-from base import BaseProfile
+from .base import BaseProfile
 
 logger = logging.getLogger(__name__)
 
