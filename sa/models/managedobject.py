@@ -1584,3 +1584,4 @@ from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
+from noc.vc.models.vcdomain import VCDomain  # noqa
