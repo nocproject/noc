@@ -16,6 +16,8 @@
     update_cache: "False"
   environment:
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Enable Nginx system service
   service:

@@ -49,6 +49,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
 
 - name: Install MongoDB
   apt:
@@ -59,6 +61,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
 
 - name: Copy mongod service file
   template:

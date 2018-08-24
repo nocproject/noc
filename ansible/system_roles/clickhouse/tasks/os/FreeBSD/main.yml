@@ -3,6 +3,8 @@
   pkgng:
     name: "clickhouse"
     state: present
+  tags:
+    - requirements
 
 - name: check if timezone is selected
   stat:

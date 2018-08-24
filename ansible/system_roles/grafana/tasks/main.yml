@@ -12,6 +12,7 @@
   no_log: "{{tower_show_secrets}}"
   tags:
     - config
+    - requirements
 
 - name: create grafana users
   import_role:

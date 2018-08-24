@@ -21,6 +21,9 @@
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+    - config
 
 - name: Check bootstrapped state
   stat:

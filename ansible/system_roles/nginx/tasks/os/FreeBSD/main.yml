@@ -3,6 +3,8 @@
   pkgng:
     name: "nginx"
     state: present
+  tags:
+    - requirements
 
 - name: Enable Nginx system service
   service:

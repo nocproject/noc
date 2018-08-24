@@ -14,6 +14,8 @@
     - config
 
 - include_tasks: install.yml
+  tags:
+    - requirements
 
 - name: Install postgres limits file
   template:
