@@ -1,6 +1,8 @@
 # nginx role
 ---
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
 
 - name: include certs
   import_tasks: certs.yml

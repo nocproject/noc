@@ -19,6 +19,8 @@
   with_items: "{{groups['all']}}"
 
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
 
 - name: Setting pg_hba.conf
   lineinfile:

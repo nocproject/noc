@@ -3,6 +3,8 @@
   pkgng:
     name: "consul-template"
     state: present
+  tags:
+    - requirements
 
 - name: copy consul-template bsdinit service configuration
   template:

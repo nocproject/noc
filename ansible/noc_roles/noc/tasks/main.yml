@@ -4,6 +4,9 @@
 ---
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+    - repo
 
 - name: Create NOC group
   group:
@@ -24,6 +27,9 @@
 
 - name: Include venv init for {{noc_python_interpreter}}
   include_tasks: "init_venv_{{noc_python_interpreter}}.yml"
+  tags:
+    - requirements
+    - config
 
 - name: Include requirements install
   import_tasks: "requirements.yml"

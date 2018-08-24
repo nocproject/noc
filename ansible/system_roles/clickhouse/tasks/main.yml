@@ -25,6 +25,9 @@
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
+    - repo
 
 - name: install users.xml
   template:
@@ -35,6 +38,8 @@
     mode: "0640"
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
+  tags:
+    - config
 
 - name: install config.xml
   template:
@@ -45,6 +50,8 @@
     mode: "0644"
   no_log: "{{tower_show_secrets}}"
   notify: restart clickhouse-server
+  tags:
+    - config
 
 - name: place clickhouse ct template
   include_role:
@@ -57,6 +64,8 @@
     ct_service_source_template: "False"
   with_fileglob:
     - "*.ctmpl"
+  tags:
+    - config
 
 - name: install config overrides
   template:

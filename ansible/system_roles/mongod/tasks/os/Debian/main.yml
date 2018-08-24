@@ -78,6 +78,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
 
 - name: Install MongoDB
   apt:
@@ -88,6 +90,8 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - include_tasks: "arbiter.yml"
   when: "has_svc_mongo_arbiter | default(False)"

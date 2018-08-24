@@ -9,6 +9,8 @@
   run_once: "True"
   environment:
     https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: unanchive nsqd
   unarchive:
@@ -16,6 +18,8 @@
     dest: "{{ nsq_root }}"
     extra_opts: ['--strip-components=2']
     creates: "{{ nsq_root }}/nsqd"
+  tags:
+    - requirements
 
 - name: Install nsqd init script
   template:

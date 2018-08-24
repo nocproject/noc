@@ -5,7 +5,8 @@
     state: present
   with_items:
     - 'postgresql{{postgres_version|replace(".","")}}-server'
-
+  tags:
+    - requirements
 
 - name: "Install PostgreSQL 2/2"
   pkgng:
@@ -14,6 +15,8 @@
   with_items:
     - 'py27-psycopg2'
     - 'postgresql{{postgres_version|replace(".","")}}-contrib'
+  tags:
+    - requirements
 
 - name: Enable postgres system service
   service:

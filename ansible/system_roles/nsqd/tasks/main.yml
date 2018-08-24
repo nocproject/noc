@@ -25,6 +25,8 @@
 
 - name: include nsqd os specific tasks
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
 
 - name: place nsqd ct template
   import_role:

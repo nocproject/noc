@@ -9,6 +9,8 @@
   run_once: "True"
   environment:
     https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: unanchive nsqd
   unarchive:
@@ -16,6 +18,8 @@
     dest: "{{nsq_root}}"
     extra_opts: ['--strip-components=2']
     creates: "{{nsq_root}}/nsqlookupd"
+  tags:
+    - requirements
 
 - name: Install nsqlookupd init script
   template: src="os/FreeBSD/etc/rc.d/nsqlookupd.j2" dest="/usr/local/etc/rc.d/nsqlookupd" mode="a+rx"

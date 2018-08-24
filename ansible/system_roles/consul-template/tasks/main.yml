@@ -16,6 +16,9 @@
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
   when:
     - ansible_distribution == 'FreeBSD'
+  tags:
+    - requirements
+    - config
 
 - name: consul-template config file
   template:

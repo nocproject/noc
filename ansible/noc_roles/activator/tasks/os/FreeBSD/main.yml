@@ -1,3 +1,7 @@
 ---
 - name: Install FreeBSD system packages
-  pkgng: name="libssh2" state=present
+  pkgng:
+    name: "libssh2"
+    state: present
+  tags:
+    - requirements

@@ -23,6 +23,8 @@
 
 - name: include nsqlookupd os specific tasks
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
 
 - name: install nsqlookupd config
   template:

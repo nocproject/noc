@@ -53,6 +53,8 @@
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
 
 - name: Install MongoDB logrotated config
   template:
