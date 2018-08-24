@@ -10,7 +10,6 @@
 from __future__ import absolute_import
 import sys
 import glob
-import logging
 import os
 import threading
 # NOC modules
