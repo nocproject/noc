@@ -509,7 +509,7 @@ class Config(BaseConfig):
     class datastream(ConfigSection):
         enable_administrativedomain = BooleanParameter(default=True)
         enable_cfgping = BooleanParameter(default=True)
-        enable_cfgsyslog= BooleanParameter(default=True)
+        enable_cfgsyslog = BooleanParameter(default=True)
         enable_cfgtrap = BooleanParameter(default=True)
         enable_dnszone = BooleanParameter(default=True)
         enable_managedobject = BooleanParameter(default=True)
