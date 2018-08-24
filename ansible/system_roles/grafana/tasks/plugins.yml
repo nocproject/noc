@@ -1,5 +1,5 @@
 ---
-- name: "Install Grafana {{item}} plugin"
+- name: "Install Grafana plugin"
   grafana_plugin:
     name: "{{ item.name }}"
     version: "{{ item.version }}"
@@ -7,10 +7,14 @@
     grafana_plugins_dir: "{{grafana_plugins_dir}}"
   with_items:
     - name: grafana-simple-json-datasource
-      version: 1.3.5
+      version: "{{grafana_plugin_simple_datasource_version}}"
     - name: vertamedia-clickhouse-datasource
-      version: 1.4.3
+      version: "{{grafana_plugin_clickhouse_datasource_version}}"
   notify: restart grafana
+  register: grafana_plugin_install
+  retries: 4
+  delay: 2
+  until: grafana_plugin_install is succeeded
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
