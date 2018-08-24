@@ -1,9 +1,9 @@
 ---
 - name: Check replica set is initialized
-  command: "{{ mongo_path }} --host {{ mongod_rs }}/{{ ansible_hostname }} --eval 1"
+  command: "{{ mongo_path }} --host {{ mongod_rs }}/127.0.0.1 --eval 1"
   register: rs_status
   changed_when:
-    - "'No primary detected for set' in rs_status.stdout or 'Unable to reach primary for set {{mongod_rs}}' in rs_status.stdout"
+    - "'No primary detected for set' in rs_status.stdout or 'Unable to reach primary for set ' in rs_status.stdout"
     - "'connect failed to replica set' in rs_status.stdout"
   failed_when: "False"
   tags:

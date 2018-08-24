@@ -23,11 +23,7 @@ systemLog:
 net:
   port: 27017
 
-{% if ansible_distribution in ['Debian', 'Ubuntu'] %}
-  bindIp: 127.0.0.1,127.0.1.1,{{ mongo_listen_addr }}
-{% else %}
-  bindIp: 127.0.0.1{{ mongo_listen_addr }}
-{% endif %}
+  bindIp: 127.0.0.1,{{ mongo_listen_addr }}
 
 processManagement:
   fork: {{ mongo_fork | lower}}
