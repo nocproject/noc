@@ -51,6 +51,9 @@
     - role: discovery
     - role: bi
 
+
+- import_playbook: additional_roles/custom/service.yml
+
 - import_playbook: noc_roles/migrate/service.yml
 
 - import_playbook: post.yml
