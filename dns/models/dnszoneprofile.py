@@ -15,10 +15,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
-from .dnsserver import DNSServer
+from noc.config import config
 from noc.main.models import NotificationGroup
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
+from .dnsserver import DNSServer
 
 id_lock = Lock()
 
@@ -93,6 +94,8 @@ class DNSZoneProfile(models.Model):
             return None
 
     def iter_changed_datastream(self):
+        if not config.datastream.enable_dnszone:
+            return
         for z in self.dnszone_set.all():
             for ds, id in z.iter_changed_datastream():
                 yield ds, id

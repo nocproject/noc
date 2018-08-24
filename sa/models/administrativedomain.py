@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
+from noc.config import config
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
@@ -95,7 +96,8 @@ class AdministrativeDomain(models.Model):
             return None
 
     def iter_changed_datastream(self):
-        yield "administrativedomain", self.id
+        if config.datastream.enable_administrativedomain:
+            yield "administrativedomain", self.id
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):

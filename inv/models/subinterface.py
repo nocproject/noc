@@ -6,8 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 from __future__ import absolute_import
+# NOC modules
+from noc.config import config
 from noc.lib.nosql import (Document, PlainReferenceField,
                            ForeignKeyField, StringField,
                            ListField, IntField)
@@ -98,7 +100,8 @@ class SubInterface(Document):
         return "%s %s" % (self.interface.managed_object.name, self.name)
 
     def iter_changed_datastream(self):
-        yield "managedobject", self.managed_object.id
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.managed_object.id
 
     @property
     def effective_vc_domain(self):

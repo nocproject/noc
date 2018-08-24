@@ -10,6 +10,7 @@
 from collections import defaultdict
 import datetime
 # NOC modules
+from noc.config import config
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
                            IntField, ObjectIdField)
@@ -82,8 +83,9 @@ class Link(Document):
             return u"Stale link (%s)" % self.id
 
     def iter_changed_datastream(self):
-        for mo_id in self.linked_objects:
-            yield "managedobject", mo_id
+        if config.datastream.enable_managedobject:
+            for mo_id in self.linked_objects:
+                yield "managedobject", mo_id
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
