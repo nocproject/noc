@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 # NOC modules
+from noc.config import config
 from noc.core.model.fields import TagsField, CIDRField
 from noc.core.ip import IP
 from noc.lib.validators import check_ipv4, check_ipv6
@@ -82,6 +83,9 @@ class AddressRange(models.Model):
         )
 
     def iter_changed_datastream(self):
+        if not config.datastream.enable_dnszone:
+            return
+
         from noc.dns.models.dnszone import DNSZone
 
         if self.action == "D":

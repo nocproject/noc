@@ -25,6 +25,7 @@ from django.contrib.auth.models import User, Group
 import cachetools
 import six
 # NOC modules
+from noc.config import config
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -490,10 +491,14 @@ class ManagedObject(Model):
             return None
 
     def iter_changed_datastream(self):
-        yield "managedobject", self.id
-        yield "cfgping", self.id
-        yield "cfgsyslog", self.id
-        yield "cfgtrap", self.id
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.id
+        if config.datastream.enable_cfgping:
+            yield "cfgping", self.id
+        if config.datastream.enable_cfgsyslog:
+            yield "cfgsyslog", self.id
+        if config.datastream.enable_cfgtrap:
+            yield "cfgtrap", self.id
 
     @property
     def data(self):

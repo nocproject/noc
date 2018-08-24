@@ -37,6 +37,8 @@ class DataStreamService(Service):
     def get_datastreams(self):
         r = []
         for name in loader.iter_datastreams():
+            if not getattr(config.datastream, "enable_%s" % name, False):
+                continue
             ds = loader.get_datastream(name)
             if ds:
                 self.logger.info("[%s] Initializing datastream", name)

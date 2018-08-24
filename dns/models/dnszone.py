@@ -19,6 +19,7 @@ from django.db import models
 import cachetools
 import six
 # NOC modules
+from noc.config import config
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.systemnotification import SystemNotification
 from noc.project.models.project import Project
@@ -111,7 +112,8 @@ class DNSZone(models.Model):
         return None
 
     def iter_changed_datastream(self):
-        yield "dnszone", self.id
+        if config.datastream.enable_dnszone:
+            yield "dnszone", self.id
 
     def clean(self):
         super(DNSZone, self).clean()
