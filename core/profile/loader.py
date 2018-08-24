@@ -11,19 +11,20 @@ from __future__ import absolute_import
 import sys
 import glob
 import logging
-import inspect
 import os
 import threading
 # NOC modules
+from noc.core.loader.base import BaseLoader
 from .base import BaseProfile
-
-logger = logging.getLogger(__name__)
 
 GENERIC_PROFILE = "Generic.Host"
 
 
-class ProfileLoader(object):
+class ProfileLoader(BaseLoader):
+    name = "profile"
+
     def __init__(self):
+        super(ProfileLoader, self).__init__()
         self.profiles = {}  # Load profiles
         self.lock = threading.Lock()
         self.all_profiles = set()
@@ -36,32 +37,23 @@ class ProfileLoader(object):
         with self.lock:
             profile = self.profiles.get(name)
             if not profile:
-                logger.info("Loading profile %s", name)
+                self.logger.info("Loading profile %s", name)
                 if not self.is_valid_name(name):
-                    logger.error("Invalid profile name")
+                    self.logger.error("Invalid profile name")
                     return None
                 if name == GENERIC_PROFILE:
                     module_name = "noc.sa.profiles.Generic"
                 else:
                     module_name = "noc.sa.profiles.%s" % name
-                try:
-                    sm = __import__(module_name, {}, {}, "*")
-                    for n in dir(sm):
-                        o = getattr(sm, n)
-                        if (
-                            inspect.isclass(o) and
-                            issubclass(o, BaseProfile) and
-                            o.__module__ == sm.__name__
-                        ):
-                            profile = o
-                            break
+                for mn in ("%s.profile" % module_name, module_name):
+                    profile = self.find_class(mn, BaseProfile, name)
                     if profile:
+                        if not profile.__module__.endswith(".profile"):
+                            self.logger.info(
+                                "Deprecation warning on %s profile: "
+                                "__init__.py should be moved to profile.py", name)
                         profile.initialize()
-                    else:
-                        logger.error("Profile not found: %s", name)
-                except Exception as e:
-                    logger.error("Failed to load profile %s: %s", name, e)
-                    profile = None
+                        break
                 self.profiles[name] = profile
             return profile
 
@@ -70,9 +62,9 @@ class ProfileLoader(object):
         Reset profile cache and release all modules
         """
         with self.lock:
-            logger.info("Reloading profiles")
+            self.logger.info("Reloading profiles")
             for s in self.profiles:
-                logger.debug("Reload profile %s", s.name)
+                self.logger.debug("Reload profile %s", s.name)
                 reload(sys.modules[s.__module__])
             self.profiles = {}
             self.all_profiles = set()

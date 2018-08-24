@@ -10,25 +10,27 @@
 from __future__ import absolute_import
 import sys
 import glob
-import logging
-import inspect
 import threading
 import os
 import re
 # NOC modules
+from noc.core.loader.base import BaseLoader
 from noc.core.profile.loader import GENERIC_PROFILE
-from .base import BaseScript
 from noc.config import config
+from .base import BaseScript
 
-logger = logging.getLogger(__name__)
 
+class ScriptLoader(BaseLoader):
+    name = "script"
 
-class ScriptLoader(object):
     rx_requires = re.compile(
         "^\s+requires\s*=\s*\[([^\]]*)\]", re.DOTALL | re.MULTILINE
     )
 
+    protected_names = {"profile", "__init__"}
+
     def __init__(self):
+        super(ScriptLoader, self).__init__()
         self.scripts = {}  # Load scripts
         self.lock = threading.Lock()
         self.all_scripts = set()
@@ -38,17 +40,19 @@ class ScriptLoader(object):
         Load script and return BaseScript instance.
         Returns None when no script found or loading error occured
         """
+        if name in self.protected_names:
+            return None
         with self.lock:
             script = self.scripts.get(name)
             if not script:
-                logger.info("Loading script %s", name)
+                self.logger.info("Loading script %s", name)
                 if not self.is_valid_name(name):
-                    logger.error("Invalid script name")
+                    self.logger.error("Invalid script name")
                     return None
                 try:
                     vendor, system, sn = name.split(".")
                 except Exception as e:
-                    logger.error("Error in script name \"%s\": %s", name, e)
+                    self.logger.error("Error in script name \"%s\": %s", name, e)
                     return None
                 is_generic = False
                 for p in config.get_customized_paths("", prefer_custom=True):
@@ -70,29 +74,15 @@ class ScriptLoader(object):
                     # Generic script
                     module_name = "noc.sa.profiles.Generic.%s" % sn
                     is_generic = True
-                try:
-                    sm = __import__(module_name, {}, {}, "*")
-                    for n in dir(sm):
-                        o = getattr(sm, n)
-                        if (
-                            inspect.isclass(o) and
-                            issubclass(o, BaseScript) and
-                            o.__module__ == sm.__name__
-                        ):
-                            if is_generic:
-                                # Create subclass with proper name
-                                script = type("Script", (o,), {
-                                    "name": name
-                                })
-                                script.__module__ = "noc.sa.profiles.%s" % name
-                            else:
-                                script = o
-                            break
-                    if not script:
-                        logger.error("Script not found: %s", name)
-                except Exception as e:
-                    logger.error("Failed to load script %s: %s", name, e)
-                    script = None
+                # Load script
+                script = self.find_class(module_name, BaseScript, name)
+                # Fix generic's module
+                if script and is_generic:
+                    # Create subclass with proper name
+                    script = type("Script", (script,), {
+                        "name": name
+                    })
+                    script.__module__ = "noc.sa.profiles.%s" % name
                 self.scripts[name] = script
             return script
 
@@ -101,9 +91,9 @@ class ScriptLoader(object):
         Reset script cache and release all modules
         """
         with self.lock:
-            logger.info("Reloading scripts")
+            self.logger.info("Reloading scripts")
             for s in self.scripts:
-                logger.debug("Reload script %s", s.name)
+                self.logger.debug("Reload script %s", s.name)
                 reload(sys.modules[s.__module__])
             self.scripts = {}
             self.all_scripts = set()
@@ -119,9 +109,9 @@ class ScriptLoader(object):
         # Load generic scripts
         generics = {}  # Name -> dependencies
         for path in glob.glob("sa/profiles/Generic/*.py"):
-            if path.endswith("/__init__.py"):
-                continue
             gn = path.rsplit(os.sep)[-1][:-3]
+            if gn in self.protected_names:
+                continue
             with open(path) as f:
                 data = f.read()
                 # Scan for requires = [..]
@@ -140,9 +130,10 @@ class ScriptLoader(object):
             for path in glob.glob(gx):
                 vendor, system, name = path.split(os.sep)[-3:]
                 name = name[:-3]
-                if name != "__init__":
-                    ns.add("%s.%s.%s" % (vendor, system, name))
-                    profiles.add("%s.%s" % (vendor, system))
+                if name in self.protected_names:
+                    continue
+                ns.add("%s.%s.%s" % (vendor, system, name))
+                profiles.add("%s.%s" % (vendor, system))
         # Apply generic scripts
         for p in profiles:
             for g in generics:
