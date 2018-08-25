@@ -138,7 +138,7 @@
                            <div class="col-sm-6">
                                <b>{{ _("Profile SA") }}</b>    {{ object.profile }}<br>
                                {% if platform != "Unknown" %}
-                                   {{ platform }}
+                                   <a href="/api/card/view/platform/{{ object.platform.id }}/">{{ platform }}</a>
                                    {% if platform %}
                                        {% if object.platform.is_end_of_sale %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
                                        {% if object.platform.is_end_of_support %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
