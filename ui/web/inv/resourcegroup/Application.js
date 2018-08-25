@@ -19,6 +19,14 @@ Ext.define("NOC.inv.resourcegroup.Application", {
 
     initComponent: function () {
         var me = this;
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -98,6 +106,9 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     allowBlank: true,
                     uiStyle: "extra"
                 }
+            ],
+            formToolbar: [
+                me.cardButton
             ]
         });
         me.callParent();
@@ -115,5 +126,14 @@ Ext.define("NOC.inv.resourcegroup.Application", {
             ftype: "lookup",
             lookup: "inv.technology"
         }
-    ]
+    ],
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/resourcegroup/" + me.currentRecord.get("id") + "/"
+            );
+        }
+    }
 });

@@ -25,6 +25,13 @@ Ext.define("NOC.inv.technology.Application", {
 
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -110,6 +117,7 @@ Ext.define("NOC.inv.technology.Application", {
                 }
             ],
             formToolbar: [
+                me.cardButton,
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
@@ -127,5 +135,14 @@ Ext.define("NOC.inv.technology.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/technology/" + me.currentRecord.get("id") + "/"
+            );
+        }
     }
 });
