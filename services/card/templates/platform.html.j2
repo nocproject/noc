@@ -2,12 +2,12 @@
 <tbody>
     <tr>
         <th colspan="2">
-            Platform: {{ object.vendor.code }} {{ object.platform.name }}
+            Platform: {{ object.vendor.name }} {{ object.name }}
         </th>
     </tr>
     <tr>
         <th scope="row">{{ _("Description") }}</th>
-        <td>{{object.descriotion}}</td>
+        <td>{{object.description}}</td>
     <tr>
     {% if object.start_of_sale %}
     <tr>

@@ -18,6 +18,13 @@ Ext.define("NOC.inv.platform.Application", {
     initComponent: function () {
         var me = this;
 
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
             restUrl: new Ext.XTemplate('/inv/platform/{id}/json/'),
@@ -158,6 +165,7 @@ Ext.define("NOC.inv.platform.Application", {
             ],
 
             formToolbar: [
+                 me.cardButton,
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
@@ -178,6 +186,16 @@ Ext.define("NOC.inv.platform.Application", {
             ]
         });
         me.callParent();
+    },
+
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/platform/" + me.currentRecord.get("id") + "/"
+            );
+        }
     },
 
     onJSON: function () {
