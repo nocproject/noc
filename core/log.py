@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Various logging utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  Various logging utilities
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2014 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import datetime
+# NOC modules
+from noc.core.debug import get_traceback, error_fingerprint
 
 
 class PrefixLoggerAdapter(object):
@@ -144,3 +146,10 @@ class ColorFormatter(logging.Formatter):
                 "ascii"
             )
         self._end_color = unicode(curses.tigetstr("sgr0"), "ascii")
+
+
+class ErrorFormatter(logging.Formatter):
+    def formatException(self, ei):
+        fp = error_fingerprint()
+        r = get_traceback(reverse=True, fp=fp, exc_info=ei)
+        return r
