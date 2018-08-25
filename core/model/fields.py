@@ -416,9 +416,9 @@ class ObjectIDArrayField(models.Field):
     def get_db_prep_value(self, value, connection, prepared=False):
         if value is None:
             return None
-        if isinstance(value, six.string_types):
+        if isinstance(value, (six.string_types, ObjectId)):
             value = [value]
-        return "{ %s }" % ", ".join(value)
+        return "{ %s }" % ", ".join(str(x) for x in value)
 
 
 add_introspection_rules([], ["^noc\.core\.model\.fields\."])
