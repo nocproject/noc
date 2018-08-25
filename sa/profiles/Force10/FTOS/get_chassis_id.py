@@ -2,17 +2,15 @@
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.sa.profiles.Force10.FTOS import SSeries
 
 
 class Script(BaseScript):
@@ -20,14 +18,25 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    ##
-    ## S-Series
-    ##
+
+    def execute(self, **kwargs):
+        if self.is_s:
+            return self.execute_s()
+        else:
+            return self.execute_other()
+
+    #
+    # S-Series
+    #
     rx_system_id = re.compile(r"Stack MAC\s+:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @BaseScript.match(SSeries)
     def execute_s(self):
+        """
+        S-series
+        :return:
+        """
+
         v = self.cli("show system brief")
         match = self.re_search(self.rx_system_id, v)
         mac = match.group("id")
@@ -36,14 +45,17 @@ class Script(BaseScript):
             "last_chassis_mac": mac
         }
 
-    ##
-    ## C/E-series
-    ##
+    #
+    # C/E-series
+    #
     rx_chassis_id = re.compile(r"Chassis MAC\s+:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @BaseScript.match()
     def execute_other(self):
+        """
+        C/E-series
+        :return:
+        """
         v = self.cli("show chassis brief")
         match = self.re_search(self.rx_chassis_id, v)
         mac = match.group("id")

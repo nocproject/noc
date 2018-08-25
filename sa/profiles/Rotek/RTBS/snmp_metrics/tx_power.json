@@ -1,6 +1,7 @@
 {
   "$metric": "Radio | TxPower",
-  "$type": "ifindex",
-  "oid": "1.3.6.1.4.1.32761.3.5.1.2.1.1.10.{{ ifIndex }}",
-  "type": "gauge"
+  "$type": "platform",
+  "oid": "1.3.6.1.4.1.{{ platform }}.3.5.1.2.1.1.10.{{ ifIndex }}",
+  "type": "gauge",
+  "scale": 1
 }

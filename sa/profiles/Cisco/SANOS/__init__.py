@@ -17,7 +17,7 @@ class Profile(BaseProfile):
         (r"^ --More--", "\n"),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
     ]
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% invalid command detected at"
     command_disable_pager = "terminal length 0"
     command_super = "enable"

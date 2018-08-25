@@ -12,11 +12,14 @@ Ext.define('NOC.fm.alarm.Application', {
     mixins: [
         'NOC.core.Export'
     ],
+    requires: [
+        'Ext.ux.form.SearchField'
+    ],
     STATUS_MAP: {
         A: 'Active',
         C: 'Archived'
     },
-    pollingInterval: 30000,
+    pollingInterval: 120000,
     //
     initComponent: function() {
         var me = this,
@@ -26,7 +29,7 @@ Ext.define('NOC.fm.alarm.Application', {
         me.sounds = {};  // url -> audio object
         me.currentQuery = {
             status: 'A',
-            maintainance: 'hide'
+            maintenance: 'hide'
         };
         me.store = Ext.create('NOC.core.ModelStore', {
             model: 'NOC.fm.alarm.Model',
@@ -168,6 +171,30 @@ Ext.define('NOC.fm.alarm.Application', {
                 select: me.onChangeFilter,
                 change: me.onChange,
                 clear: me.onChangeFilter
+            }
+        });
+
+        me.ttSearch = Ext.create('Ext.ux.form.SearchField', {
+            fieldLabel: __('TT'),
+            width: 198,
+            listeners: {
+                scope: me,
+                specialkey: function(self, e) {
+                    if(e.getKey() === e.ESC){
+                        self.setValue('');
+                    }
+                    me.onChangeFilter();
+                }
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    scope: me,
+                    handler: function(self) {
+                        self.setValue('');
+                        me.onChangeFilter();
+                    }
+                }
             }
         });
 
@@ -426,11 +453,11 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
 
-        me.maintainanceButton = Ext.create('Ext.button.Segmented', {
+        me.maintenanceButton = Ext.create('Ext.button.Segmented', {
             items: [
                 {
-                    text: __('Hide maintainance'),
-                    tooltip: __('Hide alarms covered by maintainance'),
+                    text: __('Hide maintenance'),
+                    tooltip: __('Hide alarms covered by maintenance'),
                     pressed: true,
                     filterExpression: 'hide'
                 },
@@ -441,7 +468,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 },
                 {
                     text: __('Only'),
-                    tooltip: __('Show only alarms covered by maintainance'),
+                    tooltip: __('Show only alarms covered by maintenance'),
                     filterExpression: 'only'
                 }
             ],
@@ -503,6 +530,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 layout: 'hbox',
                 items: {
                     xtype: 'combo',
+                    itemId: 'combo',
                     width: '100%',
                     queryMode: 'local',
                     valueField: 'value',
@@ -511,7 +539,7 @@ Ext.define('NOC.fm.alarm.Application', {
                     store: {
                         fields: ['value', 'text'],
                         data: [
-                            {'value': 0, 'text': __("don't show")},
+                            {'value': 0, 'text': __('don\'t show')},
                             {'value': 300, 'text': '5 min'},
                             {'value': 900, 'text': '15 min'},
                             {'value': 1800, 'text': '30 min'},
@@ -580,19 +608,19 @@ Ext.define('NOC.fm.alarm.Application', {
             },
             {
                 text: __('Start'),
-                dataIndex: "timestamp",
+                dataIndex: 'timestamp',
                 width: 120,
                 hidden: true,
                 renderer: NOC.render.DateTime
             },
             {
                 text: __('Stop'),
-                dataIndex: "clear_timestamp",
+                dataIndex: 'clear_timestamp',
                 width: 120,
                 hidden: true,
                 renderer: function(v) {
                     if(v === null) {
-                        return "-"
+                        return '-'
                     } else {
                         return NOC.render.DateTime(v)
                     }
@@ -600,7 +628,7 @@ Ext.define('NOC.fm.alarm.Application', {
             },
             {
                 text: __('Duration'),
-                dataIndex: "duration",
+                dataIndex: 'duration',
                 width: 120,
                 hidden: true,
                 renderer: NOC.render.Duration
@@ -611,6 +639,14 @@ Ext.define('NOC.fm.alarm.Application', {
                 width: 250,
                 renderer: function(v, _, record) {
                     return record.get('managed_object__label') + '<br/>' + record.get('segment__label');
+                }
+            },
+            {
+                text: __('Location'),
+                dataIndex: 'location',
+                width: 250,
+                renderer: function(v, _, record) {
+                    return record.get('location_1') + '<br/>' + record.get('location_2');
                 }
             },
             {
@@ -753,12 +789,13 @@ Ext.define('NOC.fm.alarm.Application', {
                 me.typeButton,
                 me.expandButton,
                 me.ttConfirmButton,
-                me.maintainanceButton,
+                me.maintenanceButton,
                 me.objectCombo,
                 me.segmentCombo,
                 me.admdomCombo,
                 me.selectorCombo,
                 me.alarmClassCombo,
+                me.ttSearch,
                 {
                     xtype: 'fieldset',
                     layout: 'hbox',
@@ -832,7 +869,9 @@ Ext.define('NOC.fm.alarm.Application', {
             me.recentStore.setFilterParams(recentQuery);
         }
         me.store.load();
-        me.recentStore.load();
+        if(me.recentShow.down('#combo').getValue()) {
+            me.recentStore.load();
+        }
     },
     //
     onChangeFilter: function() {
@@ -847,6 +886,12 @@ Ext.define('NOC.fm.alarm.Application', {
         if(!me.freshDuration1.isValid() || !me.freshDuration2.isValid() || !me.freshDuration3.isValid()) return;
         // Status
         q.status = me.typeButton.items.first().pressed ? 'A' : 'C';
+        if(q.status === 'A') {
+            me.autoreloadButton.setDisabled(false);
+        } else {
+            me.autoreloadButton.toggle(false);
+            me.autoreloadButton.setDisabled(true);
+        }
         var recentCombo = me.recentShow.down('combo');
         if(recentCombo.getValue()) {
             me.recentGridPanel.show();
@@ -863,9 +908,9 @@ Ext.define('NOC.fm.alarm.Application', {
         if(me.ttConfirmButton.items.first().pressed) {
             q.wait_tt = 1;
         }
-        me.maintainanceButton.items.each(function(b) {
+        me.maintenanceButton.items.each(function(b) {
             if(b.pressed) {
-                q['maintainance'] = b.filterExpression;
+                q['maintenance'] = b.filterExpression;
                 return false;
             }
             return true;
@@ -884,6 +929,8 @@ Ext.define('NOC.fm.alarm.Application', {
         setIf('timestamp__gte', me.fromDateField.getValue());
         // To Date
         setIf('timestamp__lte', me.toDateField.getValue());
+        //
+        setIf('escalation_tt__contains', me.ttSearch.getValue());
         me.currentQuery = q;
         me.reloadStore();
     },
@@ -944,20 +991,24 @@ Ext.define('NOC.fm.alarm.Application', {
     //
     pollingTask: function() {
         var me = this;
-        // Check for new alarms and play sound
-        me.checkNewAlarms();
-        // Poll only application tab is visible
-        if(!me.isActiveApp()) {
-            return;
-        }
-        // Poll only when in grid preview
-        if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
-            return;
-        }
-        // Poll only if polling is not locked
-        if(!me.isPollLocked()) {
-            me.store.load();
-            me.recentStore.load();
+        if(!Visibility.hidden()) {
+            // Check for new alarms and play sound
+            me.checkNewAlarms();
+            // Poll only application tab is visible
+            if(!me.isActiveApp()) {
+                return;
+            }
+            // Poll only when in grid preview
+            // if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
+            //     return;
+            // }
+            // Poll only if polling is not locked
+            if(!me.isPollLocked()) {
+                me.store.load();
+                if(me.recentShow.down('#combo').getValue()) {
+                    me.recentStore.load();
+                }
+            }
         }
     },
     //
@@ -1026,7 +1077,9 @@ Ext.define('NOC.fm.alarm.Application', {
         var me = this;
         if(me.autoreloadButton.pressed) {
             me.store.load();
-            me.recentStore.load();
+            if(me.recentShow.down('#combo').getValue()) {
+                me.recentStore.load();
+            }
         }
     },
     //

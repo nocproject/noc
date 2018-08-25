@@ -4,7 +4,7 @@
 # HW:     SWR
 # Author: scanbox@gmail.com
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,10 +14,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     # @todo supercli mode (Ctrl+Z lcli)
-    name = "Linksys.SWR"
+    name = "Linksys.SRW"
     pattern_prompt = r"(ArrowKey/TAB/BACK=Move  SPACE=Toggle  ENTER=Select  ESC=Back)|^>"
     command_super = "lcli"
-    # pattern_unpriveleged_prompt = "^>"
+    # pattern_unprivileged_prompt = "^>"
     pattern_username = "User Name:"
     username_submit = "\t"
     pattern_password = "Password:"

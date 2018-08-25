@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = 'Brocade.ADX'
     pattern_more = '--More--'
-    pattern_unpriveleged_prompt = \
+    pattern_unprivileged_prompt = \
         r"^\S+@(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?" \
         r"(?:\(conf[^\)]*\))?>"
     pattern_prompt = \

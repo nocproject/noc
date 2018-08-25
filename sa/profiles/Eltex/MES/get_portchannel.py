@@ -2,33 +2,33 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
 
 
 class Script(BaseScript):
     name = "Eltex.MES.get_portchannel"
     interface = IGetPortchannel
+    cache = True
 
     rx_lag = re.compile(
         r"^(?P<port>Po\d+)\s+(?P<type1>\S+):\s+(?P<interfaces1>\S+)+(\s+(?P<type2>\S+):\s+(?P<interfaces2>\S+)$|$)",
-        re.MULTILINE)
+        re.MULTILINE
+    )
 
-    rx_lacp = re.compile(
-        r"^\s+Attached Lag id:$",
-        re.MULTILINE)
+    rx_lacp = re.compile(r"^\s+Attached Lag id:$", re.MULTILINE)
 
-    def execute(self):
+    """
+    def execute_snmp(self):
         r = []
-        """ Detect only active links
-        # Try SNMP first
+        # Try SNMP
         if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
@@ -58,16 +58,16 @@ class Script(BaseScript):
                 return r
             except self.snmp.TimeOutError:
                 pass
-            """
+    """
 
+    def execute_cli(self):
+        res = []
         # Fallback to CLI
-        if (
-            self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
-            self.match_version(version__regex="4\.0\.[4-7]$")
-        ):
-            cmd = self.cli("show interfaces channel-group")
+        if (self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
+                self.match_version(version__regex="4\.0\.[4-7]$")):
+            cmd = self.cli("show interfaces channel-group", cached=True)
         else:
-            cmd = self.cli("show interfaces port-channel")
+            cmd = self.cli("show interfaces port-channel", cached=True)
         for match in self.rx_lag.finditer(cmd):
             members = match.group("interfaces1").split(',')
             memb = []
@@ -96,10 +96,12 @@ class Script(BaseScript):
                 l_type = "L"
             else:
                 l_type = "S"
-            r += [{
-                "interface": match.group("port").lower(),
-#                "interface": match.group("port"),
-                "type": l_type,
-                "members": memb,
-                }]
-        return r
+            res += [
+                {
+                    "interface": match.group("port").lower(),
+                    # "interface": match.group("port"),
+                    "type": l_type,
+                    "members": memb,
+                }
+            ]
+        return res

@@ -101,12 +101,12 @@ class Script(BaseScript):
                 remote_port_subtype = 7  # Local
             else:
                 remote_port_subtype = 5
-                if is_mac(remote_port):
-                    # Actually macAddress(3)
-                    remote_port_subtype = 3
-                elif is_ipv4(remote_port):
+                if is_ipv4(remote_port):
                     # Actually networkAddress(4)
                     remote_port_subtype = 4
+                elif is_mac(remote_port):
+                    # Actually macAddress(3)
+                    remote_port_subtype = 3
                 elif is_int(remote_port):
                     # Actually local(7)
                     remote_port_subtype = 7

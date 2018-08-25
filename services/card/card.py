@@ -22,6 +22,8 @@ from noc.services.card.cards.base import BaseCard
 from noc.core.debug import error_report
 from noc.main.models import User
 from noc.config import config
+from noc.core.debug import ErrorReport
+from noc.core.perf import metrics
 
 user_lock = Lock()
 
@@ -44,12 +46,16 @@ class CardRequestHandler(UIHandler):
         try:
             return User.objects.get(username=name)
         except User.DoesNotExist:
+            metrics["error", ("type", "user_not_found")] += 1
             return None
 
     def get_current_user(self):
-        return self.get_user_by_name(
-            self.request.headers.get("Remote-User")
-        )
+        user = None
+        with ErrorReport():
+            user = self.get_user_by_name(
+                self.request.headers.get("Remote-User")
+            )
+        return user
 
     def get(self, card_type, card_id, *args, **kwargs):
         if not self.current_user:
@@ -84,9 +90,11 @@ class CardRequestHandler(UIHandler):
                     self.set_header("Refresh", str(refresh))
                 except ValueError:
                     pass
+
             self.write(
                 self.get_card_template().render({
                     "card_data": data,
+                    "card_title": str(card.object),
                     "hashed": self.hashed,
                     "card_js": card.card_js,
                     "card_css": card.card_css
@@ -99,27 +107,35 @@ class CardRequestHandler(UIHandler):
                 self.CARD_TEMPLATE = Template(f.read())
         return self.CARD_TEMPLATE
 
+    CARDS_PREFIX = os.path.join("services", "card", "cards")
+
     @classmethod
     def load_cards(cls):
         if not cls.CARDS:
             cls.CARDS = {}
-            for r in ["custom/services/card/cards", "services/card/cards"]:
-                if not os.path.isdir(r):
+        for p in config.get_customized_paths(cls.CARDS_PREFIX):
+            b, _ = p.split(cls.CARDS_PREFIX)
+            if not os.path.isdir(p):
+                continue
+            if b:
+                basename = os.path.basename(os.path.dirname(b))
+            else:
+                basename = "noc"
+            for f in os.listdir(p):
+                if not f.endswith(".py"):
                     continue
-                for f in os.listdir(r):
-                    if not f.endswith(".py"):
-                        continue
-                    mn = "noc.%s.%s" % (
-                        r.replace("/", "."),
-                        f[:-3]
-                    )
-                    m = __import__(mn, {}, {}, "*")
-                    for d in dir(m):
-                        c = getattr(m, d)
-                        if (
+                mn = "%s.%s.%s" % (
+                    basename,
+                    cls.CARDS_PREFIX.replace(os.path.sep, "."),
+                    f[:-3]
+                )
+                m = __import__(mn, {}, {}, "*")
+                for d in dir(m):
+                    c = getattr(m, d)
+                    if (
                             inspect.isclass(c) and
                             issubclass(c, BaseCard) and
                             c.__module__ == m.__name__ and
                             getattr(c, "name", None)
-                        ):
-                            cls.CARDS[c.name] = c
+                    ):
+                        cls.CARDS[c.name] = c

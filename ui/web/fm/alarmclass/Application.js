@@ -8,7 +8,7 @@ console.debug('Defining NOC.fm.alarmclass.Application');
 
 Ext.define('NOC.fm.alarmclass.Application', {
     extend: 'NOC.core.ModelApplication',
-    uses: [
+    requires: [
         'NOC.fm.alarmclass.Model',
         'NOC.fm.alarmclass.LookupField',
         'NOC.fm.alarmseverity.LookupField',
@@ -451,12 +451,5 @@ Ext.define('NOC.fm.alarmclass.Application', {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
-    },
-    //
-    addTooltip: function(element) {
-        Ext.create('Ext.tip.ToolTip', {
-            target: element.getEl(),
-            html: element.tooltip
-        });
     }
 });

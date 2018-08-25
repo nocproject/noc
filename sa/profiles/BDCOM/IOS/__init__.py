@@ -17,7 +17,7 @@ class Profile(BaseProfile):
         (r"^ --More-- ", " "),
         (r"\(y/n\) \[n\]", "y\n")
     ]
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"^Unknown command"
     command_disable_pager = ["terminal length 0", "terminal width 0"]

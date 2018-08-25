@@ -10,8 +10,12 @@
 import struct
 # Third-party modules
 from csiphash import siphash24
+import bson
+# NOC modules
+from noc.models import is_document
 
 SIPHASH_SEED = b"\x00" * 16
+BI_ID_FIELD = "bi_id"
 
 
 def bi_hash(v):
@@ -24,27 +28,26 @@ def bi_hash(v):
     return int(struct.unpack("!Q", bh)[0] & 0x7fffffffffffffff)
 
 
-def get_bi_id(self):
+def new_bi_id():
     """
-    Returns BI id
-    :param self:
+    Generate new bi_id
     :return:
     """
-    if not self.bi_id:
-        h = getattr(self, "_bi_id", None)
-        if not h:
-            h = bi_hash(self.id)
-            self._bi_id = h
-        return h
-    else:
-        return self.bi_id
+    return bi_hash(bson.ObjectId())
 
 
 def bi_sync(cls):
     """
-    Denote class to add get_bi_id method
+    Denote class to add bi_id defaults
     :param cls:
     :return:
     """
-    setattr(cls, "get_bi_id", get_bi_id)
+    if is_document(cls):
+        f = cls._fields.get(BI_ID_FIELD)
+        assert f, "%s field must be defined" % BI_ID_FIELD
+    else:
+        f = [f for f in cls._meta.fields if f.name == BI_ID_FIELD]
+        assert f, "%s field must be defined" % BI_ID_FIELD
+        f = f[0]
+    f.default = new_bi_id
     return cls

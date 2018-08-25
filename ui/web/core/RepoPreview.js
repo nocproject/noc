@@ -15,10 +15,11 @@ Ext.define('NOC.core.RepoPreview', {
     layout: 'fit',
     syntax: null,
     restUrl: null,
+    scrollable: false,
     historyHashPrefix: null,
-    preview_theme: NOC.settings.preview_theme,
-    // preview_theme: 'monokai',
-    // mode: 'groovy',
+    // preview_theme: NOC.settings.preview_theme,
+    preview_theme: 'monokai',
+    mode: 'groovy',
 
     initComponent: function() {
         var me = this;
@@ -54,6 +55,13 @@ Ext.define('NOC.core.RepoPreview', {
             disabled: true,
             scope: me,
             handler: me.onSideBySide
+        });
+
+        me.downloadButton = Ext.create('Ext.button.Button', {
+            text: __('Download'),
+            tooltip: __('Download config'),
+            scope: me,
+            handler: me.onDownload
         });
 
         me.revCombo = Ext.create('Ext.form.ComboBox', {
@@ -215,7 +223,8 @@ Ext.define('NOC.core.RepoPreview', {
                     '-',
                     me.nextDiffButton,
                     me.prevDiffButton,
-                    me.sideBySideModeButton
+                    me.sideBySideModeButton,
+                    me.downloadButton
                     // me.lastDayButton,
                     // me.lastWeekButton,
                     // me.lastMonthButton
@@ -228,16 +237,48 @@ Ext.define('NOC.core.RepoPreview', {
             items: [me.cmContainer],
             listeners: {
                 scope: me,
-                resize: me.onResize
+                resize: me.onResize,
+                afterrender: me.onAfterRender
             }
         });
         me.callParent();
     },
     //
-    afterRender: function() {
+    onAfterRender: function() {
         var me = this;
-        me.callParent(arguments);
+        // me.callParent(arguments);
         me.initViewer();
+        me.onResize();
+    },
+    onResize: function() {
+        var me = this;
+        if(me.viewer && Ext.isFunction(me.viewer.refresh)) {
+            me.viewer.refresh();
+            me.setViewerSize();
+        }
+
+        if(me.viewer instanceof CodeMirror.MergeView) {
+            me.setMergeViewSize();
+        }
+    },
+    //
+    setViewerSize: function() {
+        var me = this;
+        if(Ext.isFunction(me.viewer.setSize)) {
+            me.viewer.setSize("100%", me.cmContainer.getHeight());
+        }
+    },
+    //
+    setMergeViewSize: function() {
+        var me = this,
+            cssMirror = Ext.util.CSS.getRule('.CodeMirror'),
+            cssMerge = Ext.util.CSS.getRule('.CodeMirror-merge');
+        if(cssMirror) {
+            cssMirror.style.height = me.cmContainer.getHeight();
+        }
+        if(cssMerge) {
+            cssMerge.style.height = me.cmContainer.getHeight();
+        }
     },
     //
     initViewer: function() {
@@ -250,22 +291,22 @@ Ext.define('NOC.core.RepoPreview', {
             styleActiveLine: true
         });
         // change the codemirror css
-        var css = Ext.util.CSS.getRule('.CodeMirror');
-        if(css) {
-            css.style.height = '100%';
-            css.style.position = 'relative';
-            css.style.overflow = 'hidden';
-        }
-        css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
-        if(css) {
-            css.style.height = '100%';
-        }
+        // var css = Ext.util.CSS.getRule('.CodeMirror');
+        // if(css) {
+        //     // css.style.height = '100%';
+        //     css.style.position = 'relative';
+        //     css.style.overflow = 'hidden';
+        // }
+        // css = Ext.util.CSS.getRule('.CodeMirror-Scroll');
+        // if(css) {
+        //     css.style.height = '100%';
+        // }
         me.setTheme(me.preview_theme);
-        // me.viewer.setOption('mode', me.mode);
+        me.viewer.setOption('mode', me.mode);
         me.sideBySideModeButton.setDisabled(true);
         // me.compareModeButton.toggle(false);
         me.sideBySideModeButton.toggle(false);
-        // CodeMirror.autoLoadMode(me.viewer, me.mode);
+        CodeMirror.autoLoadMode(me.viewer, me.mode);
     },
     //
     removeViewer: function() {
@@ -293,6 +334,7 @@ Ext.define('NOC.core.RepoPreview', {
         me.backItem = bi;
         me.rootUrl = Ext.String.format(me.restUrl, record.get('id'));
         me.setTitle(Ext.String.format(me.previewName, record.get('name')));
+        me.fileName = Ext.String.format("{0}_{1}", Ext.util.Format.lowercase(record.get('pool__label')), record.get('address'));
     },
     //
     preview: function(record, backItem) {
@@ -458,19 +500,17 @@ Ext.define('NOC.core.RepoPreview', {
                     '/ui/pkg/codemirror/theme/' + theme + '.css'
                 );
             }
-
             me.viewer = CodeMirror.MergeView(el, {
                 readOnly: false,
                 lineNumbers: true,
                 styleActiveLine: true,
                 origLeft: left,
-                viewportMargin: Infinity,
                 revertButtons: false,
                 allowEditingOriginals: true,
                 value: text,
                 theme: theme
             });
-            // CodeMirror.autoLoadMode(me.viewer, me.mode);
+            CodeMirror.autoLoadMode(me.viewer, me.mode);
         } else {
             if(!Ext.isFunction(me.viewer.getMode)) {
                 me.removeViewer();
@@ -486,6 +526,7 @@ Ext.define('NOC.core.RepoPreview', {
             }
             me.viewer.setValue(text);
         }
+        me.onResize();
     },
     //
     onSelectRev: function(combo, records, eOpts) {
@@ -641,13 +682,6 @@ Ext.define('NOC.core.RepoPreview', {
     //     me.requestDiff(rev1, rev2);
     // },
     //
-    onResize: function() {
-        var me = this;
-        if(me.viewer) {
-            me.viewer.refresh();
-        }
-    },
-    //
     getCmContainer: function() {
         var me = this;
         return Ext.create('Ext.container.Container', {
@@ -704,11 +738,18 @@ Ext.define('NOC.core.RepoPreview', {
         me.requestDiff(ids.leftId, ids.rightId);
     },
     //
+    onDownload: function() {
+        var me = this,
+            blob = new Blob([me.viewer.getValue()], {type: "text/plain;charset=utf-8"}),
+            suffix = me.revCombo.getDisplayValue().split(" ")[0].replace(/-/g, "") + ".conf.txt";
+        saveAs(blob, me.fileName + "_" + suffix);
+    },
+    //
     getIds: function() {
         var me = this;
         return {
-            rightId: me.revCombo.getValue(),
-            leftId: me.diffCombo.getValue()
+            leftId: me.revCombo.getValue(),
+            rightId: me.diffCombo.getValue()
             // rightId: me.diffSlider.getRevId(),
             // leftId: me.revSlider.getRevId()
         };

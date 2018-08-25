@@ -8,7 +8,10 @@
 
 # Python modules
 from collections import defaultdict
+import datetime
+import six
 # NOC modules
+from noc.config import config
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
     DateField, DateTimeField, UInt64Field, UInt16Field, UInt8Field,
@@ -46,7 +49,7 @@ class MAC(Model):
       AND uni = 1;
     """
 
-    class Meta:
+    class Meta(object):
         db_table = "mac"
         engine = MergeTree("date", ("ts", "managed_object"))
 
@@ -84,9 +87,14 @@ class MAC(Model):
         where like(MACNumToString(mac), 'A0:AB:1B%') group by managed_object, interface, vlan;
         """
         query_field = ["mac", "managed_object"]
+        t0 = datetime.datetime.now() - datetime.timedelta(seconds=config.web.macdb_window)
+        t0 = t0.replace(microsecond=0)
+
         if not query:
             return
-        f_filter = {}
+
+        f_filter = {"$and": [{"$gte": [{"$field": "date"}, t0.date().isoformat()]},
+                             {"$gte": [{"$field": "ts"}, t0.isoformat(sep=" ")]}]}
         for k in query:
             field = k
             q = "eq"
@@ -98,22 +106,26 @@ class MAC(Model):
             if q == "like" and not convert_mac:
                 field = "MACNumToString(mac)"
             # @todo convert mac all
-            f_filter["$%s" % q] = [{"$field": field}, query[k]]
+            if isinstance(query[k], list) and len(query[k]) == 1:
+                arg = query[k][0].strip()
+            elif isinstance(query[k], six.string_types):
+                arg = query[k].strip()
+            else:
+                arg = query[k]
+            f_filter["$and"] += [{"$%s" % q: [{"$field": field}, arg]}]
         if not f_filter:
             return
-        print f_filter
-        fields = [{"expr": "max(ts)", "alias": "timestamp", "order": 0},
+        fields = [{"expr": "argMax(ts, ts)", "alias": "timestamp", "order": 0},
                   {"expr": "mac", "alias": "mac", "group": 1},
                   {"expr": "vlan", "alias": "vlan", "group": 2},
                   {"expr": "managed_object", "alias": "managed_object", "group": 3},
-                  {"expr": "interface", "alias": "interface", "group": 4}
+                  {"expr": "argMax(interface, ts)", "alias": "interface"}
                   ]
         if convert_mac:
             fields[1]["expr"] = "MACNumToString(mac)"
         # @todo paging (offset and limit)
         # @todo check in list
-        ch_query = {"fields": fields, "filter": f_filter}
-        ch_query["limit"] = limit
+        ch_query = {"fields": fields, "filter": f_filter, "limit": limit}
         if offset:
             ch_query["offset"] = offset
         res = self.query(ch_query)

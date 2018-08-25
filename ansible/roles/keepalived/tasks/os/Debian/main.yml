@@ -1,8 +1,0 @@
-- name: Install keepalived
-  apt:
-    name: keepalived
-  tags:
-    - keepalived
-  notify: reload keepalived
-  environment:
-    https_proxy: "{{http_proxy}}"

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
@@ -18,6 +18,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
+    rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
+    rx_lldp = re.compile(r"LLDP enabled port : (?P<local_if>\S*.+)$", re.MULTILINE)
     rx_sh_int = re.compile(
         r"^\s*(?P<interface>\S+)\s+is\s+(?P<admin_status>up|down),\s+"
         r"line protocol is\s+(?P<oper_status>up|down)"
@@ -29,7 +31,7 @@ class Script(BaseScript):
     )
     rx_hw = re.compile(
         r"^\s+Hardware is (?P<hw_type>\S+)(, active is \S+)?"
-        r"(, address is (?P<mac>\S+))?\s*\n",
+        r"(,\s+address is (?P<mac>\S+))?\s*\n",
         re.MULTILINE
     )
     rx_alias = re.compile(
@@ -55,11 +57,21 @@ class Script(BaseScript):
     HW_TYPES = {
         "Fast-Ethernet": "physical",
         "Gigabit-Combo": "physical",
+        "Gigabit-TX": "physical",
+        "SFP": "physical",
+        "SFP+": "physical",
+        "EtherChannel": "aggregated",
         "EtherSVI": "SVI"
     }
 
     def execute(self):
         interfaces = []
+        # Get LLDP interfaces
+        lldp = []
+        c = self.cli("show lldp", ignore_errors=True)
+        if self.rx_lldp_en.search(c):
+            ll = self.rx_lldp.search(c)
+            lldp = ll.group("local_if").split()
         v = self.cli("show interface", cached=True)
         for match in self.rx_sh_int.finditer(v):
             name = match.group("interface")
@@ -79,6 +91,9 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat
             }
+            # LLDP protocol
+            if name in lldp:
+                iface["enabled_protocols"] = ["LLDP"]
             if iface["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
             if match1.group("mac"):
@@ -106,6 +121,8 @@ class Script(BaseScript):
                 sub["vlan_ids"] = [int(name[4:])]
             match1 = self.rx_ip.search(other)
             if match1:
+                if "NULL" in match1.group("ip"):
+                    continue
                 ip_address = "%s/%s" % (
                     match1.group("ip"),
                     IPv4.netmask_to_len(match1.group("mask"))

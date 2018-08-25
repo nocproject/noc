@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.monitor application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -82,8 +82,8 @@ class FMMonitorApplication(ExtApplication):
         r = []
         now = datetime.datetime.now()
         # Classifier section
-        new_events = db.noc.events.new.count()
-        failed_events = db.noc.events.failed.count()
+        new_events = db.noc.events.new.count_documents({})
+        failed_events = db.noc.events.failed.count_documents({})
         first_new_event = db.noc.events.new.find_one(sort=[("timestamp", 1)])
         if first_new_event:
             classification_lag = humanize_timedelta(now - first_new_event["timestamp"])
@@ -96,23 +96,23 @@ class FMMonitorApplication(ExtApplication):
         ]
         # Correlator section
         sc = db.noc.schedules.fm.correlator
-        dispose = sc.find({"jcls": "dispose"}).count()
+        dispose = sc.count_documents({"jcls": "dispose"})
         if dispose:
             f = sc.find_one({"jcls": "dispose"}, sort=[("ts", 1)])
             dispose_lag = humanize_timedelta(now - f["ts"])
         else:
             dispose_lag = "-"
-        c_jobs = sc.find({"jcls": {"$ne": "dispose"}}).count()
+        c_jobs = sc.count_documents({"jcls": {"$ne": "dispose"}})
         r += [
             ("correlator", "dispose", dispose),
             ("correlator", "dispose_lag", dispose_lag),
             ("correlator", "jobs", c_jobs)
         ]
         # Stats
-        active_events = db.noc.events.active.count()
-        archived_events = db.noc.events.archive.count()
-        active_alarms = db.noc.alarms.active.count()
-        archived_alarms = db.noc.alarms.archived.count()
+        active_events = db.noc.events.active.count_documents({})
+        archived_events = db.noc.events.archive.count_documents({})
+        active_alarms = db.noc.alarms.active.count_documents({})
+        archived_alarms = db.noc.alarms.archived.count_documents({})
         r += [
             ("events", "new_events", new_events),
             ("events", "active_events", active_events),
@@ -125,7 +125,7 @@ class FMMonitorApplication(ExtApplication):
         seq = itertools.count()
         return [
             {
-                "id": seq.next(),
+                "id": next(seq),
                 "group": g,
                 "key": k,
                 "value": v
@@ -143,8 +143,8 @@ class FMMonitorApplication(ExtApplication):
         }
         now = datetime.datetime.now()
         # Classifier section
-        new_events = db.noc.events.new.count()
-        failed_events = db.noc.events.failed.count()
+        new_events = db.noc.events.new.count_documents({})
+        failed_events = db.noc.events.failed.count_documents({})
         first_new_event = db.noc.events.new.find_one(sort=[("timestamp", 1)])
         if first_new_event:
             classification_lag = humanize_timedelta(now - first_new_event["timestamp"])
@@ -163,17 +163,17 @@ class FMMonitorApplication(ExtApplication):
             dispose_lag = humanize_timedelta(now - f["ts"])
         else:
             dispose_lag = "-"
-        c_jobs = sc.find({"jcls": {"$ne": "dispose"}}).count()
+        c_jobs = sc.count_documents({"jcls": {"$ne": "dispose"}})
         r["correlator"] = {
             "dispose": dispose,
             "dispose_lag": dispose_lag,
             "jobs": c_jobs
         }
         # Stats
-        active_events = db.noc.events.active.count()
-        archived_events = db.noc.events.archive.count()
-        active_alarms = db.noc.alarms.active.count()
-        archived_alarms = db.noc.alarms.archived.count()
+        active_events = db.noc.events.active.count_documents({})
+        archived_events = db.noc.events.archive.count_documents({})
+        active_alarms = db.noc.alarms.active.count_documents({})
+        archived_alarms = db.noc.alarms.archived.count_documents({})
         r["events"] = {
             "new_events": new_events,
             "active_events": active_events,

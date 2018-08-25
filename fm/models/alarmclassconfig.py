@@ -20,7 +20,8 @@ class AlarmClassConfig(Document):
     """
     meta = {
         "collection": "noc.alarmclassconfigs",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     alarm_class = PlainReferenceField(AlarmClass, unique=True)

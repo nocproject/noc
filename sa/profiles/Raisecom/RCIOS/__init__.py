@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Raisecom.RCIOS"
     pattern_username = r"^([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)> "
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)> "
     command_super = "enable"
     pattern_prompt = r"^(?P<hostname>\S+)# "
     command_exit = "exit"

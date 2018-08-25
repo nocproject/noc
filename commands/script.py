@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 import argparse
 import pprint
@@ -16,7 +17,9 @@ import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
+from noc.core.span import get_spans, Span
 from noc.core.script.loader import loader
+from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF, TELNET, SSH
 
 
 class Command(BaseCommand):
@@ -44,8 +47,13 @@ class Command(BaseCommand):
             help="Disable SNMP"
         )
         parser.add_argument(
-            "--beef",
-            help="Collect beef to file"
+            "--access-preference",
+            dest="access_preference",
+            help="Alter access method preference"
+        )
+        parser.add_argument(
+            "--update-spec",
+            help="Append all issued commands to spec"
         )
         parser.add_argument(
             "script",
@@ -64,7 +72,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, script, object_name, arguments, pretty,
-               yaml, use_snmp, beef,
+               yaml, use_snmp, access_preference, update_spec,
                *args, **options):
         # Get object
         obj = self.get_object(object_name[0])
@@ -87,14 +95,14 @@ class Command(BaseCommand):
                 del credentials["snmp_ro"]
             if "SNMP" in caps:
                 del caps["SNMP"]
+        if access_preference:
+            credentials["access_preference"] = access_preference
         # Get version info
-        v = obj.version
-        p = obj.platform
-        if v:
+        if obj.version:
             version = {
-                "vendor": v.vendor.name,
-                "platform": p.name,
-                "version": v.version if v else None
+                "vendor": obj.vendor.name if obj.vendor else None,
+                "platform": obj.platform.name if obj.platform else None,
+                "version": obj.version.version if obj.version else None
             }
         else:
             version = None
@@ -107,10 +115,11 @@ class Command(BaseCommand):
             args=args,
             version=version,
             timeout=3600,
-            name=script,
-            collect_beef=bool(beef)
+            name=script
         )
-        result = scr.run()
+        span_sample = 1 if update_spec else 0
+        with Span(sample=span_sample):
+            result = scr.run()
         if pretty:
             pprint.pprint(result)
         elif yaml:
@@ -119,19 +128,8 @@ class Command(BaseCommand):
             yaml.dump(result, sys.stdout)
         else:
             self.stdout.write("%s\n" % result)
-        if beef:
-            if scr.version:
-                scr.beef.set_version(**scr.version)
-            else:
-                # @todo: Fix
-                self.stdout.write("Warning! Beef contains no version info\n")
-            scr.beef.set_result(result)
-            if scr._motd:
-                scr.beef.set_motd(scr._motd)
-            if os.path.isdir(beef):
-                beef = os.path.join(beef, "%s.json" % scr.beef.uuid)
-            self.stdout.write("Writing beef to %s\n" % beef)
-            scr.beef.save(beef)
+        if update_spec:
+            self.update_spec(update_spec, scr)
 
     def get_object(self, object_name):
         """
@@ -161,22 +159,30 @@ class Command(BaseCommand):
             "user": creds.user,
             "password": creds.password,
             "super_password": creds.super_password,
-            "path": obj.remote_path
+            "path": obj.remote_path,
+            "raise_privileges": obj.to_raise_privileges,
+            "access_preference": obj.get_access_preference()
         }
         if creds.snmp_ro:
             credentials["snmp_version"] = "v2c"
             credentials["snmp_ro"] = creds.snmp_ro
-        if obj.scheme in (1, 2):
-            credentials["cli_protocol"] = {
-                1: "telnet",
-                2: "ssh"
-            }[obj.scheme]
+        if obj.scheme in CLI_PROTOCOLS:
+            credentials["cli_protocol"] = PROTOCOLS[obj.scheme]
             if obj.port:
                 credentials["cli_port"] = obj.port
-        elif obj.scheme in (3, 4):
-            credentials["http_protocol"] = "https" if obj.scheme == 4 else "http"
+        elif obj.scheme in HTTP_PROTOCOLS:
+            credentials["http_protocol"] = PROTOCOLS[obj.scheme]
             if obj.port:
                 credentials["http_port"] = obj.port
+        if (
+            obj.scheme == BEEF and
+            obj.object_profile.beef_storage and
+            obj.object_profile.beef_path_template
+        ):
+            beef_path = obj.object_profile.beef_path_template.render_subject(object=obj)
+            if beef_path:
+                credentials["beef_storage_url"] = obj.object_profile.beef_storage.url
+                credentials["beef_path"] = beef_path
         return credentials
 
     rx_arg = re.compile(
@@ -219,6 +225,79 @@ class Command(BaseCommand):
                 args[name] = parse_json(read_file(value))
         return args
 
+    def update_spec(self, name, script):
+        """
+        Update named spec
+        :param name: Spec name
+        :param script: BaseScript instance
+        :return:
+        """
+        from noc.dev.models.quiz import Quiz
+        from noc.dev.models.spec import Spec, SpecAnswer
+        from noc.sa.models.profile import Profile
+
+        self.print("Updating spec: %s" % name)
+        spec = Spec.get_by_name(name)
+        changed = False
+        if not spec:
+            self.print("   Spec not found. Creating")
+            # Get Ad-Hoc quiz
+            quiz = Quiz.get_by_name("Ad-Hoc")
+            if not quiz:
+                self.print("   'Ad-Hoc' quiz not found. Skipping")
+                return
+            # Create Ad-Hoc spec for profile
+            spec = Spec(
+                name,
+                description="Auto-generated Ad-Hoc spec for %s profile" % script.profile.name,
+                revision=1,
+                quiz=quiz,
+                author="NOC",
+                profile=Profile.get_by_name(script.profile.name),
+                changes=[],
+                answers=[]
+            )
+            changed = True
+        # Fetch commands from spans
+        cli_svc = {"beef_cli", "cli", "telnet", "ssh"}
+        commands = set()
+        for sd in get_spans():
+            row = sd.split("\t")
+            if row[6] not in cli_svc:
+                continue
+            commands.add(row[12].decode("string_escape").strip())
+        # Update specs
+        s_name = "cli_%s" % script.name.rsplit(".", 1)[-1]
+        names = set()
+        for ans in spec.answers:
+            if (
+                (ans.name == s_name or ans.name.startswith(s_name + ".")) and
+                    ans.type == "cli"
+            ):
+                names.add(ans.name)
+                if ans.value in commands:
+                    # Already recorded
+                    commands.remove(ans.value)
+        if commands:
+            # New commands left
+            max_n = 0
+            for n in names:
+                if "." in n:
+                    nn = int(n.rsplit(".", 1)[-1])
+                    if nn > max_n:
+                        max_n = nn
+            #
+            ntpl = "%s.%%d" % s_name
+            for nn, cmd in enumerate(sorted(commands)):
+                spec.answers += [SpecAnswer(
+                    name=ntpl % (nn + 1),
+                    type="cli",
+                    value=cmd
+                )]
+            changed = True
+        if changed:
+            spec.save()
+
 
 class ServiceStub(object):
     class ServiceConfig(object):
@@ -260,15 +339,17 @@ class JSONObject(object):
         with open(path) as f:
             data = ujson.load(f)
         self.scheme = {
-            "telnet": 1,
-            "ssh": 2
-        }.get(data.get("scheme", "telnet"), 1)
+            "telnet": TELNET,
+            "ssh": SSH
+        }.get(data.get("scheme", "telnet"), TELNET)
         self.profile = ProfileStub(data.get("profile"))
         self.address = data["address"]
         self.port = data.get("port")
         self.creds = data.get("credentials", {})
         self.caps = data.get("caps")
         self.remote_path = None
+        self.to_raise_privileges = data.get("raise_privileges", True)
+        self.access_preference = data.get("access_preference", "CS")
         self.pool = PoolStub("default")
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
@@ -284,6 +365,9 @@ class JSONObject(object):
 
     def get_caps(self):
         return self.caps
+
+    def get_access_preference(self):
+        return self.access_preference
 
 
 if __name__ == "__main__":

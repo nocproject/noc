@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObjectSelector
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,11 +21,10 @@ import six
 # NOC modules
 from .administrativedomain import AdministrativeDomain
 from .managedobjectprofile import ManagedObjectProfile
-from .terminationgroup import TerminationGroup
-from .profile import Profile
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.pool import Pool
 from noc.main.models.prefixtable import PrefixTable
@@ -34,6 +33,7 @@ from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
 from noc.core.model.decorator import on_delete, on_save, on_delete_check
 from noc.core.model.fields import DocumentReferenceField
+from .profile import Profile
 
 id_lock = Lock()
 
@@ -51,7 +51,6 @@ id_lock = Lock()
     ("sa.CommandSnippet", "selector"),
     ("sa.GroupAccess", "selector"),
     ("sa.ManagedObjectSelectorByAttribute", "selector"),
-    ("sa.MRTConfig", "selector"),
     ("sa.ObjectNotification", "selector"),
     ("sa.UserAccess", "selector"),
     ("vc.VCDomainProvisioningConfig", "selector"),
@@ -91,14 +90,8 @@ class ManagedObjectSelector(models.Model):
                                    verbose_name=_("Filter by VRF"), null=True, blank=True)
     filter_vc_domain = models.ForeignKey("vc.VCDomain",
                                          verbose_name=_("Filter by VC Domain"), null=True, blank=True)
-    filter_termination_group = models.ForeignKey(TerminationGroup,
-                                                 verbose_name=_("Filter by termination group"), null=True, blank=True,
-                                                 related_name="selector_termination_group_set"
-                                                 )
-    filter_service_terminator = models.ForeignKey(TerminationGroup,
-                                                  verbose_name=_("Filter by service terminator"), null=True, blank=True,
-                                                  related_name="selector_service_terminator_set"
-                                                  )
+    filter_service_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
+    filter_client_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     filter_tt_system = DocumentReferenceField(TTSystem, null=True, blank=True)
     filter_user = models.CharField(_("Filter by User (REGEXP)"),
                                    max_length=256, null=True, blank=True)
@@ -200,11 +193,11 @@ class ManagedObjectSelector(models.Model):
         if self.filter_vc_domain:
             q &= Q(vc_domain=self.filter_vc_domain)
         # Filter by termination group
-        if self.filter_termination_group:
-            q &= Q(termination_group=self.filter_termination_group)
+        if self.filter_service_group:
+            q &= Q(effective_service_groups=self.filter_service_group.id)
         # Filter by termination group
-        if self.filter_service_terminator:
-            q &= Q(service_terminator=self.filter_service_terminator)
+        if self.filter_client_group:
+            q &= Q(effective_client_groups=self.filter_client_group.id)
         # Filter by username
         if self.filter_user:
             q &= Q(user__regex=self.filter_user)
@@ -257,8 +250,8 @@ class ManagedObjectSelector(models.Model):
         ["filter_administrative_domain", "administrative_domain", "IN"],
         ["filter_vrf", "vrf", "=="],
         ["filter_vc_domain", "vc_domain", "=="],
-        ["filter_termination_group", "termination_group", "=="],
-        ["filter_service_terminator", "serivce_terminator", "=="],
+        ["filter_service_group", "effective_service_groups", "=="],
+        ["filter_client_group", "effective_client_groups", "=="],
         ["filter_user", "user", "=="],
         ["filter_remote_path", "remote_path", "~"],
         ["filter_description", "description", "~"],
@@ -390,6 +383,7 @@ class ManagedObjectSelectorByAttribute(models.Model):
     def __unicode__(self):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
+
 
 # Avoid circular references
 from .selectorcache import SelectorCache

@@ -1,6 +1,0 @@
-[[inputs.procstat]]
-pattern = "haproxy"
-  fielddrop=["involuntary_context_switches", "voluntary_context_switches", "pid", "cpu_time_guest","cpu_time_guest_nice","cpu_time_idle","cpu_time_iowait","cpu_time_irq","cpu_time_nice","cpu_time_soft_irq","cpu_time_steal","cpu_time_stolen"]
-
-[[inputs.haproxy]]
-  servers = ["/var/run/haproxy.sock"]

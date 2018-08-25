@@ -19,6 +19,6 @@ class Profile(BaseProfile):
         ("--More--$", " ")
     ]
 
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"
     convert_mac = BaseProfile.convert_mac_to_cisco

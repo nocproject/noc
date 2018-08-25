@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Force10.FTOS"
     pattern_more = "^ ?--More--"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Error: Invalid input at"
     pattern_operation_error = r"% Error: "
     command_disable_pager = "terminal length 0"
@@ -25,6 +25,24 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_submit = "\r"
     convert_interface_name = BaseProfile.convert_interface_name_cisco
+
+    matchers = {
+        "is_s": {
+            "platform": {
+                "$regex": "^S"
+            }
+        },
+        "is_c": {
+            "platform": {
+                "$regex": "^C"
+            }
+        },
+        "is_e": {
+            "platform": {
+                "$regex": "^E"
+            }
+        }
+    }
 
     def generate_prefix_list(self, name, pl):
         """
@@ -69,21 +87,3 @@ class Profile(BaseProfile):
             if r != 0:
                 return r
         return 0
-
-
-#
-# Platform matching helpers
-#
-def SSeries(v):
-    """S-series matching heler"""
-    return v["platform"].startswith("S")
-
-
-def CSeries(v):
-    """C-series matching helper"""
-    return v["platform"].startswith("C")
-
-
-def ESeries(v):
-    """E-series matching helper"""
-    return v["platform"].startswith("E")

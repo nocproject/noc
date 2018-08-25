@@ -20,7 +20,7 @@ class Script(BaseScript):
     rx_oam = re.compile(r"admin\s+: enabled")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -28,7 +28,7 @@ class Script(BaseScript):
         return self.rx_lldp.search(cmd) is not None
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """

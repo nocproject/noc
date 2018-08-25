@@ -8,8 +8,8 @@
 # ---------------------------------------------------------------------
 """
 
-import json
-
+import demjson
+from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
@@ -23,19 +23,20 @@ class IPSLADashboard(BaseDashboard):
     name = "ipsla"
 
     def resolve_object(self, object):
-        try:
-            return ManagedObject.objects.get(id=object)
-        except ManagedObject.DoesNotExist:
+        o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
+        if not o:
             raise self.NotFound()
+        else:
+            return o[0]
 
     def render(self):
         context = {
-            "device": self.object.name.replace('\"', ''),
+            "device": self.str_cleanup(self.object.name),
             "ip": self.object.address,
             "device_id": self.object.id,
-            "bi_id": self.object.get_bi_id(),
+            "bi_id": self.object.bi_id,
             "segment": self.object.segment.id,
-            "probes": [{"name": probe.name.replace('\"', ''), "value": probe.target} for
+            "probes": [{"name": self.str_cleanup(probe.name), "value": probe.target} for
                        probe in SLAProbe.objects.filter(managed_object=self.object.id)]
         }
         self.logger.info("Context with data: %s" % context)
@@ -43,5 +44,5 @@ class IPSLADashboard(BaseDashboard):
         tmpl = j2_env.get_template("dash_ipsla.j2")
         data = tmpl.render(context)
 
-        render = json.loads(data)
+        render = demjson.decode(data)
         return render

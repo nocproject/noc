@@ -15,32 +15,40 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-
-    name = "Nateks.netxpert.get_version"
+    name = "Nateks.NetXpert.get_version"
     cache = True
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r".*Series Software, Version (?P<version>[^ ,]+)\, RELEASE SOFTWARE\n"
-        r".*ROM: System Bootstrap, Version (?P<bootrom>[^ ,]+)\n"
-        r"^Serial num:(?P<sn>[^ ,]+),.*\n"
-        r"Nateks (?P<platform>[^ ,]+) RISC\n"
-        , re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    
+        r".*Series Software, Version (?P<version>[\S\s]*)\, RELEASE SOFTWARE",
+        re.MULTILINE)
+    rx_boot = re.compile(
+        r".*ROM: System Bootstrap, Version (?P<bootrom>\d+\.\d+\.\d+).*",
+        re.MULTILINE)
+    rx_sn = re.compile(
+        r"Serial num:(?P<sn>[^ ,]+),.*\n",
+        re.MULTILINE)
+    rx_plat = re.compile(
+        r"Nateks (?P<platform>.*) RISC",
+        re.MULTILINE)
+
     def execute(self):
-        v = ""
-        v = self.cli("show version ", cached=True)
-    	
-        match = self.re_search(self.rx_ver, v)
-        
+        v = self.cli("show version", cached=True)
+        match = self.rx_ver.search(v)
+        version = match.group("version")
+        match = self.rx_boot.search(v)
+        bootrom = match.group("bootrom")
+        match = self.rx_sn.search(v)
+        sn = match.group("sn")
+        match = self.rx_plat.search(v)
+        platform = match.group("platform")
+
         return {
             "vendor": "Nateks",
-            "platform": match.group("platform"),
-            "version": match.group("version"),
+            "platform": platform,
+            "version": version,
             "attributes": {
-                "Boot PROM": match.group("bootrom"),
-                "SN": match.group("sn"),
-                }
-            
+                "Boot PROM": bootrom,
+                "SN": sn
             }
-
+        }

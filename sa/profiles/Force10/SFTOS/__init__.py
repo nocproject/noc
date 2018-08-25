@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Force10.SFTOS"
     pattern_more = r"^--More-- or \(q\)uit"
-    pattern_unpriveleged_prompt = r"^(?P<host>\S+?)>"
+    pattern_unprivileged_prompt = r"^(?P<host>\S+?)>"
     pattern_prompt = r"^(?P<host>\S+?)#"
     pattern_syntax_error = r"% Invalid input detected at "
     pattern_operation_error = r"% Error: "

@@ -21,11 +21,11 @@ class Script(BaseScript):
 
     rx_iface = re.compile(
         r"^(?P<ifname>\S+?\d+) information:\s*\n"
-        r"^\s*(?P<flags>.+)\n",  re.MULTILINE)
+        r"^\s*(?P<flags>.+)\n", re.MULTILINE)
     rx_mac = re.compile(
-        r"^\s*MAC address (?P<mac>\S+)",  re.MULTILINE)
+        r"^\s*MAC address (?P<mac>\S+)", re.MULTILINE)
     rx_vlan = re.compile(
-        r"^\s*VLAN ID\s+(?P<vlan_id>\d+)",  re.MULTILINE)
+        r"^\s*VLAN ID\s+(?P<vlan_id>\d+)", re.MULTILINE)
     rx_ip = re.compile(
         r"^\s*IP address (?P<ip>\S+) \(primary\), mask (?P<mask>\S+\d+)?",
         re.MULTILINE)

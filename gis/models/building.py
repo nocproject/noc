@@ -25,6 +25,7 @@ class Building(Document):
     meta = {
         "collection": "noc.buildings",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["adm_division", "data", "sort_order"]
     }
     # Administrative division

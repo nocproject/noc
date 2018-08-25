@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+from pymongo import ReadPreference
 # NOC modules
 from .base import BaseDataSource
 from noc.inv.models.object import Object
@@ -18,10 +19,14 @@ class CHContainerDataSource(BaseDataSource):
     name = "ch_container"
 
     def extract(self):
-        for obj in Object.objects.all().order_by("id"):
+        o = Object._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+        for obj in o.find({}, {"_id": 1, "bi_id": 1, "name": 1, "container": 1,
+                               "data.address.text": 1}, no_cursor_timeout=True):
+            data = obj.get("data", {})
             yield (
-                obj.get_bi_id(),
-                obj.id,
-                obj.name,
-                bi_hash(obj.container) if obj.container else ""
+                obj["bi_id"],
+                obj["_id"],
+                obj.get("name", ""),
+                bi_hash(obj["container"]) if obj.get("container") else "",
+                data["address"].get("text", "") if data and "address" in data else ""
             )

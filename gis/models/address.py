@@ -20,6 +20,7 @@ class Address(Document):
     meta = {
         "collection": "noc.addresses",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["building", "street"]
     }
     #

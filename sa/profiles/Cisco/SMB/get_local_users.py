@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_local_users
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,8 +21,8 @@ class Script(BaseScript):
     def execute(self):
         data = self.cli("show user accounts")
         r = []
-        for l in data.split("\n"):
-            match = self.rx_line.match(l.strip())
+        for ll in data.split("\n"):
+            match = self.rx_line.match(ll.strip())
             if match:
                 user_class = "operator"
                 privilege = match.group("privilege")
@@ -35,5 +35,5 @@ class Script(BaseScript):
                     "username": match.group("username"),
                     "class": user_class,
                     "is_active": True
-                    })
+                })
         return r

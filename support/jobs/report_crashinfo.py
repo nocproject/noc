@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Obsolete data cleanup and system maintainance
+# Obsolete data cleanup and system maintenance
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details

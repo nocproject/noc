@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.pm.models.metrictype import MetricType
 from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _

@@ -15,7 +15,8 @@ from noc.lib.nosql import PlainReferenceField
 class NormativeDocument(Document):
     meta = {
         "collection": "noc.normative_documents",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField()
     doc_date = DateField()

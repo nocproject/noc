@@ -15,6 +15,7 @@ class NewAddressDiscoveryLog(Document):
     meta = {
         "collection": "noc.log.discovery.address.new",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["-timestamp"]
     }
     timestamp = DateTimeField()

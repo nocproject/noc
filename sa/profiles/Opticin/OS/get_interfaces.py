@@ -9,12 +9,12 @@
 """
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError, MACAddressParameter
+from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
 
 class Script(BaseScript):
     name = "Opticin.OS.get_interfaces"
@@ -23,24 +23,20 @@ class Script(BaseScript):
     cache = True
 
     rx_svi_name = re.compile(r"^system management vlan:\s+(?P<vl_id>\d)$",
-                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+                             re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     rx_ip_if = re.compile(r"^System IP:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$",
-                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+                          re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
-    rx_ip_mask = re.compile(r"^System Mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(|\s+)$",                           
-                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_ip_mask = re.compile(r"^System Mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(|\s+)$",
+                            re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     rx_ip_mac = re.compile(r"System MAC[^:]*?:\s*(?P<mac>\S+)$",
-                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+                           re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     def execute(self):
         ifaces = {}
-        current = None
-        is_bundle = False
-        is_svi = False
-        vlan_ids = []
-        mac_svi = ""        
+        mac_svi = ""
         name_ = {}
         mac_ = {}
         snmp_ifindex_ = {}
@@ -48,7 +44,6 @@ class Script(BaseScript):
         stat_ = {}
         tagged_ = {}
         untagged_ = {}
-        end_if = False
 
         # Get interface status
         for p in self.scripts.get_interface_status():
@@ -83,37 +78,37 @@ class Script(BaseScript):
             match = self.rx_ip_mask.search(ls)
             if match:
                 mask = match.group("mask")
-                ip_addr += [IPv4(ip, netmask = mask).prefix]
+                ip_addr += [IPv4(ip, netmask=mask).prefix]
             match = self.rx_ip_mac.search(ls)
             if match:
-                mac_svi = MACAddressParameter().clean(match.group("mac"))             
+                mac_svi = MACAddressParameter().clean(match.group("mac"))
         type = "SVI"
         stat = "up"
         vlan_ids = [int(namesviif[5:])]
         enabled_afi = ["IPv4"]
         sub = {
-              "name": namesviif,
-              "admin_status": stat == "up",
-              "oper_status": stat == "up",
-              "is_ipv4": True,
-              "enabled_afi": enabled_afi,
-              "ipv4_addresses": ip_addr,
-              "vlan_ids": vlan_ids,
-              "mac": mac_svi,
+            "name": namesviif,
+            "admin_status": stat == "up",
+            "oper_status": stat == "up",
+            "is_ipv4": True,
+            "enabled_afi": enabled_afi,
+            "ipv4_addresses": ip_addr,
+            "vlan_ids": vlan_ids,
+            "mac": mac_svi,
         }
         ifaces[namesviif] = {
-              "name": namesviif,
-              "admin_status": stat == "up",
-              "oper_status": stat == "up",
-              "type": type,
-              "mac": mac_svi,
-              "subinterfaces": [sub],
+            "name": namesviif,
+            "admin_status": stat == "up",
+            "oper_status": stat == "up",
+            "type": type,
+            "mac": mac_svi,
+            "subinterfaces": [sub],
         }
 
-        # set name ifaces         
+        # set name ifaces
         for current in name_:
             ifaces[current] = {
-               "name": current
+                "name": current
             }
         # other
         for current in ifaces:
@@ -128,30 +123,29 @@ class Script(BaseScript):
             ifaces[current]["enabled_protocols"] = []
             enabled_afi = ["BRIDGE"]
             sub = {
-               "name": current,
-               "admin_status": stat_[current],
-               "oper_status": stat_[current],
-               "is_bridge": True,
-               "enabled_afi": enabled_afi,
+                "name": current,
+                "admin_status": stat_[current],
+                "oper_status": stat_[current],
+                "is_bridge": True,
+                "enabled_afi": enabled_afi,
             }
             if current in mac_:
-               sub["mac"] = mac_[current]
+                sub["mac"] = mac_[current]
             if current in tagged_:
-               sub["tagged_vlans"] = tagged_[current]
+                sub["tagged_vlans"] = tagged_[current]
             if current in untagged_:
-               sub["untagged_vlan"] = untagged_[current] 
+                sub["untagged_vlan"] = untagged_[current]
             if current in snmp_ifindex_:
-               sub["snmp_ifindex"] = snmp_ifindex_[current]
+                sub["snmp_ifindex"] = snmp_ifindex_[current]
             ifaces[current]["subinterfaces"] = [sub]
-            
+
         # Get VRFs and "default" VRF interfaces
         r = []
-        seen = set()
         vpns = [{
             "name": "default",
             "type": "ip",
             "interfaces": []
-            }]
+        }]
         for fi in vpns:
             # Forwarding instance
             rr = {
@@ -163,7 +157,7 @@ class Script(BaseScript):
             if rd:
                 rr["rd"] = rd
             # create ifaces
-                
+
             rr["interfaces"] = ifaces.values()
         r += [rr]
         # Return result

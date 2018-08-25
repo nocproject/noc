@@ -2,14 +2,16 @@
 # ----------------------------------------------------------------------
 #  Test dateutils
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
+# Third-party modules
+import pytest
 # NOC modules
-from noc.lib.dateutils import hits_in_range
+from noc.lib.dateutils import hits_in_range, total_seconds
 
 
 def test_hits_in_range():
@@ -41,3 +43,31 @@ def test_hits_in_range():
     assert hits_in_range([t0, t1, t2, t3, t4, t5], start, stop) == 2
     #
     assert hits_in_range([t0, t1, start, t2, t3, stop, t4, t5], start, stop) == 4
+
+
+@pytest.fixture(params=[
+    # 1s
+    (datetime.timedelta(seconds=1), 1.0),
+    # 1m
+    (datetime.timedelta(minutes=1), 60.0),
+    # 1h
+    (datetime.timedelta(hours=1), 3600.0),
+    # 1day
+    (datetime.timedelta(days=1), 86400.0),
+    # 7days
+    (datetime.timedelta(days=7), 604800.0),
+    # 1mks
+    (datetime.timedelta(microseconds=1), 1e-6),
+    # 1day 1h 1m 1s 1msk
+    (
+        datetime.timedelta(days=1, hours=1, minutes=1, microseconds=1),
+        90060.000001
+    )
+])
+def total_seconds_data(request):
+    return request.param
+
+
+def test_total_seconds(total_seconds_data):
+    d, s = total_seconds_data
+    assert total_seconds(d) == s

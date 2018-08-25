@@ -18,10 +18,11 @@ class WhoisOriginRoute(Document):
     """
     meta = {
         "collection": "noc.whois.origin.route",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
-    origin = StringField(primary_key=True, unique=True)
+    origin = StringField(primary_key=True)
     routes = ListField(StringField())
 
     def __unicode__(self):

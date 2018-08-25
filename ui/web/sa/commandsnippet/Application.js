@@ -140,16 +140,16 @@ Ext.define("NOC.sa.commandsnippet.Application", {
             title: __("By Is Enabled"),
             name: "is_enabled",
             ftype: "boolean"
-        },
-        {
-            title: __("By Require Confirmation"),
-            name: "require_confirmation",
-            ftype: "boolean"
-        },
-        {
-            title: __("By Ignore CLI Errors"),
-            name: "ignore_cli_errors",
-            ftype: "boolean"
+        // },
+        // {
+        //     title: __("By Require Confirmation"),
+        //     name: "require_confirmation",
+        //     ftype: "boolean"
+        // },
+        // {
+        //     title: __("By Ignore CLI Errors"),
+        //     name: "ignore_cli_errors",
+        //     ftype: "boolean"
         } 
     ]
 });

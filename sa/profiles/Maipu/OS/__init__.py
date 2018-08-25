@@ -25,7 +25,7 @@ class Profile(BaseProfile):
 
     pattern_syntax_error = \
         r"% Unrecognized command, and error detected at \'^\' marker."
-    pattern_unpriveleged_prompt = \
+    pattern_unprivileged_prompt = \
         r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
     pattern_prompt = \
         r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"

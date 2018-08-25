@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -24,19 +24,26 @@ class Script(BaseScript):
     rx_line = re.compile(r"\n+Port:\s+", re.MULTILINE)
 
     rx_descr_if = re.compile(
-        r"^(?P<interface>\d+(\:\d+)?)(\s+)?(?P<description>\S+)?(\s+\S+)?")
+        r"^(?P<interface>\d+(\:\d+)?)(\s+)?(?P<description>\S+)?(\s+\S+)?",
+        re.MULTILINE
+    )
     rx_snmp_name_eth = re.compile(
-        r"^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE | re.DOTALL)
+        r"^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.MULTILINE
+    )
     rx_body_port = re.compile(
-        r"^(?P<interface>\d+(\:\d+)?)(\S+)?", re.IGNORECASE)
+        r"^(?P<interface>\d+(\:\d+)?)(\S+)?", re.MULTILINE
+    )
     rx_body_untagvl = re.compile(
         r"^\s+Name:\s+\S+\s+Internal\s+Tag\s+=\s+(?P<avlan>\d+).+",
-        re.IGNORECASE | re.DOTALL)
+        re.MULTILINE
+    )
     rx_body_tagvl = re.compile(
         r"^\s+Name:\s+\S+\s+802\.1Q\s+Tag\s+=\s+(?P<tvlan>\d+).+",
-        re.IGNORECASE | re.DOTALL)
+        re.MULTILINE
+    )
     rx_body_omode = re.compile(
-        r"^\s+Link\s+State:\s+(?P<omode>\S+).+", re.IGNORECASE | re.DOTALL)
+        r"^\s+Link\s+State:\s+(?P<omode>\S+).+", re.MULTILINE
+    )
 
     def get_description(self):
         r = []

@@ -23,6 +23,7 @@ class CloneClassificationRule(Document):
     meta = {
         "collection": "noc.cloneclassificationrules",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.cloneclassificationrules",
         "json_depends_on": [
             "fm.eventclassificationrules"

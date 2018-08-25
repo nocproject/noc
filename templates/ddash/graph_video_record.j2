@@ -1,0 +1,88 @@
+{
+  "mappingTypes": [
+    {
+      "name": "value to text",
+      "value": 1
+    },
+    {
+      "name": "range to text",
+      "value": 2
+    }
+  ],
+  "textSize": 24,
+  "links": [],
+  "valueMaps": [
+    {
+      "text": "Recording",
+      "value": "1",
+      "op": "="
+    },
+    {
+      "text": "Not Recording",
+      "value": "0",
+      "op": "="
+    }
+  ],
+  "rangeMaps": [
+    {
+      "to": "null",
+      "from": "null",
+      "text": "N/A"
+    }
+  ],
+  "showLegend": true,
+  "legendSortBy": "-ms",
+  "id": "9ff96872-0cf1-4758-8f20-ea6443cc7bf8",
+  "writeLastValue": true,
+  "span": 6,
+  "title": "Video | Record",
+  "showLegendNames": true,
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "video",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((concat('Video | Record ',path[3]), d)) AS groupArr\n    FROM \n    ( SELECT \n          $timeSeries as t, \n        path[3], \n        avg(video_record) d \n        from $table \n        WHERE \n            $timeFilter\n            AND managed_object=$bi_id\n            AND path[3] in ('Sub', 'Pri')\n        GROUP BY t, path[3]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series"
+    }
+  ],
+  "backgroundColor": "rgba(128, 128, 128, 0.1)",
+  "valueTextColor": "#000000",
+  "highlightOnMouseover": true,
+  "type": "natel-discrete-panel",
+  "writeAllValues": false,
+  "showLegendTime": true,
+  "writeMetricNames": true,
+  "extendLastValue": true,
+  "showDistinctCount": false,
+  "showLegendCounts": false,
+  "metricNameColor": "#000000",
+  "showLegendValues": true,
+  "showTransitionCount": false,
+  "expandFromQueryS": 600,
+  "rowHeight": 50,
+  "showLegendPercent": true,
+  "colorMaps": [
+    {
+      "color": "#CCC",
+      "text": "N/A"
+    },
+    {
+      "color": "#508642",
+      "text": "Recording"
+    },
+    {
+      "color": "#e24d42",
+      "text": "Not Recording"
+    }
+  ],
+  "datasource": null,
+  "lineColor": "rgba(128, 128, 128, 1.0)",
+  "display": "timeline"
+}

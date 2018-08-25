@@ -23,7 +23,7 @@ class Migration:
             WHERE filter_profile = %s
             """, [pmap[p], p])
         # Alter .filter_profile column
-        db.execute("ALTER TABLE sa_managedobjectselector ALTER filter_name TYPE CHAR(24) USING SUBSTRING(\"filter_name\", 1, 24)")
+        db.execute("ALTER TABLE sa_managedobjectselector ALTER filter_profile TYPE CHAR(24) USING SUBSTRING(\"filter_profile\", 1, 24)")
         # Create .filter_vendor field
         db.add_column(
             "sa_managedobjectselector",
@@ -48,7 +48,7 @@ class Migration:
                 "inv.Firmware", null=True, blank=True
             )
         )
-        # Create ..filter_tt_system field
+        # Create .filter_tt_system field
         db.add_column(
             "sa_managedobjectselector",
             "filter_tt_system",

@@ -19,10 +19,11 @@ class WhoisASSetMembers(Document):
     """
     meta = {
         "collection": "noc.whois.asset.members",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
-    as_set = StringField(primary_key=True, unique=True)
+    as_set = StringField(primary_key=True)
     members = ListField(StringField())
 
     def __unicode__(self):

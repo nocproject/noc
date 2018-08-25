@@ -45,7 +45,10 @@ class VersionCheck(DiscoveryCheck):
             self.object.platform = platform
             changed = True
             # Platform changed, clear links
-            self.clear_links()
+            if self.object.object_profile.clear_links_on_platform_change:
+                self.clear_links()
+            # Invalidate neighbor cache
+            self.invalidate_neighbor_cache()
         # Sync version
         version = Firmware.ensure_firmware(self.object.profile, vendor, result["version"])
         if not self.object.version or version.id != self.object.version.id:
@@ -59,13 +62,19 @@ class VersionCheck(DiscoveryCheck):
             changed = True
             # @todo: Check next_version and report upgrade
         # Sync image
-        image = result.get("image")
-        if image and image != self.object.software_image:
+        image = result.get("image", "") or None
+        if image != self.object.software_image:
+            if image:
+                image = image.strip()[:255]  # Cut to field length
+            if not image:
+                image = None
             if self.object.version:
                 self.logger.info("Image changed: %s -> %s",
                                  self.object.software_image, image)
             else:
                 self.logger.info("Set image: %s", image)
+            self.object.software_image = image
+            changed = True
         # Sync attributes
         if "attributes" in result:
             self.object.update_attributes(result["attributes"])

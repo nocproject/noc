@@ -2,14 +2,24 @@
 # ----------------------------------------------------------------------
 # Set Link.objects
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from __future__ import print_function
+# Third-party modules
+from mongoengine.queryset import Q
 # NOC modules
 from noc.inv.models.link import Link
 
 
 def fix():
-    for l in Link.objects.all():
-        l.save()
+    for l in Link.objects.filter(
+            Q(linked_objects__exists=False) |
+            Q(linked_segments__exists=False) |
+            Q(type__exists=False)
+    ).timeout(False):
+        try:
+            l.save()
+        except AssertionError:
+            print("Assertion Error, check link with id: %s" % l.id)

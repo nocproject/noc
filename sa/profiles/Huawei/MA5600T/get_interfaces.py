@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 import re
 
 
@@ -22,7 +21,7 @@ class Script(BaseScript):
         r"^\s*(?P<ifname>[a-zA-Z]+)(?P<ifnum>\d+) current state :\s*(?P<admin_status>UP|DOWN)\s*\n"
         r"^\s*Line protocol current state :\s*(?P<oper_status>UP|UP \(spoofing\)|DOWN)\s*\n"
         r"^\s*Description :\s*(?P<descr>.*)\n"
-        r"^\s*The Maximum Transmit Unit is (?P<mtu>\d+) bytes\s*\n"
+        r"^\s*The Maximum Transmit Unit is (?P<mtu>\d+) bytes(, Hold timer is \d+\(sec\))?\s*\n"
         r"(^\s*Forward plane MTU: \S+\n)?"
         r"(^\s*Internet Address is (?P<ip>\S+)\s*\n)?"
         r"(^\s*IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is (?P<mac>\S+)\s*\n)?",
@@ -46,7 +45,8 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_tagged = re.compile("(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
-        r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E\s+(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
+        r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E(?:-Optic|-Elec)?\s+"
+        r"(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
         r"\S+\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
         re.MULTILINE)
     rx_adsl_state = re.compile(
@@ -64,23 +64,24 @@ class Script(BaseScript):
         re.MULTILINE)
 
     type = {
-        "Vlan": 48,
-        "GPON": 125,
-        "EPON": 126,
-        "TDME1": 97,
+        "other": 1,
         "ATM": 4,
         "ADSL": 6,
-        "VDSL2": 124,
-        "SHDSL": 44,
         "Eth": 7,
         "IMA": 39,
+        "SHDSL": 44,
+        "Vlan": 48,
         "IMALink": 51,
         "Trunk": 54,
-        "BITS": 96,
-        "xDSLchan": 123,
         "DOCSISup": 59,
         "DOCSISdown": 60,
-        "DOCSISport": 61
+        "DOCSISport": 61,
+        "BITS": 96,
+        "TDME1": 97,
+        "VDSL2": 124,
+        "xDSLchan": 123,
+        "GPON": 125,
+        "EPON": 126,
     }
 
     def snmp_index(self, int_type, shelfID, slotID, intNum):
@@ -102,8 +103,12 @@ class Script(BaseScript):
         return index
 
     def get_stp(self):
+        try:
+            v = self.cli("display stp")
+        except self.CLISyntaxError:
+            return []
         r = []
-        for match in self.rx_stp.finditer(self.cli("display stp\r\n")):
+        for match in self.rx_stp.finditer(v):
             port = match.group("port").replace(" ", "")
             if port not in r:
                 r += [port]
@@ -137,8 +142,11 @@ class Script(BaseScript):
             interfaces += [iface]
         ports = self.profile.fill_ports(self)
         for i in range(len(ports)):
-            if ports[i]["t"] in ["10GE", "GE", "FE"]:
-                v = self.cli("display board 0/%d" % i)
+            if ports[i]["t"] in ["10GE", "GE", "FE", "GE-Optic", "GE-Elec", "FE-Elec"]:
+                try:
+                    v = self.cli("display board 0/%d" % i, cached=True)
+                except self.CLISyntaxError:
+                    pass
                 for match in self.rx_ether.finditer(v):
                     ifname = "0/%d/%d" % (i, int(match.group("port")))
                     admin_status = match.group("admin_status") == "active"
@@ -173,8 +181,8 @@ class Script(BaseScript):
                         for t in self.rx_tagged.finditer(m.group("tagged")):
                             if int(t.group("tagged")) != untagged:
                                 tagged += [int(t.group("tagged"))]
-                        iface["subinterfaces"][0]["untagged"] = untagged
-                        iface["subinterfaces"][0]["tagged"] = tagged
+                        iface["subinterfaces"][0]["untagged_vlan"] = untagged
+                        iface["subinterfaces"][0]["tagged_vlans"] = tagged
                     interfaces += [iface]
             if ports[i]["t"] in ["ADSL", "VDSL", "GPON"]:
                 oper_states = []
@@ -183,7 +191,7 @@ class Script(BaseScript):
                 else:
                     p_type = "adsl"
                 try:
-                    v = self.cli("display %s port state 0/%d\r\n" % (p_type, i))
+                    v = self.cli("display %s port state 0/%d" % (p_type, i))
                     for match in self.rx_adsl_state.finditer(v):
                         oper_states += [{
                             "name": "0/%d/%d" % (i, int(match.group("port"))),
@@ -198,14 +206,19 @@ class Script(BaseScript):
                     except self.CLISyntaxError:
                         display_service_port = True
                 if display_pvc:
-                    v = self.cli("display pvc 0/%d\n" % i)
+                    v = self.cli("display pvc 0/%d" % i)
                     rx_adsl = self.rx_pvc
                 elif display_service_port:
-                    v = self.cli("display service-port board 0/%d\n" % i)
-                    rx_adsl = self.rx_sp
+                    try:
+                        v = self.cli("display service-port board 0/%d" % i)
+                        rx_adsl = self.rx_sp
+                    except self.CLISyntaxError:
+                        display_service_port = False
+                        v = ""
+                        rx_adsl = self.rx_pvc
                 else:
                     v = ""
-                    rx_adsl = ""
+                    rx_adsl = self.rx_pvc
                 for match in rx_adsl.finditer(v):
                     port = int(match.group("port"))
                     ifname = "0/%d/%d" % (i, port)
@@ -244,7 +257,7 @@ class Script(BaseScript):
                                 iface["oper_status"] = o["oper_state"]
                                 break
                         interfaces += [iface]
-        v = self.cli("display interface\n")
+        v = self.cli("display interface")
         rx = self.find_re([self.rx_if1, self.rx_if2], v)
         for match in rx.finditer(v):
             ifname = "%s%s" % (match.group("ifname"), match.group("ifnum"))
@@ -252,7 +265,8 @@ class Script(BaseScript):
                 "meth": "management",
                 "null": "null",
                 "loopback": "loopback",
-                "vlanif": "SVI"
+                "vlanif": "SVI",
+                "serial": "physical"
             }[match.group("ifname").lower()]
             iface = {
                 "name": ifname,
@@ -266,7 +280,7 @@ class Script(BaseScript):
             if "admin_status" in match.groupdict():
                 iface["admin_status"] = match.group("admin_status") != "DOWN"
                 sub["admin_status"] = match.group("admin_status") != "DOWN"
-            if "oper_status"  in match.groupdict():
+            if "oper_status" in match.groupdict():
                 iface["oper_status"] = match.group("oper_status") != "DOWN"
                 sub["oper_status"] = match.group("oper_status") != "DOWN"
             if match.group("descr"):
@@ -292,7 +306,7 @@ class Script(BaseScript):
         if not vlans_found:
             for vlan in self.scripts.get_vlans():
                 for match in self.rx_vlan2.finditer(
-                    self.cli("display vlan %s\n" % vlan["vlan_id"])
+                    self.cli("display vlan %s" % vlan["vlan_id"])
                 ):
                     ifname = match.group("ifname").replace(" ", "")
                     for i in interfaces:

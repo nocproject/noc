@@ -3,7 +3,7 @@ __author__ = 'FeNikS'
 # ---------------------------------------------------------------------
 # Sencore.Probe.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -11,27 +11,28 @@ __author__ = 'FeNikS'
 # Python modules
 import re
 # NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
-class Script(NOCScript):
+
+class Script(BaseScript):
     name = "Sencore.Probe.get_version"
-    implements = [IGetVersion]
+    interface = IGetVersion
 
-    rx_version = re.compile(r"<software_version>(?P<data>.*?)</software_version>",
-                            re.MULTILINE|re.DOTALL)
-    rx_platform = re.compile(r"<product>(?P<data>.*?)</product>",
-                             re.MULTILINE|re.DOTALL)
-    
+    rx_version = re.compile(
+        r"<software_version>(?P<data>.*?)</software_version>",
+        re.MULTILINE | re.DOTALL
+    )
+    rx_platform = re.compile(
+        r"<product>(?P<data>.*?)</product>",
+        re.MULTILINE | re.DOTALL
+    )
+
     def execute(self):
         platform = "Probe"
         version = "---"
 
-        data = None
-        try:
-            data = self.http.get("/probe/status")
-        except Exception as why:
-            pass
+        data = self.http.get("/probe/status")
         if data:
             match = self.rx_version.search(data)
             if match:
@@ -40,7 +41,7 @@ class Script(NOCScript):
             match = self.rx_platform.search(data)
             if match:
                 platform = match.group("data")
-        
+
         return {
             "vendor": "Sencore",
             "platform": platform,

@@ -60,6 +60,9 @@ class Script(BaseScript):
                 name = rr[1].strip()
             if rr[0] == "ssid":
                 ssid = rr[1].strip().replace(" ", "").replace("Managed", "")
+                if ssid.startswith("2a2d"):
+                    # 2a2d - hex string
+                    ssid = ssid.decode("hex")
             if rr[0] == "bss":
                 bss = rr[1].strip()
             if ssid:

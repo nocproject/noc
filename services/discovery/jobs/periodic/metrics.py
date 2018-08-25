@@ -22,12 +22,15 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
-from noc.core.handler import get_handler
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.pm.models.thresholdprofile import ThresholdProfile
+from noc.core.window import get_window_function
+from noc.core.handler import get_handler
 
 
 MAX31 = 0x7FFFFFFF
@@ -52,11 +55,13 @@ metrics_lock = Lock()
 
 MetricConfig = namedtuple("MetricConfig", [
     "metric_type",
+    "enable_box", "enable_periodic",
     "is_stored",
     "window_type", "window", "window_function", "window_config",
     "window_related",
     "low_error", "low_warn", "high_warn", "high_error",
     "low_error_severity", "low_warn_severity", "high_warn_severity", "high_error_severity",
+    "threshold_profile",
     "process_thresholds"
 ])
 
@@ -154,9 +159,6 @@ class MetricsCheck(DiscoveryCheck):
             mt = MetricType.get_by_id(mt_id)
             if not mt:
                 continue
-            # @todo: Filter by scope
-            if not m.get("is_active"):
-                continue
             le = m.get("low_error")
             lw = m.get("low_warn")
             he = m.get("high_error")
@@ -165,8 +167,13 @@ class MetricsCheck(DiscoveryCheck):
             lww = AlarmSeverity.severity_for_weight(int(m.get("low_warn_weight", 1)))
             hew = AlarmSeverity.severity_for_weight(int(m.get("high_error_weight", 1)))
             hww = AlarmSeverity.severity_for_weight(int(m.get("high_warn_weight", 10)))
+            threshold_profile = None
+            if m.get("threshold_profile"):
+                threshold_profile = ThresholdProfile.get_by_id(m.get("threshold_profile"))
             r[mt.name] = MetricConfig(
                 mt,
+                m.get("enable_box", True),
+                m.get("enable_periodic", True),
                 m.get("is_stored", True),
                 m.get("window_type", "m"),
                 int(m.get("window", 1)),
@@ -178,6 +185,7 @@ class MetricsCheck(DiscoveryCheck):
                 int(hw) if hw is not None else None,
                 int(he) if he is not None else None,
                 lew, lww, hww, hew,
+                threshold_profile,
                 le is not None or lw is not None or he is not None or hw is not None
             )
         return r
@@ -200,6 +208,7 @@ class MetricsCheck(DiscoveryCheck):
         """
         return MetricConfig(
             m.metric_type,
+            m.enable_box, m.enable_periodic,
             m.is_stored,
             m.window_type, m.window, m.window_function,
             m.window_config, m.window_related,
@@ -208,6 +217,7 @@ class MetricsCheck(DiscoveryCheck):
             AlarmSeverity.severity_for_weight(m.low_warn_weight),
             AlarmSeverity.severity_for_weight(m.high_warn_weight),
             AlarmSeverity.severity_for_weight(m.high_error_weight),
+            m.threshold_profile,
             m.low_error is not None or m.low_warn is not None or m.high_warn is not None or m.high_error is not None
         )
 
@@ -222,9 +232,6 @@ class MetricsCheck(DiscoveryCheck):
         if not ipr:
             return r
         for m in ipr.metrics:
-            # @todo: Filter by scope
-            if not m.is_active:
-                continue
             r[m.metric_type.name] = cls.config_from_settings(m)
         return r
 
@@ -238,9 +245,6 @@ class MetricsCheck(DiscoveryCheck):
         if not spr:
             return r
         for m in spr.metrics:
-            # @todo: Filter by scope
-            if not m.is_active:
-                continue
             r[m.metric_type.name] = cls.config_from_settings(m)
         return r
 
@@ -253,6 +257,9 @@ class MetricsCheck(DiscoveryCheck):
         o_metrics = self.get_object_profile_metrics(self.object.object_profile.id)
         self.logger.debug("Object metrics: %s", o_metrics)
         for metric in o_metrics:
+            if ((self.is_box and not o_metrics[metric].enable_box) or
+                    (self.is_periodic and not o_metrics[metric].enable_periodic)):
+                continue
             m_id = next(self.id_count)
             metrics += [{
                 "id": m_id,
@@ -263,11 +270,29 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.info("Object metrics are not configured. Skipping")
         return metrics
 
+    def get_subinterfaces(self):
+        subs = defaultdict(list)  # interface id -> [{"name":, "ifindex":}]
+        for si in SubInterface._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).find({
+            "managed_object": self.object.id
+        }, {
+            "name": 1,
+            "interface": 1,
+            "ifindex": 1
+        }):
+            subs[si["interface"]] += [{
+                "name": si["name"],
+                "ifindex": si.get("ifindex")
+            }]
+        return subs
+
     def get_interface_metrics(self):
         """
         Populate metrics list with interface metrics
         :return:
         """
+        subs = None
         metrics = []
         for i in Interface._get_collection().with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED
@@ -275,6 +300,7 @@ class MetricsCheck(DiscoveryCheck):
             "managed_object": self.object.id,
             "type": "physical"
         }, {
+            "_id": 1,
             "name": 1,
             "ifindex": 1,
             "profile": 1
@@ -283,8 +309,15 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
                 continue  # No metrics configured
+            i_profile = InterfaceProfile.get_by_id(i["profile"])
+            if i_profile.allow_subinterface_metrics and subs is None:
+                # Resolve subinterfaces
+                subs = self.get_subinterfaces()
             ifindex = i.get("ifindex")
             for metric in ipr:
+                if ((self.is_box and not ipr[metric].enable_box) or
+                        (self.is_periodic and not ipr[metric].enable_periodic)):
+                    continue
                 m_id = next(self.id_count)
                 m = {
                     "id": m_id,
@@ -295,6 +328,18 @@ class MetricsCheck(DiscoveryCheck):
                     m["ifindex"] = ifindex
                 metrics += [m]
                 self.id_metrics[m_id] = ipr[metric]
+                if i_profile.allow_subinterface_metrics:
+                    for si in subs[i["_id"]]:
+                        m_id = next(self.id_count)
+                        m = {
+                            "id": m_id,
+                            "metric": metric,
+                            "path": ["", "", "", i["name"], si["name"]]
+                        }
+                        if si["ifindex"] is not None:
+                            m["ifindex"] = si["ifindex"]
+                        metrics += [m]
+                        self.id_metrics[m_id] = ipr[metric]
         if not metrics:
             self.logger.info("Interface metrics are not configured. Skipping")
         return metrics
@@ -324,6 +369,9 @@ class MetricsCheck(DiscoveryCheck):
                 )
                 continue
             for metric in pm:
+                if ((self.is_box and not pm[metric].enable_box) or
+                        (self.is_periodic and not pm[metric].enable_periodic)):
+                    continue
                 m_id = next(self.id_count)
                 metrics += [{
                     "id": m_id,
@@ -343,7 +391,7 @@ class MetricsCheck(DiscoveryCheck):
         :return:
         """
         # Restore last counter state
-        if self.job.reboot_detected:
+        if self.has_artefact("reboot"):
             self.logger.info(
                 "Resetting counter context due to detected reboot"
             )
@@ -352,7 +400,7 @@ class MetricsCheck(DiscoveryCheck):
         alarms = []
         data = defaultdict(dict)
         n_metrics = 0
-        mo_id = self.object.get_bi_id()
+        mo_id = self.object.bi_id
         ts_cache = {}  # timestamp -> (date, ts)
         #
         for m in result:
@@ -362,11 +410,11 @@ class MetricsCheck(DiscoveryCheck):
                 # Counter type
                 if path:
                     key = "%x|%s" % (
-                        cfg.metric_type.get_bi_id(),
+                        cfg.metric_type.bi_id,
                         "|".join(str(p) for p in path)
                     )
                 else:
-                    key = "%x" % cfg.metric_type.get_bi_id()
+                    key = "%x" % cfg.metric_type.bi_id
                 # Restore old value and save new
                 r = counters.get(key)
                 counters[key] = (m.ts, m.value)
@@ -404,6 +452,7 @@ class MetricsCheck(DiscoveryCheck):
             else:
                 # Gauge
                 m.abs_value = m.value * m.scale
+
             self.logger.debug(
                 "[%s] Measured value: %s. Scale: %s. Resulting value: %s",
                 m.label, m.value, m.scale, m.abs_value
@@ -419,8 +468,10 @@ class MetricsCheck(DiscoveryCheck):
                     )
                     ts_cache[m.ts] = tsc
                 if path:
-                    pk = "%s\t%s\t%d\t%s" % (tsc[0], tsc[1], mo_id,
-                                          self.quote_path(path))
+                    pk = "%s\t%s\t%d\t%s" % (
+                        tsc[0], tsc[1], mo_id,
+                        self.quote_path(path)
+                    )
                     table = "%s.date.ts.managed_object.path" % cfg.metric_type.scope.table_name
                 else:
                     pk = "%s\t%s\t%d" % (tsc[0], tsc[1], mo_id)
@@ -435,7 +486,7 @@ class MetricsCheck(DiscoveryCheck):
                     )
                     continue
                 n_metrics += 1
-            if cfg.process_thresholds and m.abs_value:
+            if cfg.process_thresholds and m.abs_value is not None:
                 alarms += self.process_thresholds(m, cfg)
         return n_metrics, data, alarms
 
@@ -529,11 +580,11 @@ class MetricsCheck(DiscoveryCheck):
         # Build window state key
         if m.path:
             key = "%x|%s" % (
-                cfg.metric_type.get_bi_id(),
+                cfg.metric_type.bi_id,
                 "|".join(str(p) for p in m.path)
             )
         else:
-            key = "%x" % cfg.metric_type.get_bi_id()
+            key = "%x" % cfg.metric_type.bi_id
         #
         states = self.job.context["metric_windows"]
         value = m.abs_value
@@ -574,7 +625,7 @@ class MetricsCheck(DiscoveryCheck):
             )
             return None
         # Process window function
-        wf = getattr(self, "wf_%s" % cfg.window_function, None)
+        wf = get_window_function(cfg.window_function)
         if not wf:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): Invalid window function %s",
@@ -605,8 +656,9 @@ class MetricsCheck(DiscoveryCheck):
         path = m.metric
         if m.path:
             path += " | ".join(m.path)
+        alarm_cfg = None
         if cfg.low_error is not None and w_value <= cfg.low_error:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_LOW_ERROR,
                 "path": path,
                 "severity": cfg.low_error_severity,
@@ -619,9 +671,9 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
         elif cfg.low_warn is not None and w_value <= cfg.low_warn:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_LOW_WARN,
                 "path": path,
                 "severity": cfg.low_warn_severity,
@@ -634,9 +686,9 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
         elif cfg.high_error is not None and w_value >= cfg.high_error:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_HIGH_ERROR,
                 "path": path,
                 "severity": cfg.high_error_severity,
@@ -649,9 +701,9 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
         elif cfg.high_warn is not None and w_value >= cfg.high_warn:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_HIGH_WARN,
                 "path": path,
                 "severity": cfg.high_warn_severity,
@@ -664,7 +716,19 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
+        if alarm_cfg is not None:
+            alarms += [alarm_cfg]
+            # Apply umbrella filter handler
+            if cfg.threshold_profile and cfg.threshold_profile.umbrella_filter_handler:
+                try:
+                    handler = get_handler(cfg.threshold_profile.umbrella_filter_handler)
+                    if handler:
+                        alarms = [handler(self, a) for a in alarms]
+                        # Remove filtered alarms
+                        alarms = [a for a in alarms if a]
+                except Exception as e:
+                    self.logger.error("Exception when loading handler %s", e)
         return alarms
 
     def send_metrics(self, data):
@@ -692,111 +756,3 @@ class MetricsCheck(DiscoveryCheck):
         # Spool data
         for f in chains:
             self.service.register_metrics(f, chains[f])
-
-    def wf_last(self, window, *args, **kwargs):
-        """
-        Returns last measured value
-        :param window:
-        :return:
-        """
-        return window[-1][1]
-
-    def wf_avg(self, window, *args, **kwargs):
-        """
-        Returns window average
-        :param window:
-        :return:
-        """
-        return float(sum(w[1] for w in window)) / len(window)
-
-    def _wf_percentile(self, window, q):
-        """
-        Calculate percentile
-        :param window:
-        :param q:
-        :return:
-        """
-        l = sorted(w[1] for w in window)
-        i = len(l) * q // 100
-        return l[i]
-
-    def wf_percentile(self, window, config, *args, **kwargs):
-        """
-        Calculate percentile
-        :param window:
-        :param config:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        try:
-            q = int(config)
-        except ValueError:
-            raise ValueError("Percentile must be integer")
-        if q < 0 or q > 100:
-            raise ValueError("Percentile must be >0 and <100")
-        return self._wf_percentile(window, q)
-
-    def wf_q1(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 25)
-
-    def wf_q2(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 50)
-
-    def wf_q3(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 75)
-
-    def wf_p95(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 95)
-
-    def wf_p99(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 99)
-
-    def wf_handler(self, window, config, *args, **kwargs):
-        """
-        Calculate via handler
-        :param window:
-        :param config:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        h = get_handler(config)
-        if not h:
-            raise ValueError("Invalid handler %s" % config)
-        return h(window)

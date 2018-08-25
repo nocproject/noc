@@ -2,20 +2,32 @@
 # ---------------------------------------------------------------------
 # DNSZoneProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+from threading import Lock
+import operator
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+import cachetools
 # NOC modules
-from dnsserver import DNSServer
+from noc.config import config
 from noc.main.models import NotificationGroup
+from noc.core.datastream.decorator import datastream
+from noc.core.model.decorator import on_delete_check
+from .dnsserver import DNSServer
+
+id_lock = Lock()
 
 
+@datastream
+@on_delete_check(check=[
+    ("dns.DNSZone", "profile")
+])
 class DNSZoneProfile(models.Model):
     """
     DNS Zone profile is a set of common parameters, shared between zones.
@@ -39,9 +51,11 @@ class DNSZoneProfile(models.Model):
         app_label = "dns"
 
     name = models.CharField(_("Name"), max_length=32, unique=True)
-    masters = models.ManyToManyField(DNSServer, verbose_name=_("Masters"),
+    masters = models.ManyToManyField(
+        DNSServer, verbose_name=_("Masters"),
         related_name="masters", blank=True)
-    slaves = models.ManyToManyField(DNSServer, verbose_name=_("Slaves"),
+    slaves = models.ManyToManyField(
+        DNSServer, verbose_name=_("Slaves"),
         related_name="slaves", blank=True)
     zone_soa = models.CharField(_("SOA"), max_length=64)
     zone_contact = models.CharField(_("Contact"), max_length=64)
@@ -49,13 +63,42 @@ class DNSZoneProfile(models.Model):
     zone_retry = models.IntegerField(_("Retry"), default=900)
     zone_expire = models.IntegerField(_("Expire"), default=86400)
     zone_ttl = models.IntegerField(_("TTL"), default=3600)
-    notification_group = models.ForeignKey(NotificationGroup,
+    notification_group = models.ForeignKey(
+        NotificationGroup,
         verbose_name=_("Notification Group"), null=True, blank=True,
         help_text=_("Notification group to use when zone group is not set"))
     description = models.TextField(_("Description"), blank=True, null=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        mo = DNSZoneProfile.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        mo = DNSZoneProfile.objects.filter(name=name)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
+    def iter_changed_datastream(self):
+        if not config.datastream.enable_dnszone:
+            return
+        for z in self.dnszone_set.all():
+            for ds, id in z.iter_changed_datastream():
+                yield ds, id
 
     @property
     def authoritative_servers(self):
@@ -64,11 +107,3 @@ class DNSZoneProfile(models.Model):
         slave servers
         """
         return list(self.masters.all()) + list(self.slaves.all())
-
-#
-# Signal handlers
-#
-@receiver(post_save, sender=DNSZoneProfile)
-def on_save(sender, instance, created, **kwargs):
-    for z in instance.dnszone_set.filter(is_auto_generated=True):
-        z.touch(z.name)

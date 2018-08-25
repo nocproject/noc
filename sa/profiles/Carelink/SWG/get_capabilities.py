@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_lldp = re.compile(r"^\d+\s+Enabled", re.MULTILINE)
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """

@@ -332,7 +332,13 @@ class Scheduler(object):
                 for job in rjobs:
                     if job.is_retries_exceeded():
                         metrics["%s_jobs_retries_exceeded" % self.name] += 1
-                    executor.submit(job.run)
+                    in_label = None
+                    if config.features.forensic:
+                        in_label = "%s:%s" % (
+                            job.attrs[Job.ATTR_CLASS],
+                            job.attrs[Job.ATTR_KEY]
+                        )
+                    executor.submit(job.run, _in_label=in_label)
                     metrics["%s_jobs_started" % self.name] += 1
                     n += 1
             if jobs:

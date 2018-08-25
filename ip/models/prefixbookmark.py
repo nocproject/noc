@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # PrefixBookmark model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from operator import attrgetter
 # Django modules
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +15,7 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 # NOC modules
-from prefix import Prefix
+from .prefix import Prefix
 
 
 class PrefixBookmark(models.Model):

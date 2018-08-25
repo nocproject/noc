@@ -1,52 +1,46 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from noc.sa.profiles.Generic.get_metrics import OIDRule
-from noc.core.mib import mib
-from noc.core.script.metrics import percent
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from .oidrules.slot import SlotRule
+from .oidrules.sslot import SSlotRule
 
 
 class Script(GetMetricsScript):
     name = "Huawei.VRP.get_metrics"
 
+    OID_RULES = [
+        SlotRule,
+        SSlotRule
+    ]
 
-class SlotRule(OIDRule):
-
-    name = "slot"
-
-    def iter_oids(self, script, metric):
-
-        hwFrameIndex = [0]
-        hwSlotIndex = [0]
-        hwCpuDevIndex = [0]
-
-        if script.has_capability("Stack | Members"):
-            hwSlotIndex = range(0, script.capabilities["Stack | Members"])
-        i = 0
-        r = {}
-
-        for fi in hwFrameIndex:
-            for si in hwSlotIndex:
-                for cp in hwCpuDevIndex:
-                    r[str(i)] = "%d.%d.%d" % (fi, si, cp)
-                    # r[str(i)] = {"hwFrameIndex": fi, "hwSlotIndex": si, "hwCpuDevIndex": cp}
-                    i += 1
-        for i in r:
-            if self.is_complex:
-                gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
-                path = ["0", "0", i, ""] if "CPU" in metric.metric else ["0", i, "0"]
-                if gen:
-                    yield tuple(gen), self.type, self.scale, path
-            else:
-                oid = mib[self.expand(self.oid, {"hwSlotIndex": r[i]})]
-                path = ["0", "0", i, ""] if "CPU" in metric.metric else ["0", i, "0"]
-                if oid:
-                    yield oid, self.type, self.scale, path
+    @metrics(
+        ["Interface | Errors | CRC", "Interface | Errors | Frame"],
+        has_capability="DB | Interfaces",
+        volatile=False,
+        access="C"  # CLI version
+    )
+    def get_vrp_interface_metrics(self, metrics):
+        v = self.cli("display interface")
+        ifdata = self.profile.parse_ifaces(v)
+        for iface, data in ifdata.items():
+            iface = self.profile.convert_interface_name(iface)
+            ipath = ["", "", "", iface]
+            if "CRC" in data:
+                self.set_metric(
+                    id=("Interface | Errors | CRC", ipath),
+                    value=int(data["CRC"])
+                )
+            if "Frames" in data:
+                self.set_metric(
+                    id=("Interface | Errors | Frame", ipath),
+                    value=int(data["Frames"])
+                )

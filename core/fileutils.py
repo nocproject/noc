@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import gzip
 # Third-party modules
 import six
 # NOC modules
-from noc.lib.version import get_version
+from noc.core.version import version
 
 
 def safe_rewrite(path, text, mode=None):
@@ -147,7 +147,7 @@ def urlopen(url, auto_deflate=False):
 
     if url.startswith("http://") or url.startswith("https://"):
         r = urllib2.Request(
-            url, headers={"User-Agent": "NOC/%s" % get_version()})
+            url, headers={"User-Agent": "NOC/%s" % version.version})
     else:
         r = url
     if auto_deflate and url.endswith(".gz"):

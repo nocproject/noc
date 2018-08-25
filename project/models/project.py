@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Project models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,12 +25,14 @@ id_lock = Lock()
     ("ip.Address", "project"),
     ("ip.Prefix", "project"),
     ("ip.VRF", "project"),
-    ("peer.ASN", "project"),
+    ("peer.AS", "project"),
     ("peer.ASSet", "project"),
     ("peer.Peer", "project"),
     ("phone.PhoneNumber", "project"),
     ("phone.PhoneRange", "project"),
-    ("vc.VC", "project")
+    ("vc.VC", "project"),
+    ("vc.VPN", "project"),
+    ("vc.VLAN", "project")
 ])
 class Project(models.Model):
     """

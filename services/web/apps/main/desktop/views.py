@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.desktop application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,8 +16,7 @@ from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged
-from noc.lib.version import get_version, get_brand
-from noc.main.models.usersession import UserSession
+from noc.core.version import version
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
 from noc.main.models.permission import Permission
@@ -63,7 +62,7 @@ class DesktopApplication(ExtApplication):
                 profile = user.get_profile()
                 if profile.preferred_language:
                     language = profile.preferred_language
-            except:
+            except Exception:
                 pass
         return language
 
@@ -97,7 +96,7 @@ class DesktopApplication(ExtApplication):
             "logo_url": config.customization.logo_url,
             "logo_width": config.customization.logo_width,
             "logo_height": config.customization.logo_height,
-            "brand": get_brand(),
+            "brand": version.brand,
             "branding_color": config.customization.branding_color,
             "branding_background_color": config.customization.branding_background_color,
             "favicon_url": favicon_url,
@@ -129,7 +128,7 @@ class DesktopApplication(ExtApplication):
         :returns: version string
         :rtype: Str
         """
-        return get_version()
+        return version.version
 
     @view(method=["GET"], url="^is_logged/$", access=True, api=True)
     def api_is_logged(self, request):
@@ -141,21 +140,6 @@ class DesktopApplication(ExtApplication):
         """
         return request.user.is_authenticated()
 
-    @view(method=["POST"], url="^logout/$", access=PermitLogged(), api=True)
-    def api_logout(self, request):
-        """
-        Deauthenticate session
-
-        :returns: Logout status: True or False
-        :rtype: Bool
-        """
-        if request.user.is_authenticated():
-            UserSession.unregister(request.session.session_key)
-            request.session.flush()
-            from django.contrib.auth.models import AnonymousUser
-            request.user = AnonymousUser()
-        return True
-
     @view(method=["GET"], url="^user_settings/$",
           access=PermitLogged(), api=True)
     def api_user_settings(self, request):
@@ -165,6 +149,7 @@ class DesktopApplication(ExtApplication):
         user = request.user
         return {
             "username": user.username,
+            "email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "can_change_credentials": True,
@@ -347,7 +332,7 @@ class DesktopApplication(ExtApplication):
             return {
                 "logo_url": config.customization.logo_url,
                 "brand": config.brand,
-                "version": get_version(),
+                "version": version.version,
                 "installation": config.installation_name,
                 "system_id": cp.system_uuid,
                 "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
@@ -356,7 +341,7 @@ class DesktopApplication(ExtApplication):
             return {
                 "logo_url": config.customization.logo_url,
                 "brand": config.brand,
-                "version": get_version(),
+                "version": version.version,
                 "installation": config.installation_name,
                 "copyright": "2007-%d, %s" % (datetime.date.today().year, config.brand)
             }

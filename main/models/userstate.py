@@ -15,6 +15,7 @@ class UserState(Document):
     meta = {
         "collection": "noc.userstate",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             ("user_id", "key")
         ]

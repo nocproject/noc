@@ -22,7 +22,7 @@ class Script(BaseScript):
                            re.MULTILINE | re.IGNORECASE)
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -30,7 +30,7 @@ class Script(BaseScript):
         return bool(self.rx_lldp_active.search(r))
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has stp enabled
         """
@@ -38,7 +38,7 @@ class Script(BaseScript):
         return bool(self.rx_stp_active.search(r))
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """

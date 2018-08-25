@@ -23,11 +23,12 @@ from mongoengine.errors import NotUniqueError
 from pymongo import UpdateOne
 # NOC modules
 from noc.core.fileutils import safe_rewrite
+from noc.config import config
 
 
 class Collection(object):
     PREFIX = "collections"
-    CUSTOM_PREFIX = "custom/collections"
+    CUSTOM_PREFIX = config.get_customized_paths(PREFIX, prefer_custom=True)
     STATE_COLLECTION = "noc.collectionstates"
 
     _MODELS = {}
@@ -43,11 +44,12 @@ class Collection(object):
         self.partial_errors = {}
 
     def get_path(self):
-        path = [os.path.join(self.PREFIX, self.name)]
-        cp = os.path.join(self.CUSTOM_PREFIX, self.name)
-        if os.path.isdir(cp):
-            path = [cp] + path
-        return path
+        paths = []
+        for cp in config.get_customized_paths(self.PREFIX, prefer_custom=True):
+            path = os.path.join(cp, self.name)
+            if os.path.exists(path):
+                paths += [path]
+        return paths
 
     @classmethod
     def iter_collections(cls):
@@ -102,9 +104,9 @@ class Collection(object):
         if os.path.exists(lpath):
             with open(lpath) as f:
                 reader = csv.reader(f)
-                reader.next()  # Skip header
-                for name, uuid, path, hash in reader:
-                    state[uuid] = hash
+                next(reader)  # Skip header
+                for name, r_uuid, path, r_hash in reader:
+                    state[r_uuid] = r_hash
         return state
 
     def save_state(self, state):
@@ -178,7 +180,7 @@ class Collection(object):
                     )
         return items
 
-    def dereference(self,  d, model=None):
+    def dereference(self, d, model=None):
         r = {}
         model = model or self.model
         for k in d:
@@ -246,7 +248,8 @@ class Collection(object):
                 "[%s|%s] Updating %s\n" % (
                     self.name, data["uuid"],
                     getattr(o, self.name_field)
-            ))
+                )
+            )
             for k in d:
                 setattr(o, k, d[k])
             o.save()
@@ -256,7 +259,8 @@ class Collection(object):
                 "[%s|%s] Creating %s\n" % (
                     self.name, data["uuid"],
                     data.get(self.name_field)
-            ))
+                )
+            )
             o = self.model(**d)
             try:
                 o.save()
@@ -352,13 +356,13 @@ class Collection(object):
         """
         bulk = []
         for d in self.model._get_collection().find({
-                "uuid": {
-                    "$type": "string"
-                }
-            }, {
-                "_id": 1,
-                "uuid": 1
+            "uuid": {
+                "$type": "string"
             }
+        }, {
+            "_id": 1,
+            "uuid": 1
+        }
         ):
             bulk += [UpdateOne({"_id": d["_id"]}, {
                 "$set": {

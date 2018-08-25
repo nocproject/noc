@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 import cachetools
 from threading import Lock
@@ -16,7 +17,9 @@ from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 LongField)
 # NOC modules
-from noc.core.model.decorator import on_delete_check
+from noc.lib.nosql import ForeignKeyField
+from noc.main.models.style import Style
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.lib.nosql import PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
@@ -37,8 +40,11 @@ class SegmentTopologySettings(EmbeddedDocument):
             ("lacp", "LACP"),
             ("lldp", "LLDP"),
             ("oam", "OAM"),
+            ("rep", "REP"),
             ("stp", "STP"),
             ("udld", "UDLD"),
+            ("fdp", "FDP"),
+            ("bfd", "BFD"),
             ("mac", "MAC"),
             ("nri", "NRI")
         ]
@@ -51,18 +57,23 @@ class SegmentTopologySettings(EmbeddedDocument):
 
 @bi_sync
 @on_delete_check(check=[
-    ("inv.NetworkSegment", "profile")
+    ("inv.NetworkSegment", "profile"),
+    ("inv.NetworkSegmentProfile", "autocreated_profile")
 ])
+@on_save
 class NetworkSegmentProfile(Document):
     meta = {
         "collection": "noc.networksegmentprofiles",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)
     description = StringField(required=False)
-    #
-    mac_discovery_interval = IntField(default=86400)
+    # segment discovery interval
+    discovery_interval = IntField(default=86400)
+    # Segment style
+    style = ForeignKeyField(Style, required=False)
     # Restrict MAC discovery to management vlan
     mac_restrict_to_management_vlan = BooleanField(default=False)
     # Management vlan, to restrict MAC search for MAC topology discovery
@@ -79,18 +90,27 @@ class NetworkSegmentProfile(Document):
             ("D", "Disable")
         ], default="D"
     )
+    # Default profile for autocreated children segments
+    # (i.e. during autosegmentation)
+    # Copy this segment profile otherwise
+    autocreated_profile = PlainReferenceField("self")
     # List of enabled topology method
     # in order of preference (most preferable first)
     topology_methods = ListField(EmbeddedDocumentField(SegmentTopologySettings))
+    # Enable VLAN discovery for appropriative management objects
+    enable_vlan = BooleanField(default=False)
+    # Default VLAN profile for discovered VLANs
+    default_vlan_profile = PlainReferenceField("vc.VLANProfile")
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -100,3 +120,39 @@ class NetworkSegmentProfile(Document):
                              lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return NetworkSegmentProfile.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
+                             lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return NetworkSegmentProfile.objects.filter(bi_id=id).first()
+
+    def on_save(self):
+        if hasattr(self, "_changed_fields") and "discovery_interval" in self._changed_fields:
+            from .networksegment import NetworkSegment
+            for ns in NetworkSegment.objects.filter(profile=self.id):
+                ns.ensure_discovery_jobs()
+
+    def get_topology_methods(self):
+        ml = getattr(self, "_topology_methods", None)
+        if not ml:
+            ml = [m.method for m in self.topology_methods
+                  if m.is_active and m not in ("custom", "handler")]
+            self._topology_methods = ml
+        return ml
+
+    def is_preferable_method(self, m1, m2):
+        """
+        Returns True if m1 topology discovery method is
+        preferable over m2
+        """
+        if m1 == m2:
+            # Method can refine itself
+            return True
+        try:
+            methods = self.get_topology_methods()
+            i1 = methods.index(m1)
+            i2 = methods.index(m2)
+        except ValueError:
+            return False
+        return i1 <= i2

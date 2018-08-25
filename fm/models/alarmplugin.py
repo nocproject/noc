@@ -13,7 +13,8 @@ from mongoengine.document import EmbeddedDocument, Document
 
 class AlarmPlugin(EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = fields.StringField()

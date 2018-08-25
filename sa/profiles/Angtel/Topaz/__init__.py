@@ -3,7 +3,7 @@
 # Vendor: Angtel (Angstrem telecom - http://www.angtel.ru/)
 # OS:     Topaz
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,14 +13,23 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Angtel.Topaz"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = r"^(?P<hostname>\S+)\s*(?:\(config[^\)]*\))?#"
     pattern_syntax_error = r"% Unrecognized command|% Wrong number of parameters"
     command_super = "enable"
     command_disable_pager = "terminal datadump"
-    pattern_more = "More: <space>,  Quit: q or CTRL+Z, One line: <return>"
-    command_more = "a"
+    # rogue_chars = [re.compile(r"\[\x1b\[1mN\x1b\[0m\]")]
+    pattern_more = [
+        (r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
+        (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n"),
+        (r"^\s*This action will cause loss of configuration.Proceed\?\s*\(Y/N\)", "Y\n")
+    ]
     command_exit = "exit"
+
+    def convert_interface_name(self, interface):
+        if str(interface) == "0":
+            return "CPU"
+        return self.convert_interface_name_cisco(interface)
 
     def setup_session(self, script):
         # Do not erase this.

@@ -20,15 +20,26 @@ class Script(BaseScript):
     rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
         cmd = self.cli("show lldp")
         return "LLDP has been enabled globally" in cmd
 
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled on Qtech
+        """
+        try:
+            r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
+            if r > 0:
+                return True
+        except self.snmp.TimeOutError:
+            return False
+
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -37,7 +48,7 @@ class Script(BaseScript):
         return "STP is disabled" not in cmd
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has OAM enabled
         """
@@ -62,7 +73,7 @@ class Script(BaseScript):
         return [l.splitlines()[0].split(":")[1].strip("-") for l in r.split("\n----") if l]
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check stack members
         :return:
@@ -70,9 +81,7 @@ class Script(BaseScript):
         r = self.cli("show port-group brief")
         return "active" in r
 
-    def execute_platform(self, caps):
-        if self.has_lacp():
-            caps["Network | LACP"] = True
+    def execute_platform_cli(self, caps):
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0

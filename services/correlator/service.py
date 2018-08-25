@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2018, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.lib.version import get_version
+from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from services.correlator import utils
 from noc.lib.dateutils import total_seconds
@@ -46,7 +46,7 @@ class CorrelatorService(Service):
 
     def __init__(self):
         super(CorrelatorService, self).__init__()
-        self.version = get_version()
+        self.version = version.version
         self.rules = {}  # event_class -> [Rule]
         self.back_rules = {}  # event_class -> [Rule]
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
@@ -359,15 +359,15 @@ class CorrelatorService(Service):
                         a.id, a.managed_object.name, a.managed_object.address,
                         a.root, h
                     )
-            except:
+            except:  # noqa. Can probable happens anything from handler
                 error_report()
-                self.perf_metrics["alarm_handler_errors"] += 1
+                self.perf_metrics["error", ("type", "alarm_handler")] += 1
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
                 try:
                     t.call(a)
-                except:
+                except: # noqa. Can probable happens anything from trigger
                     error_report()
         #
         if not a.severity:
@@ -464,18 +464,21 @@ class CorrelatorService(Service):
         env.update(kwargs)
         return eval(expression, {}, env)
 
-    def on_dispose_event(self, message, event_id, *args, **kwargs):
+    def on_dispose_event(self, message, event_id, event=None, *args, **kwargs):
         """
         Called on new dispose message
         """
         self.logger.info("[%s] Receiving message", event_id)
         message.enable_async()
-        self.get_executor("max").submit(self.dispose_worker, message, event_id)
+        self.get_executor("max").submit(self.dispose_worker, message, event_id, event)
 
-    def dispose_worker(self, message, event_id):
+    def dispose_worker(self, message, event_id, event_hint=None):
         self.perf_metrics["alarm_dispose"] += 1
         try:
-            event = self.lookup_event(event_id)
+            if event_hint:
+                event = self.get_event_from_hint(event_hint)
+            else:
+                event = self.lookup_event(event_id)
             if event:
                 self.dispose_event(event)
         except Exception:
@@ -495,6 +498,20 @@ class CorrelatorService(Service):
         if not e:
             self.logger.info("[%s] Event not found, skipping", event_id)
             self.perf_metrics["event_lookup_failed"] += 1
+        self.perf_metrics["event_lookups"] += 1
+        return e
+
+    def get_event_from_hint(self, hint):
+        """
+        Get ActiveEvent from json hint
+        :param hint:
+        :return:
+        """
+        self.perf_metrics["event_hints"] += 1
+        e = ActiveEvent.from_json(hint)
+        # Prevent TypeError: can't compare offset-naive and offset-aware datetimes
+        # when calculating alarm timestamp
+        e.timestamp = e.timestamp.replace(tzinfo=None)
         return e
 
     def dispose_event(self, e):
@@ -510,11 +527,7 @@ class CorrelatorService(Service):
             return
         # Apply disposition rules
         for r in drc:
-            if r.conditional_pyrule:
-                cond = r.conditional_pyrule(rule_name=r.name, event=e)
-            else:
-                cond = self.eval_expression(r.condition, event=e)
-            if cond:
+            if self.eval_expression(r.condition, event=e):
                 # Process action
                 if r.action == "drop":
                     self.logger.info("[%s] Dropped by action", event_id)

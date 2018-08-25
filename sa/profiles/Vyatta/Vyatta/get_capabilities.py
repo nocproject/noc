@@ -13,7 +13,7 @@ from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 class Script(BaseScript):
     name = "Vyatta.Vyatta.get_capabilities"
 
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """

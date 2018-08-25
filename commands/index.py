@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Full-Text search manipulation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Full-Text search manipulation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import os
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.main.models.textindex import TextIndex
-from models import FTS_MODELS, get_model
+from noc.models import FTS_MODELS, get_model
 
 
 class Command(BaseCommand):
@@ -39,7 +37,7 @@ class Command(BaseCommand):
             help="Output format"
         )
         # Rebuild parameters
-        rebuild_parser = subparsers.add_parser(
+        rebuild_parser = subparsers.add_parser(  # noqa
             "rebuild",
             help="Rebuild index"
         )

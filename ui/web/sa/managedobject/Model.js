@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Model");
@@ -26,7 +26,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "administrative_domain",
-            type: "int"
+            type: "int",
+            defaultValue: 1
         },
         {
             name: "administrative_domain__label",
@@ -35,7 +36,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "auth_profile",
-            type: "int"
+            type: "int",
+            defaultValue: null
         },
         {
             name: "auth_profile__label",
@@ -71,7 +73,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "vendor",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "vendor__label",
@@ -80,7 +83,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "platform",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "platform__label",
@@ -89,7 +93,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "version",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "version__label",
@@ -111,7 +116,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "object_profile",
-            type: "int"
+            type: "int",
+            defaultValue: 1
         },
         {
             name: "object_profile__label",
@@ -120,11 +126,13 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "description",
-            type: "string"
+            type: "string",
+            defaultValue: ""
         },
         {
             name: "scheme",
-            type: "int"
+            type: "int",
+            defaultValue: 1
         },
         {
             name: "address",
@@ -132,19 +140,23 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "port",
-            type: "int"
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "user",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "password",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "super_password",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "remote_path",
@@ -160,11 +172,13 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "trap_source_type",
-            type: "string"
+            type: "string",
+            defaultValue: "d"
         },
         {
             name: "syslog_source_type",
-            type: "string"
+            type: "string",
+            defaultValue: "d"
         },
         {
             name: "trap_community",
@@ -172,11 +186,13 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "snmp_ro",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "snmp_rw",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "vc_domain",
@@ -184,24 +200,6 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "vc_domain__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "termination_group",
-            type: "int"
-        },
-        {
-            name: "termination_group__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "service_terminator",
-            type: "int"
-        },
-        {
-            name: "service_terminator__label",
             type: "string",
             persist: false
         },
@@ -219,35 +217,36 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
-            name: "config_filter_rule",
-            type: "int"
+            name: "config_filter_handler",
+            type: "string"
         },
         {
-            name: "config_filter_rule__label",
+            name: "config_filter_handler__label",
             type: "string",
             persist: false
         },
         {
-            name: "config_diff_filter_rule",
-            type: "int"
+            name: "config_diff_filter_handler",
+            type: "string"
         },
         {
-            name: "config_diff_filter_rule__label",
+            name: "config_diff_filter_handler__label",
             type: "string",
             persist: false
         },
         {
-            name: "config_validation_rule",
-            type: "int"
+            name: "config_validation_handler",
+            type: "string"
         },
         {
-            name: "config_validation_rule__label",
+            name: "config_validation_handler__label",
             type: "string",
             persist: false
         },
         {
             name: "max_scripts",
-            type: "int"
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "time_pattern",
@@ -260,7 +259,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "controller",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "controller__label",
@@ -285,17 +285,18 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "interface_count",
-            type: "integer",
+            type: "int",
             persist: false
         },
         {
             name: "link_count",
-            type: "integer",
+            type: "int",
             persist: false
         },
         {
             name: "remote_system",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "remote_system__label",
@@ -311,8 +312,14 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
+            name: "autosegmentation_policy",
+            type: "string",
+            defaultValue: "p"
+        },
+        {
             name: "tt_system",
-            type: "string"
+            type: "string",
+            defaultValue: null
         },
         {
             name: "tt_system__label",
@@ -329,35 +336,76 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "escalation_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "P"
         },
         {
             name: "box_discovery_alarm_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "P"
         },
         {
             name: "periodic_discovery_alarm_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "P"
         },
         {
             name: "cli_session_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "cli_privilege_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "access_preference",
+            type: "string",
+            defaultValue: "P"
         },
         {
             name: "box_discovery_telemetry_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "P"
         },
         {
             name: "box_discovery_telemetry_sample",
-            type: "int"
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "periodic_discovery_telemetry_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "P"
         },
         {
             name: "periodic_discovery_telemetry_sample",
-            type: "int"
+            type: "int",
+            defaultValue: 0
+        },
+        {
+            name: "event_processing_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "static_service_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_service_groups",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "static_client_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_client_groups",
+            type: "auto",
+            persist: false
         },
         {
             name: "row_class",

@@ -10,17 +10,15 @@
 # Python modules
 import datetime
 import time
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 # Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 # NOC modules
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.influxdb.client import InfluxDBClient
-from noc.lib.nosql import get_db
 from noc.core.clickhouse.connect import connection
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn
@@ -31,10 +29,10 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 
 class ReportForm(forms.Form):
     reporttype = forms.ChoiceField(choices=[
-       ("load_interfaces",  _("Load Interfaces")),
-       ("load_cpu",  _("Load CPU/Memory")),
-       ("errors",  _("Errors on the Interface")),
-       ("ping", _("Ping RTT and Ping Attempts"))
+        ("load_interfaces", _("Load Interfaces")),
+        ("load_cpu", _("Load CPU/Memory")),
+        ("errors", _("Errors on the Interface")),
+        ("ping", _("Ping RTT and Ping Attempts"))
     ], label=_("Report Type"))
     from_date = forms.CharField(
         widget=AdminDateWidget,
@@ -66,11 +64,11 @@ class ReportForm(forms.Form):
         required=False,
         queryset=AdministrativeDomain.objects.order_by("name")
     )
-    #object_profile = forms.ModelChoiceField(
+    # object_profile = forms.ModelChoiceField(
     #    label=_("Object Profile"),
     #    required=False,
     #    queryset=ManagedObjectProfile.objects.exclude(name__startswith="tg.").order_by("name")
-    #)
+    # )
     interface_profile = forms.ModelChoiceField(
         label=_("Interface Profile (For Load Interfaces Report Type)"),
         required=False,
@@ -111,7 +109,7 @@ class ReportMetric(object):
                      "errors": "/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
                      "ping": "/Ping\s\|\sRTT/"}
         def_map = {"q_select": ['percentile(\"value\", 98)'],
-                   "q_from": [], # q_from = "from %s" % map_table[reporttype]
+                   "q_from": [],  # q_from = "from %s" % map_table[reporttype]
                    "q_where": ["%s", "time >= '%s'" % fd, "time <= '%s'" % td],
                    "q_group": ["object"]}
         # m_r = "(%s)" % " OR ".join(["object = '%s'" % name for name in moss])
@@ -132,7 +130,7 @@ class ReportMetric(object):
                      "errors": "interface",
                      "ping": "ping"}
         def_map = {"q_select": ["managed_object"],
-                   "q_from": [], # q_from = "from %s" % map_table[reporttype]
+                   "q_from": [],  # q_from = "from %s" % map_table[reporttype]
                    "q_where": ["managed_object IN (%s)",
                                "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" %
                                (ts_from_date, ts_from_date, ts_to_date)],
@@ -168,7 +166,7 @@ class ReportMetric(object):
         query = self.get_query(query_map, f_date, to_date)
         while mos_name[n:n + self.CHUNK_SIZE]:
             m_r = "(%s)" % " OR ".join(["object = '%s'" % name for name in mos_name[n:n + self.CHUNK_SIZE]])
-            print query % m_r
+            # print query % m_r
 
             for row in client.query(query % m_r):
                 if self.reporttype in ["ping", "load_cpu"]:
@@ -231,8 +229,8 @@ class ReportTraffic(SimpleReport):
         d_url = {
             "path": "/ui/grafana/dashboard/script/report.js",
             "rname": map_table[reporttype],
-            "from": str(int(ts_from_date*1000)),
-            "to": str(int(ts_to_date*1000)),
+            "from": str(int(ts_from_date * 1000)),
+            "to": str(int(ts_to_date * 1000)),
             # o.name.replace("#", "%23")
             "biid": "",
             "oname": "",
@@ -240,7 +238,8 @@ class ReportTraffic(SimpleReport):
 
         report_map = {
             "load_interfaces": {
-                "url": """%(path)s?title=interface&biid=%(biid)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
+                "url": '%(path)s?title=interface&biid=%(biid)s'
+                       '&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s',
                 "q_group": ["interface"],
                 "columns": [_("Int Name"), _("Int Descr"),
                             TableColumn(_("IN bps"), align="right"),
@@ -279,13 +278,13 @@ class ReportTraffic(SimpleReport):
                              "quantile(0.98)(errors_in) as err_in", "quantile(0.98)(errors_out) as err_out",
                              "quantile(0.98)(discards_in) as dis_in", "quantile(0.98)(discards_out) as dis_out"],
                 "q_group": ["path"],
-                "q_where": ["(errors_in != 0 and errors_out != 0 and discards_in != 0 and discards_out != 0)"] if zero
+                "q_where": ["(errors_in != 0 or errors_out != 0 or discards_in != 0 or discards_out != 0)"] if zero
                 else []})
             report_map["load_cpu"].update({"q_select": ["arrayStringConcat(path)", "quantile(0.98)(usage) as usage"],
                                            "q_group": ["path"]})
             report_map["ping"].update({
                 "q_select": ["managed_object", "round(quantile(0.98)(rtt) / 1000, 2)", "avg(attempts)"]})
-            moss = {str(mo.get_bi_id()): mo for mo in mos}
+            moss = {str(mo.bi_id): mo for mo in mos}
 
         if reporttype in ["load_interfaces", "errors"]:
             iface_dict = {(
@@ -315,7 +314,7 @@ class ReportTraffic(SimpleReport):
             if not l:
                 continue
             mo = moss[l[0]]
-            d_url["biid"] = mo.get_bi_id()
+            d_url["biid"] = mo.bi_id
             d_url["oname"] = mo.name.replace("#", "%23")
             if zero and allow_archive and not sum(data):
                 # For InfluxDB query
@@ -326,7 +325,7 @@ class ReportTraffic(SimpleReport):
                 res += data
                 if "load_interfaces" in reporttype:
                     i_d = iface_dict.get((mo, l[1]), ["", "", ""])
-                    res.insert(1, i_d[0])
+                    res.insert(3, i_d[0])
                     if percent:
                         in_p = float(data[0])
                         in_p = round((in_p / 1000.0) / (i_d[1] / 100.0), 2) if i_d[1] and in_p > 0 else 0

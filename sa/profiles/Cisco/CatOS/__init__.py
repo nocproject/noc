@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Cisco.CatOS"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"
     pattern_prompt = r"^\S+?\s+\(enable\)\s+"
     convert_mac = BaseProfile.convert_mac_to_dashed

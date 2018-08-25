@@ -19,7 +19,7 @@ class Profile(BaseProfile):
         ("--More--", " "),
         ("CTRL\+C.+?(a All)|(r Refresh)", "a")
     ]
-    pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
+    pattern_unprivileged_prompt = r"^\S+:(3|6|user|operator)#"
     pattern_syntax_error = r"(?:% Invalid Command|" \
                            r"% Invalid input detected at|" \
                            r"Available commands:|" \

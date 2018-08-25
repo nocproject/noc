@@ -1,0 +1,30 @@
+{
+  "current": {
+    "selected": true,
+    "text": "All",
+    "value": "$__all"
+  },
+  "datasource": null,
+  "hide": 2,
+  "includeAll": true,
+  "multi": true,
+  "name": "bi_id",
+  "options": [
+      {
+        "selected": true,
+        "text": "All",
+        "value": "$__all"
+      },
+    {% set comma = joiner(",") -%}
+    {%for id in bi_ids -%}
+        {{ comma() }}{
+          "selected": false,
+          "text": "{{id.name}}",
+          "value": "{{id.id}}"
+        }
+    {%- endfor %}
+  ],
+  "query": "{%- for id in bi_ids %}{{id.name}},{% endfor %}",
+  "refresh": 0,
+  "type": "custom"
+}

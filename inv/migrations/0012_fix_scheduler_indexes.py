@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class Migration(object):
     def forwards(self):
         db = get_db()
-        for c in db.collection_names():
+        for c in db.list_collection_names():
             if c.startswith("noc.schedules."):
                 db[c].drop_indexes()
 

@@ -24,6 +24,7 @@ class TextIndex(Document):
     meta = {
         "collection": "noc.textindex",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             ("model", "object"),
             {

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ import re
 import itertools
 import operator
 from threading import Lock
+import datetime
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
@@ -24,16 +25,15 @@ from django.contrib.auth.models import User, Group
 import cachetools
 import six
 # NOC modules
+from noc.config import config
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 from .objectmap import ObjectMap
 from .objectdata import ObjectData
-from .terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
-from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.networksegment import NetworkSegment
@@ -42,16 +42,15 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
-from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
+from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey, ObjectIDArrayField
 from noc.lib.db import SQL
 from noc.lib.app.site import site
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc.lib.validators import is_ipv4, is_ipv4_prefix
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
-from noc.settings import config
 from noc.core.scheduler.job import Job
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
@@ -64,11 +63,12 @@ from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
+from noc.core.script.scheme import SCHEME_CHOICES
+from noc.core.datastream.decorator import datastream
+from noc.core.resourcegroup.decorator import resourcegroup
 
-# Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 3
-
-scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
+# Increase whenever new field added or removed
+MANAGEDOBJECT_CACHE_VERSION = 9
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -83,6 +83,8 @@ logger = logging.getLogger(__name__)
 @on_init
 @on_save
 @on_delete
+@datastream
+@resourcegroup
 @on_delete_check(check=[
     # ("cm.ValidationRule.ObjectItem", ""),
     ("fm.ActiveAlarm", "managed_object"),
@@ -90,16 +92,15 @@ logger = logging.getLogger(__name__)
     ("fm.ArchivedAlarm", "managed_object"),
     ("fm.ArchivedEvent", "managed_object"),
     ("fm.FailedEvent", "managed_object"),
-    ("fm.NewEvent", "managed_object"),
     ("inv.Interface", "managed_object"),
     ("inv.SubInterface", "managed_object")
-    # ("maintainance.Maintainance", "escalate_managed_object"),
+    # ("maintenance.Maintenance", "escalate_managed_object"),
 ])
 class ManagedObject(Model):
     """
     Managed Object
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Managed Object"
         verbose_name_plural = "Managed Objects"
         db_table = "sa_managedobject"
@@ -152,7 +153,8 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     scheme = IntegerField(
-        "Scheme", choices=scheme_choices
+        "Scheme",
+        choices=SCHEME_CHOICES
     )
     address = CharField("Address", max_length=64)
     port = IntegerField("Port", blank=True, null=True)
@@ -210,6 +212,18 @@ class ManagedObject(Model):
         "RW Community",
         blank=True, null=True, max_length=64
     )
+    access_preference = CharField(
+        "CLI Privilege Policy",
+        max_length=8,
+        choices=[
+            ("P", "Profile"),
+            ("S", "SNMP Only"),
+            ("C", "CLI Only"),
+            ("SC", "SNMP, CLI"),
+            ("CS", "CLI, SNMP")
+        ],
+        default="P"
+    )
     #
     vc_domain = ForeignKey(
         "vc.VCDomain",
@@ -217,7 +231,7 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     # CM
-    config = GridVCSField("config", mirror=config.path.config_mirror_path)
+    config = GridVCSField("config")
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                      blank=True, null=True)
@@ -243,19 +257,6 @@ class ManagedObject(Model):
         "Last Seen",
         blank=True, null=True
     )
-    # For service terminators
-    # Name of service termination group (i.e. BRAS, SBC)
-    termination_group = ForeignKey(
-        TerminationGroup, verbose_name="Termination Group",
-        blank=True, null=True,
-        related_name="termination_set"
-    )
-    # For access switches -- L3 terminator
-    service_terminator = ForeignKey(
-        TerminationGroup, verbose_name="Service termination",
-        blank=True, null=True,
-        related_name="access_set"
-    )
     # Stencils
     shape = CharField(
         "Shape", blank=True, null=True,
@@ -267,28 +268,19 @@ class ManagedObject(Model):
         null=True, blank=True,
         on_delete=SET_NULL
     )
-    # pyRules
-    config_filter_rule = ForeignKey(
-        PyRule,
-        verbose_name="Config Filter pyRule",
-        limit_choices_to={"interface": "IConfigFilter"},
-        null=True, blank=True,
-        on_delete=SET_NULL,
-        related_name="managed_object_config_filter_rule_set")
-    config_diff_filter_rule = ForeignKey(
-        PyRule,
-        verbose_name="Config Diff Filter Rule",
-        limit_choices_to={"interface": "IConfigDiffFilter"},
-        null=True, blank=True,
-        on_delete=SET_NULL,
-        related_name="managed_object_config_diff_rule_set")
-    config_validation_rule = ForeignKey(
-        PyRule,
-        verbose_name="Config Validation pyRule",
-        limit_choices_to={"interface": "IConfigValidator"},
-        null=True, blank=True,
-        on_delete=SET_NULL,
-        related_name="managed_object_config_validation_rule_set")
+    # Config processing handlers
+    config_filter_handler = CharField(
+        "Config Filter handler",
+        max_length=256, null=True, blank=True
+    )
+    config_diff_filter_handler = CharField(
+        "Config Diff Filter Handler",
+        max_length=256, null=True, blank=True
+    )
+    config_validation_handler = CharField(
+        "Config Validation Handler",
+        max_length=256, null=True, blank=True
+    )
     max_scripts = IntegerField(
         "Max. Scripts",
         null=True, blank=True,
@@ -307,7 +299,7 @@ class ManagedObject(Model):
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = BigIntegerField(null=True, blank=True)
+    bi_id = BigIntegerField(unique=True)
     # Object alarms can be escalated
     escalation_policy = CharField(
         "Escalation Policy",
@@ -388,6 +380,60 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # CLI privilege policy
+    cli_privilege_policy = CharField(
+        "CLI Privilege Policy",
+        max_length=1,
+        choices=[
+            ("E", "Raise privileges"),
+            ("D", "Do not raise"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    #
+    autosegmentation_policy = CharField(
+        max_length=1,
+        choices=[
+            # Inherit from profile
+            ("p", "Profile"),
+            # Do not allow to move object by autosegmentation
+            ("d", "Do not segmentate"),
+            # Allow moving of object to another segment
+            # by autosegmentation process
+            ("e", "Allow autosegmentation"),
+            # Move seen objects to this object's segment
+            ("o", "Segmentate to existing segment"),
+            # Expand autosegmentation_segment_name template,
+            # ensure that children segment with same name exists
+            # then move seen objects to this segment.
+            # Following context variables are availale:
+            # * object - this object
+            # * interface - interface on which remote_object seen from object
+            # * remote_object - remote object name
+            # To create single segment use templates like {{object.name}}
+            # To create segments on per-interface basic use
+            # names like {{object.name}}-{{interface.name}}
+            ("c", "Segmentate to child segment")
+        ],
+        default="p"
+    )
+    #
+    event_processing_policy = CharField(
+        "Event Processing Policy",
+        max_length=1,
+        choices=[
+            ("P", "Profile"),
+            ("E", "Process Events"),
+            ("D", "Drop events")
+        ],
+        default="P"
+    )
+    # Resource groups
+    static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    static_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    effective_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -410,6 +456,7 @@ class ManagedObject(Model):
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -426,6 +473,26 @@ class ManagedObject(Model):
         else:
             return None
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
+                             lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        mo = ManagedObject.objects.filter(bi_id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
+    def iter_changed_datastream(self):
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.id
+        if config.datastream.enable_cfgping:
+            yield "cfgping", self.id
+        if config.datastream.enable_cfgsyslog:
+            yield "cfgsyslog", self.id
+        if config.datastream.enable_cfgtrap:
+            yield "cfgtrap", self.id
+
     @property
     def data(self):
         try:
@@ -438,13 +505,21 @@ class ManagedObject(Model):
         self._data = d
         return d
 
+    def set_scripts_caller(self, caller):
+        """
+        Override default scripts caller
+        :param caller: callabler
+        :return:
+        """
+        self._scripts_caller = caller
+
     @property
     def scripts(self):
         sp = getattr(self, "_scripts", None)
         if sp:
             return sp
         else:
-            self._scripts = ScriptsProxy(self)
+            self._scripts = ScriptsProxy(self, getattr(self, "_scripts_caller", None))
             return self._scripts
 
     @property
@@ -504,9 +579,6 @@ class ManagedObject(Model):
         deleted_cache_keys = [
             "managedobject-name-to-id-%s" % self.name
         ]
-        # IPAM sync
-        if self.object_profile.sync_ipam:
-            self.sync_ipam()
         # Notify new object
         if not self.initial_data["id"]:
             self.event(self.EV_NEW, {"object": self})
@@ -536,7 +608,8 @@ class ManagedObject(Model):
             "syslog_source_ip" in self.changed_fields or
             "address" in self.changed_fields or
             "pool" in self.changed_fields or
-            "time_pattern" in self.changed_fields
+            "time_pattern" in self.changed_fields or
+            "event_processing_policy" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
         # Invalidate credentials cache
@@ -555,7 +628,10 @@ class ManagedObject(Model):
             "vendor" in self.changed_fields or
             "platform" in self.changed_fields or
             "version" in self.changed_fields or
-            "pool" in self.changed_fields
+            "pool" in self.changed_fields or
+            "access_preference" in self.changed_fields or
+            "cli_privilege_policy" in self.changed_fields or
+            "remote_path" in self.changed_fields
         ):
             deleted_cache_keys += ["cred-%s" % self.id]
         # Rebuild paths
@@ -583,6 +659,14 @@ class ManagedObject(Model):
         # Rebuild summary
         if "object_profile" in self.changed_fields:
             self.segment.update_summary()
+        # Apply discovery jobs
+        self.ensure_discovery_jobs()
+        # Rebuild selector cache
+        SelectorCache.rebuild_for_object(self)
+        #
+        cache.delete("managedobject-id-%s" % self.id,
+                     version=MANAGEDOBJECT_CACHE_VERSION)
+        cache.delete_many(deleted_cache_keys)
         # Rebuild segment access
         if self.initial_data["id"] is None:
             self.segment.update_access()
@@ -595,14 +679,10 @@ class ManagedObject(Model):
                 iseg.update_uplinks()
             self.segment.update_access()
             self.update_topology()
-        # Apply discovery jobs
-        self.ensure_discovery_jobs()
-        # Rebuild selector cache
-        SelectorCache.rebuild_for_object(self)
-        #
-        cache.delete("managedobject-id-%s" % self.id,
-                     version=MANAGEDOBJECT_CACHE_VERSION)
-        cache.delete_many(deleted_cache_keys)
+            # Refresh links
+            from noc.inv.models.link import Link
+            for l in Link.object_links(self):
+                l.save()
         # Handle became unmanaged
         if (
             not self.initial_data["id"] is None and
@@ -623,38 +703,6 @@ class ManagedObject(Model):
         # Reset discovery cache
         from noc.inv.models.discoveryid import DiscoveryID
         DiscoveryID.clean_for_object(self)
-
-    def sync_ipam(self):
-        """
-        Synchronize FQDN and address with IPAM
-        """
-        from noc.ip.models.address import Address
-        from noc.ip.models.vrf import VRF
-        # Generate FQDN from template
-        fqdn = self.object_profile.get_fqdn(self)
-        # Get existing IPAM record
-        vrf = self.vrf if self.vrf else VRF.get_global()
-        try:
-            a = Address.objects.get(vrf=vrf, address=self.address)
-        except Address.DoesNotExist:
-            # Create new address
-            Address(
-                vrf=vrf,
-                address=self.address,
-                fqdn=fqdn,
-                managed_object=self
-            ).save()
-            return
-        # Update existing address
-        if (
-            a.managed_object != self or
-            a.address != self.address or
-            a.fqdn != fqdn
-        ):
-            a.managed_object = self
-            a.address = self.address
-            a.fqdn = fqdn
-            a.save()
 
     def get_index(self):
         """
@@ -739,7 +787,7 @@ class ManagedObject(Model):
             return default
         try:
             return int(v)
-        except:
+        except:  # noqa
             return default
 
     def set_attr(self, name, value):
@@ -853,52 +901,99 @@ class ManagedObject(Model):
         if isinstance(data, list):
             # Convert list to plain text
             r = []
-            for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
+            for d in sorted(data, key=operator.attrgetter("name")):
                 r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
             data = "\n".join(r)
+        # Wipe out unnecessary parts
+        if self.config_filter_handler:
+            handler = get_handler(self.config_filter_handler)
+            if handler:
+                data = handler(self, data)
+            else:
+                self.logger.info(
+                    "[%s] Invalid config_filter_handler \"%s\", ignoring",
+                    self.config_filter_handler
+                )
         # Pass data through config filter, if given
-        if self.config_filter_rule:
-            data = self.config_filter_rule(
-                managed_object=self, config=data)
+        if self.config_diff_filter_handler:
+            handler = get_handler(self.config_diff_filter_handler)
+            if handler:
+                data = handler(self, data)
+            else:
+                self.logger.info(
+                    "[%s] Invalid config_diff_filter_handler \"%s\", ignoring",
+                    self.config_diff_filter_handler
+                )
         # Pass data through the validation filter, if given
-        # @todo: Remove
-        if self.config_validation_rule:
-            warnings = self.config_validation_rule(
-                managed_object=self, config=data)
-            if warnings:
-                # There are some warnings. Notify responsible persons
-                self.event(
-                    self.EV_CONFIG_POLICY_VIOLATION,
-                    {
-                        "object": self,
-                        "warnings": warnings
-                    }
+        # @todo: Replace with config validation policy
+        if self.config_validation_handler:
+            handler = get_handler(self.config_validation_handler)
+            if handler:
+                warnings = handler(self, data)
+                if warnings:
+                    # There are some warnings. Notify responsible persons
+                    self.event(
+                        self.EV_CONFIG_POLICY_VIOLATION,
+                        {
+                            "object": self,
+                            "warnings": warnings
+                        }
+                    )
+            else:
+                self.logger.info(
+                    "[%s] Invalid config_validation_handler \"%s\", ignoring",
+                    self.config_validation_handler
                 )
         # Calculate diff
         old_data = self.config.read()
         is_new = not bool(old_data)
         diff = None
-        if not is_new:
+        if is_new:
+            changed = True
+        else:
             # Calculate diff
-            if self.config_diff_filter_rule:
-                # Pass through filters
-                old_data = self.config_diff_filter_rule(
-                    managed_object=self, config=old_data)
-                new_data = self.config_diff_filter_rule(
-                    managed_object=self, config=data)
-                if not old_data and not new_data:
-                    logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
+            if self.config_diff_filter_handler:
+                handler = get_handler(self.config_diff_filter_handler)
+                if handler:
+                    # Pass through filters
+                    old_data = handler(self, old_data)
+                    new_data = handler(self, data)
+                    if not old_data and not new_data:
+                        logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
+                else:
+                    new_data = data
             else:
                 new_data = data
-            if old_data == new_data:
-                return  # Nothing changed
-            diff = "".join(difflib.unified_diff(
-                old_data.splitlines(True),
-                new_data.splitlines(True),
-                fromfile=os.path.join("a", self.name.encode("utf8")),
-                tofile=os.path.join("b", self.name.encode("utf8"))
-            ))
-        # Notify changes
+            changed = old_data != new_data
+            if changed:
+                diff = "".join(difflib.unified_diff(
+                    old_data.splitlines(True),
+                    new_data.splitlines(True),
+                    fromfile=os.path.join("a", self.name.encode("utf8")),
+                    tofile=os.path.join("b", self.name.encode("utf8"))
+                ))
+        if changed:
+            # Notify changes
+            self.notify_config_changes(
+                is_new=is_new,
+                data=data,
+                diff=diff
+            )
+            # Save config
+            self.write_config(data)
+        # Apply mirroring settings
+        self.mirror_config(data, changed)
+        # Run config validation
+        self.validate_config(changed)
+
+    def notify_config_changes(self, is_new, data, diff):
+        """
+        Notify about config changes
+        :param is_new:
+        :param data:
+        :param diff:
+        :return:
+        """
         self.event(
             self.EV_CONFIG_CHANGED,
             {
@@ -908,14 +1003,91 @@ class ManagedObject(Model):
                 "diff": diff
             }
         )
-        # Save config
+
+    def write_config(self, data):
+        """
+        Save config to GridVCS
+        :param data: Config data
+        :return:
+        """
+        logger.debug("[%s] Writing config", self.name)
         self.config.write(data)
-        # Run config validation
+
+    def mirror_config(self, data, changed):
+        """
+        Save config to mirror
+        :param data: Config data
+        :param changed: True if config has been changed
+        :return:
+        """
+        logger.debug("[%s] Mirroring config", self.name)
+        policy = self.object_profile.config_mirror_policy
+        # D - Disable
+        if policy == "D":
+            logger.debug("[%s] Mirroring is disabled by policy. Skipping", self.name)
+            return
+        # C - Mirror on Change
+        if policy == "C" and not changed:
+            logger.debug("[%s] Configuration has not been changed. Skipping", self.name)
+            return
+        # Check storage
+        storage = self.object_profile.config_mirror_storage
+        if not storage:
+            logger.debug("[%s] Storage is not configured. Skipping", self.name)
+            return
+        if not storage.is_config_mirror:
+            logger.debug("[%s] Config mirroring is disabled for storage '%s'. Skipping",
+                         self.name, storage.name)
+            return  # No storage setting
+        # Check template
+        template = self.object_profile.config_mirror_template
+        if not template:
+            logger.debug("[%s] Path template is not configured. Skipping", self.name)
+            return
+        # Render path
+        path = self.object_profile.config_mirror_template.render_subject(object=self, datetime=datetime).strip()
+        if not path:
+            logger.debug("[%s] Empty mirror path. Skipping", self.name)
+            return
+        logger.debug(
+            "[%s] Mirroring to %s:%s",
+            self.name,
+            self.object_profile.config_mirror_storage.name,
+            path
+        )
+        dir_path = os.path.dirname(path)
+        try:
+            with storage.open_fs() as fs:
+                if dir_path and dir_path != "/":
+                    logger.debug("[%s] Ensuring directory: %s", self.name, dir_path)
+                    fs.makedirs(dir_path, recreate=True)
+                logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
+                fs.setbytes(path, bytes(data))
+        except storage.Error as e:
+            logger.error("[%s] Failed to mirror config: %s", self.name, e)
+
+    def validate_config(self, changed):
+        """
+        Apply config validation rules
+        :param changed:
+        :return:
+        """
+        logger.debug("[%s] Validating config", self.name)
+        policy = self.object_profile.config_validation_policy
+        # D - Disable
+        if policy == "D":
+            logger.debug("[%s] Validation is disabled by policy. Skipping", self.name)
+            return
+        # C - Mirror on Change
+        if policy == "C" and not changed:
+            logger.debug("[%s] Configuration has not been changed. Skipping", self.name)
+            return
+        # Validate
         from noc.cm.engine import Engine
         engine = Engine(self)
         try:
             engine.check()
-        except:
+        except:  # noqa
             logger.error("Failed to validate config for %s", self.name)
             error_report()
 
@@ -1140,6 +1312,14 @@ class ManagedObject(Model):
         """
         if not self.tt_system or not self.tt_system_id:
             return False
+        return self.can_notify(depended)
+
+    def can_notify(self, depended=False):
+        """
+        Check alarm can be notified via escalation
+        :param depended:
+        :return:
+        """
         if self.escalation_policy == "E":
             return True
         elif self.escalation_policy == "P":
@@ -1228,10 +1408,76 @@ class ManagedObject(Model):
         else:
             return DEFAULT_TTSYSTEM_SHARD
 
+    @property
+    def to_raise_privileges(self):
+        if self.cli_privilege_policy == "E":
+            return True
+        elif self.cli_privilege_policy == "P":
+            return self.object_profile.cli_privilege_policy == "E"
+        else:
+            return False
+
+    def get_autosegmentation_policy(self):
+        if self.autosegmentation_policy == "p":
+            return self.object_profile.autosegmentation_policy
+        else:
+            return self.autosegmentation_policy
+
+    @property
+    def enable_autosegmentation(self):
+        return self.get_autosegmentation_policy() in ("o", "c")
+
+    @property
+    def allow_autosegmentation(self):
+        return self.get_autosegmentation_policy() == "e"
+
+    def get_access_preference(self):
+        if self.access_preference == "P":
+            return self.object_profile.access_preference
+        else:
+            return self.access_preference
+
+    def get_event_processing_policy(self):
+        if self.event_processing_policy == "P":
+            return self.object_profile.event_processing_policy
+        else:
+            return self.event_processing_policy
+
+    @classmethod
+    def get_bi_selector(cls, cfg):
+        qs = {}
+        if "administrative_domain" in cfg:
+            d = AdministrativeDomain.get_by_id(cfg["administrative_domain"])
+            if d:
+                qs["administrative_domain__in"] = d.get_nested()
+        if "pool" in cfg:
+            qs["pool__in"] = [cfg["pool"]]
+        if "profile" in cfg:
+            qs["profile__in"] = [cfg["profile"]]
+        if "segment" in cfg:
+            qs["segment__in"] = [cfg["segment"]]
+        if "container" in cfg:
+            qs["container__in"] = [cfg["container"]]
+        if "vendor" in cfg:
+            qs["vendor__in"] = [cfg["vendor"]]
+        if "platform" in cfg:
+            qs["platform__in"] = [cfg["platform"]]
+        if "version" in cfg:
+            qs["version__in"] = [cfg["version"]]
+        return [
+            int(r)
+            for r in ManagedObject.objects.filter(**qs).values_list("bi_id", flat=True)
+        ]
+
+    @property
+    def metrics(self):
+        metric, last = get_objects_metrics([self])
+        return metric.get(self), last.get(self)
+
+
 @on_save
 class ManagedObjectAttribute(Model):
-
-    class Meta:
+    class Meta(object):
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"
         db_table = "sa_managedobjectattribute"
@@ -1266,9 +1512,10 @@ class ScriptsProxy(object):
         def __call__(self, **kwargs):
             return MTManager.run(self.object, self.name, kwargs)
 
-    def __init__(self, obj):
+    def __init__(self, obj, caller=None):
         self._object = obj
         self._cache = {}
+        self._caller = caller or ScriptsProxy.CallWrapper
 
     def __getattr__(self, name):
         if name in self._cache:
@@ -1276,7 +1523,7 @@ class ScriptsProxy(object):
         if not script_loader.has_script("%s.%s" % (
                 self._object.profile.name, name)):
             raise AttributeError("Invalid script %s" % name)
-        cw = ScriptsProxy.CallWrapper(self._object, name)
+        cw = self._caller(self._object, name)
         self._cache[name] = cw
         return cw
 
@@ -1334,3 +1581,5 @@ from .objectnotification import ObjectNotification
 from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
+from noc.core.pm.utils import get_objects_metrics
+from noc.vc.models.vcdomain import VCDomain  # noqa

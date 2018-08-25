@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # Interface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import logging
 # Third-party modules
@@ -16,9 +17,8 @@ from mongoengine.fields import (StringField, IntField, BooleanField,
 from pymongo import ReadPreference
 
 # NOC Modules
+from noc.config import config
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
-from interfaceprofile import InterfaceProfile
-from coverage import Coverage
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -27,6 +27,9 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete
+from noc.core.datastream.decorator import datastream
+from .interfaceprofile import InterfaceProfile
+from .coverage import Coverage
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -42,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 
 @on_delete
+@datastream
 class Interface(Document):
     """
     Interfaces
@@ -49,6 +53,7 @@ class Interface(Document):
     meta = {
         "collection": "noc.interfaces",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             ("managed_object", "name"),
             "mac",
@@ -97,6 +102,10 @@ class Interface(Document):
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
 
+    def iter_changed_datastream(self):
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.managed_object.id
+
     def save(self, *args, **kwargs):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
             self.name = self.managed_object.get_profile().convert_interface_name(self.name)
@@ -106,7 +115,7 @@ class Interface(Document):
             super(Interface, self).save(*args, **kwargs)
         except Exception as e:
             raise ValueError("%s: %s" % (e.__doc__, e.message))
-        if  not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
             ServiceSummary.refresh_object(self.managed_object)
 
     def on_delete(self):
@@ -272,7 +281,7 @@ class Interface(Document):
 
     @property
     def subinterface_set(self):
-        from subinterface import SubInterface
+        from .subinterface import SubInterface
         return SubInterface.objects.filter(interface=self.id)
 
     @property
@@ -300,11 +309,7 @@ class Interface(Document):
         def humanize_speed(speed):
             if not speed:
                 return "-"
-            for t, n in [
-                (1000000, "G"),
-                (1000, "M"),
-                (1, "k")
-            ]:
+            for t, n in [(1000000, "G"), (1000, "M"), (1, "k")]:
                 if speed >= t:
                     if speed // t * t == speed:
                         return "%d%s" % (speed // t, n)
@@ -343,9 +348,7 @@ class Interface(Document):
             return
         now = datetime.datetime.now()
         if self.oper_status != status and (
-                    not self.oper_status_change or
-                        self.oper_status_change < now
-        ):
+                not self.oper_status_change or self.oper_status_change < now):
             self.update(oper_status=status, oper_status_change=now)
             if self.profile.status_change_notification:
                 logger.debug(
@@ -375,7 +378,13 @@ class Interface(Document):
         else:
             return self
 
+    def get_profile(self):
+        if self.profile:
+            return self.profile
+        return InterfaceProfile.get_default_profile()
+
+
 # Avoid circular references
-from link import Link
-from macdb import MACDB
 from noc.sa.models.servicesummary import ServiceSummary
+from .link import Link
+from .macdb import MACDB

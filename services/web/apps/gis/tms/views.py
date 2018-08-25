@@ -66,8 +66,7 @@ class TMSApplication(ExtApplication):
         tmsv1.appendChild(title)
         # <Abstract>
         abstract = doc.createElement("Abstract")
-        abstract.appendChild(doc.createTextNode("NOC Tile Map Service. "\
-                                                "http://nocproject.org/"))
+        abstract.appendChild(doc.createTextNode("NOC Tile Map Service. \"http://nocproject.org/\""))
         tmsv1.appendChild(abstract)
         # <TileMaps>
         tilemaps = doc.createElement("TileMaps")
@@ -152,7 +151,7 @@ class TMSApplication(ExtApplication):
             if tc.ready:
                 data = tc.data
             else:
-                data = get_img("img_not_ready", "static/img/gis/notready.png")
+                data = get_img("img_not_ready", "ui/web/img/gis/notready.png")
         else:
-            data = get_img("img_no_data", "static/img/gis/nodata.png")
+            data = get_img("img_no_data", "ui/web/img/gis/nodata.png")
         return self.render_response(data, "image/png")

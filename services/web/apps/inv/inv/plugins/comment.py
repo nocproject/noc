@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import InvPlugin
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import UnicodeParameter
+from .base import InvPlugin
 
 
 class CommentPlugin(InvPlugin):

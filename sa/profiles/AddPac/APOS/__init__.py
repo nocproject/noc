@@ -16,5 +16,5 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " \n"
     command_submit = "\r"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"

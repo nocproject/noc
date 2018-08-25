@@ -14,12 +14,12 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
-    name = "Nateks.netxpert"
+    name = "Nateks.NetXpert"
     pattern_more = [
         (r"^ --More-- ", "\n"),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
     ]
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = \
         r"% Invalid input detected at|% Ambiguous command:|" \
         r"% Incomplete command."

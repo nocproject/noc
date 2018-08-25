@@ -1146,11 +1146,11 @@
         null,
         "Escondido"
     ],
-    "Hide alarms covered by maintainance": [
+    "Hide alarms covered by maintenance": [
         null,
         "Esconder alertas cobertos pela manutenção"
     ],
-    "Hide maintainance": [
+    "Hide maintenance": [
         null,
         "Esconder manutenção"
     ],
@@ -2382,7 +2382,7 @@
         null,
         "Mostrar objeto"
     ],
-    "Show only alarms covered by maintainance": [
+    "Show only alarms covered by maintenance": [
         null,
         "Mostrar apenas alertas cobertos pela manutenção"
     ],

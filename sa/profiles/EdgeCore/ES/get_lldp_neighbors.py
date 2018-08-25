@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 import binascii
@@ -19,16 +19,16 @@ class Script(BaseScript):
     name = "EdgeCore.ES.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    ##
-    ## No lldp on 46xx
-    ##
+    #
+    # No lldp on 46xx
+    #
     @BaseScript.match(platform__contains="46")
     def execute_46(self):
         raise self.NotSupportedError()
 
-    ##
-    ## 35xx
-    ##
+    #
+    # 35xx
+    #
     rx_localport = re.compile(
         r"^\s*Eth(| )(.+?)\s*(\|)MAC Address\s+(\S+).+?$",
         re.MULTILINE | re.DOTALL)
@@ -41,6 +41,14 @@ class Script(BaseScript):
         r"Sys(|tem\s+)Name\s+:\s(?P<name>\S+).*?"
         r"(SystemCapSupported|System\sCapabilities)\s+:\s"
         r"(?P<capability>[^\n]+).*", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_port_descr = re.compile(
+        r"^\s*Port Description\s+:\s+(?P<descr>.+)\n",
+        re.MULTILINE
+    )
+    rx_system_descr = re.compile(
+        r"^\s*System Description\s+:\s+(?P<descr>.+)\n",
+        re.MULTILINE
+    )
 
     @BaseScript.match()
     def execute_35(self):
@@ -63,8 +71,10 @@ class Script(BaseScript):
         for i in ifs:
             if i["local_interface"] in local_port_ids:
                 i["local_interface_id"] = local_port_ids[i["local_interface"]]
-            v = self.cli("show lldp info remote detail %s" % \
-                i["local_interface"])
+            v = self.cli(
+                "show lldp info remote detail %s" %
+                i["local_interface"]
+            )
             match = self.re_search(self.rx_detail, v)
             n = {"remote_chassis_id_subtype": 4}
             if match:
@@ -73,8 +83,7 @@ class Script(BaseScript):
                     "Interface name": 5, "Interface Name": 5,
                     "Inerface Alias": 5, "Inerface alias": 5,
                     "Interface Alias": 5, "Interface alias": 5,
-                    "Local": 7, "Locally Assigned": 7,
-                    "Locally assigned": 7
+                    "Local": 7, "Locally Assigned": 7, "Locally assigned": 7
                 }[match.group("p_type")]
                 if n["remote_port_subtype"] == 3:
                     remote_port = \
@@ -83,9 +92,12 @@ class Script(BaseScript):
                     remote_port = match.group("p_id").strip()
                 else:
                     # Removing bug
-                    remote_port = binascii.unhexlify('' . join(
-                        match.group("p_id").split('-'))
-                    )
+                    try:
+                        remote_port = binascii.unhexlify(
+                            '' . join(match.group("p_id").split('-'))
+                        )
+                    except TypeError:
+                        remote_port = str(match.group("p_id"))
                     remote_port = remote_port.rstrip('\x00')
                 n["remote_chassis_id"] = match.group("id")
                 n["remote_system_name"] = match.group("name")
@@ -99,6 +111,12 @@ class Script(BaseScript):
                         "Telephone": 32, "Cable": 64, "Station": 128
                     }[c]
                 n["remote_capabilities"] = cap
+                match = self.rx_system_descr.search(v)
+                if match:
+                    n["remote_system_description"] = match.group("descr")
+                match = self.rx_port_descr.search(v)
+                if match:
+                    n["remote_port_description"] = match.group("descr")
             i["neighbors"] += [n]
             r += [i]
         return r

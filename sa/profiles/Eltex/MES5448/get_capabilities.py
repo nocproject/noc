@@ -21,7 +21,7 @@ class Script(BaseScript):
     rx_stp_en = re.compile(r"Spanning Tree:\s+Enabled")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled on Eltex
         """
@@ -31,7 +31,7 @@ class Script(BaseScript):
         return False
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has stp enabled on Eltex
         """
@@ -39,13 +39,9 @@ class Script(BaseScript):
         return self.rx_stp_en.search(cmd) is not None
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check lacp
         """
         r = self.cli("show lacp partner all")
         return "ACT|AGG" in r
-
-    def execute_platform(self, caps):
-        if self.has_lacp():
-            caps["Network | LACP"] = True

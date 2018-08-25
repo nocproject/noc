@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Link model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,14 +10,17 @@
 from collections import defaultdict
 import datetime
 # NOC modules
+from noc.config import config
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
-                           IntField)
+                           IntField, ObjectIdField)
 from noc.core.model.decorator import on_delete, on_save
+from noc.core.datastream.decorator import datastream
 
 
 @on_delete
 @on_save
+@datastream
 class Link(Document):
     """
     Network links.
@@ -29,12 +32,39 @@ class Link(Document):
     meta = {
         "collection": "noc.links",
         "strict": False,
-        "indexes": ["interfaces", "linked_objects"]
+        "auto_create_index": False,
+        "indexes": [
+            "interfaces",
+            "linked_objects",
+            "linked_segments"
+        ]
     }
 
+    # Optional link name
+    name = StringField()
+    # Optional description
+    description = StringField()
+    # Optional shape
+    shape = StringField()
+    # List of interfaces
     interfaces = PlainReferenceListField("inv.Interface")
+    # Link type, detected automatically
+    type = StringField(choices=[
+        # 2 managed objects, 2 linked interfaces
+        ("p", "Point-to-Point"),
+        # 2 managed objects, even number of linked interfaces (>2)
+        ("a", "Point-to-Point Aggregated"),
+        # >2 managed objects, one uplink
+        ("m", "Point-to-Multipoint"),
+        # >2 managed objects, no dedicated uplink
+        ("M", "Multipoint-to-Multipoint"),
+        # Unknown
+        ("u", "Unknown")
+    ], default="u")
     # List of linked objects
     linked_objects = ListField(IntField())
+    # List of linked segments
+    linked_segments = ListField(ObjectIdField())
     # Name of discovery method or "manual"
     discovery_method = StringField()
     # Timestamp of first discovery
@@ -47,11 +77,20 @@ class Link(Document):
     l3_cost = IntField(default=1)
 
     def __unicode__(self):
-        return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
+        if self.interfaces:
+            return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
+        else:
+            return u"Stale link (%s)" % self.id
+
+    def iter_changed_datastream(self):
+        if config.datastream.enable_managedobject:
+            for mo_id in self.linked_objects:
+                yield "managedobject", mo_id
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
-        super(Link, self).clean()
+        self.linked_segments = sorted(set(i.managed_object.segment.id for i in self.interfaces))
+        self.type = self.get_type()
 
     def contains(self, iface):
         """
@@ -66,7 +105,7 @@ class Link(Document):
         Check link is point-to-point link
         :return:
         """
-        return len(self.linked_objects) == 2
+        return self.type == "p" or self.type == "a"
 
     @property
     def is_lag(self):
@@ -74,15 +113,7 @@ class Link(Document):
         Check link is unresolved LAG
         :return:
         """
-        if self.is_ptp:
-            return True
-        d = defaultdict(int)  # object -> count
-        for i in self.interfaces:
-            d[i.managed_object.id] += 1
-        if len(d) != 2:
-            return False
-        k = d.keys()
-        return d[k[0]] == d[k[1]]
+        return self.type == "p" or self.type == "a"
 
     @property
     def is_broadcast(self):
@@ -98,10 +129,20 @@ class Link(Document):
         Check link is looping to same object
         :return:
         """
-        if not self.is_ptp:
-            return False
-        i1, i2 = self.interfaces
-        return i1.managed_object == i2.managed_object
+        return len(self.linked_objects) == 1
+
+    @property
+    def interface_ids(self):
+        """
+        Returns list of interface ids, avoiding dereference
+        :return:
+        """
+        def q(i):
+            if hasattr(i, "id"):
+                return i.id
+            return i
+
+        return [q(iface) for iface in self._data.get("interfaces", [])]
 
     def other(self, interface):
         """
@@ -141,13 +182,11 @@ class Link(Document):
 
     @classmethod
     def object_links(cls, object):
-        from interface import Interface
-        ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
-        return cls.objects.filter(interfaces__in=ifaces)
+        return Link.objects.filter(linked_objects=object.id)
 
     @classmethod
     def object_links_count(cls, object):
-        return cls.object_links(object).count()
+        return Link.objects.filter(linked_objects=object.id).count()
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
@@ -161,8 +200,41 @@ class Link(Document):
         """
         List of connected managed objects
         """
-        return list(set(i.managed_object for i in self.interfaces))
+        from noc.sa.models.managedobject import ManagedObject
+        return list(ManagedObject.objects.filter(id__in=self.linked_objects))
+
+    @property
+    def segments(self):
+        """
+        List of segments connected by link
+        :return:
+        """
+        from noc.inv.models.networksegment import NetworkSegment
+        return list(NetworkSegment.objects.filter(id__in=self.linked_segments))
 
     def update_topology(self):
         for mo in self.managed_objects:
             mo.update_topology()
+
+    def get_type(self):
+        """
+        Detect link type
+        :return: Link type as value for .type
+        """
+        n_objects = len(self.linked_objects)
+        n_interfaces = len(self.interfaces)
+        if n_objects == 2 and n_interfaces == 2:
+            return "p"  # Point-to-point
+        if n_objects == 2 and n_interfaces > 2 and n_interfaces % 2 == 0:
+            d = defaultdict(int)  # object -> count
+            for i in self.interfaces:
+                d[i.managed_object.id] += 1
+            k = d.keys()
+            if d[k[0]] == d[k[1]]:
+                return "a"  # Point-to-Point aggregated
+        if n_objects > 2:
+            if self.type == "m":
+                return "m"
+            else:
+                return "M"
+        return "u"

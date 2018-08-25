@@ -2,21 +2,30 @@
 # ---------------------------------------------------------------------
 # Peer module models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.db import models
 # NOC modules
-from rir import RIR
 from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
-from person import Person
+from noc.core.model.decorator import on_save
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.decorator import on_delete_check
+from .rir import RIR
+from .person import Person
 
 
+@on_delete_check(check=[
+    ("peer.Organisation", "mnt_ref")
+])
+@on_save
 class Maintainer(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Maintainer"
         verbose_name_plural = "Maintainers"
         db_table = "peer_maintainer"
@@ -29,12 +38,12 @@ class Maintainer(models.Model):
     rir = models.ForeignKey(RIR, verbose_name="RIR")
     admins = models.ManyToManyField(Person, verbose_name="admin-c")
     extra = models.TextField("extra", blank=True, null=True)
+    rpsl = GridVCSField("rpsl_maintainer")
 
     def __unicode__(self):
         return self.maintainer
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         s = []
         s += ["mntner: %s" % self.maintainer]
         s += ["descr: %s" % self.description]
@@ -45,3 +54,13 @@ class Maintainer(models.Model):
         if self.extra:
             s += [self.extra]
         return rpsl_format("\n".join(s))
+
+    def touch_rpsl(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+
+    def on_save(self):
+        self.touch_rpsl()

@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc crashinfo
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./noc crashinfo
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 import os
-import stat
 import datetime
 import argparse
 import stat
 import re
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.config import config
 
@@ -29,7 +28,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # list command
-        list_parser = subparsers.add_parser("list")
+        subparsers.add_parser("list")
         # view command
         view_parser = subparsers.add_parser("view")
         view_parser.add_argument(
@@ -50,35 +49,41 @@ class Command(BaseCommand):
 
     def handle_list(self):
         # Get last update timestamp
-        if os.path.exists(".hg/dirstate"):
-            uts = os.stat(".hg/dirstate")[stat.ST_MTIME]
+        if os.path.exists(".git/index"):
+            uts = os.stat(".git/index")[stat.ST_MTIME]
         else:
             uts = 0
         # Build list
         fl = []
-        for fn in os.listdir(self.PREFIX):
-            if not fn.endswith(".json"):
-                continue
-            path = os.path.join(self.PREFIX, fn)
-            ts = os.stat(path)[stat.ST_MTIME]
-            t = datetime.datetime.fromtimestamp(ts)
-            with open(path) as f:
-                data = ujson.load(f)
-            service = data["process"]
-            if service.startswith("services/") and service.endswith("/service.py"):
-                service = service[9:-11]
-            x = str(data["traceback"].splitlines()[5])
-            if x.startswith("EXCEPTION: "):
-                x = x[11:]
-            x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
-            x = unicode(x)[:100].encode("utf-8")
-            fl += [{
-                "uuid": fn[:-5],
-                "time": t,
-                "status": "*" if uts and ts > uts else " ",
-                "service": service,
-                "exception": x
-            }]
+        if os.path.exists(self.PREFIX):
+            for fn in os.listdir(self.PREFIX):
+                if not fn.endswith(".json"):
+                    continue
+                path = os.path.join(self.PREFIX, fn)
+                ts = os.stat(path)[stat.ST_MTIME]
+                t = datetime.datetime.fromtimestamp(ts)
+                with open(path) as f:
+                    data = ujson.load(f)
+                service = data["process"]
+                if service.startswith("services/") and service.endswith("/service.py"):
+                    service = service[9:-11]
+                elif service.startswith("commands/"):
+                    service = "noc %s" % service[9:-3]
+                x = "Unknown exception"
+                for xline in data["traceback"].splitlines()[:7]:
+                    sl = str(xline)
+                    if sl.startswith("EXCEPTION: "):
+                        x = sl[11:]
+                        break
+                x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
+                x = unicode(x)[:100].encode("utf-8")
+                fl += [{
+                    "uuid": fn[:-5],
+                    "time": t,
+                    "status": "*" if uts and ts > uts else " ",
+                    "service": service,
+                    "exception": x
+                }]
         fs = "%s %36s  %19s  %-29s %-s\n"
         self.stdout.write(fs % ("N", "UUID", "Time", "Service", "Exception"))
         for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):
@@ -99,7 +104,10 @@ class Command(BaseCommand):
             self.stdout.write("\n\n")
 
     def handle_clear(self, clear_uuids, *args, **options):
-        if clear_uuids == "all":
+        if not clear_uuids:
+            self.stdout.write("Use './noc crashninfo clear all' for clear all crashinfo or"
+                              " './noc crashinfo clear UUID1 UUID2 ...'\n")
+        if clear_uuids and clear_uuids[0] == "all":
             clear_uuids = [
                 fn[:-5]
                 for fn in os.listdir(self.PREFIX)
@@ -112,6 +120,7 @@ class Command(BaseCommand):
             else:
                 self.stdout.write("Removing %s\n" % u)
                 os.unlink(path)
+
 
 if __name__ == "__main__":
     Command().run()

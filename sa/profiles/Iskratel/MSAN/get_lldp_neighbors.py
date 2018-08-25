@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,10 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6
 from noc.lib.text import parse_table
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -26,11 +23,11 @@ class Script(BaseScript):
         r"^Chassis ID: (?P<chassis_id>.+)\n"
         r"^Port ID Subtype: (?P<port_id_subtype>.+)\n"
         r"^Port ID: (?P<port_id>.+)\n"
-        r"^System Name: (?P<system_name>.*)\n"
-        r"^System Description: (?P<system_description>.*)\n"
-        r"^Port Description: (?P<port_description>.*)\n"
-        r"^System Capabilities Supported: .+\n"
-        r"^System Capabilities Enabled: (?P<system_capabilities>.+?)\n",
+        r"^System Name:(?P<system_name>.*)\n"
+        r"^System Description:(?P<system_description>.*)\n"
+        r"^Port Description:(?P<port_description>.*)\n"
+        r"^System Capabilities Supported:.*\n"
+        r"^System Capabilities Enabled:(?P<system_capabilities>.*?)\n",
         re.MULTILINE | re.DOTALL
     )
 
@@ -48,13 +45,22 @@ class Script(BaseScript):
             if match:
                 n = {}
                 n["remote_chassis_id_subtype"] = {
+                    "Chassis Component": 1,
+                    "Interface Alias": 2,
+                    "Port Component": 3,
                     "MAC Address": 4,
+                    "Network Address": 5,
+                    "Interface Name": 6,
+                    "Local": 7
                 }[match.group("chassis_id_subtype").strip()]
                 n["remote_chassis_id"] = match.group("chassis_id").strip()
                 n["remote_port_subtype"] = {
+                    "Interface Alias": 1,
+                    "Port Component": 2,
                     "MAC Address": 3,
+                    "Network Address": 4,
                     "Interface Name": 5,
-                    "Interface Alias": 7
+                    "Local": 7
                 }[match.group("port_id_subtype").strip()]
                 n["remote_port"] = match.group("port_id").strip()
                 if match.group("port_description").strip():

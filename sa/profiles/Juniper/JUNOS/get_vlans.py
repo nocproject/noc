@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,16 @@ class Script(BaseScript):
     name = "Juniper.JUNOS.get_vlans"
     interface = IGetVlans
 
-    rx_vlan_line = re.compile(r"^(?P<name>\S+)\s+(?P<vlan_id>\d+)\s+")
+    rx_vlan_line = re.compile(
+        r"^((?P<routing_instance>\S+)\s+)?(?P<name>\S+)\s+(?P<vlan_id>[1-9][0-9]*)\s+",
+        re.MULTILINE
+    )
 
     def execute(self):
-        return self.cli("show vlan brief", list_re=self.rx_vlan_line)
+        if not self.is_switch or not self.profile.command_exist(self, "vlans"):
+            return []
+        r = []
+        v = self.cli("show vlans brief")
+        for match in self.rx_vlan_line.finditer(v):
+            r += [match.groupdict()]
+        return r

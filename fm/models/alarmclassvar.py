@@ -12,7 +12,8 @@ import noc.lib.nosql as nosql
 
 class AlarmClassVar(nosql.EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = nosql.StringField(required=True)
     description = nosql.StringField(required=False)

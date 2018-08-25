@@ -100,13 +100,13 @@ class Command(BaseCommand):
         if not hasattr(self, "_files"):
             # @fixme: Remove hg
             f = subprocess.Popen(
-                ["./bin/hg", "locate"],
+                ["git", "ls-files"],
                 stdout=subprocess.PIPE
             ).stdout
             self._files = f.read().splitlines()
         return [p for p in self._files if pathmatch(expr, p)]
 
-    def handle_extract(self, services=None, *args, **options):
+    def handle_extract(self, services=None):
         if not services:
             services = sorted(self.SERVICES)
         for svc in services:
@@ -133,7 +133,7 @@ class Command(BaseCommand):
                         args += self.glob(expr)
                 subprocess.check_call(args)
 
-    def handle_update(self, services=None, *args, **options):
+    def handle_update(self, services=None):
         if not services:
             services = sorted(self.SERVICES)
         for svc in services:
@@ -164,7 +164,7 @@ class Command(BaseCommand):
                             "--previous"
                         ])
 
-    def handle_compile(self, services=None, *args, **options):
+    def handle_compile(self, services=None):
         if not services:
             services = sorted(self.SERVICES)
         for svc in services:
@@ -200,7 +200,8 @@ class Command(BaseCommand):
                             "-o", mo
                         ])
 
-    def handle_edit(self, service=None, language=None, *args, **options):
+    @staticmethod
+    def handle_edit(self, service=None, language=None):
         pfx = os.path.join("services", service[0],
                            "translations", language[0], "LC_MESSAGES")
 
@@ -209,6 +210,7 @@ class Command(BaseCommand):
             os.path.join(pfx, "messages_js.po")
         ]:
             subprocess.check_call(["open", path])
+
 
 if __name__ == "__main__":
     Command().run()

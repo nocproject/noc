@@ -25,7 +25,7 @@ class Profile(BaseProfile):
             "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
     ]
-    pattern_unpriveleged_prompt = r"^\S+>"
+    pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
                            r"(?:Ambiguous|Incomplete|.+Unknown) command)|" \
                            r"Error input in the position market by"

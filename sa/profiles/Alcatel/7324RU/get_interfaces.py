@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ class Script(BaseScript):
         }]
         # ADSL ports
         phy_ports = self.cli("adsl show")
-        oper_ports = self.cli("statistics adsl show")
+        oper_ports = self.cli("statistics adsl show")  # noqa
         sub_ports = self.cli("adsl pvc show")
         vlans = self.cli("switch vlan show *")
         phy_ports = phy_ports.split("Subscriber Info:")
@@ -76,6 +76,10 @@ class Script(BaseScript):
                 description = t1[1] + " " + t1[2]
             sub = []
             for s in parse_table(sub_ports):
+                if s[3] == "*":
+                    # Perhaps star - is default vlan
+                    self.logger.info("Skipping star vlan")
+                    continue
                 if s[0] == phy[0]:
                     sub += [{
                         "name": s[0],
@@ -99,7 +103,7 @@ class Script(BaseScript):
         # Enet ports info
         enet_ports = self.cli("statistics enet")
         tagged = defaultdict(list)
-        for match in re.finditer(self.rx_vlan, vlans):
+        for match in self.rx_vlan.finditer(vlans):
             up = 0
             if match.group("vstatus") == "enabled":
                 for x in match.group("uplinkmask"):

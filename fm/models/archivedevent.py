@@ -24,6 +24,7 @@ class ArchivedEvent(document.Document):
     meta = {
         "collection": "noc.events.archive",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["timestamp", "alarms"]
     }
     status = "S"

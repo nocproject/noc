@@ -12,15 +12,13 @@ Ext.define('NOC.inv.map.MiniMap', {
     alias: 'widget.minimap',
 
     height: 300,
-    style: {
-        background: "#ecf0f1"
-    },
     miniPaper: null,
     items: {
-        xtype: 'container'
+        xtype: 'container',
+        height: 300
     },
 
-    createMini: function(mapPanel){
+    createMini: function(mapPanel) {
         this.paperEl = this.items.first().el.dom;
         this.paper = mapPanel.paper;
         var w = this.width;
@@ -32,10 +30,13 @@ Ext.define('NOC.inv.map.MiniMap', {
             width: w,
             model: mapPanel.graph,
             gridSize: 1,
+            background: {
+                color: '#ecf0f1'
+            },
             interactive: false
         });
         this.miniPaper.on('blank:pointerdown', function(evt, x, y) {
-            mapPanel.items.first().scrollTo(x, y);
+            mapPanel.scrollTo(x, y);
         });
     },
 

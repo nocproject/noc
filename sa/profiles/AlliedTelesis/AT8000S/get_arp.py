@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # coded by azhur
 # See LICENSE for details
 # ---------------------------------------------------------------------
@@ -27,9 +27,9 @@ class Script(BaseScript):
             match = self.rx_line.match(l.strip())
             if not match:
                 continue
-            r.append({
+            r += [{
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
                 "interface": match.group("interface")
-                })
+            }]
         return r

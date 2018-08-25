@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BaseTopology class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  BaseTopology class
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2018 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
-from collections import defaultdict
-## Third-Party modules
+# Third-Party modules
 from networkx import nx
-## NOC modules
-from noc.lib.stencil import stencil_registry
+# NOC modules
+from noc.core.stencil import stencil_registry
 from noc.lib.text import split_alnum
 
 
@@ -51,33 +49,62 @@ class BaseTopology(object):
         Add managed object to topology
         """
         attrs = attrs or {}
-        if mo.id in self.G.node:
+        mo_id = str(mo.id)
+        if mo_id in self.G.node:
             # Only update attributes
-            self.G.node[mo.id].update(attrs)
+            self.G.node[mo_id].update(attrs)
             return
-        shape = self.get_object_shape(mo)
-        sw, sh = self.get_shape_size(shape)
+        stencil = self.get_object_stencil(mo)
         # Get capabilities
         oc = set(mo.get_caps()) & self.CAPS
         self.caps |= oc
         # Apply node hints
-        attrs.update(self.node_hints.get(mo.id) or {})
+        attrs.update(self.node_hints.get(mo_id) or {})
         # Apply default attributes
         attrs.update({
             "mo": mo,
             "type": "managedobject",
-            "id": mo.id,
+            "id": mo_id,
             "name": mo.name,
             "address": mo.address,
             "role": self.get_role(mo),
-            "shape": shape,
-            "shape_width": sw,
-            "shape_height": sh,
+            "shape": getattr(stencil, "path", ""),
+            "shape_width": getattr(stencil, "width", 0),
+            "shape_height": getattr(stencil, "height", 0),
             "level": mo.object_profile.level,
             "ports": [],
             "caps": list(oc)
         })
-        self.G.add_node(mo.id, attrs)
+        self.G.add_node(mo_id, attrs)
+
+    def add_cloud(self, link, attrs=None):
+        """
+        Add cloud to topology
+        :param link:
+        :param attrs:
+        :return:
+        """
+        attrs = attrs or {}
+        link_id = str(link.id)
+        if link_id in self.G.node:
+            # Only update attributes
+            self.G.node[link_id].update(attrs)
+            return
+        stencil = self.get_cloud_stencil(link)
+        # Apply node hints
+        attrs.update(self.node_hints.get(link_id) or {})
+        # Apply default attributes
+        attrs.update({
+            "link": link,
+            "type": "cloud",
+            "id": link_id,
+            "name": link.name or "",
+            "ports": [],
+            "shape": getattr(stencil, "path", ""),
+            "shape_width": getattr(stencil, "width", 0),
+            "shape_height": getattr(stencil, "height", 0),
+        })
+        self.G.add_node(link_id, attrs)
 
     def add_link(self, o1, o2, attrs=None):
         """
@@ -94,20 +121,21 @@ class BaseTopology(object):
         #
         self.G.add_edge(o1, o2, a)
 
-    def get_object_shape(self, mo):
+    @staticmethod
+    def get_object_stencil(mo):
         if mo.shape:
             # Use mo's shape, if set
-            sn = mo.shape
+            shape_id = mo.shape
         elif mo.object_profile.shape:
             # Use profile's shape
-            sn = mo.object_profile.shape
+            shape_id = mo.object_profile.shape
         else:
-            # Fallback to router shape
-            sn = "Cisco/router"
-        return sn
+            shape_id = None
+        return stencil_registry.get(shape_id)
 
-    def get_shape_size(self, shape):
-        return stencil_registry.get_size(shape)
+    @staticmethod
+    def get_cloud_stencil(link):
+        return stencil_registry.get(link.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
 
     def order_nodes(self, uplink, downlinks):
         """
@@ -121,9 +149,8 @@ class BaseTopology(object):
         for p in self.G.node[uplink]["ports"]:
             id_to_name[p["id"]] = sorted(p["ports"], key=split_alnum)[0]
         for dl in downlinks:
-            for p in  self.G.edge[uplink][dl]["ports"]:
+            for p in self.G.edge[uplink][dl]["ports"]:
                 if p in id_to_name:
                     dl_map[dl] = id_to_name[p]
                     break
         return sorted(dl_map, key=lambda x: split_alnum(dl_map[x]))
-

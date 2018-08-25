@@ -17,6 +17,8 @@ from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
+from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectstatus import ObjectStatus
@@ -160,7 +162,7 @@ class ReportFilterApplication(SimpleReport):
             mos = mos.filter(object_profile=obj_profile)
         if filter_view_other:
             mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
-            mos = mos.filter(profile_name="Generic.Host").exclude(object_profile__in=mnp_in)
+            mos = mos.filter(profile=Profile.objects.get(name=GENERIC_PROFILE)).exclude(object_profile__in=mnp_in)
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         mos_id = list(mos.values_list("id", flat=True))
         if avail_status:
@@ -203,6 +205,7 @@ class ReportFilterApplication(SimpleReport):
                             mo.name,
                             mo.address,
                             mo.profile.name,
+                            mo.administrative_domain.name,
                             _("Yes") if mo.get_status() else _("No"),
                             discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
                             method,

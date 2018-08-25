@@ -8,5 +8,6 @@ console.debug("Defining NOC.sa.serviceprofile.LookupField");
 
 Ext.define("NOC.sa.serviceprofile.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.serviceprofile.LookupField"
+    alias: "widget.sa.serviceprofile.LookupField",
+    uiStyle: "medium"
 });

@@ -27,15 +27,15 @@ class TrapServer(UDPServer):
 
     def on_read(self, data, address):
         self.service.perf_metrics["trap_msg_in"] += 1
-        object = self.service.lookup_object(address[0])
-        if not object:
-            self.service.perf_metrics["trap_invalid_source"] += 1
+        cfg = self.service.lookup_config(address[0])
+        if not cfg:
             return  # Invalid event source
         try:
             community, varbinds = decode_trap(data)
-        except DecodeError, why:
+        except DecodeError as e:
+            self.service.perf_metrics["error", ("type", "decode_failed")] += 1
             logger.error("Failed to decode trap: %s", data.encode("hex"))
-            logger.error("Decoder error: %s", why)
+            logger.error("Decoder error: %s", e)
             return
         # @todo: Check trap community
         # Get timestamp
@@ -47,4 +47,4 @@ class TrapServer(UDPServer):
         }
         body.update(varbinds)
         body = dict((k, fm_escape(body[k])) for k in body)
-        self.service.register_message(object, ts, body)
+        self.service.register_message(cfg.id, ts, body)

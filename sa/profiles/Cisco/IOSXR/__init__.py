@@ -17,7 +17,7 @@ from noc.sa.interfaces.base import InterfaceTypeError
 class Profile(BaseProfile):
     name = "Cisco.IOSXR"
     pattern_more = r"^ --More--"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
     command_super = "enable"
@@ -30,6 +30,14 @@ class Profile(BaseProfile):
     rx_interface_name = re.compile(
         r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(?:/\d+)*(?:\.\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
         re.IGNORECASE)
+
+    matchers = {
+        "is_platform_crs16": {
+            "platform": {
+                "$regex": r"CRS-16"
+            }
+        },
+    }
 
     def convert_interface_name(self, s):
         """

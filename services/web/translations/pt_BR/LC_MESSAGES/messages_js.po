@@ -291,11 +291,11 @@ msgid "Show only waiting confirmantion"
 msgstr "Mostrar apenas os alertas aguardando confirmação"
 
 #: ui/web/fm/alarm/Application.js:205
-msgid "Hide maintainance"
+msgid "Hide maintenance"
 msgstr "Esconder manutenção"
 
 #: ui/web/fm/alarm/Application.js:206
-msgid "Hide alarms covered by maintainance"
+msgid "Hide alarms covered by maintenance"
 msgstr "Esconder alertas cobertos pela manutenção"
 
 #: ui/web/fm/alarm/Application.js:211
@@ -307,7 +307,7 @@ msgid "Only"
 msgstr "Apenas"
 
 #: ui/web/fm/alarm/Application.js:217
-msgid "Show only alarms covered by maintainance"
+msgid "Show only alarms covered by maintenance"
 msgstr "Mostrar apenas alertas cobertos pela manutenção"
 
 #: ui/web/fm/alarm/Application.js:236 ui/web/fm/alarm/Application.js:281
@@ -741,7 +741,7 @@ msgid "Window"
 msgstr "Janela"
 
 #: ui/web/fm/eventclass/Application.js:292
-#: ui/web/maintainance/maintainancetype/Application.js:25
+#: ui/web/maintenance/maintenancetype/Application.js:25
 msgid "Suppress"
 msgstr "Suprimir"
 
@@ -1131,7 +1131,7 @@ msgid "Data"
 msgstr "Dados"
 
 #: ui/web/inv/capability/Application.js:82
-#: ui/web/maintainance/maintainancetype/Application.js:60
+#: ui/web/maintenance/maintenancetype/Application.js:60
 msgid "Card Template"
 msgstr "Template da Ficha"
 
@@ -1710,8 +1710,8 @@ msgstr "Sistema"
 #: ui/web/main/timepattern/Application.js:20
 #: ui/web/main/timepattern/Application.js:34
 #: ui/web/main/userprofile/Application.js:25
-#: ui/web/maintainance/maintainancetype/Application.js:20
-#: ui/web/maintainance/maintainancetype/Application.js:41
+#: ui/web/maintenance/maintenancetype/Application.js:20
+#: ui/web/maintenance/maintenancetype/Application.js:41
 #: ui/web/peer/asset/Application.js:19 ui/web/peer/asset/Application.js:45
 #: ui/web/peer/peergroup/Application.js:18
 #: ui/web/peer/peergroup/Application.js:38
@@ -2849,7 +2849,7 @@ msgid "Failed to save"
 msgstr "Falha ao salvar"
 
 #: ui/web/fm/alarm/AlarmPanel.js:250
-#: ui/web/maintainance/maintainance/Application.js:22
+#: ui/web/maintenance/maintenance/Application.js:22
 #: ui/web/sa/managedobject/Application.js:61
 #: ui/web/sa/managedobjectprofile/Application.js:178
 msgid "Card"
@@ -2866,8 +2866,8 @@ msgstr "Ficha"
 #: ui/web/ip/ippool/Application.js:33 ui/web/ip/ippool/Application.js:88
 #: ui/web/main/customfield/Application.js:37
 #: ui/web/main/customfield/Application.js:95
-#: ui/web/maintainance/maintainance/Application.js:31
-#: ui/web/maintainance/maintainance/Application.js:69
+#: ui/web/maintenance/maintenance/Application.js:31
+#: ui/web/maintenance/maintenance/Application.js:69
 #: ui/web/peer/community/Application.js:23
 #: ui/web/peer/community/Application.js:45 ui/web/peer/person/Application.js:29
 #: ui/web/peer/person/Application.js:54 ui/web/sa/action/Application.js:121
@@ -2883,21 +2883,21 @@ msgstr "Ficha"
 msgid "Type"
 msgstr "Tipo"
 
-#: ui/web/maintainance/maintainance/Application.js:37
-#: ui/web/maintainance/maintainance/Application.js:79
+#: ui/web/maintenance/maintenance/Application.js:37
+#: ui/web/maintenance/maintenance/Application.js:79
 #: ui/web/sa/monitor/ScriptsPanel.js:50
 msgid "Start"
 msgstr "Início"
 
 #: ui/web/fm/alarmescalation/Application.js:160
 #: ui/web/fm/eventclass/Application.js:234
-#: ui/web/maintainance/maintainance/Application.js:42
-#: ui/web/maintainance/maintainance/Application.js:103
+#: ui/web/maintenance/maintenance/Application.js:42
+#: ui/web/maintenance/maintenance/Application.js:103
 msgid "Stop"
 msgstr "Fim"
 
-#: ui/web/maintainance/maintainance/Application.js:47
-#: ui/web/maintainance/maintainance/Application.js:123
+#: ui/web/maintenance/maintenance/Application.js:47
+#: ui/web/maintenance/maintenance/Application.js:123
 msgid "Completed"
 msgstr "Completo"
 
@@ -2907,8 +2907,8 @@ msgstr "Completo"
 #: ui/web/main/notificationgroup/Application.js:108
 #: ui/web/main/template/Application.js:24
 #: ui/web/main/template/Application.js:40
-#: ui/web/maintainance/maintainance/Application.js:53
-#: ui/web/maintainance/maintainance/Application.js:63
+#: ui/web/maintenance/maintenance/Application.js:53
+#: ui/web/maintenance/maintenance/Application.js:63
 #: ui/web/sa/managedobject/AlarmPanel.js:60
 msgid "Subject"
 msgstr "Assunto"
@@ -2994,9 +2994,9 @@ msgstr "Assunto"
 #: ui/web/main/systemtemplate/Application.js:42
 #: ui/web/main/timepattern/Application.js:25
 #: ui/web/main/timepattern/Application.js:40
-#: ui/web/maintainance/maintainance/Application.js:128
-#: ui/web/maintainance/maintainancetype/Application.js:31
-#: ui/web/maintainance/maintainancetype/Application.js:48
+#: ui/web/maintenance/maintenance/Application.js:128
+#: ui/web/maintenance/maintenancetype/Application.js:31
+#: ui/web/maintenance/maintenancetype/Application.js:48
 #: ui/web/peer/asset/Application.js:24 ui/web/peer/asset/Application.js:54
 #: ui/web/peer/community/Application.js:29
 #: ui/web/peer/community/Application.js:52
@@ -3043,16 +3043,16 @@ msgstr "Assunto"
 msgid "Description"
 msgstr "Descrição"
 
-#: ui/web/maintainance/maintainance/Application.js:134
+#: ui/web/maintenance/maintenance/Application.js:134
 msgid "Contacts"
 msgstr "Contatos"
 
-#: ui/web/maintainance/maintainance/Application.js:140
+#: ui/web/maintenance/maintenance/Application.js:140
 msgid "Suppress alarms"
 msgstr "Suprimir alertas"
 
 #: ui/web/cm/validationrule/Application.js:135
-#: ui/web/maintainance/maintainance/Application.js:145
+#: ui/web/maintenance/maintenance/Application.js:145
 #: ui/web/sa/administrativedomain/Application.js:21
 #: ui/web/sa/managedobjectprofile/Application.js:109
 msgid "Objects"
@@ -3065,24 +3065,24 @@ msgstr "Objetos"
 #: ui/web/inv/coverage/Application.js:79 ui/web/inv/interface/LinkForm.js:41
 #: ui/web/inv/inv/plugins/log/LogPanel.js:58
 #: ui/web/inv/unknownmodel/Application.js:18
-#: ui/web/maintainance/maintainance/Application.js:148
+#: ui/web/maintenance/maintenance/Application.js:148
 #: ui/web/sa/managedobject/LinkForm.js:57 ui/web/sa/monitor/ScriptsPanel.js:42
 msgid "Object"
 msgstr "Objeto"
 
-#: ui/web/maintainance/maintainance/Application.js:159
+#: ui/web/maintenance/maintenance/Application.js:159
 msgid "Segments"
 msgstr "Segmentos"
 
 #: ui/web/fm/alarm/Application.js:125 ui/web/fm/alarm/Application.js:246
 #: ui/web/inv/map/Application.js:35
-#: ui/web/maintainance/maintainance/Application.js:162
+#: ui/web/maintenance/maintenance/Application.js:162
 #: ui/web/sa/managedobject/Application.js:209
 #: ui/web/sa/managedobject/Application.js:387
 msgid "Segment"
 msgstr "Segmento"
 
-#: ui/web/maintainance/maintainancetype/Application.js:55
+#: ui/web/maintenance/maintenancetype/Application.js:55
 msgid "Suppress Alarms"
 msgstr "Suprimir Alertas"
 

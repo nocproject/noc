@@ -49,7 +49,7 @@
   {{ comma() }}
       {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(load_in) as `Input {{ port }}`,  avg(load_out) as `Output {{ port }}` FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{port}}') and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(load_in) as `Input {{ port }}`,  avg(load_out) as `Output {{ port }}`, avg(status_oper) as `Oper status`, avg(status_admin) as `Admin status` FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{port}}') and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
       "database": "noc",
@@ -90,7 +90,7 @@
       "logBase": 1,
       "max": null,
       "min": null,
-      "show": null
+      "show": true
     }
   ]
 }

@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_stp_active = re.compile(r"status\s+:\s+enabled", re.MULTILINE)
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has stp enabled
         """

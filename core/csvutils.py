@@ -18,6 +18,8 @@ from django.db import models
 IR_FAIL = 0  # Fail on first conflict
 IR_SKIP = 1  # Skip conflicted records
 IR_UPDATE = 2  # Overwrite conflicted records
+# Set of ignored fields
+IGNORED_FIELDS = set(["id", "bi_id"])
 
 
 def update_if_changed(obj, values):
@@ -45,8 +47,7 @@ def update_if_changed(obj, values):
 def get_model_fields(model):
     # Detect fields
     fields = []
-    ignored = set(getattr(model, "csv_ignored_fields", []))
-    ignored.add("id")
+    ignored = set(getattr(model, "csv_ignored_fields", [])) | IGNORED_FIELDS
     for f in model._meta.fields:
         if f.name in ignored:
             continue
@@ -65,7 +66,7 @@ def get_model_fields(model):
         elif hasattr(f, "document"):
             k = f.document._meta["id_field"]
             for ff, fi in f.document._fields.items():
-                if fi.name != k and fi.unique:
+                if fi.name != k and fi.unique and fi.name not in IGNORED_FIELDS:
                     k = fi.name
                     break
             fields += [(f.name, required, f.document, k)]
@@ -130,8 +131,8 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     integers = set([ff.name for ff in model._meta.fields if
                     isinstance(ff, models.IntegerField)])
     # Search for foreign keys and required fields
-    ir = set(getattr(model, "csv_ignored_fields", []))
-    ir.add("id")
+    ir = set(["id", "bi_id"])
+    ir.update(getattr(model, "csv_ignored_fields", []))
     for name, required, rel, rname in get_model_fields(model):
         field_names.add(name)
         if rel:

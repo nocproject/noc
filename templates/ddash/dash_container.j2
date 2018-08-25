@@ -1,0 +1,94 @@
+{
+  "id": "4622e57f-a3f2-4d1e-bd97-90c4566733fa",
+  "title": "{% set comma = joiner(" ") -%}{% for o in container_path %}{{ comma() }}{{ o.name }}{% endfor %}",
+  "tags": ["{{pool}}"],
+  "style": "dark",
+  "timezone": "browser",
+  "refresh": "15m",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["5m","10m","15m"],
+    "time_options": ["1h","3h","6h","12h","24h","2d","7d"]
+  },
+  "templating": {
+    "list": [
+      {% include "template_resolved_bi_id.j2" with context -%}
+    ]
+  },
+  "annotations": {},
+  "schemaVersion": 12,
+  "version": 33,
+  "links": [
+    {
+      "icon": "doc",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": true,
+      "type": "link",
+      "title": "png",
+      "tooltip": "png",
+      "url": "/ui/grafana/render/dashboard/script/noc.js?width=1800&dashboard=container&id={{ container_id }}"
+    },
+    {
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        ""
+      ],
+      "targetBlank": true,
+      "type": "dashboards"
+    },
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "tags": [
+        "SYSTEM"
+      ],
+      "targetBlank": true,
+      "type": "dashboards"
+    }
+  ],
+  "gnetId": null,
+  "rows": [
+    {
+      "collapse": false,
+      "height": "25px",
+      "panels": [
+        {% include "panel_container.j2" with context -%}
+      ]
+    }
+    {% if bi_ids %}
+    ,{
+      "collapse": false,
+      "height": "250px",
+      "repeat": "bi_id",
+      "showTitle": true,
+      "title": "$bi_id",
+      "titleSize": "h6",
+      "panels": [
+        {% include "graph_errors.j2" with context -%},
+        {% include "graph_rtt.j2" with context -%},
+        {% include "graph_memory_usage.j2" with context -%},
+        {% include "graph_cpu_usage.j2" with context -%}
+      ]
+    }
+    {% else %}
+    ,{
+      "collapse": false,
+      "height": "25px",
+      "panels": [
+        {% include "panel_empty_container.j2" with context -%},
+      ]
+    }
+    {% endif %}
+  ]
+}

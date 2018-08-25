@@ -14,9 +14,7 @@ import ujson
 # Python modules
 import os
 import ConfigParser
-from noc.lib.version import (get_branch, get_tip,
-                             get_os_brand, get_os_version,
-                             get_versions)
+from noc.core.version import version
 
 logger = logging.getLogger(__name__)
 
@@ -206,9 +204,9 @@ class CPClient(object):
         self.account_password = password
         try:
             self.account_uuid = self.account_info()["uuid"]
-        except CPClient.Error, why:
-            logging.error("Error attaching account: %s", why)
-            raise self.Error(why)
+        except CPClient.Error as e:
+            logging.error("Error attaching account: %s", e)
+            raise self.Error(e)
         self.write_config()
         logger.info("Account %s has been attached", name)
 
@@ -257,9 +255,9 @@ class CPClient(object):
             raise self.Error("System is not registred")
         return self.call(self.UPGRADE_SERVICE, "upgrade",
                          self.system_uuid,
-                         get_os_brand(), get_os_version(),
-                         get_branch(), get_tip(),
-                         get_versions(), [], status, log)
+                         version.os_brand, version.os_version,
+                         version.branch, version.changeset,
+                         version.package_versions, [], status, log)
 
     def report_crashinfo(self, crashinfo):
         if not self.has_system():

@@ -41,6 +41,7 @@ class ActionCommands(Document):
     meta = {
         "collection": "noc.actioncommands",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "sa.actioncommands",
         "json_depends_on": [
             "sa.actions",

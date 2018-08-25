@@ -40,6 +40,11 @@ class SuggestSNMPCheck(DiscoveryCheck):
                     if self.check_oid(oid, ro, self.CHECK_VERSION[ver]):
                         self.logger.info("Guessed community: %s, version: %d", ro, ver)
                         self.object._suggest_snmp = (ro, rw, self.CHECK_VERSION[ver])
+                        if self.object.get_access_preference() == "S":
+                            self.set_credentials(
+                                snmp_ro=ro,
+                                snmp_rw=rw
+                            )
                         return
         self.logger.info("Failed to guess SNMP community")
         self.set_problem(
@@ -68,3 +73,11 @@ class SuggestSNMPCheck(DiscoveryCheck):
         except RPCError as e:
             self.logger.debug("RPC Error: %s", e)
             return False
+
+    def set_credentials(self, snmp_ro, snmp_rw):
+        self.logger.info("Setting credentials")
+        self.object.snmp_ro = snmp_ro
+        self.object.snmp_rw = snmp_rw
+        # Reset auth profile to continue operations with new credentials
+        self.object.auth_profile = None
+        self.object.save()

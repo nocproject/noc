@@ -14,20 +14,8 @@
     "to": "now"
   },
   "timepicker": {
-    "refresh_intervals": [
-      "5m",
-      "10m",
-      "15m"
-    ],
-    "time_options": [
-      "1h",
-      "3h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d"
-    ]
+    "refresh_intervals": [ "5m","10m","15m"],
+    "time_options": ["1h","3h","6h","12h","24h","2d","7d"]
   },
   "templating": {
     "list": [
@@ -36,6 +24,11 @@
         {% from 'template_port.j2' import ports -%}
         {{ comma() }}{{ ports(port_type) }}
       {% endfor -%},
+      {% endif %}
+
+      {% if subifaces %}
+        {% from "template_subiface.j2" import subiface -%}
+          {{ subiface(subifaces) }},
       {% endif %}
 
       {% include "template_device.j2" with context -%},
@@ -133,6 +126,23 @@
             }
         {%- endfor %}
     {%endif%}
+
+    {%if subifaces %}
+    ,
+        {% set comma = joiner(",") -%}
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "250px",
+          "showTitle": true,
+          "title": "SubInterfaces",
+          "internal_comment": "subif_row",
+          "panels": [
+            {% from "graph_subinterface_load.j2" import subinterface -%}
+            {{subinterface()}}
+          ]
+        }
+    {%endif%}
     {%if lags %}
     ,
         {% set comma = joiner(",") -%}
@@ -157,6 +167,8 @@
     ,
         {% include "row_errors.j2" with context -%}
     {%endif%}
+
+
     {%if object_metrics%}
         ,
         {

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Basic MO discovery job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,10 +13,14 @@ import contextlib
 import time
 import zlib
 import datetime
+import types
+import operator
 # Third-party modules
 import bson
+import cachetools
 import six
 from six.moves import StringIO
+from pymongo import UpdateOne
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
@@ -28,7 +32,6 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
 from noc.core.service.error import RPCError, RPCRemoteError
-from noc.core.service.loader import get_service
 from noc.core.error import (
     ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND,
     ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR,
@@ -36,6 +39,8 @@ from noc.core.error import (
 )
 from noc.core.span import Span
 from noc.core.error import ERR_UNKNOWN
+from noc.core.cache.base import cache
+from noc.core.perf import metrics
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -44,6 +49,9 @@ class MODiscoveryJob(PeriodicJob):
     use_offset = True
     # Name of umbrella class to cover discovery problems
     umbrella_cls = None
+    # Job families
+    is_box = False
+    is_periodic = False
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
@@ -58,6 +66,8 @@ class MODiscoveryJob(PeriodicJob):
         self.caps = None
         self.has_fatal_error = False
         self.service = self.scheduler.service
+        # Additional artefacts can be passed between checks in one session
+        self.artefacts = {}
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -288,15 +298,46 @@ class MODiscoveryJob(PeriodicJob):
     def get_alarm_weight(self):
         return 1
 
+    def set_artefact(self, name, value=None):
+        """
+        Set artefact (opaque structure to be passed to following checks)
+        :param name: Artefact name
+        :param value: Opaque value
+        :return:
+        """
+        if not value:
+            if name in self.artefacts:
+                del self.artefacts[name]
+        else:
+            self.artefacts[name] = value or None
+
+    def get_artefact(self, name):
+        """
+        Get artefact by name
+        :param name: artefact name
+        :return: artefact
+        """
+        return self.artefacts.get(name)
+
+    def has_artefact(self, name):
+        """
+        Check job has existing artefact
+        :param name: artefact name
+        :return: True, if artefact exists, False otherwise
+        """
+        return name in self.artefacts
+
 
 class DiscoveryCheck(object):
     name = None
     # If not none, check required script is available
     # before running check
     required_script = None
-    # If not none, check object has all required capablities
+    # If not None, check object has all required capablities
     # from list
     required_capabilities = None
+    # If not None, check job has all required artefacts
+    required_artefacts = None
     #
     fatal_errors = set([
         ERR_CLI_AUTH_FAILED,
@@ -326,6 +367,8 @@ class DiscoveryCheck(object):
         self.if_ip_cache = {}
         self.sub_cache = {}
         self.profile_cache = {}
+        self.is_box = self.job.is_box
+        self.is_periodic = self.job.is_periodic
 
     def is_enabled(self):
         checks = self.job.attrs.get("_checks", set())
@@ -374,12 +417,23 @@ class DiscoveryCheck(object):
                 return False
         return True
 
+    def has_required_artefacts(self):
+        if not self.required_artefacts:
+            return True
+        for ra in self.required_artefacts:
+            if not self.has_artefact(ra):
+                self.logger.info("Job has not '%s' artefact. Skipping", ra)
+                return False
+        return True
+
     def run(self):
         if not self.is_enabled():
             self.logger.info("Check is disabled. Skipping")
             return
         if self.has_fatal_error():
             self.logger.info("Check is disabled due to previous fatal error. Skipping")
+            return
+        if not self.has_required_artefacts():
             return
         with Span(server="discovery", service=self.name) as span, self.job.check_timer(self.name):
             # Check required scripts
@@ -454,14 +508,14 @@ class DiscoveryCheck(object):
                     setattr(obj, k, v)
                     changes += [(k, v)]
         if changes:
-            if bulk:
+            if bulk is not None:
                 op = {
                     "$set": dict(changes)
                 }
                 id_field = obj._fields[Interface._meta["id_field"]].db_field
-                bulk.find({
+                bulk += [UpdateOne({
                     id_field: obj.pk
-                }).update(op)
+                }, op)]
             else:
                 kwargs = {}
                 if async:
@@ -568,9 +622,9 @@ class DiscoveryCheck(object):
             managed_object=self.object.id,
             type__in=["physical", "aggregated"]
         ):
-            l = i.link
-            if l:
-                self.logger.info("Unlinking: %s", l)
+            link = i.link
+            if link:
+                self.logger.info("Unlinking: %s", link)
                 try:
                     i.unlink()
                 except ValueError as e:
@@ -596,8 +650,55 @@ class DiscoveryCheck(object):
             fatal=fatal
         )
 
+    def set_artefact(self, name, value=None):
+        """
+        Set artefact (opaque structure to be passed to following checks)
+        :param name: Artefact name
+        :param value: Opaque value
+        :return:
+        """
+        self.job.set_artefact(name, value)
+
+    def get_artefact(self, name):
+        """
+        Get artefact by name
+        :param name: artefact name
+        :return: artefact
+        """
+        return self.job.get_artefact(name)
+
+    def has_artefact(self, name):
+        """
+        Check job has existing artefact
+        :param name: artefact name
+        :return: True, if artefact exists, False otherwise
+        """
+        return self.job.has_artefact(name)
+
+    def invalidate_neighbor_cache(self, obj=None):
+        """
+        Reset cached neighbors for object.
+
+        NB: May be called by non-topology checks
+        :param obj: Managed Object instance, jobs object if ommited
+        :return:
+        """
+        obj = obj or self.object
+        if not obj.object_profile.neighbor_cache_ttl:
+            # Disabled cache
+            return
+        keys = ["mo-neighbors-%s-%s" % (x, obj.id)
+                for x in obj.segment.profile.get_topology_methods()]
+        if keys:
+            self.logger.info("Invalidating neighor cache: %s" % ", ".join(keys))
+            cache.delete_many(keys, TopologyDiscoveryCheck.NEIGHBOR_CACHE_VERSION)
+
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
+    NEIGHBOR_CACHE_VERSION = 1
+    # clean_interface settings
+    aliased_names_only = False
+
     def __init__(self, *args, **kwargs):
         super(TopologyDiscoveryCheck, self).__init__(*args, **kwargs)
         self.neighbor_hostname_cache = {}  # (method, id) -> managed object
@@ -605,15 +706,24 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
         self.neighbor_id_cache = {}
         self.interface_aliases = {}  # (object, alias) -> port name
+        self._own_mac_check_cache = {}
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
+        # Check object has interfaces
+        if not self.has_capability("DB | Interfaces"):
+            self.logger.info(
+                "No interfaces has been discovered. "
+                "Skipping topology check"
+            )
+            return
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
         loops = {}  # first interface, second interface
         problems = {}
         # Check local side
-        for li, ro, ri in self.iter_neighbors(self.object):
+        ln_key = "mo-neighbors-%s-%s" % (self.name, self.object.id)
+        for li, ro, ri in self.cached_neighbors(self.object, ln_key, self.iter_neighbors):
             # Resolve remote object
             remote_object = self.get_neighbor(ro)
             if not remote_object:
@@ -643,7 +753,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
-                if (remote_interface in loops and loops[remote_interface] == li):
+                if remote_interface in loops and loops[remote_interface] == li:
                     self.logger.info(
                         "Loop link detected: %s:%s - %s:%s",
                         self.object.name, li,
@@ -672,9 +782,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 continue
             try:
-                remote_neighbors = list(
-                    self.iter_neighbors(remote_object)
-                )
+                rn_key = "mo-neighbors-%s-%s" % (self.name, remote_object.id)
+                remote_neighbors = self.cached_neighbors(remote_object, rn_key, self.iter_neighbors)
             except Exception as e:
                 self.logger.error(
                     "Cannot get neighbors from candidate %s: %s",
@@ -716,7 +825,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "Cannot clean interface %s:%s. Skipping",
                         self.object, l)
                     continue
-                ri = self.clean_interface(self.object, r)
+                ri = self.clean_interface(remote_object, r)
                 if not ri:
                     self.logger.info(
                         "Cannot clean interface %s:%s. Skipping",
@@ -749,6 +858,45 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     path=i,
                     message=problems[i]
                 )
+
+    def cached_neighbors(self, mo, key, iter_neighbors):
+        """
+        Cache iter_neighbors results according to profile settings
+        :param mo:
+        :param key:
+        :param iter_neighbors:
+        :return:
+        """
+        ttl = mo.object_profile.neighbor_cache_ttl
+        if not ttl:
+            # Disabled cache
+            metrics["neighbor_cache_misses"] += 1
+            neighbors = iter_neighbors(mo)
+            if isinstance(neighbors, types.GeneratorType):
+                neighbors = list(iter_neighbors(mo))
+            return neighbors
+        # Cached version
+        neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
+        self.logger.debug("Use neighbors cache")
+        if neighbors is None:
+            neighbors = iter_neighbors(mo)
+            if isinstance(neighbors, types.GeneratorType):
+                neighbors = list(iter_neighbors(mo))
+            cache.set(key, neighbors, ttl=ttl,
+                      version=self.NEIGHBOR_CACHE_VERSION)
+            if self.interface_aliases:
+                alias_cache = {(mo.id, n[0]): self.interface_aliases[(mo.id, n[0])] for n in neighbors
+                               if (mo.id, n[0]) in self.interface_aliases}
+                cache.set("%s-aliases" % key, alias_cache, ttl=ttl,
+                          version=self.NEIGHBOR_CACHE_VERSION)
+            metrics["neighbor_cache_misses"] += 1
+        else:
+            alias_cache = cache.get("%s-aliases" % key, version=self.NEIGHBOR_CACHE_VERSION)
+            self.logger.debug("Alias cache is %s", alias_cache)
+            if alias_cache:
+                self.interface_aliases.update(alias_cache)
+            metrics["neighbor_cache_hits"] += 1
+        return neighbors
 
     def iter_neighbors(self, mo):
         """
@@ -823,13 +971,19 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def clean_interface(self, object, interface):
         """
-        Finaly clean interface name
-        And convert to local conventions
-        :param object:
-        :param interface:
+        Finaly clean interface name:
+        * Check for interface alias
+        * When aliased_names_only is not set - use local name
+        :param object: ManagedObject instance
+        :param interface: interface name
         :return: Interface name or None if interface cannot be cleaned
         """
-        return self.interface_aliases.get((object, interface), interface)
+        i = self.interface_aliases.get((object.id, interface))
+        if i:
+            return i
+        if self.aliased_names_only:
+            return None
+        return interface
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
@@ -899,7 +1053,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             if (
                 llink.discovery_method != self.name and
                 (llink.discovery_method is None or
-                     self.is_preferable_over(llink.discovery_method))
+                 self.is_preferable_over(local_object, remote_object, llink))
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)
@@ -910,7 +1064,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         # Check method preferences
         if llink:
-            if self.is_preferable_over(llink.discovery_method):
+            if self.is_preferable_over(local_object, remote_object, llink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     llink, self.name, llink.discovery_method
@@ -925,7 +1079,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 return
         if rlink:
-            if self.is_preferable_over(rlink.discovery_method):
+            if self.is_preferable_over(local_object, remote_object, rlink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     rlink, self.name, rlink.discovery_method
@@ -1168,11 +1322,19 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_object.name, remote_interface,
             )
 
-    def is_preferable_over(self, method):
+    def is_preferable_over(self, mo1, mo2, link):
         """
-        Check current discovery method is preferable over *method*
+        Check current discovery method is preferable over link's one
+        :param mo1: Local managed object
+        :param mo2: Remote managed object
+        :param link: Existing ling
+        :returns: True, if check's method is preferabble
         """
-        return self.job.is_preferable_method(self.name, method)
+        if mo1.segment == mo2.segment or mo2.segment.id not in mo1.segment.get_path():
+            # Same segment, or mo1 is in upper segment. apply local segment policy
+            return mo1.segment.profile.is_preferable_method(self.name, link.discovery_method)
+        # mo2 is in upper segment, use remote segment policy
+        return mo2.segment.profile.is_preferable_method(self.name, link.discovery_method)
 
     def set_interface_alias(self, object, interface_name, alias):
         """
@@ -1183,4 +1345,9 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :param alias:
         :return:
         """
-        self.interface_aliases[object, alias] = interface_name
+        self.interface_aliases[object.id, alias] = interface_name
+
+    @cachetools.cachedmethod(operator.attrgetter("_own_mac_check_cache"))
+    def is_own_mac(self, mac):
+        mr = DiscoveryID.macs_for_objects(self.object)
+        return mr and any(1 for f, t in mr if f <= mac <= t)

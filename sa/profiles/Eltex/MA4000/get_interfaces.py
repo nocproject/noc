@@ -64,11 +64,11 @@ class Script(BaseScript):
         lldp = []
         c = self.cli("show lldp configuration")
         if "LLDP state: Enabled" in c:
-            c = self.cli("show lldp local")
-            t = parse_table(c, allow_wrap=True, footer="dummy footer")
+            t = parse_table(c, allow_wrap=True, footer="PD - port description")
             for i in t:
                 ifname = " ".join(i[0].split())
-                lldp += [ifname]
+                if "transmit" in i[1] or "receive" in i[1]:
+                    lldp += [ifname]
 
         c = self.cli("show interface front-port all vlans")
         t = parse_table(
@@ -79,7 +79,6 @@ class Script(BaseScript):
                 if iface["name"] in lldp:
                     iface["enabled_protocols"] = ["LLDP"]
                 interfaces += [iface]
-
         for slot in range(0, 16):
             c = self.cli("show interface plc-pon-port %d/0-7 vlans" % slot)
             t = parse_table(
@@ -104,7 +103,6 @@ class Script(BaseScript):
             iface = self.create_iface(i, "slot-port")
             if iface is not None:
                 interfaces += [iface]
-
         c = self.cli("show management")
         match = self.rx_mgmt.search(c)
         ip_address = "%s/%s" % (
@@ -125,5 +123,28 @@ class Script(BaseScript):
         iface["mac"] = match.group("mac")
         iface["subinterfaces"][0]["mac"] = match.group("mac")
         interfaces += [iface]
-
+        portchannels = self.scripts.get_portchannel()
+        for pc in portchannels:
+            c = self.cli("show interface %s vlans" % pc["interface"])
+            t = parse_table(
+                c, allow_wrap=True, footer="N/A - interface doesn't exist")
+            for i in t:
+                iface = self.create_iface(i, "port-channel")
+                if iface is not None:
+                    has_lacp = False
+                    iface["type"] = "aggregated"
+                    if pc["type"] == "L":
+                        has_lacp = True
+                        iface["enabled_protocols"] = ["LACP"]
+                    interfaces += [iface]
+                    for member in pc["members"]:
+                        for i in interfaces:
+                            if member == i["name"]:
+                                i["aggregated_interface"] = pc["interface"]
+                                if has_lacp:
+                                    if i["enabled_protocols"]:
+                                        i["enabled_protocols"] += ["LACP"]
+                                    else:
+                                        i["enabled_protocols"] = ["LACP"]
+                                break
         return [{"interfaces": interfaces}]

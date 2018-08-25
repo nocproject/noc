@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
+from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, IntField,
                                 BooleanField, LongField, ListField)
@@ -19,16 +20,19 @@ import cachetools
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
+from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later
 
 id_lock = Lock()
 
 
+@bi_sync
 @on_save
 class ServiceProfile(Document):
     meta = {
         "collection": "noc.serviceprofiles",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField(unique=True)
     description = StringField()
@@ -48,9 +52,9 @@ class ServiceProfile(Document):
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
     # Object id in remote system
-    remote_id = StringField()    
+    remote_id = StringField()
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
     # Tags
     tags = ListField(StringField())
 
@@ -84,9 +88,11 @@ def refresh_interface_profiles(sp_id, ip_id):
     ]
     if not svc:
         return
-    bulk = Interface._get_collection().initialize_unordered_bulk_op()
-    bulk.find({
+    collection = Interface._get_collection()
+    bulk = []
+    bulk += [UpdateOne({
         "_id": {"$in": svc}
-    }).update({
+    }, {
         "$set": {"profile": ip_id}
-    })
+    })]
+    collection.bulk_write(bulk, ordered=False)

@@ -17,6 +17,6 @@ class Profile(BaseProfile):
     command_super = "su"
     command_exit = "exit"
     pattern_username = r"^[Ll]ogin:"
-    pattern_unpriveleged_prompt = r"^\S*?\s*(%|\$)\s*"
+    pattern_unprivileged_prompt = r"^\S*?\s*(%|\$)\s*"
     pattern_prompt = r"^(?P<hostname>\S*)\s*#\s*"
     pattern_syntax_error = r": Command not found\."

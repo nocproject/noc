@@ -8,7 +8,7 @@ console.debug("Defining NOC.dns.dnszone.Application");
 
 Ext.define("NOC.dns.dnszone.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.dns.dnszone.Model",
         "NOC.dns.dnszone.RecordsModel",
         "NOC.dns.dnszone.RRTypeField",
@@ -133,6 +133,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                 {
                     name: "paid_till",
                     xtype: "datefield",
+                    startDay: 1,
                     fieldLabel: __("Paid Till"),
                     allowBlank: true
                 },

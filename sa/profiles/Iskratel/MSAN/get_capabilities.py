@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
+from noc.core.mib import mib
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
@@ -16,8 +15,10 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "Iskratel.MSAN.get_capabilities"
 
+    SNMP_GET_CHECK_OID = mib["SNMPv2-MIB::sysDescr", 0]
+
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """

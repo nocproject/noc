@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "BDCOM.xPON.get_capabilities"
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -25,7 +25,7 @@ class Script(BaseScript):
         return "LLDP is not enabled" not in r
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has stp enabled
         """

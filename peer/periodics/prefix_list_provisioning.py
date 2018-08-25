@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # peer.prefix_list_provisioning
+# flake8: noqa
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -11,12 +12,13 @@ import noc.lib.periodic
 import logging
 TIMEOUT=2000
 
+
 class Task(noc.lib.periodic.Task):
     name="peer.prefix_list_provisioning"
     description=""
     wait_for=["cm.prefix_list_pull"]
     def execute(self):
-        from noc.peer.models import PrefixListCache
+        from noc.peer.models.prefixlistcache import PrefixListCache
         from noc.sa.models.managedobject import ManagedObject
         from noc.sa.models.reducetask import ReduceTask
         #

@@ -7,12 +7,15 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 import inspect
 import datetime
 # Third-party modules
 import bson
+from pymongo import ReadPreference
 # NOC modules
+from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
@@ -24,12 +27,13 @@ from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.selectorcache import SelectorCache
+from noc.gis.utils.addr.ru import normalize_division
 from noc.main.models import User
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
-from noc.maintainance.models.maintainance import Maintainance
-from noc.maintainance.models.maintainance import MaintainanceObject
+from noc.maintenance.models.maintenance import Maintenance
+from noc.maintenance.models.maintenance import MaintenanceObject
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
@@ -65,9 +69,11 @@ class AlarmApplication(ExtApplication):
         config={}
     )
 
+    DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
+
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
-        from plugins.base import AlarmPlugin
+        from .plugins.base import AlarmPlugin
         # Load plugins
         self.plugins = {}
         for f in os.listdir("services/web/apps/fm/alarm/plugins/"):
@@ -87,13 +93,13 @@ class AlarmApplication(ExtApplication):
 
     def cleaned_query(self, q):
         q = q.copy()
+        status = q["status"] if "status" in q else "A"
         for p in self.ignored_params:
             if p in q:
                 del q[p]
         for p in (
-            self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param,
-            self.only_param):
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param, self.only_param):
             if p in q:
                 del q[p]
         # Normalize parameters
@@ -101,14 +107,14 @@ class AlarmApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
-        # Exclude maintainance
-        if "maintainance" not in q:
-            q["maintainance"] = "hide"
-        if q["maintainance"] == "hide":
-            q["managed_object__nin"] = Maintainance.currently_affected()
-        elif q["maintainance"] == "only":
-            q["managed_object__in"] = Maintainance.currently_affected()
-        del q["maintainance"]
+        # Exclude maintenance
+        if "maintenance" not in q:
+            q["maintenance"] = "hide"
+        if q["maintenance"] == "hide":
+            q["managed_object__nin"] = Maintenance.currently_affected()
+        elif q["maintenance"] == "only":
+            q["managed_object__in"] = Maintenance.currently_affected()
+        del q["maintenance"]
         if "administrative_domain" in q:
             q["adm_path"] = int(q["administrative_domain"])
             q.pop("administrative_domain")
@@ -118,7 +124,7 @@ class AlarmApplication(ExtApplication):
         if "managedobjectselector" in q:
             s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
             if "managed_object__in" in q:
-                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
+                q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
                 q["managed_object__in"] = s
             q.pop("managedobjectselector")
@@ -136,18 +142,22 @@ class AlarmApplication(ExtApplication):
             del q["collapse"]
             if c != "0":
                 q["root__exists"] = False
+        if status == "C":
+            if ("timestamp__gte" not in q and "timestamp__lte" not in q and
+                    "escalation_tt__contains" not in q and "managed_object" not in q):
+                q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
         return q
 
     def instance_to_dict(self, o, fields=None):
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())
-        mtc = o.managed_object.id in Maintainance.currently_affected()
+        mtc = o.managed_object.id in Maintenance.currently_affected()
         if o.status == "C":
             # For archived alarms
-            mtc = Maintainance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
-                                              affected_objects__in=[
-                                                       MaintainanceObject(object=o.managed_object)]).count() > 0
+            mtc = Maintenance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
+                                             affected_objects__in=[
+                                                 MaintenanceObject(object=o.managed_object)]).count() > 0
 
         d = {
             "id": str(o.id),
@@ -168,6 +178,8 @@ class AlarmApplication(ExtApplication):
             "row_class": s.style.css_class_name,
             "segment__label": o.managed_object.segment.name,
             "segment": str(o.managed_object.segment.id),
+            "location_1": self.location(o.managed_object.container.id)[0] if o.managed_object.container else "",
+            "location_2": self.location(o.managed_object.container.id)[1] if o.managed_object.container else "",
             "escalation_tt": o.escalation_tt,
             "escalation_error": o.escalation_error,
             "platform": o.managed_object.platform.name if o.managed_object.platform else "",
@@ -192,10 +204,10 @@ class AlarmApplication(ExtApplication):
             raise Exception("Invalid status")
         model = self.model_map[status]
         if request.user.is_superuser:
-            return model.objects.all()
+            return model.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all()
         else:
             return model.objects.filter(
-                adm_path__in=UserAccess.get_domains(request.user)
+                adm_path__in=UserAccess.get_domains(request.user), read_preference=ReadPreference.SECONDARY_PREFERRED
             )
 
     @view(url=r"^$", access="launch", method=["GET"], api=True)
@@ -209,7 +221,6 @@ class AlarmApplication(ExtApplication):
         if not alarm:
             self.response_not_found()
         user = request.user
-        lang = "en"
         d = self.instance_to_dict(alarm)
         d["body"] = alarm.body
         d["symptoms"] = alarm.alarm_class.symptoms
@@ -242,6 +253,10 @@ class AlarmApplication(ExtApplication):
                 except Object.DoesNotExist:
                     break
             d["container_path"] = " | ".join(cp)
+            if not self.location(mo.container.id)[0]:
+                d["address_path"] = None
+            else:
+                d["address_path"] = ", ".join(self.location(mo.container.id))
         d["tags"] = mo.tags
         # Log
         if alarm.log:
@@ -437,12 +452,18 @@ class AlarmApplication(ExtApplication):
 
     @classmethod
     def f_glyph_summary(cls, s, collapse=False):
+        def be_true(p):
+            return True
+
+        def be_show(p):
+            return p.show_in_summary
+
         def get_summary(d, profile):
             v = []
             if hasattr(profile, "show_in_summary"):
-                show_in_summary = lambda p: p.show_in_summary
+                show_in_summary = be_show
             else:
-                show_in_summary = lambda p: True
+                show_in_summary = be_true
             for p, c in sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
@@ -480,3 +501,34 @@ class AlarmApplication(ExtApplication):
             return {'status': True}
         else:
             return {'status': False, 'error': 'The alarm is not active at the moment'}
+
+    def location(self, id):
+        """
+        Return geo address for Managed Objects
+        """
+        def chunkIt(seq, num):
+            avg = len(seq) / float(num)
+            out = []
+            last = 0.0
+
+            while last < len(seq):
+                out.append(seq[int(last):int(last + avg)])
+                last += avg
+            return out
+        location = []
+        address = Object.get_by_id(id).get_address_text()
+        if address:
+            for res in address.split(","):
+                adr = normalize_division(res.strip().decode("utf-8").lower())
+                if None in adr and "" in adr:
+                    continue
+                if None in adr:
+                    location += [adr[1].title().strip()]
+                else:
+                    location += [' '.join(adr).title().strip()]
+            res = chunkIt(location, 2)
+            location_1 = ", ".join(res[0])
+            location_2 = ", ".join(res[1])
+            return [location_1, location_2]
+        else:
+            return ["", ""]

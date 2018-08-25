@@ -8,7 +8,6 @@ console.debug("Defining NOC.support.account.Application");
 
 Ext.define("NOC.support.account.Application", {
     extend: "NOC.core.Application",
-    //requires: [],
     items: [],
     initComponent: function() {
         var me = this;

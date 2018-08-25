@@ -7,18 +7,19 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 from collections import defaultdict
 # Third-party modules
 import cachetools
 import geojson
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 
 
@@ -80,11 +81,16 @@ class AlarmHeatCard(BaseCard):
             qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
         if ms == 0:
             # Filter out equipment under maintenance
-            qs = qs.filter(managed_object__nin=Maintainance.currently_affected())
+            qs = qs.filter(managed_object__nin=Maintenance.currently_affected())
         for a in qs.only("id", "managed_object", "direct_subscribers", "direct_services"):
-            s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
-            s_service = SummaryItem.items_to_dict(a.direct_services)
+            s_sub, s_service = {}, {}
+            if a.direct_subscribers:
+                s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
+            if a.direct_services:
+                s_service = SummaryItem.items_to_dict(a.direct_services)
             mo = a.managed_object
+            if not mo:
+                continue
             if mo.x and mo.y:
                 w = ServiceSummary.get_weight({
                     "subscriber": s_sub,
@@ -103,8 +109,10 @@ class AlarmHeatCard(BaseCard):
                 "y": mo.y,
                 "w": max(w, 1)
             }]
-            update_dict(services, s_service)
-            update_dict(subscribers, s_sub)
+            if s_service:
+                update_dict(services, s_service)
+            if s_sub:
+                update_dict(subscribers, s_sub)
         links = None
         o_seen = set()
         points = None

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # EventTrigger
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,11 +13,10 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
-from noc.main.models.pyrule import PyRule
 
 
 class EventTrigger(models.Model):
-    class Meta:
+    class Meta(object):
         db_table = "fm_eventtrigger"
         app_label = "fm"
         verbose_name = "Event Trigger"
@@ -25,6 +24,9 @@ class EventTrigger(models.Model):
 
     name = models.CharField("Name", max_length=64, unique=True)
     is_enabled = models.BooleanField("Is Enabled", default=True)
+    description = models.CharField(
+        "Description",
+        max_length=256, null=True, blank=True)
     event_class_re = models.CharField("Event class RE", max_length=256)
     condition = models.CharField("Condition", max_length=256, default="True")
     time_pattern = models.ForeignKey(TimePattern,
@@ -39,10 +41,6 @@ class EventTrigger(models.Model):
     template = models.ForeignKey(Template,
                                  verbose_name="Template",
                                  null=True, blank=True)
-    pyrule = models.ForeignKey(PyRule,
-                               verbose_name="pyRule",
-                               null=True, blank=True,
-                               limit_choices_to={"interface": "IEventTrigger"})
     handler = models.CharField("Handler",
                                max_length=128, null=True, blank=True)
 

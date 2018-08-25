@@ -1,6 +1,0 @@
----
-- name: Install nsqadmin init script
-  template: src="os/FreeBSD/etc/rc.d/nsqadmin.j2" dest="/usr/local/etc/rc.d/nsqadmin" mode="a+rx"
-
-- name: Enable NSQADMIN system service
-  service: name="nsqadmin" enabled=yes

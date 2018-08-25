@@ -136,6 +136,14 @@ Ext.define("NOC.inv.map.Application", {
             }
         );
 
+        me.cloudInspector = Ext.create(
+            "NOC.inv.map.inspectors.CloudInspector",
+            {
+                app: me,
+                readOnly: me.readOnly
+            }
+        );
+
         me.legendPanel = Ext.create("NOC.inv.map.Legend", {
             collapsed: true,
             region: 'south',
@@ -334,11 +342,9 @@ Ext.define("NOC.inv.map.Application", {
         me.currentSegmentId = segmentId;
         // @todo: Restrict to permissions
         me.editButton.setDisabled(me.readOnly);
-        me.editButton.setPressed(false);
         me.saveButton.setDisabled(true);
-        me.newLayoutButton.setDisabled(true);
-        me.rotateButton.setDisabled(true);
-        me.revertButton.setDisabled(true);
+        me.setStateMapButtons(!me.editButton.pressed);
+        me.editButton.setPressed(false);
         me.inspectSegment();
         me.viewMapButton.setPressed(true);
         me.viewStpButton.setPressed(false);
@@ -373,7 +379,7 @@ Ext.define("NOC.inv.map.Application", {
             me.segmentInspector
         );
         if(me.currentSegmentId) {
-            me.segmentInspector.preview('segment', me.currentSegmentId, null);
+            me.segmentInspector.preview(me.currentSegmentId, null);
         }
     },
 
@@ -382,7 +388,7 @@ Ext.define("NOC.inv.map.Application", {
         me.inspectorPanel.getLayout().setActiveItem(
             me.managedObjectInspector
         );
-        me.managedObjectInspector.preview('managedobject', me.currentSegmentId, objectId);
+        me.managedObjectInspector.preview(me.currentSegmentId, objectId);
     },
 
     inspectLink: function(linkId) {
@@ -390,15 +396,36 @@ Ext.define("NOC.inv.map.Application", {
         me.inspectorPanel.getLayout().setActiveItem(
             me.linkInspector
         );
-        me.linkInspector.preview('link', me.currentSegmentId, linkId);
+        me.linkInspector.preview(me.currentSegmentId, linkId);
+    },
+
+    inspectCloud: function(linkId) {
+        var me = this;
+        me.inspectorPanel.getLayout().setActiveItem(
+            me.cloudInspector
+        );
+        me.cloudInspector.preview(me.currentSegmentId, linkId);
     },
 
     onEdit: function() {
         var me = this;
+        me.mapPanel.paper.clearGrid();
         if(me.editButton.pressed) {
             me.mapPanel.setOverlayMode(0);
+            me.mapPanel.paper.setGrid({
+                name: 'doubleMesh',
+                args: [
+                    {color: '#bdc3c7', thickness: 1}, // settings for the primary mesh
+                    {color: '#bdc3c7', scaleFactor: 5, thickness: 2} //settings for the secondary mesh
+                ]
+            });
+            me.mapPanel.paper.drawGrid();
             me.viewMapButton.setPressed(true);
-            me.rotateButton.setDisabled(false);
+            me.saveButton.setDisabled(true);
+            me.setStateMapButtons(false);
+        } else {
+            me.setStateMapButtons(true);
+            me.saveButton.setDisabled(true);
         }
         me.mapPanel.setInteractive(me.editButton.pressed);
     },
@@ -411,6 +438,7 @@ Ext.define("NOC.inv.map.Application", {
     onRevert: function() {
         var me = this;
         me.loadSegment(me.currentSegmentId);
+        me.editButton.setPressed(true);
     },
 
     onReload: function() {
@@ -422,8 +450,7 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         if(me.editButton.pressed) {
             me.saveButton.setDisabled(me.readOnly);
-            me.newLayoutButton.setDisabled(me.readOnly);
-            me.revertButton.setDisabled(me.readOnly);
+            me.setStateMapButtons(me.readOnly);
         }
     },
 
@@ -446,7 +473,7 @@ Ext.define("NOC.inv.map.Application", {
             icon: Ext.Msg.QUESTION,
             buttons: Ext.Msg.YESNO,
             fn: function(btn) {
-                if(btn == "yes") {
+                if(btn === "yes") {
                     me.mapPanel.resetLayout(forceSpring);
                 }
             }
@@ -459,7 +486,7 @@ Ext.define("NOC.inv.map.Application", {
     },
 
     onChangeName: function() {
-      var me = this;
+        var me = this;
         me.mapPanel.changeLabelText(me.addressIPButton.pressed);
     },
 
@@ -478,5 +505,11 @@ Ext.define("NOC.inv.map.Application", {
 
     onBasket: function() {
         this.basketPanel.toggleCollapse();
+    },
+    setStateMapButtons: function(state) {
+        var me = this;
+        me.newLayoutButton.setDisabled(state);
+        me.rotateButton.setDisabled(state);
+        me.revertButton.setDisabled(state);
     }
 });

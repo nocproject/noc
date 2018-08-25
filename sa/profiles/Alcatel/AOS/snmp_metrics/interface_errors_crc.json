@@ -1,0 +1,6 @@
+{
+  "$metric": "Interface | Errors | CRC",
+  "$type": "ifindex",
+  "oid": "1.3.6.1.4.1.6486.800.1.2.1.5.1.1.2.2.1.3.{{ ifIndex }}",
+  "type": "gauge"
+}

@@ -2,30 +2,32 @@
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
-# Django modules
+# Third-party modules
 from django.template import Template as DjangoTemplate
 from django.template import Context
+from mongoengine.errors import SaveConditionError
 # NOC modules
 import noc.lib.nosql as nosql
-from alarmlog import AlarmLog
-from alarmclass import AlarmClass
 from noc.main.models import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
-from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
+from .alarmseverity import AlarmSeverity
+from .alarmclass import AlarmClass
+from .alarmlog import AlarmLog
 
 ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 
@@ -110,7 +112,8 @@ class ActiveAlarm(nosql.Document):
     def __unicode__(self):
         return u"%s" % self.id
 
-    def save(self, *args, **kwargs):
+    def clean(self):
+        super(ActiveAlarm, self).clean()
         if not self.last_update:
             self.last_update = self.timestamp
         data = self.managed_object.data
@@ -118,9 +121,25 @@ class ActiveAlarm(nosql.Document):
         self.segment_path = data.segment_path
         self.container_path = data.container_path
         self.uplinks = data.uplinks
-        return super(ActiveAlarm, self).save(*args, **kwargs)
 
-    def change_severity(self, user="", delta=None, severity=None):
+    def safe_save(self, **kwargs):
+        """
+        Create new alarm or update existing if still exists
+        :param kwargs:
+        :return:
+        """
+        if self.id:
+            # Update existing only if exists
+            if "save_condition" not in kwargs:
+                kwargs["save_condition"] = {"id": self.id}
+            try:
+                self.save(**kwargs)
+            except SaveConditionError:
+                pass  # Race condition, closed during update
+        else:
+            self.save()
+
+    def change_severity(self, user="", delta=None, severity=None, to_save=True):
         """
         Change alarm severity
         """
@@ -145,20 +164,15 @@ class ActiveAlarm(nosql.Document):
                 self.severity = severity.severity
                 self.log_message(
                     "%s has changed severity to %s" % (user, severity.name))
-        if self.id:
-            self.save(save_condition={"id": self.id})
-        else:
-            self.save()
+        if to_save:
+            self.safe_save()
 
     def log_message(self, message, to_save=True):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
                      from_status=self.status, to_status=self.status,
                      message=message)]
         if to_save:
-            if self.id:
-                self.save(save_condition={"id": self.id})
-            else:
-                self.save()
+            self.safe_save()
 
     def clear_alarm(self, message, ts=None, force=False):
         """
@@ -185,7 +199,7 @@ class ActiveAlarm(nosql.Document):
             for h in self.alarm_class.get_clear_handlers():
                 try:
                     h(self)
-                except:
+                except Exception:
                     error_report()
         log = self.log + [AlarmLog(timestamp=ts, from_status="A",
                                    to_status="C", message=message)]
@@ -233,6 +247,27 @@ class ActiveAlarm(nosql.Document):
             })
         elif ct:
             pass
+        # Set checks on all consequences
+        for d in self._get_collection().find({
+            "root": self.id
+        }, {"_id": 1, "alarm_class": 1}):
+            ac = AlarmClass.get_by_id(d["alarm_class"])
+            if not ac:
+                continue
+            t = ac.recover_time
+            if not t:
+                continue
+            call_later(
+                "noc.services.correlator.check.check_close_consequence",
+                scheduler="correlator",
+                pool=self.managed_object.pool.name,
+                delay=t,
+                alarm_id=d["_id"]
+            )
+        # Clear alarm
+        self.delete()
+        # Close TT
+        # MUST be after .delete() to prevent race conditions
         if a.escalation_tt or self.clear_template:
             if self.clear_template:
                 ctx = {
@@ -255,25 +290,6 @@ class ActiveAlarm(nosql.Document):
                 notification_group_id=self.clear_notification_group.id if self.clear_notification_group else None,
                 close_tt=self.close_tt
             )
-        # Set checks on all consequences
-        for d in self._get_collection().find({
-            "root": self.id
-        }, {"_id": 1, "alarm_class": 1}):
-            ac = AlarmClass.get_by_id(d["alarm_class"])
-            if not ac:
-                continue
-            t = ac.recover_time
-            if not t:
-                continue
-            call_later(
-                "noc.services.correlator.check.check_close_consequence",
-                scheduler="correlator",
-                pool=self.managed_object.pool.name,
-                delay=t,
-                alarm_id=d["_id"]
-            )
-        # Clear alarm
-        self.delete()
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
@@ -289,8 +305,11 @@ class ActiveAlarm(nosql.Document):
 
     @property
     def subject(self):
-        ctx = Context(self.get_template_vars())
-        s = DjangoTemplate(self.alarm_class.subject_template).render(ctx)
+        if self.custom_subject:
+            s = self.custom_subject
+        else:
+            ctx = Context(self.get_template_vars())
+            s = DjangoTemplate(self.alarm_class.subject_template).render(ctx)
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
@@ -414,10 +433,8 @@ class ActiveAlarm(nosql.Document):
             self.total_services = svc_list
             self.total_subscribers = sub_list
             if ns != self.severity:
-                self.change_severity(severity=ns)
-            self.save(save_condition={
-                "id": self.id
-            })
+                self.change_severity(severity=ns, to_save=False)
+            self.safe_save()
 
     def set_root(self, root_alarm):
         """
@@ -487,7 +504,7 @@ class ActiveAlarm(nosql.Document):
     def set_clear_notification(self, notification_group, template):
         self.clear_notification_group = notification_group
         self.clear_template = template
-        self.save(save_condition={
+        self.safe_save(save_condition={
             "managed_object": {
                 "$exists": True
             },
@@ -522,7 +539,8 @@ class ActiveAlarm(nosql.Document):
             if a.escalation_tt:
                 yield a
 
+
 # Avoid circular references
-from archivedalarm import ArchivedAlarm
-from utils import get_alarm
-from alarmdiagnosticconfig import AlarmDiagnosticConfig
+from .archivedalarm import ArchivedAlarm
+from .utils import get_alarm
+from .alarmdiagnosticconfig import AlarmDiagnosticConfig

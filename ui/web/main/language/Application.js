@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.language.Application");
 
 Ext.define("NOC.main.language.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.main.language.Model"],
+    requires: ["NOC.main.language.Model"],
     
     model: "NOC.main.language.Model",
     search: true,

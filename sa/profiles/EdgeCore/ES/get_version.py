@@ -131,7 +131,7 @@ class Script(BaseScript):
         elif "MR2228N" in platform:
             vendor = "MRV"
         elif platform.lower() == "8 sfp ports + 4 gigabit combo ports " \
-            "l2/l3/l4 managed standalone switch":
+                                 "l2/l3/l4 managed standalone switch":
             platform = "ES4612"
         elif platform == "Managed 8G+4GSFP Switch":
             platform = "ECS4210-12T"
@@ -150,6 +150,8 @@ class Script(BaseScript):
                 platform = "ECS4210-12T"
             elif platform == "1.3.6.1.4.1.259.10.1.42.104":
                 platform = "ECS4210-12P"
+            elif platform == "1.3.6.1.4.1.259.6.10.50":
+                platform = "ES3526X"
             else:
                 raise self.NotSupportedError(platform)
         r = {

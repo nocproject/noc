@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 import re
 
 
@@ -160,8 +159,7 @@ class Script(BaseScript):
                 pass
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
-        match = self.re_search(self.rx_mac, self.cli("show system"))
-        mac = match.group("mac")
+        mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         for l in self.cli("show ip interface").split("\n"):
             match = self.rx_vlan_ipif.match(l.strip())
             if match:

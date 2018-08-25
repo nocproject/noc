@@ -2,31 +2,42 @@
 # ---------------------------------------------------------------------
 # AS model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+from threading import Lock
+import operator
+# Third-party modules
 from django.db import models
+import cachetools
 # NOC modules
 from noc.project.models.project import Project
-from person import Person
-from organisation import Organisation
-from maintainer import Maintainer
-from rir import RIR
-from noc.settings import config
+from noc.config import config
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.fields import DocumentReferenceField
+from .person import Person
+from .organisation import Organisation
+from .maintainer import Maintainer
+from .rir import RIR
+from .asprofile import ASProfile
+
+id_lock = Lock()
 
 
 @on_delete_check(check=[
     ("peer.Peer", "local_asn"),
-    ("peer.PeeringPoint", "local_as")
+    ("peer.PeeringPoint", "local_as"),
+    ("ip.Prefix", "asn")
 ])
+@on_save
 class AS(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "AS"
         verbose_name_plural = "ASes"
         db_table = "peer_as"
@@ -35,6 +46,10 @@ class AS(models.Model):
     asn = models.IntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
+    profile = DocumentReferenceField(
+        ASProfile,
+        null=False, blank=False
+    )
     project = models.ForeignKey(
         Project, verbose_name="Project",
         null=True, blank=True, related_name="as_set")
@@ -68,33 +83,35 @@ class AS(models.Model):
     )
     # remarks: will be prepended automatically
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
-     # remarks: will be prepended automatically
+    # remarks: will be prepended automatically
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
     rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
     tags = TagsField("Tags", null=True, blank=True)
+    rpsl = GridVCSField("rpsl_as")
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _asn_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return u"AS%d (%s)" % (self.asn, self.description)
 
-    def get_absolute_url(self):
-        return site.reverse("peer:as:change", self.id)
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        asn = AS.objects.filter(id=id)[:1]
+        if asn:
+            return asn[0]
+        return None
 
     @classmethod
-    def default_as(cls):
-        try:
-            return AS.objects.get(asn=0)
-        except AS.DoesNotExist:
-            # Try to create AS0
-            rir = RIR.objects.all()[0]
-            org = Organisation.objects.all()[0]
-            a = AS(asn=0, as_name="Default",
-                   description="Default AS, do not delete",
-                   rir=rir, organisation=org)
-            a.save()
-            return a
+    @cachetools.cachedmethod(operator.attrgetter("_asn_cache"), lock=lambda _: id_lock)
+    def get_by_asn(cls, asn):
+        asn = AS.objects.filter(asn=asn)[:1]
+        if asn:
+            return asn[0]
+        return None
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         sep = "remarks: %s" % ("-" * 72)
         s = []
         s += ["aut-num: AS%s" % self.asn]
@@ -120,10 +137,12 @@ class AS(models.Model):
             e_export_med = peer.effective_export_med
             for R in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
                 p_import, p_export, localpref, import_med, export_med, remark = R
-                if (peer.import_filter == p_import and
+                if (
+                    peer.import_filter == p_import and
                     peer.export_filter == p_export and
                     e_import_med == import_med and
-                    e_export_med == export_med):
+                    e_export_med == export_med
+                ):
                     to_skip = True
                     break
             if not to_skip:
@@ -132,7 +151,7 @@ class AS(models.Model):
                       peer.effective_local_pref, e_import_med, e_export_med,
                       peer.rpsl_remark)]
         # Build RPSL
-        inverse_pref = config.getboolean("peer", "rpsl_inverse_pref_style")
+        inverse_pref = config.peer.rpsl_inverse_pref_style
         for peer_group in pg:
             s += [sep]
             s += ["remarks: -- %s" % x
@@ -142,8 +161,7 @@ class AS(models.Model):
                 add_at = len(pg[peer_group][asn]) != 1
                 for pp in pg[peer_group][asn]:
                     for R in pg[peer_group][asn][pp]:
-                        import_filter, export_filter, localpref, import_med,\
-                        export_med, remark = R
+                        import_filter, export_filter, localpref, import_med, export_med, remark = R
                         # Prepend import and export with remark when given
                         if remark:
                             s += ["remarks: # %s" % remark]
@@ -185,9 +203,19 @@ class AS(models.Model):
                   for x in self.footer_remarks.split("\n")]
         return rpsl_format("\n".join(s))
 
+    def touch_rpsl(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+
+    def on_save(self):
+        self.touch_rpsl()
+
     @property
     def dot(self):
-        from noc.peer.models import Peer
+        from .peer import Peer
 
         s = ["graph {"]
         all_peers = Peer.objects.filter(local_asn__exact=self)

@@ -15,7 +15,7 @@ from noc.config import config
 
 class AuthRequestHandler(tornado.web.RequestHandler):
     USER_COOKIE = "noc_user"
-    USER_COOKIE_TTL = config.login.user_cookie_ttl # % fixme probably unused
+    USER_COOKIE_TTL = config.login.user_cookie_ttl  # % fixme probably unused
 
     def initialize(self, service):
         self.service = service
@@ -28,12 +28,20 @@ class AuthRequestHandler(tornado.web.RequestHandler):
             self.set_status(200, "OK")
             self.set_header("Remote-User", user)
 
+        def api_success(access):
+            self.set_status(200, "OK")
+            self.set_header("X-NOC-API-Access", access)
+
         def fail():
             self.set_status(401, "Not authorized")
 
         user = self.get_secure_cookie(self.USER_COOKIE)
         if user:
             return success(user)
+        elif self.request.headers.get("Private-Token"):
+            a = self.service.get_api_access(self.request.headers.get("Private-Token"))
+            if a:
+                return api_success(a)
         elif self.request.headers.get("Authorization"):
             # Fallback to the basic auth
             ah = self.request.headers.get("Authorization")

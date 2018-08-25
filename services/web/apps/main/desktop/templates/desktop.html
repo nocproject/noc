@@ -13,21 +13,20 @@
         <!-- CSS -->
         <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-gray/resources/theme-gray-all.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/noc-extjs.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/noc/ux.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/noc/colors.css" />
+        <link rel="stylesheet" type="text/css" href="/ui/web/css/extjs.css" />
+        <link rel="stylesheet" type="text/css" href="/ui/web/css/ux.css" />
+        <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
         <link rel="stylesheet" type="text/css" href="/main/style/css/" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/codemirror/lib/codemirror.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/codemirror/addon/dialog/dialog.css" />
-        <link rel="stylesheet" type="text/css" href="/ui/pkg/codemirror/addon/merge/merge.css" />
-        <link rel="stylesheet" type="text/css" href="/static/css/noc/codemirror.css" />
+        <link rel="stylesheet" type="text/css" href="/ui/web/css/codemirror.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/joint/joint.min.css" />
         <!-- l10n -->
         <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}">
         <!-- JS -->
-        <script type="text/javascript" src="/static/js/logging.js"></script>
-        <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
+        <script type="text/javascript" src="/ui/web/js/logging.js"></script>
+        <script type="text/javascript" src="/ui/web/js/jsloader.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/ext-all.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-gray/theme-gray.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/packages/charts/classic/charts.js"></script>
@@ -42,11 +41,12 @@
         <script type="text/javascript" src="/ui/common/diff_match_patch.js"></script>
         <script type="text/javascript" src="/ui/pkg/codemirror/addon/merge/merge.js"></script>
         <script type="text/javascript" src="/ui/pkg/filesaver/filesaver.min.js"></script>
+        <script type="text/javascript" src="/ui/pkg/visibility/visibility.min.js"></script>
         <!-- NOC modules -->
         <script type="text/javascript" src="/ui/common/gettext.js"></script>
-        <script type="text/javascript" src="/static/js/noc/colors.js"></script>
-        <script type="text/javascript" src="/static/js/noc/glyph.js"></script>
-        <script type="text/javascript" src="/static/js/noc/util.js"></script>
+        <script type="text/javascript" src="/ui/web/js/colors.js"></script>
+        <script type="text/javascript" src="/ui/web/js/glyph.js"></script>
+        <script type="text/javascript" src="/ui/web/js/util.js"></script>
         <!-- page specific -->
         <script type="text/javascript">
             //
@@ -54,7 +54,7 @@
             console.log("!!! Running NOC desktop");
             console.log("!!!");
             // Initialize loader
-            Ext.BLANK_IMAGE_URL = "/static/img/s.gif";
+            Ext.BLANK_IMAGE_URL = "/ui/web/img/s.gif";
             Ext.namespace("NOC");
             NOC.settings = {
                 systemId: {% if setup.system_uuid %}"{{ setup.system_uuid }}"{% else %}null{% endif %},
@@ -81,7 +81,7 @@
             NOC.templates = {};
             Ext.setGlyphFontFamily("FontAwesome");
         </script>
-        <script type="text/javascript" src="/static/js/noc/override.js"></script>
+        <script type="text/javascript" src="/ui/web/js/override.js"></script>
         <script type="text/javascript" src="/ui/web/main/desktop/app.js"></script>
     </head>
     <body>

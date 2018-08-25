@@ -2,28 +2,30 @@
 # ---------------------------------------------------------------------
 # Peer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.db import models
 # Peer modules
 from noc.project.models.project import Project
-from asn import AS
-from peergroup import PeerGroup
-from peeringpoint import PeeringPoint
 from noc.core.model.fields import INETField, TagsField
 from noc.lib.tt import tt_url
-from noc.settings import config
-from noc.lib.app.site import site
+from noc.config import config
+from noc.core.model.decorator import on_save
+from noc.core.gridvcs.manager import GridVCSField
+from .asn import AS
+from .peergroup import PeerGroup
+from .peeringpoint import PeeringPoint
 
 
+@on_save
 class Peer(models.Model):
     """
     BGP Peering session
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Peer"
         verbose_name_plural = "Peers"
         db_table = "peer_peer"
@@ -66,7 +68,7 @@ class Peer(models.Model):
                                    null=True, blank=True)
     tt = models.IntegerField("TT", blank=True, null=True)
     # In addition to PeerGroup.communities
-    #and PeeringPoint.communities
+    # and PeeringPoint.communities
     communities = models.CharField("Import Communities", max_length=128,
                                    blank=True, null=True)
     max_prefixes = models.IntegerField("Max. Prefixes", default=100)
@@ -76,22 +78,22 @@ class Peer(models.Model):
         "Export Filter Name", max_length=64, blank=True, null=True)
     tags = TagsField("Tags", null=True, blank=True)
 
+    rpsl = GridVCSField("rpsl_peer")
+
     def __unicode__(self):
         return u" %s (%s@%s)" % (self.remote_asn, self.remote_ip,
                                  self.peering_point.hostname)
 
-    def get_absolute_url(self):
-        return site.reverse("peer:peer:change", self.id)
-
-    def save(self):
+    def save(self, *args, **kwargs):
         if (self.import_filter_name is not None and
                 not self.import_filter_name.strip()):
             self.import_filter_name = None
         if (self.export_filter_name is not None and
                 not self.export_filter_name.strip()):
             self.export_filter_name = None
-        super(Peer, self).save()
+        super(Peer, self).save(*args, **kwargs)
         self.peering_point.sync_cm_prefix_list()
+        self.touch_rpsl()
 
     @property
     def tt_url(self):
@@ -110,15 +112,14 @@ class Peer(models.Model):
         c = sorted(r.keys())
         return " ".join(c)
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         s = "import: from AS%d" % self.remote_asn
         s += " at %s" % self.peering_point.hostname
         actions = []
         local_pref = self.effective_local_pref
         if local_pref:
             # Select pref meaning
-            if config.getboolean("peer", "rpsl_inverse_pref_style"):
+            if config.peer.rpsl_inverse_pref_style:
                 pref = 65535 - local_pref  # RPSL style
             else:
                 pref = local_pref
@@ -133,8 +134,10 @@ class Peer(models.Model):
         export_med = self.effective_export_med
         if export_med:
             actions += ["med=%d;" % export_med]
-        s += "export: to AS%s at %s" % (self.remote_asn,
-                                       self.peering_point.hostname)
+        s += "export: to AS%s at %s" % (
+            self.remote_asn,
+            self.peering_point.hostname
+        )
         if actions:
             s += " action " + " ".join(actions)
         s += " announce %s" % self.export_filter
@@ -194,3 +197,13 @@ class Peer(models.Model):
             return data[0]
         else:
             return None
+
+    def touch_rpsl(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+
+    def on_save(self):
+        self.touch_rpsl()

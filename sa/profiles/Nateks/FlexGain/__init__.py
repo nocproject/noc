@@ -15,7 +15,7 @@ import re
 class Profile(BaseProfile):
     name = "Nateks.FlexGain"
     pattern_username = "^\S+ login: "
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+):>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+):>"
     pattern_prompt = r"^(?P<hostname>\S+):%"
     pattern_more = "^--More--"
     pattern_syntax_error = r"syntax error, unexpected STRING|Command Abort, More Arguments need!"

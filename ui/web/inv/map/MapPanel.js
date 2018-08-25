@@ -57,7 +57,9 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     // Link bandwidth style
     bwStyle: [
-        [10000000000, {"stroke-width": "4px"}],  // 10G
+        [99500000000, {"stroke-width": "5px"}],  // 100G >= STM-640
+        [39500000000, {"stroke-width": "4px"}],  // 40G >= STM-256
+        [9500000000, {"stroke-width": "3px"}],  // 10G >= STM-64
         [1000000000, {"stroke-width": "2px"}],  // 1G
         [100000000, {"stroke-width": "1px"}],  // 100M
         [0, {"stroke-width": "1px", "stroke-dasharray": "10 5"}]
@@ -189,6 +191,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
         me.nodeMenuObject = null;
         me.nodeMenuObjectType = null;
+        me.tip = Ext.create("Ext.tip.ToolTip", {
+            dismissDelay: 0,
+            saveDelay: 0,
+            // showDelay: 0,
+            // hideDelay: 100,
+            closable: true,
+            autoShow: false
+        });
         //
         me.callParent();
     },
@@ -212,9 +222,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper = new joint.dia.Paper({
             el: dom,
             model: me.graph,
-            gridSize: 10,
-            gridWidth: 10,
-            gridHeight: 10,
+            gridSize: 25,
+            gridWidth: 25,
+            gridHeight: 25,
+            preventContextMenu: false,
+            async: false,
+            guard: function(evt) {
+                return (evt.type === "mousedown" && evt.buttons === 2);
+            },
             interactive: Ext.bind(me.onInteractive, me)
         });
         // Apply SVG filters
@@ -234,6 +249,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
         me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
         me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
+        me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
+        me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
         me.fireEvent("mapready");
     },
 
@@ -367,7 +384,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
         });
         me.objectNodes[data.id] = node;
-        me.objectsList.push(data.id);
+        if(data.type === "managedobject") {
+            me.objectsList.push(data.id)
+        }
         return node;
     },
     //
@@ -482,14 +501,61 @@ Ext.define("NOC.inv.map.MapPanel", {
             case "link":
                 me.app.inspectLink(data.id);
                 break;
+            case "cloud":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectCloud(data.id);
+                break
         }
     },
 
     onSegmentContextMenu: function(evt) {
         var me = this;
-
         evt.preventDefault();
         me.segmentMenu.showAt(evt.clientX, evt.clientY);
+    },
+
+    onLinkOver: function(link, evt) {
+        var me = this, data, body = [],
+            nameByPort = function(portId) {
+                var elementNameAttr = "name";
+                if(me.app.addressIPButton.pressed) {
+                    elementNameAttr = "address";
+                }
+                if(link.model.getTargetElement().get("data").id === me.portObjects[portId]) {
+                    return link.model.getTargetElement().get(elementNameAttr)
+                }
+                if(link.model.getSourceElement().get("data").id === me.portObjects[portId]) {
+                    return link.model.getSourceElement().get(elementNameAttr)
+                }
+            };
+        // prevent bounce
+        me.popupOffsetX = evt.offsetX;
+        me.popupOffsetY = evt.offsetY;
+        if(me.overlayMode === me.LO_LOAD && me.tip.isHidden()) {
+            data = link.model.get("data");
+            Ext.each(data.metrics, function(metric) {
+                var names = [], values = [];
+                Ext.each(metric.metrics, function(dat) {
+                    values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
+                    names.push((dat.metric === "Interface | Load | Out" ? "Out" : "In"));
+                });
+                body.push(Ext.String.format("<tr><td>{0}</td><td>|</td><td>Load {1} Mb</td><td>|</td><td>{2}</td></tr>"
+                    , values.join(" / "), names.join(" / "), nameByPort(metric.port)));
+            });
+            if(body.length) {
+                me.tip.html = "<table style='font-size: 10px'>" + body.join("") + "</table>";
+                me.tip.showAt([evt.pageX, evt.pageY]);
+            }
+        }
+    },
+
+    onLinkOut: function(link, evt) {
+        var me = this;
+        // prevent bounce
+        if(me.popupOffsetX !== evt.offsetX && me.popupOffsetY !== evt.offsetY) {
+            me.tip.hide();
+        }
     },
 
     onContextMenu: function(view, evt, x, y) {
@@ -505,6 +571,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             me.nodeMenu.showAt(evt.clientX, evt.clientY);
         }
     },
+    //
     onCellDoubleClick: function(view, evt, x, y) {
         var me = this,
             data = view.model.get("data");
@@ -514,6 +581,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             );
         }
     },
+    //
     onBlankSelected: function() {
         var me = this;
         me.unhighlight();
@@ -686,7 +754,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             if(!node) {
                 return;
             }
-            node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintainance bit
+            node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintenance bit
             var embeddedCells = node.getEmbeddedCells();
             if(data[s] & 0x20) {
                 if(embeddedCells.length === 0) {
@@ -767,7 +835,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     setOverlayMode: function(mode) {
         var me = this;
         // Stop polling when necessary
-        if(mode == me.LO_NONE && me.overlayPollingTaskId) {
+        if(mode === me.LO_NONE && me.overlayPollingTaskId) {
             Ext.TaskManager.stop(me.overlayPollingTaskId);
             me.overlayPollingTaskId = null;
         }
@@ -805,6 +873,9 @@ Ext.define("NOC.inv.map.MapPanel", {
                     } else {
                         return 0.0;
                     }
+                },
+                hasMetric = function(port, metric) {
+                    return data.hasOwnProperty(port) && data[port].hasOwnProperty(metric);
                 },
                 getStatus = function(port, status) {
                     if(data[port] && data[port][status] !== undefined) {
@@ -868,6 +939,20 @@ Ext.define("NOC.inv.map.MapPanel", {
                         link.label(0, {attrs: {text: luStyle}});
                     }
                 }
+                // save link utilization
+                var values = [];
+                Ext.each(ports, function(port) {
+                    var metrics = [], metricsName = ["Interface | Load | In", "Interface | Load | Out"];
+                    Ext.each(metricsName, function(metric) {
+                        var value = "-";
+                        if(hasMetric(port, metric)) {
+                            value = getTotal(port, metric);
+                        }
+                        metrics.push({metric: metric, value: value});
+                    });
+                    values.push({port: port, metrics: metrics});
+                });
+                link.set("data", Ext.apply({metrics: values}, link.get("data")));
             }
         });
     },
@@ -923,7 +1008,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this,
             objectType = me.nodeMenuObjectType;
 
-        if('managedobject' == me.nodeMenuObjectType) objectType = 'mo';
+        if('managedobject' === me.nodeMenuObjectType) objectType = 'mo';
         window.open(
             '/ui/grafana/dashboard/script/noc.js?dashboard=' + objectType + '&id=' + me.nodeMenuObject
         );
@@ -934,8 +1019,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             objectId = Number(me.nodeMenuObject);
 
         NOC.run(
-            'NOC.inv.map.Maintainance',
-            __('Add To Maintainance'),
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
             {
                 args: [
                     {mode: 'Object'},
@@ -951,8 +1036,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             elements.push({object: item.get('object'), object__label: item.get('object__label')});
         });
         NOC.run(
-            'NOC.inv.map.Maintainance',
-            __('Add To Maintainance'),
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
             {
                 args: [
                     {mode: 'Object'},
@@ -966,28 +1051,28 @@ Ext.define("NOC.inv.map.MapPanel", {
         var args = {
             direct_objects: objects,
             subject: __('created from map at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
-            contacts: NOC.username,
+            contacts: NOC.email ? NOC.email : NOC.username,
             start_date: Ext.Date.format(new Date(), 'd.m.Y'),
             start_time: Ext.Date.format(new Date(), 'H:i'),
             stop_time: '12:00',
             suppress_alarms: true
         };
 
-        Ext.create('NOC.maintainance.maintainancetype.LookupField')
-            .getStore()
-            .load({
-                params: {__query: 'РНР'},
-                callback: function(records) {
-                    if(records.length > 0) {
-                        Ext.apply(args, {
-                            type: records[0].id
-                        })
-                    }
-                    NOC.launch("maintainance.maintainance", "new", {
-                        args: args
-                    });
+        Ext.create('NOC.maintenance.maintenancetype.LookupField')
+        .getStore()
+        .load({
+            params: {__query: 'РНР'},
+            callback: function(records) {
+                if(records.length > 0) {
+                    Ext.apply(args, {
+                        type: records[0].id
+                    })
                 }
-            });
+                NOC.launch("maintenance.maintenance", "new", {
+                    args: args
+                });
+            }
+        });
     },
 
     onNodeMenuNewMaintaince: function() {
@@ -1007,11 +1092,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         if(store.getCount() === 0) {
             me.fireEvent("openbasket");
         }
-        store.add({
-            id: objectId,
-            object: objectId,
-            object__label: me.objectNodes[objectId].attributes.attrs.text.text.replace("\n", "")
-        });
+        me.addObjectToBasket(objectId, store);
     },
 
     onSegmentMenuAddToBasket: function() {
@@ -1024,11 +1105,29 @@ Ext.define("NOC.inv.map.MapPanel", {
         Ext.each(this.graph.getElements(), function(e) {
             if('managedobject' === e.get('id').split(':')[0]) {
                 var objectId = Number(e.get('id').split(':')[1]);
-                store.add({
-                    id: objectId,
-                    object: objectId,
-                    object__label: me.objectNodes[objectId].attributes.attrs.text.text
-                });
+                me.addObjectToBasket(objectId, store);
+            }
+        });
+    },
+
+    addObjectToBasket: function(id, store) {
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + id + "/",
+            method: "GET",
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                var object = {
+                    id: id,
+                    object: id,
+                    object__label: data.name,
+                    address: data.address,
+                    platform: data.platform__label,
+                    time: data.time_pattern
+                };
+                store.add(object);
+            },
+            failure: function() {
+                NOC.msg.failed(__("Failed to get object data"));
             }
         });
     },
@@ -1045,7 +1144,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             stpNodes = [];
         // Get STP nodes
         Ext.Object.each(me.objectNodes, function(k, v) {
-            if(v.attributes.data.caps.indexOf(me.CAP_STP) !== -1) {
+            if(v.attributes.data.hasOwnProperty("caps") && v.attributes.data.caps.indexOf(me.CAP_STP) !== -1) {
                 stpNodes.push(k);
             }
         });
@@ -1209,7 +1308,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         textSpan.style.display = 'block';
         textSpan.appendChild(textNode);
         svgDocument.appendChild(textElement);
-        if (!opt.svgDocument) {
+        if(!opt.svgDocument) {
             document.body.appendChild(svgDocument);
         }
 
@@ -1219,27 +1318,27 @@ Ext.define("NOC.inv.map.MapPanel", {
         var p;
         var lineHeight;
 
-        for (var i = 0, l = 0, len = words.length; i < len; i++) {
+        for(var i = 0, l = 0, len = words.length; i < len; i++) {
             var word = words[i];
 
             textNode.data = lines[l] ? lines[l] + word : word;
-            if (textSpan.getComputedTextLength() <= width) {
+            if(textSpan.getComputedTextLength() <= width) {
                 // the current line fits
                 lines[l] = textNode.data;
-                if (p) {
+                if(p) {
                     // We were partitioning. Put rest of the word onto next line
                     full[l++] = true;
                     // cancel partitioning
                     p = 0;
                 }
             } else {
-                if (!lines[l] || p) {
+                if(!lines[l] || p) {
                     var partition = !!p;
                     p = word.length - 1;
-                    if (partition || !p) {
+                    if(partition || !p) {
                         // word has only one character.
-                        if (!p) {
-                            if (!lines[l]) {
+                        if(!p) {
+                            if(!lines[l]) {
                                 // we won't fit this text within our rect
                                 lines = [];
                                 break;
@@ -1263,7 +1362,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                         words.splice(i, 1, word.substring(0, p), word.substring(p));
                         // adjust words length
                         len++;
-                        if (l && !full[l - 1]) {
+                        if(l && !full[l - 1]) {
                             // if the previous line is not full, try to fit max part of
                             // the current word there
                             l--;
@@ -1277,28 +1376,28 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
             // if size.height is defined we have to check whether the height of the entire
             // text exceeds the rect height
-            if (height !== undefined) {
-                if (lineHeight === undefined) {
+            if(height !== undefined) {
+                if(lineHeight === undefined) {
                     var heightValue;
                     // use the same defaults as in V.prototype.text
-                    if (styles.lineHeight === 'auto') {
-                        heightValue = { value: 1.5, unit: 'em' };
+                    if(styles.lineHeight === 'auto') {
+                        heightValue = {value: 1.5, unit: 'em'};
                     } else {
-                        heightValue = joint.util.parseCssNumeric(styles.lineHeight, ['em']) || { value: 1, unit: 'em' };
+                        heightValue = joint.util.parseCssNumeric(styles.lineHeight, ['em']) || {value: 1, unit: 'em'};
                     }
                     lineHeight = heightValue.value;
-                    if (heightValue.unit === 'em' ) {
+                    if(heightValue.unit === 'em') {
                         lineHeight *= textElement.getBBox().height;
                     }
                 }
-                if (lineHeight * lines.length > height) {
+                if(lineHeight * lines.length > height) {
                     // remove overflowing lines
                     lines.splice(Math.floor(height / lineHeight));
                     break;
                 }
             }
         }
-        if (opt.svgDocument) {
+        if(opt.svgDocument) {
             // svg document was provided, remove the text element only
             svgDocument.removeChild(textElement);
         } else {

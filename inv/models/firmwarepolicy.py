@@ -38,6 +38,7 @@ class FirmwarePolicy(Document):
     meta = {
         "collection": "noc.firmwarepolicy",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["platform", "firmware"]
     }
     # Platform (Matched with get_version)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,6 @@ Static  35   33:33:ff:01:62:5a  GigabitEthernet 1/1-8 2.5GigabitEthernet 1/1-2 1
 Static  35   ff:ff:ff:ff:ff:ff  GigabitEthernet 1/1-8 2.5GigabitEthernet 1/1-2 10GigabitEthernet 1/1-2 CPU
 
     """
-
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []

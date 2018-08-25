@@ -19,6 +19,7 @@ class ObjectStatus(Document):
     meta = {
         "collection": "noc.cache.object_status",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["object"]
     }
     # Object id

@@ -96,19 +96,22 @@ Ext.define("NOC.ip.addressrange.Application", {
             xtype: "combobox",
             fieldLabel: __("Address Family"),
             allowBlank: false,
-            store: [["4", "IPv4"], ["6", "IPv6"]]
+            store: [["4", "IPv4"], ["6", "IPv6"]],
+            uiStyle: "small"
         },
         {
             name: "from_address",
             xtype: "textfield",
             fieldLabel: __("From Address"),
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "to_address",
             xtype: "textfield",
             fieldLabel: __("To Address"),
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "description",
@@ -131,7 +134,8 @@ Ext.define("NOC.ip.addressrange.Application", {
                 ["N", "Do nothing"],
                 ["G", "Generate FQDNs"],
                 ["D", "Partial reverse zone delegation"]
-            ]
+            ],
+            uiStyle: "medium"
         },
         {
             name: "fqdn_template",
@@ -161,6 +165,7 @@ Ext.define("NOC.ip.addressrange.Application", {
         {
             name: "allocated_till",
             xtype: "datefield",
+            startDay: 1,
             fieldLabel: __("Allocated till"),
             allowBlank: true
         }

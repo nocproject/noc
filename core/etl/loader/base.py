@@ -20,6 +20,8 @@ import itertools
 # Third party modules
 import six
 # NOC modules
+# from noc.lib.nosql import MultipleObjectsReturned
+# from django.core.exceptions import MultipleObjectsReturned as MultipleObjectsReturnedD
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
@@ -67,11 +69,13 @@ class BaseLoader(object):
 
     PREFIX = config.path.etl_import
     rx_archive = re.compile(
-            "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
+        "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
 
     # Discard records which cannot be dereferenced
     discard_deferred = False
+    # Ignore auto-generated unique fields
+    ignore_unique = set(["bi_id"])
 
     REPORT_INTERVAL = 1000
 
@@ -82,7 +86,7 @@ class BaseLoader(object):
         self.chain = chain
         self.system = chain.system
         self.logger = PrefixLoggerAdapter(
-                logger, "%s][%s" % (self.system.name, self.name)
+            logger, "%s][%s" % (self.system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system.name, self.name)
@@ -101,12 +105,13 @@ class BaseLoader(object):
                               for n in
                               self.fields)  # field name -> clean function
         self.pending_deletes = []  # (id, string)
+        self.reffered_errors = []  # (id, string)
         if self.is_document:
             import mongoengine.errors
             unique_fields = [
                 f.name
                 for f in self.model._fields.itervalues()
-                if f.unique]
+                if f.unique and f.name not in self.ignore_unique]
             self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
             # Third-party modules
@@ -115,7 +120,8 @@ class BaseLoader(object):
             unique_fields = [
                 f.name for f in self.model._meta.fields
                 if f.unique and
-                f.name != self.model._meta.pk.name]
+                f.name != self.model._meta.pk.name and
+                f.name not in self.ignore_unique]
             self.integrity_exception = django.db.utils.IntegrityError
         if unique_fields:
             self.unique_field = unique_fields[0]
@@ -182,8 +188,8 @@ class BaseLoader(object):
                 # @todo: Die
         if os.path.isdir(self.archive_dir):
             fn = sorted(
-                    f for f in os.listdir(self.archive_dir)
-                    if self.rx_archive.match(f)
+                f for f in os.listdir(self.archive_dir)
+                if self.rx_archive.match(f)
             )
         else:
             fn = []
@@ -204,7 +210,7 @@ class BaseLoader(object):
 
         def getnext(g):
             try:
-                return g.next()
+                return next(g)
             except StopIteration:
                 return None
 
@@ -274,7 +280,7 @@ class BaseLoader(object):
                 try:
                     self.on_add(row)
                 except self.Deferred:
-                    deferred_add += [row]
+                    nd += [row]
             if len(nd) == len(deferred_add):
                 raise Exception("Unable to defer references")
             deferred_add = nd
@@ -288,7 +294,7 @@ class BaseLoader(object):
                 try:
                     self.on_change(o, n)
                 except self.Deferred:
-                    deferred_change += [(o, n)]
+                    nd += [(o, n)]
             if len(nd) == len(deferred_change):
                 raise Exception("Unable to defer references")
             deferred_change = nd
@@ -296,15 +302,47 @@ class BaseLoader(object):
             if rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
 
+    def find_object(self, v):
+        """
+        Find object by remote system/remote id
+        :param v:
+        :return:
+        """
+        if not v.get("remote_system") or not v.get("remote_id"):
+            self.logger.warning("RS or RID not found")
+            return None
+        find_query = {"remote_system": v.get("remote_system"),
+                      "remote_id": v.get("remote_id")}
+        try:
+            return self.model.objects.get(**find_query)
+        except self.model.MultipleObjectsReturned:
+            if self.unique_field:
+                find_query[self.unique_field] = v.get(self.unique_field)
+                r = self.model.objects.filter(**find_query)
+                if not r:
+                    r = self.model.objects.filter(**find_query)
+                return list(r)[-1]
+            raise self.model.MultipleObjectsReturned
+        except self.model.DoesNotExist:
+            return None
+
     def create_object(self, v):
         """
         Create object with attributes. Override to save complex
         data structures
         """
+        for k, nv in six.iteritems(v):
+            if k == "tags":
+                # Merge tags
+                nv = sorted(
+                    "%s:%s" % (self.system.name, x) for x in nv
+                )
+                v[k] = nv
         o = self.model(**v)
         try:
             o.save()
-        except self.integrity_exception:
+        except self.integrity_exception as e:
+            self.logger.warning("Integrity error: %s", e)
             assert self.unique_field
             if not self.is_document:
                 from django.db import connection
@@ -320,6 +358,8 @@ class BaseLoader(object):
         """
         Change object with attributes
         """
+        self.logger.debug("Changed object")
+        # See: https://code.getnoc.com/noc/noc/merge_requests/49
         try:
             o = self.model.objects.get(pk=object_id)
         except self.model.DoesNotExist:
@@ -350,12 +390,34 @@ class BaseLoader(object):
         """
         self.logger.debug("Add: %s", ";".join(row))
         v = self.clean(row)
-        self.c_add += 1
         # @todo: Check record is already exists
         if self.fields[0] in v:
             del v[self.fields[0]]
-        o = self.create_object(v)
-        self.set_mappings(row[0], o.id)
+        if hasattr(self.model, "remote_system"):
+            o = self.find_object(v)
+        else:
+            o = None
+        if o:
+            self.c_change += 1
+            # Lost&found object with same remote_id
+            self.logger.debug("Lost and Found object")
+            vv = {
+                "remote_system": v["remote_system"],
+                "remote_id": v["remote_id"]
+            }
+            # for fn, nv in zip(self.fields[1:], row[1:]):
+            for fn, nv in v.iteritems():
+                if fn in vv:
+                    continue
+                if getattr(o, fn) != nv:
+                    vv[fn] = nv
+            self.change_object(o.id, vv)
+            # Restore mappings
+            self.set_mappings(row[0], o.id)
+        else:
+            self.c_add += 1
+            o = self.create_object(v)
+            self.set_mappings(row[0], o.id)
 
     def on_change(self, o, n):
         """
@@ -396,6 +458,9 @@ class BaseLoader(object):
             try:
                 obj = self.model.objects.get(pk=self.mappings[r_id])
                 obj.delete()
+            except ValueError as e:  # Reffered Error
+                self.logger.error("%s", str(e))
+                self.reffered_errors += [(r_id, msg)]
             except self.model.DoesNotExist:
                 pass  # Already deleted
         self.pending_deletes = []
@@ -407,14 +472,17 @@ class BaseLoader(object):
         if not self.new_state_path:
             return
         self.logger.info(
-                "Summary: %d new, %d changed, %d removed",
-                self.c_add, self.c_change, self.c_delete
+            "Summary: %d new, %d changed, %d removed",
+            self.c_add, self.c_change, self.c_delete
+        )
+        self.logger.info(
+            "Error delete by reffered: %s", "\n".join(self.reffered_errors)
         )
         t = time.localtime()
         archive_path = os.path.join(
-                self.archive_dir,
-                "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
-                        t[:6])
+            self.archive_dir,
+            "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
+                t[:6])
         )
         self.logger.info("Moving %s to %s",
                          self.new_state_path, archive_path)
@@ -599,16 +667,17 @@ class BaseLoader(object):
         new_state = csv.reader(ns)
         r_index = set(self.fields.index(f) for f in required_fields
                       if f in self.fields)
-        u_index = set(self.fields.index(f) for f in unique_fields)
+        u_index = set(self.fields.index(f) for f in unique_fields
+                      if f not in self.ignore_unique)
         m_index = set(self.fields.index(f) for f in self.mapped_fields)
         uv = set()
         m_data = {}  # field_number -> set of mapped ids
         # Load mapped ids
         for f in self.mapped_fields:
-            l = chain.get_loader(self.mapped_fields[f])
-            ls = l.get_new_state()
+            line = chain.get_loader(self.mapped_fields[f])
+            ls = line.get_new_state()
             if not ls:
-                ls = l.get_current_state()
+                ls = line.get_current_state()
             ms = csv.reader(ls)
             m_data[self.fields.index(f)] = set(row[0] for row in ms)
         # Process data
@@ -619,8 +688,8 @@ class BaseLoader(object):
             for i in r_index:
                 if not row[i]:
                     self.logger.error(
-                            "ERROR: Required field #%d(%s) is missed in row: %s",
-                            i, self.fields[i], ",".join(row)
+                        "ERROR: Required field #%d(%s) is missed in row: %s",
+                        i, self.fields[i], ",".join(row)
                     )
                     n_errors += 1
                     continue
@@ -629,8 +698,8 @@ class BaseLoader(object):
                 v = row[i]
                 if (i, v) in uv:
                     self.logger.error(
-                            "ERROR: Field #%d(%s) value is not unique: %s",
-                            i, self.fields[i], ",".join(row)
+                        "ERROR: Field #%d(%s) value is not unique: %s",
+                        i, self.fields[i], ",".join(row)
                     )
                     n_errors += 1
                 else:

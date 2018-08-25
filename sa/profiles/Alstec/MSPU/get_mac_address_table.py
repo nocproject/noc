@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Alstec.MSPU.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,6 +25,8 @@ class Script(BaseScript):
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         v = self.scripts.get_arp()
+        if not v:
+            return []
         for i in v:
             if interface is None:
                 iface = i["interface"]

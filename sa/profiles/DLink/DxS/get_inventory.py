@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
- 
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
+from noc.sa.profiles.DLink.DxS import get_platform
 
 
 class Script(BaseScript):
@@ -39,7 +39,7 @@ class Script(BaseScript):
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
     rx_media_type = re.compile(
-        r"^\s(?P<unit>\d+)?:?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
+        r"^\s((?P<unit>\d+):)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
         r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
         r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+\d+\s+\n"
         r"\s+Compatibility: Single Mode \(SM\),"
@@ -51,15 +51,8 @@ class Script(BaseScript):
         stacks = []
         s = self.scripts.get_switch()
         match = self.rx_dev.search(s)
-        part_no = match.group("part_no")
         revision = match.group("revision")
-        if part_no.startswith("DES-3200-") and revision != "A1":
-            part_no = "%s/%s" % (part_no, revision)
-        if (part_no.startswith("DES-1210-10/ME") or
-            part_no.startswith("DES-1210-26/ME") or
-            part_no.startswith("DES-1210-28/ME") and
-            revision != "A1"):
-            part_no = "%s/%s" % (part_no, revision)
+        part_no = get_platform(match.group("part_no"), revision)
         p = {
             "type": "CHASSIS",
             "vendor": "DLINK",
@@ -67,8 +60,10 @@ class Script(BaseScript):
             "revision": revision
         }
         ser = self.rx_ser.search(s)
-        if (ser and ser.group("serial") != "System" and
-            ser.group("serial") != "Power"):
+        if (
+            ser and ser.group("serial") != "System" and
+            ser.group("serial") != "Power"
+        ):
             p["serial"] = ser.group("serial")
         p["description"] = self.rx_des.search(s).group("descr")
         try:

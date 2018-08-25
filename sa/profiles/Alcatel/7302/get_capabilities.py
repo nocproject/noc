@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "Alcatel.7302.get_capabilities"
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         try:
             # MSTP Check
             mstp = self.cli("show mstp port-instance")
@@ -41,7 +41,7 @@ class Script(BaseScript):
         r = self.cli("show equipment slot")
         return [p[0].split("/")[-1] for p in parse_table(r) if p[0].startswith("lt") and p[3] == "no-error"]
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0

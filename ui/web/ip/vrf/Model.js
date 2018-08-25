@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // ip.vrf Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.ip.vrf.Model");
@@ -33,6 +33,10 @@ Ext.define("NOC.ip.vrf.Model", {
             type: "string"
         },
         {
+            name: "vpn_id",
+            type: "string"
+        },
+        {
             name: "afi_ipv4",
             type: "boolean",
             defaultValue: true
@@ -55,11 +59,11 @@ Ext.define("NOC.ip.vrf.Model", {
             type: "auto"
         },
         {
-            name: "style",
-            type: "int"
+            name: "profile",
+            type: "string"
         },
         {
-            name: "style__label",
+            name: "profile__label",
             type: "string",
             persist: false
         },
@@ -74,7 +78,7 @@ Ext.define("NOC.ip.vrf.Model", {
         },
         {
             name: "state",
-            type: "int"
+            type: "string"
         },
         {
             name: "state__label",

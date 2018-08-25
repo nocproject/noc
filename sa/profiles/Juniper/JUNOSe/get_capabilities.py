@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Juniper.JUNOSe.get_capabilities"
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """
@@ -23,7 +23,7 @@ class Script(BaseScript):
         return bool(r)
 
     @false_on_cli_error
-    def has_bfd(self):
+    def has_bfd_cli(self):
         """
         Check box has BFD enabled
         """
@@ -47,7 +47,7 @@ class Script(BaseScript):
         v = self.cli("show pppoe interface summary | include Total")
         return v.split(":")[1].strip()
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         if self.has_pptp():
             caps["BRAS | PPTP"] = True
         if self.has_pppoe():

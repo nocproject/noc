@@ -10,7 +10,8 @@ Ext.define("NOC.crm.supplier.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.crm.supplier.Model",
-        "NOC.crm.supplierprofile.LookupField"
+        "NOC.crm.supplierprofile.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.crm.supplier.Model",
     search: true,
@@ -29,8 +30,13 @@ Ext.define("NOC.crm.supplier.Application", {
                     text: __("Profile"),
                     dataIndex: "profile",
                     width: 200,
-                    renderer: NOC.render.Lookup("profile"),
-                    flex: 1
+                    renderer: NOC.render.Lookup("profile")
+                },
+                {
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 200,
+                    renderer: NOC.render.Lookup("state")
                 },
                 {
                     text: __("Tags"),
@@ -52,6 +58,12 @@ Ext.define("NOC.crm.supplier.Application", {
                     name: "profile",
                     xtype: "crm.supplierprofile.LookupField",
                     fieldLabel: __("Profile"),
+                    allowBlank: false
+                },
+                {
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
                     allowBlank: true
                 },
                 {
@@ -60,6 +72,37 @@ Ext.define("NOC.crm.supplier.Application", {
                     fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "expand"
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "displayfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
                 },
                 {
                     name: "tags",

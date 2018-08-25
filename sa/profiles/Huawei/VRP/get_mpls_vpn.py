@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mpls_vpn import Script as BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 
 
@@ -21,6 +21,8 @@ class Script(BaseScript):
     rx_rd = re.compile(r"^\s+Route Distinguisher :\s+(?P<rd>\S+:\S+|<not set>)\s*", re.IGNORECASE)
     rx_int = re.compile(r"^(?:\s{,4}Interfaces :\s+|\s{6,})(?P<iface>.+?),?\s*$", re.IGNORECASE)
     rx_desc = re.compile(r"^\s+Description :\s+(?P<desc>.*)\s*", re.IGNORECASE)
+    rx_import = re.compile(r"^\s+Import VPN Targets :\s+(?P<rt_import>(\S+:\S+\s*){1,}|<not set>)\s*", re.IGNORECASE)
+    rx_export = re.compile(r"^\s+Export VPN Targets :\s+(?P<rt_export>(\S+:\S+\s*){1,}|<not set>)\s*", re.IGNORECASE)
     rx_vpn = re.compile(
         r"^VPN\-Instance :\s+(?P<vrf>\S+)\s*\n"
         r"^\s+(?P<description>.*)\n"
@@ -29,38 +31,61 @@ class Script(BaseScript):
         r"^\s+Interfaces :\s*\n"
         r"^\s+(?P<ifaces>.+)\s*\n", re.MULTILINE)
 
-    def execute(self, **kwargs):
-        vpns = []
+    def execute_snmp(self, **kwargs):
+        if self.is_ne_platform:
+            # NE Platform Set 3 Type for import
+            self.VRF_TYPE_MAP = {"rt_export": {"2"},
+                                 "rt_import": {"1", "3"}}
+        return super(Script, self).execute_snmp(**kwargs)
+
+    def execute_cli(self, **kwargs):
         try:
             v = self.cli("display ip vpn-instance verbose")
         except self.CLISyntaxError:
             return []
-        for l in v.splitlines():
-            match = self.rx_line.search(l)
+        vpns = []
+        block = None
+        block_splitter = None
+        for line in v.splitlines():
+            match = self.rx_line.search(line)
             if match:
                 vpns += [{
                     "type": "VRF",
                     "status": True,
+                    "vpn_id": "",
                     "name": match.group("vrf").strip(),
                     "interfaces": []
                 }]
             elif vpns:
-                match_rd = self.rx_rd.match(l)
+                if block and line.startswith("    "):
+                    vpns[-1][block] += line.strip(" ,\n").split(block_splitter)
+                    continue
+                block = None
+                block_splitter = None
+                match_rd = self.rx_rd.match(line)
                 if match_rd:
                     rd = match_rd.group("rd")
                     if ":" in rd:
                         vpns[-1]["rd"] = rd
                     continue
-
-                match_int = self.rx_int.match(l)
+                match_int = self.rx_int.match(line)
                 if match_int:
-                    vpns[-1]["interfaces"] += [match_int.group("iface")]
+                    vpns[-1]["interfaces"] += [match_int.group("iface").strip("\n")]
+                    block, block_splitter = "interfaces", ","
                     continue
-
-                match_desc = self.rx_desc.match(l)
+                match_desc = self.rx_desc.match(line)
                 if match_desc:
                     vpns[-1]["description"] = match_desc.group("desc").strip()
                     continue
+                match_export = self.rx_export.match(line)
+                if match_export:
+                    vpns[-1]["rt_export"] = match_export.group("rt_export").split()
+                    block = "rt_export"
+                match_import = self.rx_import.match(line)
+                if match_import:
+                    vpns[-1]["rt_import"] = match_import.group("rt_import").split()
+                    block = "rt_import"
+
         if vpns:
             return vpns
         # Second attempt
@@ -69,6 +94,7 @@ class Script(BaseScript):
                 "type": "VRF",
                 "status": True,
                 "name": match.group("vrf").strip(),
+                "vpn_id": "",
                 "interfaces": match.group("ifaces").strip().split(" ")
             }
             description = match.group("description").strip()

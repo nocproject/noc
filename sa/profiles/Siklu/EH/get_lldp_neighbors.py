@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Siklu.EH.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -32,6 +30,7 @@ class Script(BaseScript):
     PORT_TYPES = {
         "interfacealias": 1,
         "interface alias": 1,
+        "interface-alias": 1,
         "macaddress": 3,
         "mac address": 3,
         "mac-addr": 3,

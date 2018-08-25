@@ -1,7 +1,7 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# mailsender service
+# tgsender service
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -10,21 +10,26 @@
 # Third-party modules
 import re
 import datetime
-import socket
 import json
-import urllib
-import urllib2
 import time
+import urllib
 # NOC modules
 from noc.core.service.base import Service
+from noc.core.http.client import fetch_sync
 from noc.core.perf import metrics
 from noc.config import config
+
+API = 'https://api.telegram.org/bot'
 
 
 class TgSenderService(Service):
     name = "tgsender"
 
     def on_activate(self):
+        if not config.tgsender.token:
+            self.die("no token defined")
+        else:
+            self.url = API + config.tgsender.token
         self.subscribe(
             topic=self.name,
             channel="sender",
@@ -40,78 +45,42 @@ class TgSenderService(Service):
             ),
             message.attempts
         )
-
         return self.send_tb(message.id, address, subject, body)
 
-    def escape_markdown(self, text):
+    @staticmethod
+    def escape_markdown(text):
         """Helper function to escape telegram markup symbols"""
         escape_chars = '\*_`'
         return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
     def send_tb(self, messages, address, subject, body):
-        RETRY_TIME = config.tgsender.retry_timeout
-        TOKEN = config.tgsender.token
-        API = 'https://api.telegram.org/bot'
-        URL = API + TOKEN
-        proxy_addres = config.proxy.https_proxy
+        # proxy_addres = config.proxy.https_proxy  # not used.
         sendMessage = {
             'chat_id': address,
-            'text': '*' + self.escape_markdown(subject) + '*\n' + self.escape_markdown(body),
+            'text': '*' + self.escape_markdown(subject.encode('utf8')) +
+                    '*\n' + self.escape_markdown(body.encode('utf8')),
             'parse_mode': 'Markdown'
         }
-        time.sleep(RETRY_TIME)
-        if config.tgsender.use_proxy:
-            try:
-                proxy = urllib2.ProxyHandler({'https': proxy_addres})
-                auth = urllib2.HTTPBasicAuthHandler()
-                opener = urllib2.build_opener(proxy)
-                urllib2.install_opener(opener)
-                get = URL + '/sendMessage?' + urllib.urlencode(sendMessage)
-                result = urllib2.urlopen(get).read()
-                check = json.loads(result)
-                self.logger.info("Proxy Send: %s\n" % check)
-                metrics["telegram_proxy_sended_ok"] += 1
-                return True
-            except urllib2.HTTPError as e:
-                self.logger.info("Proxy HTTPError: %s\n" % e.code)
-                metrics["telegram_proxy_failed_httperror"] += 1
-                return False
-            except urllib2.URLError as e:
-                self.logger.info("Proxy URLError: %s\n" % e.args)
-                metrics["telegram_proxy_failed_urlerror"] += 1
-                return False
-            except urllib2.HTTPException as e:
-                self.logger.info("Proxy HTTPException: %s\n" % e.err)
-                metrics["telegram_proxy_failed_urlerror"] += 1
-                return False
-            except Exception as e:
-                self.logger.info("Proxy Generic Exception: %s\n" % e.exp)
-                metrics["telegram_proxy_failed_exceprion"] += 1
-                return False
+        time.sleep(config.tgsender.retry_timeout)
+
+        get = self.url + '/sendMessage?' + urllib.urlencode(sendMessage)
+        self.logger.info("HTTP GET %s", get)
+        code, header, body = fetch_sync(
+            get,
+            allow_proxy=True,
+            request_timeout=config.activator.http_request_timeout,
+            follow_redirects=True,
+            validate_cert=config.activator.http_validate_cert,
+        )
+        if 200 <= code <= 299:
+            check = json.loads(body)
+            self.logger.info("Result: %s" % check)
+            metrics["telegram_proxy_sended_ok"] += 1
+            return True
         else:
-            try:
-                get = URL + '/sendMessage?' + urllib.urlencode(sendMessage)
-                result = urllib2.urlopen(get).read()
-                check = json.loads(result)
-                self.logger.info("Send: %s\n" % check)
-                metrics["telegram_sended_ok"] += 1
-                return True
-            except urllib2.HTTPError as e:
-                self.logger.info("HTTPError: %s\n" % e.code)
-                metrics["telegram_failed_httperror"] += 1
-                return False
-            except urllib2.URLError as e:
-                self.logger.info("URLError: %s\n" % e.args)
-                metrics["telegram_failed_urlerror"] += 1
-                return False
-            except urllib2.HTTPException as e:
-                self.logger.info("HTTPException: %s\n" % e.err)
-                metrics["telegram_failed_urlerror"] += 1
-                return False
-            except Exception as e:
-                self.logger.info("Generic Exception: %s\n" % e.exc)
-                metrics["telegram_proxy_failed_exceprion"] += 1
-                return False
+            self.logger.error("HTTP GET %s failed: %s %s", get, code, body)
+            metrics["telegram_proxy_failed_httperror"] += 1
+            return False
 
 
 if __name__ == "__main__":

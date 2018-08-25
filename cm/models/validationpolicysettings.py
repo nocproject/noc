@@ -26,6 +26,7 @@ class ValidationPolicySettings(Document):
     meta = {
         "collection": "noc.validationpolicysettings",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [("model_id", "object_id")]
     }
     model_id = StringField()

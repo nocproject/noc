@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,8 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
+from noc.lib.validators import is_int, is_ipv4, is_mac
 
 
 class Script(BaseScript):
@@ -20,8 +19,18 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_line = re.compile(
-        r"^Interface Ethernet (?P<interface>\S+)\s*.Port\s+LLDP:\s+\S+\s+Pkt\s+Tx:\s+\d+\s+Pkt\s+Rx:\s+\d+\s*.Total neighbor count: \d+\s*.\s*.Neighbor \(\d+\):\s*.TTL: \d+\(s\)\s*.Chassis ID:\s+(?P<chassis_id>\S+)\s*.Port ID: port (?P<port_id>\S+)\s*.System Name: (?P<name>\S+)",
-        re.DOTALL|re.MULTILINE)
+        r"^Interface Ethernet (?P<interface>\S+)\s*\n"
+        r"^Port\s+LLDP:\s+\S+\s+Pkt\s+Tx:\s+\d+\s+Pkt\s+Rx:\s+\d+\s*\n"
+        r"^Total neighbor count: \d+\s*\n\n"
+        r"^Neighbor \(\d+\):\s*\n"
+        r"^TTL: \d+\(s\)\s*\n"
+        r"^Chassis ID:\s+(?P<chassis_id>\S+)\s*\n"
+        r"^Port ID:( port)? (?P<port_id>\S+)\s*\n"
+        r"^System Name: (?P<name>\S+)\s*\n"
+        r"(^System Description: (?P<system_description>.+)\s*\n)?"
+        r"(^Port Description: (?P<port_description>.+)\s*\n)?",
+        re.MULTILINE)
+
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
     def execute(self):
@@ -30,7 +39,7 @@ class Script(BaseScript):
 
         """
         # SNMP not working
-        
+
         if self.has_snmp():
             try:
 
@@ -80,16 +89,17 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         for match in self.rx_line.finditer(lldp):
             local_interface = match.group("interface")
-            local_interface = \
-                self.profile.convert_interface_name(local_interface)
             remote_chassis_id = match.group("chassis_id")
             remote_port = match.group("port_id")
             remote_system_name = match.group("name")
+            system_description = match.group("system_description")
+            port_description = match.group("port_description")
 
             # Build neighbor data
             # Get capability
             cap = 0
-#            for c in match.group("capabilities").split(","):
+            """
+            for c in match.group("capabilities").split(","):
             if cap:
                 c = c.strip()
                 if c:
@@ -99,17 +109,15 @@ class Script(BaseScript):
                         "C": 64, "S": 128, "D": 256,
                         "H": 512, "TP": 1024,
                     }[c]
-
+            """
             # Get remote port subtype
             remote_port_subtype = 5
-            if self.rx_mac.match(remote_port):
-                # Actually macAddress(3)
-                # Convert MAC to common form
-                remote_port = MACAddressParameter().clean(remote_port)
-                remote_port_subtype = 3
-            elif is_ipv4(remote_port):
+            if is_ipv4(remote_port):
                 # Actually networkAddress(4)
                 remote_port_subtype = 4
+            elif is_mac(remote_port):
+                # Actually macAddress(3)
+                remote_port_subtype = 3
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = 7
@@ -120,12 +128,16 @@ class Script(BaseScript):
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
-                }
-            if remote_system_name:
+            }
+            if remote_system_name and remote_system_name != "NULL":
                 n["remote_system_name"] = remote_system_name
+            if system_description and system_description != "NULL":
+                n["remote_system_description"] = system_description
+            if port_description and port_description != "NULL":
+                n["remote_port_description"] = port_description
 
             # TODO:
-#            n["remote_chassis_id_subtype"] = 4
+            #            n["remote_chassis_id_subtype"] = 4
 
             i["neighbors"].append(n)
             r.append(i)

@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # inv.inv log plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import InvPlugin
+from .base import InvPlugin
 
 
 class LogPlugin(InvPlugin):

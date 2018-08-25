@@ -2,20 +2,30 @@
 # ---------------------------------------------------------------------
 # SA Profile Base
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+import functools
+# Third-party modules
+import tornado.gen
+import six
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
-import functools
 
 
-class BaseProfile(object):
+class BaseProfileMetaclass(type):
+    def __new__(mcs, name, bases, attrs):
+        n = type.__new__(mcs, name, bases, attrs)
+        n.patterns = n._get_patterns()
+        return n
+
+
+class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     """
     Equipment profile. Contains all equipment personality and specific
     """
@@ -47,12 +57,12 @@ class BaseProfile(object):
     pattern_prompt = r"^\S*[>#]"
     # Regular expression to catch unpriveleged mode command prompt
     # (CLI Session)
-    pattern_unpriveleged_prompt = None
+    pattern_unprivileged_prompt = None
     # Regular expression to catch pager
     # (Used in command results)
     # If pattern_more is string, send command_more
     # If pattern_more is a list of (pattern,command)
-    # send appropriative command
+    # send appropriate command
     pattern_more = "^---MORE---"
     # Regular expression to catch the syntax errors in cli output.
     # If CLI output matches pattern_syntax_error,
@@ -65,6 +75,18 @@ class BaseProfile(object):
     # Reqular expression to start setup sequence
     # defined in setup_sequence list
     pattern_start_setup = None
+    # String or list of string to recognize continued multi-line commands
+    # Multi-line commands must be sent at whole, as the prompt will be
+    # not available until end of command
+    # NB: Sending logic is implemented in *commands* script
+    # Examples:
+    # "^.+\\" -- treat trailing backspace as continuation
+    # "banner\s+login\s+(\S+)" -- continue until matched group
+    pattern_multiline_commands = None
+    # MML end of block pattern
+    pattern_mml_end = None
+    # MML continue pattern
+    pattern_mml_continue = None
     # Device can strip long hostname in various modes
     # i.e
     # my.very.long.hostname# converts to
@@ -110,6 +132,14 @@ class BaseProfile(object):
     # Sequence to save configuration
     #
     command_save_config = None
+    # String or callable to send on syntax error to perform cleanup
+    # Callable accepts three arguments
+    # * cli instance
+    # * command that caused syntax error
+    # * error response.
+    # Coroutines are also accepted.
+    # SyntaxError exception will be raised after cleanup procedure
+    send_on_syntax_error = None
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
     # (when Action.CLEAN_INPUT==True)
@@ -155,6 +185,19 @@ class BaseProfile(object):
     snmp_metrics_get_timeout = 3
     # Allow CLI sessions by default
     enable_cli_session = True
+    # True - Send multiline command at once
+    # False - Send multiline command line by line
+    batch_send_multiline = True
+    # String to separate MML response header from body
+    mml_header_separator = "\r\n\r\n"
+    # Always enclose MML command arguments with quotes
+    # False - pass integers as unquoted
+    mml_always_quote = False
+    # Matchers are helper expressions to calculate and fill
+    # script's is_XXX properties
+    matchers = {}
+    # Filled by metaclass
+    patterns = {}
 
     def convert_prefix(self, prefix):
         """
@@ -207,7 +250,8 @@ class BaseProfile(object):
 
     # Cisco-like translation
     rx_cisco_interface_name = re.compile(
-        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
+        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE
     )
 
@@ -307,7 +351,6 @@ class BaseProfile(object):
                 return int(match.group("number"))
         return None
 
-
     def generate_prefix_list(self, name, pl):
         """
         Generate prefix list:
@@ -364,8 +407,10 @@ class BaseProfile(object):
         Default implementation compares a versions in format
         N1. .. .NM
         """
-        return cmp([int(x) for x in v1.split(".")],
-                   [int(x) for x in v2.split(".")])
+        p1 = [int(x) for x in v1.split(".")]
+        p2 = [int(x) for x in v2.split(".")]
+        # cmp-like semantic
+        return (p1 > p2) - (p1 < p2)
 
     @classmethod
     def get_parser(cls, vendor, platform, version):
@@ -404,3 +449,105 @@ class BaseProfile(object):
     @classmethod
     def allow_cli_session(cls, platform, version):
         return cls.enable_cli_session
+
+    @classmethod
+    @tornado.gen.coroutine
+    def send_backspaces(cls, cli, command, error_text):
+        # Send backspaces to clean up previous command
+        yield cli.iostream.write("\x08" * len(command))
+        # Send command_submit to force prompt
+        yield cli.iostream.write(cls.command_submit)
+        # Wait until prompt
+        yield cli.read_until_prompt()
+
+    def get_mml_login(self, script):
+        """
+        Generate MML login command. .get_mml_command may be used for formatting
+        :param script: BaseScript instance
+        :return: Login command
+        """
+        raise NotImplementedError()
+
+    def get_mml_command(self, cmd, **kwargs):
+        """
+        Generate MML command
+        :param cmd:
+        :param kwargs:
+        :return:
+        """
+        def qi(s):
+            return "\"%s\"" % s
+
+        def nqi(s):
+            if isinstance(s, six.string_types):
+                return "\"%s\"" % s
+            else:
+                return str(s)
+        if ";" in cmd:
+            return "%s\r\n" % cmd
+        r = [cmd, ":"]
+        if kwargs:
+            if self.mml_always_quote:
+                q = qi
+            else:
+                q = nqi
+            r += [", ".join("%s=%s" % (k, q(kwargs[k])) for k in kwargs)]
+        r += [";", "\r\n"]
+        return "".join(r)
+
+    def parse_mml_header(self, header):
+        """
+        Parse MML response header
+        :param header: Response header
+        :return: error code, error message
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def _get_patterns(cls):
+        """
+        Return dict of compiled regular expressions
+        """
+        patterns = {
+            "username": re.compile(cls.pattern_username,
+                                   re.DOTALL | re.MULTILINE),
+            "password": re.compile(cls.pattern_password,
+                                   re.DOTALL | re.MULTILINE),
+            "prompt": re.compile(cls.pattern_prompt,
+                                 re.DOTALL | re.MULTILINE)
+        }
+        if cls.pattern_unprivileged_prompt:
+            patterns["unprivileged_prompt"] = re.compile(
+                cls.pattern_unprivileged_prompt,
+                re.DOTALL | re.MULTILINE
+            )
+        if cls.pattern_super_password:
+            patterns["super_password"] = re.compile(
+                cls.pattern_super_password,
+                re.DOTALL | re.MULTILINE
+            )
+        if isinstance(cls.pattern_more, six.string_types):
+            more_patterns = [cls.pattern_more]
+            patterns["more_commands"] = [cls.command_more]
+        else:
+            # .more_patterns is a list of (pattern, command)
+            more_patterns = [x[0] for x in cls.pattern_more]
+            patterns["more_commands"] = [x[1] for x in cls.pattern_more]
+        if cls.pattern_start_setup:
+            patterns["setup"] = re.compile(
+                cls.pattern_start_setup,
+                re.DOTALL | re.MULTILINE
+            )
+        # Merge pager patterns
+        patterns["pager"] = re.compile(
+            "|".join([r"(%s)" % p for p in more_patterns]),
+            re.DOTALL | re.MULTILINE
+        )
+        patterns["more_patterns"] = [
+            re.compile(p, re.MULTILINE | re.DOTALL)
+            for p in more_patterns]
+        patterns["more_patterns_commands"] = list(zip(
+            patterns["more_patterns"],
+            patterns["more_commands"]
+        ))
+        return patterns

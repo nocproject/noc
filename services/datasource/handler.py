@@ -10,12 +10,13 @@
 from __future__ import absolute_import
 # Third-party modules
 import tornado.web
+import tornado.gen
 import cachetools
 import threading
 import operator
 # NOC modules
-from noc.config import config
 from .loader import get_datasource
+from noc.core.perf import metrics
 
 ds_lock = threading.Lock()
 
@@ -26,16 +27,20 @@ class DataSourceRequestHandler(tornado.web.RequestHandler):
     def initialize(self, service):
         self.service = service
 
+    @tornado.gen.coroutine
     def get(self, path, *args, **kwargs):
         ds_name, fmt = path.rsplit(".", 1)
         writer = getattr(self, "write_%s" % fmt, None)
         if not writer:
+            metrics["error", ("type", "no_writer")] += 1
             raise tornado.web.HTTPError(400, "Invalid format %s" % fmt)
         ds_cls = self.get_datasource(ds_name)
         if not ds_cls:
+            metrics["error", ("type", "invalid_datasource")] += 1
             raise tornado.web.HTTPError(404, "DataSource not found")
         ds = ds_cls()
-        data = ds.get()
+        executor = self.service.get_executor("max")
+        data = yield executor.submit(ds.get)
         writer(data)
 
     @classmethod

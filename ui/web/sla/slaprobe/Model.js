@@ -55,7 +55,8 @@ Ext.define("NOC.sla.slaprobe.Model", {
         },
         {
             name: "hw_timestamp",
-            type: "string"
+            type: "string",
+            defaultValue:false
         },
         {
             name: "tags",

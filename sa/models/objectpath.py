@@ -21,6 +21,7 @@ class ObjectPath(Document):
     meta = {
         "collection": "noc.cache.objectpaths",
         "strict": False,
+        "auto_create_index": False,
     }
     # Object id
     object = IntField(primary_key=True)

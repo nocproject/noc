@@ -3,7 +3,7 @@
 # Vendor: Qtech
 # OS:     QSW
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,8 +18,8 @@ class Profile(BaseProfile):
     pattern_username = r"^(Username\(1-32 chars\)|[Ll]ogin):"
     pattern_password = r"^Password(\(1-16 chars\)|):"
     pattern_more = [
-        (r"\n^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
-            r"to next page\.\.\.\.", "\n"),
+        (r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
+            r"to next page\.\.\.\.", " "),
         (r"^Startup config in flash will be updated, are you sure\(y/n\)\? "
             r"\[n\]", "y"),
         (r"^ --More-- $", " "),
@@ -29,7 +29,7 @@ class Profile(BaseProfile):
         (r"^Begin to receive file, please wait", " "),
         (r"#####", " ")
     ]
-    pattern_unpriveleged_prompt = r"^\S+>"
+    pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = \
         r"% (Unrecognized command, and error|Invalid input) detected at " \
         r"'\^' marker.|% Ambiguous command:|interface error!|Incomplete " \
@@ -41,18 +41,26 @@ class Profile(BaseProfile):
     command_exit = "quit"
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
-
-    rx_ifname = re.compile(r"^(?:1/)?(?P<number>\d+)$")
+    rogue_chars = [re.compile(r"\s*\x1b\[74D\s+\x1b\[74D"), "\r"]
+    rx_ifname = re.compile(r"^(?P<number>[\d/]+)$")
 
     def convert_interface_name(self, s):
         """
-        >>> Profile().convert_interface_name("Ethernet1/1")
-        'Ethernet1/1'
-        >>> Profile().convert_interface_name("1")
-        'Ethernet1/1'
+        >>> Profile().convert_interface_name("1/1")
+        'e1/1'
+        >>> Profile().convert_interface_name("e1/1")
+        'e1/1'
         """
-        match = self.rx_ifname.match(s)
+        match = self.rx_ifname.search(s)
         if match:
-            return "Ethernet1/%d" % int(match.group("number"))
+            return "e%s" % s
         else:
             return s
+
+    def get_interface_names(self, name):
+        r = []
+        if name.startswith("port "):
+            r += [name[5:]]
+        else:
+            r += [name]
+        return r

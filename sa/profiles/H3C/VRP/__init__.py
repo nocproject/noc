@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = ""
-    pattern_syntax_error = r"% Wrong parameter"
+    pattern_syntax_error = r"% Wrong parameter|% Unrecognized command found at"
 
     def generate_prefix_list(self, name, pl, strict=True):
         p = "ip ip-prefix %s permit %%s" % name
@@ -29,7 +29,9 @@ class Profile(BaseProfile):
             p += " le 32"
         return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
 
-    rx_interface_name = re.compile(r"^(?P<type>[A-Z]+E)(?P<number>[\d/]+)$")
+    rx_interface_name = re.compile(
+        r"^(?P<type>Eth|[A-Z]+E|Vlan)(?P<number>[\d/]+)$"
+    )
 
     def convert_interface_name(self, s):
         """
@@ -39,7 +41,13 @@ class Profile(BaseProfile):
         match = self.rx_interface_name.match(s)
         if not match:
             return s
-        return "%s%s" % ({"GE": "GigabitEthernet"}[match.group("type")], match.group("number"))
+        return "%s%s" % (
+            {
+                "GE": "GigabitEthernet",
+                "Eth": "Ethernet",
+                "Vlan": "Vlan-interface"
+            }[match.group("type")], match.group("number")
+        )
 
     convert_mac = BaseProfile.convert_mac_to_huawei
 

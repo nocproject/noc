@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,15 +18,20 @@ from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
     StringParameter, MapParameter, IntParameter, BooleanParameter,
     HandlerParameter, SecondsParameter, FloatParameter,
-    ServiceParameter, SecretParameter)
+    ServiceParameter, SecretParameter, ListParameter)
 
 
 class Config(BaseConfig):
     loglevel = MapParameter(default="info", mappings={
+        # pylint: disable=used-before-assignment
         "critical": logging.CRITICAL,
+        # pylint: disable=used-before-assignment
         "error": logging.ERROR,
+        # pylint: disable=used-before-assignment
         "warning": logging.WARNING,
+        # pylint: disable=used-before-assignment
         "info": logging.INFO,
+        # pylint: disable=used-before-assignment
         "debug": logging.DEBUG
     })
 
@@ -66,8 +71,14 @@ class Config(BaseConfig):
         reboot_interval = SecondsParameter(default="1M")
         extract_delay_reboots = SecondsParameter(default="1h")
         clean_delay_reboots = SecondsParameter(default="1d")
-        chunk_size = IntParameter(default=4000)
+        chunk_size = IntParameter(default=3000)
         extract_window = SecondsParameter(default="1d")
+        enable_alarms = BooleanParameter(default=False)
+        enable_reboots = BooleanParameter(default=False)
+        enable_managedobjects = BooleanParameter(default=False)
+        enable_alarms_archive = BooleanParameter(default=False)
+        alarms_archive_template = StringParameter(default="alarms.{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}")
+        alarms_archive_batch_limit = IntParameter(default=10000)
 
     brand = StringParameter(default="NOC")
 
@@ -143,11 +154,11 @@ class Config(BaseConfig):
         near_retry_timeout = IntParameter(default=1)
         host = StringParameter(default="consul")
         port = IntParameter(default=8500)
-        check_interval = SecondsParameter(default="1s")
+        check_interval = SecondsParameter(default="10s")
         check_timeout = SecondsParameter(default="1s")
         release = SecondsParameter(default="1M")
         session_ttl = SecondsParameter(default="10s")
-        lock_delay = SecondsParameter(default="1s")
+        lock_delay = SecondsParameter(default="20s")
         retry_timeout = SecondsParameter(default="1s")
         keepalive_attempts = IntParameter(default=5)
         base = StringParameter(default="noc", help="kv lookup base")
@@ -161,10 +172,10 @@ class Config(BaseConfig):
 
     class customization(ConfigSection):
         favicon_url = StringParameter(
-            default="/static/img/logo_24x24_deep_azure.png"
+            default="/ui/web/img/logo_24x24_deep_azure.png"
         )
         logo_url = StringParameter(
-            default="/static/img/logo_white.svg"
+            default="/ui/web/img/logo_white.svg"
         )
         logo_width = IntParameter(default=24)
         logo_height = IntParameter(default=24)
@@ -207,9 +218,14 @@ class Config(BaseConfig):
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
-        telemetry = BooleanParameter(default=False, help="Enable internal telemetry export to Clickhouse")
-        consul_healthchecks = BooleanParameter(default=True, help="While registering serive in consul also register health check")
-        service_registration = BooleanParameter(default=True, help="Permit consul self registration")
+        telemetry = BooleanParameter(default=False,
+                                     help="Enable internal telemetry export to Clickhouse")
+        consul_healthchecks = BooleanParameter(default=True,
+                                               help="While registering serive in consul also register health check")
+        service_registration = BooleanParameter(default=True,
+                                                help="Permit consul self registration")
+        pypy = BooleanParameter(default=False)
+        forensic = BooleanParameter(default=False)
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")
@@ -224,9 +240,11 @@ class Config(BaseConfig):
         yandex_key = SecretParameter(default="")
         google_key = SecretParameter(default="")
         google_language = StringParameter(default="en")
+        negative_ttl = SecondsParameter(default="7d",
+                                        help="Period then saving bad result")
 
     class gis(ConfigSection):
-        ellipsoid = StringParameter(default="ПЗ-90")
+        ellipsoid = StringParameter(default="PZ-90")
         enable_osm = BooleanParameter(default=True)
         enable_google_sat = BooleanParameter(default=False)
         enable_google_roadmap = BooleanParameter(default=False)
@@ -318,6 +336,8 @@ class Config(BaseConfig):
         rs = StringParameter()
         retries = IntParameter(default=20)
         timeout = SecondsParameter(default="3s")
+        retry_writes = BooleanParameter(default=False)
+        app_name = StringParameter()
 
     class mrt(ConfigSection):
         max_concurrency = IntParameter(default=50)
@@ -354,24 +374,22 @@ class Config(BaseConfig):
         dig = StringParameter()
         vcs_path = StringParameter(default="/usr/local/bin/hg")
         repo = StringParameter(default="/var/repo")
-        config_mirror_path = StringParameter("")
         backup_dir = StringParameter(default="/var/backup")
-        etl_import = StringParameter(default="var/import")
-        ssh_key_prefix = StringParameter(default="var/etc/ssh")
-        beef_prefix = StringParameter(default="var/beef/sa")
-        cp_new = StringParameter(default="var/cp/crashinfo/new")
-        bi_data_prefix = StringParameter(default="var/bi")
+        etl_import = StringParameter(default="/var/lib/noc/import")
+        ssh_key_prefix = StringParameter(default="etc/noc_ssh")
+        cp_new = StringParameter(default="/var/lib/noc/cp/crashinfo/new")
+        bi_data_prefix = StringParameter(default="/var/lib/noc/bi")
         babel_cfg = StringParameter(default="etc/babel.cfg")
         babel = StringParameter(default="./bin/pybabel")
         pojson = StringParameter(default="./bin/pojson")
         collection_fm_mibs = StringParameter(default="collections/fm.mibs/")
-        shapes_path = StringParameter(default="static/shape/")
         supervisor_cfg = StringParameter(default="etc/noc_services.conf")
         legacy_config = StringParameter(default="etc/noc.yml")
         cythonize = StringParameter(default="./bin/cythonize")
-        npkg_root = StringParameter(default="var/pkg")
+        npkg_root = StringParameter(default="/var/lib/noc/var/pkg")
         card_template_path = StringParameter(default="services/card/templates/card.html.j2")
         pm_templates = StringParameter(default="templates/ddash/")
+        custom_path = StringParameter()
 
     class pg(ConfigSection):
         addresses = ServiceParameter(
@@ -381,6 +399,7 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter()
         password = SecretParameter()
+        connect_timeout = IntParameter(default=5)
 
     class ping(ConfigSection):
         throttle_threshold = FloatParameter()
@@ -393,6 +412,8 @@ class Config(BaseConfig):
         send_buffer = IntParameter(default=4 * 1048576)
         # Recommended receive buffer size, 4M by default
         receive_buffer = IntParameter(default=4 * 1048576)
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class pmwriter(ConfigSection):
         batch_size = IntParameter(default=2500)
@@ -446,14 +467,10 @@ class Config(BaseConfig):
     class sentry(ConfigSection):
         url = StringParameter(default="")
 
-    class sync(ConfigSection):
-        config_ttl = SecondsParameter(default="1d")
-        ttl_jitter = FloatParameter(default=0.1)
-        expired_refresh_timeout = IntParameter(default=25)
-        expired_refresh_chunk = IntParameter(default=100)
-
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class tgsender(ConfigSection):
         token = SecretParameter()
@@ -473,23 +490,48 @@ class Config(BaseConfig):
 
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
+        api_arch_alarm_limit = IntParameter(default=4 * 86400)
         language = StringParameter(default="en")
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
+        macdb_window = IntParameter(default=4 * 86400)
 
     class datasource(ConfigSection):
         chunk_size = IntParameter(default=1000)
         max_threads = IntParameter(default=10)
         default_ttl = SecondsParameter(default="1h")
 
-    class tests(ConfigSection):
-        enable_coverage = BooleanParameter(default=False)
-        events_path = StringParameter(default="collections/test.events")
-        profilecheck_path = StringParameter(default="collections/test.profilecheck")
+    class datastream(ConfigSection):
+        enable_administrativedomain = BooleanParameter(default=True)
+        enable_cfgping = BooleanParameter(default=True)
+        enable_cfgsyslog = BooleanParameter(default=True)
+        enable_cfgtrap = BooleanParameter(default=True)
+        enable_dnszone = BooleanParameter(default=True)
+        enable_managedobject = BooleanParameter(default=True)
 
+    class tests(ConfigSection):
+        # List of pyfilesystem URLs holding intial data
+        fixtures_paths = ListParameter(item=StringParameter(), default=["tests/data"])
+        # List of pyfilesystem URLs holding event classification samples
+        events_paths = ListParameter(item=StringParameter())
+        # List of pyfilesystem URLs holding beef test cases
+        beef_paths = ListParameter(item=StringParameter())
+
+    class peer(ConfigSection):
+        enable_ripe = BooleanParameter(default=True)
+        enable_arin = BooleanParameter(default=True)
+        enable_radb = BooleanParameter(default=True)
+        prefix_list_optimization = BooleanParameter(default=True)
+        prefix_list_optimization_threshold = IntParameter(default=1000)
+        max_prefix_length = IntParameter(default=24)
+        rpsl_inverse_pref_style = BooleanParameter(default=False)
+
+    # pylint: disable=super-init-not-called
     def __init__(self):
         self.setup_logging()
 
@@ -520,6 +562,10 @@ class Config(BaseConfig):
                 "password": self.mongo.password,
                 "socketKeepAlive": True
             }
+            if self.mongo.app_name:
+                self._mongo_connection_args["appname"] = self.mongo.app_name
+            if self.mongo.retry_writes:
+                self._mongo_connection_args["retryWrites"] = True
             has_credentials = self.mongo.user or self.mongo.password
             if has_credentials:
                 self._mongo_connection_args["authentication_source"] = self.mongo.db
@@ -592,6 +638,28 @@ class Config(BaseConfig):
                 return CH_REPLICATED
         else:
             return CH_SHARDED
+
+    def get_customized_paths(self, *args, **kwargs):
+        """
+        Check for customized path for given repo path.
+        Repo path may be given in os.path.join-style components.
+        Returns list of possible paths. One of elements is always repo path,
+        while other may be custom counterpart, if exists.
+        :param prefer_custom: True - customized path first, False - repo path first
+        :param args: Path or path components in os.path.join-style
+        :return: List of possible paths
+        """
+        prefer_custom = kwargs.get("prefer_custom", False)
+        rpath = os.path.join(*args)
+        if not self.path.custom_path:
+            return [rpath]
+        cpath = os.path.join(self.path.custom_path, *args)
+        if os.path.exists(cpath):
+            if prefer_custom:
+                return [cpath, rpath]
+            else:
+                return [rpath, cpath]
+        return [rpath]
 
 
 CHClusterShard = namedtuple("CHClusterShard", ["replicas", "weight"])

@@ -13,7 +13,8 @@ import noc.lib.nosql as nosql
 class AlarmClassCategory(nosql.Document):
     meta = {
         "collection": "noc.alartmclasscategories",  # @todo: Fix bug
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = nosql.StringField()
     parent = nosql.ObjectIdField(required=False)

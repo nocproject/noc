@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -19,7 +20,14 @@ class Script(BaseScript):
 
     rx_hostname = re.compile(r"^hostname (?P<hostname>\S+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        try:
+            fqnd = self.snmp.get(mib["SNMPv2-MIB::sysName.0"])
+            return fqnd
+        except self.snmp.TimeOutError:
+            raise self.NotSupportedError
+
+    def execute_cli(self):
         fqdn = ""
         try:
             v = self.cli("show startup-config | i hostname", cached=True)

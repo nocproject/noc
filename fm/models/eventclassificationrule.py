@@ -37,7 +37,8 @@ class EventClassificationRuleVar(EmbeddedDocument):
 class EventClassificationRuleCategory(Document):
     meta = {
         "collection": "noc.eventclassificationrulecategories",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
@@ -79,6 +80,7 @@ class EventClassificationRule(Document):
     meta = {
         "collection": "noc.eventclassificationrules",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.eventclassificationrules",
         "json_depends_on": [
             "fm.eventclasses"

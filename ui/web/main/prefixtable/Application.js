@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.prefixtable.Application");
 
 Ext.define("NOC.main.prefixtable.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.main.prefixtable.Model"
     ],
     model: "NOC.main.prefixtable.Model",

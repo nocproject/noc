@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.ref application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,13 +18,14 @@ from mongoengine.base.common import _document_registry
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.site import site
 from noc.core.interface.loader import loader as interface_loader
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
-from noc.core.translation import ugettext as _
+from noc.core.window import wf_choices
+from noc.models import iter_model_id
 
 
 class RefAppplication(ExtApplication):
@@ -87,16 +88,16 @@ class RefAppplication(ExtApplication):
         :return:
         """
         return sorted(({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
-            key=lambda x: x["label"])
+                      key=lambda x: x["label"])
 
     def build_model(self):
         """
         Model Names
         :return:
         """
-        return sorted(({"id": m._meta.db_table,
-                        "label": m._meta.db_table}
-            for m in models.get_models()),
+        return sorted(
+            ({"id": m._meta.db_table, "label": m._meta.db_table}
+             for m in models.get_models()),
             key=lambda x: x["label"])
 
     def build_modcol(self):
@@ -199,6 +200,11 @@ class RefAppplication(ExtApplication):
             key=lambda x: x["label"]
         )
 
+    def build_windowfunction(self):
+        return sorted(
+            ({"id": x[0], "label": x[1]} for x in wf_choices)
+        )
+
     def _build_report(self):
         return sorted((
             {
@@ -207,6 +213,9 @@ class RefAppplication(ExtApplication):
             } for r_id, r in site.iter_predefined_reports()),
             key=operator.itemgetter("label")
         )
+
+    def build_modelid(self):
+        return [{"id": x, "label": x} for x in sorted(iter_model_id())]
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
@@ -243,4 +252,3 @@ class RefAppplication(ExtApplication):
             }
         else:
             return data
-

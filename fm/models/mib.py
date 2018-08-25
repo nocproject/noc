@@ -2,48 +2,56 @@
 # ---------------------------------------------------------------------
 # MIB model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import subprocess
 import re
 import imp
 import datetime
 import os
+# Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DateTimeField, IntField, ListField, DictField
 # NOC modules
-import noc.lib.nosql as nosql
 from noc.config import config
 from noc.core.fileutils import temporary_file, safe_rewrite
-from error import (MIBNotFoundException, MIBRequiredException,
-                   OIDCollision)
-from mibpreference import MIBPreference
-from mibalias import MIBAlias
-from syntaxalias import SyntaxAlias
-from oidalias import OIDAlias
 from noc.lib.validators import is_oid
 from noc.lib.escape import fm_unescape, fm_escape
 from noc.core.snmp.util import render_tc
+from noc.core.model.decorator import on_delete_check
+from .error import (MIBNotFoundException, MIBRequiredException,
+                    OIDCollision)
+from .mibpreference import MIBPreference
+from .mibalias import MIBAlias
+from .syntaxalias import SyntaxAlias
+from .oidalias import OIDAlias
 
 # Regular expression patterns
 rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
 
-class MIB(nosql.Document):
+@on_delete_check(check=[
+    ("fm.MIBData", "mib")
+])
+class MIB(Document):
     meta = {
         "collection": "noc.mibs",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
-    name = nosql.StringField(required=True, unique=True)
-    description = nosql.StringField(required=False)
-    last_updated = nosql.DateTimeField(required=True)
-    depends_on = nosql.ListField(nosql.StringField())
+    name = StringField(required=True, unique=True)
+    description = StringField(required=False)
+    last_updated = DateTimeField(required=True)
+    depends_on = ListField(StringField())
     # TC definitions: name -> SYNTAX
-    typedefs = nosql.DictField(required=False)
+    typedefs = DictField(required=False)
     # Compiled MIB version
-    version = nosql.IntField(required=False, default=0)
+    version = IntField(required=False, default=0)
 
     MIBRequiredException = MIBRequiredException
     MIB_PATH = ["var/mibs/local", "var/mibs/dist"]
@@ -156,7 +164,7 @@ class MIB(nosql.Document):
             last_updated = datetime.datetime.strptime(
                 sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],
                 "%Y-%m-%d %H:%M")
-        except:
+        except ValueError:
             last_updated = datetime.datetime(year=1970, month=1, day=1)
         # Extract MIB typedefs
         typedefs = {}
@@ -194,8 +202,7 @@ class MIB(nosql.Document):
         data = []
         for i in ["nodes", "notifications"]:
             if i in m.MIB:
-                data += [
-                    {
+                data += [{
                     "name": "%s::%s" % (mib_name, node),
                     "oid": v["oid"],
                     "description": v.get("description"),
@@ -246,7 +253,7 @@ class MIB(nosql.Document):
                 if not mib_preference:
                     # No preference for target MIB
                     raise OIDCollision(oid, oid_name, o.name,
-                                    "No preference for %s" % self.name)
+                                       "No preference for %s" % self.name)
                 o_mib = o.name.split("::")[0]
                 if o_mib not in prefs:
                     mp = MIBPreference.objects.filter(
@@ -254,7 +261,7 @@ class MIB(nosql.Document):
                     if not mp:
                         # No preference for destination MIB
                         raise OIDCollision(oid, oid_name, o.name,
-                                        "No preference for %s" % o_mib)
+                                           "No preference for %s" % o_mib)
                     prefs[o_mib] = mp.preference  # Add to cache
                 o_preference = prefs[o_mib]
                 if mib_preference == o_preference:
@@ -458,13 +465,13 @@ class MIB(nosql.Document):
                     )
                     try:
                         unicode(rv, "utf8")
-                    except:
+                    except ValueError:
                         # Escape invalid UTF8
                         rv = fm_escape(rv)
             else:
                 try:
                     unicode(rv, "utf8")
-                except:
+                except ValueError:
                     # escape invalid UTF8
                     rv = fm_escape(rv)
             if is_oid(v):
@@ -476,4 +483,4 @@ class MIB(nosql.Document):
 
 
 # Avoid circular references
-from mibdata import MIBData
+from .mibdata import MIBData

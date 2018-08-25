@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Juniper.JUNOS.get_capabilities"
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -23,7 +23,7 @@ class Script(BaseScript):
         return "?STP" in r
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -31,12 +31,28 @@ class Script(BaseScript):
         return "Enabled" in r
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """
         r = self.scripts.get_oam_status()
         return bool(r)
+
+    @false_on_cli_error
+    def has_bfd_cli(self):
+        """
+        Check box has oam enabled
+        """
+        r = self.cli("show bfd session")
+        return "0 sessions, 0 clients" not in r
+
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check box has lacp enabled
+        """
+        r = self.cli("show lacp interfaces")
+        return "lacp subsystem not running" not in r
 
     @false_on_cli_error
     def get_rpm_probes(self):
@@ -46,6 +62,6 @@ class Script(BaseScript):
             i += len(p["tests"])
         return i
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         np = self.get_rpm_probes()
         caps["Juniper | RPM | Probes"] = np

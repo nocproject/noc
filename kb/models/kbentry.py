@@ -2,29 +2,37 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import difflib
 # Third-party modules
 from core.model.fields import AutoCompleteTagsField
 from django.db import models
 # NOC modules
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.main.models.language import Language
-from noc.services.web.apps.kb.parsers import parser_registry
+from noc.services.web.apps.kb.parsers.loader import loader
+from noc.core.model.decorator import on_delete_check
 
 
-parser_registry.register_all()
-
-
+@on_delete_check(
+    delete=[
+        ("kb.KBUserBookmark", "kb_entry"),
+        ("kb.KBEntryHistory", "kb_entry"),
+        ("kb.KBEntryPreviewLog", "kb_entry"),
+        ("kb.KBGlobalBookmark", "kb_entry"),
+        ("kb.KBEntryAttachment", "kb_entry")
+    ]
+)
 class KBEntry(models.Model):
     """
     KB Entry
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "KB Entry"
         verbose_name_plural = "KB Entries"
         app_label = "kb"
@@ -36,7 +44,7 @@ class KBEntry(models.Model):
     language = models.ForeignKey(Language, verbose_name="Language",
                                  limit_choices_to={"is_active": True})
     markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=parser_registry.choices)
+                                       choices=loader.choices)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
@@ -53,7 +61,7 @@ class KBEntry(models.Model):
         """
         Wiki parser class
         """
-        return parser_registry[self.markup_language]
+        return loader.get_parser(self.markup_language)
 
     @property
     def html(self):
@@ -89,7 +97,7 @@ class KBEntry(models.Model):
         """
         Write article preview log
         """
-        from kbentrypreviewlog import KBEntryPreviewLog
+        from .kbentrypreviewlog import KBEntryPreviewLog
 
         KBEntryPreviewLog(kb_entry=self, user=user).save()
 
@@ -157,8 +165,8 @@ class KBEntry(models.Model):
         """
         Check has KBEntry any bookmarks
         """
-        from kbuserbookmark import KBUserBookmark
-        from kbglobalbookmark import KBGlobalBookmark
+        from .kbuserbookmark import KBUserBookmark
+        from .kbglobalbookmark import KBGlobalBookmark
         # Check Global bookmarks
         if KBGlobalBookmark.objects.filter(kb_entry=self).count() > 0:
             return True
@@ -170,7 +178,7 @@ class KBEntry(models.Model):
         """
         Set user bookmark
         """
-        from kbuserbookmark import KBUserBookmark
+        from .kbuserbookmark import KBUserBookmark
         if not KBUserBookmark.objects.filter(kb_entry=self,
                                              user=user).exists():
             KBUserBookmark(kb_entry=self, user=user).save()
@@ -179,10 +187,10 @@ class KBEntry(models.Model):
         """
         Uset user bookmark
         """
-        from kbuserbookmark import KBUserBookmark
+        from .kbuserbookmark import KBUserBookmark
         for b in KBUserBookmark.objects.filter(kb_entry=self, user=user):
             b.delete()
 
 
 # Avoid circular references
-from kbentryhistory import KBEntryHistory
+from .kbentryhistory import KBEntryHistory

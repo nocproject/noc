@@ -21,6 +21,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "
     pattern_more = [
         ("Please press \"Enter\" to continue!", "\n"),
+        ("q to abort", "q"),
         (r"\[Q quit\|.+\]", " "),
         (r"\[[yY]/[nN]\]", "y")
     ]

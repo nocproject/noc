@@ -10,13 +10,17 @@
 # Python modules
 import contextlib
 import threading
-# Third-party modules
-from psycopg2.pool import ThreadedConnectionPool
 # NOC modules
 from noc.core.service.base import Service
 from noc.main.models.pool import Pool
 from api.sae import SAEAPI
 from noc.config import config
+
+# Third-party modules
+if config.features.pypy:
+    from psycopg2cffi.pool import ThreadedConnectionPool
+else:
+    from psycopg2.pool import ThreadedConnectionPool
 
 
 class SAEService(Service):
@@ -63,6 +67,7 @@ class SAEService(Service):
             yield connect
         finally:
             self.pg_pool.putconn(connect)
+
 
 if __name__ == "__main__":
     SAEService().start()

@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Ericsson.MINI_LINK"
     pattern_more = "^---(more)---"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Invalid input at"
     command_super = "enable"

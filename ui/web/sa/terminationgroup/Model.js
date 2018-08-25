@@ -48,7 +48,8 @@ Ext.define("NOC.sa.terminationgroup.Model", {
         },
         {
             name: "bi_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "tags",

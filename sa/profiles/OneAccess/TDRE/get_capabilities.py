@@ -17,6 +17,6 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "OneAccess.TDRE.get_capabilities"
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         np = len(self.scripts.get_sla_probes())
         caps["OneAccess | IP | SLA | Probes"] = np

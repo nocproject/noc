@@ -8,22 +8,66 @@ console.debug("Defining NOC.sa.managedobjectprofile.Application");
 
 Ext.define("NOC.sa.managedobjectprofile.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.sa.managedobjectprofile.Model",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
+        "NOC.main.ref.windowfunction.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.pm.thresholdprofile.LookupField",
+        "NOC.main.remotesystem.LookupField",
+        "NOC.ip.prefixprofile.LookupField",
+        "NOC.ip.addressprofile.LookupField",
+        "NOC.vc.vpnprofile.LookupField",
+        "NOC.main.template.LookupField",
+        "NOC.main.extstorage.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
     rowClassField: "row_class",
     validationModelId: "sa.ManagedObjectProfile",
+    viewModel: {
+        data: {
+            enableBoxDiscoveryConfig: false,
+            enableBoxDiscoveryVPNInterface: false,
+            enableBoxDiscoveryVPNMPLS: false,
+            enableBoxDiscoveryPrefixInterface: false,
+            enableBoxDiscoveryPrefixNeighbor: false,
+            enableBoxDiscoveryAddressInterface: false,
+            enableBoxDiscoveryAddressManagement: false,
+            enableBoxDiscoveryAddressDHCP: false,
+            enableBoxDiscoveryAddressNeighbor: false,
+            enableBoxDiscoveryHK: false,
+            enableBoxDiscoveryNRIPortmap: false,
+            enableBoxDiscoveryCPEStatus: false
+        },
+        formulas: {
+            disableConfigPolicy: {
+                bind: {
+                    bindTo: '{mirrorPolicy.selection}',
+                    deep: true
+                },
+                get: function(record) {
+                    return record ? this.data.enableBoxDiscoveryConfig.checked
+                        && record.get('id') === 'D' : true;
+                }
+            },
+            disableBeefPolicy: {
+                bind: {
+                    bindTo: '{beefPolicy.selection}',
+                    deep: true
+                },
+                get: function(record) {
+                    return record ? record.get('id') === 'D' : true;
+                }
+            }
+        }
+    },
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         me.ITEM_VALIDATION_SETTINGS = me.registerItem(
@@ -66,13 +110,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         }
                         return v
                     },
-                    align: "center"
-                },
-                {
-                    text: __("Sync IPAM"),
-                    dataIndex: "sync_ipam",
-                    width: 60,
-                    renderer: NOC.render.Bool,
                     align: "center"
                 },
                 {
@@ -190,22 +227,70 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         },
                         {
                             title: __("Access"),
+                            tooltip: __("Worked with devices settings"),
                             items: [
+                                {
+                                    name: "access_preference",
+                                    xtype: "combobox",
+                                    tooltip: __("Protocol priority worked on device. <br/>" +
+                                        "Warning! Device profile (SA Profile) should support worked in selected mode"),
+                                    fieldLabel: __("Access Preference"),
+                                    labelWidth: 220,
+                                    allowBlank: false,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["S", __("SNMP Only")],
+                                        ["C", __("CLI Only")],
+                                        ["SC", __("SNMP, CLI")],
+                                        ["CS", __("CLI, SNMP")]
+                                    ],
+                                    value: "CS",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
                                 {
                                     name: "cli_session_policy",
                                     xtype: "combobox",
+                                    tooltip: __("Use one session worked on device. <br/>" +
+                                        "If disabled - worked one script - one login. Logout after script end."),
                                     fieldLabel: __("CLI Session Policy"),
+                                    labelWidth: 220,
                                     allowBlank: true,
-                                    labelWidth: 60,
                                     labelAlign: "left",
                                     uiStyle: "medium",
                                     store: [
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "E"
+                                    value: "E",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "cli_privilege_policy",
+                                    xtype: "combobox",
+                                    tooltip: __("Do enable if login unprivilege mode on device. <br/>" +
+                                        "Raise Privileges - send enable, Do not raise - work on current mode <br/>" +
+                                        "(immediately after login)"),
+                                    fieldLabel: __("CLI Privilege Policy"),
+                                    labelWidth: 220,
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["D", __("Do not raise")],
+                                        ["E", __("Raise Privileges")]
+                                    ],
+                                    value: "E",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Card"),
@@ -214,6 +299,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "card",
                                     xtype: "textfield",
                                     fieldLabel: __("Card"),
+                                    labelWidth: 200,
                                     allowBlank: true,
                                     uiStyle: "extra"
                                 },
@@ -221,25 +307,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "card_title_template",
                                     xtype: "textfield",
                                     fieldLabel: __("Card Title Template"),
+                                    labelWidth: 200,
                                     allowBlank: false,
-                                    uiStyle: "extra"
-                                }
-                            ]
-                        },
-                        {
-                            title: "IPAM",
-                            items: [
-                                {
-                                    name: "sync_ipam",
-                                    xtype: "checkboxfield",
-                                    boxLabel: __("Enable IPAM synchronization"),
-                                    allowBlank: false
-                                },
-                                {
-                                    name: "fqdn_template",
-                                    xtype: "textarea",
-                                    fieldLabel: __("FQDN template"),
-                                    allowBlank: true,
                                     uiStyle: "extra"
                                 }
                             ]
@@ -303,6 +372,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "ping_policy",
                                             xtype: "combobox",
+                                            labelAlign: "left",
+                                            labelWidth: 220,
                                             fieldLabel: __("Ping Policy"),
                                             allowBlank: true,
                                             uiStyle: "medium",
@@ -323,7 +394,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "ping_size",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Packet size, bytes"),
-                                                    labelWidth: 105,
+                                                    labelWidth: 220,
                                                     uiStyle: "small",
                                                     defautlValue: 64,
                                                     minValue: 64
@@ -341,7 +412,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "ping_count",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Packets count"),
-                                                    labelWidth: 105,
+                                                    labelWidth: 220,
                                                     defautlValue: 3,
                                                     uiStyle: "small"
                                                 }
@@ -359,12 +430,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Timeout, msec"),
                                                     defaultValue: 1000,
-                                                    labelWidth: 105,
+                                                    labelWidth: 220,
                                                     uiStyle: "small",
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {
-                                                            me.form.findField("ping_tm_calculated").setValue(newValue/1000);
+                                                            me.form.findField("ping_tm_calculated").setValue(newValue / 1000);
                                                         }
                                                     }
                                                 },
@@ -395,8 +466,22 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             title: "FM",
                             items: [
                                 {
+                                    name: "event_processing_policy",
+                                    xtype: "combobox",
+                                    labelWidth: 150,
+                                    fieldLabel: __("Event Policy"),
+                                    store: [
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "E",
+                                    allowBlank: false,
+                                    uiStyle: "medium"
+                                },
+                                {
                                     name: "weight",
                                     xtype: "numberfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Alarm Weight"),
                                     allowBlank: false,
                                     uiStyle: "small"
@@ -431,7 +516,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "box_discovery_interval",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Interval, sec"),
-                                                    labelWidth: 150,
+                                                    labelWidth: 200,
                                                     allowBlank: false,
                                                     uiStyle: "small",
                                                     listeners: {
@@ -459,7 +544,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "box_discovery_failed_interval",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Failed Interval, sec"),
-                                                    labelWidth: 150,
+                                                    labelWidth: 200,
                                                     allowBlank: false,
                                                     uiStyle: "small",
                                                     listeners: {
@@ -486,19 +571,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_on_system_start",
                                                     xtype: "checkbox",
+                                                    width: 250,
                                                     boxLabel: __("Check on system start after ")
                                                 },
                                                 {
                                                     name: "box_discovery_system_start_delay",
                                                     xtype: "numberfield",
                                                     allowBlank: false,
-                                                    labelWidth: 10,
                                                     uiStyle: "small"
                                                 },
                                                 {
                                                     name: "_box_discovery_system_start_delay",
                                                     xtype: 'displayfield',
-                                                    value: "sec"
+                                                    value: __("sec")
                                                 }
                                             ]
                                         },
@@ -512,19 +597,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_on_config_changed",
                                                     xtype: "checkbox",
+                                                    width: 250,
                                                     boxLabel: __("Check on config change after ")
                                                 },
                                                 {
                                                     name: "box_discovery_config_changed_delay",
                                                     xtype: "numberfield",
                                                     allowBlank: false,
-                                                    labelWidth: 10,
                                                     uiStyle: "small"
                                                 },
                                                 {
                                                     name: "_box_discovery_config_changed_delay",
                                                     xtype: 'displayfield',
-                                                    value: "sec"
+                                                    value: __("sec")
                                                 }
                                             ]
                                         }
@@ -559,11 +644,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Interface")
                                         },
                                         {
-                                            name: "enable_box_discovery_prefix",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Prefix")
-                                        },
-                                        {
                                             name: "enable_box_discovery_id",
                                             xtype: "checkboxfield",
                                             boxLabel: __("ID")
@@ -571,7 +651,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_config",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Config")
+                                            boxLabel: __("Config"),
+                                            reference: "enableBoxDiscoveryConfig"
                                         },
                                         {
                                             name: "enable_box_discovery_asset",
@@ -589,6 +670,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("MAC")
                                         },
                                         {
+                                            name: "enable_box_discovery_cpestatus",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("CPE status"),
+                                            reference: "enableBoxDiscoveryCPEStatus"
+                                        },
+                                        {
                                             name: "enable_box_discovery_metrics",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Metrics")
@@ -598,70 +685,314 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     xtype: "fieldset",
                                     title: __("Topology"),
-                                    layout: "hbox",
+                                    layout: "vbox",
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "enable_box_discovery_nri",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("NRI"),
+                                                    bind: {
+                                                        disabled: "{!enableBoxDiscoveryNRIPortmap.checked}"
+                                                    }
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_bfd",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("BFD")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_cdp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("CDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_huawei_ndp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("Huawei NDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_mikrotik_ndp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("MikroTik NDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_fdp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("FDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_lldp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("LLDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_oam",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("OAM")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_rep",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("REP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_stp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("STP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_udld",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("UDLD")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_lacp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("LACP")
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "neighbor_cache_ttl",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Cache neighbors for"),
+                                                    allowBlank: false,
+                                                    labelWidth: 130,
+                                                    uiStyle: "small",
+                                                    align: "right"
+                                                },
+                                                {
+                                                    xtype: "displayfield",
+                                                    name: "_neighbor_cache_ttl",
+                                                    value: __("sec")
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IPAM (VPN)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
                                     defaults: {
-                                        padding: "0 8 0 0"
+                                        padding: "2px 4px 2px 4px"
                                     },
                                     items: [
                                         {
-                                            name: "enable_box_discovery_nri",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("NRI")
+                                            xtype: "label",
+                                            text: __("Type")
                                         },
                                         {
-                                            name: "enable_box_discovery_bfd",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("BFD")
+                                            xtype: "label",
+                                            text: __("Enable")
                                         },
                                         {
-                                            name: "enable_box_discovery_cdp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("CDP")
+                                            xtype: "label",
+                                            text: __("VPN Profile")
                                         },
                                         {
-                                            name: "enable_box_discovery_huawei_ndp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Huawei NDP")
+                                            xtype: "label",
+                                            text: __("Interface")
                                         },
                                         {
-                                            name: "enable_box_discovery_mikrotik_ndp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("MikroTik NDP")
+                                            name: "enable_box_discovery_vpn_interface",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryVPNInterface"
                                         },
                                         {
-                                            name: "enable_box_discovery_fdp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("FDP")
+                                            name: "vpn_profile_interface",
+                                            xtype: "vc.vpnprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVPNInterface.checked}"
+                                            }
                                         },
                                         {
-                                            name: "enable_box_discovery_lldp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("LLDP")
+                                            xtype: "label",
+                                            text: __("MPLS")
                                         },
                                         {
-                                            name: "enable_box_discovery_oam",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("OAM")
+                                            name: "enable_box_discovery_vpn_mpls",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryVPNMPLS"
                                         },
                                         {
-                                            name: "enable_box_discovery_rep",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("REP")
+                                            name: "vpn_profile_mpls",
+                                            xtype: "vc.vpnprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVPNMPLS.checked}"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IPAM (Prefix)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
+                                    defaults: {
+                                        padding: "2px 4px 2px 4px"
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "label",
+                                            text: __("Type")
                                         },
                                         {
-                                            name: "enable_box_discovery_stp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("STP")
+                                            xtype: "label",
+                                            text: __("Enable")
                                         },
                                         {
-                                            name: "enable_box_discovery_udld",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("UDLD")
+                                            xtype: "label",
+                                            text: __("Prefix Profile")
                                         },
                                         {
-                                            name: "enable_box_discovery_lacp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("LACP")
+                                            xtype: "label",
+                                            text: __("Interface")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_prefix_interface",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryPrefixInterface"
+                                        },
+                                        {
+                                            name: "prefix_profile_interface",
+                                            xtype: "ip.prefixprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryPrefixInterface.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Neighbor")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_prefix_neighbor",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryPrefixNeighbor"
+                                        },
+                                        {
+                                            name: "prefix_profile_neighbor",
+                                            xtype: "ip.prefixprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryPrefixNeighbor.checked}"
+                                            }
+
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IPAM (Address)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
+                                    defaults: {
+                                        padding: "2px 4px 2px 4px"
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "label",
+                                            text: __("Type")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Address Profile")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_interface",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressInterface"
+                                        },
+                                        {
+                                            name: "address_profile_interface",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressInterface.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Management")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_management",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressManagement"
+                                        },
+                                        {
+                                            name: "address_profile_management",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressManagement.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("DHCP")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_dhcp",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressDHCP"
+                                        },
+                                        {
+                                            name: "address_profile_dhcp",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressDHCP.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Neighbor")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_neighbor",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressNeighbor"
+                                        },
+                                        {
+                                            name: "address_profile_neighbor",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressNeighbor.checked}"
+                                            }
                                         }
                                     ]
                                 },
@@ -700,6 +1031,51 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("SLA")
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("CPE Status"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "box_discovery_cpestatus_policy",
+                                                    xtype: "combobox",
+                                                    fieldLabel: __("Box CPE Status Policy"),
+                                                    labelWidth: 120,
+                                                    allowBlank: true,
+                                                    tooltip: __('Set Policy for CPE Status Discovery. ' +
+                                                        'S - Check only CPE Statuses (script get_cpe_status)' +
+                                                        'F - Check ALL CPE info (script get_cpe)'),
+                                                    displayField: "label",
+                                                    valueField: "id",
+                                                    store: {
+                                                        fields: ["id", "label"],
+                                                        data: [
+                                                            {"id": "S", "label": __("Status only")},
+                                                            {"id": "F", "label": __("Full")}
+                                                        ]
+                                                    },
+                                                    bind: {
+                                                        disabled: "{!enableBoxDiscoveryCPEStatus.checked}"
+                                                    },
+                                                    listeners: {
+                                                        render: me.addTooltip
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                        ]
                                 },
                                 {
                                     xtype: "fieldset",
@@ -763,18 +1139,43 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "cpe_profile",
                                                     xtype: "sa.managedobjectprofile.LookupField",
-                                                    fieldLabel:__("CPE Profile"),
+                                                    fieldLabel: __("CPE Profile"),
                                                     allowBlank: true,
                                                     uiStyle: "medium"
                                                 },
                                                 {
                                                     name: "cpe_auth_profile",
                                                     xtype: "sa.authprofile.LookupField",
-                                                    fieldLabel:__("CPE Auth Profile"),
+                                                    fieldLabel: __("CPE Auth Profile"),
                                                     allowBlank: true,
                                                     uiStyle: "medium"
                                                 }
                                             ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("NRI"),
+                                    layouy: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_box_discovery_nri_portmap",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Portmapper"),
+                                            reference: "enableBoxDiscoveryNRIPortmap"
+                                        },
+                                        {
+                                            name: "enable_box_discovery_nri_service",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Service Binding"),
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryNRIPortmap.checked}"
+                                            }
                                         }
                                     ]
                                 },
@@ -790,13 +1191,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_hk",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Housekeeping")
+                                            boxLabel: __("Housekeeping"),
+                                            reference: "enableBoxDiscoveryHK"
                                         },
                                         {
                                             name: "hk_handler",
                                             xtype: "textfield",
+                                            labelAlign: "left",
                                             fieldLabel: __("Handler"),
-                                            allowBlank: true
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryHK.checked}"
+                                            }
                                         }
                                     ]
                                 },
@@ -814,7 +1220,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "combobox",
                                             fieldLabel: __("Box Alarm"),
                                             allowBlank: true,
-                                            labelWidth: 60,
+                                            labelWidth: 135,
                                             labelAlign: "left",
                                             uiStyle: "medium",
                                             store: [
@@ -827,7 +1233,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "box_discovery_fatal_alarm_weight",
                                             xtype: "numberfield",
                                             fieldLabel: __("Fatal Alarm Weight"),
-                                            labelWidth: 115,
+                                            labelWidth: 150,
                                             labelAlign: "left",
                                             allowBlank: true,
                                             minValue: 0,
@@ -897,7 +1303,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     xtype: "container",
                                     layout: {
                                         type: "table",
-                                        columns: 4
+                                        columns: 5
                                     },
                                     defaults: {
                                         padding: "4 8 0 0"
@@ -914,6 +1320,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Interface status")
                                         },
                                         {
+                                            name: "enable_periodic_discovery_cpestatus",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("CPE status"),
+                                            reference: "enablePeriodicDiscoveryCPEStatus"
+                                        },
+                                        {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC")
@@ -924,6 +1336,51 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Metrics")
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Periodic CPE Status"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "periodic_discovery_cpestatus_policy",
+                                                    xtype: "combobox",
+                                                    fieldLabel: __("Periodic CPE Status Policy"),
+                                                    labelWidth: 150,
+                                                    allowBlank: true,
+                                                    tooltip: __('Set Policy for CPE Status Discovery. ' +
+                                                        'S - Check only CPE Statuses (script get_cpe_status)' +
+                                                        'F - Check ALL CPE info (script get_cpe)'),
+                                                    displayField: "label",
+                                                    valueField: "id",
+                                                    store: {
+                                                        fields: ["id", "label"],
+                                                        data: [
+                                                            {"id": "S", "label": __("Status only")},
+                                                            {"id": "F", "label": __("Full")}
+                                                        ]
+                                                    },
+                                                    bind: {
+                                                        disabled: "{!enablePeriodicDiscoveryCPEStatus.checked}"
+                                                    },
+                                                    listeners: {
+                                                        render: me.addTooltip
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                        ]
                                 },
                                 {
                                     xtype: "fieldset",
@@ -939,7 +1396,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "combobox",
                                             fieldLabel: __("Periodic Alarm"),
                                             allowBlank: true,
-                                            labelWidth: 90,
+                                            labelWidth: 135,
                                             labelAlign: "left",
                                             uiStyle: "medium",
                                             store: [
@@ -952,7 +1409,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "periodic_discovery_fatal_alarm_weight",
                                             xtype: "numberfield",
                                             fieldLabel: __("Fatal Alarm Weight"),
-                                            labelWidth: 115,
+                                            labelWidth: 150,
                                             labelAlign: "left",
                                             allowBlank: true,
                                             minValue: 0,
@@ -973,7 +1430,166 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
+                            title: __("Config"),
+                            tooltip: __("Settings policy for config discovery: Validation and mirroring config"),
+                            items: [
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Config Mirror"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "config_mirror_policy",
+                                            xtype: "combobox",
+                                            reference: "mirrorPolicy",
+                                            fieldLabel: __("Mirror Policy"),
+                                            allowBlank: false,
+                                            tooltip: __('Mirroring config policy worked inside Config discovery. ' +
+                                                'Saving config every discovery finished or when only config changed'),
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    {"id": "D", "label": __("Disabled")},
+                                                    {"id": "A", "label": __("Always Mirror")},
+                                                    {"id": "C", "label": __("Mirror on Change")}
+                                                ]
+                                            },
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+
+                                        },
+                                        {
+                                            name: "config_mirror_storage",
+                                            xtype: "main.extstorage.LookupField",
+                                            fieldLabel: __("Storage"),
+                                            query: {
+                                                type: "config_mirror"
+                                            },
+                                            allowBlank: true,
+                                            tooltip: __('External storage for save config. ' +
+                                                'Setup in Main -> Setup -> Ext. storage'),
+                                            bind: {
+                                                disabled: "{disableConfigPolicy}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        },
+                                        {
+                                            name: "config_mirror_template",
+                                            xtype: "main.template.LookupField",
+                                            fieldLabel: __("Path Template"),
+                                            allowBlank: true,
+                                            tooltip: __('Save config path template. ' +
+                                                'Setup on Main -> Setup -> Templates, subject form.' +
+                                                'Simple is: {{ object.name }}.txt on subject'),
+                                            bind: {
+                                                disabled: "{disableConfigPolicy}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Config Validation"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "config_validation_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Validation Policy"),
+                                            allowBlank: false,
+                                            store: [
+                                                ["D", __("Disabled")],
+                                                ["A", __("Always Mirror")],
+                                                ["C", __("Mirror on Change")]
+                                            ],
+                                            tooltip: __('If config validation policy worked: ' +
+                                                'Always after config dicovery or only if detect changes on config'),
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Beef"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "beef_policy",
+                                            xtype: "combobox",
+                                            reference: "beefPolicy",
+                                            fieldLabel: __("Beef Policy"),
+                                            allowBlank: false,
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    {"id": "D", "label": __("Disabled")},
+                                                    {"id": "A", "label": __("Always Collect")},
+                                                    {"id": "C", "label": __("Collect on Change")}
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            name: "beef_storage",
+                                            xtype: "main.extstorage.LookupField",
+                                            fieldLabel: __("Storage"),
+                                            query: {
+                                                type: "beef"
+                                            },
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{disableBeefPolicy}"
+                                            }
+                                        },
+                                        {
+                                            name: "beef_path_template",
+                                            xtype: "main.template.LookupField",
+                                            fieldLabel: __("Path Template"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{disableBeefPolicy}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
+                        },
+                        {
                             title: __("Metrics"),
+                            tooltip: __("Setup colleced metric on divices (not Interface!). <br/>" +
+                                "(Interface Metrics settings Inventory -> Setup -> Interface Profile)"),
                             items: [
                                 {
                                     name: "metrics",
@@ -985,16 +1601,20 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             dataIndex: "metric_type",
                                             width: 150,
                                             editor: {
-                                                xtype: "pm.metrictype.LookupField",
-                                                //query: {
-                                                //   scope: "o"
-                                                //}
+                                                xtype: "pm.metrictype.LookupField"
                                             },
                                             renderer: NOC.render.Lookup("metric_type")
                                         },
                                         {
-                                            text: __("Active"),
-                                            dataIndex: "is_active",
+                                            text: __("Box"),
+                                            dataIndex: "enable_box",
+                                            width: 50,
+                                            renderer: NOC.render.Bool,
+                                            editor: "checkbox"
+                                        },
+                                        {
+                                            text: __("Periodic"),
+                                            dataIndex: "enable_periodic",
                                             width: 50,
                                             renderer: NOC.render.Bool,
                                             editor: "checkbox"
@@ -1036,18 +1656,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             dataIndex: "window_function",
                                             width: 70,
                                             editor: {
-                                                xtype: "combobox",
-                                                store: [
-                                                    ["last", "Last Value"],
-                                                    ["avg", "Average"],
-                                                    ["percentile", "Percentile"],
-                                                    ["q1", "1st quartile"],
-                                                    ["q2", "2st quartile"],
-                                                    ["q3", "3st quartile"],
-                                                    ["p95", "95% percentile"],
-                                                    ["p99", "99% percentile"],
-                                                    ["handler", "Handler"]
-                                                ]
+                                                xtype: "main.ref.windowfunction.LookupField"
                                             }
                                         },
                                         {
@@ -1088,78 +1697,184 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             editor: "textfield",
                                             align: "right",
                                             renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("Profile"),
+                                            dataIndex: "threshold_profile",
+                                            width: 150,
+                                            editor: {
+                                                xtype: "pm.thresholdprofile.LookupField"
+                                            },
+                                            renderer: NOC.render.Lookup("threshold_profile")
                                         }
-                                        /*
-                                        {
-                                            text: __("Low Error Weight"),
-                                            dataIndex: "low_error_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        },
-                                        {
-                                            text: __("Low Warn Wight"),
-                                            dataIndex: "low_warn_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        },
-                                        {
-                                            text: __("High Warn Wight"),
-                                            dataIndex: "high_warn_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        },
-                                        {
-                                            text: __("High Error Wight"),
-                                            dataIndex: "high_error_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        }
-                                        */
-
                                     ]
 
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
+                        },
+                        {
+                            title: __("MAC"),
+                            tooltip: __("Filter settings for MAC disocovery"),
+                            items: [
+                                {
+                                    name: "mac_collect_all",
+                                    xtype: "checkbox",
+                                    tooltip: __("Not filter collected MACs"),
+                                    boxLabel: __("Collect All"),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "mac_collect_interface_profile",
+                                    xtype: "checkbox",
+                                    tooltip: __("Collect MACs only for allowed interfaces. <br/>" +
+                                        "(MAC Discovery Policy on Inventory -> Setup -> Interface Profile)"),
+                                    boxLabel: __("Collect if permitted by interface profile"),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "mac_collect_management",
+                                    xtype: "checkbox",
+                                    tooltip: __("Collect MAC only for managed VLAN. <br/>" +
+                                        "Managed VLAN set in Inventory -> Setup -> NetworkSegmentProfile"),
+                                    boxLabel: __("Collect from management VLAN"),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "mac_collect_multicast",
+                                    xtype: "checkbox",
+                                    tooltip: __("Collect MAC only for Multicast VLAN. <br/>" +
+                                        "Multicast VLAN set in Inventory -> Setup -> NetworkSegmentProfile"),
+                                    boxLabel: __("Collect from multicast VLAN"),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "mac_collect_vcfilter",
+                                    xtype: "checkbox",
+                                    tooltip: __("Collect MAC only for VLAN on VCFilter. <br/>" +
+                                        "MVCFilter set in VC Management -> Setup -> VCFilter"),
+                                    boxLabel: __("Collect from VLAN matching VC Filter"),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                }
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
+                        },
+                        {
+                            title: __("Autosegmentation"),
+                            tooltip: __("Settings for autosegmentatin proccess: <br/>" +
+                                "Automaticaly detect segment for ManagedObject with this ObjectProfile.<br/>" +
+                                "Uses MAC and needed MAC enable in Box"),
+                            items: [
+                                {
+                                    name: "autosegmentation_policy",
+                                    xtype: "combobox",
+                                    labelWidth: 150,
+                                    fieldLabel: __("Policy"),
+                                    allowBlank: false,
+                                    store: [
+                                        ["d", __("Do not segmentate")],
+                                        ["e", __("Allow autosegmentation")],
+                                        ["o", __("Segmentate for object's segment")],
+                                        ["c", __("Segmentate for child segment")]
+                                    ],
+                                    uiStyle: "medium"
+                                },
+                                {
+                                    name: "autosegmentation_level_limit",
+                                    xtype: "numberfield",
+                                    tooltip: __("Max level (Common -> Level) there will be changed segment. <br/>" +
+                                        "(Autosegmentation not worked with ManagedObject less this level"),
+                                    labelWidth: 150,
+                                    fieldLabel: __("Level Limit"),
+                                    allowBlank: false,
+                                    uiStyle: "small",
+                                    listeners: {
+                                        render: me.addTooltip
+                                }
+                                },
+                                {
+                                    name: "autosegmentation_segment_name",
+                                    xtype: "textfield",
+                                    tooltip: __("Jinja template for creating segment name. <br/>" +
+                                        "Worked with \"Segmentate for object's segment\" and " +
+                                        "\"Segmentate for child segment\" options"),
+                                    tooltip: __(""),
+                                    labelWidth: 150,
+                                    fieldLabel: __("Segment Name"),
+                                    allowBlank: true,
+                                    uiStyle: "extra",
+                                    listeners: {
+                                        render: me.addTooltip
+                                }
+                                }
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Integration"),
+                            tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
+                                "Do not Edit field directly!"),
                             items: [
                                 {
                                     name: "remote_system",
                                     xtype: "main.remotesystem.LookupField",
+                                    labelWidth: 150,
                                     fieldLabel: __("Remote System"),
                                     allowBlank: true
                                 },
                                 {
                                     name: "remote_id",
                                     xtype: "textfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Remote ID"),
                                     allowBlank: true,
                                     uiStyle: "medium"
                                 },
                                 {
                                     name: "bi_id",
-                                    xtype: "textfield",
+                                    xtype: "displayfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("BI ID"),
                                     allowBlank: true,
                                     uiStyle: "medium"
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Escalation"),
+                            tooltip: __("Policy for do managedobject in escalation proccess: " +
+                                "FM -> Setup -> Escalation"),
                             items: [
                                 {
                                     name: "escalation_policy",
                                     xtype: "combobox",
+                                    tooltip: __("Enable - allow escalate alarm for ManagedObject. <br/>" +
+                                        "As Depended - allow escalate ManagedObject only as depend (not root) on alarm"),
+                                    labelWidth: 150,
                                     fieldLabel: __("Escalation Policy"),
                                     allowBlank: true,
                                     uiStyle: "medium",
@@ -1168,28 +1883,54 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["D", __("Disable")],
                                         ["R", __("As Depended")]
                                     ],
-                                    value: "E"
+                                    value: "E",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         },
                         {
                             title: __("Telemetry"),
+                            tooltip: __("Setting for saving discovery operation on ClickHouse telemetry table. <br/>" +
+                                "Warning! Activate telemetry if you really know for it. <br/>" +
+                                "Enable overhad about +25% CPU usage"),
                             items: [
                                 {
                                     name: "box_discovery_telemetry_sample",
                                     xtype: "numberfield",
+                                    tooltip: __("Sampling value for Box discovery. Interval from 0 to 1. <br/>" +
+                                        "1 - all jobs will saved, 0 - Not collect telemetry, <br/>" +
+                                        " 0,99 ... 0,1 - chance to save"),
+                                    labelWidth: 150,
                                     fieldLabel: __("Box Sample"),
                                     allowBlank: false,
-                                    uiStyle: "medium"
+                                    uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "periodic_discovery_telemetry_sample",
                                     xtype: "numberfield",
+                                    tooltip: __('Sampling value for Periodic discovery. Interval from 0 to 1. <br/>' +
+                                        '1 - all jobs will saved, 0 - Not collect telemetry, ' +
+                                        ' 0,99 ... 0,1 - chance to save'),
+                                    labelWidth: 150,
                                     fieldLabel: __("Periodic Sample"),
                                     allowBlank: false,
-                                    uiStyle: "medium"
+                                    uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-                            ]
+                            ],
+                            listeners: {
+                                render: me.addTooltip
+                            }
                         }
                     ]
                 }
@@ -1201,7 +1942,88 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         me.callParent();
     },
     //
-    onValidationSettings: function () {
+    filters: [
+        {
+            title: __("Box Discovery"),
+            ftype: "list",
+            listStore: {
+                sorters: "label",
+                data: [
+                    {field_name: "enable_box_discovery_profile", label: __("Pofile")},
+                    {field_name: "enable_box_discovery_version", lLabel: __("Version")},
+                    {field_name: "enable_box_discovery_caps", label: __("Caps")},
+                    {field_name: "enable_box_discovery_interface", label: __("Interface")},
+                    {field_name: "enable_box_discovery_prefix", label: __("Prefix")},
+                    {field_name: "enable_box_discovery_id", label: __("ID")},
+                    {field_name: "enable_box_discovery_config", label: __("Config")},
+                    {field_name: "enable_box_discovery_asset", label: __("Asset")},
+                    {field_name: "enable_box_discovery_vlan", label: __("VLAN")},
+                    {field_name: "enable_box_discovery_mac", label: __("MAC")},
+                    {field_name: "enable_box_discovery_metrics", label: __("Metrics")}
+                ]
+            },
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {label: __('Enabled'), value: true},
+                    {label: __('Disabled'), value: false},
+                    {label: __('All'), value: 'all'}
+                ]
+            }
+        },
+        {
+            title: __("Topology Discovery"),
+            ftype: "list",
+            listStore: {
+                sorters: "label",
+                data: [
+                    {field_name: "enable_box_discovery_nri", label: __("NRI")},
+                    {field_name: "enable_box_discovery_bfd", label: __("BFD")},
+                    {field_name: "enable_box_discovery_cdp", label: __("CDP")},
+                    {field_name: "enable_box_discovery_huawei_ndp", label: __("Huawei NDP")},
+                    {field_name: "enable_box_discovery_mikrotik_ndp", label: __("MikroTik NDP")},
+                    {field_name: "enable_box_discovery_fdp", label: __("FDP")},
+                    {field_name: "enable_box_discovery_lldp", label: __("LLDP")},
+                    {field_name: "enable_box_discovery_oam", label: __("OAM")},
+                    {field_name: "enable_box_discovery_rep", label: __("REP")},
+                    {field_name: "enable_box_discovery_stp", label: __("STP")},
+                    {field_name: "enable_box_discovery_udld", label: __("UDLD")},
+                    {field_name: "enable_box_discovery_lacp", label: __("LACP")}
+                ]
+            },
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {label: __('Enabled'), value: true},
+                    {label: __('Disabled'), value: false},
+                    {label: __('All'), value: 'all'}
+                ]
+            }
+        },
+        {
+            title: __("Periodic Discovery"),
+            ftype: "list",
+            listStore: {
+                sorters: "label",
+                data: [
+                    {field_name: "enable_periodic_discovery_uptime", label: __("Uptime")},
+                    {field_name: "enable_periodic_discovery_interface_status", label: __("Interface status")},
+                    {field_name: "enable_periodic_discovery_mac", label: __("MAC")},
+                    {field_name: "enable_periodic_discovery_metrics", label: __("Metrics")}
+                ]
+            },
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {label: __('Enabled'), value: true},
+                    {label: __('Disabled'), value: false},
+                    {label: __('All'), value: 'all'}
+                ]
+            }
+        }
+    ],
+    //
+    onValidationSettings: function() {
         var me = this;
         me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
     }

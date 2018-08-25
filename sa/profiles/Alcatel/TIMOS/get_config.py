@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.TIMOS.get_config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -33,9 +33,10 @@ class Script(BaseScript):
 
         conf = {}
         conf['name'] = "li"
-        conf['config'] = self.cli("configure li")
+        self.cli("configure li")
         conf['config'] = self.cli("info")
         conf['config'] = self.cleaned_config(conf['config'])
+        self.cli("exit")
         configs.append(conf)
 
         return configs

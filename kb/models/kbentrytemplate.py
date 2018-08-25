@@ -2,19 +2,20 @@
 # ---------------------------------------------------------------------
 # KBEntryTemplate model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 # Third-party modules
 from django.db import models
 # NOC modules
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
-from kbentry import parser_registry  # Load
+from noc.services.web.apps.kb.parsers.loader import loader
 
 
 class KBEntryTemplate(models.Model):
@@ -34,7 +35,7 @@ class KBEntryTemplate(models.Model):
     language = models.ForeignKey(Language, verbose_name="Language",
                                  limit_choices_to={"is_active": True})
     markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=parser_registry.choices)
+                                       choices=loader.choices)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
     rx_template_var = re.compile("{{([^}]+)}}", re.MULTILINE)

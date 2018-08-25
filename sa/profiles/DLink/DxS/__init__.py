@@ -3,7 +3,7 @@
 # Vendor: D-Link
 # OS:     DxS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,12 +11,13 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.script.error import CLIOperationError
 
 
 class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_more = "CTRL\+C.+?a A[Ll][Ll]\s*"
-    pattern_unpriveleged_prompt = r"\S+:(3|6|user|operator)# ?"
+    pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = \
         r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"
@@ -28,6 +29,8 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
+    # to one SNMP GET request
+    snmp_metrics_get_chunk = 10
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
     #
     # Version comparison
@@ -37,10 +40,9 @@ class Profile(BaseProfile):
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)]
-        )
+        a = [int(z) for z in self.rx_ver.findall(x)]
+        b = [int(z) for z in self.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     """
     IF-MIB:IfDescr
@@ -88,7 +90,7 @@ class Profile(BaseProfile):
         Ports in CLI like 1:1-24,2:1-24
         """
         platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100', "DGS-3420")
-        match = self.rx_interface_name.match(s)
+        match = self.rx_interface_name.match(s.strip())
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
                 match.group("re_platform") and \
@@ -239,7 +241,7 @@ class Profile(BaseProfile):
                         obj_parser=self.parse_interface,
                         cmd_next="n", cmd_stop="q"
                     )
-            except:
+            except script.CLISyntaxError:
                 objects = []
             # DES-3226S does not support `show ports description` command
             if objects == []:
@@ -264,23 +266,24 @@ class Profile(BaseProfile):
 
     rx_vlan = re.compile(
         r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*?)\n"
-        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*?\n"
-        r"(VLAN Advertisement\s+:.*?\n)?"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*?\n"
+        r"((VLAN )?Advertisement\s+:\s+\S+\s*\n)?"
         r"(Current )?Tagged ports\s+:(?P<tagged_ports>.*?)\n"
         r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*?)",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE)
     rx_vlan1 = re.compile(
         r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*?)\n"
-        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*?\n"
-        r"(VLAN Advertisement\s+:.*?\n)?"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*?"
+        r"((VLAN )?Advertisement\s+:\s+\S+\s*)?\n"
         r"Member Ports\s+:(?P<member_ports>.*?)\n"
-        r"(Static ports\s+:.*?\n)?"
+        r"\s*(Static Ports\s+:.*?\n)?"
         r"((Current )?Tagged Ports\s+:.*?\n)?"
         r"(VLAN Trunk Ports\s+:.*?\n)?"
-        r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*?)",
+        r"(Current )?Untagged Ports\s*:(?P<untagged_ports>.*?)\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def get_vlan(self, script, v):
+        v = v + "\n"
         match = self.rx_vlan1.search(v)
         if match:
             tagged_ports = []
@@ -341,15 +344,25 @@ class Profile(BaseProfile):
                     vlans += [self.get_vlan(script, l)]
         return vlans
 
-    rx_blocked_session = re.compile(
-        ".*System locked by other session!", re.MULTILINE | re.DOTALL)
-
     def cleaned_config(self, config):
-        # if self.rx_blocked_session.search(config):
         if "System locked by other session!" in config:
-            raise BaseException("System locked by other session!")
+            raise CLIOperationError("System locked by other session!")
         config = super(Profile, self).cleaned_config(config)
         return config
+
+
+def DES30xx(v):
+    """
+    DES-30xx-series
+    :param v:
+    :return:
+    """
+    return (
+        v["platform"].startswith("DES-3010") or
+        v["platform"].startswith("DES-3016") or
+        v["platform"].startswith("DES-3018") or
+        v["platform"].startswith("DES-3026")
+    )
 
 
 def DES3028(v):
@@ -455,8 +468,32 @@ def DxS_L2(v):
         v["platform"].startswith("DGS-12") or
         v["platform"].startswith("DGS-15") or
         v["platform"].startswith("DGS-30") or
-        v["platform"].startswith("DGS-32")
+        v["platform"].startswith("DGS-32") or
+        v["platform"].startswith("DGS-37")
     ):
         return True
     else:
         return False
+
+
+def get_platform(platform, hw_revision):
+    if (
+        platform.startswith("DES-1210-") or
+        platform.startswith("DES-1228") or
+        platform.startswith("DES-2108") or
+        platform.startswith("DES-3200-") or
+        platform.startswith("DGS-1210-") or
+        platform.startswith("DGS-3120-") or
+        platform.startswith("DGS-3420-") or
+        platform.startswith("DGS-3620-")
+    ):
+        if hw_revision is not None:
+            if platform.endswith("/%s" % hw_revision):
+                return platform
+        else:
+            # Found in DES-1210-28/ME/A1 with SNMP
+            if platform.startswith("DES-1210-"):
+                hw_revision = "A1"
+        return "%s/%s" % (platform, hw_revision)
+    else:
+        return platform

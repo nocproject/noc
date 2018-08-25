@@ -37,10 +37,12 @@ class MetricType(Document):
     meta = {
         "collection": "noc.metrictypes",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "pm.metrictypes",
         "json_depends_on": [
             "pm.metricscopes"
-        ]
+        ],
+        "json_unique_fields": ["name"]
     }
 
     # Metric type name, i.e. Interface | Load | In
@@ -75,11 +77,12 @@ class MetricType(Document):
     # Optional required capability
     required_capability = PlainReferenceField(Capability)
     # Object id in BI, used for counter context hashing
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
     #
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -116,6 +119,11 @@ class MetricType(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return MetricType.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return MetricType.objects.filter(bi_id=id).first()
 
     def on_save(self):
         call_later(

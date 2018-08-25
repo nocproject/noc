@@ -12,10 +12,14 @@ Ext.define("NOC.inv.macdb.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.inv.macdb.Model",
-        "NOC.main.style.LookupField"
+        "NOC.main.style.LookupField",
+        "NOC.main.pool.LookupField",
+        "NOC.sa.managedobjectprofile.LookupField"
     ],
     model: "NOC.inv.macdb.Model",
     search: true,
+    searchPlaceholder: "insert MAC address to search",
+    searchTooltip: __("Insert MAC address to this field one of format:<li>FULL: AA:AA:AA:AA:AA:AA</li><li>Left part: AA:AA:</li><li>Right part: :AA:AA</li>"),
     canCreate: false,
     rowClassField: "row_class",
 
@@ -36,6 +40,18 @@ Ext.define("NOC.inv.macdb.Application", {
                     text: __("VC Domain"),
                     dataIndex: "vc_domain",
                     renderer: NOC.render.Lookup("vc_domain"),
+                    flex: 1
+                },
+                {
+                    text: __("Pool"),
+                    dataIndex: "pool",
+                    renderer: NOC.render.Lookup("pool"),
+                    flex: 1
+                },
+                {
+                    text: __("Object Profile"),
+                    dataIndex: "object_profile",
+                    renderer: NOC.render.Lookup("object_profile"),
                     flex: 1
                 },
                 {

@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import VRFGroup
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.ip.models.vrfgroup import VRFGroup
 from noc.core.translation import ugettext as _
 
 

@@ -1,0 +1,88 @@
+{
+  "bars": false,
+  "timeFrom": null,
+  "links": [],
+  "nullPointMode": "connected",
+  "renderer": "flot",
+  "id": "55143917-4453-48d7-aff4-765688a06565",
+  "linewidth": 2,
+  "steppedLine": false,
+  "targets": [
+    {
+      "refId": "A",
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(load_1min) as `Memory | load | 1min` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "memory",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "fill": 1,
+  "span": 6,
+  "title": "Memory | Load | 1min",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
+  "stack": false,
+  "yaxes": [
+    {
+      "logBase": 1,
+      "format": "percent",
+      "max": "100",
+      "show": true,
+      "label": null,
+      "min": "0"
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    }
+  ],
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "seriesOverrides": [],
+  "percentage": false,
+  "type": "graph",
+  "error": false,
+  "editable": true,
+  "grid": {},
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": false,
+    "values": true,
+    "total": false,
+    "alignAsTable": true
+  },
+  "timeShift": null,
+  "aliasColors": {
+    "Memory | load | 1min": "#f9e2d2"
+  },
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
+}

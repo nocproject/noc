@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,16 +13,15 @@ from threading import Lock
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.template import Template, Context
 import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from .authprofile import AuthProfile
-from noc.lib.validators import is_fqdn
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
 from noc.core.model.decorator import on_save, on_init, on_delete_check
+from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
@@ -30,33 +29,46 @@ from noc.core.defer import call_later
 from .objectmap import ObjectMap
 from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
                                     IntParameter, StringParameter)
+from noc.core.bi.decorator import bi_sync
+from noc.core.window import wf_choices
+from noc.ip.models.prefixprofile import PrefixProfile
+from noc.ip.models.addressprofile import AddressProfile
+from noc.vc.models.vpnprofile import VPNProfile
+from noc.main.models.extstorage import ExtStorage
+from noc.main.models.template import Template
+from noc.core.datastream.decorator import datastream
 
-m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
-                                   "is_active": BooleanParameter(default=False),
-                                   "is_stored": BooleanParameter(default=True),
-                                   "window_type": StringParameter(choices=["m", "t"],
-                                                                  default="m"),
-                                   "window": IntParameter(default=1),
-                                   "window_function": StringParameter(choices=["handler", "last", "avg",
-                                                                               "percentile", "q1", "q2", "q3",
-                                                                               "p95", "p99"],
-                                                                      default="last"),
-                                   "window_config": StringParameter(default=""),
-                                   "window_related": BooleanParameter(default=False),
-                                   "low_error": IntParameter(required=False),
-                                   "high_error": IntParameter(required=False),
-                                   "low_warn": IntParameter(required=False),
-                                   "high_warn": IntParameter(required=False),
-                                   "low_error_weight": IntParameter(default=10),
-                                   "low_warn_weight": IntParameter(default=1),
-                                   "high_warn_weight": IntParameter(default=1),
-                                   "high_error_weight": IntParameter(default=10)})
+
+m_valid = DictListParameter(attrs={
+    "metric_type": ObjectIdParameter(required=True),
+    "enable_box": BooleanParameter(default=False),
+    "enable_periodic": BooleanParameter(default=True),
+    "is_stored": BooleanParameter(default=True),
+    "window_type": StringParameter(
+        choices=["m", "t"],
+        default="m"),
+    "window": IntParameter(default=1),
+    "window_function": StringParameter(choices=[x[0] for x in wf_choices], default="last"),
+    "window_config": StringParameter(default=""),
+    "window_related": BooleanParameter(default=False),
+    "low_error": IntParameter(required=False),
+    "high_error": IntParameter(required=False),
+    "low_warn": IntParameter(required=False),
+    "high_warn": IntParameter(required=False),
+    "low_error_weight": IntParameter(default=10),
+    "low_warn_weight": IntParameter(default=1),
+    "high_warn_weight": IntParameter(default=1),
+    "high_error_weight": IntParameter(default=10),
+    "threshold_profile": ObjectIdParameter(required=False)
+})
 
 id_lock = Lock()
 
 
 @on_init
 @on_save
+@bi_sync
+@datastream
 @on_delete_check(check=[
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
@@ -87,7 +99,9 @@ class ManagedObjectProfile(models.Model):
                                      blank=True, null=True)
     # IPAM Synchronization
     # During ManagedObject save
+    # @todo: Remove
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
+    # @todo: Remove
     fqdn_template = models.TextField(_("FQDN template"),
                                      null=True, blank=True)
     # @todo: Name validation function
@@ -157,18 +171,34 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_caps = models.BooleanField(default=False)
     # Collect interface settings
     enable_box_discovery_interface = models.BooleanField(default=False)
-    # Extract interface prefixes and synchronize with ipam
-    enable_box_discovery_prefix = models.BooleanField(default=False)
     # Collect chassis ID information
     enable_box_discovery_id = models.BooleanField(default=False)
     # Collect config
     enable_box_discovery_config = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_asset = models.BooleanField(default=False)
-    # Collect hardware configuration
+    # Process topology from NRI
     enable_box_discovery_nri = models.BooleanField(default=False)
-    # Collect interface IP addresses
-    # enable_box_discovery_ip = models.BooleanField(default=False)
+    # Process NRI portmapping
+    enable_box_discovery_nri_portmap = models.BooleanField(default=False)
+    # Process NRI service binding
+    enable_box_discovery_nri_service = models.BooleanField(default=False)
+    # VPN discovery (interface)
+    enable_box_discovery_vpn_interface = models.BooleanField(default=False)
+    # VPN discovery (MPLS)
+    enable_box_discovery_vpn_mpls = models.BooleanField(default=False)
+    # IP discovery (interface)
+    enable_box_discovery_address_interface = models.BooleanField(default=False)
+    # IP discovery (Management)
+    enable_box_discovery_address_management = models.BooleanField(default=False)
+    # IP discovery (DHCP)
+    enable_box_discovery_address_dhcp = models.BooleanField(default=False)
+    # IP discovery (neighbbors)
+    enable_box_discovery_address_neighbor = models.BooleanField(default=False)
+    # IP discovery (interface)
+    enable_box_discovery_prefix_interface = models.BooleanField(default=False)
+    # IP discovery (neighbbors)
+    enable_box_discovery_prefix_neighbor = models.BooleanField(default=False)
     # Collect static vlans
     enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD
@@ -203,6 +233,18 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_metrics = models.BooleanField(default=False)
     # Enable Housekeeping
     enable_box_discovery_hk = models.BooleanField(default=False)
+    # Enable CPE status
+    enable_box_discovery_cpestatus = models.BooleanField(default=False)
+    # Enable Box CPE status policy
+    box_discovery_cpestatus_policy = models.CharField(
+        _("CPE Status Policy"),
+        max_length=1,
+        choices=[
+            ("S", "Status Only"),
+            ("F", "Full")
+        ],
+        default="S"
+    )
     # Enable periodic discovery.
     # Periodic discovery launched repeatedly
     enable_periodic_discovery = models.BooleanField(default=True)
@@ -216,6 +258,18 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_mac = models.BooleanField(default=False)
     # Collect metrics
     enable_periodic_discovery_metrics = models.BooleanField(default=False)
+    # Enable CPE status
+    enable_periodic_discovery_cpestatus = models.BooleanField(default=False)
+    # CPE status discovery settings
+    periodic_discovery_cpestatus_policy = models.CharField(
+        _("CPE Status Policy"),
+        max_length=1,
+        choices=[
+            ("S", "Status Only"),
+            ("F", "Full")
+        ],
+        default="S"
+    )
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
     #
@@ -251,6 +305,64 @@ class ManagedObjectProfile(models.Model):
         max_length=255,
         null=True, blank=True
     )
+    # MAC collection settings
+    # Collect all MAC addresses
+    mac_collect_all = models.BooleanField(default=False)
+    # Collect MAC addresses if permitted by interface profile
+    mac_collect_interface_profile = models.BooleanField(default=True)
+    # Collect MAC addresses from management VLAN
+    mac_collect_management = models.BooleanField(default=False)
+    # Collect MAC addresses from multicast VLAN
+    mac_collect_multicast = models.BooleanField(default=False)
+    # Collect MAC from designated VLANs (NetworkSegment/NetworkSegmentProfile)
+    mac_collect_vcfilter = models.BooleanField(default=False)
+    #
+    access_preference = models.CharField(
+        "Access Preference",
+        max_length=8,
+        choices=[
+            ("S", "SNMP Only"),
+            ("C", "CLI Only"),
+            ("SC", "SNMP, CLI"),
+            ("CS", "CLI, SNMP")
+        ],
+        default="CS"
+    )
+    # Autosegmentation policy
+    autosegmentation_policy = models.CharField(
+        max_length=1,
+        choices=[
+            # Do not allow to move object by autosegmentation
+            ("d", "Do not segmentate"),
+            # Allow moving of object to another segment
+            # by autosegmentation process
+            ("e", "Allow autosegmentation"),
+            # Move seen objects to this object's segment
+            ("o", "Segmentate to existing segment"),
+            # Expand autosegmentation_segment_name template,
+            # ensure that children segment with same name exists
+            # then move seen objects to this segment.
+            # Following context variables are availale:
+            # * object - this object
+            # * interface - interface on which remote_object seen from object
+            # * remote_object - remote object name
+            # To create single segment use templates like {{object.name}}
+            # To create segments on per-interface basic use
+            # names like {{object.name}}-{{interface.name}}
+            ("c", "Segmentate to child segment")
+        ],
+        default="d"
+    )
+    # Objects can be autosegmented by *o* and *i* policy
+    # only if their level below *autosegmentation_level_limit*
+    # 0 - disable
+    autosegmentation_level_limit = models.IntegerField(_("Level"), default=0)
+    # Jinja2 tempplate for segment name
+    # object and interface context variables are exist
+    autosegmentation_segment_name = models.CharField(
+        max_length=255,
+        default="{{object.name}}"
+    )
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem,
@@ -258,7 +370,7 @@ class ManagedObjectProfile(models.Model):
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.BigIntegerField(null=True, blank=True)
+    bi_id = models.BigIntegerField(unique=True)
     # Object alarms can be escalated
     escalation_policy = models.CharField(
         "Escalation Policy",
@@ -325,12 +437,125 @@ class ManagedObjectProfile(models.Model):
         ],
         default="E"
     )
+    # CLI privilege policy
+    cli_privilege_policy = models.CharField(
+        "CLI Privilege Policy",
+        max_length=1,
+        choices=[
+            ("E", "Raise privileges"),
+            ("D", "Do not raise")
+        ],
+        default="E"
+    )
+    # Event processing policy
+    event_processing_policy = models.CharField(
+        "Event Processing Policy",
+        max_length=1,
+        choices=[
+            ("E", "Process Events"),
+            ("D", "Drop events")
+        ],
+        default="E"
+    )
+    # Cache protocol neighbors up to *neighbor_cache_ttl* seconds
+    # 0 - disable cache
+    neighbor_cache_ttl = models.IntegerField(
+        "Neighbor Cache TTL",
+        default=0
+    )
+    # VPN discovery profiles
+    vpn_profile_interface = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
+    vpn_profile_mpls = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
+    # Prefix discovery profiles
+    prefix_profile_interface = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    prefix_profile_neighbor = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    # Address discovery profiles
+    address_profile_interface = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_management = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_dhcp = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_neighbor = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    # Config mirror settings
+    config_mirror_storage = DocumentReferenceField(
+        ExtStorage,
+        null=True, blank=True
+    )
+    config_mirror_template = models.ForeignKey(
+        Template, verbose_name=_("Config Mirror Template"),
+        blank=True, null=True,
+        related_name="config_mirror_objects_set"
+    )
+    config_mirror_policy = models.CharField(
+        _("Config Mirror Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="C"
+    )
+    # Config validation settings
+    config_validation_policy = models.CharField(
+        _("Config Validation Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="C"
+    )
+    # Beef collection settings
+    beef_storage = DocumentReferenceField(
+        ExtStorage,
+        null=True, blank=True
+    )
+    beef_path_template = models.ForeignKey(
+        Template, verbose_name=_("Beef Path Template"),
+        blank=True, null=True,
+        related_name="beef_objects_set"
+    )
+    beef_policy = models.CharField(
+        _("Beef Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disable"),
+            ("A", "Always"),
+            ("C", "Change")
+        ],
+        default="D"
+    )
     #
-    metrics = PickledField()
+    metrics = PickledField(blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -338,10 +563,27 @@ class ManagedObjectProfile(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return ManagedObjectProfile.objects.get(id=id)
-        except ManagedObjectProfile.DoesNotExist:
+        mop = ManagedObjectProfile.objects.filter(id=id)[:1]
+        if mop:
+            return mop[0]
+        else:
             return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        mop = ManagedObjectProfile.objects.filter(bi_id=id)[:1]
+        if mop:
+            return mop[0]
+        else:
+            return None
+
+    def iter_changed_datastream(self):
+        from noc.sa.models.managedobject import ManagedObject
+
+        for mo in ManagedObject.objects.filter(object_profile=self):
+            for c in mo.iter_changed_datastream():
+                yield c
 
     def iter_pools(self):
         """
@@ -350,23 +592,13 @@ class ManagedObjectProfile(models.Model):
         for mo in self.managedobject_set.order_by("pool").distinct("pool"):
             yield mo.pool
 
-    def get_fqdn(self, object):
-        if self.fqdn_template:
-            # Render template
-            ctx = Context({"object": object})
-            f = Template(self.fqdn_template).render(ctx)
-            # Remove spaces
-            f = "".join(f.split())
-        else:
-            f = object.name
-        # Check resulting fqdn
-        if not is_fqdn(f):
-            raise ValueError("Invalid FQDN: %s" % f)
-        return f
-
     def on_save(self):
         box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
         periodic_changed = self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery
+        access_changed = (
+            (self.initial_data["access_preference"] != self.access_preference) or
+            (self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy)
+        )
 
         if box_changed or periodic_changed:
             call_later(
@@ -384,15 +616,21 @@ class ManagedObjectProfile(models.Model):
             self.initial_data["ping_size"] != self.ping_size or
             self.initial_data["ping_count"] != self.ping_count or
             self.initial_data["ping_timeout_ms"] != self.ping_timeout_ms or
-            self.initial_data["report_ping_attempts"] != self.ping_interval
+            self.initial_data["report_ping_attempts"] != self.ping_interval or
+            self.initial_data["event_processing_policy"] != self.event_processing_policy
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
+        if access_changed:
+            cache.delete_many([
+                "cred-%s" % x
+                for x in self.managedobject_set.values_list("id", flat=True)
+            ])
 
     def can_escalate(self, depended=False):
         """
         Check alarms on objects within profile can be escalated
-        :return: 
+        :return:
         """
         if self.escalation_policy == "R":
             return bool(depended)
@@ -416,6 +654,24 @@ class ManagedObjectProfile(models.Model):
             except ValueError as e:
                 raise ValueError(e)
         super(ManagedObjectProfile, self).save(force_insert, force_update)
+
+    @classmethod
+    def get_max_metrics_interval(cls, managed_object_profiles=None):
+        Q = models.Q
+        op_query = ((Q(enable_box_discovery_metrics=True) & Q(enable_box_discovery=True)) |
+                    (Q(enable_periodic_discovery=True) & Q(enable_periodic_discovery_metrics=True)))
+        if managed_object_profiles:
+            op_query &= Q(id__in=managed_object_profiles)
+        r = set()
+        for mop in ManagedObjectProfile.objects.filter(op_query).exclude(metrics=[]).exclude(metrics=None):
+            if not mop.metrics:
+                continue
+            for m in mop.metrics:
+                if m["enable_box"]:
+                    r.add(mop.box_discovery_interval)
+                if m["enable_periodic"]:
+                    r.add(mop.periodic_discovery_interval)
+        return max(r) if r else 0
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

@@ -10,10 +10,10 @@
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
 <META HTTP-EQUIV="Expires" CONTENT="0" />
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
-<link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+<link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css" />
 <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/noc/colors.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/noc/print.css" />
+<link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />
+<link rel="stylesheet" type="text/css" href="/ui/web/css/print.css" />
 <script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
 {% block extrastyle %}{% endblock %}
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}/media/admin/css/ie.css{% endblock %}" /><![endif]-->
@@ -27,6 +27,13 @@
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
         onmousemove="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();"
         onkeydown="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();">
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            window.top.NOC.info("{{ message }}");
+        {% endfor %}
+    </script>
+{% endif %}
 <!-- Container -->
 <div id="container">
     {% if not is_popup %}
@@ -34,14 +41,6 @@
     <div class="breadcrumbs"><ul>{% block breadcrumbs %}<li>{% trans 'Home' %}</li>{% endblock %}</ul></div>
     <!-- END Breadcrumbs -->
     {% endif %}
-    {% if messages %}
-    <ul class="messagelist">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-        
     <!-- Content -->
     <div id="content" class="{% block coltype %}colM{% endblock %}">
         {% block pretitle %}{% endblock %}
@@ -55,16 +54,5 @@
     <!-- END Content -->
 </div>
 <!-- END Container -->
-
-<!-- Popup window stub -->
-<div id="noc-popup-mask"></div>
-<div id="noc-popup-window">
-    <div id="noc-popup-header">
-        <span id="noc-popup-header-title"></span>
-        <span id="noc-popup-header-close"><a href="#" onclick="hide_popup();"><img src="/media/admin/img/icon_deletelink.gif" title="Close"/></a></span>
-    </div>
-    <div id="noc-popup-body"></div>
-</div>
-<!-- END Popup -->
 </body>
 </html>

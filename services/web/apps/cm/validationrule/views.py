@@ -84,7 +84,7 @@ class ValidationRuleApplication(ExtDocApplication):
                 "managed_object_id": mo.id,
                 "managed_object": mo.name,
                 "address": mo.address,
-                "platform": mo.platform,
+                "platform": mo.platform.name if mo.platform else "",
                 "hits": x["hits"]
             }]
         return r

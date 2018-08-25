@@ -25,6 +25,7 @@ class SlowOp(Document):
     meta = {
         "collection": "noc.slowops",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             {
                 "fields": ["expire"],

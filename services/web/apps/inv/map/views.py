@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,16 +22,15 @@ from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.lib.stencil import stencil_registry
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.lib.text import split_alnum
+from noc.core.pm.utils import get_interface_metrics
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
-from noc.core.clickhouse.connect import connection
 
 tags_lock = threading.RLock()
 
@@ -54,7 +53,7 @@ class MapApplication(ExtApplication):
     ST_ALARM = 2  # Object is reachable, Active alarms
     ST_UNREACH = 3  # Object is unreachable due to other's object failure
     ST_DOWN = 4  # Object is down
-    ST_MAINTAINANCE = 32  # Maintainance bit
+    ST_MAINTENANCE = 32  # Maintenance bit
 
     # Maximum object to be shown
     MAX_OBJECTS = 300
@@ -64,9 +63,13 @@ class MapApplication(ExtApplication):
     def api_data(self, request, id):
         def q_mo(d):
             x = d.copy()
-            del x["mo"]
-            x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
-            x["id"] = str(x["id"])
+            if x["type"] == "managedobject":
+                del x["mo"]
+                x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
+                # x["id"] = str(x["id"])
+            elif d["type"] == "cloud":
+                del x["link"]
+                x["external"] = False
             return x
 
         # Find segment
@@ -89,9 +92,9 @@ class MapApplication(ExtApplication):
         if settings:
             self.logger.info("Using stored positions")
             for n in settings.nodes:
-                node_hints[int(n.id)] = {
+                node_hints[n.id] = {
                     "type": n.type,
-                    "id": int(n.id),
+                    "id": n.id,
                     "x": n.x,
                     "y": n.y
                 }
@@ -120,7 +123,7 @@ class MapApplication(ExtApplication):
         if segment.parent:
             r["parent"] = {
                 "id": str(segment.parent.id),
-                "name": str(segment.parent.name)
+                "name": segment.parent.name
             }
         # Save settings
         if not settings:
@@ -156,30 +159,6 @@ class MapApplication(ExtApplication):
         return {
             "status": True
         }
-
-    def get_object_shape(self, object):
-        if object.shape:
-            # Use object's shape, if set
-            sn = object.shape
-        elif object.object_profile.shape:
-            # Use profile's shape
-            sn = object.object_profile.shape
-        else:
-            # Fallback to router shape
-            sn = "Cisco/router"
-        return sn
-
-    def get_shape_size(self, shape):
-        return stencil_registry.get_size(shape)
-
-    @view(url="^stencils/(?P<shape>.+)/$",
-        method=["GET"], access=True, api=True)
-    def api_stencil(self, request, shape):
-        svg = stencil_registry.get_svg(shape)
-        if not svg:
-            return self.response_not_found()
-        else:
-            return self.render_response(svg, content_type="image/svg+xml")
 
     @view(url="^(?P<id>[0-9a-f]{24})/info/segment/$", method=["GET"],
           access="read", api=True)
@@ -228,10 +207,12 @@ class MapApplication(ExtApplication):
                 s = s.encode("utf-8")
             return s
 
-        segment = self.get_object_or_404(NetworkSegment, id=id)
+        self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
             "id": str(link.id),
+            "name": link.name or None,
+            "description": link.description or None,
             "objects": [],
             "method": link.discovery_method
         }
@@ -252,23 +233,18 @@ class MapApplication(ExtApplication):
                 ]
             }]
         # Get link bandwidth
-        where = []
-        for mo in o:
-            for i in o[mo]:
-                where += [(mo, i)]
-        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(mo.get_bi_id()), q(i.name))
-                             for mo, i in where])
-        query = ["select  managed_object, path[4], anyLast(load_in), anyLast(load_out) ",
-                 "from interface",
-                 "where %s" % where,
-                 "group by managed_object, path[4]"]
-        ch = connection()
         mo_in = defaultdict(float)
         mo_out = defaultdict(float)
-        for row in ch.execute(" ".join(query)):
-            mo_in[row[0]] += float(row[2])
-            mo_out[row[0]] += float(row[3])
-        mos = [str(ManagedObject.get_by_id(mo["id"]).get_bi_id()) for mo in r["objects"]]
+        mos = [ManagedObject.get_by_id(mo["id"]) for mo in r["objects"]]
+        metric_map, last_ts = get_interface_metrics(o.keys())
+        for mo in o:
+            if mo not in metric_map:
+                continue
+            for i in o[mo]:
+                if i.name not in metric_map[mo]:
+                    continue
+                mo_in[mo] += metric_map[mo][i.name]["Interface | Load | In"]
+                mo_out[mo] += metric_map[mo][i.name]["Interface | Load | Out"]
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
@@ -276,14 +252,54 @@ class MapApplication(ExtApplication):
                 int(max(mo_in[mo2], mo_out[mo1])),
             ]
         else:
-            r["utilisation"] = [int(max(mo_in.values() + mo_out.values()))]
+            mv = mo_in.values() + mo_out.values()
+            if mv:
+                r["utilisation"] = [int(max(mv))]
+            else:
+                r["utilisation"] = 0
         return r
 
-    @view(url="^objects_statuses/$", method=["POST"],
-          access="read", api=True,
-          validate={
-              "objects": ListOfParameter(IntParameter())
-          }
+    @view(url="^(?P<id>[0-9a-f]{24})/info/cloud/(?P<link_id>[0-9a-f]{24})/$", method=["GET"],
+          access="read", api=True)
+    def api_info_cloud(self, request, id, link_id):
+        def q(s):
+            if isinstance(s, unicode):
+                s = s.encode("utf-8")
+            return s
+
+        self.get_object_or_404(NetworkSegment, id=id)
+        link = self.get_object_or_404(Link, id=link_id)
+        r = {
+            "id": str(link.id),
+            "name": link.name or None,
+            "description": link.description or None,
+            "objects": [],
+            "method": link.discovery_method
+        }
+        o = defaultdict(list)
+        for i in link.interfaces:
+            o[i.managed_object] += [i]
+        for mo in sorted(o, key=lambda x: x.name):
+            r["objects"] += [{
+                "id": mo.id,
+                "name": mo.name,
+                "interfaces": [
+                    {
+                        "name": i.name,
+                        "description": i.description or None,
+                        "status": i.status
+                    }
+                    for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
+                ]
+            }]
+        return r
+
+    @view(
+        url="^objects_statuses/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "objects": ListOfParameter(IntParameter())
+        }
     )
     def api_objects_statuses(self, request, objects):
         def get_alarms(objects):
@@ -314,16 +330,16 @@ class MapApplication(ExtApplication):
                 r.update([d["_id"] for d in a])
             return r
 
-        def get_maintainance(objects):
+        def get_maintenance(objects):
             """
-            Returns a set of objects currently in maintainance
+            Returns a set of objects currently in maintenance
             :param objects:
             :return:
             """
             now = datetime.datetime.now()
             so = set(objects)
             r = set()
-            for m in Maintainance._get_collection().find({
+            for m in Maintenance._get_collection().find({
                 "is_completed": False,
                 "start": {
                     "$lte": now
@@ -340,7 +356,7 @@ class MapApplication(ExtApplication):
         r = dict((o, self.ST_UNKNOWN) for o in objects)
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
-        mo = get_maintainance(objects)
+        mo = get_maintenance(objects)
         for o in sr:
             if sr[o]:
                 # Check for alarms
@@ -351,7 +367,7 @@ class MapApplication(ExtApplication):
             else:
                 r[o] = self.ST_DOWN
             if o in mo:
-                r[o] |= self.ST_MAINTAINANCE
+                r[o] |= self.ST_MAINTENANCE
         return r
 
     @classmethod
@@ -408,6 +424,8 @@ class MapApplication(ExtApplication):
         mlst = []  # (metric, object, interface)
         for m in metrics:
             if "object" in m["tags"] and "interface" in m["tags"]:
+                if not m["tags"]["object"]:
+                    continue
                 try:
                     if_ids[
                         self.interface_tags_to_id(
@@ -415,19 +433,14 @@ class MapApplication(ExtApplication):
                             m["tags"]["interface"]
                         )
                     ] = m["id"]
-                    object_bi = str(ManagedObject.objects.get(name=m["tags"]["object"]).get_bi_id())
-                    tag_id[object_bi, m["tags"]["interface"]] = m["id"]
-                    mlst += [(m["metric"], object_bi, m["tags"]["interface"])]
+                    object = ManagedObject.objects.get(name=m["tags"]["object"])
+                    tag_id[object, m["tags"]["interface"]] = m["id"]
+                    mlst += [(m["metric"], object, m["tags"]["interface"])]
                 except KeyError:
                     pass
         # @todo: Get last values from cache
         if not mlst:
             return {}
-        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(o), q(i)) for m, o, i in mlst])
-        s = ["select  managed_object, path[4], anyLast(load_in), anyLast(load_out) ",
-             "from interface",
-             "where %s" % where,
-             "group by managed_object, path[4]"]
 
         r = {}
         # Apply interface statuses
@@ -447,17 +460,21 @@ class MapApplication(ExtApplication):
                 "admin_status": d.get("admin_status", True),
                 "oper_status": d.get("oper_status", True)
             }
+        metric_map, last_ts = get_interface_metrics([m[1] for m in mlst])
         # Apply metrics
-        ch = connection()
-        # print " ".join(s)
-        for rq in ch.execute(" ".join(s)):
-            pid = tag_id.get((rq[0], rq[1]))
+        for rq_mo, rq_iface in tag_id:
+            pid = tag_id.get((rq_mo, rq_iface))
             if not pid:
                 continue
             if pid not in r:
                 r[pid] = {}
-            r[pid]["Interface | Load | In"] = rq[2]
-            r[pid]["Interface | Load | Out"] = rq[3]
+            if rq_mo not in metric_map:
+                continue
+            if rq_iface not in metric_map[rq_mo]:
+                continue
+            r[pid]["Interface | Load | In"] = metric_map[rq_mo][rq_iface]["Interface | Load | In"]
+            r[pid]["Interface | Load | Out"] = metric_map[rq_mo][rq_iface]["Interface | Load | Out"]
+
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
@@ -469,11 +486,12 @@ class MapApplication(ExtApplication):
             "status": True
         }
 
-    @view(url="^stp/status/$", method=["POST"],
-          access="read", api=True,
-          validate={
-              "objects": ListOfParameter(IntParameter())
-          }
+    @view(
+        url="^stp/status/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "objects": ListOfParameter(IntParameter())
+        }
     )
     def api_objects_stp_status(self, request, objects):
         def get_stp_status(object_id):

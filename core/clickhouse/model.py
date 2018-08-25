@@ -10,51 +10,61 @@
 from __future__ import absolute_import
 import time
 import hashlib
+from collections import OrderedDict
 # Third-party modules
 import six
 # NOC modules
-from .fields import BaseField
+from .fields import BaseField, NestedField
 from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
+from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.managedobject import ManagedObject
 
-__all__ = ["Model"]
+__all__ = ["Model", "NestedModel"]
 
 
 class ModelBase(type):
     def __new__(mcs, name, bases, attrs):
         cls = type.__new__(mcs, name, bases, attrs)
         cls._fields = {}
+        cls._display_fields = OrderedDict()
+        cls._tsv_encoders = {}
         cls._meta = ModelMeta(
             engine=getattr(cls.Meta, "engine", None),
             db_table=getattr(cls.Meta, "db_table", None),
             description=getattr(cls.Meta, "description", None),
+            sample=getattr(cls.Meta, "sample", False),
             tags=getattr(cls.Meta, "tags", None),
         )
         for k in attrs:
             if isinstance(attrs[k], BaseField):
-                cls._fields[k] = attrs[k]
-                cls._fields[k].name = k
+                attrs[k].contribute_to_class(cls, k)
+                cls._display_fields[k] = attrs[k]
+                cls._display_fields[k].name = k
         cls._fields_order = sorted(
             cls._fields, key=lambda x: cls._fields[x].field_number
         )
+        cls._tsv_order = [cls._tsv_encoders[f] for f in cls._fields_order]
         return cls
 
 
 class ModelMeta(object):
     def __init__(self, engine=None, db_table=None, description=None,
-                 tags=None):
+                 sample=False, tags=None):
         self.engine = engine
         self.db_table = db_table
         self.description = description
+        self.sample = sample
         self.tags = tags
 
 
 class Model(six.with_metaclass(ModelBase)):
-    class Meta:
+    class Meta(object):
         engine = None
         db_table = None
         description = None
+        sample = False
         tags = None
 
     def __init__(self, **kwargs):
@@ -74,7 +84,7 @@ class Model(six.with_metaclass(ModelBase)):
     @classmethod
     def wrap_table(cls, table_name):
         class WrapClass(Model):
-            class Meta:
+            class Meta(object):
                 db_table = table_name
 
         return WrapClass
@@ -103,14 +113,18 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def to_tsv(cls, **kwargs):
-        return "\t".join(
-            cls._fields[f].to_tsv(kwargs[f]) for f in cls._fields_order
-        ) + "\n"
+        return "\t".join(f(kwargs) for f in cls._tsv_order) + "\n"
 
     @classmethod
     def get_fingerprint(cls):
-        return "%s.%s" % (cls._get_db_table(),
-                          ".".join(cls._fields_order))
+        field_list = []
+        for f in cls._fields_order:
+            if isinstance(cls._fields[f], NestedField):
+                field_list += ["%s.%s" % (f, nf) for nf in cls._fields[f].field_type._fields_order]
+            else:
+                field_list += [f]
+        return "%s|%s" % (cls._get_db_table(),
+                          "|".join(field_list))
 
     @classmethod
     def get_short_fingerprint(cls):
@@ -202,10 +216,43 @@ class Model(six.with_metaclass(ModelBase)):
         :param user:
         :return: query dict or None if access denied
         """
+        if not user or user.is_superuser:
+            return query  # No restrictions
+        if query["datasource"].startswith("dictionaries."):
+            return query  # To dictionaries
+        # Get user domains
+        domains = UserAccess.get_domains(user)
+        # Resolve domains against dict
+        mos_bi = [int(bi_id) for bi_id in ManagedObject.objects.filter(
+            administrative_domain__in=domains).values_list("bi_id", flat=True)]
+        filter = query.get("filter", {})
+        dl = len(mos_bi)
+        if not dl:
+            return None
+        elif dl == 1:
+            q = {
+                "$eq": [
+                    {"$field": "managed_object"},
+                    mos_bi
+                ]
+            }
+        else:
+            q = {
+                "$in": [
+                    {"$field": "managed_object"},
+                    mos_bi
+                ]
+            }
+        if filter:
+            query["filter"] = {
+                "$and": [query["filter"], q]
+            }
+        else:
+            query["filter"] = q
         return query
 
     @classmethod
-    def query(cls, query, user=None):
+    def query(cls, query, user=None, dry_run=False):
         """
         Execute query and return result
         :param query: dict of
@@ -216,11 +263,14 @@ class Model(six.with_metaclass(ModelBase)):
                 *order -- nth field in ORDER BY expression, starting from 0
                 *desc -- sort in descending order, if true
             "filter": expression
+            "having": expression
             "limit": N -- limit to N rows
             "offset": N -- skip first N rows
             "sample": 0.0-1.0 -- randomly select rows
             @todo: group by
             @todo: order by
+        :param user: User doing query
+        :param dry_run: Do not query, only return it.
         :return:
         """
         # Get field expressions
@@ -241,7 +291,7 @@ class Model(six.with_metaclass(ModelBase)):
             alias = f.get("alias", default_alias)
             if not f.get("hide"):
                 aliases += [alias]
-                fields_x += ["%s AS %s" % (to_sql(f["expr"]), escape_field(alias))]
+                fields_x += ["%s AS %s" % (to_sql(f["expr"], cls), escape_field(alias))]
             if "group" in f:
                 group_by[int(f["group"])] = alias
             if "order" in f:
@@ -257,6 +307,7 @@ class Model(six.with_metaclass(ModelBase)):
         else:
             # Get where expressions
             filter_x = to_sql(transformed_query.get("filter", {}))
+            filter_h = to_sql(transformed_query.get("having", {}))
             # Generate SQL
             sql = ["SELECT "]
             sql += [", ".join(fields_x)]
@@ -269,6 +320,9 @@ class Model(six.with_metaclass(ModelBase)):
             # GROUP BY
             if group_by:
                 sql += ["GROUP BY %s" % ", ".join(group_by[v] for v in sorted(group_by))]
+            # HAVING
+            if filter_h:
+                sql += ["HAVING %s" % filter_h]
             # ORDER BY
             if order_by:
                 sql += ["ORDER BY %s" % ", ".join(order_by[v] for v in sorted(order_by))]
@@ -282,6 +336,8 @@ class Model(six.with_metaclass(ModelBase)):
             # Execute query
             ch = connection()
             t0 = time.time()
+            if dry_run:
+                return sql
             r = ch.execute(sql)
             dt = time.time() - t0
         return {
@@ -290,3 +346,14 @@ class Model(six.with_metaclass(ModelBase)):
             "duration": dt,
             "sql": sql
         }
+
+
+class NestedModel(Model):
+
+    @classmethod
+    def get_create_sql(cls):
+        return ",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)
+
+    @classmethod
+    def get_fingerprint(cls):
+        return ["%s.%s" % (cls._fields[f].name, f) for f in cls._fields_order]

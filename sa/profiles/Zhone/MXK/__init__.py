@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zhone.MXK"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)\s*>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_prompt = r"^(?P<hostname>\S+)\s*#"
     pattern_syntax_error = r"ERROR: Permission denied."
     pattern_more = \

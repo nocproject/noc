@@ -15,6 +15,8 @@ class Script(BaseScript):
     name = "ECI.SAM.get_version"
     cache = True
     interface = IGetVersion
+    reuse_cli_session = False
+    keep_cli_session = False
 
     rx_platform = re.compile(r"\|\|\s+0\s+\|\|\s+(?P<platform>.+)\s*\n")
 
@@ -31,8 +33,8 @@ class Script(BaseScript):
             cardtype = "None"
             platform = "None"
         else:
-            version = match.group("version")
-            cardtype = match.group("cardtype")
+            version = match.group("version").strip()
+            cardtype = match.group("cardtype").strip()
             c = self.cli("EXISTSH ALL")
             match = self.rx_platform.search(c)
             platform = match.group("platform")

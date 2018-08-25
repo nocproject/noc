@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import csv
 import decimal
 import pprint
@@ -15,10 +16,10 @@ from functools import reduce
 import six
 from django.utils.dateformat import DateFormat
 # NOC modules
-from reportapplication import *
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.lib.widgets import tags_list
+from .reportapplication import ReportApplication
 
 
 INDENT = "    "
@@ -77,7 +78,7 @@ class ReportNode(object):
         """
         return ""
 
-    def to_csv(self):
+    def to_csv(self, delimiter=","):
         """
         Return CSV presentation of Node
         """
@@ -116,12 +117,12 @@ class Report(ReportNode):
         """
         return "\n".join([s.to_html() for s in self.sections])
 
-    def to_csv(self):
+    def to_csv(self, delimiter=","):
         """
         Return CSV for report
         :return:
         """
-        return "\n".join([x for x in [s.to_csv() for s in self.sections] if x])
+        return "\n".join([x for x in [s.to_csv(delimiter=delimiter) for s in self.sections] if x])
 
 
 class ReportSection(ReportNode):
@@ -151,7 +152,7 @@ class TextSection(ReportSection):
         """
         if not self.text:
             return []
-        if isinstance(self.text, basestring):
+        if isinstance(self.text, six.string_types):
             return [self.text]
         else:
             return self.text
@@ -182,10 +183,10 @@ class TextSection(ReportSection):
 # List of (limit, divider, suffix)
 #
 SIZE_DATA = []
-l = decimal.Decimal(1024)
+dec = decimal.Decimal(1024)
 for suffix in ["KB", "MB", "GB", "TB", "PB"]:
-    SIZE_DATA += [(l * 1024, l, suffix)]
-    l *= 1024
+    SIZE_DATA += [(dec * 1024, dec, suffix)]
+    dec *= 1024
 
 
 class SafeString(unicode):
@@ -208,16 +209,17 @@ class TableColumn(ReportNode):
 
     def __init__(self, name, title=None, align=None, format=None, total=None,
                  total_label=None):
-        self.name = name
+        super(TableColumn, self).__init__(name=name)
+        # self.name = name
         self.title = title if title else name
         self.align = {"l": self.ALIGN_LEFT, "left": self.ALIGN_LEFT,
                       "r": self.ALIGN_RIGHT, "right": self.ALIGN_RIGHT,
                       "c": self.ALIGN_CENTER, "center": self.ALIGN_CENTER}[
-        align.lower()] if align else None
+            align.lower()] if align else None
         self.format = getattr(self, "f_%s" % format) if isinstance(format,
-                                                        basestring) else format
+                                                                   six.string_types) else format
         self.total = getattr(self, "ft_%s" % total) if isinstance(total,
-                                                        basestring) else total
+                                                                  six.string_types) else total
         self.total_label = total_label
         self.total_data = []
         self.subtotal_data = []
@@ -397,9 +399,9 @@ class TableColumn(ReportNode):
         Display boolean field
         """
         if f:
-            return SafeString("<img src='/static/pkg/famfamfam-silk/tick.png' />")
+            return SafeString("<i class='fa fa-check' style='color:#2ecc71'></i>")
         else:
-            return SafeString("<img src='/static/pkg/famfamfam-silk/cross.png' />")
+            return SafeString("<i class='fa fa-times' style='color:#c0392b'></i>")
 
     def f_url(self, url):
         """
@@ -431,7 +433,7 @@ class TableColumn(ReportNode):
         """
         try:
             return SafeString(tags_list(f))
-        except:
+        except Exception:
             return ""
 
     def ft_sum(self, l):
@@ -439,7 +441,7 @@ class TableColumn(ReportNode):
         Returns a sum of not-null elements
         """
         return reduce(lambda x, y: x + y,
-            [decimal.Decimal(str(z)) for z in l if z], 0)
+                      [decimal.Decimal(str(z)) for z in l if z], 0)
 
     def ft_count(self, l):
         """
@@ -477,14 +479,14 @@ class TableSection(ReportSection):
         super(ReportSection, self).__init__(name=name)
         self.columns = []
         for c in columns:
-            if isinstance(c, basestring) or hasattr(c, "__unicode__"):
+            if isinstance(c, six.string_types) or hasattr(c, "__unicode__"):
                 self.columns += [TableColumn(unicode(c))]
             else:
                 self.columns += [c]
         self.data = data
         self.enumerate = enumerate
         self.has_total = reduce(lambda x, y: x or y,
-            [c.has_total for c in self.columns],
+                                [c.has_total for c in self.columns],
                                 False)  # Check wrether table has totals
 
     def to_xml(self):
@@ -515,16 +517,37 @@ class TableSection(ReportSection):
             return s
 
         s = [
-            "<script type='text/javascript' src='/static/js/jquery.table2CSV.js'></script>",
-            "<form action='/main/desktop/dlproxy/' method='POST'>",
+            "<script type='text/javascript' src='/ui/pkg/jquery.table2csv/jquery.table2csv.js'></script>",
+            "<form id='report' action='/main/desktop/dlproxy/' method='POST'>",
             "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
             "<input type='hidden' name='filename' value='report.csv'>",
             "<input type='hidden' name='data' id='csv_data'>",
-            "<input type='submit' value='CSV' onclick='getCSVData(\".report-table\");'>",
-            "<input type='button' value='" + _("Print") + "'onclick='window.print()'>",
-            "<input type='button' value='PDF' onclick='getPDF(\".report-table\")'>",
-            "<input type='submit' value='SSV' onclick='getSSVData(\".report-table\");'>",
+            "<input class='button' disabled type='submit' value='CSV' onclick='getData(\".report-table\", \",\");'>",
+            "<input class='button' disabled type='button' value='" + _("Print") + "'onclick='window.print()'>",
+            "<input class='button' disabled type='button' value='PDF' onclick='getPDFReport(\".report-table\")'>",
+            "<input class='button' disabled type='button' value='SSV' onclick='getData(\".report-table\", \";\");'>",
             "</form>",
+            "<script>",
+            "function getData(t, delimiter) {",
+            "  $('.button').attr('disabled','disabled');",
+            "  setTimeout(function() {",
+            "      var v = $(t).TableCSVExport({delivery: 'value', separator: ';'});",
+            "      $('#csv_data').val($(t).TableCSVExport({delivery: 'value', separator: delimiter}));",
+            "      $('.button').prop('disabled', false);",
+            "      $('#report').submit();",
+            "  }, 0);",
+            "}",
+            "function getPDFReport(t) {",
+            "  $('.button').attr('disabled','disabled');",
+            "  setTimeout(function() {",
+            "      getPDF(t)",
+            "      $('.button').prop('disabled', false);",
+            "  }, 0);",
+            "}",
+            "$( document ).ready(function() {",
+            "   var buttons = $('.button').prop('disabled', false);",
+            "});",
+            "</script>",
             "<table class='report-table' summary='%s'>" % self.quote(self.name)
         ]
         # Render header
@@ -547,11 +570,15 @@ class TableSection(ReportSection):
                 if type(row) == SectionRow:
                     # Display section row
                     if (current_section and self.has_total and
-                    current_section.subtotal):
+                            current_section.subtotal):
                         # Display totals from previous sections
                         s += render_subtotals()
                     s += [
-                        "<tr><td colspan=%d style='margin: 0;padding: 2px 5px 3px 5px;font-size: 11px;text-align:left;font-weight:bold;background: #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x;color:white;'>" % s_span,
+                        ";".join(["<tr><td colspan=%d style='margin: 0" % s_span,
+                                  "padding: 2px 5px 3px 5px;font-size: 11px;text-align:left",
+                                  "font-weight:bold",
+                                  "background: #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x",
+                                  "color:white;'>"]),
                         self.quote(row.title), "</td></tr>"]
                     current_section = row
                     continue
@@ -580,26 +607,15 @@ class TableSection(ReportSection):
             s += ["</tr>"]
         s += ["</tbody>"]
         s += ["</table>"]
-        s += ["<script>"]
-        s += ["function getCSVData(t) {"]
-        s += ["  var v = $(t).TableCSVExport({delivery: 'value', separator: ','});"]
-        s += ["  $('#csv_data').val(v);"]
-        s += ["}"]
-        s += ["function getSSVData(t) {"]
-        s += ["  var v = $(t).TableCSVExport({delivery: 'value', separator: ';'});"]
-        s += ["  $('#csv_data').val(v);"]
-        s += ["}"]
-
-        s += ["</script>"]
         return "\n".join(s)
 
-    def to_csv(self):
+    def to_csv(self, delimiter=","):
         """
         Return CSV representation of table
         :return:
         """
         f = six.StringIO()
-        writer = csv.writer(f)
+        writer = csv.writer(f, delimiter=delimiter)
         if self.enumerate:
             writer.writerow(["#"] + [c.title for c in self.columns])
         else:
@@ -619,6 +635,46 @@ class TableSection(ReportSection):
                         writer.writerow([row.name])
                         continue
                     writer.writerow(row)
+        return f.getvalue()
+
+    def to_ssv2(self, delimiter=";", mrf="center", date=None):
+        """
+        Return CSV representation of table
+        :return:
+        """
+        f = six.StringIO()
+        writer = csv.writer(f, delimiter=delimiter)
+        section = "default"
+        prefix = [mrf, section]
+        prefix_c = ["mrf", "pool"]
+        if date:
+            prefix_c += ["date"]
+            prefix += [date]
+        if self.enumerate:
+            writer.writerow(["#"] + prefix_c + [c.title for c in self.columns])
+        else:
+            writer.writerow(prefix_c + [c.title for c in self.columns])
+        if self.data:
+            if self.enumerate:
+                n = 1
+                for row in self.data:
+                    if type(row) == SectionRow:
+                        # writer.writerow([row.name])
+                        prefix = [mrf, row.name]
+                        if date:
+                            prefix += [date]
+                        continue
+                    writer.writerow([n] + prefix + list(row))
+                    n += 1
+            else:
+                for row in self.data:
+                    if type(row) == SectionRow:
+                        # writer.writerow([row.name])
+                        prefix = [mrf, row.name]
+                        if date:
+                            prefix += [date]
+                        continue
+                    writer.writerow(prefix + list(row))
         return f.getvalue()
 
 

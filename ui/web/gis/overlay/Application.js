@@ -8,7 +8,7 @@ console.debug("Defining NOC.gis.overlay.Application");
 
 Ext.define("NOC.gis.overlay.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.gis.overlay.Model"],
+    requires: ["NOC.gis.overlay.Model"],
     model: "NOC.gis.overlay.Model",
     columns: [
         {

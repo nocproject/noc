@@ -7,11 +7,13 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.crm.models.subscriber import Subscriber
+from noc.lib.app.decorators.state import state_handler
 from noc.core.translation import ugettext as _
 
 
+@state_handler
 class SubscriberApplication(ExtDocApplication):
     """
     Subscriber application
@@ -22,4 +24,6 @@ class SubscriberApplication(ExtDocApplication):
     query_fields = ["name__icontains"]
 
     def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile.style else ""
+        if o.profile and o.profile.style:
+            return o.profile.style.css_class_name
+        return ""

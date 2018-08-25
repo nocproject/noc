@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -35,6 +34,12 @@ class Script(BaseScript):
     rx_interface_swport_4626 = re.compile(
         r"(?P<interface>[^\n]+)\n.*?Mode\s+:(?P<mode>\S+).*?Port VID\s+:(?P<pvid>\d+).*?",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_member = re.compile(r"Member port of trunk \d+")
+    rx_not_present = re.compile(r"Not present\.")
+    rx_vlans = re.compile(r"\)([^,]+?)(\d)")
+    rx_vlan_tag = re.compile(r"(?P<vlan>\d+)\((?P<tag>u|t)\)")
+    rx_agg_member = re.compile(r"Type :Aggregation member")
+    rx_trunk = re.compile(r"Trunk allowed Vlan: (?P<tagged>[^\n]+?)(\n|$)")
 
     def execute(self):
         r = []
@@ -69,8 +74,12 @@ class Script(BaseScript):
                     "tagged": "",
                     "status": interface_status.get(name, False)
                 }
-                if re.search(r"Member port of trunk \d+", block):
+                if self.rx_member.search(block):
                     # skip portchannel members
+                    r += [swport]
+                    continue
+                if self.rx_not_present.search(block):
+                    # skip strange port state
                     r += [swport]
                     continue
                 match = self.rx_interface_swport_3526.search(block)
@@ -82,13 +91,14 @@ class Script(BaseScript):
                     if mqinq.group("qmode").lower() in ["access"]:
                         swport["802.1ad Tunnel"] = True
                     # untagged/tagged
-                p = re.compile("\)([^,]+?)(\d)")
-                vlans = p.sub(r"),\g<2>", match.group("vlans").rstrip(",\n "))
+                vlans = self.rx_vlans.sub(
+                    r"),\g<2>", match.group("vlans").rstrip(",\n ")
+                )
                 vlans = vlans.replace(" ", "")
                 untagged = None
                 tagged = []
                 for i in vlans.split(","):
-                    m = re.search("(?P<vlan>\d+)\((?P<tag>u|t)\)", i)
+                    m = self.rx_vlan_tag.search(i)
                     if m.group("tag") == "u":
                         if m.group("vlan") == match.group("native"):
                             untagged = m.group("vlan")
@@ -109,16 +119,15 @@ class Script(BaseScript):
                           "802.1Q Enabled": False,
                           "tagged": "",
                           "status": interface_status.get(name, False)}
-                if re.search(r"Type :Aggregation member", block):
-                # skip portchannel members
+                if self.rx_agg_member.search(block):
+                    # skip portchannel members
                     r += [swport]
                     continue
                 if match.group("mode").lower() == "trunk":
                     swport["802.1Q Enabled"] = "True"
                 swport["untagged"] = match.group("pvid")
                 tagged = []
-                p = re.search("Trunk allowed Vlan: (?P<tagged>[^\n]+?)(\n|$)",
-                              block)
+                p = self.rx_trunk.search(block)
                 if p:
                     swport["tagged"] = self.expand_rangelist(
                         p.group("tagged").replace(";", ","))

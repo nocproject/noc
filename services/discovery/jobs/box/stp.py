@@ -22,7 +22,11 @@ class STPCheck(TopologyDiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
-        roots = self.get_root_ports()
+        roots = self.cached_neighbors(
+            self.object,
+            "mo-neighbors-stp-root-%s" % self.object.id,
+            self.get_root_ports
+        )
         for ro in roots:
             remote_object = self.get_neighbor(ro)
             if not remote_object:
@@ -31,7 +35,11 @@ class STPCheck(TopologyDiscoveryCheck):
                     ro
                 )
                 continue
-            rdmap = self.get_designated_ports(remote_object)
+            rdmap = self.cached_neighbors(
+                remote_object,
+                "mo-neighbors-stp-desg-%s" % remote_object.id,
+                self.get_designated_ports
+            )
             for li, rpid in roots[ro]:
                 ri = rdmap.get(rpid)
                 if ri:
@@ -41,12 +49,12 @@ class STPCheck(TopologyDiscoveryCheck):
                         remote_object, ri
                     )
 
-    def get_root_ports(self):
+    def get_root_ports(self, mo):
         """
         Returns a dict of
         remote_object_id -> set((local_interface, remote_port_id)
         """
-        result = self.object.scripts.get_spanning_tree()
+        result = mo.scripts.get_spanning_tree()
         roots = defaultdict(set)  # Neighbor -> [(local iface, remote_id)]
         for i in result["instances"]:
             for iface in i["interfaces"]:
@@ -57,6 +65,7 @@ class STPCheck(TopologyDiscoveryCheck):
                             iface["designated_port_id"]
                         )
                     ))
+        roots = dict((ro, list(roots[ro])) for ro in roots)
         self.logger.debug("Roots ports: %s" % roots)
         return roots
 

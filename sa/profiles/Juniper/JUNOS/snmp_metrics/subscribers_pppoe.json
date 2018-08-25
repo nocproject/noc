@@ -1,0 +1,6 @@
+{
+  "$metric": "Subscribers | PPPoE",
+  "$type": "oid",
+  "oid": "1.3.6.1.4.1.2636.3.67.1.1.3.11.0",
+  "type": "gauge"
+}

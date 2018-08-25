@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,16 +21,21 @@ from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.pm.models.metrictype import MetricType
+from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
+from noc.core.window import wf_choices
 
 id_lock = Lock()
 
 
 class InterfaceProfileMetrics(EmbeddedDocument):
     metric_type = ReferenceField(MetricType, required=True)
-    # Collect metric
-    is_active = BooleanField()
+    # Metric collection settings
+    # Enable during box discovery
+    enable_box = BooleanField(default=False)
+    # Enable during periodic discovery
+    enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Window depth
@@ -49,30 +54,7 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     # Accepts window as a list of [(timestamp, value)]
     # and window_config
     # and returns float value
-    window_function = StringField(
-        choices=[
-            # Call handler
-            # window_config is a handler
-            ("handler", "Handler"),
-            # Last measure
-            ("last", "Last Value"),
-            # Average, no config
-            ("avg", "Average"),
-            # Percentile, window_config is in a percent
-            ("percentile", "Percentile"),
-            # 25% percentile
-            ("q1", "1st quartile"),
-            # 50% percentile, median
-            ("q2", "2st quartile"),
-            # 75% percentile
-            ("q3", "3st quartile"),
-            # 95% percentile
-            ("p95", "95% percentile"),
-            # 99% percentile
-            ("p99", "99% percentile")
-        ],
-        default="last"
-    )
+    window_function = StringField(choices=wf_choices, default="last")
     # Window function configuration
     window_config = StringField()
     # Convert window function result to percents of interface bandwidth
@@ -91,6 +73,8 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     low_warn_weight = IntField(default=1)
     high_warn_weight = IntField(default=1)
     high_error_weight = IntField(default=10)
+    # Threshold processing
+    threshold_profile = ReferenceField(ThresholdProfile)
 
 
 @bi_sync
@@ -106,7 +90,8 @@ class InterfaceProfile(Document):
     """
     meta = {
         "collection": "noc.interface_profiles",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField(unique=True)
     description = StringField()
@@ -154,16 +139,23 @@ class InterfaceProfile(Document):
     # User network interface
     # MAC discovery can be restricted to UNI
     is_uni = BooleanField(default=False)
+    # Allow automatic segmentation
+    allow_autosegmentation = BooleanField(default=False)
+    # Allow collecting metrics from subinterfaces
+    allow_subinterface_metrics = BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _status_discovery_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
 
@@ -176,7 +168,12 @@ class InterfaceProfile(Document):
         return InterfaceProfile.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return InterfaceProfile.objects.filter(bi_id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return InterfaceProfile.objects.filter(name=name).first()
 
@@ -184,3 +181,16 @@ class InterfaceProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
     def get_default_profile(cls):
         return InterfaceProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_status_discovery_cache"), lock=lambda _: id_lock)
+    def get_with_status_discovery(cls):
+        """
+        Get list of interface profile ids with status_discovery = True
+        :return:
+        """
+        return list(x["_id"] for x in InterfaceProfile._get_collection().find({
+            "status_discovery": True
+        }, {
+            "_id": 1
+        }))

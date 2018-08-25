@@ -25,9 +25,12 @@ class Script(BaseScript):
         r"(?P<status>Active|Inactive)\s*\n"
         r"  Interfaces:\n"
         r"(?P<ifaces>(?:    \S+\n)*)"
-        r"  Route-distinguisher: (?P<rd>\S+)",
+        r"  Route-distinguisher: (?P<rd>\S+)\s*\n"
+        r"(  Vrf-import: \[(?P<vrf_import>.+)\]\s*\n)?"
+        r"(  Vrf-export: \[(?P<vrf_export>.+)\]\s*\n)?",
         re.MULTILINE | re.IGNORECASE
     )
+    rx_vrf_target = re.compile("target:(?P<rd>\d+:\d+)")
     type_map = {
         "vrf": "VRF",
         "vpls": "VPLS",
@@ -35,13 +38,22 @@ class Script(BaseScript):
     }
 
     def execute(self, **kwargs):
+        c = self.cli(
+            "help apropos \"instance\" | match \"^show route instance\" ",
+            cached=True, ignore_errors=True
+        )
+        if "show route instance" not in c:
+            return []
+
         vpns = []
         v = self.cli("show route instance detail")
         for match in self.rx_ri.finditer(v):
             name = match.group("name")
             rt = match.group("type").lower()
-            if (name == "master" or name.startswith("__") or
-              rt not in self.type_map):
+            if (
+                name == "master" or name.startswith("__") or
+                rt not in self.type_map
+            ):
                 continue
             interfaces = [
                 x.strip() for x in match.group("ifaces").splitlines()
@@ -59,5 +71,27 @@ class Script(BaseScript):
             description = match.group("description")
             if description:
                 vpn["description"] = description.strip()
+            if match.group("vrf_import"):
+                vpn["rt_import"] = []
+                for rt_name in match.group("vrf_import").split(" "):
+                    rt_name = rt_name.strip()
+                    if rt_name == "":
+                        continue
+                    if rt_name.startswith("target:"):
+                        vpn["rt_import"] += [rt_name[7:]]
+                    c = self.cli("show policy %s" % rt_name)
+                    for rd in self.rx_vrf_target.finditer(c):
+                        vpn["rt_import"] += [rd.group("rd")]
+            if match.group("vrf_export"):
+                vpn["rt_export"] = []
+                for rt_name in match.group("vrf_export").split(" "):
+                    rt_name = rt_name.strip()
+                    if rt_name == "":
+                        continue
+                    if rt_name.startswith("target:"):
+                        vpn["rt_export"] += [rt_name[7:]]
+                    c = self.cli("show policy %s" % rt_name)
+                    for rd in self.rx_vrf_target.finditer(c):
+                        vpn["rt_export"] += [rd.group("rd")]
             vpns += [vpn]
         return vpns

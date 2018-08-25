@@ -29,7 +29,7 @@ import ujson
 import threading
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
-from noc.core.debug import excepthook, error_report
+from noc.core.debug import excepthook, error_report, ErrorReport
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -115,6 +115,11 @@ class Service(object):
     SHARDING_KEYS = {
         "span": "ctx"
     }
+
+    # Timeout to wait NSQ writer is to close
+    NSQ_WRITER_CLOSE_TRY_TIMEOUT = 0.25
+    # Times to try to close NSQ writer
+    NSQ_WRITER_CLOSE_RETRIES = 5
 
     class RegistrationError(Exception):
         pass
@@ -216,7 +221,7 @@ class Service(object):
             )
 
     def handle_callback_exception(self, callback):
-        sys.stdout.write("Exception in callback %r\n" % callback)
+        sys.stdout.write("Exception in callback %s\n" % repr(callback))
         error_report()
 
     @classmethod
@@ -254,6 +259,9 @@ class Service(object):
         self.logger = logging.getLogger(self.name)
         logging.captureWarnings(True)
 
+    def setup_test_logging(self):
+        self.logger = logging.getLogger(self.name)
+
     def setup_translation(self):
         from noc.core.translation import set_translation, ugettext
 
@@ -275,6 +283,8 @@ class Service(object):
         Log a separator string to visually split log
         """
         self.logger.warn(symbol * length)
+        if config.features.forensic:
+            self.logger.warn("[noc.core.forensic] [=Process restarted]")
 
     def setup_signal_handlers(self):
         """
@@ -512,6 +522,35 @@ class Service(object):
                     )
         # Custom deactivation
         yield self.on_deactivate()
+        # Flush pending NSQ messages
+        if self.nsq_writer:
+            conns = list(self.nsq_writer.conns)
+            n = self.NSQ_WRITER_CLOSE_RETRIES
+            while conns:
+                self.logger.info("Waiting for %d NSQ connections to finish", len(conns))
+                waiting = []
+                for conn_id in conns:
+                    connect = self.nsq_writer.conns.get(conn_id)
+                    if not connect:
+                        continue
+                    if connect.callback_queue:
+                        # Pending operations
+                        waiting += [conn_id]
+                    elif not connect.closed():
+                        # Unclosed connection
+                        connect.close()
+                        waiting += [conn_id]
+                conns = waiting
+                if conns:
+                    n -= 1
+                    if n <= 0:
+                        self.logger.info("Failed to close NSQ writer properly. Giving up. Pending messages may be lost")
+                        break
+                    # Wait
+                    yield tornado.gen.sleep(self.NSQ_WRITER_CLOSE_TRY_TIMEOUT)
+                else:
+                    self.logger.info("NSQ writer is shut down clearly")
+        # Continue deactivation
         # Finally stop ioloop
         self.dcs = None
         self.logger.info("Stopping IOLoop")
@@ -544,7 +583,7 @@ class Service(object):
         addr, port = self.get_service_address()
         r = yield self.dcs.register(
             self.name, addr, port,
-            pool=config.pool or None,
+            pool=config.pool if self.pooled else None,
             lock=self.get_leader_lock_name(),
             tags=self.get_register_tags()
         )
@@ -632,9 +671,11 @@ class Service(object):
                 self.logger.debug("Cannot decode JSON message: %s", e)
                 return True  # Broken message
             if isinstance(data, dict):
-                r = handler(message, **data)
+                with ErrorReport():
+                    r = handler(message, **data)
             else:
-                r = handler(message, data)
+                with ErrorReport():
+                    r = handler(message, data)
             if r:
                 self.perf_metrics[metric_processed] += 1
             elif message.is_async():
@@ -645,7 +686,8 @@ class Service(object):
 
         def call_raw_handler(message):
             self.perf_metrics[metric_in] += 1
-            r = handler(message, message.body)
+            with ErrorReport():
+                r = handler(message, message.body)
             if r:
                 self.perf_metrics[metric_processed] += 1
             elif message.is_async():
@@ -908,7 +950,7 @@ class Service(object):
         if status == 200 and uri == "/mon/" and method == "GET":
             self.logger.debug("Monitoring request (%s)", remote_ip)
             self.perf_metrics["mon_requests"] += 1
-        elif status == 200 and uri.startswith("/health/") and method == "GET":
+        elif (status == 200 or status == 429) and uri.startswith("/health/") and method == "GET":
             pass
         elif status == 200 and uri == ("/metrics") and method == "GET":
             pass
@@ -918,9 +960,8 @@ class Service(object):
                 method, uri, remote_ip,
                 1000.0 * handler.request.request_time()
             )
-            self.perf_metrics["http_requests"] += 1
-            self.perf_metrics["http_requests_%s" % method.lower()] += 1
-            self.perf_metrics["http_response_%s" % status] += 1
+            self.perf_metrics["http_requests", ("method", method.lower())] += 1
+            self.perf_metrics["http_response", ("status", status)] += 1
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:

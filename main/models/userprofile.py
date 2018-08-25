@@ -13,7 +13,7 @@ from django.db import models
 from django.contrib.auth.models import User
 # NOC modules
 from noc import settings
-from noc.lib.middleware import get_user
+from noc.core.middleware.tls import get_user
 
 
 class UserProfileManager(models.Manager):
@@ -40,7 +40,7 @@ class UserProfile(models.Model):
     """
     User profile
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
         app_label = "main"
@@ -87,3 +87,7 @@ class UserProfile(models.Model):
         return [
             (c.notification_method, c.params)
             for c in self.contacts if c.time_pattern.match(now)]
+
+# Avoid circular references
+# No delete, fixed 'UserProfile' object has no attribute 'userprofilecontact_set'
+from .userprofilecontact import UserProfileContact  # noqa

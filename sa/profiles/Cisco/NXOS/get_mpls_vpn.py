@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_mpls_vpn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,42 +18,32 @@ class Script(BaseScript):
     interface = IGetMPLSVPN
 
     rx_line_split = re.compile(r"^VRF-Name:\s+", re.MULTILINE)
-    rx_line_name = re.compile(r"^(?P<name>\S+),\s+VRF-ID:\s(?P<id>\d+),\s+State:\s+(?P<state>Up|Down)\s+",
-                              re.MULTILINE)
-    rx_line_rd = re.compile(r"^\s+RD:\s(?P<rd>\d:\d)\s*",re.MULTILINE)
-
-    portchannel_members = {}
-
-    def _get_portchannel_members(self, iface):
-        iface = self.profile.convert_interface_name(iface)
-        if not self.portchannel_members:
-            for pc in self.scripts.get_portchannel():
-                i = pc["interface"]
-                self.portchannel_members[i] = pc["members"]
-        if iface in self.portchannel_members:
-            return self.portchannel_members[iface]
-        else:
-            return []
+    rx_line_name = re.compile(
+        r"^(?P<name>\S+),\s+VRF-ID:\s(?P<id>\d+),\s+"
+        r"State:\s+(?P<state>Up|Down)\s+",
+        re.MULTILINE
+    )
+    rx_line_rd = re.compile(r"^\s+RD:\s(?P<rd>\d\S*:\d)\s*", re.MULTILINE)
 
     def execute(self, **kwargs):
         t = self.cli("show vrf interface")
         vrfif = {}
         firstline = True
-        for l in t.splitlines():
+        for ll in t.splitlines():
             if firstline:
                 firstline = False
                 continue
-            l = l.strip().split()
-            if l[1] not in vrfif.keys():
-                vrfif[l[1]] = []
-            vrfif[l[1]].append(l[0])
+            ll = ll.strip().split()
+            if ll[1] not in vrfif.keys():
+                vrfif[ll[1]] = []
+            vrfif[ll[1]].append(ll[0])
         vpns = []
 
         v = self.cli("show vrf detail")
         for I in self.rx_line_split.split(v)[1:]:
-            match = self.re_search(self.rx_line_name, I)
+            match = self.rx_line_name.search(I)
             name = match.group("name")
-            match = self.re_search(self.rx_line_rd, I)
+            match = self.rx_line_rd.search(I)
             rd = match.group("rd")
 
             vpn = {
@@ -61,7 +51,7 @@ class Script(BaseScript):
                 "status": True,
                 "name": name,
                 "interfaces": vrfif.get(name, []),
-                "rd": vrfif.get(rd, "0:0")
+                "rd": rd
             }
             vpns += [vpn]
 

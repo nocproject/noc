@@ -1,0 +1,5 @@
+{
+  "$metric": "Environment | Temperature",
+  "$type": "oid",
+  "oid": "1.3.6.1.4.1.35419.20.1.140.0"
+}

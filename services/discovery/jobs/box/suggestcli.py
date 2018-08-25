@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # Suggest SNMP check check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.script.scheme import SSH
+from noc.lib.text import safe_shadow
 
 
 class SuggestCLICheck(DiscoveryCheck):
@@ -24,12 +26,14 @@ class SuggestCLICheck(DiscoveryCheck):
         if self.object.profile.is_generic:
             self.logger.info("Profile is not detected properly. Skipping")
             return
+        message = "Unknown"
         for user, password, super_password in self.object.auth_profile.iter_cli():
-            if self.check_login(user, password, super_password):
+            result, message = self.check_login(user, password, super_password)
+            if result:
                 if self.object._suggest_snmp:
-                    ro, rw, version = self.object._suggest_snmp
+                    ro, rw, version = self.object._suggest_snmp  # noqa
                 else:
-                    ro, rw, version = None, None, None
+                    ro, rw, version = None, None, None  # noqa
                 self.set_credentials(
                     user=user,
                     password=password,
@@ -41,12 +45,13 @@ class SuggestCLICheck(DiscoveryCheck):
         self.logger.info("Failed to guess CLI credentials")
         self.set_problem(
             alarm_class="Discovery | Guess | CLI Credentials",
-            message="Failed to guess CLI credentials",
+            message="Failed to guess CLI credentials (%s)" % message,
             fatal=True
         )
 
     def check_login(self, user, password, super_password):
-        self.logger.info("Checking %s/%s/%s", user, password, super_password)
+        self.logger.debug("Checking %s/%s/%s", user, password, super_password)
+        self.logger.info("Checking %s/%s/%s", safe_shadow(user), safe_shadow(password), safe_shadow(super_password))
         try:
             r = open_sync_rpc(
                 "activator",
@@ -55,7 +60,7 @@ class SuggestCLICheck(DiscoveryCheck):
             ).script(
                 "%s.login" % self.object.profile.name,
                 {
-                    "cli_protocol": "ssh" if self.object.scheme == 2 else "telnet",
+                    "cli_protocol": "ssh" if self.object.scheme == SSH else "telnet",
                     "address": self.object.address,
                     "user": user,
                     "password": password,
@@ -63,11 +68,11 @@ class SuggestCLICheck(DiscoveryCheck):
                     "path": None
                 }
             )
-            self.logger.info("Result: %s", r)
-            return bool(r)  # bool(False) == bool(None)
+            self.logger.info("Result: %s, %s", r, r["message"])
+            return bool(r["result"]), r["message"]  # bool(False) == bool(None)
         except RPCError as e:
             self.logger.debug("RPC Error: %s", e)
-            return False
+            return False, ""
 
     def set_credentials(self, user, password, super_password,
                         snmp_ro, snmp_rw):

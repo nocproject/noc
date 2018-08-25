@@ -16,7 +16,7 @@ Ext.define("NOC.main.desktop.About", {
     modal: true,
     version: null,
     installation: null,
-    width: 500,
+    width: 600,
     height: 132,
     app: null,
     aboutCfg: null,

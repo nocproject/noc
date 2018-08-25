@@ -9,24 +9,22 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
     name = "DLink.DVG.get_chassis_id"
     interface = IGetChassisID
-    cache = True
 
     rx_mac = re.compile(r"^WAN MAC \[+(?P<mac>\S+)+\]$", re.MULTILINE)
+    OIDS_CHECK = ["1.3.6.1.2.1.2.2.1.6.2"]
 
-    def execute(self):
+    def execute_cli(self):
         # Try SNMP first
         if self.has_snmp():
             try:
-                mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.2",
-                                    cached=True)  # IF-MIB
-                return mac
+                return self.execute_snmp()
             except self.snmp.TimeOutError:
                 pass
 

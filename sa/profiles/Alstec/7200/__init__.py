@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Alstec.7200"
     pattern_username = r"^User:"
-    pattern_unpriveleged_prompt = r"^\S+ >"
+    pattern_unprivileged_prompt = r"^\S+ >"
     pattern_prompt = r"^\S+ #"
     pattern_more = r"^--More-- or \(q\)uit$"
     pattern_syntax_error = r"^(% Invalid input detected at|Command not found)"

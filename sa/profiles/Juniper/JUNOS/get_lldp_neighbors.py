@@ -2,19 +2,16 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import (IntParameter,
-                                    MACAddressParameter,
-                                    InterfaceTypeError)
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
+from noc.sa.interfaces.base import IntParameter
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import (is_int, is_ipv4, is_ipv6)
 
 
 class Script(BaseScript):
@@ -27,33 +24,44 @@ class Script(BaseScript):
         r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$",
         re.MULTILINE | re.DOTALL)
     rx_neigh = re.compile(
-        r"^(?P<local_if>.e-\S+?|me0|fxp0)\s.*?$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<local_if>[x,g]e-\S+|me\d(\.\d)?|fxp0|et-\S+)\s.*?$",
+        re.MULTILINE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
-    rx_detail = [
-         r"Chassis ID\s+:\s(?P<id>\S+)",
-         r"Port type\s+:\s(?P<p_type>.+)",
-         r"Port \S+\s+:\s(?P<p_id>.+)",
-         r"System name\s+:\s(?P<name>\S+)",
-         r"System capabilities",
-         r"Supported\s*:\s(?P<capability>.+)"
-    ]
-    rx_detail1 = [
-         r"Chassis ID\s+:\s(?P<id>\S+)",
-         r"Port type\s+:\s(?P<p_type>.+)",
-         r"Port \S+\s+:\s(?P<p_id>.+)",
-         r"System name\s+:\s(?P<name>\S+)"
-    ]
-    rx_detail2 = [
-         r"Chassis ID\s+:\s(?P<id>\S+)",
-         r"Port type\s+:\s(?P<p_type>.+)",
-         r"Port \S+\s+:\s(?P<p_id>.+)"
-    ]
+    rx_detail = re.compile(
+        r"Chassis type\s+:\s+(?P<ch_type>.+)\n"
+        r"Chassis ID\s+:\s(?P<id>\S+)\n"
+        r"Port type\s+:\s(?P<p_type>.+)\n"
+        r"(Port ID\s+:\s(?P<p_id>.+)\n)?"
+        r"(Port description\s+:\s(?P<p_descr>.+)\n)?"
+        r"(System name\s+:\s(?P<name>.+)\n)?",
+        re.MULTILINE
+    )
+    rx_caps = re.compile(
+        r"System capabilities\s*\n"
+        r"\s*Supported\s*:\s(?P<capability>.+)\n",
+        re.MULTILINE
+    )
+    CHASSIS_TYPE = {
+        "Mac address": 4,
+        "Network address": 5,
+        "Locally assigned": 7
+    }
+    PORT_TYPE = {
+        "Interface alias": 1,
+        "Port component": 2,
+        "Mac address": 3,
+        "Interface name": 5,
+        "Locally assigned": 7
+    }
 
-    # Match mx, ex and qfx
-    @BaseScript.match(platform__regex="[em]x|qfx|acx")
-    def execute_ex(self):
+    def execute_cli(self):
+        if self.is_has_lldp:
+            return self.execute_switch()
+        raise self.NotSupportedError()
+
+    # Match mx, ex, qfx, acx
+    def execute_switch(self):
         r = []
         # Collect data
         local_port_ids = {}  # name -> id
@@ -71,105 +79,40 @@ class Script(BaseScript):
             v = self.cli(
                 "show lldp neighbors interface %s" % i["local_interface"]
             )
-            match = self.match_lines(self.rx_detail, v)
-            n = {"remote_chassis_id_subtype": 4}
+            n = {}
+            match = self.rx_detail.search(v)
+            n["remote_chassis_id_subtype"] = self.CHASSIS_TYPE[
+                match.group("ch_type")
+            ]
+            n["remote_chassis_id"] = match.group("id")
+            n["remote_port_subtype"] = self.PORT_TYPE[match.group("p_type")]
+            n["remote_port"] = match.group("p_id")
+            if match.group("p_descr"):
+                n["remote_port_description"] = match.group("p_descr")
+            # On some devices we are not seen `Port ID`
+            if not n["remote_port"] and n["remote_port_subtype"] == 1:
+                n["remote_port"] = n["remote_port_description"]
+            if match.group("name"):
+                n["remote_system_name"] = match.group("name")
+            # Get capability
+            cap = 0
+            match = self.rx_caps.search(v)
             if match:
-                n["remote_port_subtype"] = {
-                    "Interface alias": 1,
-                    "Port component": 2,
-                    "Mac address": 3,
-                    "Interface name": 5,
-                    "Locally assigned": 7
-                }[match.get("p_type")]
-                if n["remote_port_subtype"] == 3:
-                    remote_port = \
-                        MACAddressParameter().clean(match.get("p_id"))
-                elif n["remote_port_subtype"] == 7:
-                    p_id = match.get("p_id")
-                    try:
-                        remote_port = IntParameter().clean(p_id)
-                    except InterfaceTypeError:
-                        remote_port = p_id
-                else:
-                    remote_port = match.get("p_id")
-                n["remote_chassis_id"] = match.get("id")
-                n["remote_system_name"] = match.get("name")
-                n["remote_port"] = str(remote_port)
-                # Get capability
-                cap = 0
-                if match.get("capability"):
-                    s = match.get("capability")
-                    # WLAN Access Point
-                    s = s.replace(" Access Point", "")
-                    # Station Only
-                    s = s.replace(" Only", "")
-                    for c in s.strip().split(" "):
-                        cap |= {
-                            "Other": 1, "Repeater": 2, "Bridge": 4,
-                            "WLAN": 8, "Router": 16, "Telephone": 32,
-                            "Cable": 64, "Station": 128
-                        }[c]
+                s = match.group("capability")
+                # WLAN Access Point
+                s = s.replace(" Access Point", "")
+                # Station Only
+                s = s.replace(" Only", "")
+                for c in s.strip().split(" "):
+                    cap |= {
+                        "Other": 1, "Repeater": 2, "Bridge": 4,
+                        "WLAN": 8, "Router": 16, "Telephone": 32,
+                        "Cable": 64, "Station": 128
+                    }[c]
                 n["remote_capabilities"] = cap
-            else:
-                match = self.match_lines(self.rx_detail1, v)
-                if match:
-                    n["remote_port_subtype"] = {
-                        "Interface alias": 1,
-                        "Port component": 2,
-                        "Mac address": 3,
-                        "Interface name": 5,
-                        "Locally assigned": 7
-                    }[match.get("p_type")]
-                    if n["remote_port_subtype"] == 3:
-                        remote_port = \
-                            MACAddressParameter().clean(match.get("p_id"))
-                    elif n["remote_port_subtype"] == 7:
-                        p_id = match.get("p_id")
-                        try:
-                            remote_port = IntParameter().clean(p_id)
-                        except InterfaceTypeError:
-                            remote_port = p_id
-                    else:
-                        remote_port = match.get("p_id")
-                    n["remote_chassis_id"] = match.get("id")
-                    n["remote_system_name"] = match.get("name")
-                    n["remote_port"] = str(remote_port)
-                else:
-                    match = self.match_lines(self.rx_detail2, v)
-                    if match:
-                        n["remote_port_subtype"] = {
-                            "Interface alias": 1,
-                            "Port component": 2,
-                            "Mac address": 3,
-                            "Interface name": 5,
-                            "Locally assigned": 7
-                        }[match.get("p_type")]
-                        if n["remote_port_subtype"] == 3:
-                            remote_port = \
-                                MACAddressParameter().clean(match.get("p_id"))
-                        elif n["remote_port_subtype"] == 7:
-                            p_id = match.get("p_id")
-                            try:
-                                remote_port = IntParameter().clean(p_id)
-                            except InterfaceTypeError:
-                                remote_port = p_id
-                        else:
-                            remote_port = match.get("p_id")
-                        n["remote_chassis_id"] = match.get("id")
-                        n["remote_port"] = str(remote_port)
-            if is_ipv4(n["remote_chassis_id"]) \
-              or is_ipv6(n["remote_chassis_id"]):
-                n["remote_chassis_id_subtype"] = 5
             i["neighbors"] += [n]
             r += [i]
         for q in r:
             if q['local_interface'].endswith(".0"):
                 q['local_interface'] = q['local_interface'][:-2]
         return r
-
-    #
-    # No lldp on M/T
-    #
-    @BaseScript.match()
-    def execute_other(self):
-        raise self.NotSupportedError()

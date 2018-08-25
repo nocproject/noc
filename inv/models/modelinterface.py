@@ -39,7 +39,8 @@ A_TYPE = ["str", "int", "float", "bool", "objectid", "ref", "strlist"]
 
 class ModelInterfaceAttr(EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField()
     type = StringField(choices=[(t, t) for t in A_TYPE])
@@ -94,6 +95,7 @@ class ModelInterface(Document):
     meta = {
         "collection": "noc.modelinterfaces",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "inv.modelinterfaces"
     }
 

@@ -11,7 +11,6 @@ Ext.define("NOC.core.modelfilter.Tree", {
     extend: "NOC.core.modelfilter.Base",
     lookup: null,  // module.app
     referrer: null, // Referrer application id
-    requires: [],
 
     initComponent: function() {
         var me = this,

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.audittrail application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.audittrail.Application");
@@ -36,12 +36,18 @@ Ext.define("NOC.main.audittrail.Application", {
                     width: 150
                 },
                 {
+                    text: __("Object"),
+                    dataIndex: "object_name",
+                    width: 250
+                },
+                {
                     text: __("Operation"),
                     dataIndex: "op",
                     flex: 1,
                     renderer: NOC.render.Choices({
                         "C": "Create",
                         "M": "Modify",
+                        "U": "Update",
                         "D": "Delete"
                     })
                 }
@@ -61,6 +67,11 @@ Ext.define("NOC.main.audittrail.Application", {
                     name: "model_id",
                     xtype: "displayfield",
                     fieldLabel: __("Model")
+                },
+                {
+                    name: "object_name",
+                    xtype: "displayfield",
+                    fieldLabel: __("Object")
                 },
                 {
                     name: "op",
@@ -92,5 +103,30 @@ Ext.define("NOC.main.audittrail.Application", {
         });
         me.callParent();
         me.saveButton.hide();
-    }
+    },
+    //
+    filters: [
+        {
+            title: __("Operation"),
+            ftype: "lookup",
+            name: "op",
+            lookup: "local",
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {value: "C", label: __("Create")},
+                    {value: "M", label: __("Modify")},
+                    {value: "U", label: __("Update")},
+                    {value: "D", label: __("Delete")}
+                ]
+            }
+        // },{
+        //     title: __("By User"),
+        //     name: "user",
+        //     ftype: "lookup",
+        //     lookup: "main.user",
+        //     valueName: "label",
+        //     addQuery: false
+        }
+    ]
 });

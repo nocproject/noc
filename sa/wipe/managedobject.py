@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Wipe managed object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,6 @@ from noc.inv.models.link import Link
 from noc.inv.models.macdb import MACDB
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
@@ -30,7 +29,7 @@ from noc.fm.models.uptime import Uptime
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.validationrule import ValidationRule
-from noc.ip.models import Address
+from noc.ip.models.address import Address
 from noc.core.scheduler.job import Job
 
 logger = logging.getLogger(__name__)
@@ -54,7 +53,6 @@ def wipe(o):
         )
     # Wiping FM events
     log.debug("Wiping events")
-    NewEvent.objects.filter(managed_object=o.id).delete()
     FailedEvent.objects.filter(managed_object=o.id).delete()
     ActiveEvent.objects.filter(managed_object=o.id).delete()
     ArchivedEvent.objects.filter(managed_object=o.id).delete()

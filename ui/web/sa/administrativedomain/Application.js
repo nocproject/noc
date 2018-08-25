@@ -62,6 +62,7 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             emptyText: __("Select parent..."),
             labelAlign: "left",
             labelWidth: 100,
+            listWidth: 1,
             margin: '0 0 5'
         }),
         {
@@ -100,7 +101,7 @@ Ext.define("NOC.sa.administrativedomain.Application", {
                 },
                 {
                     name: "bi_id",
-                    xtype: "textfield",
+                    xtype: "displayfield",
                     fieldLabel: __("BI ID"),
                     allowBlank: true,
                     uiStyle: "medium"

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -22,7 +22,7 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_descr = re.compile(
         r"^(?P<port>\d+)(?P<descr>.+)$",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE)
     rx_switchport = re.compile(
         r"^Administrative Mode: (?P<mode>\S+)\s*\n"
         r"^Operational Mode: \S+\s*\n"
@@ -90,7 +90,7 @@ class Script(BaseScript):
             return []
         return []
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         descr = []
         gvrp = self.get_gvrp()
@@ -134,8 +134,8 @@ class Script(BaseScript):
             }
             for i in descr:
                 if ifname == i["port"]:
-                    iface["description"] = i["descr"]
-                    sub["description"] = i["descr"]
+                    iface["description"] = i["descr"].strip()
+                    sub["description"] = i["descr"].strip()
                     break
             s = self.cli("show interface port %s switchport" % ifname)
             match1 = self.rx_switchport.search(s)
@@ -143,8 +143,7 @@ class Script(BaseScript):
                 sub["untagged_vlan"] = int(match1.group("access_vlan"))
             elif match1.group("mode") == "trunk":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
-                sub["tagged_vlans"] = \
-                self.expand_rangelist(match1.group("vlans"))
+                sub["tagged_vlans"] = self.expand_rangelist(match1.group("vlans"))
             else:
                 raise self.NotSupportedError()
             iface["subinterfaces"] += [sub]
@@ -158,13 +157,13 @@ class Script(BaseScript):
                     continue
                 descr += [match.groupdict()]
 
-
         v = self.cli("show interface ip")
         for match in self.rx_ip.finditer(v):
             ip_address = match.group("ip_address")
             ip_subnet = match.group("ip_subnet")
             ip_address = "%s/%s" % (
-                ip_address, IPv4.netmask_to_len(ip_subnet))
+                ip_address, IPv4.netmask_to_len(ip_subnet)
+            )
             ifname = match.group("ifname")
             iface = {
                 "name": "ip%s" % ifname,
@@ -173,7 +172,7 @@ class Script(BaseScript):
                 "oper_status": match.group("admin_status") == "active",
                 "mac": mac,
                 "subinterfaces": [{
-                    "name":  "ip%s" % ifname,
+                    "name": "ip%s" % ifname,
                     "admin_status": match.group("admin_status") == "active",
                     "oper_status": match.group("admin_status") == "active",
                     "mac": mac,
@@ -184,8 +183,8 @@ class Script(BaseScript):
             }
             for i in descr:
                 if ifname == i["port"]:
-                    iface["description"] = i["descr"]
-                    iface["subinterfaces"][0]["description"] = i["descr"]
+                    iface["description"] = i["descr"].strip()
+                    iface["subinterfaces"][0]["description"] = i["descr"].strip()
                     break
             interfaces += [iface]
             # Not implemented

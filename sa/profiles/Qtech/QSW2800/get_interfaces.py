@@ -2,16 +2,17 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -23,16 +24,21 @@ class Script(BaseScript):
     name = "Qtech.QSW2800.get_interfaces"
     interface = IGetInterfaces
 
-    rx_interface = re.compile(r"^\s*(?P<interface>\S+) is "
-                    r"(?P<admin_status>\S*\s*\S+), "
-                    r"line protocol is (?P<oper_status>\S+)")
-    rx_description = re.compile(r"alias name is "
-                    r"(?P<description>[A-Za-z0-9\-_/\.\s\(\)]*)")
+    rx_interface = re.compile(
+        r"^\s*(?P<interface>\S+) is (?P<admin_status>\S*\s*\S+), "
+        r"line protocol is (?P<oper_status>\S+)"
+    )
+    rx_description = re.compile(
+        r"alias name is (?P<description>[A-Za-z0-9\-_/\.\s\(\)]*)"
+    )
     rx_ifindex = re.compile(r"index is (?P<ifindex>\d+)$")
     rx_ipv4 = re.compile(r"^\s+(?P<ip>[\d+\.]+)\s+(?P<mask>[\d+\.]+)\s+")
     rx_mac = re.compile(r"address is (?P<mac>[0-9a-f\-]+)$", re.IGNORECASE)
     rx_mtu = re.compile(r"^\s+MTU(?: is)? (?P<mtu>\d+) bytes")
     rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
+    rx_vid = re.compile(r"(?P<vid>\d+)")
+    MAX_REPETITIONS = 10
+    MAX_GETNEXT_RETIRES = 1
 
     def get_lldp(self):
         v = self.cli("show lldp")
@@ -42,17 +48,14 @@ class Script(BaseScript):
                 r = l.split(":")[1].split()
         return r
 
-    def execute(self):
-        # get interfaces' status
-        int_status = {}
-        for s in self.scripts.get_interface_status():
-            int_status[s["interface"]] = s["oper_status"]
-
+    def execute_cli(self):
         # get switchports
         swports = {}
         for sp in self.scripts.get_switchport():
-            swports[sp["interface"]] = (sp["untagged"] if "untagged" in sp
-                                                    else None, sp["tagged"])
+            swports[sp["interface"]] = (
+                sp["untagged"] if "untagged" in sp else None,
+                sp["tagged"]
+            )
 
         # get portchannels
         pc_members = {}
@@ -60,17 +63,7 @@ class Script(BaseScript):
             i = pc["interface"]
             t = pc["type"] == "L"
             for m in pc["members"]:
-                pc_members[m] = (i,t)
-
-        # global GVRP status
-        try:
-            v = self.cli("show gvrp active port-member")
-            if "GVRP global function is disable" in v:
-                ggvrp = False
-            else:
-                ggvrp = True
-        except self.CLISyntaxError:
-            ggvrp = False
+                pc_members[m] = (i, t)
 
         # Get LLDP port
         lldp = self.get_lldp()
@@ -85,7 +78,8 @@ class Script(BaseScript):
                 # some initial settings
                 iface = {
                     "name": ifname,
-                    "admin_status": True,
+                    "admin_status": "up" in match.group("admin_status"),
+                    "oper_status": "up" in match.group("oper_status"),
                     "enabled_protocols": [],
                     "subinterfaces": []
                 }
@@ -96,10 +90,10 @@ class Script(BaseScript):
                     iface["type"] = "aggregated"
                 elif ifname.startswith("Vlan"):
                     iface["type"] = "SVI"
-                # get interface statuses
-                iface["oper_status"] = int_status.get(ifname, False)
-                if match.group("admin_status").startswith("administratively"):
-                    iface["admin_status"] = False
+                elif ifname.startswith("l2over"):
+                    iface["type"] = "tunnel"
+                elif ifname.startswith("Loop"):
+                    iface["type"] = "loopback"
                 # proccess LLDP
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
@@ -108,14 +102,14 @@ class Script(BaseScript):
                     iface["aggregated_interface"] = pc_members[ifname][0]
                     if pc_members[ifname][1]:
                         iface["enabled_protocols"] += ["LACP"]
-                try:
-                    if ifname.startswith("Ethernet"):
-                        v = self.cli("show ethernet-oam local interface %s" % ifname )
+                if ifname.startswith("Ethernet"):
+                    try:
+                        v = self.cli("show ethernet-oam local interface %s" % ifname)
                         match = self.rx_oam.search(v)
                         if not match:
                             iface["enabled_protocols"] += ["OAM"]
-                except self.CLISyntaxError:
-                    pass
+                    except self.CLISyntaxError:
+                        pass
                 # process subinterfaces
                 if "aggregated_interface" not in iface:
                     sub = {
@@ -143,23 +137,27 @@ class Script(BaseScript):
             match = self.rx_description.search(l)
             if match:
                 descr = match.group("description")
-                if not "(null)" in descr:
+                if "(null)" not in descr:
                     iface["description"] = descr
                     sub["description"] = descr
             # get ipv4 addresses
             match = self.rx_ipv4.match(l)
             if match:
-                if not "ipv4 addresses" in sub:
+                if "ipv4 addresses" not in sub:
                     sub["enabled_afi"] += ["IPv4"]
                     sub["ipv4_addresses"] = []
-                    vid = re.search("(?P<vid>\d+)", ifname)
+                    vid = self.rx_vid.search(ifname)
                     sub["vlan_ids"] = [int(vid.group("vid"))]
-                ip = IPv4(match.group("ip"),
-                            netmask=match.group("mask")).prefix
+                ip = IPv4(
+                    match.group("ip"), netmask=match.group("mask")
+                ).prefix
                 sub["ipv4_addresses"] += [ip]
+            # management interface may have IP address
+            if l.strip() == "IPv4 address is:" and iface["name"] == "Ethernet0":
+                iface["type"] = "management"
             # get mac address
             match = self.rx_mac.search(l)
-            if match:
+            if match and MAC(match.group("mac")) != "00:00:00:00:00:00":
                 iface["mac"] = match.group("mac")
                 sub["mac"] = iface["mac"]
             # get mtu address
@@ -170,5 +168,7 @@ class Script(BaseScript):
                     iface["subinterfaces"] = []
                 else:
                     iface["subinterfaces"] += [sub]
+            # the following lines are not important
+            if l.strip() == "Input packets statistics:":
                 r += [iface]
         return [{"interfaces": r}]

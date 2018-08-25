@@ -13,7 +13,7 @@ Ext.define("NOC.sa.administrativedomain.Model", {
     fields: [
         {
             name: "id",
-            type: "string"
+            type: "int"
         },
 
         {
@@ -62,7 +62,8 @@ Ext.define("NOC.sa.administrativedomain.Model", {
         },
         {
             name: "bi_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "tags",

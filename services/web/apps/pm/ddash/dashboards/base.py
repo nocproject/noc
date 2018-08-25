@@ -6,10 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import os
+
 import ujson
-import logging
+
+BAD_CHARS = u'!"%\'()+,:;<>?@\^`{|}~\\\n\r'
 
 
 class BaseDashboard(object):
@@ -59,13 +62,13 @@ class BaseDashboard(object):
             path = os.path.join(t_path, f)
             if os.path.isfile(path):
                 if ".json" not in f:
-                    self.logger.info("Extension file %s is not .json" % fl)
+                    self.logger.info("Extension file %s is not .json" % f)
                     continue
                 with open(os.path.join(t_path, f)) as data_file:
                     try:
                         t[f.split(".")[0]] = ujson.load(data_file)
                     except ValueError:
-                        self.logger.error("Dashboard template file %s not contains valid JSON" % fl)
+                        self.logger.error("Dashboard template file %s not contains valid JSON" % f)
                         continue
                 continue
             for fl in os.listdir(path):
@@ -79,3 +82,11 @@ class BaseDashboard(object):
                         self.logger.error("Dashboard template file %s not contains valid JSON" % fl)
                         continue
         return t
+
+    def str_cleanup(self, data, translate_to=None):
+        if data:
+            remove_letters = BAD_CHARS
+            translate_table = dict((ord(char), translate_to) for char in remove_letters)
+            return data.translate(translate_table)
+        else:
+            return data

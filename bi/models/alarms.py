@@ -7,13 +7,13 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.clickhouse.model import Model, NestedModel
 from noc.core.clickhouse.fields import (DateField, DateTimeField,
                                         Int16Field,
                                         Int32Field, Int64Field,
                                         StringField,
                                         Float64Field, ReferenceField,
-                                        IPv4Field)
+                                        IPv4Field, NestedField, UInt32Field)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.vendor import Vendor
@@ -30,8 +30,18 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
 
 
+class Services(NestedModel):
+    profile = StringField(description="Profile Name")
+    summary = UInt32Field(description="Summary")
+
+
+class Subscribers(NestedModel):
+    profile = StringField(description="Profile Name")
+    summary = UInt32Field(description="Summary")
+
+
 class Alarms(Model):
-    class Meta:
+    class Meta(object):
         db_table = "alarms"
         engine = MergeTree("date", ("ts", "managed_object"))
 
@@ -68,6 +78,9 @@ class Alarms(Model):
     # Coordinates
     x = Float64Field(description=_("Longitude"))
     y = Float64Field(description=_("Latitude"))
+    services = NestedField(Services, description=_("Affected Services"))
+    subscribers = NestedField(Subscribers, description=_("Affected Subscribers"))
+    # location = StringField(description="Location")
 
     @classmethod
     def transform_query(cls, query, user):
@@ -77,7 +90,7 @@ class Alarms(Model):
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
         domain_ids = [
-            x.get_bi_id()
+            x.bi_id
             for x in AdministrativeDomainM.objects.filter(id__in=domains)
         ]
         filter = query.get("filter", {})
@@ -105,3 +118,16 @@ class Alarms(Model):
         else:
             query["filter"] = q
         return query
+
+    @classmethod
+    def transform_field(cls, field):
+        if field == "services":
+            return ",".join(["arrayStringConcat(arrayMap(x -> concat(dictGetString('serviceprofile'",
+                             " 'name', toUInt64(services.profile[indexOf(services.summary, x)]))",
+                             " ':', toString(x)), services.summary),',')"])
+
+        elif field == "subscribers":
+            return ",".join(["arrayStringConcat(arrayMap(x -> concat(dictGetString('subscriberprofile'",
+                             " 'name', toUInt64(subscribers.profile[indexOf(subscribers.summary, x)]))",
+                             " ':', toString(x)), subscribers.summary),',')"])
+        return field

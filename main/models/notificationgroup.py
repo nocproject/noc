@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import logging
 import operator
@@ -18,9 +19,9 @@ import cachetools
 # NOC modules
 from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
-from timepattern import TimePattern
 from noc.core.service.pub import pub
 from noc.core.model.decorator import on_delete_check
+from .timepattern import TimePattern
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -64,6 +65,7 @@ class NotificationGroup(models.Model):
     description = models.TextField("Description", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -71,10 +73,18 @@ class NotificationGroup(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return NotificationGroup.objects.get(id=id)
-        except NotificationGroup.DoesNotExist:
-            return None
+        ng = NotificationGroup.objects.filter(id=id)[:1]
+        if ng:
+            return ng[0]
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        ng = NotificationGroup.objects.filter(name=name)[:1]
+        if ng:
+            return ng[0]
+        return None
 
     @property
     def members(self):
@@ -90,7 +100,7 @@ class NotificationGroup(models.Model):
                 profile = ngu.user.get_profile()
                 if profile.preferred_language:
                     lang = profile.preferred_language
-            except:
+            except Exception:
                 # Fallback to user's email
                 m += [(TimePatternList([]), "mail", ngu.user.email, lang)]
                 continue
@@ -203,12 +213,11 @@ class NotificationGroup(models.Model):
                 ngs.add((method, params))
                 lang[(method, params)] = l
         for method, params in ngs:
-            l = lang[(method, params)]
             cls.send_notification(
                 method,
                 params,
-                cls.get_effective_message(subject, l),
-                cls.get_effective_message(body, l)
+                cls.get_effective_message(subject, lang[(method, params)]),
+                cls.get_effective_message(body, lang[(method, params)])
             )
 
 

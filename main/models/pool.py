@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Pool model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,13 +22,16 @@ id_lock = threading.Lock()
 
 @bi_sync
 @on_delete_check(check=[
+    ('sa.AdministrativeDomain', 'default_pool'),
     ("sa.ManagedObject", "pool"),
+    ("sa.ManagedObjectSelector", "filter_pool")
     # ("fm.EscalationItem", "administrative_domain")
 ])
 class Pool(Document):
     meta = {
         "collection": "noc.pools",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True, min_length=1, max_length=16,
@@ -36,9 +39,10 @@ class Pool(Document):
     description = StringField()
     discovery_reschedule_limit = IntField(default=50)
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _name_cache = cachetools.TTLCache(1000, ttl=60)
     reschedule_lock = threading.Lock()
     reschedule_ts = {}  # pool id -> timestamp
@@ -50,6 +54,11 @@ class Pool(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Pool.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return Pool.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

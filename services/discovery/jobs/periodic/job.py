@@ -2,19 +2,22 @@
 # ---------------------------------------------------------------------
 # Periodic Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import random
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
-from uptime import UptimeCheck
-from interfacestatus import InterfaceStatusCheck
-from mac import MACCheck
-from metrics import MetricsCheck
 from noc.core.span import Span
+from noc.core.datastream.change import bulk_datastream_changes
+from .uptime import UptimeCheck
+from .interfacestatus import InterfaceStatusCheck
+from .mac import MACCheck
+from .metrics import MetricsCheck
+from .cpestatus import CPEStatusCheck
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -24,12 +27,13 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     # Store context
     context_version = 1
 
+    is_periodic = True
+
     def handler(self, **kwargs):
-        with Span(sample=self.object.periodic_telemetry_sample):
+        with Span(sample=self.object.periodic_telemetry_sample), bulk_datastream_changes():
             if self.object.auth_profile and self.object.auth_profile.type == "S":
                 self.logger.info("Invalid credentials. Stopping")
                 return
-            self.reboot_detected = False
             if self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
                 with self.object.open_session():
@@ -42,6 +46,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             UptimeCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_interface_status:
             InterfaceStatusCheck(self).run()
+        if self.object.object_profile.enable_periodic_discovery_cpestatus:
+            CPEStatusCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_mac:
             MACCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_metrics:
@@ -71,7 +77,6 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
 
     def can_update_alarms(self):
         return self.object.can_create_periodic_alarms()
-
 
     def get_fatal_alarm_weight(self):
         return self.object.object_profile.periodic_discovery_fatal_alarm_weight

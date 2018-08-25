@@ -17,6 +17,7 @@ class LACPCheck(TopologyDiscoveryCheck):
     name = "lacp"
     required_script = "get_lacp_neighbors"
     required_capabilities = ["Network | LACP"]
+    aliased_names_only = True
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_lacp_neighbors()

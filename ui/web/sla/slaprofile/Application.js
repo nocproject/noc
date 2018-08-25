@@ -11,7 +11,9 @@ Ext.define("NOC.sla.slaprofile.Application", {
     requires: [
         "NOC.sla.slaprofile.Model",
         "NOC.main.style.LookupField",
-        "NOC.pm.metrictype.LookupField"
+        "NOC.pm.metrictype.LookupField",
+        "NOC.main.ref.windowfunction.LookupField",
+        "NOC.pm.thresholdprofile.LookupField"
     ],
     model: "NOC.sla.slaprofile.Model",
     rowClassField: "row_class",
@@ -60,8 +62,15 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             renderer: NOC.render.Lookup("metric_type")
                         },
                         {
-                            text: __("Active"),
-                            dataIndex: "is_active",
+                            text: __("Box"),
+                            dataIndex: "enable_box",
+                            width: 50,
+                            renderer: NOC.render.Bool,
+                            editor: "checkbox"
+                        },
+                        {
+                            text: __("Periodic"),
+                            dataIndex: "enable_periodic",
                             width: 50,
                             renderer: NOC.render.Bool,
                             editor: "checkbox"
@@ -100,18 +109,7 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             dataIndex: "window_function",
                             width: 70,
                             editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["last", "Last Value"],
-                                    ["avg", "Average"],
-                                    ["percentile", "Percentile"],
-                                    ["q1", "1st quartile"],
-                                    ["q2", "2st quartile"],
-                                    ["q3", "3st quartile"],
-                                    ["p95", "95% percentile"],
-                                    ["p99", "99% percentile"],
-                                    ["handler", "Handler"]
-                                ]
+                                xtype: "main.ref.windowfunction.LookupField"
                             }
                         },
                         {
@@ -151,6 +149,15 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             editor: "textfield",
                             align: "right",
                             renderer: NOC.render.Size
+                        },
+                        {
+                            text: __("Profile"),
+                            dataIndex: "threshold_profile",
+                            width: 150,
+                            editor: {
+                                xtype: "pm.thresholdprofile.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("threshold_profile")
                         }
                     ]
                 }

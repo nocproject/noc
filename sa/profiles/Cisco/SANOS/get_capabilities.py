@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "Cisco.SANOS.get_capabilities"
 
     @false_on_cli_error
-    def has_cdp(self):
+    def has_cdp_cli(self):
         """
         Check box has cdp enabled
         """

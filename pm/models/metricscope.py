@@ -70,7 +70,9 @@ class MetricScope(Document):
     meta = {
         "collection": "noc.metricscopes",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "pm.metricscopes",
+        "json_unique_fields": ["name"]
     }
 
     name = StringField(unique=True)

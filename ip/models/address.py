@@ -2,38 +2,43 @@
 # ---------------------------------------------------------------------
 # Address model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
+from noc.config import config
 from noc.project.models.project import Project
-from vrf import VRF
-from prefix import Prefix
-from afi import AFI_CHOICES
-from noc.main.models.style import Style
-from noc.main.models.resourcestate import ResourceState
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
-from noc.lib.app.site import site
-from noc.lib.validators import (
-    ValidationError, check_fqdn, check_ipv4, check_ipv6)
+from noc.lib.validators import ValidationError, check_fqdn, check_ipv4, check_ipv6
 from noc.main.models.textindex import full_text_search
+from noc.core.model.fields import DocumentReferenceField
+from noc.core.wf.decorator import workflow
+from noc.wf.models.state import State
+from noc.core.datastream.decorator import datastream
+from .afi import AFI_CHOICES
+from .vrf import VRF
+from .addressprofile import AddressProfile
 
 
+@datastream
 @full_text_search
+@workflow
 class Address(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
         db_table = "ip_address"
         app_label = "ip"
         unique_together = [("vrf", "afi", "address")]
 
-    prefix = models.ForeignKey(Prefix, verbose_name=_("Prefix"))
+    prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"))
     vrf = models.ForeignKey(
         VRF,
         verbose_name=_("VRF"),
@@ -44,11 +49,22 @@ class Address(models.Model):
         max_length=1,
         choices=AFI_CHOICES)
     address = INETField(_("Address"))
+    profile = DocumentReferenceField(
+        AddressProfile,
+        null=False, blank=False
+    )
+    name = models.CharField(
+        _("Name"),
+        max_length=255,
+        null=False, blank=False
+    )
     fqdn = models.CharField(
         _("FQDN"),
         max_length=255,
         help_text=_("Full-qualified Domain Name"),
-        validators=[check_fqdn])
+        validators=[check_fqdn],
+        null=True, blank=True
+    )
     project = models.ForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
@@ -69,6 +85,11 @@ class Address(models.Model):
         related_name="address_set",
         on_delete=models.SET_NULL,
         help_text=_("Set if address belongs to the Managed Object's interface"))
+    subinterface = models.CharField(
+        "SubInterface",
+        max_length=128,
+        null=True, blank=True
+    )
     description = models.TextField(
         _("Description"),
         blank=True, null=True)
@@ -77,14 +98,10 @@ class Address(models.Model):
         _("TT"),
         blank=True, null=True,
         help_text=_("Ticket #"))
-    style = models.ForeignKey(
-        Style,
-        verbose_name=_("Style"),
-        blank=True, null=True)
-    state = models.ForeignKey(
-        ResourceState,
-        verbose_name=_("State"),
-        default=ResourceState.get_default)
+    state = DocumentReferenceField(
+        State,
+        null=True, blank=True
+    )
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True, blank=True,
@@ -95,15 +112,42 @@ class Address(models.Model):
         null=True, blank=True,
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL)
+    source = models.CharField(
+        "Source",
+        max_length=1,
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("m", "Management"),
+            ("d", "DHCP"),
+            ("n", "Neighbor")
+        ],
+        null=False, blank=False,
+        default="M"
+    )
 
     csv_ignored_fields = ["prefix"]
 
     def __unicode__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
 
-    def get_absolute_url(self):
-        return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi,
-                            self.prefix.prefix)
+    def iter_changed_datastream(self):
+        if not config.datastream.enable_dnszone:
+            return
+
+        from noc.dns.models.dnszone import DNSZone
+
+        if self.fqdn:
+            # Touch forward zone
+            fz = DNSZone.get_zone(self.fqdn)
+            if fz:
+                for ds, id in fz.iter_changed_datastream():
+                    yield ds, id
+            # Touch reverse zone
+            rz = DNSZone.get_zone(self.address)
+            if rz:
+                for ds, id in rz.iter_changed_datastream():
+                    yield ds, id
 
     @classmethod
     def get_afi(cls, address):
@@ -118,12 +162,15 @@ class Address(models.Model):
         :return: VRF already containing address or None
         :rtype: VRF or None
         """
-        if vrf.vrf_group.address_constraint != "G":
+        if not vrf.vrf_group or vrf.vrf_group.address_constraint != "G":
             return None
         afi = cls.get_afi(address)
         try:
-            a = Address.objects.get(afi=afi, address=address,
-                vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id))
+            a = Address.objects.get(
+                afi=afi,
+                address=address,
+                vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id)
+            )
             return a.vrf
         except Address.DoesNotExist:
             return None
@@ -135,15 +182,7 @@ class Address(models.Model):
         :param kwargs:
         :return:
         """
-        # Check VRF group restrictions
-        cv = self.get_collision(self.vrf, self.address)
-        if cv:
-            # Collision detected
-            raise ValidationError("Address already exists in VRF %s" % cv)
-        # Detect AFI
-        self.afi = self.get_afi(self.address)
-        # Set proper prefix
-        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
+        self.clean()
         super(Address, self).save(**kwargs)
 
     def clean(self):
@@ -151,13 +190,24 @@ class Address(models.Model):
         Field validation
         :return:
         """
-        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         super(Address, self).clean()
+        # Get proper AFI
+        self.afi = "6" if ":" in self.address else "4"
         # Check prefix is of AFI type
-        if self.afi == "4":
+        if self.is_ipv4:
             check_ipv4(self.address)
-        elif self.afi == "6":
+        elif self.is_ipv6:
             check_ipv6(self.address)
+        # Check VRF
+        if not self.vrf:
+            self.vrf = VRF.get_global()
+        # Find parent prefix
+        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
+        # Check VRF group restrictions
+        cv = self.get_collision(self.vrf, self.address)
+        if cv:
+            # Collision detected
+            raise ValidationError("Address already exists in VRF %s" % cv)
 
     @property
     def short_description(self):
@@ -173,8 +223,11 @@ class Address(models.Model):
         """
         Full-text search
         """
-        content = [self.address, self.fqdn]
-        card = "Address %s, FQDN %s" % (self.address, self.fqdn)
+        content = [self.address, self.name]
+        card = "Address %s, Name %s" % (self.address, self.name)
+        if self.fqdn:
+            content += [self.fqdn]
+            card += ", FQDN %s" % self.fqdn
         if self.mac:
             content += [self.mac]
             card += ", MAC %s" % self.mac
@@ -203,3 +256,15 @@ class Address(models.Model):
                 )
             }
         )
+
+    @property
+    def is_ipv4(self):
+        return self.afi == "4"
+
+    @property
+    def is_ipv6(self):
+        return self.afi == "6"
+
+
+# Avoid django's validation failure
+from .prefix import Prefix

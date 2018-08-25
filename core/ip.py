@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # IP address manipulation routines
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,8 +12,8 @@ import six
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
 
 # Bit masks
-B16 = 0xffffL
-B32 = 0xffffffffL
+B16 = 0xffff
+B32 = 0xffffffff
 
 
 class IP(object):
@@ -247,13 +247,30 @@ class IP(object):
         else:
             return spot
 
-    #
-    # Rebase to a new base
-    #
     def rebase(self, base, new_base):
+        """
+        Rebase to a new base prefix
+        :param base:
+        :param new_base:
+        :return:
+        """
+        if self == base:
+            return new_base
         pb = list(self.iter_bits())[base.mask:]
         nb = list(new_base.iter_bits()) + [0] * (base.mask - new_base.mask) + pb
         return self.from_bits(nb)
+
+    @staticmethod
+    def expand(addr):
+        """
+        Expand and normalize address for reliable key lookup
+        :param addr:
+        :return:
+        """
+        if ":" in addr:
+            return IPv6.expand(addr)
+        else:
+            return IPv4.expand(addr)
 
 
 class IPv4(IP):
@@ -277,7 +294,7 @@ class IPv4(IP):
         check_ipv4_prefix(prefix)
         super(IPv4, self).__init__(prefix)
         # Convert to int
-        self.d = 0L
+        self.d = 0
         m = 24
         for d in self._get_parts():
             self.d += d << m
@@ -322,8 +339,9 @@ class IPv4(IP):
         :param mask: mask length (0 .. 32)
         :type mask: integer
         """
-        return IPv4("%d.%d.%d.%d/%d" % ((s >> 24) & 0xff, (s >> 16) & 0xff,
-                                       (s >> 8) & 0xff, s & 0xff, mask))
+        return IPv4("%d.%d.%d.%d/%d" % (
+            (s >> 24) & 0xff, (s >> 16) & 0xff, (s >> 8) & 0xff, s & 0xff, mask
+        ))
 
     def __hash__(self):
         """Hashing"""
@@ -382,7 +400,7 @@ class IPv4(IP):
         :return: Generator of bits
         :rtype: Generator
         """
-        m = 1L << 31
+        m = 1 << 31
         for i in range(self.mask):
             yield 1 if self.d & m else 0
             m >>= 1
@@ -422,7 +440,7 @@ class IPv4(IP):
         :return: First address
         :rtype:
         """
-        return self._to_prefix(self.d & (((1L << self.mask) - 1L) << (32L - self.mask)), self.mask)
+        return self._to_prefix(self.d & (((1 << self.mask) - 1) << (32 - self.mask)), self.mask)
 
     @property
     def last(self):
@@ -430,7 +448,7 @@ class IPv4(IP):
         Returns new IPv4 instance with last address of the block (broadcast)
         :return:
         """
-        return self._to_prefix(self.d | (B32 ^ (((1L << self.mask) - 1L) << (32L - self.mask))), self.mask)
+        return self._to_prefix(self.d | (B32 ^ (((1 << self.mask) - 1) << (32 - self.mask))), self.mask)
 
     @property
     def netmask(self):
@@ -438,7 +456,7 @@ class IPv4(IP):
         Returns new IPv4 instance holding netmask
         :return:
         """
-        return self._to_prefix(((1L << self.mask) - 1L) << (32L - self.mask), 32)
+        return self._to_prefix(((1 << self.mask) - 1) << (32 - self.mask), 32)
 
     @property
     def wildcard(self):
@@ -456,7 +474,7 @@ class IPv4(IP):
         """
         if self.mask > other.mask:
             return False
-        m = ((1L << self.mask) - 1L) << (32L - self.mask)
+        m = ((1 << self.mask) - 1) << (32 - self.mask)
         return (self.d & m) == (other.d & m)
 
     @property
@@ -465,7 +483,7 @@ class IPv4(IP):
         Returns new IPv4 instance in normalized minimal possible form
         :return:
         """
-        return self._to_prefix(self.d & ((1L << self.mask) - 1L) << (32L - self.mask), self.mask)
+        return self._to_prefix(self.d & ((1 << self.mask) - 1) << (32 - self.mask), self.mask)
 
     def set_mask(self, mask=32):
         """
@@ -518,6 +536,15 @@ class IPv4(IP):
                 first = nfirst
         return r
 
+    @staticmethod
+    def expand(addr):
+        """
+        IPv6.expand compatibility stub
+        :param addr:
+        :return:
+        """
+        return addr
+
 
 class IPv6(IP):
     """
@@ -555,7 +582,7 @@ class IPv6(IP):
             parts = parts[:-1] + ["%02x%02x" % (p[0], p[1]),
                                   "%02x%02x" % (p[2], p[3])]
         if len(parts) == 8:
-            parts = [p if p else "0" for p in parts]
+            parts = [pp if pp else "0" for pp in parts]
         else:
             # Expand ::
             i = parts.index("")
@@ -566,7 +593,7 @@ class IPv6(IP):
                 i += 1
             t = parts[i + 1:]
             parts = h + ["0"] * (8 - len(h) - len(t)) + t
-        return [int(p, 16) for p in parts]
+        return [int(pp, 16) for pp in parts]
 
     @staticmethod
     def mask_to_bits(mask):
@@ -594,7 +621,7 @@ class IPv6(IP):
                 masks += [0xffffffff]
                 mask -= 32
             else:
-                masks += [((1L << mask) - 1L) << (32L - mask)]
+                masks += [((1 << mask) - 1) << (32 - mask)]
                 mask = 0
         masks += [0] * (4 - len(masks))
         return masks
@@ -628,13 +655,13 @@ class IPv6(IP):
             except ValueError:
                 break
             s = i
-            l = 1
-            while s + l < len(r) and r[s + l] == 0:
-                l += 1
-            if l > ll:
+            ln = 1
+            while s + ln < len(r) and r[s + ln] == 0:
+                ln += 1
+            if ln > ll:
                 lp = s
-                ll = l
-            cp = s + l
+                ll = ln
+            cp = s + ln
         if ll:
             h = r[:lp]
             t = r[lp + ll:]
@@ -656,9 +683,9 @@ class IPv6(IP):
         :param other:
         :return:
         """
-        return (self.afi == other.afi and self.d0 == other.d0
-                and self.d1 == other.d1 and self.d2 == other.d2
-                and self.d3 == other.d3 and self.mask == other.mask)
+        return (self.afi == other.afi and self.d0 == other.d0 and
+                self.d1 == other.d1 and self.d2 == other.d2 and
+                self.d3 == other.d3 and self.mask == other.mask)
 
     def __ne__(self, other):
         """
@@ -666,9 +693,9 @@ class IPv6(IP):
         :param other:
         :return:
         """
-        return (self.d0 != other.d0 or self.d1 != other.d1
-                or self.d2 != other.d2 or self.d3 != other.d3
-                or self.mask != other.mask)
+        return (self.d0 != other.d0 or self.d1 != other.d1 or
+                self.d2 != other.d2 or self.d3 != other.d3 or
+                self.mask != other.mask)
 
     def __lt__(self, other):
         """
@@ -861,6 +888,30 @@ class IPv6(IP):
         r = self.digits[origin_len:]
         r.reverse()
         return ".".join(r)
+
+    @staticmethod
+    def expand(addr):
+        """
+        Expand :: with appropriate amount of :0:
+        :param addr:
+        :return: Expanded address as string
+        """
+        ni = addr.find("::")
+        if ni < 0:
+            return addr
+        lp = addr.count(":", 0, ni)
+        if ni > 0:
+            lp += 1
+        rp = addr.count(":", ni + 2)
+        if ni + 2 < len(addr):
+            rp += 1
+        np = lp + rp
+        xs = ":".join(["0"] * (8 - np))
+        if lp:
+            xs = ":%s" % xs
+        if rp:
+            xs = "%s:" % xs
+        return addr.replace("::", xs)
 
 
 class PrefixDB(object):

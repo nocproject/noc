@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # AdministrativeDomain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,17 +14,20 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
+from noc.config import config
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.datastream.decorator import datastream
 
 
 id_lock = Lock()
 
 
 @bi_sync
+@datastream
 @on_delete_check(check=[
     ("cm.ObjectNotify", "administrative_domain"),
     # ("fm.EscalationItem", "administrative_domain"),
@@ -32,7 +35,8 @@ id_lock = Lock()
     ("sa.ManagedObject", "administrative_domain"),
     ("sa.ManagedObjectSelector", "filter_administrative_domain"),
     ("sa.UserAccess", "administrative_domain"),
-    ("sa.AdministrativeDomain", "parent")
+    ("sa.AdministrativeDomain", "parent"),
+    ("phone.PhoneNumber", "administrative_domain")
 ])
 class AdministrativeDomain(models.Model):
     """
@@ -61,11 +65,12 @@ class AdministrativeDomain(models.Model):
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.BigIntegerField(null=True, blank=True)
+    bi_id = models.BigIntegerField(unique=True)
 
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
@@ -75,10 +80,24 @@ class AdministrativeDomain(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return AdministrativeDomain.objects.get(id=id)
-        except AdministrativeDomain.DoesNotExist:
+        ad = AdministrativeDomain.objects.filter(id=id)[:1]
+        if ad:
+            return ad[0]
+        else:
             return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        ad = AdministrativeDomain.objects.filter(bi_id=id)[:1]
+        if ad:
+            return ad[0]
+        else:
+            return None
+
+    def iter_changed_datastream(self):
+        if config.datastream.enable_administrativedomain:
+            yield "administrativedomain", self.id
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):

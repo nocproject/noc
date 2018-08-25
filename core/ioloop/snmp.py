@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SNMP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ import six
 # NOC modules
 from noc.core.snmp.version import SNMP_v2c
 from noc.core.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
-                               parse_get_response)
+                               parse_get_response, parse_get_response_raw)
 from noc.core.snmp.set import set_pdu
 from noc.core.snmp.error import (NO_ERROR, NO_SUCH_NAME,
                                  SNMPError, TIMED_OUT, UNREACHABLE)
@@ -34,7 +34,8 @@ def snmp_get(address, oids, port=161,
              timeout=10,
              tos=None,
              ioloop=None,
-             udp_socket=None):
+             udp_socket=None,
+             raw_varbinds=False):
     """
     Perform SNMP get request and returns Future to be used
     inside @tornado.gen.coroutine
@@ -73,7 +74,10 @@ def snmp_get(address, oids, port=161,
             sock.settimeout(prev_timeout)
         else:
             sock.close()
-    resp = parse_get_response(data)
+    if raw_varbinds:
+        resp = parse_get_response_raw(data)
+    else:
+        resp = parse_get_response(data)
     if resp.error_status == NO_ERROR:
         # Success
         if oid_map:
@@ -233,7 +237,9 @@ def snmp_getnext(address, oid, port=161,
                  only_first=False,
                  tos=None,
                  ioloop=None,
-                 udp_socket=None):
+                 udp_socket=None,
+                 max_retries=0,
+                 raw_varbinds=False):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
     inside @tornado.gen.coroutine
@@ -258,6 +264,7 @@ def snmp_getnext(address, oid, port=161,
     else:
         sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
+    last_oid = None
     while True:
         # Get PDU
         if bulk:
@@ -273,8 +280,11 @@ def snmp_getnext(address, oid, port=161,
             yield sock.sendto(pdu, (address, port))
             data, addr = yield sock.recvfrom(4096)
         except socket.timeout:
-            close_socket()
-            raise SNMPError(code=TIMED_OUT, oid=oid)
+            if not max_retries:
+                close_socket()
+                raise SNMPError(code=TIMED_OUT, oid=oid)
+            max_retries -= 1
+            continue
         except socket.gaierror as e:
             logger.debug("[%s] Cannot resolve address: %s", address, e)
             close_socket()
@@ -284,7 +294,10 @@ def snmp_getnext(address, oid, port=161,
             close_socket()
             raise SNMPError(code=UNREACHABLE, oid=oid)
         # Parse response
-        resp = parse_get_response(data)
+        if raw_varbinds:
+            resp = parse_get_response_raw(data)
+        else:
+            resp = parse_get_response(data)
         if resp.error_status == NO_SUCH_NAME:
             # NULL result
             break
@@ -295,10 +308,11 @@ def snmp_getnext(address, oid, port=161,
         else:
             # Success value
             for oid, v in resp.varbinds:
-                if oid.startswith(poid) and not (only_first and result):
+                if oid.startswith(poid) and not (only_first and result) and oid != last_oid:
                     # Next value
                     if filter(oid, v):
                         result += [(oid, v)]
+                    last_oid = oid
                 else:
                     logger.debug("[%s] GETNEXT result: %s",
                                  address, result)
@@ -322,7 +336,7 @@ def snmp_set(address, varbinds, port=161,
     logger.debug("[%s] SNMP SET %s", address, varbinds)
     if udp_socket:
         sock = udp_socket
-        prev_timeout = sock.get_timeout()
+        prev_timeout = sock.get_timeout()  # noqa
     else:
         sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)

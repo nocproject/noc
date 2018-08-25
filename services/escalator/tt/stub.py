@@ -8,6 +8,7 @@
 
 # Python modules
 import uuid
+import logging
 # NOC modules
 from noc.core.tt.base import BaseTTSystem
 
@@ -20,6 +21,7 @@ class StubTTSystem(BaseTTSystem):
     promote_group_tt = True
 
     def __init__(self, name, connection):
+        self.logger = logging.getLogger("StubTTSystem.%s" % name)
         pass
 
     def create_tt(self, queue, obj, reason=None,

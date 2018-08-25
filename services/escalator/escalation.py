@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # Escalation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2018, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
-import cachetools
 import datetime
 import operator
 import threading
@@ -24,11 +23,11 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
-from noc.core.span import Span, PARENT_SAMPLE, get_current_span
+from noc.core.span import Span, PARENT_SAMPLE
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         r = []
         for k in summary:
             p = model.get_by_id(k.profile)
-            if not p or getattr(p, "show_in_summary", True) == False:
+            if not p or getattr(p, "show_in_summary", True) is False:
                 continue
             r += [{
                 "profile": p.name,
@@ -75,7 +74,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         metrics["escalation_alarm_is_not_root"] += 1
         return
     #
-    escalation = escalation_cache[escalation_id]
+    escalation = AlarmEscalation.get_by_id(escalation_id)
     if not escalation:
         log("Escalation %s is not found, skipping",
             escalation_id)
@@ -113,16 +112,16 @@ def escalate(alarm_id, escalation_id, escalation_delay,
             # @todo: Move into escalator service
             # @todo: Process per-ttsystem limits
             ets = datetime.datetime.now() - datetime.timedelta(seconds=config.escalator.ets)
-            ae = ActiveAlarm._get_collection().find({
+            ae = ActiveAlarm._get_collection().count_documents({
                 "escalation_ts": {
                     "$gte": ets
                 }
-            }).count()
-            ae += ArchivedAlarm._get_collection().find({
+            })
+            ae += ArchivedAlarm._get_collection().count_documents({
                 "escalation_ts": {
                     "$gte": ets
                 }
-            }).count()
+            })
             if ae >= config.escalator.tt_escalation_limit:
                 logger.error(
                     "Escalation limit exceeded (%s/%s). Skipping",
@@ -178,7 +177,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                     )
                 else:
                     pre_reason = escalation.get_pre_reason(mo.tt_system)
-                    active_maintenance = Maintainance.get_object_maintenance(mo)
+                    active_maintenance = Maintenance.get_object_maintenance(mo)
                     if active_maintenance:
                         for m in active_maintenance:
                             log("Object is under maintenance: %s (%s-%s)",
@@ -263,7 +262,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                     # Notify consequences
                     for ca in cons_escalated:
                         c_tt_name, c_tt_id = ca.escalation_tt.split(":")
-                        cts = tt_system_id_cache[c_tt_name]
+                        cts = TTSystem.get_by_name(c_tt_name)
                         if cts:
                             tts = cts.get_system()
                             try:
@@ -286,7 +285,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                                 ca.escalation_tt)
                             metrics["escalation_tt_comment_fail"] += 1
             # Send notification
-            if a.notification_group:
+            if a.notification_group and mo.can_notify():
                 subject = a.template.render_subject(**ctx)
                 body = a.template.render_body(**ctx)
                 logger.debug("[%s] Notification message:\nSubject: %s\n%s",
@@ -333,7 +332,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
             return
         with Span(client="escalator", sample=PARENT_SAMPLE):
             c_tt_name, c_tt_id = tt_id.split(":")
-            cts = tt_system_id_cache[c_tt_name]
+            cts = TTSystem.get_by_name(c_tt_name)
             if cts:
                 tts = cts.get_system()
                 if close_tt:
@@ -354,6 +353,10 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                         metrics["escalation_tt_close_retry"] += 1
                         Job.retry_after(get_next_retry(), str(e))
                         cts.register_failure()
+                        if alarm:
+                            alarm.set_escalation_close_error(
+                                "[%s] %s" % (alarm.managed_object.tt_system.name, e)
+                            )
                     except TTError as e:
                         log("Failed to close tt %s: %s",
                             tt_id, e)
@@ -382,42 +385,13 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                     tt_id)
                 metrics["escalation_tt_comment_fail"] += 1
     if notification_group_id:
-        notification_group = notification_group_cache[notification_group_id]
+        notification_group = NotificationGroup.get_by_id(notification_group_id)
         if notification_group:
             log("Sending notification to group %s", notification_group.name)
             notification_group.notify(subject, body)
             metrics["escalation_notify"] += 1
         else:
             log("Invalid notification group %s", notification_group_id)
-
-
-def get_item(model, **kwargs):
-    if not id:
-        return None
-    try:
-        return model.objects.get(**kwargs)
-    except model.DoesNotExist:
-        return None
-
-
-TTL = 60
-CACHE_SIZE = 256
-
-escalation_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(AlarmEscalation, id=x)
-)
-
-tt_system_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, id=x)
-)
-
-tt_system_id_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, name=x)
-)
-
-notification_group_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(NotificationGroup, id=x)
-)
 
 
 def get_next_retry():

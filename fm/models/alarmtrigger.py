@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmTrigger
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,11 +13,10 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
-from noc.main.models.pyrule import PyRule
 
 
 class AlarmTrigger(models.Model):
-    class Meta:
+    class Meta(object):
         db_table = "fm_alarmtrigger"
         app_label = "fm"
         verbose_name = "Alarm Trigger"
@@ -25,6 +24,9 @@ class AlarmTrigger(models.Model):
 
     name = models.CharField("Name", max_length=64, unique=True)
     is_enabled = models.BooleanField("Is Enabled", default=True)
+    description = models.CharField(
+        "Description",
+        max_length=256, null=True, blank=True)
     alarm_class_re = models.CharField("Alarm class RE", max_length=256)
     condition = models.CharField("Condition", max_length=256, default="True")
     time_pattern = models.ForeignKey(TimePattern,
@@ -39,10 +41,8 @@ class AlarmTrigger(models.Model):
     template = models.ForeignKey(Template,
                                  verbose_name="Template",
                                  null=True, blank=True)
-    pyrule = models.ForeignKey(PyRule,
-                               verbose_name="pyRule",
-                               null=True, blank=True,
-                               limit_choices_to={"interface": "IAlarmTrigger"})
+    handler = models.CharField("Handler",
+                               max_length=128, null=True, blank=True)
 
     def __unicode__(self):
         return "%s <<<%s>>>" % (self.alarm_class_re, self.condition)

@@ -78,6 +78,18 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     allowBlank: false
                 },
                 {
+                    name: "user_search_dn",
+                    xtype: "textfield",
+                    fieldLabel: __("User_DN"),
+                    allowBlank: true
+                },
+                {
+                    name: "group_search_dn",
+                    xtype: "textfield",
+                    fieldLabel: __("Group_DN"),
+                    allowBlank: true
+                },
+                {
                     name: "user_search_filter",
                     xtype: "textfield",
                     fieldLabel: __("User Search Filter"),

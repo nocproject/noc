@@ -21,6 +21,7 @@ class AlarmDiagnostic(Document):
     meta = {
         "collection": "noc.alarmdiagnostic",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "alarm"
         ]

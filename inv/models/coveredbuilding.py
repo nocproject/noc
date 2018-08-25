@@ -19,6 +19,7 @@ class CoveredBuilding(Document):
     meta = {
         "collection": "noc.coveredbuildings",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["building", "coverage"]
     }
     coverage = PlainReferenceField(Coverage)

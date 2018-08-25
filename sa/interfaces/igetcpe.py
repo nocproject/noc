@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # IGetCPE - interface to query ARP cache
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from __future__ import absolute_import
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from base import (StringParameter, InterfaceNameParameter,
-                  IPv4Parameter, MACAddressParameter, DictListParameter,
-                  FloatParameter)
+from .base import (StringParameter, InterfaceNameParameter,
+                   IPv4Parameter, MACAddressParameter, DictListParameter,
+                   IntParameter)
 
 
 class IGetCPE(BaseInterface):
@@ -32,7 +33,9 @@ class IGetCPE(BaseInterface):
         * docsis - DOCSIS cable modem
         * other - all other typesu8
     * interface - controller's physical interface leading to CPE
+    * vendor - CPE vendor
     * model - CPE model
+    * version - CPE os version
     * serial - CPE serial number
     * ip - CPE IP
     * mac - CPE mac
@@ -61,12 +64,14 @@ class IGetCPE(BaseInterface):
             "other"
         ]),
         "interface": InterfaceNameParameter(required=False),
+        "vendor": StringParameter(required=False),
         "model": StringParameter(required=False),
+        "version": StringParameter(required=False),
         "serial": StringParameter(required=False),
         "ip": IPv4Parameter(required=False),
         "mac": MACAddressParameter(required=False),
         "modulation": StringParameter(required=False),
         "description": StringParameter(required=False),
         "location": StringParameter(required=False),
-        "distance": FloatParameter(required=False)
+        "distance": IntParameter(required=False)
     })

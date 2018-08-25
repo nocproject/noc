@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 //  Inspector abstract class
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug('Defining NOC.inv.map.inspectors.Inspector');
@@ -17,18 +17,20 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
     defaults: {
         padding: 4
     },
+    inspectorName: undefined,
 
-    preview: function(name, segmentId, objectId) {
-        var url = '/inv/map/' + segmentId + '/info/' + name + '/';
+    getDataURL: function(segmentId, objectId) {
+        var me = this;
+        return '/inv/map/' + segmentId + '/info/' + me.inspectorName + '/'
+    },
 
-        if(name === 'managedobject' || name === 'link') {
-            url += objectId + '/';
-        }
+    preview: function(segmentId, objectId) {
+        var me = this;
 
         Ext.Ajax.request({
-            url: url,
+            url: me.getDataURL(segmentId, objectId),
             method: "GET",
-            scope: this,
+            scope: me,
             success: function(response) {
                 var values = Ext.decode(response.responseText);
                 this.update(values);

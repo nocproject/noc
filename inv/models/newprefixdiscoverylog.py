@@ -15,6 +15,7 @@ class NewPrefixDiscoveryLog(Document):
     meta = {
         "collection": "noc.log.discovery.prefix.new",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["-timestamp"]
     }
     timestamp = DateTimeField()

@@ -9,6 +9,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 import sys
 import subprocess
@@ -19,45 +20,45 @@ from django.db import connection
 from noc.config import config
 from noc.core.gridvcs.manager import GridVCS
 
-
 HG = config.path.vcs_path
 REPO = config.path.repo
 
 
 def get_hg_revisions(path):
     p = subprocess.Popen([HG, "log", "--template", "{rev} {date}\n", path],
-        stdout=subprocess.PIPE, cwd=REPO)
+                         stdout=subprocess.PIPE, cwd=REPO)
     s = []
-    for l in p.stdout:
-        l = l.strip()
-        if not l:
+    for line in p.stdout:
+        line = line.strip()
+        if not line:
             continue
-        rev, date = l.split()
+        rev, date = line.split()
         if "-" in date:
             date, r = date.split("-", 1)
         s += [(rev, datetime.datetime.fromtimestamp(float(date)))]
     s.reverse()
     return s
 
+
 def get_hg_revision(path, revision):
     p = subprocess.Popen([HG, "cat", "-r", revision, path],
-        stdout=subprocess.PIPE, cwd=REPO)
+                         stdout=subprocess.PIPE, cwd=REPO)
     return p.stdout.read()
 
 
 def get_hg_files():
     p = subprocess.Popen([HG, "locate"],
-        stdout=subprocess.PIPE, cwd=REPO)
+                         stdout=subprocess.PIPE, cwd=REPO)
     return [l.strip() for l in p.stdout.readlines()]
 
 
 def import_file(repo, id, path):
-    print "Imporing %s:" % path,
+    print("Imporing %s:" % path)
     for rev, date in get_hg_revisions(path):
-        print "r%s " % rev,
+        print("r%s " % rev)
         data = get_hg_revision(path, rev)
         GRIDVCS.put(id, data, ts=date)
-    print
+    print()
 
 
 def migrate_dns():
@@ -76,6 +77,7 @@ def migrate_config():
     for id, path in c:
         if path in files:
             import_file("config", id, path)
+
 
 if __name__ == "__main__":
     repo = sys.argv[1]

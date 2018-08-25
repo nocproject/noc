@@ -18,7 +18,7 @@ class Script(BaseScript):
     sec_mode = re.compile(r".+?: (?P<mode>multiple|single|noconfirm)\s+", re.MULTILINE | re.DOTALL)
 
     @false_on_cli_error
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         caps["Cisco | ASA | Security | Context | Mode"] = "nosupport"
         v = self.cli("show mode")
         if "Invalid input detected at" not in v:

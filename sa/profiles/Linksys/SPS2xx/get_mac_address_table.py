@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -31,7 +32,7 @@ class Script(BaseScript):
                 if mac is not None:
                     mac = mac.lower()
                 for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"]):
-                        vlan_oid.append(v[0])
+                    vlan_oid.append(v[0])
                 # mac iface type
                 for v in self.snmp.get_tables(["1.3.6.1.2.1.17.4.3.1.1",
                                                "1.3.6.1.2.1.17.4.3.1.2",
@@ -45,7 +46,7 @@ class Script(BaseScript):
                                 continue
                     else:
                         continue
-                    if int(v[3]) > 3 or int(v[3]) < 1:
+                    if (not is_int(v[3])) or (int(v[3]) > 3 or int(v[3]) < 1):
                         continue
                     iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + str(v[2]))  # IF-MIB
                     if interface is not None:
@@ -68,7 +69,7 @@ class Script(BaseScript):
                         "mac": chassis,
                         "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
                         "vlan_id": vlan_id,
-                        })
+                    })
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -85,23 +86,27 @@ class Script(BaseScript):
                     continue
                 if interface is not None:
                     if interfaces == interface:
-                        r += [{"vlan_id": match.group("vlan_id"),
-                               "mac": match.group("mac"),
-                               "interfaces": [interfaces],
-                               "type": {
-                                   "dynamic": "D",
-                                   "static": "S",
-                                   "permanent": "S",
-                                   "self": "S"}[match.group("type").lower()],
-                               }]
+                        r += [{
+                            "vlan_id": match.group("vlan_id"),
+                            "mac": match.group("mac"),
+                            "interfaces": [interfaces],
+                            "type": {
+                                "dynamic": "D",
+                                "static": "S",
+                                "permanent": "S",
+                                "self": "S"
+                            }[match.group("type").lower()]
+                        }]
                 else:
-                    r += [{"vlan_id": match.group("vlan_id"),
-                           "mac": match.group("mac"),
-                           "interfaces": [interfaces],
-                           "type": {
-                               "dynamic": "D",
-                               "static": "S",
-                               "permanent": "S",
-                               "self": "S"}[match.group("type").lower()],
-                           }]
+                    r += [{
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [interfaces],
+                        "type": {
+                            "dynamic": "D",
+                            "static": "S",
+                            "permanent": "S",
+                            "self": "S"
+                        }[match.group("type").lower()]
+                    }]
         return r

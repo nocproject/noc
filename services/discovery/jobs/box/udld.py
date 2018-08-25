@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.discoveryid import DiscoveryID
 
 
@@ -21,7 +22,12 @@ class UDLDCheck(TopologyDiscoveryCheck):
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_udld_neighbors()
-        for n in result["neighbors"]:
+        d = DiscoveryID.objects.filter(object=self.object.id).first()
+        local_id = d.udld_id if d and d.udld_id else None
+        for n in result:
+            if local_id != n["local_device"]:
+                DiscoveryID.update_udld_id(self.object, n["local_device"])
+                local_id = n["local_device"]
             yield (
                 n["local_interface"],
                 n["remote_device"],
@@ -29,4 +35,8 @@ class UDLDCheck(TopologyDiscoveryCheck):
             )
 
     def get_neighbor(self, device_id):
-        return DiscoveryID.get_by_udld_id(device_id)
+        r = DiscoveryID.get_by_udld_id(device_id)
+        if r:
+            return ManagedObject.get_by_id(r["object"])
+        else:
+            return None

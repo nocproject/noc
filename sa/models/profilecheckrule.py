@@ -25,6 +25,7 @@ class ProfileCheckRule(Document):
     meta = {
         "collection": "noc.profilecheckrules",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "sa.profilecheckrules",
         "json_depends_on": [
             "sa.profile"

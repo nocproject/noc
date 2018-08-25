@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     ]
     pattern_username = "^[Pp]lease [Ll]ogin:"
     pattern_password = "^[Pp]assword:"
-    pattern_unpriveleged_prompt = r"^\S*>"
+    pattern_unprivileged_prompt = r"^\S*>"
     pattern_prompt = r"^\S*#"
     command_more = "\n"
     command_submit = "\n"

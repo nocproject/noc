@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import sys
 import re
 import logging
@@ -20,7 +21,7 @@ import uuid
 import ujson
 # NOC modules
 from noc.config import config
-from noc.lib.version import get_branch, get_tip
+from noc.core.version import version
 from noc.core.fileutils import safe_rewrite
 from noc.core.perf import metrics
 
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig()
 
+rx_coding = re.compile(r"coding[:=]\s*([-\w.]+)")
 
 # CP error reporting
 ENABLE_CP = config.features.cp
@@ -45,7 +47,7 @@ if config.features.sentry:
         processors=(
             'raven.processors.SanitizePasswordsProcessor',
         ),
-        release=get_tip()
+        release=version.version
     )
 
 
@@ -76,7 +78,7 @@ def get_lines_from_file(filename, lineno, context_lines,
     for line in source[:2]:
         # File coding may be specified. Match pattern from PEP-263
         # (http://www.python.org/dev/peps/pep-0263/)
-        match = re.search(r"coding[:=]\s*([-\w.]+)", line)
+        match = rx_coding.search(line)
         if match:
             encoding = match.group(1)
             break
@@ -195,7 +197,7 @@ def format_frames(frames, reverse=config.traceback.reverse):
                     pv = unicode(repr(v), "utf-8")
                     if len(pv) > 72:
                         pv = u"\n" + pprint.pformat(v)
-                except:
+                except:  # noqa
                     pv = u"repr() failed"
                 r += [u"%20s = %s" % (n, pv)]
         else:
@@ -208,11 +210,14 @@ def format_frames(frames, reverse=config.traceback.reverse):
 def check_fatal_errors(t, v):
     def die(msg, *args, **kwargs):
         logger.error(msg, *args, **kwargs)
+        logger.error("Exiting due to fatal error")
         os._exit(1)
 
     xn = "%s.%s" % (t.__module__, t.__name__)
     if xn == "pymongo.errors.AutoReconnect":
-        die("Failed to connect MongoDB: %s", v)
+        die("Reconnecting to MongoDB: %s", v)
+    elif xn == "pymongo.errors.ServerSelectionTimeoutError":
+        die("Cannot select MongoDB master: %s", v)
     elif xn == "django.db.utils.DatabaseError" and "server closed" in v:
         die("Failed to connect PostgreSQL: %s", v)
     elif xn == "psycopg2.InterfaceError" and "connection already closed" in v:
@@ -229,21 +234,18 @@ def get_traceback(reverse=config.traceback.reverse, fp=None):
     t, v, tb = sys.exc_info()
     try:
         check_fatal_errors(t, v)
-    except:
-        pass  # Ignore exceptions
+    except:  # noqa
+        pass  # noqa Ignore exceptions
     now = datetime.datetime.now()
-    try:
-        branch = get_branch()
-        tip = get_tip()
-    except:
-        # We cannot get branch and tip on "Too many open files" error
-        branch = "unknown"
-        tip = "unknown"
     r = [
         "UNHANDLED EXCEPTION (%s)" % str(now),
-        "BRANCH: %s TIP: %s" % (branch, tip),
-        "PROCESS: %s" % sys.argv[0]
+        "PROCESS: %s" % version.process,
+        "VERSION: %s" % version.version
     ]
+    if version.branch:
+        r += [
+            "BRANCH: %s CHANGESET: %s" % (version.branch, version.changeset)
+        ]
     if fp:
         r += ["ERROR FINGERPRINT: %s" % fp]
     r += [
@@ -264,6 +266,8 @@ def excepthook(t, v, tb):
     """
     Override default exception handler
     """
+    import datetime  # Required for pytest
+    import sys
     now = datetime.datetime.now()
     r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
     r += ["Working directory: %s" % os.getcwd()]
@@ -301,8 +305,10 @@ def error_report(reverse=config.traceback.reverse, logger=logger):
                 "uuid": fp,
                 # "installation": None,
                 "process": SERVICE_NAME,
-                "branch": get_branch(),
-                "tip": get_tip(),
+                "version": version.version,
+                "branch": version.branch,
+                "tip": version.changeset,
+                "changeset": version.changeset,
                 "traceback": r
             }
             try:
@@ -351,7 +357,7 @@ def error_fingerprint():
             noc_lineno = tb_lineno
         tb = tb.tb_next
     parts = [
-        get_branch(),
+        version.branch,
         SERVICE_NAME,  # Process
         str(t),  # Exception class
         noc_file, noc_function, str(noc_lineno),  # NOC code point
@@ -368,11 +374,11 @@ def dump_stacks(thread_id=None):
     for tid, stack in sys._current_frames().items():
         if thread_id and tid != thread_id:
             continue
-        print "[THREAD #%s]" % tid
+        print("[THREAD #%s]" % tid)
         for filename, lineno, name, line in traceback.extract_stack(stack):
-            print "File: '%s', line %d, in %s" % (filename, lineno, name)
+            print("File: '%s', line %d, in %s" % (filename, lineno, name))
             if line:
-                print "    %s" % line.strip()
+                print("    %s" % line.strip())
 
 
 def BQ(s):
@@ -390,3 +396,19 @@ def BQ(s):
         return unicode(s)
     except UnicodeDecodeError:
         return "(%s)" % " ".join(["%02X" % ord(c) for c in s])
+
+
+class ErrorReport(object):
+    """
+    error_report context wrapper
+    """
+    def __init__(self, reverse=config.traceback.reverse, logger=logger):
+        self.reverse = reverse
+        self.logger = logger
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            error_report(self.reverse, self.logger)

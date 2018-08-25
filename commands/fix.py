@@ -13,10 +13,12 @@ import os
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
+from noc.config import config
 
 
 class Command(BaseCommand):
-    FIX_DIRS = ["custom/fixes", "fixes"]
+
+    FIX_DIRS = config.get_customized_paths("fixes")
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -65,7 +67,7 @@ class Command(BaseCommand):
     def handle_apply(self, fixes=None, *args, **options):
         if not fixes:
             return
-        import noc.lib.nosql  # Connect to mongo
+        import noc.lib.nosql  # noqa Connect to mongo
         for f in fixes:
             fix = self.get_fix(f)
             if not fix:

@@ -64,46 +64,46 @@ msgstr ""
 msgid "Loading ..."
 msgstr "Carregando ..."
 
-#: services/card/templates/maintainance.html.j2:9
+#: services/card/templates/maintenance.html.j2:9
 msgid "Type"
 msgstr "Tipo"
 
-#: services/card/templates/maintainance.html.j2:13
+#: services/card/templates/maintenance.html.j2:13
 msgid "Date"
 msgstr "Data"
 
 #: services/card/templates/alarm.html.j2:76
-#: services/card/templates/maintainance.html.j2:17
-#: services/card/templates/maintainance.html.j2:36
+#: services/card/templates/maintenance.html.j2:17
+#: services/card/templates/maintenance.html.j2:36
 #: services/card/templates/managedobject.html.j2:65
 #: services/card/templates/service.html.j2:72
 #: services/card/templates/tt.html.j2:34
 msgid "Services"
 msgstr "Serviços"
 
-#: services/card/templates/maintainance.html.j2:21
+#: services/card/templates/maintenance.html.j2:21
 #: services/card/templates/managedobject.html.j2:89
 #: services/card/templates/tt.html.j2:65
 msgid "Description"
 msgstr "Descrição"
 
-#: services/card/templates/maintainance.html.j2:25
+#: services/card/templates/maintenance.html.j2:25
 #: services/card/templates/service.html.j2:110
 msgid "Contacts"
 msgstr "Contatos"
 
-#: services/card/templates/maintainance.html.j2:29
+#: services/card/templates/maintenance.html.j2:29
 msgid "Affected objects"
 msgstr "Objetos afetados"
 
 #: services/card/templates/alarm.html.j2:21
 #: services/card/templates/alarm.html.j2:78
-#: services/card/templates/maintainance.html.j2:33
+#: services/card/templates/maintenance.html.j2:33
 #: services/card/templates/tt.html.j2:31
 msgid "Object"
 msgstr "Objeto"
 
-#: services/card/templates/maintainance.html.j2:35
+#: services/card/templates/maintenance.html.j2:35
 #: services/card/templates/managedobject.html.j2:72
 msgid "IP"
 msgstr ""
@@ -183,7 +183,7 @@ msgstr ""
 msgid "Errors"
 msgstr "Erros"
 
-#: services/card/templates/maintainance.html.j2:34
+#: services/card/templates/maintenance.html.j2:34
 #: services/card/templates/managedobject.html.j2:60
 #: services/card/templates/managedobject.html.j2:104
 #: services/card/templates/object.html.j2:15
@@ -225,7 +225,7 @@ msgstr ""
 
 #: services/card/templates/managedobject.html.j2:13
 #: services/card/templates/service.html.j2:48
-msgid "Maintainance"
+msgid "Maintenance"
 msgstr "Manutenção"
 
 #: services/card/templates/managedobject.html.j2:19

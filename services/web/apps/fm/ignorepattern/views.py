@@ -33,13 +33,14 @@ class IgnorePatternApplication(ExtDocApplication):
         event = get_event(event_id)
         if not event:
             self.response_not_found()
-        data = { "is_active": True }
-        if event.raw_vars["source"] == "syslog":
+        data = {"is_active": True}
+        if event.source == "syslog":
             data["description"] = event.raw_vars["message"]
             data["source"] = "syslog"
-        elif (event.raw_vars["source"] == "SNMP Trap" and
+        elif (event.source == "SNMP Trap" and
               "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
             data["source"] = "SNMP Trap"
-        data["pattern"] = event.raw_vars["message"]
+        if "message" in event.raw_vars:
+            data["pattern"] = event.raw_vars["message"]
         return data

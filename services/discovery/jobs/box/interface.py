@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.service.rpc import RPCError
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -27,30 +28,34 @@ class InterfaceCheck(DiscoveryCheck):
     def __init__(self, *args, **kwargs):
         super(InterfaceCheck, self).__init__(*args, **kwargs)
         self.get_interface_profile = InterfaceClassificationRule.get_classificator()
+        self.interface_macs = set()
+        self.seen_interfaces = []
+        self.vrf_artefact = {}  # name -> {name:, type:, rd:}
+        self.prefix_artefact = {}
+        self.interface_prefix_artefact = []
 
     def handler(self):
         self.logger.info("Checking interfaces")
         result = self.object.scripts.get_interfaces()
-        self.seen_interfaces = []
         # Process forwarding instances
         for fi in result:
+            vpn_id = fi.get("vpn_id")
             # Apply forwarding instance
             forwarding_instance = self.submit_forwarding_instance(
                 name=fi["forwarding_instance"],
                 type=fi["type"],
                 rd=fi.get("rd"),
-                vr=fi.get("vr")
+                vr=fi.get("vr"),
+                vpn_id=vpn_id
             )
             # Move LAG members to the end
             # for effective caching
-            in_lag = lambda x: ("aggregated_interface" in x and
-                                bool(x["aggregated_interface"]))
-            ifaces = sorted(fi["interfaces"], key=in_lag)
+            ifaces = sorted(fi["interfaces"], key=self.in_lag)
             icache = {}
             for i in ifaces:
                 # Get LAG
                 agg = None
-                if in_lag(i):
+                if self.in_lag(i):
                     agg = icache.get(i["aggregated_interface"])
                     if not agg:
                         self.logger.error(
@@ -60,8 +65,9 @@ class InterfaceCheck(DiscoveryCheck):
                         )
                         continue
                 # Submit discovered interface
+                mac = i.get("mac")
                 iface = self.submit_interface(
-                    name=i["name"], type=i["type"], mac=i.get("mac"),
+                    name=i["name"], type=i["type"], mac=mac,
                     description=i.get("description"),
                     aggregated_interface=agg,
                     enabled_protocols=i.get("enabled_protocols", []),
@@ -72,7 +78,8 @@ class InterfaceCheck(DiscoveryCheck):
                 for si in i["subinterfaces"]:
                     self.submit_subinterface(
                         forwarding_instance=forwarding_instance,
-                        interface=iface, name=si["name"],
+                        interface=iface,
+                        name=si["name"],
                         description=si.get("description"),
                         mac=si.get("mac", i.get("mac")),
                         vlan_ids=si.get("vlan_ids", []),
@@ -88,6 +95,19 @@ class InterfaceCheck(DiscoveryCheck):
                         # ip_unnumbered_subinterface
                         ifindex=si.get("snmp_ifindex")
                     )
+                    addresses = si.get("ipv4_addresses", []) + si.get("ipv6_addresses", [])
+                    if addresses:
+                        rd = forwarding_instance.rd if forwarding_instance else "0:0"
+                        for a in addresses:
+                            self.interface_prefix_artefact += [{
+                                "vpn_id": vpn_id,
+                                "rd": rd,
+                                "address": a,
+                                "subinterface": si["name"],
+                                "description": si.get("description"),
+                                "mac": mac,
+                                "vlan_ids": si.get("vlan_ids", [])
+                            }]
                 # Delete hanging subinterfaces
                 self.cleanup_subinterfaces(
                     forwarding_instance, iface,
@@ -109,8 +129,11 @@ class InterfaceCheck(DiscoveryCheck):
                 managed_object=self.object.id
             ).count()
         }, source="interface")
+        self.set_artefact("interface_macs", self.interface_macs)
+        self.set_artefact("interface_vpn", self.vrf_artefact)
+        self.set_artefact("interface_prefix", self.interface_prefix_artefact)
 
-    def submit_forwarding_instance(self, name, type, rd, vr):
+    def submit_forwarding_instance(self, name, type, rd, vr, vpn_id=None):
         if name == "default":
             return None
         forwarding_instance = ForwardingInstance.objects.filter(
@@ -126,7 +149,7 @@ class InterfaceCheck(DiscoveryCheck):
                 }
             )
             self.log_changes(
-                "Forwarding instance '%s' has been changed",
+                "Forwarding instance '%s' has been changed" % name,
                 changes
             )
         else:
@@ -143,6 +166,12 @@ class InterfaceCheck(DiscoveryCheck):
                 virtual_router=vr
             )
             forwarding_instance.save()
+        self.vrf_artefact[name] = {
+            "name": name,
+            "type": type,
+            "rd": rd,
+            "vpn_id": vpn_id
+        }
         return forwarding_instance
 
     def submit_interface(self, name, type,
@@ -180,6 +209,8 @@ class InterfaceCheck(DiscoveryCheck):
             )
             iface.save()
             self.set_interface(name, iface)
+        if mac:
+            self.interface_macs.add(mac)
         return iface
 
     def submit_subinterface(self, forwarding_instance, interface,
@@ -236,6 +267,8 @@ class InterfaceCheck(DiscoveryCheck):
                 ifindex=ifindex
             )
             si.save()
+        if mac:
+            self.interface_macs.add(mac)
         return si
 
     def cleanup_forwarding_instances(self, fi):
@@ -305,7 +338,13 @@ class InterfaceCheck(DiscoveryCheck):
         """
         if iface.profile_locked:
             return
-        p_id = self.get_interface_profile(iface)
+        try:
+            p_id = self.get_interface_profile(iface)
+        except NotImplementedError:
+            self.logger.error(
+                "Uses not implemented rule"
+            )
+            return
         if p_id and p_id != iface.profile.id:
             # Change profile
             profile = InterfaceProfile.get_by_id(p_id)
@@ -342,7 +381,10 @@ class InterfaceCheck(DiscoveryCheck):
             "Missed ifindexes for: %s",
             ", ".join(missed_ifindexes)
         )
-        r = self.object.scripts.get_ifindexes()
+        try:
+            r = self.object.scripts.get_ifindexes()
+        except RPCError:
+            r = None
         if not r:
             return
         updates = {}
@@ -357,3 +399,7 @@ class InterfaceCheck(DiscoveryCheck):
                 self.logger.info("Set ifindex for %s: %s", n, i)
                 iface.ifindex = i
                 iface.save()  # Signals will be sent
+
+    @staticmethod
+    def in_lag(x):
+        return "aggregated_interface" in x and bool(x["aggregated_interface"])

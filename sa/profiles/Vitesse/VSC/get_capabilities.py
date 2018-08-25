@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -17,30 +15,30 @@ class Script(BaseScript):
     name = "Vitesse.VSC.get_capabilities"
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has LLDP enabled
         """
         return True  # Always global enabled
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
-        cmd = self.cli("show spanning-tree")
+        cmd = self.cli("show spanning-tree", cached=True)
         return " Forwarding " in cmd
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has Ethernet OAM enabled
         """
-        cmd = self.cli("show link-oam")
+        cmd = self.cli("show link-oam", cached=True)
         return "  enabled  " in cmd
 
     @false_on_cli_error
-    def has_ipv6(self):
+    def has_ipv6_cli(self):
         """
         Check box has IPv6 ND enabled
         """

@@ -101,37 +101,37 @@ msgid "Name"
 msgstr "Название"
 
 #: services/card/templates/alarm.html.j2:187
-#: services/card/templates/maintainance.html.j2:13
+#: services/card/templates/maintenance.html.j2:13
 msgid "Date"
 msgstr "Дата"
 
 #: services/card/templates/alarm.html.j2:114
-#: services/card/templates/maintainance.html.j2:17
-#: services/card/templates/maintainance.html.j2:52
+#: services/card/templates/maintenance.html.j2:17
+#: services/card/templates/maintenance.html.j2:52
 #: services/card/templates/managedobject.html.j2:94
 #: services/card/templates/service.html.j2:72
 #: services/card/templates/tt.html.j2:34
 msgid "Services"
 msgstr "Сервисы"
 
-#: services/card/templates/maintainance.html.j2:26
+#: services/card/templates/maintenance.html.j2:26
 #: services/card/templates/managedobject.html.j2:57
 #: services/card/templates/timepattern.html.j2:5
 msgid "Time Pattern"
 msgstr "Интервал времени"
 
 #: services/card/templates/alarm.html.j2:54
-#: services/card/templates/maintainance.html.j2:34
+#: services/card/templates/maintenance.html.j2:34
 msgid "Escalation"
 msgstr "Эскалация"
 
 #: services/card/templates/alarm.html.j2:188
-#: services/card/templates/maintainance.html.j2:41
+#: services/card/templates/maintenance.html.j2:41
 #: services/card/templates/service.html.j2:110
 msgid "Contacts"
 msgstr "Контакты"
 
-#: services/card/templates/maintainance.html.j2:45
+#: services/card/templates/maintenance.html.j2:45
 msgid "Affected objects"
 msgstr "Затронутое оборудование"
 
@@ -227,7 +227,7 @@ msgstr "Дуплекс"
 msgid "Errors"
 msgstr "Ошибки"
 
-#: services/card/templates/maintainance.html.j2:50
+#: services/card/templates/maintenance.html.j2:50
 #: services/card/templates/managedobject.html.j2:89
 #: services/card/templates/managedobject.html.j2:137
 #: services/card/templates/managedobject.html.j2:232
@@ -293,7 +293,7 @@ msgstr "Проект"
 
 #: services/card/templates/dialplan.html.j2:11
 #: services/card/templates/dialplan.html.j2:41
-#: services/card/templates/maintainance.html.j2:21
+#: services/card/templates/maintenance.html.j2:21
 #: services/card/templates/managedobject.html.j2:118
 #: services/card/templates/managedobject.html.j2:235
 #: services/card/templates/phonenumber.html.j2:64
@@ -316,7 +316,7 @@ msgid "Linked Numbers"
 msgstr "Связанные номера"
 
 #: services/card/templates/alarm.html.j2:186
-#: services/card/templates/maintainance.html.j2:9
+#: services/card/templates/maintenance.html.j2:9
 #: services/card/templates/phonenumber.html.j2:89
 #: services/card/templates/phonenumber.html.j2:121
 msgid "Type"
@@ -397,14 +397,14 @@ msgstr "Объекты"
 
 #: services/card/templates/alarm.html.j2:21
 #: services/card/templates/alarm.html.j2:116
-#: services/card/templates/maintainance.html.j2:49
+#: services/card/templates/maintenance.html.j2:49
 #: services/card/templates/segmentalarm.html.j2:4
 #: services/card/templates/tt.html.j2:31
 msgid "Object"
 msgstr "Объект"
 
 #: services/card/templates/alarm.html.j2:117
-#: services/card/templates/maintainance.html.j2:51
+#: services/card/templates/maintenance.html.j2:51
 #: services/card/templates/managedobject.html.j2:101
 #: services/card/templates/segmentalarm.html.j2:5
 msgid "IP"
@@ -433,7 +433,7 @@ msgstr "Сводка"
 
 #: services/card/templates/managedobject.html.j2:13
 #: services/card/templates/service.html.j2:48
-msgid "Maintainance"
+msgid "Maintenance"
 msgstr "РНР"
 
 #: services/card/templates/alarm.html.j2:119

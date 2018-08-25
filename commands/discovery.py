@@ -31,12 +31,13 @@ class Command(BaseCommand):
         "box": [
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri", "udld",
-            "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe",
-            "lacp", "hk", "mac"
+            "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe", "cpestatus",
+            "lacp", "hk", "mac", "bfd", "fdp", "vpn", "prefix", "address",
+            "nri_portmap", "nri_service", "metrics"
         ],
         "periodic": [
             "uptime", "interfacestatus",
-            "mac", "metrics"
+            "mac", "metrics", "cpestatus"
         ]
     }
 
@@ -52,7 +53,7 @@ class Command(BaseCommand):
         )
         run_parser.add_argument(
             "--trace",
-            type=bool,
+            action="store_true",
             default=False,
             help="Trace process"
         )
@@ -150,6 +151,7 @@ class ServiceStub(object):
 
     def register_metrics(self, fields, data):
         self.metrics[fields] += data
+
 
 if __name__ == "__main__":
     Command().run()

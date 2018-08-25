@@ -21,10 +21,13 @@ import cachetools
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
+from noc.core.clickhouse.dictionary import Dictionary
 from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
 from noc.bi.models.span import Span
+from noc.bi.models.managedobjects import ManagedObject
+from noc.bi.models.aggregatedinterface import AggregatedInterface
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
@@ -58,7 +61,9 @@ class BIAPI(API):
     datasources = [
         Reboots,
         Alarms,
-        Span
+        Span,
+        ManagedObject,
+        AggregatedInterface
     ]
 
     _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
@@ -86,6 +91,7 @@ class BIAPI(API):
                 "name": ms.table_name,
                 "description": ms.description,
                 "tags": [],
+                "sample": False,
                 "fields": [
                     {
                         "name": "date",
@@ -109,6 +115,17 @@ class BIAPI(API):
                     "dict": cls.ref_dict.get(k.model, None),
                     "model": k.model
                 }]
+                if cls.ref_dict.get(k.model, None):
+                    for f in Dictionary.get_dictionary_class(cls.ref_dict.get(k.model, None))._fields_order:
+                        r["fields"] += [{
+                            "name": f,
+                            "description": f,
+                            "type": "UInt64",
+                            "ro": True,
+                            "dict": cls.ref_dict.get(k.model, None),
+                            "dict_id": k.field_name,
+                            "model": k.model
+                        }]
             if ms.path:
                 r["fields"] += [{
                     "name": "path",
@@ -128,19 +145,23 @@ class BIAPI(API):
                 "name": model._meta.db_table,
                 "description": model._meta.description,
                 "tags": model._meta.tags,
+                "sample": False,
                 "fields": []
             }
-            for fn in model._fields_order:
-                f = model._fields[fn]
+            for fn in model._display_fields:
+                f = model._display_fields[fn]
                 d = getattr(f, "dict_type", None)
                 if d:
                     d = d._meta.name
                 r["fields"] += [{
                     "name": f.name,
                     "description": _(f.description),
-                    "type": f.db_type,
+                    "type": f.get_db_type(),
+                    "is_agg": f.is_agg,
                     "dict": d
                 }]
+                if hasattr(f, "model"):
+                    r["fields"][-1]["model"] = f.model
             result += [r]
         return result
 
@@ -183,7 +204,7 @@ class BIAPI(API):
         return [
             {
                 "name": ds["name"],
-                "decscription": ds["description"],
+                "description": ds.get("description", ""),
                 "tags": ds["tags"]
             } for ds in self.get_datasources()
         ]
@@ -205,6 +226,7 @@ class BIAPI(API):
         for ds in self.get_datasources():
             if ds["name"] == name:
                 return ds
+        self.service.perf_metrics["error", ("type", "info_invalid_datasource")] += 1
         raise APIError("Invalid datasource")
 
     @executor("query")
@@ -218,9 +240,11 @@ class BIAPI(API):
         :return:
         """
         if "datasource" not in query:
+            self.service.perf_metrics["error", ("type", "query_no_datasource")] += 1
             raise APIError("No datasource")
         model = self.get_model(query["datasource"])
         if not model:
+            self.service.perf_metrics["error", ("type", "query_invalid_datasource")] += 1
             raise APIError("Invalid datasource")
         return model.query(query, self.handler.current_user)
 
@@ -250,7 +274,7 @@ class BIAPI(API):
             aq &= Q(format=str(query["version"]))
         return [{
             "id": str(d.id),
-            "format": str(d.format),
+            "format": int(d.format),
             "title": str(d.title),
             "description": str(d.description),
             "tags": str(d.tags),
@@ -279,6 +303,7 @@ class BIAPI(API):
             elif i.group and i.group.id in groups and i.level >= access_level:
                 return d
         # No access
+        self.service.perf_metrics["error", ("type", "no_permission")] += 1
         raise APIError("User have no permission to access dashboard")
 
     @executor("query")
@@ -293,7 +318,8 @@ class BIAPI(API):
         if d:
             return ujson.loads(zlib.decompress(d.config))
         else:
-            return None
+            self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
+            raise APIError("Dashboard not found")
 
     @executor("query")
     @api
@@ -306,10 +332,12 @@ class BIAPI(API):
         if "id" in config:
             d = self._get_dashboard(config["id"], access_level=1)
             if not d:
+                self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
                 raise APIError("Dashboard not found")
         else:
             d = Dashboard.objects.filter(title=config.get("title")).first()
             if d:
+                self.service.perf_metrics["error", ("type", "bad_dashboard_name")] += 1
                 raise APIError("Dashboard name exists")
             d = Dashboard(id=str(bson.ObjectId()), owner=self.handler.current_user)
         d.format = config.get("format", 1)
@@ -335,6 +363,7 @@ class BIAPI(API):
             d.delete()
             return True
         else:
+            self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
 
     @executor("query")
@@ -369,13 +398,17 @@ class BIAPI(API):
                     sort_children(n)
 
         if "datasource" not in params:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_no_datasource")] += 1
             raise APIError("No datasource")
         if "dic_name" not in params:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_no_dict_name")] += 1
             raise APIError("No dictionary name")
         if "field_name" not in params:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_no_field_name")] += 1
             raise APIError("No field name")
         model = Model.get_model_class(params["datasource"])
         if not model:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_invalid_datasource")] += 1
             raise APIError("Invalid datasource")
         query = {
             "fields": [
@@ -426,7 +459,7 @@ class BIAPI(API):
         tree = {}
         for row in result["result"]:
             names = reversed(map(lambda x: x[1:-1], row[0][1:-1].split(",")))
-            ids = reversed(map(lambda x: int(x), row[1][1:-1].split(",")))
+            ids = reversed(map(lambda x: str(x), row[1][1:-1].split(",")))
             parent_id = None
             for id, text in zip(ids, names):
                 searched = search_parent(tree, parent_id)
@@ -514,17 +547,19 @@ class BIAPI(API):
 
         :param id: Dashboard ID
         :param items: Dictionary rights
-        :param r_filter: User or Group only set
+        :param acc_limit: User or Group only set
         :return:
         """
         self.logger.info("Settings dashboard access")
         d = self._get_dashboard(id)
         if not d:
             self.logger.error("Dashboards not find %s", id)
+            self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
         if d.get_user_access(self.handler.current_user) < DAL_ADMIN:
             self.logger.error("Access for user Dashboards %s", self.handler.current_user)
-            raise APIError("User no permission for set rights")
+            self.service.perf_metrics["error", ("type", "no_permissions_to_set_permissions")] += 1
+            raise APIError("User have no permission to set permissions")
         access = []
         if acc_limit == "user":
             access = list(itertools.ifilter(lambda x: x.user, d.access))
@@ -537,6 +572,7 @@ class BIAPI(API):
             items = I_VALID.clean(items)
         except ValueError as e:
             self.logger.error("Validation items with rights", e)
+            self.service.perf_metrics["error", ("type", "validation")] += 1
             raise APIError("Validation error %s" % e)
         for i in items:
             da = DashboardAccess(level=i.get("level", -1))
@@ -559,6 +595,7 @@ class BIAPI(API):
         :return:
         """
         if not id.get("id"):
+            self.service.perf_metrics["error", ("type", "wrong_json")] += 1
             raise APIError("Not id field in JSON")
         return self._set_dashboard_access(id.get("id"), items.get("items"))
 

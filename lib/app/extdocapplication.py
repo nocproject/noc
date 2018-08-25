@@ -21,15 +21,16 @@ from mongoengine.errors import ValidationError
 from noc.config import config
 from .extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
-                           PlainReferenceField, Q)
+                           PlainReferenceField, Q, DateField)
 from noc.sa.interfaces.base import (
     BooleanParameter, GeoPointParameter,
     ModelParameter, ListOfParameter,
     EmbeddedDocumentParameter, DictParameter,
-    InterfaceTypeError, DocumentParameter)
+    InterfaceTypeError, DocumentParameter, ObjectIdParameter)
 from noc.lib.validators import is_int, is_uuid
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
+from noc.main.models.tag import Tag
 
 
 class ExtDocApplication(ExtApplication):
@@ -38,9 +39,11 @@ class ExtDocApplication(ExtApplication):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
     int_query_fields = []  # Integer fields for exact match
-    clean_fields = {}  # field name -> Parameter instance
+    clean_fields = {"id": ObjectIdParameter()}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
     parent_model = None
+    lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
+    ignored_fields = set(["id", "bi_id"])
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -167,14 +170,16 @@ class ExtDocApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
-        if "id" in data:
-            del data["id"]
-        for f in data:
-            if data[f] == "":
-                data[f] = None
-            elif f in self.clean_fields:
+        # Strip ignored fields and convert empty strings to None
+        data = dict(
+            (str(k), data[k] if data[k] != "" else None)
+            for k in data if k not in self.ignored_fields
+        )
+        # Clean up fields
+        for f in self.clean_fields:
+            if f in data:
                 data[f] = self.clean_fields[f].clean(data[f])
-        return dict((str(k), data[k]) for k in data)
+        return data
 
     def cleaned_query(self, q):
         q = q.copy()
@@ -232,6 +237,11 @@ class ExtDocApplication(ExtApplication):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                 elif isinstance(f, BinaryField):
                     v = repr(v)
+                elif isinstance(f, DateField):
+                    if v:
+                        v = v.strftime("%Y-%m-%d")
+                    else:
+                        v = None
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
@@ -256,7 +266,10 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
-        return self.list_data(request, self.instance_to_lookup)
+        try:
+            return self.list_data(request, self.instance_to_lookup)
+        except ValueError:
+            return self.response(self.lookup_default, status=self.OK)
 
     @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
     def api_lookup_tree(self, request):
@@ -292,6 +305,7 @@ class ExtDocApplication(ExtApplication):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.response(str(e), status=self.BAD_REQUEST)
 
         if self.pk in attrs:
@@ -347,6 +361,7 @@ class ExtDocApplication(ExtApplication):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.response(str(e), status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(**{self.pk: id})
@@ -354,6 +369,15 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
+        if hasattr(o, "tags") and attrs.get("tags"):
+            old_tags = set(o.tags) if o.tags else set()
+            new_tags = set(attrs["tags"]) if attrs["tags"] else set()
+            for t in old_tags - new_tags:
+                self.logger.info("Unregister Tag: %s" % t)
+                Tag.unregister_tag(t, repr(self.model))
+            for t in new_tags - old_tags:
+                self.logger.info("Register Tag: %s" % t)
+                Tag.register_tag(t, repr(self.model))
         # @todo: Check for duplicates
         for k in attrs:
             if k != self.pk and "__" not in k:
@@ -425,6 +449,7 @@ class ExtDocApplication(ExtApplication):
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
             return self.render_json({
                 "status": False,
                 "message": "Bad request",

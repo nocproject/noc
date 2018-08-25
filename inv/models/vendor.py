@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vendor model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,7 +30,8 @@ id_lock = threading.Lock()
     ("inv.ObjectModel", "vendor"),
     ("inv.Platform", "vendor"),
     ("inv.Firmware", "vendor"),
-    ("sa.ManagedObject", "vendor")
+    ("sa.ManagedObject", "vendor"),
+    ("sa.ManagedObjectSelector", "filter_vendor")
 ])
 class Vendor(Document):
     """
@@ -54,10 +55,11 @@ class Vendor(Document):
     # Vendor's site
     site = URLField(required=False)
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
-    _codes_cache = cachetools.TTLCache(1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
+    _code_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
@@ -68,6 +70,12 @@ class Vendor(Document):
                              lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Vendor.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
+                             lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return Vendor.objects.filter(bi_id=id).first()
 
     @classmethod
     def _get_by_code(cls, code):

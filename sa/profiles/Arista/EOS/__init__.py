@@ -16,7 +16,7 @@ from noc.sa.interfaces.base import InterfaceTypeError
 
 class Profile(BaseProfile):
     name = "Arista.EOS"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Invalid input"
     pattern_more = [

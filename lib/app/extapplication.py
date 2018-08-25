@@ -2,21 +2,23 @@
 # ---------------------------------------------------------------------
 # ExtApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
-# Django modules
+# Third-party modules
 from django.http import HttpResponse
 import ujson
+import six
 # NOC modules
-from application import Application, view
-from access import HasPerm, PermitLogged
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
 from noc.config import config
+from .application import Application, view
+from .access import HasPerm, PermitLogged
 
 
 class ExtApplication(Application):
@@ -53,6 +55,31 @@ class ExtApplication(Application):
         self.document_root = os.path.join("services", "web", "apps", self.module, self.app)
         self.row_limit = config.web.api_row_limit
         self.pk = "id"
+        # Bulk fields API
+        self.bulk_fields = []
+        for fn in [n for n in dir(self) if n.startswith("bulk_field_")]:
+            h = getattr(self, fn)
+            if callable(h):
+                self.bulk_fields += [h]
+
+    def apply_bulk_fields(self, data):
+        """
+        Pass data through bulk_field_* handlers to enrich instance_to_dict result
+        :param data: dict or list of dicts
+        :return: dict or list of dicts
+        """
+        if not self.bulk_fields:
+            return data
+        if isinstance(data, dict):
+            # Single dict
+            nd = [data]
+            for h in self.bulk_fields:
+                h(nd)
+            return data
+        # List of dicts
+        for h in self.bulk_fields:
+            h(data)
+        return data
 
     @property
     def js_app_class(self):
@@ -68,7 +95,7 @@ class ExtApplication(Application):
         return ujson.loads(data)
 
     def response(self, content="", status=200):
-        if not isinstance(content, basestring):
+        if not isinstance(content, six.string_types):
             return HttpResponse(ujson.dumps(content),
                                 mimetype="text/json; charset=utf-8",
                                 status=status)
@@ -207,6 +234,9 @@ class ExtApplication(Application):
                 fav_items = self.get_favorite_items(request.user)
             for r in out:
                 r[self.fav_status] = r[self.pk] in fav_items
+        # Bulk update result. Enrich with proper fields
+        out = self.clean_list_data(out)
+        #
         if request.is_extjs:
             ld = len(out)
             if limit and (ld == limit or start > 0):
@@ -219,6 +249,15 @@ class ExtApplication(Application):
                 "data": out
             }
         return self.response(out, status=self.OK)
+
+    def clean_list_data(self, data):
+        """
+        Finally process list_data result. Override to enrich with
+        additional fields
+        :param data:
+        :return:
+        """
+        return self.apply_bulk_fields(data)
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
           method=["POST"],
@@ -246,7 +285,6 @@ class ExtApplication(Application):
         """
         Set/reset favorite items
         """
-        v = action == "set"
         item = self.fav_convert(item)
         if action == "set":
             Favorites.add_item(request.user, self.app_id, item)

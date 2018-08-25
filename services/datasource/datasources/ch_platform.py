@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+from pymongo import ReadPreference
 # NOC modules
 from .base import BaseDataSource
 from noc.inv.models.platform import Platform
@@ -17,9 +18,9 @@ class CHPlatformDataSource(BaseDataSource):
     name = "ch_platform"
 
     def extract(self):
-        for p in Platform.objects.all().order_by("id"):
+        for p in Platform.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
-                p.get_bi_id(),
+                p.bi_id,
                 p.id,
                 p.name,
                 p.vendor.name,

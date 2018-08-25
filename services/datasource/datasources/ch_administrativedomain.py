@@ -19,8 +19,8 @@ class CHAdministrativeDomainDataSource(BaseDataSource):
     def extract(self):
         for ad in AdministrativeDomain.objects.all().order_by("id"):
             yield (
-                ad.get_bi_id(),
+                ad.bi_id,
                 ad.id,
                 ad.name,
-                ad.parent.get_bi_id() if ad.parent else ""
+                ad.parent.bi_id if ad.parent else ""
             )

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NSCComm.LPOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ class Script(BaseScript):
         r"^tagged on ports\s*:\s+(?P<tports>.+)\s*",
         re.MULTILINE
     )
+
     def execute(self):
         interfaces = []
         v = self.cli("ethstat")

@@ -14,6 +14,10 @@ class Script(BaseScript):
     name = "DCN.DCWS.get_capabilities"
     cache = True
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
+        if self.match_version(platform__regex="^DCWS*"):
+            caps["CPE | Controller"] = True
+
+    def execute_platform_snmp(self, caps):
         if self.match_version(platform__regex="^DCWS*"):
             caps["CPE | Controller"] = True

@@ -3,9 +3,11 @@
 # Varios metric converting functions
 # to use in get_metrics scripts
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+# Python modules
+from functools import reduce
 
 
 def percent(value, total):
@@ -33,9 +35,21 @@ def percent_invert(value, total):
     Convert avail and total values to percent
     """
     if total:
-        return (float(total) - float(value)) * 100.0 / float(total) if value <= total else 100.00
-    else:
-        return 100.0
+        v = (float(total) - float(value)) * 100.0 / float(total)
+        if v >= 0.0:
+            return v
+    return 100.0
+
+
+def convert_percent_str(x):
+    """
+    Convert 09% to 9.0 value
+    Convert 09 to 9.0 value
+    If x = None, return 0
+    """
+    if x:
+        return float(str(x).strip("% "))
+    return 0
 
 
 def sum(*args):
@@ -54,3 +68,10 @@ def subtract(*args):
 
 def is1(x):
     return 1 if x == 1 else 0
+
+
+def invert0(x):
+    """
+    Invert 0 -> 1 if OK = 0, FALSE > 1
+    """
+    return 0 if x > 0 else 1

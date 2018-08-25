@@ -14,7 +14,9 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.main.ref.windowfunction.LookupField",
+        "NOC.pm.thresholdprofile.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
@@ -189,6 +191,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        name: "allow_autosegmentation",
+                        xtype: "checkbox",
+                        boxLabel: __("Allow Autosegmentation"),
+                        allowBlank: true
+                    },
+                    {
                         xtype: "fieldset",
                         layout: "hbox",
                         title: __("Integration"),
@@ -212,12 +220,18 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             },
                             {
                                 name: "bi_id",
-                                xtype: "textfield",
+                                xtype: "displayfield",
                                 fieldLabel: __("BI ID"),
                                 allowBlank: true,
                                 uiStyle: "medium"
                             }
                         ]
+                    },
+                    {
+                        name: "allow_subinterface_metrics",
+                        xtype: "checkbox",
+                        boxLabel: __("Apply metrics to subinterfaces"),
+                        allowBlank: true
                     },
                     {
                         name: "metrics",
@@ -234,8 +248,15 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 renderer: NOC.render.Lookup("metric_type")
                             },
                             {
-                                text: __("Active"),
-                                dataIndex: "is_active",
+                                text: __("Box"),
+                                dataIndex: "enable_box",
+                                width: 50,
+                                renderer: NOC.render.Bool,
+                                editor: "checkbox"
+                            },
+                            {
+                                text: __("Periodic"),
+                                dataIndex: "enable_periodic",
                                 width: 50,
                                 renderer: NOC.render.Bool,
                                 editor: "checkbox"
@@ -274,18 +295,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 dataIndex: "window_function",
                                 width: 70,
                                 editor: {
-                                    xtype: "combobox",
-                                    store: [
-                                        ["last", "Last Value"],
-                                        ["avg", "Average"],
-                                        ["percentile", "Percentile"],
-                                        ["q1", "1st quartile"],
-                                        ["q2", "2st quartile"],
-                                        ["q3", "3st quartile"],
-                                        ["p95", "95% percentile"],
-                                        ["p99", "99% percentile"],
-                                        ["handler", "Handler"]
-                                    ]
+                                    xtype: "main.ref.windowfunction.LookupField"
                                 }
                             },
                             {
@@ -325,6 +335,15 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 editor: "textfield",
                                 align: "right",
                                 renderer: NOC.render.Size
+                            },
+                            {
+                                text: __("Profile"),
+                                dataIndex: "threshold_profile",
+                                width: 150,
+                                editor: {
+                                    xtype: "pm.thresholdprofile.LookupField"
+                                },
+                                renderer: NOC.render.Lookup("threshold_profile")
                             }
                         ]
 

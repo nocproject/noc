@@ -20,7 +20,6 @@ import struct
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
-from http_parser.parser import HttpParser
 import cachetools
 import six
 # NOC modules
@@ -28,6 +27,11 @@ from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 from noc.config import config
+
+if config.features.pypy:
+    from http_parser.pyparser import HttpParser
+else:
+    from http_parser.parser import HttpParser
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +100,7 @@ def fetch(url, method="GET",
           password=None,
           content_encoding=None,
           eof_mark=None
-    ):
+          ):
     """
 
     :param url: Fetch URL
@@ -127,8 +131,7 @@ def fetch(url, method="GET",
         return ssl_options
 
     logger.debug("HTTP %s %s", method, url)
-    metrics["httpclient_requests"] += 1
-    metrics["httpclient_%s_requests" % method] += 1
+    metrics["httpclient_requests", ("method", method.lower())] += 1
     # Detect proxy when necessary
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
     u = urlparse.urlparse(str(url))
@@ -165,6 +168,8 @@ def fetch(url, method="GET",
         try:
             if proxy:
                 connect_address = proxy
+            elif isinstance(addr, tuple):
+                connect_address = addr
             else:
                 connect_address = (addr, port)
 
@@ -324,6 +329,8 @@ def fetch(url, method="GET",
                     io_loop=io_loop
                 )
             except tornado.iostream.StreamClosedError:
+                if not response_body and config.features.pypy:
+                    break
                 if eof_mark and response_body:
                     # Check if EOF mark is in received data
                     response_body = ["".join(response_body)]

@@ -7,25 +7,26 @@
 # ---------------------------------------------------------------------
 import math
 
-#
-# dBm to mW
-# mW = 10^(dBm/10)
-#
+
 def dbm2mw(v):
     """
+    dBm to mW
+    mW = 10^(dBm/10)
+
     >>> dbm2mw(0)
     1.0
     >>> dbm2mw(10)
     10.0
     """
-    return math.pow(10, v/10)
+    return math.pow(10, v / 10)
 
-#
-# mW to dBm
-# dBm = 10 log10 (mW) 
-#
+
 def mw2dbm(v):
     """
+    mW to dBm
+    dBm = 10 log10 (mW)
+    if v == 0.0 - math domain error
+
     >>> mw2dbm(1)
     0.0
     >>> mw2dbm(10)

@@ -16,5 +16,7 @@ class Container(Dictionary):
         name = "container"
         layout = "hashed"
 
+    id = StringField()
     name = StringField()
-    parent = ReferenceField("self")
+    parent = ReferenceField("self"),
+    address_text = StringField()

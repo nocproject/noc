@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.timepattern.Application");
 
 Ext.define("NOC.main.timepattern.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.main.timepattern.Model",
         "NOC.main.timepattern.TermModel"
     ],
@@ -63,6 +63,7 @@ Ext.define("NOC.main.timepattern.Application", {
                 {
                     name: "date",
                     xtype: "datefield",
+                    startDay: 1,
                     fieldLabel: __("Date"),
                     allowBlank: false,
                     format: "Y-m-d"

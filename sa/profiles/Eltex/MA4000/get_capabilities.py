@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MA4000.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_stack = re.compile(r"^\s*\*?(?P<box_id>\d+)\s+", re.MULTILINE)
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -27,14 +27,24 @@ class Script(BaseScript):
         return "LLDP state: Enabled" in cmd
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
         cmd = self.cli("show spanning-tree active")
         return "spanning tree: off" not in cmd
 
-    def execute_platform(self, caps):
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check box has STP enabled
+        """
+        for ch in self.scripts.get_portchannel():
+            if ch["type"] == "L":
+                return True
+        return False
+
+    def execute_platform_cli(self, caps):
         try:
             cmd = self.cli("show stack")
             s = []

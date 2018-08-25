@@ -2,15 +2,14 @@
 # ---------------------------------------------------------------------
 # peer.maintainer application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.peer.models import Maintainer, Person
-from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
-                                    StringParameter)
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.peer.models.maintainer import Maintainer
+from noc.lib.app.repoinline import RepoInline
 from noc.core.translation import ugettext as _
 
 
@@ -22,3 +21,4 @@ class MaintainerApplication(ExtModelApplication):
     menu = [_("Setup"), _("Maintainers")]
     model = Maintainer
 
+    rpsl = RepoInline("rpsl")

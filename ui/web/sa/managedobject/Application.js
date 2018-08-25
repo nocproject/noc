@@ -19,18 +19,21 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.inv.vendor.LookupField",
         "NOC.inv.platform.LookupField",
         "NOC.inv.firmware.LookupField",
+        "NOC.inv.resourcegroup.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.ip.vrf.LookupField",
-        "NOC.main.pyrule.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
-        "NOC.sa.terminationgroup.LookupField",
         "NOC.inv.networksegment.LookupField",
         "NOC.main.timepattern.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.fm.ttsystem.LookupField"
+        "NOC.fm.ttsystem.LookupField",
+        "NOC.inv.platform.LookupField",
+        "NOC.inv.map.Maintenance",
+        "NOC.maintenance.maintenancetype.LookupField",
+        "NOC.main.handler.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -50,12 +53,31 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: __("Set unmanaged"),
             action: "set_unmanaged",
             glyph: NOC.glyph.times
+        },
+        {
+            title: __("New Maintaince"),
+            glyph: NOC.glyph.wrench,
+            run: "newMaintaince"
+        },
+        {
+            title: __("Add to Maintaince"),
+            glyph: NOC.glyph.plus,
+            run: "addToMaintaince"
         }
     ],
     validationModelId: "sa.ManagedObject",
+    formMinWidth: 800,
+    formMaxWidth: 1000,
     //
     initComponent: function() {
-        var me = this;
+        var me = this,
+            padding = 10,
+            fieldSetDefaults = {
+                xtype: "container",
+                padding: padding,
+                layout: "form",
+                columnWidth: 0.5
+            };
 
         me.configPreviewButton = Ext.create("Ext.button.Button", {
             text: __("Config"),
@@ -129,6 +151,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onAlarm
         });
 
+        me.maintainceButton = Ext.create("Ext.button.Button", {
+            text: __("New Maintaince"),
+            glyph: NOC.glyph.wrench,
+            scope: me,
+            handler: me.onMaintaince
+        });
+
         me.inventoryButton = Ext.create("Ext.button.Button", {
             text: __("Inventory"),
             glyph: NOC.glyph.list,
@@ -150,7 +179,6 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onValidationSettings
         });
 
-
         me.capsButton = Ext.create("Ext.button.Button", {
             text: __("Capabilities"),
             glyph: NOC.glyph.file,
@@ -168,8 +196,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
-                previewName: '{0} config',
-                restUrl: '/sa/managedobject/{0}/repo/cfg/',
+                previewName: "{0} config",
+                restUrl: "/sa/managedobject/{0}/repo/cfg/",
                 historyHashPrefix: "config"
             })
         );
@@ -295,151 +323,131 @@ Ext.define("NOC.sa.managedobject.Application", {
             fields: [
                 {
                     xtype: "fieldset",
-                    layout: "hbox",
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
                     border: false,
-                    padding: 0,
                     items: [
                         {
-                            name: "name",
-                            xtype: "textfield",
-                            fieldLabel: __("Name"),
-                            allowBlank: false,
-                            uiStyle: "large"
-                        },
-                        {
-                            name: "is_managed",
-                            xtype: "checkboxfield",
-                            boxLabel: __("Is Managed?"),
-                            allowBlank: false,
-                            groupEdit: true,
-                            padding: "0px 0px 0px 4px"
+                            xtype: "container",
+                            items: [ // first column
+                                {
+                                    name: "name",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Name"),
+                                    allowBlank: false,
+                                    autoFocus: true,
+                                    tabIndex: 10
+                                },
+                                {
+                                    name: "description",
+                                    xtype: "textarea",
+                                    fieldLabel: __("Description"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "is_managed",
+                                    xtype: "checkboxfield",
+                                    fieldLabel: __("Is Managed?"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                }
+                            ]
+                        }, {
+                            xtype: "container",
+                            items: [ // second column
+                                {
+                                    name: "bi_id",
+                                    xtype: "displayfield",
+                                    fieldLabel: __("BI ID"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "tags",
+                                    xtype: "tagsfield",
+                                    fieldLabel: __("Tags"),
+                                    allowBlank: true
+                                }
+                            ]
                         }
                     ]
                 },
                 {
-                    name: "description",
-                    xtype: "textarea",
-                    fieldLabel: __("Description"),
-                    allowBlank: true,
-                    uiStyle: "extra"
-                },
-                {
                     xtype: "fieldset",
-                    layout: "hbox",
                     title: __("Role"),
-                    defaults: {
-                        padding: 4
-                    },
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
                     items: [
                         {
-                            name: "object_profile",
-                            xtype: "sa.managedobjectprofile.LookupField",
-                            fieldLabel: __("Object Profile"),
-                            labelWidth: 90,
-                            itemId: "object_profile",
-                            allowBlank: false,
-                            groupEdit: true
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "object_profile",
+                                    xtype: "sa.managedobjectprofile.LookupField",
+                                    fieldLabel: __("Object Profile"),
+                                    itemId: "object_profile",
+                                    allowBlank: false,
+                                    tabIndex: 20,
+                                    groupEdit: true
+                                }]
                         },
                         {
-                            name: "shape",
-                            xtype: "main.ref.stencil.LookupField",
-                            fieldLabel: __("Shape"),
-                            allowBlank: true,
-                            groupEdit: true,
-                            labelWidth: 40
-                        }
-                    ]
-                },
-                {
-                    xtype: "fieldset",
-                    title: __("Location"),
-                    layout: "hbox",
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
-                    items: [
-                        {
-                            name: "administrative_domain",
-                            xtype: "sa.administrativedomain.LookupField",
-                            fieldLabel: __("Administrative Domain"),
-                            width: 200,
-                            allowBlank: false,
-                            groupEdit: true
-                        },
-                        {
-                            name: "segment",
-                            xtype: "inv.networksegment.LookupField",
-                            fieldLabel: __("Segment"),
-                            width: 200,
-                            allowBlank: false,
-                            groupEdit: true
-                        },
-                        {
-                            name: "pool",
-                            xtype: "main.pool.LookupField",
-                            fieldLabel: __("Pool"),
-                            width: 100,
-                            allowBlank: false,
-                            groupEdit: true
-                        },
-                        {
-                            name: "vrf",
-                            xtype: "ip.vrf.LookupField",
-                            fieldLabel: __("VRF"),
-                            allowBlank: true,
-                            groupEdit: true
-                        },
-                        {
-                            name: "vc_domain",
-                            xtype: "vc.vcdomain.LookupField",
-                            fieldLabel: __("VC Domain"),
-                            allowBlank: true,
-                            groupEdit: true
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "shape",
+                                    xtype: "main.ref.stencil.LookupField",
+                                    fieldLabel: __("Shape"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                }]
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
                     title: __("Platform"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
                     items: [
                         {
                             xtype: "container",
-                            layout: "hbox",
-                            defaults: {
-                                labelAlign: "top",
-                                padding: 4
-                            },
                             items: [
                                 {
                                     name: "profile",
                                     xtype: "sa.profile.LookupField",
                                     fieldLabel: __("SA Profile"),
                                     allowBlank: false,
+                                    tabIndex: 30,
                                     groupEdit: true
-                                },
-                                {
+                                }, {
                                     name: "vendor",
                                     xtype: "inv.vendor.LookupField",
                                     fieldLabel: __("Vendor"),
-                                    allowBlank: true,
-                                    groupEdit: true
-                                },
-                                {
+                                    allowBlank: true
+                                }, {
                                     name: "platform",
                                     xtype: "inv.platform.LookupField",
                                     fieldLabel: __("Platform"),
-                                    allowBlank: true,
-                                    groupEdit: true
-                                },
+                                    allowBlank: true
+                                }
+                            ]
+                        }, {
+                            xtype: "container",
+                            items: [
                                 {
                                     name: "version",
                                     xtype: "inv.firmware.LookupField",
                                     fieldLabel: __("Version"),
-                                    allowBlank: true,
-                                    groupEdit: true
-                                },
-                                {
+                                    allowBlank: true
+                                }, {
                                     name: "software_image",
                                     xtype: "displayfield",
                                     fieldLabel: __("Software Image"),
@@ -452,21 +460,21 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     xtype: "fieldset",
                     title: __("Access"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
                     items: [
                         {
                             xtype: "container",
-                            layout: "hbox",
-                            defaults: {
-                                labelAlign: "top",
-                                padding: 4
-                            },
                             items: [
                                 {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
                                     fieldLabel: __("Scheme"),
                                     allowBlank: false,
-                                    uiStyle: "small",
+                                    tabIndex: 40,
                                     groupEdit: true
                                 },
                                 {
@@ -474,63 +482,76 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "textfield",
                                     fieldLabel: __("Address"),
                                     allowBlank: false,
-                                    uiStyle: "medium"
+                                    tabIndex: 50,
+                                    groupEdit: true,
+                                    vtype: "IPv4"
+                                },
+                                {
+                                    name: "access_preference",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Access Preference"),
+                                    allowBlank: true,
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["S", __("SNMP Only")],
+                                        ["C", __("CLI Only")],
+                                        ["SC", __("SNMP, CLI")],
+                                        ["CS", __("CLI, SNMP")]
+                                    ],
+                                    groupEdit: true
                                 },
                                 {
                                     name: "port",
                                     xtype: "numberfield",
                                     fieldLabel: __("Port"),
                                     allowBlank: true,
-                                    uiStyle: "small",
                                     minValue: 0,
                                     maxValue: 65535,
-                                    hideTrigger: true
+                                    hideTrigger: true,
+                                    groupEdit: true
+
                                 },
                                 {
                                     name: "cli_session_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Session Policy"),
                                     allowBlank: true,
-                                    uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P"
+                                    groupEdit: true
                                 },
                                 {
-                                    name: "max_scripts",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Max. Scripts"),
+                                    name: "cli_privilege_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("CLI Privilege Policy"),
                                     allowBlank: true,
-                                    uiStyle: "small",
-                                    hideTrigger: true,
-                                    minValue: 0,
-                                    maxValue: 99
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Raise Privileges")],
+                                        ["D", __("Don't Raise")]
+                                    ],
+                                    groupEdit: true
                                 },
                                 {
-                                    name: "time_pattern",
-                                    xtype: "main.timepattern.LookupField",
-                                    fieldLabel: __("Time Pattern"),
+                                    name: "remote_path",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Path"),
                                     allowBlank: true,
-                                    groupEdit: true,
-                                    uiStyle: "medium"
+                                    groupEdit: true
                                 }
                             ]
                         },
                         {
                             xtype: "container",
-                            layout: "hbox",
-                            defaults: {
-                                labelAlign: "top",
-                                padding: 4
-                            },
                             items: [
                                 {
                                     name: "auth_profile",
                                     xtype: "sa.authprofile.LookupField",
                                     fieldLabel: __("Auth Profile"),
+                                    tabIndex: 60,
                                     allowBlank: true,
                                     groupEdit: true
                                 },
@@ -538,18 +559,18 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "user",
                                     xtype: "textfield",
                                     fieldLabel: __("User"),
+                                    tabIndex: 61,
                                     allowBlank: true,
-                                    groupEdit: true,
-                                    uiStyle: "medium"
+                                    groupEdit: true
                                 },
                                 {
                                     name: "password",
                                     xtype: "textfield",
                                     fieldLabel: __("Password"),
+                                    tabIndex: 62,
                                     allowBlank: true,
                                     inputType: "password",
-                                    groupEdit: true,
-                                    uiStyle: "medium"
+                                    groupEdit: true
                                 },
                                 {
                                     name: "super_password",
@@ -557,15 +578,40 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Super Password"),
                                     allowBlank: true,
                                     inputType: "password",
-                                    groupEdit: true,
-                                    uiStyle: "medium"
+                                    groupEdit: true
                                 },
                                 {
-                                    name: "remote_path",
+                                    name: "snmp_ro",
                                     xtype: "textfield",
-                                    fieldLabel: __("Path"),
+                                    fieldLabel: __("RO Community"),
+                                    tabIndex: 63,
                                     allowBlank: true,
-                                    uiStyle: "medium"
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "snmp_rw",
+                                    xtype: "textfield",
+                                    fieldLabel: __("RW Community"),
+                                    tabIndex: 64,
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "max_scripts",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Max. Scripts"),
+                                    allowBlank: true,
+                                    hideTrigger: true,
+                                    minValue: 0,
+                                    maxValue: 99,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "time_pattern",
+                                    xtype: "main.timepattern.LookupField",
+                                    fieldLabel: __("Time Pattern"),
+                                    allowBlank: true,
+                                    groupEdit: true
                                 }
                             ]
                         }
@@ -573,368 +619,532 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: __("Service"),
-                    layout: "hbox",
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    title: __("Location"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
                     items: [
                         {
-                            name: "termination_group",
-                            xtype: "sa.terminationgroup.LookupField",
-                            fieldLabel: __("Termination Group"),
-                            allowBlank: true,
-                            groupEdit: true
-                        },
-                        {
-                            name: "service_terminator",
-                            xtype: "sa.terminationgroup.LookupField",
-                            fieldLabel: __("Service Terminator"),
-                            allowBlank: true,
-                            groupEdit: true
-                        }
-                    ]
-                },
-                {
-                    xtype: "fieldset",
-                    title: __("CPE"),
-                    layout: "hbox",
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
-                    items: [
-                        {
-                            name: "controller",
-                            xtype: "sa.managedobject.LookupField",
-                            fieldLabel: __("Controller"),
-                            allowBlank: true,
-                            groupEdit: true
-                        },
-                        {
-                            name: "local_cpe_id",
-                            xtype: "textfield",
-                            fieldLabel: __("Local CPE Id"),
-                            allowBlank: true
-                        },
-                        {
-                            name: "global_cpe_id",
-                            xtype: "textfield",
-                            fieldLabel: __("Global CPE Id"),
-                            allowBlank: true
-                        },
-                        {
-                            name: "last_seen",
-                            xtype: "displayfield",
-                            fieldLabel: __("Last Seen"),
-                            allowBlank: true
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "administrative_domain",
+                                    xtype: "sa.administrativedomain.LookupField",
+                                    fieldLabel: __("Administrative Domain"),
+                                    allowBlank: false,
+                                    tabIndex: 90,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "segment",
+                                    xtype: "inv.networksegment.LookupField",
+                                    fieldLabel: __("Segment"),
+                                    allowBlank: false,
+                                    tabIndex: 100,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "pool",
+                                    xtype: "main.pool.LookupField",
+                                    fieldLabel: __("Pool"),
+                                    allowBlank: false,
+                                    tabIndex: 110,
+                                    groupEdit: true
+                                }
+                            ]
+                        }, {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "vrf",
+                                    xtype: "ip.vrf.LookupField",
+                                    fieldLabel: __("VRF"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "vc_domain",
+                                    xtype: "vc.vcdomain.LookupField",
+                                    fieldLabel: __("VC Domain"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "autosegmentation_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Autosegmentation Policy"),
+                                    allowBlank: true,
+                                    groupEdit: true,
+                                    store: [
+                                        ["p", __("Profile")],
+                                        ["d", __("Do not segmentate")],
+                                        ["e", __("Allow autosegmentation")],
+                                        ["o", __("Segmentate to existing segment")],
+                                        ["c", __("Segmentate to child segment")]
+                                    ],
+                                }
+                            ]
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
                     title: __("Event Sources"),
-                    layout: "hbox",
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
                     items: [
                         {
-                            name: "trap_source_type",
-                            xtype: "combobox",
-                            fieldLabel: __("Trap Source"),
-                            store: [
-                                ["d", "Disable"],
-                                ["m", "Management Address"],
-                                ["s", "Specify address"],
-                                ["l", "Loopback address"],
-                                ["a", "All interface addresses"]
-                            ],
-                            value: "d",
-                            listeners: {
-                                scope: me,
-                                change: function(combo, newValue, oldValue, eOpts) {
-                                    combo.nextSibling().setHidden(newValue !== "s");
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "event_processing_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Event Policy"),
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    allowBlank: false,
+                                    tabIndex: 130,
+                                    groupEdit: true
                                 },
-                                afterrender: function(combo, eOpts) {
-                                    combo.nextSibling().setHidden(combo.value !== "s");
-                                }
-                            }
-                        },
-                        {
-                            name: "trap_source_ip",
-                            xtype: "textfield",
-                            fieldLabel: __("Trap Source IP"),
-                            allowBlank: true,
-                            uiStyle: "medium"
-                        },
-                        {
-                            name: "syslog_source_type",
-                            xtype: "combobox",
-                            fieldLabel: __("Syslog Source"),
-                            store: [
-                                ["d", "Disable"],
-                                ["m", "Management Address"],
-                                ["s", "Specify address"],
-                                ["l", "Loopback address"],
-                                ["a", "All interface addresses"]
-                            ],
-                            value: "d",
-                            listeners: {
-                                scope: me,
-                                change: function(combo, newValue, oldValue, eOpts) {
-                                    combo.nextSibling().setHidden(newValue !== "s");
+                                {
+                                    name: "trap_source_type",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Trap Source"),
+                                    store: [
+                                        ["d", __("Disable")],
+                                        ["m", __("Management Address")],
+                                        ["s", __("Specify address")],
+                                        ["l", __("Loopback address")],
+                                        ["a", __("All interface addresses")]
+                                    ],
+                                    listeners: {
+                                        scope: me,
+                                        change: function(combo, newValue, oldValue, eOpts) {
+                                            combo.nextSibling().setHidden(newValue !== "s");
+                                        },
+                                        afterrender: function(combo, eOpts) {
+                                            combo.nextSibling().setHidden(combo.value !== "s");
+                                        }
+                                    },
+                                    groupEdit: true
                                 },
-                                afterrender: function(combo, eOpts) {
-                                    combo.nextSibling().setHidden(combo.value !== "s");
-                                }
-                            }
-                        },
-                        {
-                            name: "syslog_source_ip",
-                            xtype: "textfield",
-                            fieldLabel: __("Syslog Source IP"),
-                            allowBlank: true,
-                            uiStyle: "medium"
+                                {
+                                    name: "trap_source_ip",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Trap Source IP"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                }]
+                        }, {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "syslog_source_type",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Syslog Source"),
+                                    store: [
+                                        ["d", __("Disable")],
+                                        ["m", __("Management Address")],
+                                        ["s", __("Specify address")],
+                                        ["l", __("Loopback address")],
+                                        ["a", __("All interface addresses")]
+                                    ],
+                                    listeners: {
+                                        scope: me,
+                                        change: function(combo, newValue, oldValue, eOpts) {
+                                            combo.nextSibling().setHidden(newValue !== "s");
+                                        },
+                                        afterrender: function(combo, eOpts) {
+                                            combo.nextSibling().setHidden(combo.value !== "s");
+                                        }
+                                    },
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "syslog_source_ip",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Syslog Source IP"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "trap_community",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Trap Community"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                }]
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
-                    title: "SNMP",
-                    layout: "hbox",
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    title: __("Resource Groups"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: false,
                     items: [
                         {
-                            name: "trap_community",
-                            xtype: "textfield",
-                            fieldLabel: __("Trap Community"),
-                            allowBlank: true,
-                            groupEdit: true,
-                            uiStyle: "medium"
+                            name: "static_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                // {
+                                //     xtype: "glyphactioncolumn",
+                                //     width: 20,
+                                //     sortable: false,
+                                //     items: [
+                                //         {
+                                //             glyph: NOC.glyph.search,
+                                //             tooltip: __("Show Card"),
+                                //             scope: me,
+                                //             handler: me.onShowResourceGroup
+                                //         }
+                                //     ]
+                                // },
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
                         },
                         {
-                            name: "snmp_ro",
-                            xtype: "textfield",
-                            fieldLabel: __("RO Community"),
-                            allowBlank: true,
-                            groupEdit: true,
-                            uiStyle: "medium"
+                            name: "effective_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
                         },
                         {
-                            name: "snmp_rw",
-                            xtype: "textfield",
-                            fieldLabel: __("RW Community"),
-                            allowBlank: true,
-                            groupEdit: true,
-                            uiStyle: "medium"
+                            name: "static_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("CPE"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: true,
+                    items: [
+                        {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "controller",
+                                    xtype: "sa.managedobject.LookupField",
+                                    fieldLabel: __("Controller"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "local_cpe_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Local CPE Id"),
+                                    allowBlank: true
+                                }]
+                        },
+                        {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "global_cpe_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Global CPE Id"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "last_seen",
+                                    xtype: "displayfield",
+                                    fieldLabel: __("Last Seen"),
+                                    allowBlank: true
+                                }]
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
                     title: __("Rules"),
-                    layout: "hbox",
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: true,
                     items: [
                         {
-                            name: "config_filter_rule",
-                            xtype: "main.pyrule.LookupField",
-                            fieldLabel: __("Config Filter pyRule"),
-                            allowBlank: true,
-                            groupEdit: true
-                        },
-                        {
-                            name: "config_diff_filter_rule",
-                            xtype: "main.pyrule.LookupField",
-                            fieldLabel: __("Config Diff Filter Rule"),
-                            allowBlank: true,
-                            groupEdit: true
-                        },
-                        {
-                            name: "config_validation_rule",
-                            xtype: "main.pyrule.LookupField",
-                            fieldLabel: __("Config Validation pyRule"),
-                            allowBlank: true,
-                            groupEdit: true
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "config_filter_handler",
+                                    xtype: "main.handler.LookupField",
+                                    fieldLabel: __("Config Filter Handler"),
+                                    allowBlank: true,
+                                    groupEdit: true,
+                                    query: {
+                                        allow_config_filter: true
+                                    }
+                                },
+                                {
+                                    name: "config_diff_filter_handler",
+                                    xtype: "main.handler.LookupField",
+                                    fieldLabel: __("Config Diff Filter Handler"),
+                                    allowBlank: true,
+                                    groupEdit: true,
+                                    query: {
+                                        allow_config_filter: true
+                                    }
+                                }]
+                        }, {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "config_validation_handler",
+                                    xtype: "main.handler.LookupField",
+                                    fieldLabel: __("Config Validation Handler"),
+                                    allowBlank: true,
+                                    groupEdit: true,
+                                    query: {
+                                        allow_config_validation: true
+                                    }
+                                }]
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
-                    layout: "hbox",
                     title: __("Integration"),
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: true,
                     items: [
                         {
-                            name: "remote_system",
-                            xtype: "main.remotesystem.LookupField",
-                            fieldLabel: __("Remote System"),
-                            allowBlank: true
-                        },
-                        {
-                            name: "remote_id",
-                            xtype: "textfield",
-                            fieldLabel: __("Remote ID"),
-                            allowBlank: true,
-                            uiStyle: "medium"
-                        },
-                        {
-                            name: "bi_id",
-                            xtype: "textfield",
-                            fieldLabel: __("BI ID"),
-                            allowBlank: true,
-                            uiStyle: "medium"
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "remote_system",
+                                    xtype: "main.remotesystem.LookupField",
+                                    fieldLabel: __("Remote System"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "remote_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Remote ID"),
+                                    allowBlank: true
+                                }]
+                        }, {
+                            xtype: "container",
+                            items: []
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
-                    layout: "hbox",
                     title: __("Escalation"),
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: true,
                     items: [
                         {
-                            name: "escalation_policy",
-                            xtype: "combobox",
-                            fieldLabel: __("Escalation Policy"),
-                            allowBlank: true,
-                            uiStyle: "medium",
-                            store: [
-                                ["P", __("Profile")],
-                                ["E", __("Enable")],
-                                ["D", __("Disable")],
-                                ["R", __("As Depended")]
-                            ],
-                            value: "P"
-                        },
-                        {
-                            name: "tt_system",
-                            xtype: "fm.ttsystem.LookupField",
-                            fieldLabel: __("TT System"),
-                            allowBlank: true
-                        },
-                        {
-                            name: "tt_queue",
-                            xtype: "textfield",
-                            fieldLabel: __("TT Queue"),
-                            allowBlank: true
-                        },
-                        {
-                            name: "tt_system_id",
-                            xtype: "textfield",
-                            fieldLabel: __("TT System ID"),
-                            allowBlank: true,
-                            uiStyle: "medium"
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "escalation_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Escalation Policy"),
+                                    allowBlank: true,
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")],
+                                        ["R", __("As Depended")]
+                                    ],
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "tt_system",
+                                    xtype: "fm.ttsystem.LookupField",
+                                    fieldLabel: __("TT System"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                }]
+                        }, {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "tt_queue",
+                                    xtype: "textfield",
+                                    fieldLabel: __("TT Queue"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "tt_system_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("TT System ID"),
+                                    allowBlank: true
+                                }
+                            ]
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
-                    layout: "hbox",
                     title: __("Discovery Alarm"),
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: true,
                     items: [
                         {
-                            name: "box_discovery_alarm_policy",
-                            xtype: "combobox",
-                            fieldLabel: __("Box Alarm"),
-                            allowBlank: true,
-                            uiStyle: "medium",
-                            store: [
-                                ["P", __("Profile")],
-                                ["E", __("Enable")],
-                                ["D", __("Disable")]
-                            ],
-                            value: "P"
-                        },
-                        {
-                            name: "periodic_discovery_alarm_policy",
-                            xtype: "combobox",
-                            fieldLabel: __("Periodic Alarm"),
-                            allowBlank: true,
-                            uiStyle: "medium",
-                            store: [
-                                ["P", __("Profile")],
-                                ["E", __("Enable")],
-                                ["D", __("Disable")]
-                            ],
-                            value: "P"
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "box_discovery_alarm_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Box Alarm"),
+                                    allowBlank: true,
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    groupEdit: true
+                                }]
+                        }, {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "periodic_discovery_alarm_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Periodic Alarm"),
+                                    allowBlank: true,
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    groupEdit: true
+                                }]
                         }
                     ]
                 },
                 {
                     xtype: "fieldset",
-                    layout: "hbox",
                     title: __("Telemetry"),
-                    defaults: {
-                        labelAlign: "top",
-                        padding: 4
-                    },
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: true,
                     items: [
                         {
-                            name: "box_discovery_telemetry_policy",
-                            xtype: "combobox",
-                            fieldLabel: __("Box Telemetry"),
-                            allowBlank: true,
-                            uiStyle: "medium",
-                            store: [
-                                ["P", __("Profile")],
-                                ["E", __("Enable")],
-                                ["D", __("Disable")]
-                            ],
-                            value: "P"
-                        },
-                        {
-                            name: "box_discovery_telemetry_sample",
-                            xtype: "numberfield",
-                            fieldLabel: __("Box Sample"),
-                            uiStyle: "medium"
-                        },
-                        {
-                            name: "periodic_discovery_telemetry_policy",
-                            xtype: "combobox",
-                            fieldLabel: __("Periodic Alarm"),
-                            allowBlank: true,
-                            uiStyle: "medium",
-                            store: [
-                                ["P", __("Profile")],
-                                ["E", __("Enable")],
-                                ["D", __("Disable")]
-                            ],
-                            value: "P"
-                        },
-                        {
-                            name: "periodic_discovery_telemetry_sample",
-                            xtype: "numberfield",
-                            fieldLabel: __("Periodic Sample"),
-                            uiStyle: "medium"
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "box_discovery_telemetry_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Box Telemetry"),
+                                    allowBlank: true,
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "box_discovery_telemetry_sample",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Box Sample"),
+                                    groupEdit: true
+                                }]
+                        }, {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "periodic_discovery_telemetry_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Periodic Alarm"),
+                                    allowBlank: true,
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "periodic_discovery_telemetry_sample",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Periodic Sample"),
+                                    groupEdit: true
+                                }]
                         }
                     ]
-                },
-                {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true,
-                    uiStyle: "extra"
                 }
             ],
             formToolbar: [
@@ -949,12 +1159,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.linksButton,
                 me.discoveryButton,
                 me.alarmsButton,
+                me.maintainceButton,
                 me.interactionsButton,
                 me.validationSettingsButton,
                 me.capsButton,
                 me.factsButton
             ]
-        });
+        })
+        ;
         me.callParent();
     },
     filters: [
@@ -988,6 +1200,18 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "inv.networksegment"
         },
         {
+            title: __("By Service Group"),
+            name: "effective_service_groups",
+            ftype: "lookup",
+            lookup: "inv.resourcegroup"
+        },
+        {
+            title: __("By Client Group"),
+            name: "effective_client_groups",
+            ftype: "lookup",
+            lookup: "inv.resourcegroup"
+        },
+        {
             title: __("By Selector"),
             name: "selector",
             ftype: "lookup",
@@ -1018,16 +1242,10 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "sa.managedobject"
         },
         {
-            title: __("By Termination Group"),
-            name: "termination_group",
+            title: __("Platform"),
+            name: "platform",
             ftype: "lookup",
-            lookup: "sa.terminationgroup"
-        },
-        {
-            title: __("By Service Terminator"),
-            name: "service_terminator",
-            ftype: "lookup",
-            lookup: "sa.terminationgroup"
+            lookup: "inv.platform"
         },
         {
             title: __("By Tags"),
@@ -1035,9 +1253,10 @@ Ext.define("NOC.sa.managedobject.Application", {
             ftype: "tag"
         }
     ],
-    inlines: [
-        {
+    inlines:
+        [{
             title: __("Attributes"),
+            collapsed: true,
             model: "NOC.sa.managedobject.AttributesModel",
             columns: [
                 {
@@ -1053,8 +1272,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     flex: 1
                 }
             ]
-        }
-    ],
+        }],
     //
     onCard: function() {
         var me = this;
@@ -1126,6 +1344,54 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
     },
     //
+    onMaintaince: function() {
+        var me = this;
+        me.newMaintaince([{
+            object: me.currentRecord.get("id"),
+            object__label: me.currentRecord.get("name")
+        }]);
+    },
+    //
+    addToMaintaince: function(objects) {
+        NOC.run(
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
+            {
+                args: [
+                    {mode: 'Object'},
+                    objects
+                ]
+            }
+        );
+    },
+    //
+    newMaintaince: function(objects) {
+        var args = {
+            direct_objects: objects,
+            subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+            contacts: NOC.email ? NOC.email : NOC.username,
+            start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+            start_time: Ext.Date.format(new Date(), 'H:i'),
+            stop_time: '12:00',
+            suppress_alarms: true
+        };
+        Ext.create("NOC.maintenance.maintenancetype.LookupField")
+        .getStore()
+        .load({
+            params: {__query: 'РНР'},
+            callback: function(records) {
+                if(records.length > 0) {
+                    Ext.apply(args, {
+                        type: records[0].id
+                    })
+                }
+                NOC.launch("maintenance.maintenance", "new", {
+                    args: args
+                });
+            }
+        });
+    },
+    //
     onCaps: function() {
         var me = this;
         me.previewItem(me.ITEM_CAPS, me.currentRecord);
@@ -1146,7 +1412,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_LINKS, record);
     },
     //
-    onValidationSettings: function () {
+    onValidationSettings: function() {
         var me = this;
         me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
     },
@@ -1163,6 +1429,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.linksButton.setDisabled(disabled);
         me.discoveryButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
         me.alarmsButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
+        me.maintainceButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
 
     },
     //
@@ -1176,7 +1443,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         var me = this;
         me.loadById(args[0], function(record) {
             me.onEditRecord(record);
-            switch (args[1]) {
+            switch(args[1]) {
                 case "config":
                     switch(args.length) {
                         case 2:
@@ -1203,5 +1470,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                     break;
             }
         });
+    },
+    // Show ResourceGroup card
+    onShowResourceGroup: function(grid, rowIndex, colIndex) {
+        var me = this,
+            r = me.store.getAt(rowIndex),
+            id = r.get("group");
+        window.open("/api/card/view/resourcegroup/" + id + "/", "_blank");
     }
 });

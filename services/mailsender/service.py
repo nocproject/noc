@@ -120,7 +120,7 @@ class MailSenderService(Service):
                     "[%s] SMTP Authentication error: %s",
                     message_id, e
                 )
-                self.perf_metrics["smtp_response_%d" % e.smtp_code] += 1
+                self.perf_metrics['smtp_response', ('code', e.smtp_code)] += 1
                 return False
         # Send mail
         try:
@@ -135,7 +135,7 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] MAIL FROM '%s' failed: %s %s",
                                   message_id, from_address, code, resp)
-                self.perf_metrics["smtp_response_%d" % code] += 1
+                self.perf_metrics['smtp_response', ('code', code)] += 1
                 return False
             # RCPT TO
             code, resp = smtp.rcpt(address, [])
@@ -143,7 +143,7 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] RCPT TO '%s' failed: %s %s",
                                   message_id, address, code, resp)
-                self.perf_metrics["smtp_response_%d" % code] += 1
+                self.perf_metrics['smtp_response', ('code', code)] += 1
                 return False
             # Data
             code, resp = smtp.data(msg)
@@ -151,10 +151,10 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] DATA failed: %s %s",
                                   message_id, code, resp)
-                self.perf_metrics["smtp_response_%d" % code] += 1
+                self.perf_metrics['smtp_response', ('code', code)] += 1
                 return False
             self.logger.info("[%s] Message sent: %s", message_id, resp)
-            self.perf_metrics["smtp_response_%d" % code] += 1
+            self.perf_metrics['smtp_response', ('code', code)] += 1
         except smtplib.SMTPException as e:
             self.logger.error("[%s] SMTP Error: %s", message_id, e)
             smtp.rset()
@@ -167,6 +167,7 @@ class MailSenderService(Service):
                 message_id, e
             )
         return True
+
 
 if __name__ == "__main__":
     MailSenderService().start()

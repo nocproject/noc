@@ -16,6 +16,8 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 class Script(BaseScript):
     name = "ECI.SAM.get_chassis_id"
     interface = IGetChassisID
+    reuse_cli_session = False
+    keep_cli_session = False
     cache = True
 
     rx_mac1 = re.compile(r"^\s*OUTBAND\s+\|\s(?P<mac1>\S+)\n\s*INBAND\s+\|\s(?P<mac2>\S+)$", re.MULTILINE)

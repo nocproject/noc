@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "Orion.NOS.get_inventory"
     interface = IGetInventory
 
-    def execute(self):
+    def execute_cli(self):
         v = self.profile.get_version(self)
         return [{
             "type": "CHASSIS",

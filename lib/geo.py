@@ -17,7 +17,7 @@ from noc.config import config
 
 # major, minor, flattening=(major-minor)/major
 ELLIPSOIDS["Krass"] = (6378.245, 6356.863019, 1 / 298.3000031662238)
-ELLIPSOIDS["ПЗ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
+ELLIPSOIDS["PZ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
 
 ELLIPSOID = config.gis.ellipsoid
 

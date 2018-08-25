@@ -2,15 +2,15 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
+
+import re
+# NOC modules
+from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
@@ -23,7 +23,7 @@ class Script(BaseScript):
         match = self.rx_iface.search(i)
         return match.group(1)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             s = self.cli("show etherchannel summary")
@@ -31,7 +31,7 @@ class Script(BaseScript):
             # Some ASR100X do not have this command
             # raise self.NotSupportedError
             return []
-        for i in parse_table(s, allow_wrap=True):
+        for i in parse_table(s, allow_wrap=True, max_width=120):
             iface = {
                 "interface": self.extract_iface(i[1]),
                 "members": []
@@ -40,7 +40,7 @@ class Script(BaseScript):
                 iface["type"] = "L"
             else:
                 iface["type"] = "S"
-            for ifname in i[len(i)-1].split():
+            for ifname in i[len(i) - 1].split():
                 iface["members"] += [self.extract_iface(ifname)]
             r += [iface]
         return r

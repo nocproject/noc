@@ -1,0 +1,37 @@
+{% macro subiface(subifaces) -%}
+
+{% set comma = joiner(",") -%}
+{
+  "current": {
+    "selected": true,
+    "tags": [],
+    "text": "All",
+    "value": [
+      "$__all"
+     ]
+  },
+  "datasource": null,
+  "hide": 0,
+  "includeAll": true,
+  "label": "SubInterfaces",
+  "multi": true,
+  "name": "SubInterfaces",
+  "options": [
+    {
+      "selected": false,
+      "text": "All",
+      "value": "$__all"
+    },
+    {%for port in subifaces -%}
+    {{ comma() }}{
+      "selected": false,
+      "text": "{%- if port.descr -%}{{port.name}} ({{port.descr}}){%else%}{{port.name}}{%- endif -%}",
+      "value": "{{port.name}}"
+    }
+    {%- endfor %}
+   ],
+  "query": "{%- for port in subifaces %}{{port.name}},{% endfor %}",
+  "refresh": 0,
+  "type": "custom"
+}
+{%- endmacro %}

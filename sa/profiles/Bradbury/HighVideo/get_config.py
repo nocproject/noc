@@ -1,19 +1,27 @@
 __author__ = 'FeNikS'
 # -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Bradbury.HighVideo.get_config
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 import urllib2
 import json
 
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 datas = ['load-Servers', 'load-Channels', 'load-Profiles', 'load-Multiplexes']
+
 
 def get_response_json(url, req_data):
     req = urllib2.Request(url, req_data)
     response = urllib2.urlopen(req)
     data = response.read()
     return json.loads(data)
+
 
 def json2xml(obj, line_padding=''):
     result_list = list()
@@ -33,9 +41,11 @@ def json2xml(obj, line_padding=''):
                 result_list.append(json2xml(sub_obj, '\t' + line_padding))
                 result_list.append('%s</%s>' % (line_padding, tag_name))
             else:
-                result_list.append('%s<%s>%s</%s>' %\
-                                   (line_padding, tag_name, sub_obj, tag_name))
+                result_list.append('%s<%s>%s</%s>' % (
+                    line_padding, tag_name, sub_obj, tag_name
+                ))
         return '\n'.join(result_list)
+
 
 def have_sub_elements(obj):
     obj_type = type(obj)
@@ -46,9 +56,10 @@ def have_sub_elements(obj):
             return True
     return False
 
-class Script(noc.sa.script.Script):
+
+class Script(BaseScript):
     name = "Bradbury.HighVideo.get_config"
-    implements = [IGetConfig]
+    interface = IGetConfig
     TIMEOUT = 240
     CLI_TIMEOUT = 240
 

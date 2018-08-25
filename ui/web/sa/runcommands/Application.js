@@ -16,7 +16,7 @@ Ext.define('NOC.sa.runcommands.Application', {
         'Ext.layout.container.Card',
         'Ext.form.field.ComboBox',
         'NOC.sa.runcommands.ViewModel',
-        'NOC.sa.runcommands.AppController',
+        'NOC.sa.runcommands.Controller',
         'NOC.core.filter.Filter'
     ],
 
@@ -61,11 +61,6 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectionStore}',
                                 selection: '{selectionRow}'
                             },
-                            selModel: {
-                                mode: 'SIMPLE',
-                                // pruneRemoved: false,
-                                selType: 'checkboxmodel'
-                            },
                             listeners: {
                                 selectionchange: 'onSelectionChange',
                                 itemdblclick: 'onSelectionDblClick',
@@ -81,40 +76,53 @@ Ext.define('NOC.sa.runcommands.Application', {
                                         },
                                         handler: 'onSelectionRefresh'
                                     }, {
-                                        text: __('Select All'),
-                                        glyph: NOC.glyph.plus_circle,
-                                        tooltip: __('Select all devices on screen'),
-                                        style: {
-                                            pointerEvents: 'all'
+                                        xtype: 'combo',
+                                        editable: false,
+                                        minWidth: 225,
+                                        emptyText: __('Group select'),
+                                        store: {
+                                            fields: ['cmd', 'title'],
+                                            data: [
+                                                {'cmd': 'SCREEN', 'title': __('All devices on screen')},
+                                                {'cmd': 'FIRST_50', 'title': __('First 50')},
+                                                {'cmd': 'FIRST_100', 'title': __('First 100')},
+                                                {'cmd': 'N_ROWS', 'title': __('First N')},
+                                                {'cmd': 'PERIOD', 'title': __('Period start,qty')}
+                                            ]
                                         },
-                                        handler: 'onSelectionSelectAll'
-                                    }, {
-                                        text: __('Unselect All'),
-                                        glyph: NOC.glyph.minus_circle,
-                                        tooltip: __('Unselect all devices'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionUnselectAll'
-                                    }, '->', {
-                                        text: __('Select Checked'),
-                                        glyph: NOC.glyph.arrow_right,
-                                        tooltip: __('Move all selected devices to the right'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectionGridHasSel}'
-                                        },
-                                        handler: 'onSelectionAddChecked'
-                                    }, '|', {
-                                        xtype: 'box',
-                                        bind: {
-                                            html: __('Selected : {total.selection}')
+                                        queryMode: 'local',
+                                        displayField: 'title',
+                                        valueField: 'cmd',
+                                        listeners: {
+                                            select: 'onSelectionSelectAll'
                                         }
+                                        // }, {
+                                        //     text: __('Unselect All'),
+                                        //     glyph: NOC.glyph.minus_circle,
+                                        //     tooltip: __('Unselect all devices'),
+                                        //     style: {
+                                        //         pointerEvents: 'all'
+                                        //     },
+                                        //     bind: {
+                                        //         disabled: '{!selectionGridHasSel}'
+                                        //     },
+                                        //     handler: 'onSelectionUnselectAll'
+                                        // }, '->', {
+                                        //     text: __('Select Checked'),
+                                        //     glyph: NOC.glyph.arrow_right,
+                                        //     tooltip: __('Move all selected devices to the right'),
+                                        //     style: {
+                                        //         pointerEvents: 'all'
+                                        //     },
+                                        //     bind: {
+                                        //         disabled: '{!selectionGridHasSel}'
+                                        //     },
+                                        //     handler: 'onSelectionAddChecked'
+                                        // }, '|', {
+                                        //     xtype: 'box',
+                                        //     bind: {
+                                        //         html: __('Selected : {total.selection}')
+                                        //     }
                                     }]
                                 }
                             }],
@@ -141,7 +149,10 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectedStore}',
                                 selection: '{selectedRow}'
                             },
-                            selModel: 'checkboxmodel',
+                            selModel: {
+                                mode: 'MULTI',
+                                selType: 'checkboxmodel'
+                            },
                             listeners: {
                                 itemdblclick: 'onSelectedDblClick',
                                 afterrender: 'setRowClass'
@@ -200,6 +211,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                         xtype: 'splitter',
                         width: 1
                     },
+                    treeAlign: 'left',
                     resizable: true,
                     selectionStore: 'runcommands.selectionStore'
                 }
@@ -389,21 +401,20 @@ Ext.define('NOC.sa.runcommands.Application', {
                     }]
                 },
                 {
+                    xtype: 'panel',
                     region: 'east',
                     width: '50%',
+                    scrollable: true,
+                    padding: 4,
                     items: {
-                        xtype: 'textarea',
+                        xtype: 'container',
                         layout: 'fit',
-                        width: '100%',
-                        height: 700,
-                        scrollable: true,
-                        padding: 4,
                         fieldStyle: {
                             'fontFamily': 'courier new',
                             'fontSize': '12px'
                         },
                         bind: {
-                            value: '{resultOutput}'
+                            html: '{resultOutput}'
                         }
                     }
                 }
@@ -455,6 +466,14 @@ Ext.define('NOC.sa.runcommands.Application', {
                             pointerEvents: 'all'
                         },
                         handler: 'toPrev'
+                    },
+                    {
+                        glyph: NOC.glyph.download,
+                        tooltip: __('Download results'),
+                        style: {
+                            pointerEvents: 'all'
+                        },
+                        handler: 'onDownload'
                     }
                 ]
             }]

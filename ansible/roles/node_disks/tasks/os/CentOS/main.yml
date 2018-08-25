@@ -1,9 +1,0 @@
----
-- name: Install CentOS packages
-  yum:
-    name: xfsprogs
-    state: present
-    update_cache: yes
-  environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"

@@ -47,6 +47,7 @@ class DashboardLayout(Document):
     meta = {
         "collection": "noc.dashboardlayouts",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "bi.dashboardlayouts"
     }
 

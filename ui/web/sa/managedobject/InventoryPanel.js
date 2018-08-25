@@ -11,6 +11,9 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
     requires: [
         "NOC.sa.managedobject.InventoryModel"
     ],
+    mixins: [
+        "NOC.core.Export"
+    ],
     app: null,
     autoScroll: true,
 
@@ -25,7 +28,13 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
             scope: me,
             handler: me.onRefresh
         });
-
+        //
+        me.exportButton = Ext.create("Ext.button.Button", {
+            text: __("Export"),
+            glyph: NOC.glyph.arrow_down,
+            scope: me,
+            handler: me.onExport
+        });
         //
         me.defaultRoot = {
             text: __("."),
@@ -83,7 +92,8 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
                     dock: "top",
                     items: [
                         me.getCloseButton(),
-                        me.refreshButton
+                        me.refreshButton,
+                        me.exportButton
                     ]
                 }
             ]
@@ -112,5 +122,10 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
     onRefresh: function() {
         var me = this;
         me.preview(me.currentRecord);
+    },
+    //
+    onExport: function() {
+        var me = this;
+        me.save(me.inventoryPanel, 'inventory.csv');
     }
 });

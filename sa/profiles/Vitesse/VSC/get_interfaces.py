@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 from noc.lib.text import parse_table
 import re
 
@@ -20,7 +19,7 @@ class Script(BaseScript):
 
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s+(?P<admin_status>\S+)\s+"
-        r"\S+\s+\d+\s+\S+\s+(?P<oper_status>\S+)", re.MULTILINE)
+        r"\S+\s+(?:\S+\s+)?\d+\s+\S+\s+(?P<oper_status>\S+)\s*\n", re.MULTILINE)
     rx_stp = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G) \S+)\s+", re.MULTILINE)
     rx_ctp = re.compile(
@@ -36,9 +35,11 @@ class Script(BaseScript):
         r"^Access Mode VLAN: (?P<access_vlan>\d+)\s*\n"
         r"^Trunk Native Mode VLAN: (?P<native_vlan>\d+)\s*\n"
         r"^Administrative Native VLAN tagging: \S+\s*\n"
-        r"^VLAN Trunking: \S+\s*\n"
+        r"(^VLAN Trunking: \S+\s*\n)?"
         r"^Allowed VLANs:(?P<vlans>.*)\n", re.MULTILINE)
-    rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*(?:VLAN )?(?P<vlan>\d+)\s+", re.MULTILINE)
+    rx_hybrid_vlan = re.compile(
+        r"^Hybrid Native Mode VLAN: (?P<native_vlan>\d+)", re.MULTILINE)
     rx_link = re.compile(
         r"^\s*LINK: (?P<mac>\S+) Mtu:(?P<mtu>\d+) \<(?P<options>.+?)\>",
         re.MULTILINE)
@@ -61,7 +62,7 @@ class Script(BaseScript):
     def get_stp(self):
         try:
             r = []
-            v = self.cli("show spanning-tree")
+            v = self.cli("show spanning-tree", cached=True)
             for match in self.rx_stp.finditer(v):
                 r += [self.profile.convert_interface_name(match.group("port"))]
             return r
@@ -80,7 +81,7 @@ class Script(BaseScript):
     def get_oam(self):
         try:
             r = []
-            v = self.cli("show link-oam")
+            v = self.cli("show link-oam", cached=True)
             for match in self.rx_oam.finditer(v):
                 r += [match.group("port") + " " + match.group("port_num")]
             return r
@@ -90,8 +91,6 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        descr = []
-        adm_status = []
         gvrp = self.get_gvrp()
         stp = self.get_stp()
         ctp = self.get_ctp()
@@ -143,7 +142,14 @@ class Script(BaseScript):
             elif match1.group("mode") == "trunk":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
                 sub["tagged_vlans"] = \
-                self.expand_rangelist(match1.group("vlans").strip())
+                    self.expand_rangelist(match1.group("vlans").strip())
+            elif match1.group("mode") == "hybrid":
+                sub["untagged_vlan"] = int(match1.group("native_vlan"))
+                sub["tagged_vlans"] = \
+                    self.expand_rangelist(match1.group("vlans").strip())
+                match2 = self.rx_hybrid_vlan.search(s)
+                if match2:
+                    sub["untagged_vlan"] = int(match2.group("native_vlan"))
             else:
                 raise self.NotSupportedError()
             iface["subinterfaces"] += [sub]
@@ -151,9 +157,9 @@ class Script(BaseScript):
         v = self.cli("show ip interface brief")
         for match in self.rx_vlan.finditer(v):
             vlan_id = match.group("vlan")
-            l = self.cli("show interface vlan %s" % vlan_id)
+            ll = self.cli("show interface vlan %s" % vlan_id)
             ifname = "VLAN%s" % vlan_id
-            match1 = self.rx_link.search(l)
+            match1 = self.rx_link.search(ll)
             iface = {
                 "name": ifname,
                 "type": "SVI",
@@ -170,11 +176,11 @@ class Script(BaseScript):
                     "vlan_ids": [int(vlan_id)]
                 }]
             }
-            match1 = self.rx_ipv4.search(l)
+            match1 = self.rx_ipv4.search(ll)
             if match1:
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv4"]
                 iface["subinterfaces"][0]["ipv4_addresses"] = [match1.group("ip")]
-            match1 = self.rx_ipv6.search(l)
+            match1 = self.rx_ipv6.search(ll)
             if match1:
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
                 iface["subinterfaces"][0]["ipv6_addresses"] = [match1.group("ip")]

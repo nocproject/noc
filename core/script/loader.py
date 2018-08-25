@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Script loader
-#----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -15,8 +16,9 @@ import threading
 import os
 import re
 # NOC modules
-from base import BaseScript
 from noc.core.profile.loader import GENERIC_PROFILE
+from .base import BaseScript
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -48,25 +50,26 @@ class ScriptLoader(object):
                 except Exception as e:
                     logger.error("Error in script name \"%s\": %s", name, e)
                     return None
-                if os.path.exists(
-                        os.path.join(
-                            "custom", "sa", "profiles", vendor, system,
-                            "%s.py" % sn
-                        )
-                ):
-                    # Custom script
-                    module_name = "noc.custom.sa.profiles.%s" % name
-                elif os.path.exists(
-                        os.path.join(
-                            "sa", "profiles", vendor, system,
-                            "%s.py" % sn
-                        )
-                ):
-                    # Common script
-                    module_name = "noc.sa.profiles.%s" % name
+                is_generic = False
+                for p in config.get_customized_paths("", prefer_custom=True):
+                    if os.path.exists(
+                            os.path.join(
+                                p, "sa", "profiles", vendor, system,
+                                "%s.py" % sn
+                            )
+                    ):
+                        if p:
+                            # Custom script
+                            base_name = os.path.basename(os.path.dirname(p))
+                        else:
+                            # Common script
+                            base_name = "noc"
+                        module_name = "%s.sa.profiles.%s" % (base_name, name)
+                        break
                 else:
                     # Generic script
                     module_name = "noc.sa.profiles.Generic.%s" % sn
+                    is_generic = True
                 try:
                     sm = __import__(module_name, {}, {}, "*")
                     for n in dir(sm):
@@ -76,7 +79,14 @@ class ScriptLoader(object):
                             issubclass(o, BaseScript) and
                             o.__module__ == sm.__name__
                         ):
-                            script = o
+                            if is_generic:
+                                # Create subclass with proper name
+                                script = type("Script", (o,), {
+                                    "name": name
+                                })
+                                script.__module__ = "noc.sa.profiles.%s" % name
+                            else:
+                                script = o
                             break
                     if not script:
                         logger.error("Script not found: %s", name)
@@ -123,22 +133,16 @@ class ScriptLoader(object):
                         if s.strip()
                     ]
                     ns.add("%s.%s" % (GENERIC_PROFILE, gn))
-        # Load custom scripts
+        # Load custom scripts, Load common scripts
         profiles = set()
-        for path in glob.glob("custom/sa/profiles/*/*/*.py"):
-            vendor, system, name = path.split(os.sep)[-3:]
-            name = name[:-3]
-            if name != "__init__":
-                ns.add("%s.%s.%s" % (vendor, system, name))
-                profiles.add("%s.%s" % (vendor, system))
-        # Load common scripts
-        profiles = set()
-        for path in glob.glob("sa/profiles/*/*/*.py"):
-            vendor, system, name = path.split(os.sep)[-3:]
-            name = name[:-3]
-            if name != "__init__":
-                ns.add("%s.%s.%s" % (vendor, system, name))
-                profiles.add("%s.%s" % (vendor, system))
+        for gx in config.get_customized_paths(os.path.join("sa", "profiles"), prefer_custom=True):
+            gx = os.path.join(gx, "*", "*", "*.py")
+            for path in glob.glob(gx):
+                vendor, system, name = path.split(os.sep)[-3:]
+                name = name[:-3]
+                if name != "__init__":
+                    ns.add("%s.%s.%s" % (vendor, system, name))
+                    profiles.add("%s.%s" % (vendor, system))
         # Apply generic scripts
         for p in profiles:
             for g in generics:
@@ -171,6 +175,7 @@ class ScriptLoader(object):
         if not self.all_scripts:
             self.find_scripts()
         return name in self.all_scripts
+
 
 # Create singleton object
 loader = ScriptLoader()

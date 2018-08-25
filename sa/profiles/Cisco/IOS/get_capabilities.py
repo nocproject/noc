@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_capabilities_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,15 +41,23 @@ class Script(BaseScript):
     ]
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
         r = self.cli("show lldp neighbors")
         return "% LLDP is not enabled" not in r
 
+    def has_cdp_snmp(self):
+        """
+        Check box has cdp enabled
+        """
+        # ciscoCdpMIB::cdpGlobalRun
+        r = self.snmp.get("1.3.6.1.4.1.9.9.23.1.3.1.0")
+        return r == 1
+
     @false_on_cli_error
-    def has_cdp(self):
+    def has_cdp_cli(self):
         """
         Check box has cdp enabled
         """
@@ -57,7 +65,7 @@ class Script(BaseScript):
         return "% CDP is not enabled" not in r
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """
@@ -65,18 +73,38 @@ class Script(BaseScript):
         return "% OAM is not enabled" not in r  # @todo:  not tested
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has stp enabled
         """
         r = self.cli("show spanning-tree")
-        if ("No spanning tree instance exists" in r
-            or "No spanning tree instances exist" in r):
+        if ("No spanning tree instance exists" in r or
+                "No spanning tree instances exist" in r):
             return False
         return True
 
     @false_on_cli_error
-    def has_ipv6(self):
+    def has_udld_cli(self):
+        """
+        Check box has stp enabled
+        """
+        r = self.cli("show udld  neighbors")
+        if len(r.splitlines()) > 2:
+            return True
+        return False
+
+    @false_on_cli_error
+    def has_bfd_cli(self):
+        """
+        Check box has bfd enabled
+        """
+        r = self.cli("show bfd summary")
+        if not r:
+            return False
+        return True
+
+    @false_on_cli_error
+    def has_ipv6_cli(self):
         """
         Check box has IPv6 ND enabled
         """
@@ -110,7 +138,7 @@ class Script(BaseScript):
         return sum(1 for _ in self.rx_ip_sla_probe_entry.finditer(r))
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check LACP Status
         :return:
@@ -118,7 +146,16 @@ class Script(BaseScript):
         r = self.cli("show lacp counters")
         return r
 
-    def execute_platform(self, caps):
+    @false_on_cli_error
+    def has_rep_cli(self):
+        """
+        Check REP status
+        :return:
+        """
+        r = self.cli("show rep topology")
+        return bool(r)
+
+    def execute_platform_cli(self, caps):
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
         if sla_v is not None:
@@ -132,5 +169,3 @@ class Script(BaseScript):
             np = self.get_ip_sla_probes()
             if np:
                 caps["Cisco | IP | SLA | Probes"] = np
-            if self.has_lacp():
-                caps["Network | LACP"] = True

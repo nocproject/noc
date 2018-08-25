@@ -1,0 +1,84 @@
+{
+  "id": 92363,
+  "title": "Disk | Total size",
+  "span": 6,
+  "type": "graph",
+  "datasource": null,
+  "targets": [
+    {
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT \n  $timeSeries as t, \n  avg(tmp13) as `Disk | Total`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "refId": "A",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "disk",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "renderer": "flot",
+  "yaxes": [
+    {
+      "label": null,
+      "show": true,
+      "logBase": 1,
+      "min": null,
+      "max": null,
+      "format": "bytes"
+    },
+    {
+      "label": null,
+      "show": true,
+      "logBase": 1,
+      "min": null,
+      "max": null,
+      "format": "short"
+    }
+  ],
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "lines": true,
+  "fill": 1,
+  "linewidth": 1,
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10,
+  "points": false,
+  "pointradius": 5,
+  "bars": false,
+  "stack": false,
+  "percentage": false,
+  "legend": {
+    "show": true,
+    "values": true,
+    "min": true,
+    "max": true,
+    "current": true,
+    "total": false,
+    "avg": true,
+    "alignAsTable": true
+  },
+  "nullPointMode": "null",
+  "steppedLine": false,
+  "tooltip": {
+    "value_type": "individual",
+    "shared": true,
+    "sort": 0
+  },
+  "timeFrom": null,
+  "timeShift": null,
+  "aliasColors": {
+    "Disk | Total": "#d683ce"
+  },
+  "seriesOverrides": [],
+  "thresholds": [],
+  "links": []
+}

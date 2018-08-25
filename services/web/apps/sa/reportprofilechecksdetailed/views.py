@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import re
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
@@ -15,7 +16,8 @@ from noc.main.models.pool import Pool
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.core.profile.loader import GENERIC_PROFILE
@@ -24,8 +26,14 @@ from noc.core.profile.loader import GENERIC_PROFILE
 class ReportForm(forms.Form):
     pool = forms.ModelChoiceField(
         label=_("Managed Objects Pool"),
-        required=True,
+        required=False,
+        help_text="Pool for choice",
         queryset=Pool.objects.order_by("name"))
+    selector = forms.ModelChoiceField(
+        label=_("Managed Objects Selector"),
+        required=False,
+        help_text="Selector for choice",
+        queryset=ManagedObjectSelector.objects.order_by("name"))
 
 
 class ReportFilterApplication(SimpleReport):
@@ -33,7 +41,7 @@ class ReportFilterApplication(SimpleReport):
     form = ReportForm
     try:
         default_pool = Pool.objects.get(name="default")
-    except:
+    except Exception:
         default_pool = Pool.objects.all()[0]
     predefined_reports = {
         "default": PredefinedReport(
@@ -43,16 +51,32 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
-    def get_data(self, request, pool=Pool.objects.filter()[0], avail_status=None, **kwargs):
+    re_cli = re.compile("^Failed to guess CLI credentials")
+
+    def get_data(self, request, pool=None,
+                 selector=None, avail_status=None, **kwargs):
         data = []
 
-        data += [SectionRow(name=pool.name)]
-
         mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
+        if pool:
+            base = ManagedObject.objects.filter(pool=pool)
+            data += [SectionRow(name=pool.name)]
+        elif selector:
+            base = ManagedObject.objects.filter(selector.Q)
+            data += [SectionRow(name=selector.name)]
+        else:
+            return self.from_dataset(
+                title=self.title,
+                columns=[
+                    _("Managed Object"), _("Address"), _("Profile"), _("Hostname"),
+                    _("Auth Profile"), _("Username"), _("SNMP Community"),
+                    _("Avail"), _("Error")
+                ],
+                data=data)
 
-        is_managed = ManagedObject.objects.filter(is_managed=True, pool=pool).exclude(object_profile__in=mnp_in)
-        is_not_man = ManagedObject.objects.filter(is_managed=False, pool=pool)
-        is_not_resp = ManagedObject.objects.filter(is_managed=True, pool=pool, object_profile__in=mnp_in)
+        is_managed = base.filter(is_managed=True).exclude(object_profile__in=mnp_in)
+        is_not_man = base.filter(is_managed=False)
+        is_not_resp = base.filter(is_managed=True, object_profile__in=mnp_in)
         if not request.user.is_superuser:
             is_managed = is_managed.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_man = is_not_man.filter(administrative_domain__in=UserAccess.get_domains(request.user))
@@ -84,17 +108,19 @@ class ReportFilterApplication(SimpleReport):
              "_id": {"$in": is_managed_alive_in}})
         bad_cli_cred = get_db()["noc.joblog"].with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED).find(
-            {"problems.suggest_cli.": "Failed to guess CLI credentials",
+            {"problems.suggest_cli.": self.re_cli,
              "_id": {"$in": is_managed_ng_in}})
-        mos_id = list(is_managed.values_list("id", flat=True))
-        mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
+        mos_id = list(is_managed.order_by("id").values_list("id", flat=True))
+        mo_hostname = ReportObjectsHostname1(sync_ids=mos_id)
+        mo_hostname = mo_hostname.get_dictionary()
         for b in is_not_alived_c:
             mo = ManagedObject.get_by_id(b["object"])
             data += [(
                 mo.name,
                 mo.address,
                 mo.profile.name,
-                mo_hostname[mo.id],
+                mo.administrative_domain.name,
+                mo_hostname.get(mo.id, ""),
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -107,8 +133,9 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
+                mo.administrative_domain.name,
                 mo.profile.name,
-                mo_hostname[mo.id],
+                mo_hostname.get(mo.id, ""),
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -120,8 +147,9 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
+                mo.administrative_domain.name,
                 mo.profile.name,
-                mo_hostname[mo.id],
+                mo_hostname.get(mo.id, ""),
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -132,7 +160,7 @@ class ReportFilterApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Profile"), _("Hostname"),
+                _("Managed Object"), _("Address"), _("Administrative Domain"), _("Profile"), _("Hostname"),
                 _("Auth Profile"), _("Username"), _("SNMP Community"),
                 _("Avail"), _("Error")
             ],

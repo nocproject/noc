@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.inv plugins
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import logging
 # NOC modules
 from noc.inv.models.object import Object
+
 
 class InvPlugin(object):
     name = None
@@ -43,4 +44,3 @@ class InvPlugin(object):
 
     def get_data(self, request, object):
         return None
-

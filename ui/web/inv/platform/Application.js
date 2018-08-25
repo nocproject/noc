@@ -15,7 +15,7 @@ Ext.define("NOC.inv.platform.Application", {
     model: "NOC.inv.platform.Model",
     search: true,
 
-    initComponent: function() {
+    initComponent: function () {
         var me = this;
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
@@ -45,6 +45,31 @@ Ext.define("NOC.inv.platform.Application", {
                     width: 30,
                     renderer: NOC.render.Bool,
                     sortable: false
+                },
+                {
+                    text: __("sysObjectID"),
+                    dataIndex: "snmp_sysobjectid",
+                    width: 200
+                },
+                {
+                    text: __("Start of Sale"),
+                    dataIndex: "start_of_sale",
+                    width: 150
+                },
+                {
+                    text: __("End of Sale"),
+                    dataIndex: "end_of_sale",
+                    width: 150
+                },
+                {
+                    text: __("End of Support"),
+                    dataIndex: "end_of_support",
+                    width: 150
+                },
+                {
+                    text: __("End of Extended Support"),
+                    dataIndex: "end_of_xsupport",
+                    width: 150
                 }
             ],
 
@@ -65,13 +90,70 @@ Ext.define("NOC.inv.platform.Application", {
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: __("UUID")
+                    fieldLabel: __("UUID"),
+                    allowBlank: true
                 },
                 {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
-                    allowBlank: false
+                    allowBlank: true
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("Support"),
+                    items: [
+                        {
+                            name: "start_of_sale",
+                            xtype: "datefield",
+                            startDay: 1,
+                            fieldLabel: __("Start of Sale"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            format: "Y-m-d"
+                        },
+                        {
+                            name: "end_of_sale",
+                            xtype: "datefield",
+                            startDay: 1,
+                            fieldLabel: __("End of Sale"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            format: "Y-m-d"
+                        },
+                        {
+                            name: "end_of_support",
+                            xtype: "datefield",
+                            startDay: 1,
+                            fieldLabel: __("End of Support"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            format: "Y-m-d"
+                        },
+                        {
+                            name: "end_of_xsupport",
+                            xtype: "datefield",
+                            startDay: 1,
+                            fieldLabel: __("End of Extended Support"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            format: "Y-m-d"
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("SNMP OID"),
+                    items: [
+                        {
+                            name: "snmp_sysobjectid",
+                            xtype: "textfield",
+                            fieldLabel: "sysObjectID.0",
+                            allowBlank: true,
+                            regex: /^1.3.6(\.\d+)+$/,
+                            uiStyle: "large"
+                        }
+                    ]
                 }
             ],
 
@@ -98,7 +180,7 @@ Ext.define("NOC.inv.platform.Application", {
         me.callParent();
     },
 
-    onJSON: function() {
+    onJSON: function () {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Interface loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import sys
 import glob
 import logging
@@ -14,8 +15,9 @@ import inspect
 import threading
 import os
 import re
-## NOC modules
-from base import BaseInterface
+# NOC modules
+from .base import BaseInterface
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -42,16 +44,18 @@ class InterfaceLoader(object):
                 logger.error("Invalid interface name")
                 return None
             imname = name.lower()
-            if os.path.exists(
-                    os.path.join(
-                        "custom", "sa", "interfaces", "%s.py" % imname)):
-                # Custom script
-                module_name = "noc.custom.sa.interfaces.%s" % imname
-            elif os.path.exists(
-                    os.path.join(
-                        "sa", "interfaces", "%s.py" % imname)):
-                # Common script
-                module_name = "noc.sa.interfaces.%s" % imname
+            for p in config.get_customized_paths("", prefer_custom=True):
+                if os.path.exists(
+                        os.path.join(
+                            p, "sa", "interfaces", "%s.py" % imname)):
+                    if p:
+                        # Custom script
+                        base_name = os.path.basename(os.path.dirname(config.path.custom_path))
+                    else:
+                        # Common script
+                        base_name = "noc"
+                    module_name = "%s.sa.interfaces.%s" % (base_name, imname)
+                    break
             else:
                 logger.error("Interface not found: %s", name)
                 self.interfaces[name] = None
@@ -92,7 +96,7 @@ class InterfaceLoader(object):
         Scan all available scripts
         """
         ns = set()
-        for gx in ["sa/interfaces/*.py", "custom/sa/interfaces/*.py"]:
+        for gx in config.get_customized_paths(os.path.join("sa", "interfaces", "*.py")):
             for path in glob.glob(gx):
                 if path in ("base.py", "__init__.py"):
                     continue
@@ -122,6 +126,7 @@ class InterfaceLoader(object):
         if not self.all_interfaces:
             self.find_interfaces()
         return name in self.all_interfaces
+
 
 # Create singleton object
 loader = InterfaceLoader()

@@ -19,6 +19,7 @@ class CoveredObject(Document):
     meta = {
         "collection": "noc.coveredobjects",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["coverage", "object"]
     }
     coverage = PlainReferenceField(Coverage)

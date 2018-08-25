@@ -21,6 +21,7 @@ class ForwardingInstance(Document):
     meta = {
         "collection": "noc.forwardinginstances",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["managed_object"]
     }
     managed_object = ForeignKeyField(ManagedObject)

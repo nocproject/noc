@@ -45,6 +45,8 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             + "</div></tpl>"
             + "<tpl if='container_path'><div><span class='noc-alarm-label'>Location</span> {container_path}"
             + "</div></tpl>"
+            + "<tpl if='address_path'><div><span class='noc-alarm-label'>Address</span> {address_path}"
+            + "</div></tpl>"
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
@@ -550,9 +552,10 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
     onShowObject: function() {
         var me = this;
-        window.open(
-            "/api/card/view/managedobject/" + me.data.managed_object + "/"
-        );
+        NOC.launch("sa.managedobject", "history", {
+            args: [me.data.managed_object]
+        });
+
     },
     onEscalateObject: function() {
         var me = this;

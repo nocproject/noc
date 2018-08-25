@@ -25,6 +25,8 @@ class Script(BaseScript):
 
     def execute(self):
         ver = self.cli("show system information 1", cached=True)
+        if "Unit 1 is unavaible" in ver:
+            ver = self.cli("show system information 2", cached=True)
         match = self.rx_version.search(ver)
         version = match.group("version")
         match = self.rx_serial.search(ver)

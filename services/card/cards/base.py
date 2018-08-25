@@ -14,16 +14,16 @@ from jinja2 import Template, Environment
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
+from noc.config import config
+from noc.core.perf import metrics
 
 
 class BaseCard(object):
     name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
-    TEMPLATE_PATH = [
-        "custom/services/card/templates/",
-        "services/card/templates/"
-    ]
+    TEMPLATE_PATH = config.get_customized_paths(os.path.join("services", "card", "templates"),
+                                                prefer_custom=True)
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
     DEFAULT_SERVICE_TITLE_TEMPLATE = "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> {%endif %}{{ object.profile.name }}: {{ object.order_id }}"
@@ -73,6 +73,7 @@ class BaseCard(object):
             try:
                 return self.get_object(id)
             except self.model.DoesNotExist:
+                metrics["error", ("type", "no_such_object")] += 1
                 return None
         else:
             return None
@@ -216,6 +217,7 @@ class BaseCard(object):
         """
         from noc.inv.models.object import Object
         if not object.container:
+            metrics["error", ("type", "no_such_container")] += 1
             return _("N/A")
         path = []
         c = object.container
@@ -230,6 +232,7 @@ class BaseCard(object):
             if c:
                 c = Object.get_by_id(c)
         if not path:
+            metrics["error", ("type", "no_such_path")] += 1
             return _("N/A")
         return ", ".join(reversed(path))
 

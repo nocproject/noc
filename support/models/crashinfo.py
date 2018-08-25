@@ -26,9 +26,10 @@ class Crashinfo(Document):
     meta = {
         "collection": "noc.crashinfo",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [("status", "timestamp")]
     }
-    uuid = UUIDField(unique=True, primary_key=True)
+    uuid = UUIDField(primary_key=True)
     timestamp = DateTimeField(required=True)
     status = StringField(
         choices=[

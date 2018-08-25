@@ -42,6 +42,7 @@ class PhoneNumber(Document):
     meta = {
         "collection": "noc.phonenumbers",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "linked_numbers.number"
         ]

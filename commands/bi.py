@@ -12,11 +12,13 @@ import os
 import datetime
 import gzip
 import time
+from pymongo.errors import OperationFailure
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
+from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
 from noc.core.clickhouse.dictionary import Dictionary
 from noc.config import config
 from noc.core.service.shard import Sharder
@@ -31,11 +33,13 @@ class Command(BaseCommand):
 
     EXTRACTORS = [
         RebootsExtractor,
-        AlarmsExtractor
+        AlarmsExtractor,
+        ManagedObjectsExtractor
     ]
 
     # Extract by 1-day chunks
     EXTRACT_WINDOW = config.bi.extract_window
+    MIN_WINDOW = datetime.timedelta(seconds=2)
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -46,11 +50,17 @@ class Command(BaseCommand):
             help="Show only summary"
         )
         # extract command
-        extract_parser = subparsers.add_parser("extract")
+        extract = subparsers.add_parser("extract")
+        extract.add_argument(
+            "--use-archive",
+            action="store_true",
+            default=False,
+            help="Use archived collection for extract"
+        )
         # clean command
-        clean_parser = subparsers.add_parser("clean")
+        subparsers.add_parser("clean")
         # load command
-        load_parser = subparsers.add_parser("load")
+        subparsers.add_parser("load")
 
     def handle(self, cmd, data_prefix, *args, **options):
         self.DATA_PREFIX = data_prefix
@@ -76,23 +86,43 @@ class Command(BaseCommand):
             }
         }, upsert=True)
 
-    def handle_extract(self, *args, **options):
+    def handle_extract(self, use_archive=False, *args, **options):
         now = datetime.datetime.now()
         window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
+            if not ecls.is_enabled():
+                self.print("[%s] Not enabled, skipping" % ecls.name)
+                continue
             start = self.get_last_extract(ecls.name)
-            if not start:
+            if not start or ecls.is_snapshot:
                 start = ecls.get_start()
                 if not start:
-                    self.print("[%s] No data, skipping" % e.name)
+                    self.print("[%s] No data, skipping" % ecls.name)
                     continue
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
+            extracted_record = 0
+            is_exception = False
             while start < stop:
                 end = min(start + window, stop)
-                e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
-                self.print("[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True)
+                if hasattr(ecls, "use_archive"):
+                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX,
+                             use_archive=use_archive)
+                else:
+                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
                 t0 = time.time()
-                nr = e.extract()
+                try:
+                    nr = e.extract()
+                except OperationFailure as ex:
+                    window = window // 2
+                    if window < self.MIN_WINDOW:
+                        self.print("[%s] Window less two seconds. Too many element in interval. Fix it manually" %
+                                   e.name)
+                        self.die("Too many elements per interval")
+                    self.print("[%s] Mongo Exception: %s, switch window to: %s" % (e.name, ex, window))
+                    is_exception = True
+                    continue
+
+                self.print("[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True)
                 dt = time.time() - t0
                 if dt > 0.0:
                     self.print("%d records in %.3fs (%.2frec/s)" % (
@@ -102,6 +132,13 @@ class Command(BaseCommand):
                     self.print("no records")
                 self.set_last_extract(ecls.name, e.last_ts or end)
                 start += window
+
+                if is_exception:  # Save extracted record after exception
+                    extracted_record = nr
+                    is_exception = False
+                if window != datetime.timedelta(seconds=self.EXTRACT_WINDOW) and nr < extracted_record * 0.75:
+                    self.print("[%s] Restore Window to: %s" % (e.name, window * 2))
+                    window = min(window * 2, datetime.timedelta(seconds=self.EXTRACT_WINDOW))
 
     def handle_dictionaries(self, *args, **options):
         # Extract dictionaries
@@ -118,11 +155,15 @@ class Command(BaseCommand):
 
     def handle_clean(self, *args, **options):
         for ecls in self.EXTRACTORS:
+            if not ecls.is_enabled():
+                self.print("[%s] Not enabled, skipping" % ecls.name)
+                continue
             stop = self.get_last_extract(ecls.name)
             if not stop:
                 continue
             e = ecls(start=stop, stop=stop, prefix=self.DATA_PREFIX)
             e.clean()
+            self.print("[%s] Cleaned %s - %s ... " % (e.name, stop, stop), end="", flush=True)
 
     def handle_load(self):
         for fn in sorted(os.listdir(self.DATA_PREFIX)):

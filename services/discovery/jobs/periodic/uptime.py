@@ -24,4 +24,5 @@ class UptimeCheck(DiscoveryCheck):
         self.logger.debug("Received uptime: %s", uptime)
         if uptime:
             r = Uptime.register(self.object, uptime)
-            self.job.reboot_detected = not r
+            if not r:
+                self.set_artefact("reboot", True)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,11 @@ class Script(BaseScript):
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard = re.compile(
-        r"\[(?:Main_Board|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        r"\[(?:Main_Board|BackPlane_\d)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        re.DOTALL | re.MULTILINE | re.VERBOSE
+    )
+    rx_mainboard_ne = re.compile(
+        r"\[Board\sProperties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_subitem = re.compile(
@@ -66,6 +70,10 @@ class Script(BaseScript):
         r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\s*\n"
         r"MAC_ADDRESS\s+:\s+(?P<mac>\S+)\s*\n"
         r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n", re.MULTILINE)
+    rx_date_check = re.compile("\d+-\d+-\d+")
+    rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+", re.MULTILINE)
+    rx_header_repl = re.compile(r"((Slot|Brd|Subslot|Sft|Unit|SubCard)\s)")
+    rx_d = re.compile("\d+")
 
     unit = False
 
@@ -88,7 +96,6 @@ class Script(BaseScript):
 
     def parse_item_content(self, item, number, item_type):
         """Parse display elabel block"""
-        date_check = re.compile("\d+-\d+-\d+")
         match_body = self.rx_item_content2.search(item)
         if not match_body or match_body is None:
             self.logger.info("Port number %s not having asset" % number)
@@ -101,7 +108,7 @@ class Script(BaseScript):
             vendor = "NONAME"
         if " " in serial:
             serial = serial.split()[0]
-        if manufactured and part_no and date_check.match(manufactured):
+        if manufactured and part_no and self.rx_date_check.match(manufactured):
             manufactured = self.normalize_date(manufactured)
         else:
             manufactured = None
@@ -129,22 +136,52 @@ class Script(BaseScript):
             v_cli = "display elabel unit %s %s"
         elif self.match_version(platform__regex="^(S93..|AR[12].+)$"):
             v_cli = "display elabel %s %s"
-        try:
-            v = self.cli(v_cli % (slot_num, subcard_num))
-        except self.CLISyntaxError:
-            return []
+        if self.is_ne_platform and i_type != "CHASSIS":
+            try:
+                v = self.cli("display elabel %s" % slot_num)
+            except self.CLISyntaxError:
+                return []
+        else:
+            try:
+                v = self.cli(v_cli % (slot_num, subcard_num))
+            except self.CLISyntaxError:
+                if slot_num == 0:
+                    try:
+                        # found on AR0B0024BA model
+                        v = self.cli("display elabel backplane")
+                        i_type = "CHASSIS"
+                    except self.CLISyntaxError:
+                        return []
+                else:
+                    try:
+                        # found on `Quidway S9312` 5.130 (V200R003C00SPC500)
+                        v = self.cli("display elabel %s" % slot_num)
+                    except self.CLISyntaxError:
+                        return []
+
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
 
-        if i_type == "CHASSIS":
-            f = re.search(self.rx_mainboard, v)
-            sh = self.parse_item_content(f.group("body"), slot_num, "CHASSIS")
-            r.append(sh)
+        if self.is_ne_platform:
+            if i_type == "CHASSIS":
+                v = self.cli("display elabel backplane")
+                f = self.rx_mainboard_ne.search(v)
+                r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+            else:
+                # Do not parse empty lines
+                if v.strip():
+                    r.append(self.parse_item_content(v, slot_num, i_type))
         else:
-            r.append(self.parse_item_content(v, subcard_num, i_type))
+            if i_type == "CHASSIS":
+                f = self.rx_mainboard.search(v)
+                r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
+            else:
+                # Do not parse empty lines
+                if v.strip():
+                    r.append(self.parse_item_content(v, subcard_num, i_type))
 
-        for f in re.finditer(self.rx_port, v):
+        for f in self.rx_port.finditer(v):
             # port block, search XCVR
             num = f.group("port_num")
             if f.group("body") == '':
@@ -180,6 +217,8 @@ class Script(BaseScript):
             # Detect slot number
             if "Slot" in i:
                 i_slot = i["Slot"]
+            elif "Slot#" in i:
+                i_slot = i["Slot#"]
             elif "Unit#" in i:
                 i_slot = i["Unit#"]
             elif "SlotNo." in i:
@@ -226,25 +265,20 @@ class Script(BaseScript):
                 continue
             else:
                 inv.extend(self.part_parse(i_type, slot_num, i_sub))
-            """
-            inv += [{
-                "type": type,
-                "number": number,
-                "part_no": part_no,
-                "vendor": "HUAWEI"
-            }]
-            """
+            # inv += [{
+            #     "type": type,
+            #     "number": number,
+            #     "part_no": part_no,
+            #     "vendor": "HUAWEI"
+            # }]
 
         return inv
 
-    @staticmethod
-    def parse_table(s):
+    def parse_table(self, s):
         """List of Dict [{column1: row1, column2: row2}, ...]"""
-        rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+", re.MULTILINE)
-        rx_header_repl = re.compile(r"((Slot|Brd|Subslot|Sft|Unit|SubCard)\s)")
         header_first_line = False
 
-        if not rx_header_start.search(s):
+        if not self.rx_header_start.search(s):
             # if not header splitter in table
             header_first_line = True
 
@@ -258,37 +292,37 @@ class Script(BaseScript):
             # Chassis: S5328C-EI-24S's Device status:
             ch = s.pop(0)
             chassis = ch.split("'")[0]
-            r.append({"Type": "CHASSIS",
-                      "Slot": 0,
-                      "Sub": "-",
-                      "part_no": ch.split("'")[0]})
+            r.append({
+                "Type": "CHASSIS",
+                "Slot": 0,
+                "Sub": "-",
+                "part_no": ch.split("'")[0]
+            })
         elif "Unit" in s[0]:
             # @todo Unit devices
             s.pop(0)
 
-        for l in s:
-            if not l.strip():
+        for ll in s:
+            if not ll.strip():
                 continue
             if header_first_line:
-                """
-                If S85XX column with spaces:
-                Slot No.   Brd Type        Brd Status   Subslot Num    Sft Ver
-                Merge word
-                """
-                l = rx_header_repl.sub(r"\g<2>", l)
-                columns = [c.strip() for c in l.split(" ") if c]
+                # If S85XX column with spaces:
+                # Slot No.   Brd Type        Brd Status   Subslot Num    Sft Ver
+                # Merge word
+                ll = self.rx_header_repl.sub(r"\g<2>", ll)
+                columns = [c.strip() for c in ll.split(" ") if c]
                 header_first_line = False
                 continue
-            if rx_header_start.match(l):
+            if self.rx_header_start.match(ll):
                 if " #" in l_old:
                     # If Slot # in first column name - strip whitespace
-                    l_old = rx_header_repl.sub(r"\g<2>", l_old)
+                    l_old = self.rx_header_repl.sub(r"\g<2>", l_old)
                 columns = l_old.split()
             elif columns:
-                """Fetch cells"""
-                row = l.strip().split()
-                if len(l.strip().split()) != len(columns):
-                    """First column is empty"""
+                # Fetch cells
+                row = ll.strip().split()
+                if len(ll.strip().split()) != len(columns):
+                    # First column is empty
                     row.insert(0, "-")
                 # else:
                 #    chassis = True
@@ -301,20 +335,18 @@ class Script(BaseScript):
 
                 r.append(dict(zip(columns, row)))
                 # r.append([l[f:t].strip() for f,t in columns])
-            l_old = l
+            l_old = ll
         return r
 
-    @staticmethod
-    def normalize_date(date):
+    def normalize_date(self, date):
         """Normalize date in input to YYYY-MM-DD"""
         # @todo use datetime.strftime()
-        d = re.compile("\d+")
         result = date
         need_edit = False
         parts = date.split('-')
         year = int(parts[0])
         month = int(parts[1])
-        day = int(d.search(parts[2]).group(0))
+        day = int(self.rx_d.search(parts[2]).group(0))
         if month < 10:
             month = '0' + str(month)
             need_edit = True
@@ -322,8 +354,10 @@ class Script(BaseScript):
             day = '0' + str(day)
             need_edit = True
         if len(str(year)) < 4:
-            year = "2" + "0" * (3-len(str(year))) + str(year)
-            need_edit = True
+            year = "2" + "0" * (3 - len(str(year))) + str(year)
+        # if year < 100:
+        #     year = "2%03d" % year
+        #     need_edit = True
         if need_edit:
             parts = [year, month, day]
             result = '-'.join([str(el) for el in parts])
@@ -338,7 +372,7 @@ class Script(BaseScript):
         :return: type, number, part_no
         :rtype: list
         """
-        cx_600_t = ["LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
+        cx_600_t = ["IPU", "LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
         self.logger.info("Getting type %s, %s, %s", slot, sub, part_no)
 
         try:
@@ -374,6 +408,12 @@ class Script(BaseScript):
             return part_no, slot, None
         elif part_no.startswith("LE0"):
             return "FRU", slot, part_no
+        elif part_no.startswith("SAE"):
+            return "FRU", slot, part_no
+        elif part_no.startswith("CMU"):
+            return "FRU", slot, part_no
+        elif part_no.startswith("SRU"):
+            return "SRU", slot, part_no
         elif part_no.startswith("AR"):
             # AR Series ISR, Examples:
             # "SIC": ["AR0MSEG1CA00"], "WSIC": ["AR01WSX220A"], "XSIC": ["AR01XSX550A"], "SRU": ["AR01SRU2C"],

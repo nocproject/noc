@@ -1,5 +1,0 @@
-[sa_public]
-enabled = true
-type = sa
-private = false
-repo = https://bitbucket.org/nocproject/noc-sa-beef-public

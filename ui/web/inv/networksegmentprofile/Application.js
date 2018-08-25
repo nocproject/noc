@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegmentprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegmentprofile.Application");
@@ -9,9 +9,15 @@ console.debug("Defining NOC.inv.networksegmentprofile.Application");
 Ext.define("NOC.inv.networksegmentprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.inv.networksegmentprofile.Model"
+        "NOC.inv.networksegmentprofile.Model",
+        "NOC.inv.networksegmentprofile.LookupField",
+        "NOC.main.style.LookupField",
+        "NOC.vc.vlanprofile.LookupField"
     ],
     model: "NOC.inv.networksegmentprofile.Model",
+    search: true,
+    rowClassField: "row_class",
+
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
@@ -19,6 +25,18 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                 {
                     text: __("Name"),
                     dataIndex: "name",
+                    width: 150
+                },
+                {
+                    text: __("VLAN Discovery"),
+                    dataIndex: "enable_vlan",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Style"),
+                    dataIndex: "style",
+                    renderer: NOC.render.Lookup("style"),
                     flex: 1
                 }
             ],
@@ -35,14 +53,26 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
-                    name: "mac_discovery_interval",
+                    name: "style",
+                    xtype: "main.style.LookupField",
+                    fieldLabel: __("Style"),
+                    allowBlank: true
+                },
+                {
+                    name: "discovery_interval",
                     xtype: "numberfield",
-                    fieldLabel: __("MAC discovery interval"),
+                    fieldLabel: __("Discovery interval"),
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "small"
+                },
+                {
+                    name: "autocreated_profile",
+                    xtype: "inv.networksegmentprofile.LookupField",
+                    fieldLabel: __("Autocreated Profile"),
+                    allowBlank: true
                 },
                 {
                     name: "mac_restrict_to_management_vlan",
@@ -108,8 +138,11 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                                     ["lacp", "LACP"],
                                     ["lldp", "LLDP"],
                                     ["oam", "OAM"],
+                                    ["rep", "REP"],
                                     ["stp", "STP"],
                                     ["udld", "UDLD"],
+                                    ["fdp", "FDP"],
+                                    ["bfd", "BFD"],
                                     ["mac", "MAC"],
                                     ["nri", "NRI"]
                                 ]
@@ -123,6 +156,17 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                             flex: 1
                         }
                     ]
+                },
+                {
+                    name: "enable_vlan",
+                    xtype: "checkbox",
+                    boxLabel: __("Enable VLAN Discovery")
+                },
+                {
+                    name: "default_vlan_profile",
+                    xtype: "vc.vlanprofile.LookupField",
+                    fieldLabel: __("Default VLAN Profile"),
+                    allowBlank: true
                 }
             ]
         });

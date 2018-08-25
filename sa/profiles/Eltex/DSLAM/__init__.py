@@ -3,7 +3,7 @@
 # Vendor: Eltex
 # OS:     DSLAM
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
@@ -30,7 +30,8 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "save"
-    rx_header = re.compile("(\S+)")
+
+    rx_header = re.compile("^\-+$")
 
     def iter_items(self, s):
         def iter_lines(s):
@@ -40,31 +41,35 @@ class Profile(BaseProfile):
                 i = lines.index("") + 1
             else:
                 i = 0
-            ll = len(lines) - 2
+            ll = len(lines) - 1
             while i <= ll:
-                yield lines[i], lines[i + 1]
-                i += 3
-
-        def parse_line(key, value):
-            pos = [match.start() for match in self.rx_header.finditer(key)]
-            ranges = [(s, e) for s, e in zip(pos, pos[1:])]
-            if not ranges:
-                return {}
-            ranges += [(ranges[-1][1], None)]
-            d = {}
-            for s, e in ranges:
-                d[key[s:e].strip()] = value[s:e].strip()
-            return d
-
-        d = {}
-        for kl, vl in iter_lines(s):
-            if not vl or not kl:
+                line = lines[i]
+                line = ''.join('%-8s' % item for item in line.split('\t'))
+                yield line.split()
+                i += 1
+        d = []
+        for line in iter_lines(s):
+            match = self.rx_header.search(line[0])
+            if match:
                 continue
-            if kl[0] == " ":
-                d.update(parse_line(kl, vl))
-            else:
-                if d:
-                    yield d
-                d = parse_line(kl, vl)
-        if d:
-            yield d
+            d += [line]
+        return d
+
+    matchers = {
+        "is_platform_MXA24": {
+            "platform": {
+                "$regex": r"^MXA24"
+            }
+        },
+        "is_platform_MXA32": {
+            "platform": {
+                "$regex": r"^MXA32"
+            }
+        },
+        "is_platform_MXA64": {
+            "platform": {
+                "$regex": r"^MXA64"
+            }
+
+        }
+    }

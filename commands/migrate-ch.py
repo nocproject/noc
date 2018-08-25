@@ -32,6 +32,7 @@ class Command(BaseCommand):
         self.host = host or None
         self.port = port or None
         self.connect()
+        self.create_dictionaries_db()
         self.ensure_db()
         changed = ensure_bi_models(connect=self.connect)
         changed |= ensure_pm_scopes(connect=self.connect)
@@ -54,6 +55,10 @@ class Command(BaseCommand):
         """
         self.print("Ensuring database")
         self.connect.ensure_db()
+
+    def create_dictionaries_db(self):
+        self.print("Ensuring Dictionary database")
+        self.connect.execute(post="CREATE DATABASE IF NOT EXISTS dictionaries ENGINE = Dictionary", nodb=True)
 
 
 if __name__ == "__main__":

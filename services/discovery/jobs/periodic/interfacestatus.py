@@ -12,6 +12,7 @@ import operator
 # Third-party modules
 import cachetools
 from pymongo import ReadPreference
+from pymongo.errors import BulkWriteError
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
@@ -68,8 +69,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
             self.logger.info("No interfaces with status discovery enabled. Skipping")
             return
         result = self.object.scripts.get_interface_status_ex()
-        bulk = Interface._get_collection().initialize_unordered_bulk_op()
-        nb = 0
+        collection = Interface._get_collection()
+        bulk = []
         for i in result:
             iface = get_interface(i["interface"])
             if not iface:
@@ -90,12 +91,16 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "Interface %s status has been changed" % i["interface"],
                 changes
             )
-            if changes:
-                nb += 1
             ostatus = i.get("oper_status")
             if iface.oper_status != ostatus and ostatus is not None:
                 self.logger.info("[%s] set oper status to %s",
                                  i["interface"], ostatus)
                 iface.set_oper_status(ostatus)
-        if nb:
-            bulk.execute()
+        if bulk:
+            self.logger.info("Commiting changes to database")
+            try:
+                collection.bulk_write(bulk, ordered=False)
+                # 1 bulk operations complete in 0ms: inserted=0, updated=1, removed=0
+                self.logger.info("Database has been synced")
+            except BulkWriteError as e:
+                self.logger.error("Bulk write error: '%s'", e.details)

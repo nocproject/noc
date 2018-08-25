@@ -14,6 +14,7 @@ class CollectionCache(Document):
     meta = {
         "collection": "noc.collectioncache",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["collection"]
     }
 

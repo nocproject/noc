@@ -18,11 +18,13 @@ from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
 from noc.core.model.decorator import on_delete_check
 from noc.core.model.fields import TagsField, DocumentReferenceField
+from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 
 
 @on_save
+@bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "auth_profile"),
     ("sa.ManagedObjectProfile", "cpe_auth_profile")
@@ -61,7 +63,7 @@ class AuthProfile(models.Model):
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.BigIntegerField(null=True, blank=True)
+    bi_id = models.BigIntegerField(unique=True)
 
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -110,25 +112,35 @@ class AuthProfile(models.Model):
 
 class AuthProfileSuggestSNMP(models.Model):
     class Meta:
+        verbose_name = "Auth Profile Suggest SNMP"
+        verbose_name_plural = "Auth Profile Suggest SNMP"
         db_table = "sa_authprofilesuggestsnmp"
         app_label = "sa"
 
-    auth_profile = models.ForeignKey(AuthProfile)
+    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile")
     snmp_ro = models.CharField(
         "RO Community", blank=True, null=True, max_length=64)
     snmp_rw = models.CharField(
         "RW Community", blank=True, null=True, max_length=64)
 
+    def __unicode__(self):
+        return self.auth_profile.name
+
 
 class AuthProfileSuggestCLI(models.Model):
     class Meta:
+        verbose_name = "Auth Profile Suggest CLI"
+        verbose_name_plural = "Auth Profile Suggest CLI"
         db_table = "sa_authprofilesuggestcli"
         app_label = "sa"
 
-    auth_profile = models.ForeignKey(AuthProfile)
+    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile")
     user = models.CharField(
         "User", max_length=32, blank=True, null=True)
     password = models.CharField(
         "Password", max_length=32, blank=True, null=True)
     super_password = models.CharField(
         "Super Password", max_length=32, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.auth_profile.name

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SA Script base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,35 +28,38 @@ from .context import (ConfigurationContextManager, CacheContextManager,
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.handler import get_handler
 from noc.core.mac import MAC
-from .beef import Beef
 from .error import (ScriptError, CLISyntaxError, CLIOperationError,
                     NotSupportedError, UnexpectedResultError)
 from noc.config import config
 from noc.core.span import Span
+from noc.core.matcher import match
 
 
-class BaseScript(object):
+class BaseScriptMetaclass(type):
+    """
+    Process @match decorators
+    """
+    def __new__(mcs, name, bases, attrs):
+        n = type.__new__(mcs, name, bases, attrs)
+        n._execute_chain = sorted(
+            (v for v in attrs.itervalues() if hasattr(v, "_seq")),
+            key=operator.attrgetter("_seq")
+        )
+        return n
+
+
+class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     """
     Service Activation script base class
     """
-    class __metaclass__(type):
-        """
-        Process @match decorators
-        """
-        def __new__(mcs, name, bases, attrs):
-            n = type.__new__(mcs, name, bases, attrs)
-            n._execute_chain = sorted(
-                (v for v in attrs.itervalues() if hasattr(v, "_seq")),
-                key=operator.attrgetter("_seq")
-            )
-            return n
-
     # Script name in form of <vendor>.<system>.<name>
     name = None
     # Default script timeout
     TIMEOUT = config.script.timeout
-    # Defeault session timeout
+    # Default session timeout
     SESSION_IDLE_TIMEOUT = config.script.session_idle_timeout
+    # Default access preferene
+    DEFAULT_ACCESS_PREFERENCE = "SC"
     # Enable call cache
     # If True, script result will be cached and reused
     # during lifetime of parent script
@@ -74,6 +77,7 @@ class BaseScript(object):
     # Sessions
     session_lock = Lock()
     session_cli = {}
+    session_mml = {}
     # In session mode when active CLI session exists
     # * True -- reuse session
     # * False -- close session and run new without session context
@@ -83,6 +87,9 @@ class BaseScript(object):
     # * True - keep CLI session for next script
     # * False - close CLI session
     keep_cli_session = True
+    # Script-level matchers.
+    # Override profile one
+    matchers = {}
 
     # Error classes shortcuts
     ScriptError = ScriptError
@@ -104,10 +111,14 @@ class BaseScript(object):
         "beef": "noc.core.script.cli.beef.BeefCLI"
     }
 
+    mml_protocols = {
+        "telnet": "noc.core.script.mml.telnet.TelnetMML"
+    }
+
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
                  version=None, parent=None, timeout=None,
-                 name=None, collect_beef=False,
+                 name=None,
                  session=None, session_idle_timeout=None):
         self.service = service
         self.tos = config.activator.tos
@@ -132,19 +143,13 @@ class BaseScript(object):
         self.start_time = None
         self.args = self.clean_input(args or {})
         self.cli_stream = None
-        if collect_beef:
-            self.beef = Beef(script=self.name)
-            self.logger.info("Collecting beef %s", self.beef.uuid)
-        else:
-            self.beef = None
+        self.mml_stream = None
         if self.parent:
             self.snmp = self.root.snmp
-            self.beef = self.parent.beef
+        elif self.is_beefed:
+            self.snmp = BeefSNMP(self)
         else:
-            if self.credentials.get("beef"):
-                self.snmp = BeefSNMP(self)
-            else:
-                self.snmp = SNMP(self, beef=self.beef)
+            self.snmp = SNMP(self)
         self.http = HTTP(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
@@ -160,6 +165,15 @@ class BaseScript(object):
         # Cached results of self.cli calls
         self.cli_cache = {}
         #
+        self.http_cache = {}
+        self.partial_result = None
+        # Tracking
+        self.to_track = False
+        self.cli_tracked_data = {}  # command -> [packets]
+        self.cli_tracked_command = None
+        # state -> [..]
+        self.cli_fsm_tracked_data = {}
+        #
         if not parent and version and not name.endswith(".get_version"):
             self.logger.debug("Filling get_version cache with %s",
                               version)
@@ -169,6 +183,9 @@ class BaseScript(object):
                 {},
                 version
             )
+        # Fill matchers
+        if not self.name.endswith(".get_version"):
+            self.apply_matchers()
         #
         if self.profile.setup_script:
             self.profile.setup_script(self)
@@ -176,6 +193,28 @@ class BaseScript(object):
     def __call__(self, *args, **kwargs):
         self.args = kwargs
         return self.run()
+
+    def apply_matchers(self):
+        """
+        Process matchers and apply is_XXX properties
+        :return:
+        """
+        def get_matchers(c, matchers):
+            return dict(
+                (m, match(c, matchers[m]))
+                for m in matchers
+            )
+
+        # Match context
+        # @todo: Add capabilities
+        ctx = self.version or {}
+        # Calculate matches
+        v = get_matchers(ctx, self.profile.matchers)
+        v.update(get_matchers(ctx, self.matchers))
+        #
+        for k in v:
+            self.logger.debug("%s = %s", k, v[k])
+            setattr(self, k, v[k])
 
     def clean_input(self, args):
         """
@@ -220,6 +259,8 @@ class BaseScript(object):
                         self.snmp.close()
                         # Close CLI socket when necessary
                         self.close_cli_stream()
+                        # Close MML socket when necessary
+                        self.close_mml_stream()
                         # Close HTTP Client
                         self.http.close()
             # Clean result
@@ -327,9 +368,13 @@ class BaseScript(object):
     def execute(self, **kwargs):
         """
         Default script behavior:
-        Pass through _execute_chain and call appropriative handler
+        Pass through _execute_chain and call appropriate handler
         """
         if self._execute_chain and not self.name.endswith(".get_version"):
+            # Deprecated @match chain
+            self.logger.info(
+                "WARNING: Using deprecated @BaseScript.match() decorator. "
+                "Consider porting to the new matcher API")
             # Get version information
             if not self.version:
                 self.version = self.scripts.get_version()
@@ -339,6 +384,81 @@ class BaseScript(object):
                     return f(self, **kwargs)
                 # Raise error
             raise self.NotSupportedError()
+        else:
+            # New SNMP/CLI API
+            return self.call_method(
+                cli_handler=self.execute_cli,
+                snmp_handler=self.execute_snmp,
+                **kwargs
+            )
+
+    def call_method(self, cli_handler=None, snmp_handler=None,
+                    fallback_handler=None, **kwargs):
+        """
+        Call function depending on access_preference
+        :param cli_handler: String or callable to call on CLI access method
+        :param snmp_handler: String or callable to call on SNMP access method
+        :param fallback_handler: String or callable to call if no access method matched
+        :param kwargs:
+        :return:
+        """
+        # Select proper handler
+        access_preference = self.get_access_preference() + "*"
+        for m in access_preference:
+            # Select proper handler
+            if m == "C":
+                handler = cli_handler
+            elif m == "S":
+                if self.has_snmp():
+                    handler = snmp_handler
+                else:
+                    self.logger.debug("SNMP is not enabled. Passing to next method")
+                    continue
+            elif m == "*":
+                handler = fallback_handler
+            else:
+                raise self.NotSupportedError("Invalid access method '%s'" % m)
+            # Resolve handler when necessary
+            if isinstance(handler, six.string_types):
+                handler = getattr(self, handler, None)
+            if handler is None:
+                self.logger.debug("No '%s' handler. Passing to next method" % m)
+                continue
+            # Call handler
+            try:
+                r = handler(**kwargs)
+                if isinstance(r, PartialResult):
+                    if self.partial_result:
+                        self.partial_result.update(r.result)
+                    else:
+                        self.partial_result = r.result
+                    self.logger.debug("Partial result: %r. Passing to next method", self.partial_result)
+                else:
+                    return r
+            except self.snmp.TimeOutError:
+                self.logger.info("SNMP timeout. Passing to next method")
+                if access_preference == "S*":
+                    self.logger.info("Last S method break by timeout.")
+                    raise self.snmp.TimeOutError
+            except NotImplementedError:
+                self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
+        raise self.NotSupportedError("Access preference '%s' is not supported" % access_preference[:-1])
+
+    def execute_cli(self, **kwargs):
+        """
+        Process script using CLI
+        :param kwargs:
+        :return:
+        """
+        raise NotImplementedError("execute_cli() is not implemented")
+
+    def execute_snmp(self, **kwargs):
+        """
+        Process script using SNMP
+        :param kwargs:
+        :return:
+        """
+        raise NotImplementedError("execute_snmp() is not implemented")
 
     def cleaned_config(self, config):
         """
@@ -366,12 +486,12 @@ class BaseScript(object):
             if x == "":
                 continue
             if "-" in x:
-                l, r = [int(y) for y in x.split("-")]
-                if l > r:
-                    x = r
-                    r = l
-                    l = x
-                for i in range(l, r + 1):
+                left, right = [int(y) for y in x.split("-")]
+                if left > right:
+                    x = right
+                    right = left
+                    left = x
+                for i in range(left, right + 1):
                     result[i] = None
             else:
                 result[int(x)] = None
@@ -550,16 +670,16 @@ class BaseScript(object):
     def match_lines(cls, rx, s):
         k = id(rx)
         if k not in cls._match_lines_cache:
-            _rx = [re.compile(l, re.IGNORECASE) for l in rx]
+            _rx = [re.compile(line, re.IGNORECASE) for line in rx]
             cls._match_lines_cache[k] = _rx
         else:
             _rx = cls._match_lines_cache[k]
         ctx = {}
         idx = 0
         r = _rx[0]
-        for l in s.splitlines():
-            l = l.strip()
-            match = r.search(l)
+        for line in s.splitlines():
+            line = line.strip()
+            match = r.search(line)
             if match:
                 ctx.update(match.groupdict())
                 idx += 1
@@ -650,17 +770,14 @@ class BaseScript(object):
                 return format_result(r)
         command_submit = command_submit or self.profile.command_submit
         stream = self.get_cli_stream()
+        if self.to_track:
+            self.cli_tracked_command = cmd
         r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
-                           cmd_next=cmd_next, cmd_stop=cmd_stop)
+                           cmd_next=cmd_next, cmd_stop=cmd_stop,
+                           ignore_errors=ignore_errors)
         if isinstance(r, six.string_types):
-            if self.beef:
-                self.beef.set_cli(cmd, r)
             # Check for syntax errors
             if not ignore_errors:
-                # Check for syntax error
-                if (self.profile.rx_pattern_syntax_error and
-                        self.profile.rx_pattern_syntax_error.search(r)):
-                    raise CLISyntaxError(r)
                 # Then check for operation error
                 if (self.profile.rx_pattern_operation_error and
                         self.profile.rx_pattern_operation_error.search(r)):
@@ -737,6 +854,58 @@ class BaseScript(object):
                 self.cli_stream.close()
             self.cli_stream = None
 
+    def mml(self, cmd, **kwargs):
+        """
+        Execute MML command and return result. Initiate MML session when necessary
+        :param cmd:
+        :param kwargs:
+        :return:
+        """
+        stream = self.get_mml_stream()
+        r = stream.execute(cmd, **kwargs)
+        return r
+
+    def get_mml_stream(self):
+        if self.parent:
+            return self.root.get_mml_stream()
+        if not self.mml_stream and self.session:
+            # Try to get cached session's CLI
+            with self.session_lock:
+                self.mml_stream = self.session_mml.get(self.session)
+                if self.mml_stream and self.mml_stream.is_closed:
+                    self.mml_stream = None
+                    del self.session_mml[self.session]
+            if self.mml_stream:
+                if self.to_reuse_cli_session():
+                    self.logger.debug("Using cached session's MML")
+                    self.mml_stream.set_script(self)
+                else:
+                    self.logger.debug(
+                        "Script cannot reuse existing MML session, starting new one"
+                    )
+                    self.close_mml_stream()
+        if not self.mml_stream:
+            protocol = self.credentials.get("cli_protocol", "telnet")
+            self.logger.debug("Open %s MML", protocol)
+            self.mml_stream = get_handler(
+                self.mml_protocols[protocol]
+            )(self, tos=self.tos)
+            # Store to the sessions
+            if self.session:
+                with self.session_lock:
+                    self.session_mml[self.session] = self.mml_stream
+        return self.mml_stream
+
+    def close_mml_stream(self):
+        if self.parent:
+            return
+        if self.mml_stream:
+            if self.session and self.to_keep_cli_session():
+                self.mml_stream.deferred_close(self.session_idle_timeout)
+            else:
+                self.mml_stream.close()
+            self.cli_stream = None
+
     @classmethod
     def close_session(cls, session_id):
         """
@@ -744,12 +913,34 @@ class BaseScript(object):
         :return:
         """
         with cls.session_lock:
-            stream = cls.session_cli.get(session_id)
-            if stream:
+            cli_stream = cls.session_cli.get(session_id)
+            if cli_stream:
                 del cls.session_cli[session_id]
-        if stream and not stream.is_closed:
-            stream.shutdown_session()
-            stream.close()
+            mml_stream = cls.session_mml.get(session_id)
+            if mml_stream:
+                del cls.session_mml[session_id]
+        if cli_stream and not cli_stream.is_closed:
+            cli_stream.shutdown_session()
+            cli_stream.close()
+        if mml_stream and not mml_stream.is_closed:
+            mml_stream.shutdown_session()
+            mml_stream.close()
+
+    def get_access_preference(self):
+        return self.credentials.get("access_preference",
+                                    self.DEFAULT_ACCESS_PREFERENCE)
+
+    def has_cli_access(self):
+        return "C" in self.get_access_preference()
+
+    def has_snmp_access(self):
+        return "S" in self.get_access_preference() and self.has_snmp()
+
+    def has_cli_only_access(self):
+        return self.has_cli_access() and not self.has_snmp_access()
+
+    def has_snmp_only_access(self):
+        return not self.has_cli_access() and self.has_snmp_access()
 
     def has_snmp(self):
         """
@@ -813,6 +1004,69 @@ class BaseScript(object):
     def to_keep_cli_session(self):
         return self.keep_cli_session
 
+    def start_tracking(self):
+        self.logger.debug("Start tracking")
+        self.to_track = True
+
+    def stop_tracking(self):
+        self.logger.debug("Stop tracking")
+        self.to_track = False
+        self.cli_tracked_data = {}
+
+    def push_cli_tracking(self, r, state):
+        if state == "prompt":
+            if self.cli_tracked_command in self.cli_tracked_data:
+                self.cli_tracked_data[self.cli_tracked_command] += [r]
+            else:
+                self.cli_tracked_data[self.cli_tracked_command] = [r]
+        elif state in self.cli_fsm_tracked_data:
+            self.cli_fsm_tracked_data[state] += [r]
+        else:
+            self.cli_fsm_tracked_data[state] = [r]
+
+    def push_snmp_tracking(self, oid, tlv):
+        self.logger.debug("PUSH SNMP %s: %r", oid, tlv)
+
+    def iter_cli_tracking(self):
+        """
+        Yields command, packets for collected data
+        :return:
+        """
+        for cmd in self.cli_tracked_data:
+            self.logger.debug("Collecting %d tracked CLI items", len(self.cli_tracked_data[cmd]))
+            yield cmd, self.cli_tracked_data[cmd]
+        self.cli_tracked_data = {}
+
+    def iter_cli_fsm_tracking(self):
+        for state in self.cli_fsm_tracked_data:
+            yield state, self.cli_fsm_tracked_data[state]
+
+    def request_beef(self):
+        """
+        Download and return beef
+        :return:
+        """
+        if not hasattr(self, "_beef"):
+            self.logger.debug("Requesting beef")
+            beef_storage_url = self.credentials.get("beef_storage_url")
+            beef_path = self.credentials.get("beef_path")
+            if not beef_storage_url:
+                self.logger.debug("No storage URL")
+                self._beef = None
+                return None
+            if not beef_path:
+                self.logger.debug("No beef path")
+                self._beef = None
+                return None
+            from .beef import Beef
+            beef = Beef.load(beef_storage_url, beef_path)
+            self._beef = beef
+        return self._beef
+
+    @property
+    def is_beefed(self):
+        return self.credentials.get("cli_protocol") == "beef"
+
 
 class ScriptsHub(object):
     """
@@ -861,3 +1115,10 @@ class ScriptsHub(object):
             # Normalize to full name
             item = "%s.%s" % (self._script.profile.name, item)
         return script_loader.has_script(item)
+
+
+class PartialResult(object):
+    __slots__ = ["result"]
+
+    def __int__(self, **kwargs):
+        self.result = kwargs
