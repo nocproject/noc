@@ -56,4 +56,27 @@
     </td>
 </tr>
 {% endif %}
+{% if children %}
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Nested Groups") }}
+    </th>
+    <td>
+        <table class="table table-condensed table-hover">
+            <thead>
+                <th>{{ _("Group") }}</th>
+                <th>{{ _("Technology") }}</th>
+            </thead>
+            <tbody>
+            {% for g in children %}
+                <tr>
+                    <td><a href="/api/card/view/resourcegroup/{{ g.id }}/">{{ g.name }}</a></td>
+                    <td><a href="/api/card/view/technology/{{ g.technology.id }}/">{{ g.technology.name }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </td>
+</tr>
+{% endif %}
 </table>

@@ -57,9 +57,12 @@ class ResourceGroupCard(BaseCard):
             "allow_services": bool(self.object.technology.service_model),
             "allow_clients": bool(self.object.technology.client_model),
             "services": services,
-            "clients": clients
+            "clients": clients,
+            "children": []
         }
-        # @todo: Children
+        # Append children
+        for rg in ResourceGroup.objects.filter(parent=self.object.id).order_by("name"):
+            r["children"] += [rg]
         return r
 
     def get_card_name(self, model):
