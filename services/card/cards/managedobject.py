@@ -20,6 +20,7 @@ from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.uptime import Uptime
 from noc.fm.models.outage import Outage
 from noc.inv.models.object import Object
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
@@ -251,15 +252,29 @@ class ManagedObjectCard(BaseCard):
                     interfaces[-1]["untagged_vlan"] = si.untagged_vlan
                     interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
             interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
-
-        # Termination group
-        l2_terminators = []
-        if self.object.termination_group:
-            l2_terminators = list(ManagedObject.objects.filter(service_terminator=self.object.termination_group))
-            l2_terminators = sorted(
-                l2_terminators,
-                key=operator.attrgetter("name"))
-
+        # Resource groups
+        # Service groups (i.e. server)
+        static_services = set(self.object.static_service_groups)
+        service_groups = []
+        for rg_id in self.object.effective_service_groups:
+            rg = ResourceGroup.get_by_id(rg_id)
+            service_groups += [{
+                "id": rg_id,
+                "name": rg.name,
+                "technology": rg.technology,
+                "is_static": rg_id in static_services
+            }]
+        # Client groups (i.e. client)
+        static_clients = set(self.object.static_client_groups)
+        client_groups = []
+        for rg_id in self.object.effective_client_groups:
+            rg = ResourceGroup.get_by_id(rg_id)
+            client_groups += [{
+                "id": rg_id,
+                "name": rg.name,
+                "technology": rg.technology,
+                "is_static": rg_id in static_clients
+            }]
         # @todo: Administrative domain path
         # Alarms
         alarm_list = []
@@ -336,7 +351,8 @@ class ManagedObjectCard(BaseCard):
             "current_start": current_start,
             # Current uptime/downtime
             "current_duration": duration,
-            "l2_terminators": l2_terminators,
+            "service_groups": service_groups,
+            "client_groups": client_groups,
             "tt": [],
             "links": links,
             "alarms": alarm_list,

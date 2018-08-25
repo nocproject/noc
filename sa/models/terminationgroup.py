@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# BRASGroup
+# TerminationGroup
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -17,11 +17,10 @@ from noc.core.bi.decorator import bi_sync
 
 @bi_sync
 @on_delete_check(check=[
-    # ("ip.DynamicIPPoolUsage", "termination_group"),
-    ("sa.ManagedObject", "termination_group"),
-    ("sa.ManagedObject", "service_terminator"),
     ("sa.ManagedObjectSelector", "filter_termination_group"),
-    ("sa.ManagedObjectSelector", "filter_service_terminator")
+    ("sa.ManagedObjectSelector", "filter_service_terminator"),
+    ("phone.PhoneRange", "termination_group"),
+    ("phone.PhoneNumber", "termination_group"),
 ])
 class TerminationGroup(models.Model):
     """

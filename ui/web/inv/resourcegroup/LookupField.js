@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.inv.technology.Lookup
+// NOC.inv.resourcegroup.Lookup
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.technology.LookupField");
+console.debug("Defining NOC.inv.resourcegroup.LookupField");
 
-Ext.define("NOC.inv.technology.LookupField", {
+Ext.define("NOC.inv.resourcegroup.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.inv.technology.LookupField",
+    alias: "widget.inv.resourcegroup.LookupField",
     uiStyle: "medium"
 });

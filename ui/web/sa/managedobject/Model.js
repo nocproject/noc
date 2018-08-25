@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Model");
@@ -204,24 +204,6 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
-            name: "termination_group",
-            type: "int"
-        },
-        {
-            name: "termination_group__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "service_terminator",
-            type: "int"
-        },
-        {
-            name: "service_terminator__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "vrf",
             type: "int"
         },
@@ -406,6 +388,24 @@ Ext.define("NOC.sa.managedobject.Model", {
             name: "event_processing_policy",
             type: "string",
             defaultValue: "P"
+        },
+        {
+            name: "static_service_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_service_groups",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "static_client_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_client_groups",
+            type: "auto",
+            persist: false
         },
         {
             name: "row_class",

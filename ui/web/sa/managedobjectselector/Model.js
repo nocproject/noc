@@ -134,20 +134,20 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
             persist: false
         },
         {
-            name: "filter_termination_group",
-            type: "int"
+            name: "filter_service_group",
+            type: "string"
         },
         {
-            name: "filter_termination_group__label",
+            name: "filter_service_group__label",
             type: "string",
             persist: false
         },
         {
-            name: "filter_service_terminator",
-            type: "int"
+            name: "filter_client_group",
+            type: "string"
         },
         {
-            name: "filter_service_terminator__label",
+            name: "filter_client_group__label",
             type: "string",
             persist: false
         },

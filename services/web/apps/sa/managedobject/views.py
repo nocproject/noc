@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,6 +30,7 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from noc.lib.app.decorators.handlerfield import handler_field
@@ -90,6 +91,12 @@ class ManagedObjectApplication(ExtModelApplication):
         "-version": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("version", pk, i) for i, pk in enumerate(
             Firmware.objects.filter().order_by("-version").values_list("id"))])
     }
+    resource_group_fields = [
+        "static_service_groups",
+        "effective_service_groups",
+        "static_client_groups",
+        "effective_client_groups"
+    ]
 
     DISCOVERY_JOBS = [
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
@@ -99,14 +106,100 @@ class ManagedObjectApplication(ExtModelApplication):
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
-    def field_interface_count(self, o):
-        return Interface.objects.filter(
-            managed_object=o.id,
-            type="physical"
-        ).count()
+    def bulk_field_interface_count(self, data):
+        """
+        Apply interface_count fields
+        :param data:
+        :return:
+        """
+        mo_ids = [x["id"] for x in data]
+        if not mo_ids:
+            return data
+        # Collect interface counts
+        r = Interface._get_collection().aggregate([
+            {
+                "$match": {
+                    "managed_object": {
+                        "$in": mo_ids
+                    },
+                    "type": "physical"
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$managed_object",
+                    "total": {
+                        "$sum": 1
+                    }
+                }
+            }
+        ])
+        ifcount = dict((x["_id"], x["total"]) for x in r)
+        # Apply interface counts
+        for x in data:
+            x["interface_count"] = ifcount.get(x["id"]) or 0
+        return data
 
-    def field_link_count(self, o):
-        return Link.object_links_count(o)
+    def bulk_field_link_count(self, data):
+        """
+        Apply link_count fields
+        :param data:
+        :return:
+        """
+        mo_ids = [x["id"] for x in data]
+        if not mo_ids:
+            return data
+        # Collect interface counts
+        r = Link._get_collection().aggregate([
+            {
+                "$match": {
+                    "linked_objects": {
+                        "$in": mo_ids
+                    }
+                }
+            },
+            {
+                "$unwind": "$linked_objects"
+            },
+            {
+                "$group": {
+                    "_id": "$linked_objects",
+                    "total": {
+                        "$sum": 1
+                    }
+                }
+            }
+        ])
+        links_count = dict((x["_id"], x["total"]) for x in r)
+        # Apply interface counts
+        for x in data:
+            x["link_count"] = links_count.get(x["id"]) or 0
+        return data
+
+    def instance_to_dict(self, o, fields=None):
+        def sg_to_list(items):
+            return [
+                {
+                    "group": x,
+                    "group__label": unicode(ResourceGroup.get_by_id(x))
+                } for x in items
+            ]
+
+        data = super(ManagedObjectApplication, self).instance_to_dict(o, fields)
+        # Expand resource groups fields
+        for fn in self.resource_group_fields:
+            data[fn] = sg_to_list(data.get(fn) or [])
+        return data
+
+    def clean(self, data):
+        # Clean resource groups
+        for fn in self.resource_group_fields:
+            if fn.startswith("effective_") and fn in data:
+                del data[fn]
+                continue
+            data[fn] = [x["group"] for x in (data.get(fn) or [])]
+        # Clean other
+        return super(ManagedObjectApplication, self).clean(data)
 
     def cleaned_query(self, q):
         if "administrative_domain" in q:
