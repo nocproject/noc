@@ -55,8 +55,6 @@ class Script(BaseScript):
                 vlan = int(match.group("vlan"))
                 vlans = []
                 tag = match.group("tag")
-                a_stat = False
-                o_stat = ifname in oper_up
                 if ifname == "MGT1":
                     desc = match.group("desc")
                 else:
@@ -79,7 +77,7 @@ class Script(BaseScript):
                 sub = {
                     "name": ifname,
                     "admin_status": a_stat,
-                    "oper_status": o_stat,
+                    "oper_status": ifname in oper_up,
                     "description": desc,
                     "untagged_vlan": vlan,
                     "tagged_vlans": vlans,
@@ -90,7 +88,7 @@ class Script(BaseScript):
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,
-                    "oper_status": o_stat,
+                    "oper_status": ifname in oper_up,
                     "description": desc,
                     "type": iftype,
                     "enabled_protocols": [],
