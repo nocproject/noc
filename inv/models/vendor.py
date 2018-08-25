@@ -12,8 +12,7 @@ import operator
 import uuid
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, LongField, URLField,
-                                UUIDField, ListField)
+from mongoengine.fields import (StringField, LongField, URLField, UUIDField, ListField)
 from mongoengine.errors import NotUniqueError
 import cachetools
 import six
@@ -27,11 +26,8 @@ id_lock = threading.Lock()
 
 @bi_sync
 @on_delete_check(check=[
-    ("inv.ObjectModel", "vendor"),
-    ("inv.Platform", "vendor"),
-    ("inv.Firmware", "vendor"),
-    ("sa.ManagedObject", "vendor"),
-    ("sa.ManagedObjectSelector", "filter_vendor")
+    ("inv.ObjectModel", "vendor"), ("inv.Platform", "vendor"), ("inv.Firmware", "vendor"),
+    ("sa.ManagedObject", "vendor"), ("sa.ManagedObjectSelector", "filter_vendor")
 ])
 class Vendor(Document):
     """
@@ -66,14 +62,12 @@ class Vendor(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Vendor.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return Vendor.objects.filter(bi_id=id).first()
 
@@ -109,18 +103,19 @@ class Vendor(Document):
         return to_json({
             "name": self.name,
             "$collection": self._meta["json_collection"],
-            "full_name":self.full_name,
+            "full_name": self.full_name,
             "code": self.code,
             "site": self.site,
             "uuid": self.uuid
-        }, order=["name", "uuid", "full_name", "code", "site"])
+        },
+            order=["name", "uuid", "full_name", "code", "site"]
+        )
 
     def get_json_path(self):
         return "%s.json" % self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_ensure_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_ensure_cache"), lock=lambda _: id_lock)
     def ensure_vendor(cls, code):
         """
         Get or create vendor by code
@@ -132,12 +127,7 @@ class Vendor(Document):
             if vendor:
                 return vendor
             try:
-                vendor = Vendor(
-                    name=code,
-                    full_name=code,
-                    code=[code],
-                    uuid=uuid.uuid4()
-                )
+                vendor = Vendor(name=code, full_name=code, code=[code], uuid=uuid.uuid4())
                 vendor.save()
                 return vendor
             except NotUniqueError:
