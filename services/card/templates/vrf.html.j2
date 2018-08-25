@@ -1,0 +1,27 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2">
+            {{ object.name }} VRF
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Profile") }}</th>
+        <td>{{object.profile.name}}</td>
+    <tr>
+    <tr>
+        <th scope="row">{{ _("RD") }}</th>
+        <td>{{ object.rd }}</td>
+    <tr>
+    {% if object.description %}
+    <tr>
+        <th scope="row">{{ _("Description") }}</th>
+        <td>{{object.description}}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <th scope="row">{{ _("VPN ID") }}</th>
+        <td>{{ object.vpn_id }}</td>
+    <tr>
+</tbody>
+</table>

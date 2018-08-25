@@ -22,6 +22,13 @@ Ext.define("NOC.ip.vrf.Application", {
     initComponent: function () {
         var me = this;
 
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -166,6 +173,9 @@ Ext.define("NOC.ip.vrf.Application", {
                     fieldLabel: __("Allocated till"),
                     allowBlank: true
                 }
+            ],
+            formToolbar: [
+                me.cardButton
             ]
         });
         me.callParent();
@@ -200,5 +210,14 @@ Ext.define("NOC.ip.vrf.Application", {
             name: "afi_ipv6",
             ftype: "boolean"
         }
-    ]
+    ],
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/vrf/" + me.currentRecord.get("id") + "/"
+            );
+        }
+    }
 });
