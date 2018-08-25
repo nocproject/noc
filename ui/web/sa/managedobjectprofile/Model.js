@@ -486,7 +486,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "autosegmentation_segment_name",
-            type: "string"
+            type: "string",
+            defaultValue: "{{ object.name }}"
         },
         {
             name: "hk_handler",
@@ -531,7 +532,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "neighbor_cache_ttl",
             type: "int",
-            defaultValue: 43200
+            defaultValue: 0
         },
         {
             name: "event_processing_policy",
@@ -658,7 +659,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "beef_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "D"
         }
     ]
 });
