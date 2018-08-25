@@ -35,7 +35,7 @@
              <attribute>
                  <name>profile</name>
                  <type>String</type>
-                 <null_value>default</null_value>
+                 <null_value>Unknown</null_value>
                  <hierarchical>false</hierarchical>
              </attribute>
              <attribute>
