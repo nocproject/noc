@@ -11,6 +11,7 @@ Services
     /services/chwriter
     /services/classifier
     /services/correlator
+    /services/datastream
     /services/datasource
     /services/discovery
     /services/escalator
@@ -18,7 +19,6 @@ Services
     /services/login
     /services/mailsender
     /services/mrt
-    /services/omap
     /services/ping
     /services/sae
     /services/scheduler
