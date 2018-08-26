@@ -37,6 +37,9 @@ Ext.define("NOC.core.ModelApplication", {
     formLayout: "anchor",
     formMinWidth: undefined,
     formMaxWidth: undefined,
+    helpId: undefined,
+    listHelpId: undefined,
+    formHelpId: undefined,
     //
     initComponent: function() {
         var me = this;
@@ -171,15 +174,6 @@ Ext.define("NOC.core.ModelApplication", {
             }
         });
 
-        me.listHelpButton = Ext.create("Ext.button.Button", {
-                itemId: "listHelp",
-                glyph: NOC.glyph.question,
-                tooltip: __("Application Help"),
-                scope: me,
-                handler: Ext.pass(NOC.helpURL, "listHelpId")
-            }
-        );
-
         gridToolbar.push(me.searchField, me.refreshButton, me.createButton, me.exportButton);
         // admin actions
         if(me.actions || me.hasGroupEdit) {
@@ -191,6 +185,13 @@ Ext.define("NOC.core.ModelApplication", {
         });
         gridToolbar.push(me.totalField);
         if(me.helpId || me.listHelpId) {
+            me.listHelpButton = Ext.create("Ext.button.Button", {
+                itemId: "listHelp",
+                glyph: NOC.glyph.question_circle,
+                tooltip: __("Application Help"),
+                scope: me,
+                handler: NOC.helpOpener(me.listHelpId || me.helpId)
+            });
             gridToolbar = gridToolbar.concat("-", me.listHelpButton);
         }
         // Initialize panels
@@ -520,14 +521,6 @@ Ext.define("NOC.core.ModelApplication", {
             handler: me.onClone
         });
         //
-        me.formHelpButton = Ext.create("Ext.button.Button", {
-                itemId: "formHelp",
-                glyph: NOC.glyph.question,
-                tooltip: __("Form Help"),
-                scope: me,
-                handler: Ext.pass(NOC.helpURL, "formHelpId")
-            }
-        );
         // Default toolbar items
         var formToolbar = [
             me.saveButton,
@@ -558,6 +551,14 @@ Ext.define("NOC.core.ModelApplication", {
         formToolbar = formToolbar.concat(me.formToolbar);
         //
         if(me.helpId || me.formHelpId){
+            me.formHelpButton = Ext.create("Ext.button.Button", {
+                    itemId: "formHelp",
+                    glyph: NOC.glyph.question_circle,
+                    tooltip: __("Form Help"),
+                    scope: me,
+                    handler: NOC.helpOpener(me.formHelpId || me.helpId)
+                }
+            );
             formToolbar = formToolbar.concat("->", me.formHelpButton);
         }
         // Prepare inlines grid

@@ -514,6 +514,11 @@ class Config(BaseConfig):
         enable_dnszone = BooleanParameter(default=True)
         enable_managedobject = BooleanParameter(default=True)
 
+    class help(ConfigSection):
+        base_url = StringParameter(default="https://docs.getnoc.com")
+        branch = StringParameter(default="microservices")
+        language = StringParameter(default="en")
+
     class tests(ConfigSection):
         # List of pyfilesystem URLs holding intial data
         fixtures_paths = ListParameter(item=StringParameter(), default=["tests/data"])

@@ -16,6 +16,7 @@ Ext.define("NOC.sa.administrativedomain.Application", {
     ],
     model: "NOC.sa.administrativedomain.Model",
     search: true,
+    helpId: "reference-administrative-domain",
     columns: [
         {
             text: __("Name"),

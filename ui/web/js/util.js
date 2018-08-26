@@ -632,13 +632,21 @@ NOC.uiStyles = {
 //
 // https://docs.getnoc.com/<branch>/<language>/go.html#<имя ссылки>
 //
-NOC.helpURL = function(topic) {
-    var url, win,
-        link = this.helpId;
-    if(this.hasOwnProperty(topic)) {
-        link = this[topic];
-    }
-    url = Ext.String.format("https://docs.getnoc.com/{0}/{1}/go.html#{2}", NOC.settings.brand, NOC.settings.language, link);
+NOC.openHelp = function(topic) {
+    var url, win;
+    url = Ext.String.format(
+        "{0}/{1}/{2}/go.html#{3}",
+        NOC.settings.helpUrl,
+        NOC.settings.helpBranch,
+        NOC.settings.helpLanguage,
+        topic
+    );
     win = window.open(url, '_blank');
     win.focus();
+};
+
+NOC.helpOpener = function(topic) {
+    return function() {
+        NOC.openHelp(topic)
+    }
 };
