@@ -11,9 +11,8 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, DateTimeField, ListField,
-                                EmbeddedDocumentField, ObjectIdField)
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DateTimeField, ListField, ObjectIdField
 from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
