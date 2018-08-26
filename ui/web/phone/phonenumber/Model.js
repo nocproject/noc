@@ -91,10 +91,6 @@ Ext.define("NOC.phone.phonenumber.Model", {
             persist: false
         },
         {
-            name: "linked_numbers",
-            type: "auto"
-        },
-        {
             name: "row_class",
             type: "string",
             persist: false

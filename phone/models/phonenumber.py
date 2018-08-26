@@ -20,22 +20,15 @@ import cachetools
 from .phonerange import PhoneRange
 from .numbercategory import NumberCategory
 from noc.sa.models.service import Service
-from .dialplan import DialPlan
-from .phonenumberprofile import PhoneNumberProfile
-from .phonelinktype import PhoneLinkType
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.lib.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
+from .dialplan import DialPlan
+from .phonenumberprofile import PhoneNumberProfile
 
 id_lock = Lock()
-
-
-class LinkedNumber(EmbeddedDocument):
-    type = PlainReferenceField(PhoneLinkType)
-    number = PlainReferenceField("phone.PhoneNumber")
-    description = StringField()
 
 
 @resourcegroup
@@ -45,7 +38,6 @@ class PhoneNumber(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "linked_numbers.number",
             "static_service_groups",
             "effective_service_groups",
             "static_client_groups",
@@ -88,8 +80,6 @@ class PhoneNumber(Document):
     allocated_till = DateTimeField()
     # Last state change
     changed = DateTimeField()
-    #
-    linked_numbers = ListField(EmbeddedDocumentField(LinkedNumber))
     #
     administrative_domain = ForeignKeyField(AdministrativeDomain)
     # Resource groups
