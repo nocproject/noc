@@ -30,7 +30,6 @@ from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
-from .objectmap import ObjectMap
 from .objectdata import ObjectData
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
@@ -597,21 +596,6 @@ class ManagedObject(Model):
                 key=self.id,
                 pool=pool_name
             )
-        # Rebuild object maps
-        if (
-            self.initial_data["id"] is None or
-            "is_managed" in self.changed_fields or
-            "object_profile" in self.changed_fields or
-            "trap_source_type" in self.changed_fields or
-            "trap_source_ip" in self.changed_fields or
-            "syslog_source_type" in self.changed_fields or
-            "syslog_source_ip" in self.changed_fields or
-            "address" in self.changed_fields or
-            "pool" in self.changed_fields or
-            "time_pattern" in self.changed_fields or
-            "event_processing_policy" in self.changed_fields
-        ):
-            ObjectMap.invalidate(self.pool)
         # Invalidate credentials cache
         if (
             self.initial_data["id"] is None or

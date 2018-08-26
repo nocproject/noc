@@ -40,14 +40,9 @@ class TrapCollectorService(Service):
         self.source_configs = {}  # id -> SourceConfig
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
-        self.omap = None
-        self.fmwriter = None
 
     @tornado.gen.coroutine
     def on_activate(self):
-        # Register RPC aliases
-        self.omap = self.open_rpc("omap")
-        self.fmwriter = self.open_rpc("fmwriter", pool=config.pool)
         # Listen sockets
         server = TrapServer(service=self)
         for l in config.trapcollector.listen.split(","):
@@ -114,7 +109,7 @@ class TrapCollectorService(Service):
     @tornado.gen.coroutine
     def send_messages(self):
         """
-        Periodic task to send collected messages to fmwriter
+        Periodic task to send collected messages to classifier
         """
         if self.messages:
             messages, self.messages = self.messages, []
