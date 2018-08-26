@@ -431,11 +431,11 @@ Ext.define("NOC.main.desktop.Application", {
         }
     },
     //
-    setActiveNavTabTooltip: function(context) {
+    setActiveNavTabTooltip: function(text) {
         var me = this;
         Ext.each(me.workplacePanel.tabBar.getRefItems(), function(btn) {
             if(btn.active === true) {
-                btn.setTooltip(me.workplacePanel.getApp().navTooltipTemplate.apply(context));
+                btn.setTooltip(text);
                 return false;
             }
         });
