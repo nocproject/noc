@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Platform
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,15 +15,18 @@ import uuid
 import datetime
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, UUIDField
-from mongoengine.errors import NotUniqueError
+from mongoengine.fields import StringField, LongField, UUIDField, ListField
+from mongoengine.queryset import Q
+from pymongo.collection import ReturnDocument
 import cachetools
+from bson.int64 import Int64
 # NOC modules
-from .vendor import Vendor
 from noc.lib.nosql import PlainReferenceField, DateField
 from noc.core.model.decorator import on_delete_check
-from noc.core.bi.decorator import bi_sync
+from noc.core.bi.decorator import bi_sync, new_bi_id
 from noc.lib.prettyjson import to_json
+from noc.models import get_model
+from .vendor import Vendor
 
 id_lock = threading.Lock()
 
@@ -43,7 +46,8 @@ class Platform(Document):
             {
                 "fields": ["vendor", "name"],
                 "unique": True
-            }
+            },
+            ("vendor", "aliases")
         ]
     }
     vendor = PlainReferenceField(Vendor)
@@ -64,6 +68,8 @@ class Platform(Document):
     snmp_sysobjectid = StringField(regex=r"^1.3.6(\.\d+)+$")
     # Global ID
     uuid = UUIDField(binary=True)
+    # Platform aliases
+    aliases = ListField(StringField())
     # Object id in BI
     bi_id = LongField(unique=True)
 
@@ -76,7 +82,16 @@ class Platform(Document):
 
     def clean(self):
         self.full_name = "%s %s" % (self.vendor.name, self.name)
+        if self.aliases:
+            self.aliases = sorted(self.aliases)
         super(Platform, self).clean()
+
+    def save(self, *args, **kwargs):
+        to_merge_aliases = not hasattr(self, "_changed_fields") or "aliases" in self._changed_fields
+        super(Platform, self).save(*args, **kwargs)
+        if to_merge_aliases:
+            for a in self.aliases:
+                self.merge_platform(a)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
@@ -97,6 +112,8 @@ class Platform(Document):
             "name": self.name,
             "uuid": self.uuid
         }
+        if self.aliases:
+            r["aliases"] = [str(x) for x in self.aliases]
         if self.description:
             r["description"] = self.description
         if self.start_of_sale:
@@ -108,8 +125,8 @@ class Platform(Document):
         if self.snmp_sysobjectid:
             r["snmp_sysobjectid"] = self.snmp_sysobjectid
         return to_json(r, order=[
-            "vendor__name", "name", "$collection", "uuid", "description",
-            "start_of_sale", "end_of_sale", "end_of_support",
+            "vendor__name", "name", "$collection", "uuid", "aliases",
+            "description", "start_of_sale", "end_of_sale", "end_of_support",
             "snmp_sysobjectid"])
 
     def get_json_path(self):
@@ -128,23 +145,29 @@ class Platform(Document):
         :param name:
         :return:
         """
-        while True:
-            platform = Platform.objects.filter(
-                vendor=vendor.id,
-                name=name
-            ).first()
-            if platform:
-                return platform
-            try:
-                platform = Platform(
-                    vendor=vendor,
-                    name=name,
-                    uuid=uuid.uuid4()
-                )
-                platform.save()
-                return platform
-            except NotUniqueError:
-                pass  # Already created by concurrent process, reread
+        # Try to find platform
+        q = Q(vendor=vendor.id, name=name) | Q(vendor=vendor.id, aliases=name)
+        platform = Platform.objects.filter(q).first()
+        if platform:
+            return platform
+        # Try to create
+        pu = uuid.uuid4()
+        d = Platform._get_collection().find_one_and_update({
+            "vendor": vendor.id,
+            "name": name
+        }, {
+            "$setOnInsert": {
+                "uuid": pu,
+                "full_name": "%s %s" % (vendor.name, name),
+                "bi_id": Int64(new_bi_id()),
+                "aliases": []
+            }
+        }, upsert=True, return_document=ReturnDocument.AFTER)
+        d["id"] = d["_id"]
+        del d["_id"]
+        p = Platform(**d)
+        p._changed_fields = []
+        return p
 
     @property
     def is_end_of_sale(self):
@@ -171,3 +194,22 @@ class Platform(Document):
             return datetime.date.today() > max(deadline)
         else:
             return False
+
+    def merge_platform(self, alias):
+        """
+        Merge *alias* platform
+        :param alias: platform name
+        :return:
+        """
+        ap = Platform.objects.filter(vendor=self.vendor.id, name=alias).first()
+        if not ap:
+            return
+        # Replace ce platform
+        refs = self._on_delete["check"] + self._on_delete["clean"] + self._on_delete["delete"]
+        for model_name, field in refs:
+            model = get_model(model_name)
+            for obj in model.objects.filter(**{field: self.id}):
+                setattr(obj, field, self)
+                obj.save()
+        # Finally delete aliases platform
+        ap.delete()

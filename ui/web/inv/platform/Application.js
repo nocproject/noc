@@ -44,6 +44,11 @@ Ext.define("NOC.inv.platform.Application", {
                 {
                     text: __("Platform"),
                     dataIndex: "full_name",
+                    width: 200
+                },
+                {
+                    text: __("Aliases"),
+                    dataIndex: "aliases",
                     flex: 1
                 },
                 {
@@ -98,6 +103,12 @@ Ext.define("NOC.inv.platform.Application", {
                     name: "uuid",
                     xtype: "displayfield",
                     fieldLabel: __("UUID"),
+                    allowBlank: true
+                },
+                {
+                    name: "aliases",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Aliases"),
                     allowBlank: true
                 },
                 {
