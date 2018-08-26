@@ -136,8 +136,9 @@ class BaseExtractor(object):
                 writer = csv.writer(f, delimiter=";")
                 for p in itertools.chain(self.quality_problems, self.fatal_problems):
                     writer.writerow(
-                        [c.encode("utf-8") for c in p.row] + ["Fatal problem, line was rejected" if p.is_rej else
-                                                              "Data quality problem"] + [p.message.encode("utf-8")])
+                        [str(c).encode("utf-8") for c in p.row] + ["Fatal problem, line was rejected" if p.is_rej else
+                                                                   "Data quality problem"] + [p.message.encode("utf-8")]
+                    )
             except IOError as e:
                 self.logger.error("Error when saved problems %s", e)
             finally:
