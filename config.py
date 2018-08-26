@@ -513,6 +513,7 @@ class Config(BaseConfig):
         enable_cfgtrap = BooleanParameter(default=True)
         enable_dnszone = BooleanParameter(default=True)
         enable_managedobject = BooleanParameter(default=True)
+        enable_resourcegroup = BooleanParameter(default=True)
 
     class tests(ConfigSection):
         # List of pyfilesystem URLs holding intial data
