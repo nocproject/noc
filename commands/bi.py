@@ -163,7 +163,7 @@ class Command(BaseCommand):
                 continue
             e = ecls(start=stop, stop=stop, prefix=self.DATA_PREFIX)
             e.clean()
-            self.print("[%s] Cleaned %s - %s ... " % (e.name, stop, stop), end="", flush=True)
+            self.print("[%s] Cleaned brfore %s ... \n" % (e.name, stop), end="", flush=True)
 
     def handle_load(self):
         for fn in sorted(os.listdir(self.DATA_PREFIX)):

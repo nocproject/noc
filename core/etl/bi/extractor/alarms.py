@@ -139,11 +139,11 @@ class AlarmsExtractor(ArchivingExtractor):
         # Archive
         super(AlarmsExtractor, self).clean()
         # Clean
-        # ArchivedAlarm._get_collection().remove({
-        #     "clear_timestamp": {
-        #         "$lte": self.clean_ts
-        #     }
-        # })
+        ArchivedAlarm._get_collection().remove({
+            "clear_timestamp": {
+                "$lte": self.clean_ts
+            }
+        })
 
     @classmethod
     def get_start(cls):
