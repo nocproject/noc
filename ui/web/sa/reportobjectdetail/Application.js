@@ -41,6 +41,7 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["segment", __("Segment"), true],
                 ["phys_interface_count", __("Physical Iface Count"), false],
                 ["link_count", __("Link Count"), false],
+                ["last_config_ts", __("Last Config get Timestamp"), false],
                 ["adm_path", __("Adm Path"), true],
                 ["interface_type_count", __("Interface count by type"), false],
                 ["object_caps", __("Object capabilities"), false],

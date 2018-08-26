@@ -22,8 +22,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.sa.administrativedomain.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.vc.vcdomain.LookupField",
-        "NOC.sa.terminationgroup.LookupField",
-        "NOC.sa.terminationgroup.LookupField",
+        "NOC.inv.resourcegroup.LookupField",
         "NOC.fm.ttsystem.LookupField",
         "NOC.main.pool.LookupField"
     ],
@@ -197,17 +196,17 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     labelWidth: 170
                 },
                 {
-                    name: "filter_termination_group",
-                    xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: __("Filter by termination group"),
+                    name: "filter_service_group",
+                    xtype: "inv.resourcegroup.LookupField",
+                    fieldLabel: __("Filter by Service Group"),
                     allowBlank: true,
                     uiStyle: "large",
                     labelWidth: 170
                 },
                 {
-                    name: "filter_service_terminator",
-                    xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: __("Filter by service terminator"),
+                    name: "filter_client_group",
+                    xtype: "inv.resourcegroup.LookupField",
+                    fieldLabel: __("Filter by Client Group"),
                     allowBlank: true,
                     uiStyle: "large",
                     labelWidth: 170

@@ -26,11 +26,11 @@ class Profile(BaseProfile):
 
     rx_ver = re.compile(
         r"^Product name\s*:\s*(?P<platform>.+)\s*\n"
-        r"^NOS\s+Version NOS_(?P<version>\d+\.\d+\.\d+).+\n"
+        r"^NOS\s+Version:? NOS_(?P<version>\d+\.\d+\.\d+).+\n"
         r"(^Support ipv6\s*:\s*(?P<ipv6_support>\S+)\s*\n)?"
         r"^Bootstrap\s+Version:? (?P<bootprom>(Bootstrap_\d+\.\d+\.\d+|UNKNOWN)).*\n"
         r"(^FPGA Version\s*\n)?"
-        r"^Hardware( \S+| \S+\s\S+|) Version( Rev.|\:|\s*)(?P<hardware>\S+)\s*\n"
+        r"^Hardware( \S+| \S+\s\S+|) Version( Rev.|\: ?|\s*)(?P<hardware>\S+)\s*\n"
         r"\n"
         r"^System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
         r"^Serial number\s*:\s*(?P<serial>\S+)\s*\n",

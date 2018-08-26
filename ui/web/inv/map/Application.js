@@ -342,11 +342,9 @@ Ext.define("NOC.inv.map.Application", {
         me.currentSegmentId = segmentId;
         // @todo: Restrict to permissions
         me.editButton.setDisabled(me.readOnly);
-        me.editButton.setPressed(false);
         me.saveButton.setDisabled(true);
-        me.newLayoutButton.setDisabled(true);
-        me.rotateButton.setDisabled(true);
-        me.revertButton.setDisabled(true);
+        me.setStateMapButtons(!me.editButton.pressed);
+        me.editButton.setPressed(false);
         me.inspectSegment();
         me.viewMapButton.setPressed(true);
         me.viewStpButton.setPressed(false);
@@ -423,7 +421,11 @@ Ext.define("NOC.inv.map.Application", {
             });
             me.mapPanel.paper.drawGrid();
             me.viewMapButton.setPressed(true);
-            me.rotateButton.setDisabled(false);
+            me.saveButton.setDisabled(true);
+            me.setStateMapButtons(false);
+        } else {
+            me.setStateMapButtons(true);
+            me.saveButton.setDisabled(true);
         }
         me.mapPanel.setInteractive(me.editButton.pressed);
     },
@@ -436,6 +438,7 @@ Ext.define("NOC.inv.map.Application", {
     onRevert: function() {
         var me = this;
         me.loadSegment(me.currentSegmentId);
+        me.editButton.setPressed(true);
     },
 
     onReload: function() {
@@ -447,8 +450,7 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         if(me.editButton.pressed) {
             me.saveButton.setDisabled(me.readOnly);
-            me.newLayoutButton.setDisabled(me.readOnly);
-            me.revertButton.setDisabled(me.readOnly);
+            me.setStateMapButtons(me.readOnly);
         }
     },
 
@@ -503,5 +505,11 @@ Ext.define("NOC.inv.map.Application", {
 
     onBasket: function() {
         this.basketPanel.toggleCollapse();
+    },
+    setStateMapButtons: function(state) {
+        var me = this;
+        me.newLayoutButton.setDisabled(state);
+        me.rotateButton.setDisabled(state);
+        me.revertButton.setDisabled(state);
     }
 });

@@ -13,13 +13,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 # NOC modules
+from noc.config import config
 from noc.core.model.fields import TagsField, CIDRField
 from noc.core.ip import IP
 from noc.lib.validators import check_ipv4, check_ipv6
 from noc.core.datastream.decorator import datastream
 from .afi import AFI_CHOICES
 from .vrf import VRF
-from .address import Address
 
 
 @datastream
@@ -62,7 +62,8 @@ class AddressRange(models.Model):
         _("Reverse NSes"),
         max_length=255,
         null=True, blank=True,
-        help_text=_("Comma-separated list of NSes to partial reverse zone delegation when 'Action' set to 'Partial reverse zone delegation"))
+        help_text=_("Comma-separated list of NSes to partial reverse zone delegation when "
+                    "'Action' set to 'Partial reverse zone delegation"))
     tags = TagsField(_("Tags"), null=True, blank=True)
     tt = models.IntegerField(
         "TT",
@@ -82,6 +83,9 @@ class AddressRange(models.Model):
         )
 
     def iter_changed_datastream(self):
+        if not config.datastream.enable_dnszone:
+            return
+
         from noc.dns.models.dnszone import DNSZone
 
         if self.action == "D":
@@ -244,3 +248,7 @@ class AddressRange(models.Model):
             is_active=True,
             from_address__lte=address,
             to_address__gte=address).exists()
+
+
+# Avoid circular references
+from .address import Address

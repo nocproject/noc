@@ -55,6 +55,31 @@ class ExtApplication(Application):
         self.document_root = os.path.join("services", "web", "apps", self.module, self.app)
         self.row_limit = config.web.api_row_limit
         self.pk = "id"
+        # Bulk fields API
+        self.bulk_fields = []
+        for fn in [n for n in dir(self) if n.startswith("bulk_field_")]:
+            h = getattr(self, fn)
+            if callable(h):
+                self.bulk_fields += [h]
+
+    def apply_bulk_fields(self, data):
+        """
+        Pass data through bulk_field_* handlers to enrich instance_to_dict result
+        :param data: dict or list of dicts
+        :return: dict or list of dicts
+        """
+        if not self.bulk_fields:
+            return data
+        if isinstance(data, dict):
+            # Single dict
+            nd = [data]
+            for h in self.bulk_fields:
+                h(nd)
+            return data
+        # List of dicts
+        for h in self.bulk_fields:
+            h(data)
+        return data
 
     @property
     def js_app_class(self):
@@ -232,7 +257,7 @@ class ExtApplication(Application):
         :param data:
         :return:
         """
-        return data
+        return self.apply_bulk_fields(data)
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
           method=["POST"],

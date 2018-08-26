@@ -12,6 +12,7 @@ from __future__ import absolute_import
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
+from noc.config import config
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
@@ -20,10 +21,10 @@ from noc.main.models.textindex import full_text_search
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
+from noc.core.datastream.decorator import datastream
 from .afi import AFI_CHOICES
 from .vrf import VRF
 from .addressprofile import AddressProfile
-from noc.core.datastream.decorator import datastream
 
 
 @datastream
@@ -131,6 +132,9 @@ class Address(models.Model):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
 
     def iter_changed_datastream(self):
+        if not config.datastream.enable_dnszone:
+            return
+
         from noc.dns.models.dnszone import DNSZone
 
         if self.fqdn:

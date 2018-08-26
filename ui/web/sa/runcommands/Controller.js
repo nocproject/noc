@@ -583,5 +583,11 @@ Ext.define('NOC.sa.runcommands.Controller', {
             });
 
         }
+    },
+    //
+    onDownload: function() {
+        var text = $($.parseHTML(this.lookupReference('sa-run-commands-report-panel').html)).text(),
+            blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, 'result.txt');
     }
 });

@@ -21,6 +21,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.lib.nosql import ForeignKeyField
 from noc.core.window import wf_choices
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
@@ -73,6 +74,9 @@ class SLAProfileMetrics(EmbeddedDocument):
     threshold_profile = ReferenceField(ThresholdProfile)
 
 
+@on_delete_check(check=[
+    ("sla.SLAProbe", "profile")
+])
 class SLAProfile(Document):
     """
     SLA profile and settings

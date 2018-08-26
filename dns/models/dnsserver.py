@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
+from noc.config import config
 from noc.core.model.fields import INETField
 from noc.core.datastream.decorator import datastream
 
@@ -41,6 +42,8 @@ class DNSServer(models.Model):
         return self.name
 
     def iter_changed_datastream(self):
+        if not config.datastream.enable_dnszone:
+            return
         for zp in self.masters.all():
             for ds, id in zp.iter_changed_datastream():
                 yield ds, id

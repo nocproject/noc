@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # VLAN Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,7 +26,8 @@ id_lock = Lock()
 
 @bi_sync
 @on_delete_check(check=[
-    ("vc.VLAN", "profile")
+    ("vc.VLAN", "profile"),
+    ("inv.NetworkSegmentProfile", "default_vlan_profile")
 ])
 class VLANProfile(Document):
     meta = {

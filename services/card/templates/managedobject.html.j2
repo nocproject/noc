@@ -138,7 +138,7 @@
                            <div class="col-sm-6">
                                <b>{{ _("Profile SA") }}</b>    {{ object.profile }}<br>
                                {% if platform != "Unknown" %}
-                                   {{ platform }}
+                                   <a href="/api/card/view/platform/{{ object.platform.id }}/">{{ platform }}</a>
                                    {% if platform %}
                                        {% if object.platform.is_end_of_sale %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
                                        {% if object.platform.is_end_of_support %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
@@ -175,24 +175,24 @@
                 </div>
                 <div class="line"></div>
 
-                {% if l2_terminators %}
+                {% if service_groups %}
                     <div class="row">
-                        <div class="col-sm-2">
-                            <small>{{ _("L2 Terminator") }}</small>
+                        <div class="col-sm-1">
+                            <b>{{ _("Provides Resources") }}</b>
                         </div>
-                        <div class="col-sm-10">
+                        <div class="col-sm-11">
                             <table class="table table-condensed table-hover">
                                 <thead>
-                                    <th>{{ _("Name") }}</th>
-                                    <th>{{ _("Address") }}</th>
-                                    <th>{{ _("Model") }}</th>
+                                    <th>{{ _("Group") }}</th>
+                                    <th>{{ _("Technology") }}</th>
+                                    <th>{{ _("Type") }}</th>
                                 </thead>
                                 <tbody>
-                                {% for t in l2_terminators %}
+                                {% for g in service_groups %}
                                     <tr>
-                                        <td><a href="/api/card/view/managedobject/{{ t.id }}/">{{ t.name }}</a></td>
-                                        <td>{{ t.address }}</td>
-                                        <td>{{ t.platform }}</td>
+                                        <td><a href="/api/card/view/resourcegroup/{{ g["id"] }}/">{{ g["name"] }}</a></td>
+                                        <td><a href="/api/card/view/technology/{{ g["technology"]["id"] }}/">{{ g["technology"]["name"] }}</a></td>
+                                        <td>{% if g["is_static"] %}{{ _("Static") }}{% else %}{{ _("Dynamic") }}{% endif %}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -202,13 +202,32 @@
                     <div class="line"></div>
                 {% endif %}
 
-                <div class="row">
-                    <div class="col-sm-1">
-                        <small>{{ _("L3 Terminator") }}</small>
+                {% if client_groups %}
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <b>{{ _("Consumes Resources") }}</b>
+                        </div>
+                        <div class="col-sm-11">
+                            <table class="table table-condensed table-hover">
+                                <thead>
+                                    <th>{{ _("Group") }}</th>
+                                    <th>{{ _("Technology") }}</th>
+                                    <th>{{ _("Type") }}</th>
+                                </thead>
+                                <tbody>
+                                {% for g in client_groups %}
+                                    <tr>
+                                        <td><a href="/api/card/view/resourcegroup/{{ g["id"] }}/">{{ g["name"] }}</a></td>
+                                        <td><a href="/api/card/view/technology/{{ g["technology"]["id"] }}/">{{ g["technology"]["name"] }}</a></td>
+                                        <td>{% if g["is_static"] %}{{ _("Static") }}{% else %}{{ _("Dynamic") }}{% endif %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
                     </div>
-                <div class="col-sm-10">
-                    N/A
-                </div>
+                    <div class="line"></div>
+                {% endif %}
             </div>
             <div class="line"></div>
 

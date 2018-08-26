@@ -15,10 +15,8 @@ from django.db import models
 # NOC modules
 from noc.lib.app.site import site
 from noc.main.models.language import Language
-from noc.services.web.apps.kb.parsers import parser_registry
+from noc.services.web.apps.kb.parsers.loader import loader
 from noc.core.model.decorator import on_delete_check
-
-parser_registry.register_all()
 
 
 @on_delete_check(
@@ -46,7 +44,7 @@ class KBEntry(models.Model):
     language = models.ForeignKey(Language, verbose_name="Language",
                                  limit_choices_to={"is_active": True})
     markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=parser_registry.choices)
+                                       choices=loader.choices)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
@@ -63,7 +61,7 @@ class KBEntry(models.Model):
         """
         Wiki parser class
         """
-        return parser_registry[self.markup_language]
+        return loader.get_parser(self.markup_language)
 
     @property
     def html(self):

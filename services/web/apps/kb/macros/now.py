@@ -2,25 +2,28 @@
 # ---------------------------------------------------------------------
 # now macro
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from __future__ import absolute_import
 import datetime
-
+# Third-party modules
 from django.utils.dateformat import DateFormat
+# NOC modules
+from .base import BaseMacro
 
-from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 
-
-#
-# now macro
-#     Returns current date and time
-#     Optional arguments
-#     format - PHP date()-like format string
-#
-#
-class Macro(MacroBase):
+class Macro(BaseMacro):
+    """
+    now macro
+    Returns current date and time
+    Optional arguments
+        format - PHP date()-like format string
+    """
     name = "now"
+
     @classmethod
     def handle(cls, args, text):
         if "format" in args:

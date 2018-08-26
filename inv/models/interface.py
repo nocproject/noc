@@ -17,6 +17,7 @@ from mongoengine.fields import (StringField, IntField, BooleanField,
 from pymongo import ReadPreference
 
 # NOC Modules
+from noc.config import config
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
@@ -102,7 +103,8 @@ class Interface(Document):
         return u"%s: %s" % (self.managed_object.name, self.name)
 
     def iter_changed_datastream(self):
-        yield "managedobject", self.managed_object.id
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.managed_object.id
 
     def save(self, *args, **kwargs):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:

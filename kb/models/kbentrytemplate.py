@@ -15,7 +15,7 @@ from django.db import models
 from noc.lib.app.site import site
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
-from .kbentry import parser_registry  # Load
+from noc.services.web.apps.kb.parsers.loader import loader
 
 
 class KBEntryTemplate(models.Model):
@@ -35,7 +35,7 @@ class KBEntryTemplate(models.Model):
     language = models.ForeignKey(Language, verbose_name="Language",
                                  limit_choices_to={"is_active": True})
     markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=parser_registry.choices)
+                                       choices=loader.choices)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
     rx_template_var = re.compile("{{([^}]+)}}", re.MULTILINE)

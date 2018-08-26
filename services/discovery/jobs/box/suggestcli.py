@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Suggest SNMP check check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.script.scheme import SSH
 from noc.lib.text import safe_shadow
 
 
@@ -59,7 +60,7 @@ class SuggestCLICheck(DiscoveryCheck):
             ).script(
                 "%s.login" % self.object.profile.name,
                 {
-                    "cli_protocol": "ssh" if self.object.scheme == 2 else "telnet",
+                    "cli_protocol": "ssh" if self.object.scheme == SSH else "telnet",
                     "address": self.object.address,
                     "user": user,
                     "password": password,

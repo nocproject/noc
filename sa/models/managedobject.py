@@ -25,13 +25,12 @@ from django.contrib.auth.models import User, Group
 import cachetools
 import six
 # NOC modules
+from noc.config import config
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
-from .objectmap import ObjectMap
 from .objectdata import ObjectData
-from .terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
@@ -42,7 +41,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
-from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
+from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey, ObjectIDArrayField
 from noc.lib.db import SQL
 from noc.lib.app.site import site
 from noc.core.stencil import stencil_registry
@@ -66,9 +65,10 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.matcher import match
 from noc.core.datastream.decorator import datastream
+from noc.core.resourcegroup.decorator import resourcegroup
 
-# Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 9
+# Increase whenever new field added or removed
+MANAGEDOBJECT_CACHE_VERSION = 10
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -84,6 +84,7 @@ logger = logging.getLogger(__name__)
 @on_save
 @on_delete
 @datastream
+@resourcegroup
 @on_delete_check(check=[
     # ("cm.ValidationRule.ObjectItem", ""),
     ("fm.ActiveAlarm", "managed_object"),
@@ -255,19 +256,6 @@ class ManagedObject(Model):
     last_seen = DateTimeField(
         "Last Seen",
         blank=True, null=True
-    )
-    # For service terminators
-    # Name of service termination group (i.e. BRAS, SBC)
-    termination_group = ForeignKey(
-        TerminationGroup, verbose_name="Termination Group",
-        blank=True, null=True,
-        related_name="termination_set"
-    )
-    # For access switches -- L3 terminator
-    service_terminator = ForeignKey(
-        TerminationGroup, verbose_name="Service termination",
-        blank=True, null=True,
-        related_name="access_set"
     )
     # Stencils
     shape = CharField(
@@ -441,6 +429,11 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Resource groups
+    static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    static_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    effective_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -491,10 +484,14 @@ class ManagedObject(Model):
             return None
 
     def iter_changed_datastream(self):
-        yield "managedobject", self.id
-        yield "cfgping", self.id
-        yield "cfgsyslog", self.id
-        yield "cfgtrap", self.id
+        if config.datastream.enable_managedobject:
+            yield "managedobject", self.id
+        if config.datastream.enable_cfgping:
+            yield "cfgping", self.id
+        if config.datastream.enable_cfgsyslog:
+            yield "cfgsyslog", self.id
+        if config.datastream.enable_cfgtrap:
+            yield "cfgtrap", self.id
 
     @property
     def data(self):
@@ -618,21 +615,6 @@ class ManagedObject(Model):
             "software_image" in self.changed_fields
         ):
             self.reset_matchers()
-        # Rebuild object maps
-        if (
-            self.initial_data["id"] is None or
-            "is_managed" in self.changed_fields or
-            "object_profile" in self.changed_fields or
-            "trap_source_type" in self.changed_fields or
-            "trap_source_ip" in self.changed_fields or
-            "syslog_source_type" in self.changed_fields or
-            "syslog_source_ip" in self.changed_fields or
-            "address" in self.changed_fields or
-            "pool" in self.changed_fields or
-            "time_pattern" in self.changed_fields or
-            "event_processing_policy" in self.changed_fields
-        ):
-            ObjectMap.invalidate(self.pool)
         # Invalidate credentials cache
         if (
             self.initial_data["id"] is None or
@@ -1638,3 +1620,4 @@ from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
+from noc.vc.models.vcdomain import VCDomain  # noqa

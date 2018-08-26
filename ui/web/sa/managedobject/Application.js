@@ -19,13 +19,13 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.inv.vendor.LookupField",
         "NOC.inv.platform.LookupField",
         "NOC.inv.firmware.LookupField",
+        "NOC.inv.resourcegroup.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
-        "NOC.sa.terminationgroup.LookupField",
         "NOC.inv.networksegment.LookupField",
         "NOC.main.timepattern.LookupField",
         "NOC.main.remotesystem.LookupField",
@@ -787,36 +787,86 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: __("Service"),
+                    title: __("Resource Groups"),
                     layout: "column",
                     minWidth: me.formMinWidth,
                     maxWidth: me.formMaxWidth,
                     defaults: fieldSetDefaults,
                     collapsible: true,
-                    collapsed: true,
+                    collapsed: false,
                     items: [
                         {
-                            xtype: "container",
-                            items: [
+                            name: "static_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                // {
+                                //     xtype: "glyphactioncolumn",
+                                //     width: 20,
+                                //     sortable: false,
+                                //     items: [
+                                //         {
+                                //             glyph: NOC.glyph.search,
+                                //             tooltip: __("Show Card"),
+                                //             scope: me,
+                                //             handler: me.onShowResourceGroup
+                                //         }
+                                //     ]
+                                // },
                                 {
-                                    name: "termination_group",
-                                    xtype: "sa.terminationgroup.LookupField",
-                                    fieldLabel: __("Termination Group"),
-                                    allowBlank: true,
-                                    groupEdit: true
+                                    dataIndex: "group",
+                                    text: __("Static Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
                                 }
                             ]
                         },
                         {
-                            xtype: "container",
-                            items: [
+                            name: "effective_service_groups",
+                            xtype: "gridfield",
+                            columns: [
                                 {
-                                    name: "service_terminator",
-                                    xtype: "sa.terminationgroup.LookupField",
-                                    fieldLabel: __("Service Terminator"),
-                                    allowBlank: true,
-                                    groupEdit: true
-                                }]
+                                    dataIndex: "group",
+                                    text: __("Effective Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "static_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
                         }
                     ]
                 },
@@ -1150,6 +1200,18 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "inv.networksegment"
         },
         {
+            title: __("By Service Group"),
+            name: "effective_service_groups",
+            ftype: "lookup",
+            lookup: "inv.resourcegroup"
+        },
+        {
+            title: __("By Client Group"),
+            name: "effective_client_groups",
+            ftype: "lookup",
+            lookup: "inv.resourcegroup"
+        },
+        {
             title: __("By Selector"),
             name: "selector",
             ftype: "lookup",
@@ -1178,18 +1240,6 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "controller",
             ftype: "lookup",
             lookup: "sa.managedobject"
-        },
-        {
-            title: __("By Termination Group"),
-            name: "termination_group",
-            ftype: "lookup",
-            lookup: "sa.terminationgroup"
-        },
-        {
-            title: __("By Service Terminator"),
-            name: "service_terminator",
-            ftype: "lookup",
-            lookup: "sa.terminationgroup"
         },
         {
             title: __("Platform"),
@@ -1420,5 +1470,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                     break;
             }
         });
+    },
+    // Show ResourceGroup card
+    onShowResourceGroup: function(grid, rowIndex, colIndex) {
+        var me = this,
+            r = me.store.getAt(rowIndex),
+            id = r.get("group");
+        window.open("/api/card/view/resourcegroup/" + id + "/", "_blank");
     }
 });

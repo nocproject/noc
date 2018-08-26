@@ -121,7 +121,7 @@ class Script(BaseScript):
                     if match.group("caps").strip():
                         for c in match.group("caps").split():
                             c = c.strip()
-                            if c:
+                            if c and (c != "--"):
                                 caps |= {
                                     "O": 1, "P": 2, "B": 4,
                                     "W": 8, "R": 16, "r": 16, "T": 32,

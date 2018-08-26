@@ -45,7 +45,6 @@ class PingService(Service):
         self.mappings_callback = None
         self.metrics_callback = None
         self.probes = {}  # mo id -> ProbeSetting
-        self.omap = None
         self.ping = None
         self.is_throttled = False
         self.slot_number = 0

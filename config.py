@@ -76,6 +76,9 @@ class Config(BaseConfig):
         enable_alarms = BooleanParameter(default=False)
         enable_reboots = BooleanParameter(default=False)
         enable_managedobjects = BooleanParameter(default=False)
+        enable_alarms_archive = BooleanParameter(default=False)
+        alarms_archive_template = StringParameter(default="alarms.{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}")
+        alarms_archive_batch_limit = IntParameter(default=10000)
 
     brand = StringParameter(default="NOC")
 
@@ -464,14 +467,10 @@ class Config(BaseConfig):
     class sentry(ConfigSection):
         url = StringParameter(default="")
 
-    class sync(ConfigSection):
-        config_ttl = SecondsParameter(default="1d")
-        ttl_jitter = FloatParameter(default=0.1)
-        expired_refresh_timeout = IntParameter(default=25)
-        expired_refresh_chunk = IntParameter(default=100)
-
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class tgsender(ConfigSection):
         token = SecretParameter()
@@ -491,6 +490,8 @@ class Config(BaseConfig):
 
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
@@ -504,6 +505,14 @@ class Config(BaseConfig):
         chunk_size = IntParameter(default=1000)
         max_threads = IntParameter(default=10)
         default_ttl = SecondsParameter(default="1h")
+
+    class datastream(ConfigSection):
+        enable_administrativedomain = BooleanParameter(default=True)
+        enable_cfgping = BooleanParameter(default=True)
+        enable_cfgsyslog = BooleanParameter(default=True)
+        enable_cfgtrap = BooleanParameter(default=True)
+        enable_dnszone = BooleanParameter(default=True)
+        enable_managedobject = BooleanParameter(default=True)
 
     class tests(ConfigSection):
         # List of pyfilesystem URLs holding intial data

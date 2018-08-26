@@ -50,7 +50,13 @@ class Command(BaseCommand):
             help="Show only summary"
         )
         # extract command
-        subparsers.add_parser("extract")
+        extract = subparsers.add_parser("extract")
+        extract.add_argument(
+            "--use-archive",
+            action="store_true",
+            default=False,
+            help="Use archived collection for extract"
+        )
         # clean command
         subparsers.add_parser("clean")
         # load command
@@ -80,7 +86,7 @@ class Command(BaseCommand):
             }
         }, upsert=True)
 
-    def handle_extract(self, *args, **options):
+    def handle_extract(self, use_archive=False, *args, **options):
         now = datetime.datetime.now()
         window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
@@ -98,7 +104,11 @@ class Command(BaseCommand):
             is_exception = False
             while start < stop:
                 end = min(start + window, stop)
-                e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
+                if hasattr(ecls, "use_archive"):
+                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX,
+                             use_archive=use_archive)
+                else:
+                    e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
                 t0 = time.time()
                 try:
                     nr = e.extract()
@@ -145,11 +155,15 @@ class Command(BaseCommand):
 
     def handle_clean(self, *args, **options):
         for ecls in self.EXTRACTORS:
+            if not ecls.is_enabled():
+                self.print("[%s] Not enabled, skipping" % ecls.name)
+                continue
             stop = self.get_last_extract(ecls.name)
             if not stop:
                 continue
             e = ecls(start=stop, stop=stop, prefix=self.DATA_PREFIX)
             e.clean()
+            self.print("[%s] Cleaned before %s ... \n" % (e.name, stop), end="", flush=True)
 
     def handle_load(self):
         for fn in sorted(os.listdir(self.DATA_PREFIX)):

@@ -21,6 +21,7 @@ from noc.lib import nosql
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler
+from noc.core.model.decorator import on_delete_check
 from .alarmclass import AlarmClass
 
 id_lock = Lock()
@@ -200,6 +201,11 @@ class EventClassCategory(nosql.Document):
         super(EventClassCategory, self).save(*args, **kwargs)
 
 
+@on_delete_check(check=[
+    ("fm.EventClassificationRule", "event_class"),
+    ("fm.ArchivedEvent", "event_class"),
+    ("fm.ActiveEvent", "event_class")
+])
 class EventClass(Document):
     """
     Event class

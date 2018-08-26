@@ -25,6 +25,7 @@ from noc.lib.app.reportdatasources.report_discoveryresult import ReportDiscovery
 from noc.lib.app.reportdatasources.report_objectifacesstatusstat import ReportObjectIfacesStatusStat
 from noc.lib.app.reportdatasources.report_objectcaps import ReportObjectCaps
 from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
+from noc.lib.app.reportdatasources.report_objectconfig import ReportObjectConfig
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -151,6 +152,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "segment",
             "phys_interface_count",
             "link_count",
+            "last_config_ts"
             # "discovery_problem"
             # "object_tags"
             # "sorted_tags"
@@ -176,7 +178,8 @@ class ReportObjectDetailApplication(ExtApplication):
             "CONTAINER",
             "SEGMENT",
             "PHYS_INTERFACE_COUNT",
-            "LINK_COUNT"
+            "LINK_COUNT",
+            "LAST_CONFIG_TS"
         ]
         # "DISCOVERY_PROBLEM"
         # "ADM_PATH
@@ -218,6 +221,7 @@ class ReportObjectDetailApplication(ExtApplication):
         container_lookup = iter(ReportContainer(mos_id))
         iss = iter(ReportObjectIfacesStatusStat(mos_id))
         hn = iter(ReportObjectsHostname1(mos_id))
+        rc = iter(ReportObjectConfig(mos_id))
         # ccc = iter(ReportObjectCaps(mos_id))
         if "adm_path" in columns.split(","):
             ad_path = ReportAdPath()
@@ -251,7 +255,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 "profile", "object_profile__name", "auth_profile__name",
                 "administrative_domain__name", "segment",
                 "vendor", "platform", "version", "tags").order_by("id"):
-            if mos_filter and mo_id not in mos_filter:
+            if (mos_filter and mo_id not in mos_filter) or not mos_id:
                 continue
             mo_continer = next(container_lookup)
             r += [translate_row(row([
@@ -274,6 +278,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 NetworkSegment.get_by_id(m_segment) if m_segment else "",
                 next(iface_count)[0],
                 next(link_count)[0],
+                next(rc)[0]
             ]), cmap)]
             if "adm_path" in columns.split(","):
                 r[-1].extend([ad] + list(ad_path[ad]))

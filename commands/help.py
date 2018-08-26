@@ -39,13 +39,16 @@ class Command(BaseCommand):
                 if f.startswith("_") or f.startswith("."):
                     continue
                 elif f.endswith(".py"):
-                    if root == "commands":
-                        h = get_handler("noc.commands.%s" % f[:-3])
-                    else:
-                        h = get_handler("noc.custom.commands.%s" % f[:-3])
-                    ha = getattr(h, "Command", "")
-                    if ha:
-                        help = ha.help
+                    try:
+                        if root == "commands":
+                            h = get_handler("noc.commands.%s" % f[:-3])
+                        else:
+                            h = get_handler("noc.custom.commands.%s" % f[:-3])
+                        ha = getattr(h, "Command", "")
+                        if ha:
+                            help = ha.help
+                    except Exception:
+                        help = ""
                     commands.add((f[:-3], help))
                 elif f.endswith(".sh"):
                     commands.add((f[:-3], help))

@@ -3,7 +3,7 @@
 # SelectorCache
 # Updated by sa.refresh_selector_cache job
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ from mongoengine.document import Document
 from mongoengine.fields import IntField
 import cachetools
 # NOC modules
+from noc.core.model.hacks import ensure_pending_models
 from noc.core.defer import call_later
 
 logger = logging.getLogger(__name__)
@@ -88,6 +89,7 @@ class SelectorCache(Document):
         selectors = cls.get_active_selectors()
         if not selectors:
             return set()
+        ensure_pending_models()  # Resolve ForeignKey models
         sql = []
         params = []
         for s in selectors:

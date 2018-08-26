@@ -140,6 +140,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                         ["E", __("Enable")],
                         ["D", __("Disable")]
                     ],
+                    labelWidth: 180,
                     uiStyle: "medium"
                 },
                 {
@@ -152,6 +153,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                         ["E", __("Enable")],
                         ["D", __("Disable")]
                     ],
+                    labelWidth: 180,
                     uiStyle: "medium"
                 }
             ],
