@@ -1,7 +1,8 @@
 {
     "name": "MEINBERG Radio Clocks",
     "uuid": "42d5edf0-223f-4109-8183-c89617d2264b",
-    "code": "MEINBERG",
+    "full_name": "MEINBERG Radio Clocks",
+    "code": ["MEINBERG"],
     "site": "https://www.meinbergglobal.com/",
     "$collection": "inv.vendors"
 }

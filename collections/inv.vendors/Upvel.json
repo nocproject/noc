@@ -1,8 +1,8 @@
 {
     "name": "Upvel",
     "uuid": "53cad42c-16de-4fef-a73e-248a24639168",
-    "code": "UPVEL",
+    "name": "Upvel",
+    "code": ["UPVEL"],
     "site": "http://www.upvel.ru",
-    "aliases": [],
     "$collection": "inv.vendors"
 }

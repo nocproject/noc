@@ -1,8 +1,8 @@
 {
   "name": "ModuleTech Ltd.",
   "uuid": "459c2c71-07c8-4227-a035-217accc5efe1",
-  "code": "MODULTECH",
+  "full_name": "ModuleTech Ltd.",
+  "code": ["MODULTECH"],
   "site": "http://module-ltd.ru/",
-  "aliases": [],
   "$collection": "inv.vendors"
 }

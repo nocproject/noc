@@ -1,7 +1,8 @@
 {
     "name": "Supertel",
     "uuid": "215b1104-c4b2-4d13-9667-ddd465ff141f",
-    "code": "SUPERTEL",
+    "full_name": "Supertel",
+    "code": ["SUPERTEL"],
     "site": "http://supertel.ru/",
     "$collection": "inv.vendors"
 }

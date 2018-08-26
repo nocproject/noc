@@ -1,0 +1,8 @@
+{
+    "name": "Eltex",
+    "uuid": "c7aff078-8024-4d98-8cb1-383c3b2d8023",
+    "full_name": "ООО «Предприятие «ЭЛТЕКС»",
+    "code": ["ELTEX"],
+    "site": "https://eltex-co.ru/",
+    "$collection": "inv.vendors"
+}

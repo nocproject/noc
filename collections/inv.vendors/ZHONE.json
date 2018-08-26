@@ -1,0 +1,8 @@
+{
+    "name": "Zhone",
+    "uuid": "4ed89445-326f-479d-b270-b4e402f0ede9",
+    "full_name": "Dasan Zhone Solutions",
+    "code": ["DZS", "ZHONE"],
+    "site": "https://dasanzhone.com/",
+    "$collection": "inv.vendors"
+}

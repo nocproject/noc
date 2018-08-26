@@ -1,7 +1,8 @@
 {
     "name": "T Fortis",
     "uuid": "239515d5-a8b8-454e-ab37-32c4643a141c",
-    "code": "TFORTIS",
+    "full_name": "T Fortis",
+    "code": ["TFORTIS"],
     "site": "http://www.tfortis.ru/",
     "$collection": "inv.vendors"
 }

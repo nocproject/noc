@@ -1,7 +1,8 @@
 {
     "name": "Brocade",
     "uuid": "3b613993-3c19-4b04-9bd5-fcf01b7efecd",
-    "code": "BROCADE",
+    "full_name": "Brocade",
+    "code": ["BROCADE"],
     "site": "http://www.brocade.com/",
     "$collection": "inv.vendors"
 }

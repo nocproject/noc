@@ -1,7 +1,8 @@
 {
     "name": "MRV Communications",
     "uuid": "81096be6-f9ff-47ba-b71b-3bd6a0930884",
-    "code": "MRV",
+    "full_name": "MRV Communications",
+    "code": ["MRV"],
     "site": "http://mrv.ru/",
     "$collection": "inv.vendors"
 }

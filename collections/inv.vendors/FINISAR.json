@@ -1,7 +1,8 @@
 {
     "name": "FINISAR CORPORATION",
     "uuid": "ee35ecb4-0217-4f89-9196-6afd127322c3",
-    "code": "FINISAR",
+    "full_name": "FINISAR CORPORATION",
+    "code": ["FINISAR", "FINISAR CORP."],
     "site": "http://www.finisar.com/",
     "$collection": "inv.vendors"
 }

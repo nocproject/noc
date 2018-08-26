@@ -1,0 +1,8 @@
+{
+    "name": "HIKVISION",
+    "uuid": "eee05c8a-2410-4da2-8a17-a67137c080de",
+    "full_name": "Hikvision Digital Technology Co., Ltd.",
+    "code": ["HIKVISION"],
+    "site": "http://www.hikvision.com",
+    "$collection": "inv.vendors"
+}
