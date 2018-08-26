@@ -285,8 +285,8 @@ class ManagedObjectDataStream(DataStream):
                 continue
             r += [{
                 "id": str(g),
-                "name": rg.name,
-                "technology": rg.technology.name,
+                "name": qs(rg.name),
+                "technology": qs(rg.technology.name),
                 "static": g in static_groups
             }]
         return r
@@ -294,11 +294,25 @@ class ManagedObjectDataStream(DataStream):
     @classmethod
     def get_meta(cls, data):
         return {
-            "pool": data.get("pool")
+            "pool": data.get("pool"),
+            "service_groups": [g["id"] for g in data.get("service_groups")],
+            "client_groups": [g["id"] for g in data.get("client_groups")]
         }
 
     @classmethod
     def filter_pool(cls, name):
         return {
             "%s.pool" % cls.F_META: name
+        }
+
+    @classmethod
+    def filter_service_group(cls, name):
+        return {
+            "%s.service_groups" % cls.F_META: name
+        }
+
+    @classmethod
+    def filter_client_group(cls, name):
+        return {
+            "%s.client_groups" % cls.F_META: name
         }
