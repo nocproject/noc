@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // phone.phonenumber Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.phone.phonenumber.Model");
@@ -109,12 +109,21 @@ Ext.define("NOC.phone.phonenumber.Model", {
             persist: false
         },
         {
-            name: "termination_group",
-            type: "string"
+            name: "static_service_groups",
+            type: "auto"
         },
         {
-            name: "termination_group__label",
-            type: "string",
+            name: "effective_service_groups",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "static_client_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_client_groups",
+            type: "auto",
             persist: false
         }
     ]

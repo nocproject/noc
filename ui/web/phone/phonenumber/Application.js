@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // phone.phonenumber application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.phone.phonenumber.Application");
@@ -18,7 +18,7 @@ Ext.define("NOC.phone.phonenumber.Application", {
         "NOC.phone.phonenumber.LookupField",
         "NOC.phone.phonelinktype.LookupField",
         "NOC.sa.administrativedomain.LookupField",
-        "NOC.sa.terminationgroup.LookupField"
+        "NOC.inv.resourcegroup.LookupField"
     ],
     model: "NOC.phone.phonenumber.Model",
     rowClassField: "row_class",
@@ -95,12 +95,6 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     renderer: NOC.render.Lookup("administrative_domain")
                 },
                 {
-                    text: __("Termination Group"),
-                    dataIndex: "termination_group",
-                    width: 100,
-                    renderer: NOC.render.Lookup("termination_group")
-                },
-                {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1
@@ -175,10 +169,92 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "termination_group",
-                    xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: __("Termination Group"),
-                    allowBlank: true
+                    xtype: "fieldset",
+                    title: __("Resource Groups"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: {
+                        columnWidth: 0.5,
+                        padding: 10
+                    },
+                    collapsible: true,
+                    collapsed: false,
+                    items: [
+                        {
+                            name: "static_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                // {
+                                //     xtype: "glyphactioncolumn",
+                                //     width: 20,
+                                //     sortable: false,
+                                //     items: [
+                                //         {
+                                //             glyph: NOC.glyph.search,
+                                //             tooltip: __("Show Card"),
+                                //             scope: me,
+                                //             handler: me.onShowResourceGroup
+                                //         }
+                                //     ]
+                                // },
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "static_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     name: "linked_numbers",

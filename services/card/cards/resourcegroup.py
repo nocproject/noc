@@ -20,7 +20,9 @@ class ResourceGroupCard(BaseCard):
     model = ResourceGroup
 
     CARD_MAP = {
-        "sa.ManagedObject": "managedobject"
+        "sa.ManagedObject": "managedobject",
+        "phone.PhoneRange": "phonerange",
+        "phone.PhoneNumber": "phonenumber"
     }
 
     def get_data(self):

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PhoneRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import operator
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField, ListField,
-                                EmbeddedDocumentField)
+                                EmbeddedDocumentField, ObjectIdField)
 from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
@@ -25,9 +25,9 @@ from .phonenumberprofile import PhoneNumberProfile
 from .phonelinktype import PhoneLinkType
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.lib.text import clean_number
+from noc.core.resourcegroup.decorator import resourcegroup
 
 id_lock = Lock()
 
@@ -38,13 +38,18 @@ class LinkedNumber(EmbeddedDocument):
     description = StringField()
 
 
+@resourcegroup
 class PhoneNumber(Document):
     meta = {
         "collection": "noc.phonenumbers",
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "linked_numbers.number"
+            "linked_numbers.number",
+            "static_service_groups",
+            "effective_service_groups",
+            "static_client_groups",
+            "effective_client_groups"
         ]
     }
 
@@ -87,7 +92,11 @@ class PhoneNumber(Document):
     linked_numbers = ListField(EmbeddedDocumentField(LinkedNumber))
     #
     administrative_domain = ForeignKeyField(AdministrativeDomain)
-    termination_group = ForeignKeyField(TerminationGroup)
+    # Resource groups
+    static_service_groups = ListField(ObjectIdField())
+    effective_service_groups = ListField(ObjectIdField())
+    static_client_groups = ListField(ObjectIdField())
+    effective_client_groups = ListField(ObjectIdField())
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 
