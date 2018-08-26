@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.vendor Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.vendor.Model");
@@ -20,8 +20,12 @@ Ext.define("NOC.inv.vendor.Model", {
             type: "string"
         },
         {
-            name: "code",
+            name: "full_name",
             type: "string"
+        },
+        {
+            name: "code",
+            type: "auto"
         },
         {
             name: "uuid",
