@@ -72,6 +72,8 @@ class CardRequestHandler(UIHandler):
                 data = card.render()
         except BaseCard.RedirectError as e:
             return self.redirect(e.args[0])
+        except BaseCard.NotFoundError:
+            raise tornado.web.HTTPError(404, "Not found")
         except Exception:
             error_report()
             raise tornado.web.HTTPError(500, "Internal server error")

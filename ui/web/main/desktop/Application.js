@@ -140,7 +140,7 @@ Ext.define("NOC.main.desktop.Application", {
                 params.app_id = [p[1], p[2]].join(".");
             }
             var tab = me.workplacePanel.launchTab(panel_class, title, params, node);
-            if (node) {
+            if(node) {
                 me.launchedTabs[node] = tab;
             }
         }
@@ -265,7 +265,7 @@ Ext.define("NOC.main.desktop.Application", {
             scope: me,
             success: function(response) {
                 var status = Ext.decode(response.responseText);
-                if (status) {
+                if(status) {
                     me.onLogin();
                 } else {
                     NOC.error(__("Login failed"));
@@ -429,5 +429,25 @@ Ext.define("NOC.main.desktop.Application", {
             me.breadcrumbs.show();
             me.navPanel.hide();
         }
+    },
+    //
+    setActiveNavTabTooltip: function(text) {
+        var me = this;
+        Ext.each(me.workplacePanel.tabBar.getRefItems(), function(btn) {
+            if(btn.active === true) {
+                btn.setTooltip(text);
+                return false;
+            }
+        });
+    },
+    //
+    clearActiveNavTabTooltip: function() {
+        var me = this;
+        Ext.each(me.workplacePanel.tabBar.getRefItems(), function(btn) {
+            if(btn.active === true) {
+                btn.setTooltip(undefined);
+                return false;
+            }
+        });
     }
 });

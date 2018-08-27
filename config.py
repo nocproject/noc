@@ -513,6 +513,7 @@ class Config(BaseConfig):
         enable_cfgtrap = BooleanParameter(default=True)
         enable_dnszone = BooleanParameter(default=True)
         enable_managedobject = BooleanParameter(default=True)
+        enable_resourcegroup = BooleanParameter(default=True)
 
     class help(ConfigSection):
         base_url = StringParameter(default="https://docs.getnoc.com")
