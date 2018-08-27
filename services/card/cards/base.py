@@ -34,6 +34,9 @@ class BaseCard(object):
     class RedirectError(Exception):
         pass
 
+    class NotFoundError(Exception):
+        pass
+
     def __init__(self, handler, id):
         self.handler = handler
         self.id = id
@@ -74,9 +77,8 @@ class BaseCard(object):
                 return self.get_object(id)
             except self.model.DoesNotExist:
                 metrics["error", ("type", "no_such_object")] += 1
-                return None
-        else:
-            return None
+                raise self.NotFoundError()
+        return None
 
     def get_data(self):
         """
