@@ -295,8 +295,8 @@ class ManagedObjectDataStream(DataStream):
     def get_meta(cls, data):
         return {
             "pool": data.get("pool"),
-            "service_groups": [g["id"] for g in data.get("service_groups")],
-            "client_groups": [g["id"] for g in data.get("client_groups")]
+            "service_groups": [g["id"] for g in data.get("service_groups", [])],
+            "client_groups": [g["id"] for g in data.get("client_groups", [])]
         }
 
     @classmethod
