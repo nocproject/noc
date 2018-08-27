@@ -10,6 +10,7 @@
 from collections import defaultdict
 # NOC modules
 from noc.core.datastream.base import DataStream
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
@@ -56,6 +57,7 @@ class ManagedObjectDataStream(DataStream):
         cls._apply_object_profile(mo, r)
         cls._apply_chassis_id(mo, r)
         cls._apply_interfaces(mo, r)
+        cls._apply_resource_groups(mo, r)
         return r
 
     @staticmethod
@@ -261,14 +263,56 @@ class ManagedObjectDataStream(DataStream):
         if rr:
             r["chassis_id"] = rr
 
+    @staticmethod
+    def _apply_resource_groups(mo, r):
+        if mo.effective_service_groups:
+            r["service_groups"] = ManagedObjectDataStream._get_resource_groups(
+                mo.effective_service_groups,
+                mo.static_service_groups
+            )
+        if mo.effective_client_groups:
+            r["client_groups"] = ManagedObjectDataStream._get_resource_groups(
+                mo.effective_client_groups,
+                mo.static_client_groups
+            )
+
+    @staticmethod
+    def _get_resource_groups(groups, static_groups):
+        r = []
+        for g in groups:
+            rg = ResourceGroup.get_by_id(g)
+            if not rg:
+                continue
+            r += [{
+                "id": str(g),
+                "name": qs(rg.name),
+                "technology": qs(rg.technology.name),
+                "static": g in static_groups
+            }]
+        return r
+
     @classmethod
     def get_meta(cls, data):
         return {
-            "pool": data.get("pool")
+            "pool": data.get("pool"),
+            "service_groups": [g["id"] for g in data.get("service_groups", [])],
+            "client_groups": [g["id"] for g in data.get("client_groups", [])]
         }
 
     @classmethod
     def filter_pool(cls, name):
         return {
             "%s.pool" % cls.F_META: name
+        }
+
+    @classmethod
+    def filter_service_group(cls, name):
+        return {
+            "%s.service_groups" % cls.F_META: name
+        }
+
+    @classmethod
+    def filter_client_group(cls, name):
+        return {
+            "%s.client_groups" % cls.F_META: name
         }
