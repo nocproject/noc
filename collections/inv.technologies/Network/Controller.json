@@ -1,0 +1,11 @@
+{
+    "name": "Network | Controller",
+    "$collection": "inv.technologies",
+    "uuid": "bcf7ad57-81a4-4da0-8e6d-e429c9e21532",
+    "description": "Controller - CPE relation",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": true,
+    "allow_children": false
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Network | Traffic Group",
+    "$collection": "inv.technologies",
+    "uuid": "c656bcd4-7869-4ad4-9945-ee002a7b70c1",
+    "description": "Group of Managed Objects for network planning tasks",
+    "service_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": true
+}

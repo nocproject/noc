@@ -1,0 +1,10 @@
+{
+    "name": "Object Group",
+    "$collection": "inv.technologies",
+    "uuid": "f4c6d51d-d597-4183-918e-23efd748fd12",
+    "description": "Arbitrary group of Managed Objects",
+    "service_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}

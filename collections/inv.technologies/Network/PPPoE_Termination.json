@@ -1,0 +1,11 @@
+{
+    "name": "Network | PPPoE Termination",
+    "$collection": "inv.technologies",
+    "uuid": "a8ddcd67-d8c4-471d-9a9b-9f4749e09011",
+    "description": "PPPoE Temination (access equipment -> BRAS)",
+    "service_model": "sa.ManagedObject",
+    "client_model": "sa.ManagedObject",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}
