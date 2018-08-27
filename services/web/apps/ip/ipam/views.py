@@ -199,7 +199,6 @@ class IPAMApplication(ExtApplication):
             "n": "Neighbor"
         }.get(prefix.source, "-"))]
         #
-        ippools = prefix.ippools
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
             v = getattr(prefix, f.name)
@@ -312,7 +311,6 @@ class IPAMApplication(ExtApplication):
             long_description=long_description,
             prefixes=prefixes,
             addresses=addresses,
-            ippools=ippools,
             prefix_info=prefix_info,
             display_empty_message=not addresses and not prefixes,
             can_view=can_view,

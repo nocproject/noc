@@ -39,7 +39,6 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("ip.Address", "vrf"),
     ("ip.AddressRange", "vrf"),
-    ("ip.IPPool", "vrf"),
     ("ip.PrefixAccess", "vrf"),
     ("ip.Prefix", "vrf"),
     # ("ip.DynamicIPPoolUsage", "vrf"),

@@ -22,7 +22,6 @@ class BaseRemoteSystem(object):
         "networksegmentprofile",
         "networksegment",
         "container",
-        "terminationgroup",
         "managedobjectprofile",
         "administrativedomain",
         "authprofile",
@@ -99,7 +98,7 @@ class BaseRemoteSystem(object):
     def extractor(cls, c):
         """
         Decorator for extractor
-        :return: 
+        :return:
         """
         cls.extractors[c.name] = c
         return c

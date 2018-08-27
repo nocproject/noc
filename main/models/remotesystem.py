@@ -52,7 +52,6 @@ class EnvItem(EmbeddedDocument):
     ("sa.ManagedObjectProfile", "remote_system"),
     ("sa.AuthProfile", "remote_system"),
     ("sa.ServiceProfile", "remote_system"),
-    ("sa.TerminationGroup", "remote_system"),
     ("sa.Service", "remote_system"),
     ("vc.VLAN", "remote_system"),
     ("vc.VLANProfile", "remote_system"),
@@ -87,7 +86,6 @@ class RemoteSystem(Document):
     enable_service = BooleanField()
     enable_serviceprofile = BooleanField()
     enable_subscriber = BooleanField()
-    enable_terminationgroup = BooleanField()
     enable_ttsystem = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()

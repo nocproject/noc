@@ -2,15 +2,17 @@
 # ----------------------------------------------------------------------
 # Managed Object loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import BaseLoader
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
 from noc.sa.models.profile import Profile
+from .base import BaseLoader
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -50,8 +52,6 @@ class ManagedObjectLoader(BaseLoader):
         "administrative_domain": "administrativedomain",
         "object_profile": "managedobjectprofile",
         "segment": "networksegment",
-        "termination_group": "terminationgroup",
-        "service_terminator": "terminationgroup",
         "container": "container",
         "auth_profile": "authprofile",
         "tt_system": "ttsystem"

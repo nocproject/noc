@@ -18,6 +18,7 @@ from noc.core.datastream.loader import loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.dns.models.dnszone import DNSZone
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.models import is_document
 
 
@@ -28,7 +29,8 @@ class Command(BaseCommand):
         "cfgping": ManagedObject,
         "cfgsyslog": ManagedObject,
         "cfgtrap": ManagedObject,
-        "dnszone": DNSZone
+        "dnszone": DNSZone,
+        "resourcegroup": ResourceGroup
     }
 
     def add_arguments(self, parser):

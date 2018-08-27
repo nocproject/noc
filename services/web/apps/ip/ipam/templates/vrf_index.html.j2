@@ -465,35 +465,6 @@ document.currentPrefix = "{{ prefix.prefix }}";
     <!-- End ranges -->
 {% endif %}
 <!-- end addresses -->
-<!-- ip pools -->
-{% if ippools %}
-    <div class="module">
-        <table width="100%" id="ippools" class="striped">
-            <caption class="module">IP Pools</caption>
-            <thead>
-                <tr>
-                    <th class="ippool-tg">Termination Group</th>
-                    <th class="ippool-name">Pool Name</th>
-                    <th class="ippool-type">Type</th>
-                    <th class="ippool-from">From</th>
-                    <th class="ippool-to">To</th>
-                    <th class="ippool-tech">Technologies</th>
-                </tr>
-            </thead>
-            {% for p in ippools %}
-                <tr>
-                    <td>{{ p.termination_group.name }}</td>
-                    <td>{{ p.name }}</td>
-                    <td>{% if p.type == 'D' %}Dynamic{% else %}Static{% endif %}</td>
-                    <td>{{ p.from_address }}</td>
-                    <td>{{ p.to_address }}</td>
-                    <td>{{ p.technologies|join(", ") }}</td>
-                </tr>
-            {%  endfor %}
-        </table>
-    </div>
-{% endif %}
-<!-- end ip pools -->
 <!-- block info -->
         </div>
     <div class="col-sm-12 col-lg-3">
