@@ -50,8 +50,6 @@ class ManagedObjectLoader(BaseLoader):
         "administrative_domain": "administrativedomain",
         "object_profile": "managedobjectprofile",
         "segment": "networksegment",
-        "termination_group": "terminationgroup",
-        "service_terminator": "terminationgroup",
         "container": "container",
         "auth_profile": "authprofile",
         "tt_system": "ttsystem"

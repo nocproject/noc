@@ -22,7 +22,6 @@ class BaseRemoteSystem(object):
         "networksegmentprofile",
         "networksegment",
         "container",
-        "terminationgroup",
         "managedobjectprofile",
         "administrativedomain",
         "authprofile",

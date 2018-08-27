@@ -117,11 +117,6 @@ Ext.define("NOC.main.remotesystem.Application", {
                             boxLabel: __("Subscriber")
                         },
                         {
-                            name: "enable_terminationgroup",
-                            xtype: "checkbox",
-                            boxLabel: __("Termination Group")
-                        },
-                        {
                             name: "enable_ttsystem",
                             xtype: "checkbox",
                             boxLabel: __("TT System")
