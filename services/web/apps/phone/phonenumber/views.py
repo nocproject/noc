@@ -42,7 +42,7 @@ class PhoneNumberApplication(ExtDocApplication):
         def sg_to_list(items):
             return [
                 {
-                    "group": x,
+                    "group": str(x),
                     "group__label": unicode(ResourceGroup.get_by_id(x))
                 } for x in items
             ]
@@ -55,3 +55,13 @@ class PhoneNumberApplication(ExtDocApplication):
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
+
+    def clean(self, data):
+        # Clean resource groups
+        for fn in self.resource_group_fields:
+            if fn.startswith("effective_") and fn in data:
+                del data[fn]
+                continue
+            data[fn] = [x["group"] for x in (data.get(fn) or [])]
+        # Clean other
+        return super(PhoneNumberApplication, self).clean(data)
