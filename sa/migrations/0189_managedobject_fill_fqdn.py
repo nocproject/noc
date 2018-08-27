@@ -23,7 +23,8 @@ class Migration(object):
             fixes += [str(mo_id)]
         if not fixes:
             return
-        db.execute("""
+        db.execute(
+            """
             UPDATE sa_managedobject
             SET fqdn=address, address_resolution_policy='O'
             WHERE id IN (%s)
