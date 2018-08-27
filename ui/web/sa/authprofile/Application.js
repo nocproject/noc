@@ -10,7 +10,8 @@ Ext.define("NOC.sa.authprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.authprofile.Model",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.core.PasswordField"
     ],
     model: "NOC.sa.authprofile.Model",
     columns: [
@@ -76,16 +77,16 @@ Ext.define("NOC.sa.authprofile.Application", {
         },
         {
             name: "password",
-            xtype: "textfield",
-            inputType: "password",
+            xtype: "password",
             fieldLabel: __("Password"),
+            uiStyle: "large",
             allowBlank: true
         },
         {
             name: "super_password",
-            xtype: "textfield",
-            inputType: "password",
+            xtype: "password",
             fieldLabel: __("Super Password"),
+            uiStyle: "large",
             allowBlank: true
         },
         {
