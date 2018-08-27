@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PhoneRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import operator
 import logging
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField
+from mongoengine.fields import StringField, BooleanField, ListField, ObjectIdField
 from mongoengine.queryset import Q
 from mongoengine.errors import ValidationError
 import cachetools
@@ -25,24 +25,31 @@ from noc.lib.nosql import PlainReferenceField
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.defer import call_later
 from noc.lib.text import clean_number
+from noc.core.resourcegroup.decorator import resourcegroup
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 
 @on_save
+@resourcegroup
 @on_delete
 class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["parent"]
+        "indexes": [
+            "parent",
+            "static_service_groups",
+            "effective_service_groups",
+            "static_client_groups",
+            "effective_client_groups"
+        ]
     }
 
     name = StringField()
@@ -55,11 +62,12 @@ class PhoneRange(Document):
     supplier = PlainReferenceField(Supplier)
     project = ForeignKeyField(Project)
     administrative_domain = ForeignKeyField(AdministrativeDomain)
-    termination_group = ForeignKeyField(TerminationGroup)
     to_allocate_numbers = BooleanField()
-    # @todo: softswitch
-    # @todo: SBC
-    # @todo: tags
+    # Resource groups
+    static_service_groups = ListField(ObjectIdField())
+    effective_service_groups = ListField(ObjectIdField())
+    static_client_groups = ListField(ObjectIdField())
+    effective_client_groups = ListField(ObjectIdField())
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
