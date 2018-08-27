@@ -34,6 +34,10 @@ Ext.define("NOC.main.handler.Model", {
         {
             name: "allow_config_validation",
             type: "boolean"
+        },
+        {
+            name: "allow_resolver",
+            type: "boolean"
         }
     ]
 });

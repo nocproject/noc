@@ -652,6 +652,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     allowBlank: false,
                                     tabIndex: 110,
                                     groupEdit: true
+                                },
+                                {
+                                    name: "fqdn",
+                                    xtype: "textfield",
+                                    fieldLabel: __("FQDN"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    tabIndex: 120
                                 }
                             ]
                         }, {
@@ -683,7 +691,20 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["e", __("Allow autosegmentation")],
                                         ["o", __("Segmentate to existing segment")],
                                         ["c", __("Segmentate to child segment")]
+                                    ]
+                                },
+                                                                {
+                                    name: "address_resolution_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Address Resolution Policy"),
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["D", __("Disabled")],
+                                        ["O", __("Once")],
+                                        ["E", __("Enabled")]
                                     ],
+                                    allowBlank: false,
+                                    uiStyle: "medium"
                                 }
                             ]
                         }

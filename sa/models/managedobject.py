@@ -67,7 +67,7 @@ from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 9
+MANAGEDOBJECT_CACHE_VERSION = 11
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -221,6 +221,24 @@ class ManagedObject(Model):
             ("SC", "SNMP, CLI"),
             ("CS", "CLI, SNMP")
         ],
+        default="P"
+    )
+    # IPAM
+    fqdn = CharField(
+        "FQDN",
+        max_length=256,
+        null=True, blank=True
+    )
+    address_resolution_policy = CharField(
+        "Address Resolution Policy",
+        choices=[
+            ("P", "Profile"),
+            ("D", "Disabled"),
+            ("O", "Once"),
+            ("E", "Enabled")
+        ],
+        max_length=1,
+        null=False, blank=False,
         default="P"
     )
     #
@@ -1426,6 +1444,33 @@ class ManagedObject(Model):
             return self.object_profile.event_processing_policy
         else:
             return self.event_processing_policy
+
+    def get_address_resolution_policy(self):
+        if self.address_resolution_policy == "P":
+            return self.object_profile.address_resolution_policy
+        else:
+            return self.address_resolution_policy
+
+    def get_full_fqdn(self):
+        if not self.fqdn:
+            return None
+        if self.fqdn.endswith(".") or not self.object_profile.fqdn_suffix:
+            return self.fqdn[:-1]
+        return "%s.%s" % (self.fqdn, self.objects_profile.fqdn_suffix)
+
+    def resolve_fqdn(self):
+        """
+        Resolve FQDN to address
+        :param fqdn:
+        :return:
+        """
+        fqdn = self.get_full_fqdn()
+        if not fqdn:
+            return None
+        if self.object_profile.resolver_handler:
+            return self.object_profile.resolver_handler.get_handler()(fqdn)
+        import socket
+        return socket.gethostbyname(fqdn)
 
     @classmethod
     def get_bi_selector(cls, cfg):
