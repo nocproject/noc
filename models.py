@@ -243,7 +243,6 @@ _MODELS = {
     "ip.Address": "noc.ip.models.address.Address",
     "ip.AddressProfile": "noc.ip.models.addressprofile.AddressProfile",
     "ip.AddressRange": "noc.ip.models.addressrange.AddressRange",
-    "ip.IPPool": "noc.ip.models.ippool.IPPool",
     "ip.Prefix": "noc.ip.models.prefix.Prefix",
     "ip.PrefixAccess": "noc.ip.models.prefixaccess.PrefixAccess",
     "ip.PrefixBookmark": "noc.ip.models.prefixbookmark.PrefixBookmark",
