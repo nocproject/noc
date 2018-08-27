@@ -37,7 +37,12 @@ Ext.define("NOC.core.ModelApplication", {
     formLayout: "anchor",
     formMinWidth: undefined,
     formMaxWidth: undefined,
-    //
+    navTooltipTemplate: new Ext.XTemplate(
+        '<tpl if="data.name">',
+        '{data.name} - ',
+        '</tpl>{title}'
+    ),
+
     initComponent: function() {
         var me = this;
         // set base_url
@@ -851,6 +856,7 @@ Ext.define("NOC.core.ModelApplication", {
             field,
             data;
         me.currentRecord = record;
+        me.setNavTabTooltip({data: me.currentRecord.data});
         me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
         data = record.getData();
@@ -1144,6 +1150,7 @@ Ext.define("NOC.core.ModelApplication", {
             // Remove filter set by loadById
             delete me.currentQuery[me.idField];
         }
+        me.clearNavTabTooltip();
         // Apply updated filter
         me.store.setFilterParams(me.currentQuery);
         me.showGrid();

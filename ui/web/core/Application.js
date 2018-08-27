@@ -10,6 +10,7 @@ Ext.define("NOC.core.Application", {
     extend: "Ext.panel.Panel",
     layout: "fit",
     permissions: {},  // User permissions
+    navTooltipTemplate: undefined,
 
     constructor: function(options) {
         var me = this;
@@ -131,5 +132,25 @@ Ext.define("NOC.core.Application", {
     isActiveApp: function() {
         var me = this;
         return me.ownerCt.isVisible();
+    },
+    //
+    setNavTabTooltip: function(ctx) {
+        var me = this,
+            txt;
+        if(!me.navTooltipTemplate) {
+            return
+        }
+        ctx = ctx || {};
+        ctx["title"] = me.appTitle;
+        txt = me.navTooltipTemplate.apply(ctx).trim();
+        if(txt === "") {
+            me.clearNavTabTooltip()
+        } else {
+            NOC.app.app.setActiveNavTabTooltip(txt)
+        }
+    },
+    //
+    clearNavTabTooltip: function() {
+        NOC.app.app.clearActiveNavTabTooltip();
     }
 });
