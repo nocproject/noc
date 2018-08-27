@@ -14,7 +14,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 class Migration(object):
     def forwards(self):
         # Check ManagedObjectProfile in DB
-        mop_req = db.execute("SELECT count(*) FROM sa_managedobjectprofile")
+        mop_req = db.execute("SELECT count(*) FROM sa_managedobjectprofile where length(metrics) > 6")
         if mop_req[0][0] > 1:
             for mop in ManagedObjectProfile.objects.filter():
                 if not mop.metrics:
