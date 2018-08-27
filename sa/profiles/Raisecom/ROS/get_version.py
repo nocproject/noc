@@ -22,7 +22,7 @@ class Script(BaseScript):
         return {
             "vendor": "Raisecom",
             "platform": v["platform"],
-            "version": v["version"][4:] if v["version"].startswith("ROS_") else v["version"],
+            "version": v["version"],
             "attributes": {
                 "Serial Number": v["serial"],
                 "Boot PROM": v["bootstrap"],
