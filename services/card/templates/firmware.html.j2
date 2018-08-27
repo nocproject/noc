@@ -1,0 +1,29 @@
+<table class="table table-condensed table-hover">
+<tbody>
+</tbody>
+<tr>
+    <th colspan="2">
+        {{ object.fulname }} Firmware
+    </th>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">{{ _("Vendor") }}</th>
+    <td>{{ object.vendor.name }}</td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">{{ _("Profile") }}</th>
+    <td>{{ object.profile.name }}</td>
+</tr>
+{% if object.description %}
+<tr>
+    <th scope="row" class="col-md-2">{{ _("Description") }}</th>
+    <td>{{ object.description }}</td>
+</tr>
+{% endif %}
+{% if object.download_url %}
+<tr>
+    <th scope="row" class="col-md-2">{{ _("URL") }}</th>
+    <td><a href="{{ object.download_url }}">{{ object.download_url }}</a></td>
+</tr>
+{% endif %}
+</table>

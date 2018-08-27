@@ -144,7 +144,7 @@
                                        {% if object.platform.is_end_of_support %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
                                     {% endif %}
                                     {% if version %}
-                                        </br>Version: {{ version }}
+                                        </br>Version: <a href="/api/card/view/firmare/{{ object.version.id }}/">{{ version }}</a>
                                         {% if firmware_recommended and firmware_recommended.version != version %}
                                             ({{ _("Recommended") }}: {{ firmware_recommended.version }})
                                         {% endif %}
