@@ -1,7 +1,8 @@
 {
     "name": "Avaya",
     "uuid": "eaffacec-f2ea-469f-90fa-6fafba9f9bbf",
-    "code": "AVAYA",
+    "full_name": "Avaya",
+    "code": ["AVAYA"],
     "site": "http://www.avaya.com",
     "$collection": "inv.vendors"
 }

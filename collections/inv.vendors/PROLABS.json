@@ -1,7 +1,8 @@
 {
     "name": "Prolabs",
     "uuid": "98df95a5-a03a-41da-ad17-919930e60dd0",
-    "code": "PROLABS",
+    "full_name": "Prolabs",
+    "code": ["PROLABS"],
     "site": "http://www.prolabs.com/",
     "$collection": "inv.vendors"
 }

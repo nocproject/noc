@@ -1,7 +1,8 @@
 {
     "name": "Methode Electronics",
     "uuid": "b704b0b3-ba91-4a87-9d17-a8b92182e5be",
-    "code": "METHODE",
+    "full_name": "Methode Electronics",
+    "code": ["METHODE"],
     "site": "http://www.methode.com/",
     "$collection": "inv.vendors"
 }

@@ -1,0 +1,8 @@
+{
+    "name": "NAG",
+    "uuid": "ac3b8bb0-1efa-4415-a315-36bc850b95d2",
+    "full_name": "NAG LLC",
+    "code": ["NAG", "NAG LLC"],
+    "site": "https://www.nag.ru/",
+    "$collection": "inv.vendors"
+}

@@ -1,7 +1,8 @@
 {
     "name": "AVAGO-TECH",
     "uuid": "770da8a7-df6c-4b28-9d66-a8c803cee5b2",
-    "code": "AVAGO",
+    "full_name": "Avago Technologies Limited",
+    "code": ["AVAGO"],
     "site": "http://www.avagotech.com/",
     "$collection": "inv.vendors"
 }

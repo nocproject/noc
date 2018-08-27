@@ -1,7 +1,8 @@
 {
     "name": "NoName",
     "uuid": "eccf0b1f-349e-449c-8ead-0209b0df36a0",
-    "code": "NONAME",
+    "full_name": "NoName",
+    "code": ["NONAME"],
     "site": null,
     "$collection": "inv.vendors"
 }

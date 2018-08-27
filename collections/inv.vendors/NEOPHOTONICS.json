@@ -1,7 +1,8 @@
 {
     "name": "Neophotonics",
     "uuid": "27ac7ba8-3006-4c1c-9e41-ea5dc04e6546",
-    "code": "NEOPHOTONICS",
+    "full_name": "Neophotonics",
+    "code": ["NEOPHOTONICS"],
     "site": "https://www.neophotonics.com",
     "$collection": "inv.vendors"
 }

@@ -1,0 +1,8 @@
+{
+    "name": "DCN",
+    "uuid": "c810d9cb-9bc2-4825-8dc0-acb2c1681f73",
+    "full_name": "Digital China Networks",
+    "code": ["DCN"],
+    "site": "http://www.dcnglobal.com/",
+    "$collection": "inv.vendors"
+}

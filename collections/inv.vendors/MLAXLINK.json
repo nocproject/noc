@@ -1,7 +1,8 @@
 {
     "name": "MlaxLink",
     "uuid": "4a96b085-0423-4afb-b4c9-0fa414869218",
-    "code": "MLAXLINK",
+    "full_name": "MlaxLink",
+    "code": ["MLAXLINK"],
     "site": "http://www.mlaxlink.ru/",
     "$collection": "inv.vendors"
 }
