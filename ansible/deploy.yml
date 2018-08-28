@@ -35,7 +35,6 @@
     - role: web
     - role: card
     - role: ch_datasource
-    - role: omap
     - role: activator
     - role: grafanads
     - role: mailsender

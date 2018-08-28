@@ -9,11 +9,18 @@ forms:
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/datastream/ target=_blank>Datastream</a><br/>
       <strong>Placement constraint</strong>: On node with mongo<br/>
     power:
-      default: 2
+      default: 1
       label: "Instances"
       type: int
       max: 8
       min: 0
+    mode:
+      default: wait
+      label: Datastrem mode
+      type: list
+      options:
+        - pool
+        - wait
     loglevel:
       default: info
       label: Loglevel

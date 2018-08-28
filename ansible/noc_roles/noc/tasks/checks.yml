@@ -46,3 +46,13 @@
     - has_svc_noc is defined
   tags:
     - checks
+
+- name: Warn about omap is selected
+  fail:
+    msg: |
+      Be aware that omap service is depricated and should not be used.
+      Read https://kb.nocproject.org/x/OwB2Ag for more details.
+  when:
+    - has_svc_omap is defined
+  tags:
+    - checks
