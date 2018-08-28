@@ -14,6 +14,8 @@
     - config
 
 - include_tasks: install.yml
+  tags:
+    - requirements
 
 - name: PostgreSQL init db
   command: '{{postgres_bin_dir}}/postgresql{{postgres_version|replace(".","")}}-setup initdb'

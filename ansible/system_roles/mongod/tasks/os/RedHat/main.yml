@@ -53,6 +53,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
 
 - name: Install MongoDB
   yum:
@@ -61,6 +63,8 @@
     update_cache: "True"
   environment:
     https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Install mongodb limits file
   template:

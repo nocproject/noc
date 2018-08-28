@@ -1,5 +1,7 @@
 ---
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - requirements
 
 - name: Install activator python packages
   pip:
