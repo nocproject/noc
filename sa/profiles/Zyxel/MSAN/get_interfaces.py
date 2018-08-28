@@ -40,7 +40,7 @@ class Script(BaseScript):
     rx_sub_o1 = re.compile(r"^\s*(?P<sub>\d+)\s+(?P<admin_status>V|\-)(\s+\S+\s+(?P<pvid>\d+))?", re.MULTILINE)
     rx_sub_o2 = re.compile(r"^\s*Port (?P<sub>\d+): (?P<admin_status>Up|Down)", re.MULTILINE)
     rx_sub_o3 = re.compile(
-        r"^\s*(?P<sub>\d+)\s.+(?P<admin_status>Enabled|Disabled)\s*/(?P<oper_status>Up|Down)\s*\n",
+        r"^\s*(?:Port\=)?(?P<sub>\d+)\s.+(?P<admin_status>Enabled|Disabled)\s*/(?P<oper_status>Up|Down)\s*\n",
         re.MULTILINE
     )
     rx_descr = re.compile("^\s*(?P<sub>\d+)\s+(?P<descr>\S+)\s+", re.MULTILINE)
