@@ -17,7 +17,7 @@ Ext.apply(NOC.render, {
     //     Grid field renderer for boolean values
     //     Displays icons depending on true/false status
     //
-    Bool: function (v) {
+    Bool: function(v) {
         return {
             true: "<i class='fa fa-check' style='color:" + NOC.colors.yes + "'></i>",
             false: "<i class='fa fa-times' style='color:" + NOC.colors.no + "'></i>",
@@ -29,7 +29,7 @@ Ext.apply(NOC.render, {
     // NOC.render.URL(v)
     //      Grid field renderer for URLs
     //
-    URL: function (v) {
+    URL: function(v) {
         return "<a href =' " + v + "' target='_'>" + v + "</a>";
     },
 
@@ -37,9 +37,9 @@ Ext.apply(NOC.render, {
     // NOC.render.Tags(v)
     //      Grid field renderer for tags
     //
-    Tags: function (v) {
-        if (v) {
-            return v.map(function (x) {
+    Tags: function(v) {
+        if(v) {
+            return v.map(function(x) {
                 return "<span class='x-display-tag'>" + x + "</span>";
             }).join(" ");
         } else {
@@ -93,8 +93,8 @@ Ext.apply(NOC.render, {
         };
     },
 
-    WrapColumn: function (val){
-        return '<div style="white-space:normal !important;">'+ val +'</div>';
+    WrapColumn: function(val) {
+        return '<div style="white-space:normal !important;">' + val + '</div>';
     },
 
     Date: function(val) {
@@ -158,9 +158,9 @@ Ext.apply(NOC.render, {
         if(isNaN(val)) {
             return "";
         }
-        if (val < 1) {
+        if(val < 1) {
             // Msec
-            return "" + val*1000 + "ms";
+            return "" + val * 1000 + "ms";
         }
         if(val < 60) {
             // XXs
@@ -181,7 +181,7 @@ Ext.apply(NOC.render, {
     },
 
     Size: function(v) {
-        if (v === null || v === undefined) {
+        if(v === null || v === undefined) {
             return "";
         }
         if(v >= 10000000) {
@@ -403,7 +403,9 @@ NOC.hasPermission = function(perm) {
 };
 //
 NOC.listToRanges = function(lst) {
-    var l = lst.sort(function(x, y){return x - y;}),
+    var l = lst.sort(function(x, y) {
+            return x - y;
+        }),
         lastStart = null,
         lastEnd = null,
         r = [],
@@ -447,14 +449,14 @@ NOC.is_ipv4 = function(value) {
     var arrayX = new Array(),
         arrayoct = new Array(),
         arrayX = value.split(".");
-    if (arrayX.length != 4)
+    if(arrayX.length != 4)
         return false;
     else {
-        for (var oct in arrayX) {
-            if ((parseInt(arrayX[oct]) >= 0) && (parseInt(arrayX[oct]) <=255))
+        for(var oct in arrayX) {
+            if((parseInt(arrayX[oct]) >= 0) && (parseInt(arrayX[oct]) <= 255))
                 arrayoct.push(arrayX[oct]);
         }
-        if (arrayoct.length != 4) {
+        if(arrayoct.length != 4) {
             return false;
         } else {
             return true;
@@ -465,11 +467,11 @@ NOC.is_ipv4 = function(value) {
 NOC.is_ipv4_prefix = function(value) {
     var arrayX = new Array(),
         arrayX = value.split("/");
-    if (arrayX.length != 2)
+    if(arrayX.length != 2)
         return false;
-    if (!NOC.is_ipv4(arrayX[0]))
+    if(!NOC.is_ipv4(arrayX[0]))
         return false;
-    if ((parseInt(arrayX[1]) >= 0) && (parseInt(arrayX[1]) <= 32)) {
+    if((parseInt(arrayX[1]) >= 0) && (parseInt(arrayX[1]) <= 32)) {
         return true;
     } else {
         return false;
@@ -511,7 +513,7 @@ Ext.define("NOC.form.field.VTypes", {
     ASNMask: /[\d\/]/,
 
     // IPv4 check
-    IPv4: function(val, field){
+    IPv4: function(val, field) {
         try {
             return NOC.is_ipv4(val);
         } catch(e) {
@@ -522,7 +524,7 @@ Ext.define("NOC.form.field.VTypes", {
     IPv4Mask: /[\d\.]/i,
 
     // IPv4 prefix check
-    IPv4Prefix: function(val, field){
+    IPv4Prefix: function(val, field) {
         try {
             return NOC.is_ipv4_prefix(val);
         } catch(e) {
@@ -533,7 +535,7 @@ Ext.define("NOC.form.field.VTypes", {
     IPv4PrefixMask: /[\d\.\/]/i,
 
     // FQDN check
-    FQDN: function(val, field){
+    FQDN: function(val, field) {
         var me = this;
         try {
             return me.FQDNRe.test(val);
@@ -545,19 +547,19 @@ Ext.define("NOC.form.field.VTypes", {
     FQDNText: "Not valid FQDN",
 
     // AS-set check
-    ASSET: function(val, field){
+    ASSET: function(val, field) {
         var me = this;
         try {
             return me.ASSETRe.test(val);
         } catch(e) {
             return false;
         }
-    },   
+    },
     ASSETRe: /^AS(-\w+)+$/i,
     ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
 
     // AS/AS-set check
-    ASorASSET: function(val, field){
+    ASorASSET: function(val, field) {
         var me = this;
         return me.ASN(val, field) || me.ASSET(val, field);
     },
@@ -625,5 +627,26 @@ NOC.uiStyles = {
     // Full width
     extra: {
         anchor: "100%"
+    }
+};
+//
+// https://docs.getnoc.com/<branch>/<language>/go.html#<имя ссылки>
+//
+NOC.openHelp = function(topic) {
+    var url, win;
+    url = Ext.String.format(
+        "{0}/{1}/{2}/go.html#{3}",
+        NOC.settings.helpUrl,
+        NOC.settings.helpBranch,
+        NOC.settings.helpLanguage,
+        topic
+    );
+    win = window.open(url, '_blank');
+    win.focus();
+};
+
+NOC.helpOpener = function(topic) {
+    return function() {
+        NOC.openHelp(topic)
     }
 };
