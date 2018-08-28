@@ -11,7 +11,7 @@ from base import BaseLoader
 from noc.inv.models.resourcegroup import ResourceGroup
 
 
-class TerminationGroupLoader(BaseLoader):
+class ResourceGroupLoader(BaseLoader):
     """
     Administrative division loader
     """
