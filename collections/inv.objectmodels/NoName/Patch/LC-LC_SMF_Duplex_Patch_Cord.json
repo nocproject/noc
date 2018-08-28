@@ -11,7 +11,8 @@
             "direction": "s",
             "gender": "m",
             "name": "1",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": [">1000BASEX"],
         },
         {
             "cross": "4",
@@ -19,7 +20,8 @@
             "direction": "s",
             "gender": "m",
             "name": "2",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": [">1000BASEX"],
         },
         {
             "cross": "1",
@@ -27,7 +29,8 @@
             "direction": "s",
             "gender": "m",
             "name": "3",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": ["<1000BASEX"],
         },
         {
             "cross": "2",
@@ -35,7 +38,8 @@
             "direction": "s",
             "gender": "m",
             "name": "4",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": ["<1000BASEX"],
         }
     ],
     "data": {

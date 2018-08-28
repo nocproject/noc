@@ -19,14 +19,16 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": [">10GBASESR-850"],
         },
         {
             "description": "TX Port",
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "type__name": "Optical | LC"
+            "type__name": "Optical | LC",
+            "protocols": ["<10GBASESR-850"],
         }
     ],
     "data": {}
