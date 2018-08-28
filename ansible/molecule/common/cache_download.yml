@@ -49,10 +49,6 @@
 - name: download pkg cache
   command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}}"
 
-- name: check os type
-  setup:
-    gather_subset: min
-
 - name: Enable pkg cache
   lineinfile:
     dest: /etc/yum.conf
