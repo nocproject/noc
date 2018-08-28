@@ -76,7 +76,10 @@
                         "enable_google_roadmap": {% if setup.enable_gis_base_google_roadmap %}true{% else %}false{% endif %}
                     }
                 },
-                traceExtJSEvents: {% if setup.trace_extjs_events %}true{% else %}false{% endif %}
+                traceExtJSEvents: {% if setup.trace_extjs_events %}true{% else %}false{% endif %},
+                helpUrl: "{{ setup.help_base_url }}",
+                helpBranch: "{{ setup.help_branch }}",
+                helpLanguage: "{{ setup.help_language }}"
             };
             NOC.templates = {};
             Ext.setGlyphFontFamily("FontAwesome");

@@ -108,7 +108,10 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_google_roadmap": config.gis.enable_google_roadmap,
             "trace_extjs_events": False,
             "preview_theme": config.customization.preview_theme,
-            "enable_search": enable_search
+            "enable_search": enable_search,
+            "help_base_url": config.help.base_url,
+            "help_branch": config.help.branch,
+            "help_language": config.help.language
         }
         return self.render(
             request, "desktop.html",
