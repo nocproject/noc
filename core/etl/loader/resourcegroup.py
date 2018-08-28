@@ -11,6 +11,7 @@ from __future__ import absolute_import
 # NOC modules
 from .base import BaseLoader
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.technology import Technology
 
 
 class ResourceGroupLoader(BaseLoader):
@@ -23,10 +24,18 @@ class ResourceGroupLoader(BaseLoader):
         "id",
         "name",
         "technology",
-        "parent"
+        "parent",
         "description"
     ]
 
     mapped_fields = {
         "parent": "resourcegroup"
     }
+
+    def clean(self, row):
+        """
+        Fix Technology
+        """
+        v = super(ResourceGroupLoader, self).clean(row)
+        v["technology"] = Technology.get_by_name(v["technology"])
+        return v
