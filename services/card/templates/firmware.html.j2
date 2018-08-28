@@ -3,7 +3,7 @@
 </tbody>
 <tr>
     <th colspan="2">
-        {{ object.fulname }} Firmware
+        Firmware: {%- if object.full_name -%}{{ object.full_name }}{%- else -%}{{ object.version }}{%- endif -%}
     </th>
 </tr>
 <tr>
