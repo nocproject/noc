@@ -7,9 +7,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from __future__ import absolute_import
 # NOC modules
 from noc.core.service.base import Service
-from api.omap import OMapAPI
+from .api.omap import OMapAPI
 
 
 class OMapService(Service):
