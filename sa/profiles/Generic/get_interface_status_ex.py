@@ -53,35 +53,20 @@ class Script(BaseScript):
         if "::" in oid:
             oid = mib[oid]
         if ifindex:
-            results = {}  # oid -> value
-            oids = ["%s.%s" % (oid, i) for i in ifindex]
-            snmp_get_chunk = self.get_snmp_metrics_get_chunk()
-            self.snmp.set_timeout_limits(self.get_snmp_metrics_get_timeout())
-            while oids:
-                chunk, oids = oids[:snmp_get_chunk], oids[snmp_get_chunk:]
-                chunk = dict((x, x) for x in chunk)
-                try:
-                    results.update(self.snmp.get(chunk))
-                except self.snmp.TimeOutError as e:
-                    self.logger.error("Failed to get SNMP OIDs %s: %s", oids, e)
-                except self.snmp.FatalTimeoutError:
-                    self.logger.error("Fatal timeout error on: %s", oids)
-                    break
-                except self.snmp.SNMPError as e:
-                    self.logger.error("SNMP error code %s", e.code)
-                for k, v in six.iteritems(results):
-                    yield int(k.split(".")[-1]), v
+            results = self.snmp.get_chunked(
+                oids=["%s.%s" % (oid, i) for i in ifindex],
+                chunk_size=self.get_snmp_metrics_get_chunk(),
+                timeout_limits=self.get_snmp_metrics_get_timeout()
+            )
+            for k, v in six.iteritems(results):
+                yield int(k.split(".")[-1]), v
         else:
             for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
                                             max_retries=self.get_getnext_retires()):
                 yield int(oid.rsplit(".", 1)[-1]), v
 
     def apply_table(self, r, mib, name, f=None):
-        if not f:
-
-            def f(x):
-                return x
-
+        f = f or (lambda x: x)
         if_index = [index for index in r]
         for ifindex, v in self.get_iftable(mib, if_index):
             s = r.get(ifindex)
