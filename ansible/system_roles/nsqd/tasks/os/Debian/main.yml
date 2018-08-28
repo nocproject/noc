@@ -7,6 +7,10 @@
   delegate_to: 127.0.0.1
   become: "False"
   run_once: "True"
+  register: nsq_download
+  retries: 4
+  delay: 2
+  until: nsq_download is succeeded
   environment:
     https_proxy: "{{http_proxy}}"
 
