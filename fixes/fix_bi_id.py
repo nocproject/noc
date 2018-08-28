@@ -18,7 +18,12 @@ from noc.core.bi.decorator import bi_hash
 BI_SYNC_MODELS = [
     "ip.AddressProfile",
     "ip.PrefixProfile",
-    "vc.VPNProfile"
+    "vc.VPNProfile",
+    "inv.Firmware",
+    "inv.Platform",
+    "inv.Vendor",
+    "inv.Technology",
+    "sa.Profile"
 ]
 
 
