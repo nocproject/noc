@@ -38,7 +38,7 @@ class Vendor(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.vendors",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name", "code"]
     }
     # Short vendor name, included as first part of platform
     name = StringField(unique=True)

@@ -37,7 +37,8 @@ class Technology(Document):
         "collection": "technologies",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "inv.technologies"
+        "json_collection": "inv.technologies",
+        "json_unique_fields": ["name"],
     }
 
     # Group | Name
