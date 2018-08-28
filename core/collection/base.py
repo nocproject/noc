@@ -288,6 +288,7 @@ class Collection(object):
                         o.save()
                         # Try again
                         return self.update_item(data)
+                self.stdout.write("Cannot resolve non-unique error\n")
                 raise
 
     def delete_item(self, uuid):
