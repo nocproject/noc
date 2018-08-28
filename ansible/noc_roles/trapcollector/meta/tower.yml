@@ -50,3 +50,4 @@ services:
       user: root
     depends:
       - noc
+      - datastream

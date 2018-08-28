@@ -142,24 +142,6 @@
       vars:
         goss_service_name: ch_datasource
 
-- name: Install NOC omap
-  hosts: svc-omap-exec
-  become: "True"
-  strategy: "free"
-  gather_facts: "True"
-  tags:
-    - noc
-    - omap
-  vars_files:
-    - "../../vars/main.yml"
-    - "../../vars/{{ ansible_distribution }}.yml"
-  roles:
-    - role: omap
-    - role: goss
-      tags: [goss]
-      vars:
-        goss_service_name: omap
-
 - name: Install NOC activator
   hosts: svc-activator-exec
   become: "True"
