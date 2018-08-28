@@ -23,5 +23,12 @@
         <th scope="row">{{ _("VPN ID") }}</th>
         <td>{{ object.vpn_id }}</td>
     <tr>
+    <tr>
+        <th scope="row">{{ _("Prefixes") }}</th>
+        <td>
+            {% if ipv4_prefix %}<a href="/api/card/view/prefix/{{ ipv4_prefix.id }}/">IPv4</a>{% endif %}
+            {% if ipv6_prefix %}<a href="/api/card/view/prefix/{{ ipv6_prefix.id }}/">IPv6</a>{% endif %}
+        </td>
+    <tr>
 </tbody>
 </table>
