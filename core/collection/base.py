@@ -268,13 +268,14 @@ class Collection(object):
             except NotUniqueError:
                 # Possible local alternative with different uuid
                 if not self.model._meta.get("json_unique_fields"):
+                    self.stdout.write("Not json_unique_fields on object\n")
                     raise
                 # Try to find conflicting item
                 for k in self.model._meta["json_unique_fields"]:
                     if isinstance(d[k], list):
                         qs = {"%s__in" % k: d[k]}
                     else:
-                        qs = {k, d[k]}
+                        qs = {k: d[k]}
                     o = self.model.objects.filter(**qs).first()
                     if o:
                         self.stdout.write(
@@ -288,7 +289,7 @@ class Collection(object):
                         o.save()
                         # Try again
                         return self.update_item(data)
-                self.stdout.write("Cannot resolve non-unique error\n")
+                self.stdout.write("Not find object by query: %s\n" % qs)
                 raise
 
     def delete_item(self, uuid):
