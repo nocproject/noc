@@ -265,32 +265,30 @@ class Collection(object):
             try:
                 o.save()
                 return True
-            except NotUniqueError as e:
+            except NotUniqueError:
                 # Possible local alternative with different uuid
                 if not self.model._meta.get("json_unique_fields"):
-                    self.stdout.write("Not json_unique_fields on object\n")
                     raise
                 # Try to find conflicting item
-                qs = dict(
-                    ("%s__in" % k, d[k]) if isinstance(d[k], list) else (k, d[k])
-                    for k in self.model._meta["json_unique_fields"]
-                )
-                o = self.model.objects.filter(**qs).first()
-                if o:
-                    self.stdout.write(
-                        "[%s|%s] Changing local uuid %s (%s)\n" % (
-                            self.name, data["uuid"],
-                            o.uuid,
-                            getattr(o, self.name_field)
+                for k in self.model._meta["json_unique_fields"]:
+                    if isinstance(d[k], list):
+                        qs = {"%s__in" % k: d[k]}
+                    else:
+                        qs = {k, d[k]}
+                    o = self.model.objects.filter(**qs).first()
+                    if o:
+                        self.stdout.write(
+                            "[%s|%s] Changing local uuid %s (%s)\n" % (
+                                self.name, data["uuid"],
+                                o.uuid,
+                                getattr(o, self.name_field)
+                            )
                         )
-                    )
-                    o.uuid = data["uuid"]
-                    o.save()
-                    # Try again
-                    return self.update_item(data)
-                else:
-                    self.stdout.write("Not find object by query: %s\n" % qs)
-                    raise
+                        o.uuid = data["uuid"]
+                        o.save()
+                        # Try again
+                        return self.update_item(data)
+                raise
 
     def delete_item(self, uuid):
         o = self.model.objects.filter(uuid=uuid).first()
