@@ -7,11 +7,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
+# Python modules
 import operator
 # Third-party modules
 import cachetools
 # NOC modules
-from base import BaseLoader
+from .base import BaseLoader
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.crm.models.subscriber import Subscriber
 
