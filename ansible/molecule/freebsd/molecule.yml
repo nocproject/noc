@@ -46,7 +46,7 @@ provisioner:
     side_effect: cache.yml
   options:
     i: inv.yml
-    e: tower_dist_dir=/tmp
+    extra-vars: tower_dist_dir=/tmp noc_version=${NOC_BRANCH}
   lint:
     name: ansible-lint
 scenario:
