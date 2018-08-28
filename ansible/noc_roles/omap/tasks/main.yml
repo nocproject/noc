@@ -1,3 +1,0 @@
----
-- name: "Include OS-specific tasks"
-  include_tasks: "os/{{ ansible_distribution }}/main.yml"

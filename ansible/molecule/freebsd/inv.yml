@@ -44,6 +44,7 @@ all:
           correlator_power: 1
           datastream_loglevel: info
           datastream_power: 2
+          datastream_mode: wait
           discovery_backup_power: 1
           discovery_loglevel: info
           discovery_max_threads: 10
@@ -82,7 +83,6 @@ all:
           has_svc_noc: true
           has_svc_nsqd: true
           has_svc_nsqlookupd: true
-          has_svc_omap: true
           has_svc_pgbouncer: true
           has_svc_ping: true
           has_svc_postgres: true
@@ -392,6 +392,7 @@ all:
             - config:
                 loglevel: info
                 power: 2
+                mode: wait
               config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
               environment:
                 category: internal
@@ -551,26 +552,6 @@ all:
               name: mrt
               pool: null
             - config:
-                loglevel: info
-                power: 2
-              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
-              environment:
-                category: internal
-                depends:
-                  - noc
-                level: global
-                supervisord:
-                  command: ./services/omap/service.py
-                  oom_score_adj: 100
-                  priority: 120
-                  process_name: '%(program_name)s-%(process_num)02d'
-                  startretries: 999
-                  stdout_logfile_backups: 1
-                  stdout_logfile_maxbytes: 10MB
-                  stopwaitsecs: 1
-              name: omap
-              pool: null
-            - config:
                 backup_power: 1
                 loglevel: info
                 power: 4
@@ -584,7 +565,6 @@ all:
                   - noc
                   - nsqlookupd
                   - nsqd
-                  - omap
                 level: pool
                 supervisord:
                   command: ./services/ping/service.py
@@ -716,8 +696,6 @@ all:
           node_id: 1
           nsqd_max_messages_in_memory: 10000
           nsqd_max_msg_size: 1048576
-          omap_loglevel: info
-          omap_power: 2
           pgbouncer_max_clients: 3000
           pgbouncer_max_db_connections: 10
           ping_backup_power: 1
@@ -1009,17 +987,6 @@ all:
           hosts:
             noc_node_freebsd11: {}
     svc-nsqlookupd-exec:
-      hosts:
-        noc_node_freebsd11: {}
-    svc-omap:
-      children:
-        cfg-omap-noc_node_freebsd11:
-          hosts:
-            noc_node_freebsd11: {}
-        svc-omap-read:
-          hosts:
-            noc_node_freebsd11: {}
-    svc-omap-exec:
       hosts:
         noc_node_freebsd11: {}
     svc-pgbouncer:
