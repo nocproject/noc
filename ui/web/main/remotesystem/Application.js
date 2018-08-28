@@ -119,7 +119,7 @@ Ext.define("NOC.main.remotesystem.Application", {
                         {
                             name: "enable_resourcegroup",
                             xtype: "checkbox",
-                            boxLabel: __("Termination Group")
+                            boxLabel: __("Resource Group")
                         },
                         {
                             name: "enable_ttsystem",
