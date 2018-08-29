@@ -32,7 +32,7 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="List of extractor names"
         )
-    rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
+    rx_last_updated = re.compile(r"\"last_updated\":\s*\"([^\"]+)\"",
                                  re.MULTILINE)
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
     PREFIX = config.path.collection_fm_mibs
