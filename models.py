@@ -115,6 +115,7 @@ _MODELS = {
     "main.SystemTemplate": "noc.main.models.systemtemplate.SystemTemplate",
     "main.Tag": "noc.main.models.tag.Tag",
     "main.Template": "noc.main.models.template.Template",
+    "main.TextIndex": "noc.main.models.textindex.TextIndex",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
     "main.User": "django.contrib.auth.models.User",
