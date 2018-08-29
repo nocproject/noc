@@ -39,6 +39,10 @@ class Profile(BaseProfile):
         re.compile(r"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
         "\r"
     ]
+    # to one SNMP GET request
+    snmp_metrics_get_chunk = 8
+    # Timeout for snmp GET request
+    snmp_metrics_get_timeout = 5
 
     def setup_session(self, script):
         script.cli("config", ignore_errors=True)
