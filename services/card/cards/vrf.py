@@ -27,7 +27,7 @@ class VRFCard(BaseCard):
             ipv4_prefix = None
         ipv6_prefix = Prefix.objects.filter(vrf=self.object, prefix="::/0")[:1]
         if ipv6_prefix:
-            ipv6_prefix = ipv4_prefix[0]
+            ipv6_prefix = ipv6_prefix[0]
         else:
             ipv6_prefix = None
         return {
