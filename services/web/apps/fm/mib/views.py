@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.mib application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.syntaxalias import SyntaxAlias
 from noc.core.fileutils import temporary_file
+from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.translation import ugettext as _
 
 
@@ -113,15 +114,17 @@ class MIBApplication(ExtDocApplication):
         while len(left):
             n = len(left)
             for name in left.keys():
-                with temporary_file(left[name].read()) as path:
-                    try:
-                        MIB.load(path)
+                try:
+                    svc = open_sync_rpc("mib")
+                    r = svc.compile(left[name].read())
+                    if r.get("status"):
                         del left[name]
                         if name in errors:
                             del errors[name]
-                    except MIB.MIBRequiredException, x:
-                        errors[name] = "%s requires MIBs %s" % (
-                            x.mib, x.requires_mib)
+                    else:
+                        errors[name] = r["msg"]
+                except RPCError as e:
+                    errors[name] = str(e)
             if len(left) == n:
                 # Failed to upload anything, stopping
                 break
@@ -135,4 +138,11 @@ class MIBApplication(ExtDocApplication):
           access="launch", api=True)
     def api_text(self, request, id):
         mib = self.get_object_or_404(MIB, id=id)
-        return mib.get_text()
+        try:
+            svc = open_sync_rpc("mib")
+            r = svc.get_text(mib.name)
+            if r.get("status"):
+                return r["data"]
+        except RPCError as e:
+            pass
+        return ""
