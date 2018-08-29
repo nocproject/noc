@@ -464,6 +464,10 @@ class Config(BaseConfig):
 
     secret_key = StringParameter(default="12345")
 
+    class selfmon(ConfigSection):
+        enable_managedobject = BooleanParameter(default=True)
+        managedobject_ttl = IntParameter(default=30)
+
     class sentry(ConfigSection):
         url = StringParameter(default="")
 
