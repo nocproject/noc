@@ -602,6 +602,10 @@ class Service(object):
         raise tornado.gen.Return()
 
     @tornado.gen.coroutine
+    def acquire_lock(self):
+        yield self.dcs.acquire_lock("lock-%s" % self.name)
+
+    @tornado.gen.coroutine
     def acquire_slot(self):
         if self.pooled:
             name = "%s-%s" % (self.name, config.pool)

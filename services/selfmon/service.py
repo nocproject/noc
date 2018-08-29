@@ -11,6 +11,8 @@
 from threading import Thread
 import operator
 import time
+# Third-party modules
+import tornado.gen
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.debug import error_report
@@ -20,18 +22,18 @@ from noc.services.selfmon.loader import iter_collectors
 
 class SelfMonService(Service):
     name = "selfmon"
-    require_nsq_writer = True
 
     def __init__(self):
         super(SelfMonService, self).__init__()
         self.collectors = []
         self.runner_thread = None
 
+    @tornado.gen.coroutine
     def on_activate(self):
         self.collectors = [c(self) for c in iter_collectors() if c.is_enabled()]
         if not self.collectors:
             self.die("No collectors enabled")
-        # @todo: check collections is not empty
+        yield self.acquire_lock()
         self.reorder()
         self.runner_thread = Thread(target=self.runner)
         self.runner_thread.setDaemon(True)
