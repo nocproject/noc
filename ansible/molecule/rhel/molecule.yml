@@ -46,9 +46,7 @@ provisioner:
     destroy: ../common/destroy.yml
   options:
     i: inv.yml
-    e: tower_dist_dir=/tmp
-    e: rhel_register_rhel_subscription_username=${rhel_subscription_username}  # yamllint disable-line rule:key-duplicates
-    e: rhel_register_rhel_subscription_password=${rhel_subscription_password}  # yamllint disable-line rule:key-duplicates
+    extra-vars: tower_dist_dir=/tmp noc_version=${NOC_BRANCH} rhel_register_rhel_subscription_username=${rhel_subscription_username} rhel_register_rhel_subscription_password=${rhel_subscription_password}
   lint:
     name: ansible-lint
 scenario:

@@ -70,6 +70,7 @@ all:
           has_svc_datastream: true
           has_svc_discovery: true
           has_svc_escalator: true
+          has_svc_selfmon: true
           has_svc_goss: true
           has_svc_grafana: true
           has_svc_grafanads: true
@@ -248,6 +249,25 @@ all:
                   stopwaitsecs: 3
               name: activator
               pool: default
+            - config:
+                loglevel: info
+                power: 1
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                level: global
+                supervisord:
+                  command: ./services/selfmon/service.py
+                  oom_score_adj: 50
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 10MB
+                  stopwaitsecs: 2
+              name: selfmon
+              pool: null
             - config:
                 language: en-us
                 loglevel: info

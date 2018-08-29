@@ -1,0 +1,43 @@
+---
+forms:
+  selfmon:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: selfmon service <br/>
+      <strong>Long description</strong>: Displays annotations on grafanas graphs with alarms info <br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/selfmon/ target=_blank>selfmon</a><br/>
+      <strong>Placement constraint</strong>: None<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 8
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
+
+services:
+  selfmon:
+    level: global
+    category: internal
+    supervisord:
+      command: "./services/selfmon/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 100
+      priority: 50
+      startretries: 999
+      stopwaitsecs: 1
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 1
+    depends:
+      - noc

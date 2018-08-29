@@ -178,6 +178,24 @@
       vars:
         goss_service_name: grafanads
 
+- name: Install NOC selfmon
+  hosts: svc-selfmon-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - selfmon
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
+    - role: selfmon
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: selfmon
+
 - name: Install NOC mailsender
   hosts: svc-mailsender-exec
   become: "True"
