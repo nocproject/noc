@@ -11,7 +11,6 @@ from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.syntaxalias import SyntaxAlias
-from noc.core.fileutils import temporary_file
 from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.translation import ugettext as _
 
@@ -28,8 +27,7 @@ class MIBApplication(ExtDocApplication):
           access="launch", api=True)
     def api_data(self, request, id):
         def insert_tree(data, ds):
-            if (len(data["path"]) + 1 == len(ds["path"])
-                and data["path"] == ds["path"][:-1]):
+            if len(data["path"]) + 1 == len(ds["path"]) and data["path"] == ds["path"][:-1]:
                 # Direct child
                 data["children"] = data.get("children", []) + [ds]
             else:
@@ -88,11 +86,9 @@ class MIBApplication(ExtDocApplication):
             s += [syntax["base_type"]]
             if "display_hint" in syntax:
                 s += ["display-hint: %s" % syntax["display_hint"]]
-            if (syntax["base_type"] in ("Enumeration", "Bits") and
-                "enum_map" in syntax):
+            if syntax["base_type"] in ("Enumeration", "Bits") and "enum_map" in syntax:
                 # Display enumeration
-                for k in sorted(syntax["enum_map"],
-                                key=lambda x: int(x)):
+                for k in sorted(syntax["enum_map"], key=lambda x: int(x)):
                     s += ["%s -> %s" % (k, syntax["enum_map"][k])]
             return s
 
@@ -143,6 +139,6 @@ class MIBApplication(ExtDocApplication):
             r = svc.get_text(mib.name)
             if r.get("status"):
                 return r["data"]
-        except RPCError as e:
+        except RPCError:
             pass
         return ""

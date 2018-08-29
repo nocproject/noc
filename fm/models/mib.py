@@ -107,7 +107,6 @@ class MIB(Document):
             s["display_hint"] = syntax["format"]
         return s
 
-
     def load_data(self, data):
         """
         Load mib data from list of {oid:, name:, description:, syntax:}
