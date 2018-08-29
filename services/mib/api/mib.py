@@ -86,7 +86,7 @@ class MIBAPI(API):
                 [config.path.smilint, "-m", tmp_path],
                 stderr=subprocess.PIPE,
                 env=self.SMI_ENV
-                ).stderr
+            ).stderr
             for l in f:
                 match = self.rx_module_not_found.search(l.strip())
                 if match:
