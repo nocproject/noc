@@ -130,6 +130,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInterfaces
         });
 
+        me.cpeButton = Ext.create("Ext.button.Button", {
+            text: __("CPE"),
+            glyph: NOC.glyph.share_alt,
+            scope: me,
+            handler: me.onCPE
+        });
+
         me.linksButton = Ext.create("Ext.button.Button", {
             text: __("Links"),
             glyph: NOC.glyph.link,
@@ -207,6 +214,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
         me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
+        me.ITEM_CPE = me.registerItem("NOC.sa.managedobject.CPEPanel");
         me.ITEM_SCRIPTS = me.registerItem("NOC.sa.managedobject.ScriptPanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
@@ -1156,6 +1164,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.configPreviewButton,
                 me.inventoryButton,
                 me.interfacesButton,
+                me.cpeButton,
                 me.linksButton,
                 me.discoveryButton,
                 me.alarmsButton,
@@ -1324,6 +1333,11 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_INTERFACE, me.currentRecord);
     },
     //
+    onCPE: function() {
+        var me = this;
+        me.previewItem(me.ITEM_CPE, me.currentRecord);
+    },
+    //
     onScripts: function() {
         var me = this;
         me.previewItem(me.ITEM_SCRIPTS, me.currentRecord);
@@ -1426,6 +1440,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.scriptsButton.setDisabled(disabled || !NOC.hasPermission("script") || !me.currentRecord.get("is_managed"));
         me.configPreviewButton.setDisabled(disabled);
         me.interfacesButton.setDisabled(disabled);
+        me.cpeButton.setDisabled(disabled);
         me.linksButton.setDisabled(disabled);
         me.discoveryButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
         me.alarmsButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
