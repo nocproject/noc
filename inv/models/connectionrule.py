@@ -99,7 +99,8 @@ class ConnectionRule(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [],
-        "json_collection": "inv.connectionrules"
+        "json_collection": "inv.connectionrules",
+        "json_unique_fields": ["name"]
     }
 
     name = StringField(unique=True)
