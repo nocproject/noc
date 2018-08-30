@@ -389,10 +389,17 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "object_profile",
                                     xtype: "sa.managedobjectprofile.LookupField",
                                     fieldLabel: __("Object Profile"),
+                                    tooltip: __(
+                                        "More settings for worked with devices. <br/>" +
+                                        "Place on Service Activaton -> Setup -> Object Profile."
+                                    ),
                                     itemId: "object_profile",
                                     allowBlank: false,
                                     tabIndex: 20,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }]
                         },
                         {
@@ -424,19 +431,38 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "profile",
                                     xtype: "sa.profile.LookupField",
                                     fieldLabel: __("SA Profile"),
+                                    tooltip: __(
+                                        "Profile (Adapter) for device work. <br/>" +
+                                        "!! Auto detect profile by SNMP if Object Profile -> Box -> Profile is set. <br/>"
+                                    ),
                                     allowBlank: false,
                                     tabIndex: 30,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }, {
                                     name: "vendor",
                                     xtype: "inv.vendor.LookupField",
                                     fieldLabel: __("Vendor"),
-                                    allowBlank: true
+                                    tooltip: __(
+                                        "Set after Version Discovery. Not for manual set"
+                                    ),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }, {
                                     name: "platform",
                                     xtype: "inv.platform.LookupField",
                                     fieldLabel: __("Platform"),
-                                    allowBlank: true
+                                    tooltip: __(
+                                        "Set after Version Discovery. Not for manual set"
+                                    ),
+                                    allowBlank: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
                             ]
                         }, {
@@ -490,6 +516,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "access_preference",
                                     xtype: "combobox",
                                     fieldLabel: __("Access Preference"),
+                                    tooltip: __(
+                                        "Preference mode with worked profile script. <br/>" +
+                                        "!! Work if Device Profile supported. <br/>" +
+                                        "Profile (default) - use Object Profile settings <br/>" +
+                                        "S - Use only SNMP when access to device" +
+                                        "CLI Only - Use only CLI when access to device" +
+                                        "SNMP, CLI - Use SNMP, if not avail swithc to CLI" +
+                                        "CLI, SNMP - Use CLI, if not avail swithc to SNMP"
+                                    ),
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
@@ -498,7 +533,10 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["SC", __("SNMP, CLI")],
                                         ["CS", __("CLI, SNMP")]
                                     ],
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "port",
@@ -515,25 +553,41 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "cli_session_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Session Policy"),
+                                    tooltip: __(
+                                        "Use one session worked on device. <br/>" +
+                                        "Profile (default) - use Object Profile settings <br/>" +
+                                        "Enable - login when statr job, logout after end." +
+                                        "Disable - worked one script - one login. Logout after script end."),
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "cli_privilege_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Privilege Policy"),
+                                    tooltip: __(
+                                        "Do enable if login unprivilege mode on device. <br/>" +
+                                        "Raise Privileges - send enable<br/>" +
+                                        "Do not raise - work on current mode (immediately after login)"
+                                    ),
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Raise Privileges")],
                                         ["D", __("Don't Raise")]
                                     ],
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "remote_path",
@@ -551,9 +605,17 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "auth_profile",
                                     xtype: "sa.authprofile.LookupField",
                                     fieldLabel: __("Auth Profile"),
+                                    tooltip: __(
+                                        'Get credentials (user, pass, snmp etc.) from Auth profile.<br/> ' +
+                                        ' Service Activation -> Setup -> Auth Profile. If set - ' +
+                                        'value in field user, password, snmp community will be IGNORED'
+                                    ),
                                     tabIndex: 60,
                                     allowBlank: true,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "user",
@@ -610,8 +672,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "time_pattern",
                                     xtype: "main.timepattern.LookupField",
                                     fieldLabel: __("Time Pattern"),
+                                    tooltip: __(
+                                        'Use this field if you want disable ping check on specified time.<br/> ' +
+                                        ' Main -> Setup -> Time Patterns'
+                                    ),
                                     allowBlank: true,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
                             ]
                         }
@@ -633,9 +702,18 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "administrative_domain",
                                     xtype: "sa.administrativedomain.LookupField",
                                     fieldLabel: __("Administrative Domain"),
+                                    tooltip: __(
+                                        "Use for setup User permission on Object. <br/>" +
+                                        "Place on Service Activaton -> Setup -> Administrative Domain.<br/>" +
+                                        "Permission on Activaton -> Setup -> Group Access/User Access.<br/>"
+                                    ),
                                     allowBlank: false,
                                     tabIndex: 90,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+
                                 },
                                 {
                                     name: "segment",
@@ -649,9 +727,32 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "pool",
                                     xtype: "main.pool.LookupField",
                                     fieldLabel: __("Pool"),
+                                    tooltip: __(
+                                        "Use for shard devices over intersection IP Address spaces. <br/>" +
+                                        "Create and Set on Tower<br/>"
+                                    ),
                                     allowBlank: false,
                                     tabIndex: 110,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "fqdn",
+                                    xtype: "textfield",
+                                    fieldLabel: __("FQDN"),
+                                    tooltip: __(
+                                        "Set device name. If FQDN suffix is not set use dot after name: NAME.<br/>" +
+                                        "FQND suffix set on Object Profile: " +
+                                        "Service Activation -> Setup -> Object Profile -> Common<br/>"
+                                    ),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    tabIndex: 120,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
                             ]
                         }, {
@@ -683,7 +784,30 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["e", __("Allow autosegmentation")],
                                         ["o", __("Segmentate to existing segment")],
                                         ["c", __("Segmentate to child segment")]
+                                    ]
+                                },
+                                {
+                                    name: "address_resolution_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Address Resolution Policy"),
+                                    tooltip: __(
+                                        'Activate resolve Address by FQND field (or other handler).<br/> ' +
+                                        'Profile - Use profile settings<br/>' +
+                                        'Disable - Do not resolve FQDN into Address field<br/>' +
+                                        'Once - Once resolve FQDN (after success settings will be set to Disable)<br/>' +
+                                        'Enable - Enable resolve address before running Job<br/>'
+                                    ),
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["D", __("Disabled")],
+                                        ["O", __("Once")],
+                                        ["E", __("Enabled")]
                                     ],
+                                    allowBlank: false,
+                                    uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
                             ]
                         }
@@ -1128,7 +1252,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "periodic_discovery_telemetry_policy",
                                     xtype: "combobox",
-                                    fieldLabel: __("Periodic Alarm"),
+                                    fieldLabel: __("Periodic Telemetry"),
                                     allowBlank: true,
                                     store: [
                                         ["P", __("Profile")],

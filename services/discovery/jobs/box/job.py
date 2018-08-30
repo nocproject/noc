@@ -12,6 +12,7 @@ from __future__ import absolute_import
 import random
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
+from .resolver import ResolverCheck
 from .suggestsnmp import SuggestSNMPCheck
 from .profile import ProfileCheck
 from .suggestcli import SuggestCLICheck
@@ -74,6 +75,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
     def handler(self, **kwargs):
         with Span(sample=self.object.box_telemetry_sample), bulk_datastream_changes():
             has_cli = "C" in self.object.get_access_preference()
+            ResolverCheck(self).run()
             if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestSNMPCheck(self).run()
             if self.object.object_profile.enable_box_discovery_profile:

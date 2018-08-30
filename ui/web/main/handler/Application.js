@@ -61,6 +61,11 @@ Ext.define("NOC.main.handler.Application", {
                     name: "allow_config_validation",
                     xtype: "checkbox",
                     boxLabel: __("Allow Config Validation")
+                },
+                {
+                    name: "allow_resolver",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Resolver")
                 }
             ]
         });
