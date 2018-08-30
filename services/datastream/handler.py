@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 # Third-party modules
 import tornado.gen
+import tornado.web
 # NOC modules
 from noc.core.service.apiaccess import APIAccessRequestHandler, authenticated
 
@@ -52,12 +53,15 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         last_change = None
         while True:
             r = []
-            for item_id, change_id, data in self.datastream.iter_data(limit=limit, filters=filters,
-                                                                      change_id=change_id):
-                if not first_change:
-                    first_change = change_id
-                last_change = change_id
-                r += [data]
+            try:
+                for item_id, change_id, data in self.datastream.iter_data(limit=limit, filters=filters,
+                                                                          change_id=change_id):
+                    if not first_change:
+                        first_change = change_id
+                    last_change = change_id
+                    r += [data]
+            except ValueError:
+                raise tornado.web.HTTPError(400)
             if to_block and not r:
                 yield self.service.wait(self.datastream.name)
             else:

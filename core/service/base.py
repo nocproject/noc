@@ -610,6 +610,8 @@ class Service(object):
             name,
             config.global_n_instances
         )
+        if total_slots <= 0:
+            self.die("Service misconfiguration detected: Invalid total_slots")
         raise tornado.gen.Return((slot_number, total_slots))
 
     @tornado.gen.coroutine
