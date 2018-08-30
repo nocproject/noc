@@ -8,8 +8,6 @@
 
 # Python modules
 from __future__ import absolute_import
-import hashlib
-import struct
 import operator
 from threading import Lock
 # Third-party modules
