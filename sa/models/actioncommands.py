@@ -46,7 +46,8 @@ class ActionCommands(Document):
         "json_depends_on": [
             "sa.actions",
             "sa.profile"
-        ]
+        ],
+        "json_unique_fields": ["name"]
     }
     name = StringField(unique=True)
     uuid = UUIDField(unique=True)
