@@ -26,7 +26,8 @@ DiscoveredAddress = namedtuple("DiscoveredAddress", [
     "description",
     "source",
     "subinterface",
-    "mac"
+    "mac",
+    "fqdn"
 ])
 
 GLOBAL_VRF = "0:0"
@@ -178,7 +179,8 @@ class AddressCheck(DiscoveryCheck):
                 source=SRC_INTERFACE,
                 description=a["description"],
                 subinterface=a["subinterface"],
-                mac=a["mac"]
+                mac=a["mac"],
+                fqdn=None
             ) for a in addresses
         ]
 
@@ -201,7 +203,8 @@ class AddressCheck(DiscoveryCheck):
                     source=SRC_MANAGEMENT,
                     description="Management address",
                     subinterface=None,
-                    mac=None
+                    mac=None,
+                    fqdn=self.object.get_full_fqdn()
                 )
             ]
         return addresses
@@ -228,7 +231,8 @@ class AddressCheck(DiscoveryCheck):
                 source=SRC_DHCP,
                 description=None,
                 subinterface=None,
-                mac=a.get("mac")
+                mac=a.get("mac"),
+                fqdn=None
             ) for a in leases
         ]
         return r
@@ -257,7 +261,8 @@ class AddressCheck(DiscoveryCheck):
                         source=SRC_NEIGHBOR,
                         description=None,
                         subinterface=None,
-                        mac=a.get("mac")
+                        mac=a.get("mac"),
+                        fqdn=None
                     )
                 ]
         return r
@@ -295,7 +300,7 @@ class AddressCheck(DiscoveryCheck):
             vrf=vrf,
             address=address.address,
             name=self.get_address_name(address),
-            fqdn=self.get_address_fqdn(address),
+            fqdn=address.fqdn,
             profile=address.profile,
             description=address.description,
             source=address.source,
@@ -334,10 +339,9 @@ class AddressCheck(DiscoveryCheck):
                     changes += ["name: %s -> %s" % (address.name, name)]
                     address.name = name
                 # Check fqdn
-                fqdn = self.get_address_fqdn(discovered_address)
-                if fqdn != address.fqdn and fqdn:
-                    changes += ["fqdn: %s -> %s" % (address.fqdn, fqdn)]
-                    address.fqdn = fqdn
+                if discovered_address.fqdn != address.fqdn and discovered_address.fqdn:
+                    changes += ["fqdn: %s -> %s" % (address.fqdn, discovered_address.fqdn)]
+                    address.fqdn = discovered_address.fqdn
                 # @todo: Change profile
                 # Change managed object
                 if (
