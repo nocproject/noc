@@ -238,3 +238,11 @@ class VRF(models.Model):
 
     def get_search_info(self, user):
         return ("ip.vrf", "history", {"args": [self.id]})
+
+    def delete(self, *args, **kwargs):
+        # Cleanup prefixes
+        self.afi_ipv4 = False
+        self.afi_ipv6 = False
+        self.save()
+        # Delete
+        super(VRF, self).delete(*args, **kwargs)
