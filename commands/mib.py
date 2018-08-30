@@ -88,6 +88,7 @@ class Command(BaseCommand):
             if not done:
                 # Cannot load additional mibs
                 self.die("Cannot load MIBs: %s" % ", ".join(left_paths))
+            left_paths = [x for x in left_paths if x in done]
 
     def upload_mib(self, path):
         """
