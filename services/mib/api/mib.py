@@ -160,16 +160,16 @@ class MIBAPI(API):
                 )
                 mib.save()
             # Upload MIB data
-            data = []
+            cdata = []
             for i in ["nodes", "notifications"]:
                 if i in m.MIB:
-                    data += [{
+                    cdata += [{
                         "name": "%s::%s" % (mib_name, node),
                         "oid": v["oid"],
                         "description": v.get("description"),
                         "syntax": v["syntax"]["type"] if "syntax" in v else None
                     } for node, v in m.MIB[i].items()]
-            mib.load_data(data)
+            mib.load_data(cdata)
             # Move file to permanent place
             safe_rewrite(self.get_path(mib_name), data)
         return {
