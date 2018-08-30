@@ -22,9 +22,15 @@ class ResolverCheck(DiscoveryCheck):
         address = self.object.resolve_fqdn()
         if not address:
             self.logger.info("Failed to resolve")
+            self.set_problem(
+                alarm_class="Discovery | Error | Unhandled Exception",
+                message="Failed to resolve fqdn %s" % fqdn,
+                fatal=True
+            )
             return
         if address == self.object.address:
             self.logger.info("Confirmed address %s", address)
+            # If policy set once and address == self.object.address, check is not disabled
             return
         policy = self.object.get_address_resolution_policy()
         self.logger.info("Changing address to %s", address)
@@ -37,5 +43,6 @@ class ResolverCheck(DiscoveryCheck):
         if not super(ResolverCheck, self).is_enabled():
             return False
         if not self.object.fqdn:
+            self.logger.info("FQDN field is empty")
             return False
         return self.object.get_address_resolution_policy() in ("E", "O")

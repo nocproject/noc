@@ -1456,7 +1456,7 @@ class ManagedObject(Model):
             return None
         if self.fqdn.endswith(".") or not self.object_profile.fqdn_suffix:
             return self.fqdn[:-1]
-        return "%s.%s" % (self.fqdn, self.objects_profile.fqdn_suffix)
+        return "%s.%s" % (self.fqdn, self.object_profile.fqdn_suffix)
 
     def resolve_fqdn(self):
         """
@@ -1470,7 +1470,10 @@ class ManagedObject(Model):
         if self.object_profile.resolver_handler:
             return self.object_profile.resolver_handler.get_handler()(fqdn)
         import socket
-        return socket.gethostbyname(fqdn)
+        try:
+            return socket.gethostbyname(fqdn)
+        except socket.gaierror:
+            return None
 
     @classmethod
     def get_bi_selector(cls, cfg):
