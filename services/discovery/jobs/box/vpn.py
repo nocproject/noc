@@ -134,7 +134,7 @@ class VPNCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredVPN(
-                rd=p["rd"],
+                rd=p.get("rd"),
                 vpn_id=p.get("vpn_id"),
                 name=p["name"],
                 type=p["type"],
@@ -161,7 +161,7 @@ class VPNCheck(DiscoveryCheck):
         vpns = self.object.scripts.get_mpls_vpn()
         r = [
             DiscoveredVPN(
-                rd=vpn["rd"],
+                rd=vpn.get("rd"),
                 vpn_id=vpn["vpn_id"],
                 name=vpn["name"],
                 type=vpn["type"],

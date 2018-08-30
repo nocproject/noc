@@ -14,6 +14,7 @@ from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
                                     ModelParameter, RDParameter,
                                     ListOfParameter, DictParameter)
 from noc.core.translation import ugettext as _
+from noc.core.vpn import get_vpn_id
 
 
 class VRFApplication(ExtModelApplication):
@@ -34,6 +35,16 @@ class VRFApplication(ExtModelApplication):
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile.style else ""
+
+    def clean(self, data):
+        if not data.get("vpn_id"):
+            vdata = {
+                "type": "VRF",
+                "name": data["name"],
+                "rd": data.get("rd")
+            }
+            data["vpn_id"] = get_vpn_id(vdata)
+        return super(VRFApplication, self).clean(data)
 
     @view(
         url="^bulk/import/$", method=["POST"], access="import",
