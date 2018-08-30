@@ -204,6 +204,8 @@ class DataStream(object):
     def iter_data(cls, change_id=None, limit=None, filters=None):
         """
         Iterate over data items beginning from change id
+
+        Raises ValueError if filters has incorrect input parameters
         :param change_id: Staring change id
         :param limit: Records limit
         :param filters: List of strings with filter expression
@@ -331,8 +333,18 @@ class DataStream(object):
         :param n_instances:
         :return:
         """
+        # Raise ValueError if not integer
+        instance = int(instance)
+        n_instances = int(n_instances)
+        #
+        if n_instances < 1:
+            raise ValueError("Invalid number of instances")
+        if instance < 0:
+            raise ValueError("Invalid instance")
+        if instance >= n_instances:
+            raise ValueError("Invalid instance")
         return {
             "_id": {
-                "$mod": [int(n_instances), int(instance)]
+                "$mod": [n_instances, instance]
             }
         }
