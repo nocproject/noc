@@ -743,7 +743,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "textfield",
                                     fieldLabel: __("FQDN"),
                                     tooltip: __(
-                                        "Set device name. If FQDN suffix is not set use dot after name: NAME.  <br/>" +
+                                        "Set device name. If FQDN suffix is not set use dot after name: NAME.<br/>" +
                                         "FQND suffix set on Object Profile: " +
                                         "Service Activation -> Setup -> Object Profile -> Common<br/>"
                                     ),
