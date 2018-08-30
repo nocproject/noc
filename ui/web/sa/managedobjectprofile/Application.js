@@ -181,10 +181,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     xtype: "tabpanel",
                     layout: "fit",
                     autoScroll: true,
+                    tabPosition: "left",
+                    tabBar: {
+                        tabRotation: 0,
+                        layout: {
+                            align: "stretch"
+                        }
+                    },
                     anchor: "-0, -50",
                     defaults: {
                         autoScroll: true,
                         layout: "anchor",
+                        textAlign: "left",
                         padding: 10
                     },
                     items: [
@@ -1625,6 +1633,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "metrics",
                                     xtype: "gridfield",
                                     fieldLabel: __("Metrics"),
+                                    labelAlign: "top",
                                     columns: [
                                         {
                                             text: __("Metric Type"),
