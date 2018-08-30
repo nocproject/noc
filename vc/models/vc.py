@@ -53,8 +53,10 @@ class VC(models.Model):
 
     vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
     name = models.CharField("Name", max_length=64)
-    state = models.ForeignKey(ResourceState, verbose_name="State",
-        default=ResourceState.get_default)
+    state = models.ForeignKey(
+        ResourceState, verbose_name="State",
+        default=ResourceState.get_default
+    )
     project = models.ForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
@@ -100,13 +102,14 @@ class VC(models.Model):
         """
         Enforce additional checks
         """
-        if (self.l1 < self.vc_domain.type.label1_min or
-            self.l1 > self.vc_domain.type.label1_max):
+        if self.l1 < self.vc_domain.type.label1_min or self.l1 > self.vc_domain.type.label1_max:
             raise InvalidLabelException("Invalid value for L1")
         if self.vc_domain.type.min_labels > 1 and self.l2 is None:
             raise MissedLabelException("L2 required")
-        if (self.vc_domain.type.min_labels > 1 and
-            not (self.vc_domain.type.label2_min <= self.l2 <= self.vc_domain.type.label2_max)):
+        if (
+            self.vc_domain.type.min_labels > 1 and
+            not (self.vc_domain.type.label2_min <= self.l2 <= self.vc_domain.type.label2_max)
+        ):
             raise InvalidLabelException("Invalid value for L2")
         # Format name
         if self.name:

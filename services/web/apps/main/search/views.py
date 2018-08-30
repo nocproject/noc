@@ -22,10 +22,12 @@ class SearchApplication(ExtApplication):
     menu = _("Search")
     glyph = "search noc-preview"
 
-    @view(url="^$", method=["POST"], access="launch", api=True,
-          validate={
-              "query": UnicodeParameter()
-          })
+    @view(
+        url="^$", method=["POST"], access="launch", api=True,
+        validate={
+            "query": UnicodeParameter()
+        }
+    )
     def api_search(self, request, query):
         r = []
         for qr in TextIndex.search(query):
