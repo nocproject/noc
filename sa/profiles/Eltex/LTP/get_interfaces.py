@@ -27,6 +27,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
     rx_mac = re.compile(r"^\s+MAC address: (?P<mac>\S+)", re.MULTILINE)
+    rx_status = re.compile(r"^.+\d\s+(?P<oper_status>up|down)", re.MULTILINE)
 
     def normalize_ifname(self, port):
         port = port.strip()
@@ -127,6 +128,13 @@ class Script(BaseScript):
                 if match:
                     i["mac"] = match.group("mac")
                     i["subinterfaces"][0]["mac"] = match.group("mac")
+                try:
+                    c = self.cli("show interfaces status %s" % i["name"])
+                    match = self.rx_status.search(c)
+                    i["oper_status"] = match.group("oper_status") == "up"
+                    i["subinterfaces"][0]["oper_status"] = match.group("oper_status") == "up"
+                except self.CLISyntaxError:
+                    pass
         c = self.cli("show management")
         match = self.rx_mgmt.search(c)
         ip_address = "%s/%s" % (
@@ -135,8 +143,12 @@ class Script(BaseScript):
         iface = {
             "name": "management",
             "type": "SVI",
+            "admin_status": True,
+            "oper_status": True,
             "subinterfaces": [{
                 "name": "management",
+                "admin_status": True,
+                "oper_status": True,
                 "enabled_afi": ["IPv4"],
                 "ipv4_addresses": [ip_address],
                 "vlan_ids": int(match.group("vlan_id"))
