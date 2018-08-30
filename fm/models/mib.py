@@ -8,30 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
-import subprocess
 import re
-import imp
-import datetime
-import os
+import threading
+import operator
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, IntField, ListField, DictField
+import cachetools
 # NOC modules
-from noc.config import config
-from noc.core.fileutils import temporary_file, safe_rewrite
 from noc.lib.validators import is_oid
 from noc.lib.escape import fm_unescape, fm_escape
 from noc.core.snmp.util import render_tc
 from noc.core.model.decorator import on_delete_check
-from .error import (MIBNotFoundException, MIBRequiredException,
-                    OIDCollision)
+from .error import MIBNotFoundException, OIDCollision
 from .mibpreference import MIBPreference
 from .mibalias import MIBAlias
 from .syntaxalias import SyntaxAlias
 from .oidalias import OIDAlias
 
+id_lock = threading.Lock()
+
 # Regular expression patterns
-rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
 
@@ -53,24 +50,21 @@ class MIB(Document):
     # Compiled MIB version
     version = IntField(required=False, default=0)
 
-    MIBRequiredException = MIBRequiredException
-    MIB_PATH = ["var/mibs/local", "var/mibs/dist"]
-    SMILINT_PATH = ["/usr/local/bin/"]
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
 
-    def get_text(self):
-        """
-        Returns MIB text
-        :return:
-        """
-        for d in self.MIB_PATH:
-            path = os.path.join(d, self.name + ".mib")
-            if os.path.isfile(path):
-                with open(path) as f:
-                    return f.read()
-        return ""
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return MIB.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        return MIB.objects.filter(name=name).first()
 
     @classmethod
     def parse_syntax(cls, syntax):
@@ -112,118 +106,6 @@ class MIB(Document):
         if "format" in syntax:
             s["display_hint"] = syntax["format"]
         return s
-
-    @classmethod
-    def load(cls, path, force=False):
-        """
-        Load MIB from file
-        :param path: MIB path
-        :param force: Load anyways
-        :return: MIB object
-        """
-        if not os.path.exists(path):
-            raise ValueError("File not found: %s" % path)
-        # Pass MIB through smilint to detect missed modules
-        f = subprocess.Popen(
-            [config.path.smilint, "-m", path],
-            stderr=subprocess.PIPE,
-            env={"SMIPATH": ":".join(cls.MIB_PATH)}).stderr
-        for l in f:
-            match = rx_module_not_found.search(l.strip())
-            if match:
-                raise MIBRequiredException("Uploaded MIB",
-                                           match.group(1))
-        # Convert MIB to python module and load
-        with temporary_file() as p:
-            subprocess.check_call(
-                [config.path.smidump, "-k", "-q",
-                 "-f", "python", "-o", p, path],
-                env={"SMIPATH": ":".join(cls.MIB_PATH)})
-            # Add coding string
-            with open(p) as f:
-                data = unicode(f.read(), "ascii", "ignore").encode("ascii")
-            with open(p, "w") as f:
-                f.write(data)
-            m = imp.load_source("mib", p)
-        mib_name = m.MIB["moduleName"]
-        # Check module dependencies
-        depends_on = {}  # MIB Name -> Object ID
-        if "imports" in m.MIB:
-            for i in m.MIB["imports"]:
-                if "module" not in i:
-                    continue
-                rm = i["module"]
-                if rm in depends_on:
-                    continue
-                md = MIB.objects.filter(name=rm).first()
-                if md is None:
-                    raise MIBRequiredException(mib_name, rm)
-                depends_on[rm] = md
-        # Get MIB latest revision date
-        try:
-            last_updated = datetime.datetime.strptime(
-                sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],
-                "%Y-%m-%d %H:%M")
-        except ValueError:
-            last_updated = datetime.datetime(year=1970, month=1, day=1)
-        # Extract MIB typedefs
-        typedefs = {}
-        if "typedefs" in m.MIB:
-            for t in m.MIB["typedefs"]:
-                typedefs[t] = cls.parse_syntax(m.MIB["typedefs"][t])
-        # Check mib already uploaded
-        mib_description = m.MIB[mib_name].get("description", None)
-        mib = MIB.objects.filter(name=mib_name).first()
-        if force and mib:
-            # Delete mib to forceful update
-            MIBData.objects.filter(mib=mib.id).delete()
-            mib.clean()
-            mib.delete()
-            mib = None
-        if mib is not None:
-            # Skip same version
-            if mib.last_updated >= last_updated:
-                return mib
-            mib.description = mib_description
-            mib.last_updated = last_updated
-            mib.depends_on = sorted(depends_on)
-            mib.typedefs = typedefs
-            mib.save()
-            # Delete all MIB Data
-            mib.clean()
-        else:
-            # Create MIB
-            mib = MIB(name=mib_name, description=mib_description,
-                      last_updated=last_updated,
-                      depends_on=sorted(depends_on),
-                      typedefs=typedefs)
-            mib.save()
-        # Upload MIB data
-        data = []
-        for i in ["nodes", "notifications"]:
-            if i in m.MIB:
-                data += [{
-                    "name": "%s::%s" % (mib_name, node),
-                    "oid": v["oid"],
-                    "description": v.get("description"),
-                    "syntax": v["syntax"]["type"] if "syntax" in v else None
-                } for node, v in m.MIB[i].items()]
-        mib.load_data(data)
-        # Save MIB to cache if not uploaded from cache
-        lcd = os.path.join("local", "share", "mibs")
-        if not os.path.isdir(lcd):  # Ensure directory exists
-            os.makedirs(os.path.join("local", "share", "mibs"))
-        local_cache_path = os.path.join(lcd, "%s.mib" % mib_name)
-        cache_path = os.path.join("share", "mibs", "%s.mib" % mib_name)
-        if ((os.path.exists(local_cache_path) and
-             os.path.samefile(path, local_cache_path)) or
-            (os.path.exists(cache_path) and
-             os.path.samefile(path, cache_path))):
-            return mib
-        with open(path) as f:
-            data = f.read()
-        safe_rewrite(local_cache_path, data)
-        return mib
 
     def load_data(self, data):
         """
@@ -289,11 +171,13 @@ class MIB(Document):
                 syntax = v.get("syntax")
                 if syntax:
                     syntax = MIB.parse_syntax(syntax)
-                MIBData(mib=self.id,
-                        oid=oid,
-                        name=oid_name,
-                        description=description,
-                        syntax=syntax).save()
+                MIBData(
+                    mib=self.id,
+                    oid=oid,
+                    name=oid_name,
+                    description=description,
+                    syntax=syntax
+                ).save()
 
     @classmethod
     def get_oid(cls, name):

@@ -24,6 +24,7 @@ from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.handler import Handler
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
@@ -96,13 +97,22 @@ class ManagedObjectProfile(models.Model):
     # Regular expression to check name format
     name_template = models.CharField(_("Name template"), max_length=256,
                                      blank=True, null=True)
-    # IPAM Synchronization
-    # During ManagedObject save
-    # @todo: Remove
-    sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
-    # @todo: Remove
-    fqdn_template = models.TextField(_("FQDN template"),
-                                     null=True, blank=True)
+    # Suffix for ManagedObject's FQDN
+    fqdn_suffix = models.CharField(_("FQDN suffix"), max_length=256, null=True, blank=True)
+    # Policy for MO address resolution from FQDN
+    address_resolution_policy = models.CharField(
+        _("Address Resolution Policy"),
+        choices=[
+            ("D", "Disabled"),
+            ("O", "Once"),
+            ("E", "Enabled")
+        ],
+        max_length=1,
+        null=False, blank=False,
+        default="D"
+    )
+    # Name to address resolver. socket.gethostbyname by default
+    resolver_handler = DocumentReferenceField(Handler, null=True, blank=True)
     # @todo: Name validation function
     # FM settings
     enable_ping = models.BooleanField(

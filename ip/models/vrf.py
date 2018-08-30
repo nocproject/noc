@@ -8,8 +8,6 @@
 
 # Python modules
 from __future__ import absolute_import
-import hashlib
-import struct
 import operator
 from threading import Lock
 # Third-party modules
@@ -69,9 +67,9 @@ class VRF(models.Model):
     )
     rd = models.CharField(
         _("RD"),
-        unique=True,
         max_length=21,
         validators=[check_rd],
+        null=True, blank=True,
         help_text=_("Route Distinguisher in form of ASN:N or IP:N"))
     # RFC2685-compatible VPN id
     vpn_id = models.CharField(
@@ -131,7 +129,6 @@ class VRF(models.Model):
             return self.name
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _rd_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _vpn_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     @classmethod
@@ -140,16 +137,6 @@ class VRF(models.Model):
         lock=lambda _: id_lock)
     def get_by_id(cls, id):
         vrf = VRF.objects.filter(id=id)[:1]
-        if vrf:
-            return vrf[0]
-        return None
-
-    @classmethod
-    @cachetools.cachedmethod(
-        operator.attrgetter("_rd_cache"),
-        lock=lambda _: id_lock)
-    def get_by_rd(cls, rd):
-        vrf = VRF.objects.filter(rd=rd)[:1]
         if vrf:
             return vrf[0]
         return None
@@ -172,15 +159,7 @@ class VRF(models.Model):
         """
         Returns VRF 0:0
         """
-        return VRF.objects.get(rd=cls.GLOBAL_RD)
-
-    @classmethod
-    def generate_rd(cls, name):
-        """
-        Generate unique rd for given name
-        """
-        return "0:%d" % struct.unpack(
-            "I", hashlib.sha1(name).digest()[:4])
+        return VRF.get_by_vpn_id(cls.GLOBAL_RD)
 
     def save(self, **kwargs):
         """
@@ -189,8 +168,6 @@ class VRF(models.Model):
         from .prefix import Prefix
 
         # Generate unique rd, if empty
-        if not self.rd:
-            self.rd = self.generate_rd(self.name)
         if not self.vpn_id:
             vdata = {
                 "type": "VRF",
@@ -262,3 +239,11 @@ class VRF(models.Model):
     @classmethod
     def get_search_result_url(cls, obj_id):
         return "/api/card/view/vrf/%s/" % obj_id
+
+    def delete(self, *args, **kwargs):
+        # Cleanup prefixes
+        self.afi_ipv4 = False
+        self.afi_ipv6 = False
+        self.save()
+        # Delete
+        super(VRF, self).delete(*args, **kwargs)

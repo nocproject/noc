@@ -230,8 +230,9 @@ def check_fatal_errors(t, v):
         die("Improperly configured: %s", v)
 
 
-def get_traceback(reverse=config.traceback.reverse, fp=None):
-    t, v, tb = sys.exc_info()
+def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
+    exc_info = exc_info or sys.exc_info()
+    t, v, tb = exc_info
     try:
         check_fatal_errors(t, v)
     except:  # noqa

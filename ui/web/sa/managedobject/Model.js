@@ -390,6 +390,15 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: "P"
         },
         {
+            name: "address_resolution_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "fqdn",
+            type: "string",
+        },
+        {
             name: "static_service_groups",
             type: "auto"
         },

@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # tgsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,14 +27,15 @@ class TgSenderService(Service):
 
     def on_activate(self):
         if not config.tgsender.token:
-            self.die("no token defined")
+            self.logger.info("No token defined")
+            self.url = None
         else:
             self.url = API + config.tgsender.token
-        self.subscribe(
-            topic=self.name,
-            channel="sender",
-            handler=self.on_message
-        )
+            self.subscribe(
+                topic=self.name,
+                channel="sender",
+                handler=self.on_message
+            )
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(
@@ -62,24 +63,27 @@ class TgSenderService(Service):
             'parse_mode': 'Markdown'
         }
         time.sleep(config.tgsender.retry_timeout)
-
-        get = self.url + '/sendMessage?' + urllib.urlencode(sendMessage)
-        self.logger.info("HTTP GET %s", get)
-        code, header, body = fetch_sync(
-            get,
-            allow_proxy=True,
-            request_timeout=config.activator.http_request_timeout,
-            follow_redirects=True,
-            validate_cert=config.activator.http_validate_cert,
-        )
-        if 200 <= code <= 299:
-            check = json.loads(body)
-            self.logger.info("Result: %s" % check)
-            metrics["telegram_proxy_sended_ok"] += 1
-            return True
+        if self.url:
+            get = self.url + '/sendMessage?' + urllib.urlencode(sendMessage)
+            self.logger.info("HTTP GET %s", get)
+            code, header, body = fetch_sync(
+                get,
+                allow_proxy=True,
+                request_timeout=config.activator.http_request_timeout,
+                follow_redirects=True,
+                validate_cert=config.activator.http_validate_cert,
+            )
+            if 200 <= code <= 299:
+                check = json.loads(body)
+                self.logger.info("Result: %s" % check)
+                metrics["telegram_proxy_sended_ok"] += 1
+                return True
+            else:
+                self.logger.error("HTTP GET %s failed: %s %s", get, code, body)
+                metrics["telegram_proxy_failed_httperror"] += 1
+                return False
         else:
-            self.logger.error("HTTP GET %s failed: %s %s", get, code, body)
-            metrics["telegram_proxy_failed_httperror"] += 1
+            self.logger.info("No token, no Url.")
             return False
 
 

@@ -29,7 +29,8 @@ class ConnectionType(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": ["extend", "data", "c_group"],
-        "json_collection": "inv.connectiontypes"
+        "json_collection": "inv.connectiontypes",
+        "json_unique_fields": ["name"]
     }
 
     name = StringField(unique=True)

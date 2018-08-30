@@ -199,7 +199,8 @@ def fetch(url, method="GET",
                 yield tornado.gen.with_timeout(
                     deadline,
                     future=stream.write(req),
-                    io_loop=io_loop
+                    io_loop=io_loop,
+                    quiet_exceptions=(tornado.iostream.StreamClosedError,)
                 )
             except tornado.iostream.StreamClosedError:
                 metrics["httpclient_proxy_timeouts"] += 1
@@ -214,7 +215,8 @@ def fetch(url, method="GET",
                     data = yield tornado.gen.with_timeout(
                         deadline,
                         future=stream.read_bytes(max_buffer_size, partial=True),
-                        io_loop=io_loop
+                        io_loop=io_loop,
+                        quiet_exceptions=(tornado.iostream.StreamClosedError,)
                     )
                 except tornado.iostream.StreamClosedError:
                     metrics["httpclient_proxy_timeouts"] += 1
@@ -241,7 +243,8 @@ def fetch(url, method="GET",
                             ssl_options=get_ssl_options(),
                             server_hostname=u.netloc
                         ),
-                        io_loop=io_loop
+                        io_loop=io_loop,
+                        quiet_exceptions=(tornado.iostream.StreamClosedError,)
                     )
                 except tornado.iostream.StreamClosedError:
                     metrics["httpclient_proxy_timeouts"] += 1
@@ -311,7 +314,8 @@ def fetch(url, method="GET",
             yield tornado.gen.with_timeout(
                 deadline,
                 future=stream.write(req),
-                io_loop=io_loop
+                io_loop=io_loop,
+                quiet_exceptions=(tornado.iostream.StreamClosedError,)
             )
         except tornado.iostream.StreamClosedError:
             metrics["httpclient_timeouts"] += 1
@@ -326,7 +330,8 @@ def fetch(url, method="GET",
                 data = yield tornado.gen.with_timeout(
                     deadline,
                     future=stream.read_bytes(max_buffer_size, partial=True),
-                    io_loop=io_loop
+                    io_loop=io_loop,
+                    quiet_exceptions=(tornado.iostream.StreamClosedError,)
                 )
             except tornado.iostream.StreamClosedError:
                 if not response_body and config.features.pypy:
