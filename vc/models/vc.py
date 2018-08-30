@@ -136,8 +136,9 @@ class VC(models.Model):
             r["tags"] = self.tags
         return r
 
-    def get_search_info(self, user):
-        return ("vc.vc", "history", {"args": [self.id]})
+    @classmethod
+    def get_search_result_url(cls, obj_id):
+        return "/api/card/view/vlan/%s/" % obj_id
 
     def get_bridge_subinterfaces(self):
         """

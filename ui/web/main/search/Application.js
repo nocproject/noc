@@ -102,13 +102,13 @@ Ext.define("NOC.main.search.Application", {
         var me = this;
         me.searchField.focus();
         me.store.loadData(result);
-        console.log(result);
         me.totalField.setValue(__("Total: ") + result.length);
     },
     //
     onSelect: function(model, record, index, opts) {
         var me = this,
-            i = record.get("info");
-        NOC.launch(i[0], i[1], i[2]);
+            w;
+        w = window.open(record.get("url"), "_blank");
+        w.focus()
     }
 });

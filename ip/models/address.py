@@ -244,18 +244,9 @@ class Address(models.Model):
             r["tags"] = self.tags
         return r
 
-    def get_search_info(self, user):
-        # @todo: Check user access
-        return (
-            "iframe",
-            None,
-            {
-                "title": "Assigned addresses",
-                "url": "/ip/ipam/%s/%s/%s/change_address/" % (
-                    self.vrf.id, self.afi, self.address
-                )
-            }
-        )
+    @classmethod
+    def get_search_result_url(cls, obj_id):
+        return "/api/card/view/address/%s/" % obj_id
 
     @property
     def is_ipv4(self):
