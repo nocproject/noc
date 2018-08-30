@@ -57,6 +57,11 @@ class Profile(BaseProfile):
                 "$regex": r"76(0[3459](\-S)?|13)"
             }
         },
+        "is_platform_me3x00x": {
+            "platform": {
+                "$regex": r"^ME\-3[68]00X"
+            }
+        },
         "is_isr_router": {
             "platform": {
                 "$regex": r"^(19\d\d|29\d\d|39\d\d)$"
