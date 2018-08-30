@@ -38,12 +38,12 @@ class Vendor(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.vendors",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name", "code"]
     }
     # Short vendor name, included as first part of platform
     name = StringField(unique=True)
     # Full vendor name
-    full_name = StringField(unique=True)
+    full_name = StringField()
     # Unique id
     uuid = UUIDField(binary=True)
     # List of vendor codes to be searched via .get_by_code()

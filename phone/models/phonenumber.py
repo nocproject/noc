@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PhoneRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,40 +11,36 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, DateTimeField, ListField,
-                                EmbeddedDocumentField)
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DateTimeField, ListField, ObjectIdField
 from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
 from .phonerange import PhoneRange
 from .numbercategory import NumberCategory
 from noc.sa.models.service import Service
-from .dialplan import DialPlan
-from .phonenumberprofile import PhoneNumberProfile
-from .phonelinktype import PhoneLinkType
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.lib.text import clean_number
+from noc.core.resourcegroup.decorator import resourcegroup
+from .dialplan import DialPlan
+from .phonenumberprofile import PhoneNumberProfile
 
 id_lock = Lock()
 
 
-class LinkedNumber(EmbeddedDocument):
-    type = PlainReferenceField(PhoneLinkType)
-    number = PlainReferenceField("phone.PhoneNumber")
-    description = StringField()
-
-
+@resourcegroup
 class PhoneNumber(Document):
     meta = {
         "collection": "noc.phonenumbers",
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "linked_numbers.number"
+            "static_service_groups",
+            "effective_service_groups",
+            "static_client_groups",
+            "effective_client_groups"
         ]
     }
 
@@ -84,10 +80,12 @@ class PhoneNumber(Document):
     # Last state change
     changed = DateTimeField()
     #
-    linked_numbers = ListField(EmbeddedDocumentField(LinkedNumber))
-    #
     administrative_domain = ForeignKeyField(AdministrativeDomain)
-    termination_group = ForeignKeyField(TerminationGroup)
+    # Resource groups
+    static_service_groups = ListField(ObjectIdField())
+    effective_service_groups = ListField(ObjectIdField())
+    static_client_groups = ListField(ObjectIdField())
+    effective_client_groups = ListField(ObjectIdField())
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 

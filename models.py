@@ -115,6 +115,7 @@ _MODELS = {
     "main.SystemTemplate": "noc.main.models.systemtemplate.SystemTemplate",
     "main.Tag": "noc.main.models.tag.Tag",
     "main.Template": "noc.main.models.template.Template",
+    "main.TextIndex": "noc.main.models.textindex.TextIndex",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
     "main.User": "django.contrib.auth.models.User",
@@ -195,7 +196,6 @@ _MODELS = {
     "sa.Service": "noc.sa.models.service.Service",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.ServiceSummary": "noc.sa.models.servicesummary.ServiceSummary",
-    "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
     # fm models
     "fm.ActiveAlarm": "noc.fm.models.activealarm.ActiveAlarm",
@@ -244,7 +244,6 @@ _MODELS = {
     "ip.Address": "noc.ip.models.address.Address",
     "ip.AddressProfile": "noc.ip.models.addressprofile.AddressProfile",
     "ip.AddressRange": "noc.ip.models.addressrange.AddressRange",
-    "ip.IPPool": "noc.ip.models.ippool.IPPool",
     "ip.Prefix": "noc.ip.models.prefix.Prefix",
     "ip.PrefixAccess": "noc.ip.models.prefixaccess.PrefixAccess",
     "ip.PrefixBookmark": "noc.ip.models.prefixbookmark.PrefixBookmark",

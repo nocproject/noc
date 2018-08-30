@@ -23,5 +23,6 @@ Ext.define("NOC.main.desktop.IFramePanel", {
     getHistoryHash: function() {
         var me = this;
         return me.noc.app_id;
-    }
+    },
+    onCloseApp: function() {}
 });

@@ -37,7 +37,16 @@ Ext.define("NOC.core.ModelApplication", {
     formLayout: "anchor",
     formMinWidth: undefined,
     formMaxWidth: undefined,
+    helpId: undefined,
+    listHelpId: undefined,
+    formHelpId: undefined,
     //
+    navTooltipTemplate: new Ext.XTemplate(
+        '<tpl if="data.name">',
+        '{data.name} - ',
+        '</tpl>{title}'
+    ),
+
     initComponent: function() {
         var me = this;
         // set base_url
@@ -178,8 +187,19 @@ Ext.define("NOC.core.ModelApplication", {
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
         gridToolbar.push("->");
-        me.totalField = Ext.create("Ext.form.field.Display");
+        me.totalField = Ext.create("Ext.button.Button", {
+        });
         gridToolbar.push(me.totalField);
+        if(me.helpId || me.listHelpId) {
+            me.listHelpButton = Ext.create("Ext.button.Button", {
+                itemId: "listHelp",
+                glyph: NOC.glyph.question_circle,
+                tooltip: __("Application Help"),
+                scope: me,
+                handler: NOC.helpOpener(me.listHelpId || me.helpId)
+            });
+            gridToolbar = gridToolbar.concat("-", me.listHelpButton);
+        }
         // Initialize panels
         // Filters
         var grid_rbar = null;
@@ -506,6 +526,7 @@ Ext.define("NOC.core.ModelApplication", {
             scope: me,
             handler: me.onClone
         });
+        //
         // Default toolbar items
         var formToolbar = [
             me.saveButton,
@@ -534,6 +555,18 @@ Ext.define("NOC.core.ModelApplication", {
             formToolbar.push("-");
         }
         formToolbar = formToolbar.concat(me.formToolbar);
+        //
+        if(me.helpId || me.formHelpId){
+            me.formHelpButton = Ext.create("Ext.button.Button", {
+                    itemId: "formHelp",
+                    glyph: NOC.glyph.question_circle,
+                    tooltip: __("Form Help"),
+                    scope: me,
+                    handler: NOC.helpOpener(me.formHelpId || me.helpId)
+                }
+            );
+            formToolbar = formToolbar.concat("->", me.formHelpButton);
+        }
         // Prepare inlines grid
         var formInlines = [];
         me.inlineStores = [];
@@ -851,6 +884,7 @@ Ext.define("NOC.core.ModelApplication", {
             field,
             data;
         me.currentRecord = record;
+        me.setNavTabTooltip({data: me.currentRecord.data});
         me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
         data = record.getData();
@@ -1144,6 +1178,7 @@ Ext.define("NOC.core.ModelApplication", {
             // Remove filter set by loadById
             delete me.currentQuery[me.idField];
         }
+        me.clearNavTabTooltip();
         // Apply updated filter
         me.store.setFilterParams(me.currentQuery);
         me.showGrid();
@@ -1255,7 +1290,7 @@ Ext.define("NOC.core.ModelApplication", {
     },
     //
     onInlineCancel: function(editor, context) {
-        if(Ext.isEmpty(context.originalValue)){
+        if(Ext.isEmpty(context.originalValue)) {
             context.grid.store.removeAt(context.rowIdx);
         }
     },
@@ -1396,7 +1431,7 @@ Ext.define("NOC.core.ModelApplication", {
     onLoad: function() {
         var me = this,
             total = me.store.getTotalCount();
-        me.totalField.setValue(__("Total: ") + total);
+        me.totalField.setText(__("Total: ") + total);
         if(me.rendered) {
             me.refreshButton.setDisabled(false);
         }

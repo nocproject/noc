@@ -15,8 +15,10 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
 # NOC modules
+from noc.config import config
 from noc.lib.nosql import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
+from noc.core.datastream.decorator import datastream
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from .technology import Technology
@@ -25,6 +27,7 @@ id_lock = threading.Lock()
 
 
 @bi_sync
+@datastream
 @on_delete_check(check=[
     ("inv.ResourceGroup", "parent"),
     # sa.ManagedObject
@@ -35,6 +38,16 @@ id_lock = threading.Lock()
     # sa.ManagedObjectSelector
     ("sa.ManagedObjectSelector", "filter_service_group"),
     ("sa.ManagedObjectSelector", "filter_client_group"),
+    # phone.PhoneRange
+    ("phone.PhoneRange", "static_service_groups"),
+    ("phone.PhoneRange", "effective_service_groups"),
+    ("phone.PhoneRange", "static_client_groups"),
+    ("phone.PhoneRange", "effective_client_groups"),
+    # phone.PhoneNumber
+    ("phone.PhoneNumber", "static_service_groups"),
+    ("phone.PhoneNumber", "effective_service_groups"),
+    ("phone.PhoneNumber", "static_client_groups"),
+    ("phone.PhoneNumber", "effective_client_groups")
 ])
 class ResourceGroup(Document):
     """
@@ -79,3 +92,7 @@ class ResourceGroup(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return ResourceGroup.objects.filter(bi_id=id).first()
+
+    def iter_changed_datastream(self):
+        if config.datastream.enable_resourcegroup:
+            yield "resourcegroup", self.id

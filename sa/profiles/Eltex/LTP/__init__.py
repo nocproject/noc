@@ -3,11 +3,12 @@
 # Vendor: Eltex
 # OS:     LTP
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -47,3 +48,18 @@ class Profile(BaseProfile):
             """Leave switch context"""
             if exc_type is None:
                 self.script.cli("exit\r")
+
+    rx_interface_name = re.compile(r"^(?P<ifname>\S.+)\s+(?P<number>\d+)", re.MULTILINE)
+
+    def convert_interface_name(self, s):
+        match = self.rx_interface_name.match(s)
+        if not match:
+            return s
+        if "PON channel" in match.group("ifname"):
+            return "pon-port %s" % match.group("number")
+        elif "Uplink" in match.group("ifname") and int(match.group("number")) <= 7:
+            return "front-port %s" % match.group("number")
+        elif "Uplink" in match.group("ifname") and int(match.group("number")) > 7:
+            return "10G-front-port %s" % (int(match.group("number")) - 8)
+        else:
+            return s

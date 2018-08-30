@@ -23,20 +23,25 @@ def _apply_dynamic_client_groups(obj):
     return obj.static_client_groups or []
 
 
-def _apply_effective_groups(sender, instance=None, *args, **kwargs):
+def _apply_model_effective_groups(sender, instance=None, *args, **kwargs):
     instance.effective_service_groups = _apply_dynamic_service_groups(instance)
     instance.effective_client_groups = _apply_dynamic_client_groups(instance)
+
+
+def _apply_document_effective_groups(sender, document=None, *args, **kwargs):
+    document.effective_service_groups = _apply_dynamic_service_groups(document)
+    document.effective_client_groups = _apply_dynamic_client_groups(document)
 
 
 def resourcegroup(cls):
     if is_document(cls):
         mongo_signals.pre_save.connect(
-            _apply_effective_groups,
+            _apply_document_effective_groups,
             sender=cls
         )
     else:
         django_signals.pre_save.connect(
-            _apply_effective_groups,
+            _apply_model_effective_groups,
             sender=cls
         )
     return cls

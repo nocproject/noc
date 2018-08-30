@@ -30,6 +30,13 @@ import threading
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from noc.core.debug import excepthook, error_report, ErrorReport
+from noc.core.log import ErrorFormatter
+from noc.core.perf import metrics, apply_metrics
+from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
+from noc.core.threadpool import ThreadPoolExecutor
+from noc.core.nsq.reader import Reader as NSQReader
+from noc.core.span import get_spans, SPAN_FIELDS
+from noc.core.tz import setup_timezone
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -39,12 +46,6 @@ from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
 from .loader import set_service
-from noc.core.perf import metrics, apply_metrics
-from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-from noc.core.threadpool import ThreadPoolExecutor
-from noc.core.nsq.reader import Reader as NSQReader
-from noc.core.span import get_spans, SPAN_FIELDS
-from noc.core.tz import setup_timezone
 
 CHWRITER = "chwriter"
 
@@ -127,8 +128,6 @@ class Service(object):
     def __init__(self):
         set_service(self)
         sys.excepthook = excepthook
-        # Monkeypatch error reporting
-        tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
         self.ioloop = None
         self.logger = None
         self.service_id = str(uuid.uuid4())
@@ -220,10 +219,6 @@ class Service(object):
                 help="NOC pool name"
             )
 
-    def handle_callback_exception(self, callback):
-        sys.stdout.write("Exception in callback %s\n" % repr(callback))
-        error_report()
-
     @classmethod
     def die(cls, msg=""):
         """
@@ -243,7 +238,7 @@ class Service(object):
         logger = logging.getLogger()
         if len(logger.handlers):
             # Logger is already initialized
-            fmt = logging.Formatter(self.LOG_FORMAT, None)
+            fmt = ErrorFormatter(self.LOG_FORMAT, None)
             for h in logging.root.handlers:
                 if isinstance(h, logging.StreamHandler):
                     h.stream = sys.stdout
@@ -600,6 +595,10 @@ class Service(object):
         Called when service activated
         """
         raise tornado.gen.Return()
+
+    @tornado.gen.coroutine
+    def acquire_lock(self):
+        yield self.dcs.acquire_lock("lock-%s" % self.name)
 
     @tornado.gen.coroutine
     def acquire_slot(self):

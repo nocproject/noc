@@ -13,6 +13,7 @@ import random
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from noc.core.span import Span
 from noc.core.datastream.change import bulk_datastream_changes
+from ..box.resolver import ResolverCheck
 from .uptime import UptimeCheck
 from .interfacestatus import InterfaceStatusCheck
 from .mac import MACCheck
@@ -34,6 +35,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             if self.object.auth_profile and self.object.auth_profile.type == "S":
                 self.logger.info("Invalid credentials. Stopping")
                 return
+            ResolverCheck(self).run()
             if self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
                 with self.object.open_session():

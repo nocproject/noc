@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 import gzip
 import re
@@ -32,13 +33,13 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="List of extractor names"
         )
-    rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
+    rx_last_updated = re.compile(r"\"last_updated\":\s*\"([^\"]+)\"",
                                  re.MULTILINE)
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
     PREFIX = config.path.collection_fm_mibs
 
     def handle(self, *args, **options):
-        print "Synchronizing MIBs"
+        self.print("Synchronizing MIBs")
         self.sync_mibs(force=options["force"])
 
     def get_bundled_mibs(self):
@@ -72,7 +73,7 @@ class Command(BaseCommand):
                     match = self.rx_last_updated.search(data)
                 last_updated = self.decode_date(match.group(1))
                 if (last_updated > mib.last_updated) or force:
-                    print "    updating %s" % mib_name
+                    self.print("    updating %s" % mib_name)
                     self.update_mib(mib, data + f.read(), version=0)
                 elif last_updated == mib.last_updated:
                     # Check internal version
@@ -88,10 +89,10 @@ class Command(BaseCommand):
                         else:
                             version = 0
                     if version > mib.version:
-                        print "    updating %s" % mib_name
+                        self.print("    updating %s" % mib_name)
                         self.update_mib(mib, data + f.read(), version=version)
             else:
-                print "    creating %s" % mib_name
+                self.print("    creating %s" % mib_name)
                 self.create_mib(f.read())
             f.close()
 
@@ -129,6 +130,7 @@ class Command(BaseCommand):
         # Upload
         if d["data"]:
             mib.load_data(d["data"])
+
 
 if __name__ == "__main__":
     Command().run()

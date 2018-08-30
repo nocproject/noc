@@ -24,7 +24,14 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
         });
 
         me.editField = Ext.create("Ext.form.field.HtmlEditor", {
-            hidden: true
+            hidden: true,
+            defaultLinkValue: "https://",
+            createLink: function() {
+                var url = prompt(this.createLinkText, this.defaultLinkValue);
+                if(url && url !== this.defaultLinkValue) {
+                    this.relayCmd('insertHTML', "<a href='" + url + "' target='_blank'>" + url + "</a>");
+                }
+            }
         });
 
         me.editButton = Ext.create("Ext.button.Button", {

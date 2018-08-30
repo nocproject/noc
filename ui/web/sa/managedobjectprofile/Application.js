@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Application");
@@ -23,7 +23,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.ip.addressprofile.LookupField",
         "NOC.vc.vpnprofile.LookupField",
         "NOC.main.template.LookupField",
-        "NOC.main.extstorage.LookupField"
+        "NOC.main.extstorage.LookupField",
+        "NOC.main.handler.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -180,10 +181,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     xtype: "tabpanel",
                     layout: "fit",
                     autoScroll: true,
+                    tabPosition: "left",
+                    tabBar: {
+                        tabRotation: 0,
+                        layout: {
+                            align: "stretch"
+                        }
+                    },
                     anchor: "-0, -50",
                     defaults: {
                         autoScroll: true,
                         layout: "anchor",
+                        textAlign: "left",
                         padding: 10
                     },
                     items: [
@@ -222,6 +231,35 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     fieldLabel: __("Name template"),
                                     allowBlank: true,
                                     uiStyle: "large"
+                                },
+                                {
+                                    name: "fqdn_suffix",
+                                    xtype: "textfield",
+                                    fieldLabel: __("FQDN Suffix"),
+                                    allowBlank: true,
+                                    uiStyle: "large"
+                                },
+                                {
+                                    name: "address_resolution_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Address Resolution Policy"),
+                                    store: [
+                                        ["D", __("Disabled")],
+                                        ["O", __("Once")],
+                                        ["E", __("Enabled")]
+                                    ],
+                                    allowBlank: false,
+                                    uiStyle: "medium"
+                                },
+                                {
+                                    name: "resolver_handler",
+                                    xtype: "main.handler.LookupField",
+                                    fieldLabel: __("Resolver Handler"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    query: {
+                                        allow_resolver: true
+                                    }
                                 }
                             ]
                         },
@@ -1595,6 +1633,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "metrics",
                                     xtype: "gridfield",
                                     fieldLabel: __("Metrics"),
+                                    labelAlign: "top",
                                     columns: [
                                         {
                                             text: __("Metric Type"),

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # phone.phonerange application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from mongoengine.queryset import Q
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.phone.models.phonerange import PhoneRange
 from noc.core.translation import ugettext as _
 
@@ -28,6 +29,12 @@ class PhoneRangeApplication(ExtDocApplication):
         "description__icontains",
         "from_number__startswith"
     ]
+    resource_group_fields = [
+        "static_service_groups",
+        "effective_service_groups",
+        "static_client_groups",
+        "effective_client_groups"
+    ]
 
     def field_total_numbers(self, o):
         return o.total_numbers
@@ -38,6 +45,31 @@ class PhoneRangeApplication(ExtDocApplication):
             "label": unicode(o),
             "has_children": o.has_children
         }
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        def sg_to_list(items):
+            return [
+                {
+                    "group": str(x),
+                    "group__label": unicode(ResourceGroup.get_by_id(x))
+                } for x in items
+            ]
+
+        data = super(PhoneRangeApplication, self).instance_to_dict(o, fields, nocustom)
+        # Expand resource groups fields
+        for fn in self.resource_group_fields:
+            data[fn] = sg_to_list(data.get(fn) or [])
+        return data
+
+    def clean(self, data):
+        # Clean resource groups
+        for fn in self.resource_group_fields:
+            if fn.startswith("effective_") and fn in data:
+                del data[fn]
+                continue
+            data[fn] = [x["group"] for x in (data.get(fn) or [])]
+        # Clean other
+        return super(PhoneRangeApplication, self).clean(data)
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""

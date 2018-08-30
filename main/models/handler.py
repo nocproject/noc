@@ -13,10 +13,16 @@ import operator
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 import cachetools
+# NOC modules
+from noc.core.model.decorator import on_delete_check
+from noc.core.handler import get_handler
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObjectProfile", "resolver_handler")
+])
 class Handler(Document):
     meta = {
         "collection": "handlers",
@@ -29,6 +35,7 @@ class Handler(Document):
     description = StringField()
     allow_config_filter = BooleanField()
     allow_config_validation = BooleanField()
+    allow_resolver = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
@@ -39,3 +46,6 @@ class Handler(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Handler.objects.filter(handler=id).first()
+
+    def get_handler(self):
+        return get_handler(self.handler)

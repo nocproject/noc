@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Model");
@@ -56,14 +56,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: "{{ object.object_profile.name }}: {{ object.name }}"
         },
         {
-            name: "fqdn_template",
-            type: "string",
-            defaultValue: "{{ object.address }}.example.com"
+            name: "fqdn_suffix",
+            type: "string"
         },
         {
-            name: "sync_ipam",
-            type: "boolean",
-            defaultValue: false
+            name: "address_resolution_policy",
+            type: "string"
+        },
+        {
+            name: "resolver_handler",
+            type: "string"
+        },
+        {
+            name: "resolver_handler__label",
+            type: "string",
+            persist: false
         },
         {
             name: "enable_ping",

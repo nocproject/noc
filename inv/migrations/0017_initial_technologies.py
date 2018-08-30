@@ -10,6 +10,7 @@
 from uuid import UUID
 # Third-party modules
 import bson
+from bson.int64 import Int64
 from pymongo import UpdateOne
 # NOC modules
 from noc.lib.nosql import get_db
@@ -27,7 +28,8 @@ class Migration(object):
                     "description": "Grouping element",
                     "single_service": False,
                     "single_client": False,
-                    "allow_children": True
+                    "allow_children": True,
+                    "bi_id": Int64(3859384814270643576)
                 }
             }, upsert=True),
             UpdateOne({
@@ -41,7 +43,8 @@ class Migration(object):
                     "client_model": "sa.ManagedObject",
                     "single_service": False,
                     "single_client": True,
-                    "allow_children": False
+                    "allow_children": False,
+                    "bi_id": Int64(2204453448135692504)
                 }
             }, upsert=True),
             UpdateOne({
@@ -54,7 +57,8 @@ class Migration(object):
                     "service_model": "sa.ManagedObject",
                     "single_service": False,
                     "single_client": False,
-                    "allow_children": False
+                    "allow_children": False,
+                    "bi_id": Int64(4062440225872880146)
                 }
             }, upsert=True),
             UpdateOne({
@@ -68,7 +72,8 @@ class Migration(object):
                     "client_model": "sa.ManagedObject",
                     "single_service": False,
                     "single_client": False,
-                    "allow_children": False
+                    "allow_children": False,
+                    "bi_id": Int64(4546441601898809637)
                 }
             }, upsert=True),
             UpdateOne({
@@ -82,7 +87,8 @@ class Migration(object):
                     "client_model": "sa.ManagedObject",
                     "single_service": False,
                     "single_client": False,
-                    "allow_children": False
+                    "allow_children": False,
+                    "bi_id": Int64(3384545658468911814)
                 }
             }, upsert=True),
             UpdateOne({
@@ -96,7 +102,8 @@ class Migration(object):
                     "client_model": "sa.ManagedObject",
                     "single_service": False,
                     "single_client": False,
-                    "allow_children": False
+                    "allow_children": False,
+                    "bi_id": Int64(2085768785416150430)
                 }
             }, upsert=True),
             UpdateOne({
@@ -110,7 +117,8 @@ class Migration(object):
                     "client_model": "sa.ManagedObject",
                     "single_service": False,
                     "single_client": False,
-                    "allow_children": False
+                    "allow_children": False,
+                    "bi_id": Int64(4632306658633376591)
                 }
             }, upsert=True)
         ]
