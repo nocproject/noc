@@ -1,3 +1,5 @@
+.. _reference-service-profile:
+
 ===============
 Service Profile
 ===============

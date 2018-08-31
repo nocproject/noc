@@ -1,3 +1,5 @@
+.. _reference-subscriber:
+
 ==========
 Subscriber
 ==========
@@ -10,7 +12,7 @@ Subscriber
 
 Group Settings
 --------------
-Group settings for *Subscribers* are contained in :doc:`/reference/subscriber-profile`
+Group settings for *Subscribers* are contained in :ref:`Subscriber Profile<reference-subscriber-profile>`
 
 .. todo::
     Describe *Subscriber*

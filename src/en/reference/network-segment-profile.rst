@@ -1,3 +1,5 @@
+.. _reference-network-segment-profile:
+
 =======================
 Network Segment Profile
 =======================
@@ -8,7 +10,7 @@ Network Segment Profile
     :depth: 1
     :class: singlecol
 
-Network Segment Profile is a group settings for :doc:`/reference/network-segment`
+Network Segment Profile is a group settings for :ref:`Network Segment<reference-network-segment>`
 
 .. todo::
     Complete documentation

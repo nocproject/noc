@@ -25,6 +25,8 @@ Reference
     /reference/dns-zone
     /reference/allocation-group
     /reference/vc-filter
+    /reference/prefix
+    /reference/prefix-profile
     /reference/dialplan
     /reference/phone-range
     /reference/phone-range-profile
@@ -38,7 +40,7 @@ Reference
     /reference/template
     /reference/threshold-profile
     /reference/handler
-    /reference/external-system
+    /reference/remote-system
     /reference/apikey
     /reference/technology
 

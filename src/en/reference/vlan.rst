@@ -12,7 +12,7 @@ VLAN
 
 Group Settings
 --------------
-Group settings for *VLAN* are contained in :doc:`/reference/vlan-profile`
+Group settings for *VLAN* are contained in :ref:`VLAN Profile<reference-vlan-profile>`
 
 .. todo::
     Describe VLAN

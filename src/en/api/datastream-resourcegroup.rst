@@ -27,7 +27,7 @@ Fields
 +---------------+--------+---------------------------------------------------------------------+
 | technology    | Object | Resource Group's :ref:`Technology<reference-technology>`            |
 +---------------+--------+---------------------------------------------------------------------+
-| remote_system | Object | Source :ref:`external system<reference-external-system>` for object |
+| remote_system | Object | Source :ref:`remote system<reference-remote-system>` for object     |
 +---------------+--------+---------------------------------------------------------------------+
 | * id          | String | External system's id                                                |
 +---------------+--------+---------------------------------------------------------------------+

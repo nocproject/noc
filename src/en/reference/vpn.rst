@@ -1,3 +1,5 @@
+.. _reference-vpn:
+
 ===
 VPN
 ===
@@ -10,7 +12,7 @@ VPN
 
 Group Settings
 --------------
-Group settings for *VPN* are contained in :doc:`/reference/vpn-profile`
+Group settings for *VPN* are contained in :ref:`VPN Profile<reference-vpn-profile>`
 
 .. todo::
     Describe VPN

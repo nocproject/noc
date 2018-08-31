@@ -1,3 +1,5 @@
+.. _reference-phone-number:
+
 ============
 Phone Number
 ============

@@ -1,3 +1,5 @@
+.. _reference-interface-profile:
+
 =================
 Interface Profile
 =================

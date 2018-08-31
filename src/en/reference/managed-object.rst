@@ -1,3 +1,5 @@
+.. _reference-managed-object:
+
 ==============
 Managed Object
 ==============
@@ -14,7 +16,7 @@ or passively (SYSLOG, SNMP Traps, Netflow)
 
 Group Settings
 --------------
-Group settings for Managed Object are contained in :doc:`/reference/managed-object-profile`
+Group settings for Managed Object are contained in :ref:`Managed Object Profile<reference-managed-object-profile>`
 
 Divisions
 ---------

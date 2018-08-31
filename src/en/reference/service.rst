@@ -1,3 +1,5 @@
+.. _reference-service:
+
 =======
 Service
 =======
@@ -10,7 +12,7 @@ Service
 
 Group Settings
 --------------
-Group settings for *Services* are contained in :doc:`/reference/service-profile`
+Group settings for *Services* are contained in :ref:`Service Profiles<reference-service-profile>`
 
 .. todo::
     Describe Services

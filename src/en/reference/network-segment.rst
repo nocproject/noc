@@ -1,3 +1,5 @@
+.. _reference-network-segment:
+
 ===============
 Network Segment
 ===============
@@ -13,7 +15,7 @@ layers. i. e. core, aggregation, access e.t.c. Therefore the network can
 be considered as hierarchy of interconnected parts, called
 *Network Segments*.
 
-Network Segment is a group of :doc:`Managed Objects</reference/managed-object>`
+Network Segment is a group of :ref:`Managed Objects<reference-managed-object>`
 taking specific part in network hierarchy. Each Managed Object *MUST*
 belong to one Network Segment. Typical Network Segment hierarchy:
 
@@ -60,7 +62,7 @@ Proper segmentation is the key concept for various areas:
 
 Group Settings
 --------------
-Group settings for Network Segments are contained in :doc:`/reference/network-segment-profile`
+Group settings for Network Segments are contained in :ref:`Network Segment Profiles<reference-network-segment-profile>`
 
 .. _network-segment-segment-topology:
 

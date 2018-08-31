@@ -1,3 +1,5 @@
+.. _reference-interface:
+
 =========
 Interface
 =========
@@ -10,7 +12,7 @@ Interface
 
 Group Settings
 --------------
-Group settings for *Interfaces* are contained in :doc:`/reference/interface-profile`
+Group settings for *Interfaces* are contained in :ref:`Interface Profiles<reference-interface-profile>`
 
 .. todo::
     Describe interface
