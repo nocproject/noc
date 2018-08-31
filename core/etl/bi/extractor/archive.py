@@ -29,10 +29,16 @@ class ArchivingExtractor(BaseExtractor):
     archive_meta = {}
     archive_intervals = {}
 
-    def clean(self):
+    def clean(self, force=False):
         if self.enable_archive:
             self.archive()
         super(ArchivingExtractor, self).clean()
+
+    def get_archived_template(self):
+        # "alarms.{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}"
+        # print(self.archive_collection_template)
+        template = "%s.%s" % (self.name, self.archive_collection_template)
+        return Template(template)
 
     def iter_archived_items(self):
         """
@@ -104,7 +110,7 @@ class ArchivingExtractor(BaseExtractor):
 
         db = get_db()
         # Compile name template
-        tpl = Template(self.archive_collection_template)
+        tpl = self.get_archived_template()
         # collection name -> data
         data = defaultdict(list)
         # Collect data and spool full batches

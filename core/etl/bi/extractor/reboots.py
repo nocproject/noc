@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 # NOC modules
 from .base import BaseExtractor
 from noc.fm.models.reboot import Reboot
@@ -58,12 +58,14 @@ class RebootsExtractor(BaseExtractor):
         self.reboot_stream.finish()
         return nr
 
-    def clean(self):
-        Reboot._get_collection().remove({
-            "ts": {
-                "$lte": self.clean_ts
-            }
-        })
+    def clean(self, force=False):
+        if force:
+            print("Clean Reboots collection before %s" % self.clean_ts)
+            Reboot._get_collection().remove({
+                "ts": {
+                    "$lte": self.clean_ts
+                }
+            })
 
     @classmethod
     def get_start(cls):

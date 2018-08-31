@@ -64,7 +64,7 @@ class Config(BaseConfig):
         keep_day_of_month = IntParameter(default="1")
 
     class bi(ConfigSection):
-        language = StringParameter(default="en")
+        language = StringParameter(default="en", help="Language BI interface")
         query_threads = IntParameter(default=10)
         extract_delay_alarms = SecondsParameter(default="1h")
         clean_delay_alarms = SecondsParameter(default="1d")
@@ -77,7 +77,13 @@ class Config(BaseConfig):
         enable_reboots = BooleanParameter(default=False)
         enable_managedobjects = BooleanParameter(default=False)
         enable_alarms_archive = BooleanParameter(default=False)
-        alarms_archive_template = StringParameter(default="alarms.{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}")
+        alarms_archive_policy = MapParameter(default="weekly", mappings={
+            "weekly": "{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}",
+            "monthly": "{{doc[\"clear_timestamp\"].strftime(\"y%Ym%m\")}}",
+            "quarterly": "{{doc[\"clear_timestamp\"].strftime(\"y%Y\")}}"
+                         "_quarter{{(doc[\"clear_timestamp\"].month-1)//3 + 1}}",
+            "yearly": "{{doc[\"clear_timestamp\"].strftime(\"y%Y\")}}"
+        })
         alarms_archive_batch_limit = IntParameter(default=10000)
 
     brand = StringParameter(default="NOC")
