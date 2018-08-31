@@ -50,9 +50,14 @@ class MRTRequestHandler(AuthRequestHandler):
                 "id": str(oid),
                 "error": str(e)
             })
+        if r["errors"]:
+            raise tornado.gen.Return({
+                "id": str(oid),
+                "error": r["output"]
+            })
         raise tornado.gen.Return({
             "id": str(oid),
-            "result": r
+            "result": r["output"],
         })
 
     @tornado.gen.coroutine
@@ -68,6 +73,7 @@ class MRTRequestHandler(AuthRequestHandler):
         :param kwargs:
         :return:
         """
+        logger.info("Run task on parralels: %d", config.mrt.max_concurrency)
         metrics["mrt_requests"] += 1
         # Parse request
         req = ujson.loads(self.request.body)
@@ -103,3 +109,4 @@ class MRTRequestHandler(AuthRequestHandler):
         while not wi.done():
             r = yield wi.next()
             yield self.write_chunk(r)
+        logger.info("Done")

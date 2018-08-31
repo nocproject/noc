@@ -27,13 +27,18 @@ class Script(BaseScript):
     requires = []
 
     def execute(self, commands, ignore_cli_errors=False, include_commands=False):
-        cli = self.safe_cli if ignore_cli_errors else self.cli
-        r = []
+        cli = self.safe_cli
+        r = {"errors": False,
+             "output": []}
         for c in self.format_multiline(commands):
             if include_commands:
-                r += [c + "\n\n" + cli(c)]
+                r["output"] += [c + "\n\n" + cli(c)]
             else:
-                r += [cli(c)]
+                r["output"] += [cli(c)]
+            if "%ERROR:" in r["output"][-1]:
+                r["errors"] = True
+                if not ignore_cli_errors:
+                    break
         return r
 
     def safe_cli(self, cmd):
@@ -41,6 +46,7 @@ class Script(BaseScript):
         Safer version of Script.cli. Always returns text on syntax error
         :param cmd:
         :return:
+        :rtype: str
         """
         try:
             return self.cli(cmd)
