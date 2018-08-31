@@ -176,6 +176,6 @@ class Script(BaseScript):
             return self.execute_cat6000()
         elif self.is_cat4000:
             return self.execute_cat4000()
-        elif self.is_small_cat:
+        elif self.is_small_cat or self.is_platform_me3x00x:
             return self.execute_small_cat()
         raise self.NotSupportedError()
