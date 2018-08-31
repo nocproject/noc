@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // phone.phonenumberprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.phone.phonenumberprofile.Application");
@@ -14,6 +14,7 @@ Ext.define("NOC.phone.phonenumberprofile.Application", {
     ],
     model: "NOC.phone.phonenumberprofile.Model",
     search: true,
+    helpId: "reference-phone-number-profile",
     rowClassField: "row_class",
 
     initComponent: function() {

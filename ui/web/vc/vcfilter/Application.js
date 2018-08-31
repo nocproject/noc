@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // vc.vcfilter application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.vc.vcfilter.Application");
@@ -13,6 +13,8 @@ Ext.define("NOC.vc.vcfilter.Application", {
     ],
     model: "NOC.vc.vcfilter.Model",
     search: true,
+    helpId: "reference-vc-filter",
+
     columns: [
         {
             text: __("Name"),

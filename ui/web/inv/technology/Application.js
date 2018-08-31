@@ -14,6 +14,8 @@ Ext.define("NOC.inv.technology.Application", {
     ],
     model: "NOC.inv.technology.Model",
     search: true,
+    helpId: "reference-technology",
+
     initComponent: function() {
         var me = this;
 

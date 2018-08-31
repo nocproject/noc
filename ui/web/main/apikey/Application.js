@@ -14,6 +14,7 @@ Ext.define("NOC.main.apikey.Application", {
     ],
     model: "NOC.main.apikey.Model",
     search: true,
+    helpId: "reference-apikey",
 
     initComponent: function() {
         var me = this;

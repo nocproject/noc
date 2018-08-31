@@ -28,6 +28,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
+    helpId: "reference-managed-object-profile",
     rowClassField: "row_class",
     validationModelId: "sa.ManagedObjectProfile",
     viewModel: {

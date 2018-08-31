@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // crm.subscriber application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.crm.subscriber.Application");
@@ -16,6 +16,7 @@ Ext.define("NOC.crm.subscriber.Application", {
     model: "NOC.crm.subscriber.Model",
     search: true,
     rowClassField: "row_class",
+    helpId: "reference-subscriber",
 
     initComponent: function() {
         var me = this;

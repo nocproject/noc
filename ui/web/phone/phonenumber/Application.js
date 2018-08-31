@@ -22,6 +22,7 @@ Ext.define("NOC.phone.phonenumber.Application", {
     model: "NOC.phone.phonenumber.Model",
     rowClassField: "row_class",
     search: true,
+    helpId: "reference-phone-number",
 
     statusStore: [
         ["N", "New"],

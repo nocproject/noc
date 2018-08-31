@@ -16,6 +16,7 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
     ],
     model: "NOC.inv.networksegmentprofile.Model",
     search: true,
+    helpId: "reference-network-segment-profile",
     rowClassField: "row_class",
 
     initComponent: function() {

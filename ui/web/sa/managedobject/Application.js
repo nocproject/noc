@@ -37,6 +37,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
+    helpId: "reference-managed-object",
     rowClassField: "row_class",
     actions: [
         {

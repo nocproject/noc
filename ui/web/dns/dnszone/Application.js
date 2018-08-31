@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // dns.dnszone application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.dns.dnszone.Application");
@@ -18,6 +18,7 @@ Ext.define("NOC.dns.dnszone.Application", {
     ],
     model: "NOC.dns.dnszone.Model",
     search: true,
+    helpId: "reference-dns-zone",
 
     initComponent: function () {
         var me = this;

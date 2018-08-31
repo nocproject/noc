@@ -13,6 +13,7 @@ Ext.define("NOC.main.handler.Application", {
     ],
     model: "NOC.main.handler.Model",
     search: true,
+    helpId: "reference-handler",
 
     initComponent: function() {
         var me = this;
