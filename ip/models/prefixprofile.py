@@ -30,7 +30,9 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("ip.Prefix", "profile"),
     ("sa.ManagedObjectProfile", "prefix_profile_interface"),
-    ("sa.ManagedObjectProfile", "prefix_profile_neighbor")
+    ("sa.ManagedObjectProfile", "prefix_profile_neighbor"),
+    ("vc.VPNProfile", "default_prefix_profile"),
+    ("peer.ASProfile", "prefix_profile_whois_route")
 ])
 class PrefixProfile(Document):
     meta = {

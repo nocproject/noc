@@ -40,7 +40,8 @@ id_lock = Lock()
 @bi_sync
 @on_save
 @on_delete_check(check=[
-    ("sa.ManagedObject", "container")
+    ("sa.ManagedObject", "container"),
+    ("inv.CoveredObject", "object")
 ])
 class Object(Document):
     """

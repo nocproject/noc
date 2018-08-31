@@ -2,14 +2,19 @@
 # ---------------------------------------------------------------------
 # PeerGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.db import models
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("peer.Peer", "peer_group")
+])
 class PeerGroup(models.Model):
     class Meta:
         verbose_name = "Peer Group"

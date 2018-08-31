@@ -30,7 +30,9 @@ id_lock = threading.Lock()
 
 @bi_sync
 @on_delete_check(check=[
-    ("sa.ManagedObject", "platform")
+    ("sa.ManagedObject", "platform"),
+    ("sa.ManagedObjectSelector", "filter_platform"),
+    ("inv.FirmwarePolicy", "platform")
 ])
 class Platform(Document):
     meta = {

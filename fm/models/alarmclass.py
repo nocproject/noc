@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,12 +26,18 @@ from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 handlers_lock = Lock()
 
 
 @bi_sync
+@on_delete_check(check=[
+    ("fm.ActiveAlarm", "alarm_class"), 
+    ("fm.AlarmClassConfig", "alarm_class"), 
+    ("fm.ArchivedAlarm", "alarm_class")
+])
 class AlarmClass(nosql.Document):
     """
     Alarm class

@@ -19,11 +19,15 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
 @bi_sync
+@on_delete_check(check=[
+    ("crm.Subscriber", "profile")
+])
 class SubscriberProfile(Document):
     meta = {
         "collection": "noc.subscriberprofiles",
