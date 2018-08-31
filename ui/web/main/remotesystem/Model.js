@@ -82,6 +82,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
+            name: "enable_resourcegroup",
+            type: "boolean"
+        },
+        {
             name: "enable_ttsystem",
             type: "boolean"
         }

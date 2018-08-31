@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Administrative division loader
+# ResourceGroup Group loader
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2015 The NOC Project
 # See LICENSE for details
@@ -10,22 +10,32 @@
 from __future__ import absolute_import
 # NOC modules
 from .base import BaseLoader
-from noc.gis.models.division import Division
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.technology import Technology
 
 
-class AdmDivLoader(BaseLoader):
+class ResourceGroupLoader(BaseLoader):
     """
     Administrative division loader
     """
-    name = "admdiv"
-    model = Division
+    name = "resourcegroup"
+    model = ResourceGroup
     fields = [
         "id",
-        "parent",
         "name",
-        "short_name"
+        "technology",
+        "parent",
+        "description"
     ]
 
     mapped_fields = {
-        "parent": "admdiv"
+        "parent": "resourcegroup"
     }
+
+    def clean(self, row):
+        """
+        Fix Technology
+        """
+        v = super(ResourceGroupLoader, self).clean(row)
+        v["technology"] = Technology.get_by_name(v["technology"])
+        return v

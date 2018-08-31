@@ -45,6 +45,12 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     dataIndex: "technology",
                     width: 300,
                     renderer: NOC.render.Lookup("technology")
+                },
+                {
+                    text: __("Description"),
+                    dataIndex: "description",
+                    width: 300,
+                    flex: 1
                 }
             ],
 
@@ -67,6 +73,12 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     xtype: "inv.technology.LookupField",
                     fieldLabel: __("Technology"),
                     allowBlank: false
+                },
+                {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: __("Description"),
+                    allowBlank: true
                 },
                 {
                     xtype: "fieldset",
