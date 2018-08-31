@@ -58,7 +58,13 @@ class Command(BaseCommand):
             help="Use archived collection for extract"
         )
         # clean command
-        subparsers.add_parser("clean")
+        clean = subparsers.add_parser("clean")
+        clean.add_argument(
+            "--force",
+            action="store_true",
+            default=False,
+            help="Really remove data"
+        )
         # load command
         subparsers.add_parser("load")
 
@@ -161,9 +167,18 @@ class Command(BaseCommand):
             stop = self.get_last_extract(ecls.name)
             if not stop:
                 continue
+            force = options.get("force")
             e = ecls(start=stop, stop=stop, prefix=self.DATA_PREFIX)
-            e.clean()
-            self.print("[%s] Cleaned before %s ... \n" % (e.name, stop), end="", flush=True)
+            self.print("[%s] Cleaned before %s ... \n" % (
+                e.name, stop - datetime.timedelta(seconds=ecls.clean_delay)
+            ), end="", flush=True)
+            if force:
+                self.print("All data before %s from collection %s will be Remove..\n" % (
+                    e.name, stop - datetime.timedelta(seconds=ecls.clean_delay)))
+                for i in reversed(range(1, 10)):
+                    self.print("%d\n" % i)
+                    time.sleep(1)
+            e.clean(force=force)
 
     def handle_load(self):
         for fn in sorted(os.listdir(self.DATA_PREFIX)):

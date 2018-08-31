@@ -139,7 +139,7 @@ class SecondsParameter(BaseParameter):
         (7 * 24 * 3600, "w"),
         (24 * 3600, "d"),
         (3600, "h"),
-        (60, "m")
+        (60, "M")
     )
 
     SCALE = {

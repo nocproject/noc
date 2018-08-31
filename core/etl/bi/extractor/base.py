@@ -39,7 +39,12 @@ class BaseExtractor(object):
     def extract(self):
         pass
 
-    def clean(self):
+    def clean(self, force=False):
+        """
+
+        :param force: Really remove data
+        :return:
+        """
         pass
 
     @classmethod

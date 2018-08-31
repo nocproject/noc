@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import datetime
 # NOC modules
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -31,7 +31,7 @@ class AlarmsExtractor(ArchivingExtractor):
     reboot_interval = datetime.timedelta(seconds=config.bi.reboot_interval)
     enable_archive = config.bi.enable_alarms_archive
     archive_batch_limit = config.bi.alarms_archive_batch_limit
-    archive_collection_template = config.bi.alarms_archive_template
+    archive_collection_template = config.bi.alarms_archive_policy
 
     def __init__(self, prefix, start, stop, use_archive=False):
         self.use_archive = use_archive
@@ -135,15 +135,17 @@ class AlarmsExtractor(ArchivingExtractor):
         self.alarm_stream.finish()
         return nr
 
-    def clean(self):
+    def clean(self, force=False):
         # Archive
         super(AlarmsExtractor, self).clean()
         # Clean
-        ArchivedAlarm._get_collection().remove({
-            "clear_timestamp": {
-                "$lte": self.clean_ts
-            }
-        })
+        if force:
+            print("Clean ArchivedAlarm collection before %s" % self.clean_ts)
+            ArchivedAlarm._get_collection().remove({
+                "clear_timestamp": {
+                    "$lte": self.clean_ts
+                }
+            })
 
     @classmethod
     def get_start(cls):
