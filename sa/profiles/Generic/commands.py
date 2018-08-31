@@ -36,8 +36,8 @@ class Script(BaseScript):
             else:
                 r["output"] += [cli(c)]
             if "%ERROR:" in r["output"][-1]:
-                r["errors"] = True
                 if not ignore_cli_errors:
+                    r["errors"] = True
                     break
         return r
 

@@ -101,12 +101,12 @@ class MRTRequestHandler(AuthRequestHandler):
                 metrics["mrt_access_denied"] += 1
             if len(futures) >= config.mrt.max_concurrency:
                 wi = tornado.gen.WaitIterator(*futures)
-                r = yield wi.next()
+                r = yield next(wi)
                 yield self.write_chunk(r)
             futures += [self.run_script(oid, d["script"], d.get("args"))]
         # Wait for rest
         wi = tornado.gen.WaitIterator(*futures)
         while not wi.done():
-            r = yield wi.next()
+            r = yield next(wi)
             yield self.write_chunk(r)
         logger.info("Done")
