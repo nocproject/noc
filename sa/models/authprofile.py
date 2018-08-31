@@ -26,7 +26,7 @@ id_lock = Lock()
 @on_save
 @bi_sync
 @on_delete_check(check=[
-    ("sa.AuthProfileSuggestSNMP", "auth_profile"), 
+    ("sa.AuthProfileSuggestSNMP", "auth_profile"),
     ("sa.AuthProfileSuggestCLI", "auth_profile"),
     ("sa.ManagedObject", "auth_profile"),
     ("sa.ManagedObjectProfile", "cpe_auth_profile")
