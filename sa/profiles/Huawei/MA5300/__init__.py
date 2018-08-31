@@ -20,7 +20,8 @@ class Profile(BaseProfile):
         (r"Note: Terminal", "\n"),
         (r"Warning: Battery is low power!", "\n"),
         (r"\{\s<cr>.*\s\}:", "\n"),
-        (r"^Are you sure?\[Y/N\]", "y\n")
+        (r"^Are you sure?\[Y/N\]", "y\n"),
+        (r"^\{ terminal\<K\> \}\:", "terminal\n")
     ]
     pattern_username = r"^Username:"
     pattern_password = r"^Password:"
@@ -37,6 +38,8 @@ class Profile(BaseProfile):
         r"System is busy, please try after a while)"
     rogue_chars = [
         re.compile(r"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
+        re.compile(r"\r\n\s+Note: Terminal users login \(IP: \S+ \)"),
+        re.compile(r"\r\nWarning: Battery is low power!"),
         "\r"
     ]
     # to one SNMP GET request
@@ -49,4 +52,5 @@ class Profile(BaseProfile):
         script.cli("terminal type vt100", ignore_errors=True)
         script.cli("history size 0", ignore_errors=True)
         script.cli("length 0", cached=True, ignore_errors=True)
+        script.cli("exit", cached=True, ignore_errors=True)
         script.cli("cls", ignore_errors=True)
