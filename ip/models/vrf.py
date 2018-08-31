@@ -236,8 +236,9 @@ class VRF(models.Model):
             r["tags"] = self.tags
         return r
 
-    def get_search_info(self, user):
-        return ("ip.vrf", "history", {"args": [self.id]})
+    @classmethod
+    def get_search_result_url(cls, obj_id):
+        return "/api/card/view/vrf/%s/" % obj_id
 
     def delete(self, *args, **kwargs):
         # Cleanup prefixes

@@ -481,18 +481,9 @@ class Prefix(models.Model):
             r["tags"] = self.tags
         return r
 
-    def get_search_info(self, _user):
-        # @todo: Check user access
-        return (
-            "iframe",
-            None,
-            {
-                "title": "Assigned addresses",
-                "url": "/ip/ipam/%s/%s/%s/" % (
-                    self.vrf.id, self.afi, self.prefix
-                )
-            }
-        )
+    @classmethod
+    def get_search_result_url(cls, obj_id):
+        return "/api/card/view/prefix/%s/" % obj_id
 
     @property
     def address_ranges(self):

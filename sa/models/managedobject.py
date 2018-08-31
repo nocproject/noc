@@ -741,6 +741,10 @@ class ManagedObject(Model):
         }
         return r
 
+    @classmethod
+    def get_search_result_url(cls, obj_id):
+        return "/api/card/view/managedobject/%s/" % obj_id
+
     @property
     def is_router(self):
         """

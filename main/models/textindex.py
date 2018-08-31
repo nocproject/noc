@@ -148,8 +148,13 @@ def full_text_search(cls):
                 "card": ....,
                 "tags": ...
             }
+
+        @classmethod
+        def get_search_result_url(cls, obj_id):
+           return "/api/card/view/mycard/%s/" % obj_id
     """
     assert hasattr(cls, "get_index")
+    assert hasattr(cls, "get_search_result_url")
     logger.debug("Adding FTS index for %s", cls._meta)
     if isinstance(cls._meta, dict):
         pass
