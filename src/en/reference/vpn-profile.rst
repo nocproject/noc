@@ -1,3 +1,5 @@
+.. _reference-vpn-profile:
+
 ===========
 VPN Profile
 ===========

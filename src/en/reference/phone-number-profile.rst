@@ -1,3 +1,5 @@
+.. _reference-phone-number-profile:
+
 ====================
 Phone Number Profile
 ====================

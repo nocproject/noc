@@ -1,3 +1,5 @@
+.. _reference-phone-range-profile:
+
 ===================
 Phone Range Profile
 ===================

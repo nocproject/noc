@@ -1,8 +1,6 @@
-.. _reference-vlan-profile:
-
-============
-VLAN Profile
-============
+==============
+Prefix Profile
+==============
 
 .. contents:: On this page
     :local:
@@ -11,4 +9,4 @@ VLAN Profile
     :class: singlecol
 
 .. todo::
-    Describe VLAN profiles
+    Describe Prefix profiles
