@@ -13,6 +13,8 @@ Ext.define("NOC.phone.dialplan.Application", {
     ],
     model: "NOC.phone.dialplan.Model",
     search: true,
+    helpId: "reference-dialplan",
+
     initComponent: function() {
         var me = this;
 

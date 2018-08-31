@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.notificationgroup application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.notificationgroup.Application");
@@ -17,6 +17,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
     ],
     model: "NOC.main.notificationgroup.Model",
     search: true,
+    helpId: "reference-notification-group",
     columns: [
         {
             text: __("Name"),

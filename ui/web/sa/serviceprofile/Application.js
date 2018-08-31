@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.serviceprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.serviceprofile.Application");
@@ -16,6 +16,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
     ],
     model: "NOC.sa.serviceprofile.Model",
     search: true,
+    helpId: "reference-service-profile",
 
     initComponent: function() {
         var me = this;

@@ -17,6 +17,7 @@ Ext.define("NOC.ip.prefixprofile.Application", {
     ],
     model: "NOC.ip.prefixprofile.Model",
     search: true,
+    helpId: "prefix-profile",
     rowClassField: "row_class",
 
     initComponent: function() {

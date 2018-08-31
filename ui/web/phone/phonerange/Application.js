@@ -19,6 +19,7 @@ Ext.define("NOC.phone.phonerange.Application", {
     ],
     model: "NOC.phone.phonerange.Model",
     search: true,
+    helpId: "reference-phonerange",
     rowClassField: "row_class",
 
     initComponent: function() {

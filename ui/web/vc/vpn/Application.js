@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // vc.vpn application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.vc.vpn.Application");
@@ -19,6 +19,7 @@ Ext.define("NOC.vc.vpn.Application", {
     model: "NOC.vc.vpn.Model",
     rowClassField: "row_class",
     search: true,
+    helpId: "reference-vpn",
 
     initComponent: function() {
         var me = this;

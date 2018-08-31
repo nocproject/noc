@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.pool application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.pool.Application");
@@ -13,6 +13,8 @@ Ext.define("NOC.main.pool.Application", {
     ],
     model: "NOC.main.pool.Model",
     search: true,
+    helpId: "reference-pool",
+
     initComponent: function() {
         var me = this;
         Ext.apply(me, {

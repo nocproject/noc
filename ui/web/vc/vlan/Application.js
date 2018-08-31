@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // vc.vlan application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.vc.vlan.Application");
@@ -19,6 +19,7 @@ Ext.define("NOC.vc.vlan.Application", {
     ],
     model: "NOC.vc.vlan.Model",
     search: true,
+    helpId: "reference-vlan",
     rowClassField: "row_class",
 
     initComponent: function() {

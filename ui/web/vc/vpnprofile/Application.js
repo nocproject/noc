@@ -19,6 +19,7 @@ Ext.define("NOC.vc.vpnprofile.Application", {
     model: "NOC.vc.vpnprofile.Model",
     rowClassField: "row_class",
     search: true,
+    helpId: "reference-vpn-profile",
     viewModel: {
         data: {
             vpnType: null

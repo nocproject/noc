@@ -18,6 +18,7 @@ Ext.define("NOC.sa.service.Application", {
     ],
     model: "NOC.sa.service.Model",
     search: true,
+    helpId: "reference-service",
 
     initComponent: function () {
         var me = this;

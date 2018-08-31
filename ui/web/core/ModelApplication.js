@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -190,7 +190,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.totalField = Ext.create("Ext.button.Button", {
         });
         gridToolbar.push(me.totalField);
-        if(me.helpId || me.listHelpId) {
+        if(NOC.settings.enableHelp && (me.helpId || me.listHelpId)) {
             me.listHelpButton = Ext.create("Ext.button.Button", {
                 itemId: "listHelp",
                 glyph: NOC.glyph.question_circle,
@@ -556,7 +556,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         formToolbar = formToolbar.concat(me.formToolbar);
         //
-        if(me.helpId || me.formHelpId){
+        if(NOC.settings.enableHelp && (me.helpId || me.formHelpId)) {
             me.formHelpButton = Ext.create("Ext.button.Button", {
                     itemId: "formHelp",
                     glyph: NOC.glyph.question_circle,

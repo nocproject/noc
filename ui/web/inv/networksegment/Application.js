@@ -22,6 +22,7 @@ Ext.define("NOC.inv.networksegment.Application", {
     model: "NOC.inv.networksegment.Model",
     rowClassField: "row_class",
     search: true,
+    helpId: "reference-network-segment",
 
     initComponent: function() {
         var me = this;

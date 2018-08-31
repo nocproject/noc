@@ -14,6 +14,7 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
     ],
     model: "NOC.phone.phonerangeprofile.Model",
     search: true,
+    helpId: "reference-phonerange-profile",
     rowClassField: "row_class",
 
     initComponent: function() {

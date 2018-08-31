@@ -14,6 +14,7 @@ Ext.define("NOC.wf.workflow.Application", {
     ],
     model: "NOC.wf.workflow.Model",
     search: true,
+    helpId: "reference-workflow",
 
     initComponent: function() {
         var me = this;

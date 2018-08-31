@@ -14,6 +14,7 @@ Ext.define("NOC.inv.allocationgroup.Application", {
     ],
     model: "NOC.inv.allocationgroup.Model",
     search: true,
+    helpId: "reference-allocation-group",
 
     initComponent: function() {
         var me = this;

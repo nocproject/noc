@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.remotesystem application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.remotesystem.Application");
@@ -13,6 +13,7 @@ Ext.define("NOC.main.remotesystem.Application", {
     ],
     model: "NOC.main.remotesystem.Model",
     search: true,
+    helpId: "reference-remote-system",
 
     initComponent: function () {
         var me = this;

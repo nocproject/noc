@@ -81,6 +81,7 @@
                 helpBranch: "{{ setup.help_branch }}",
                 helpLanguage: "{{ setup.help_language }}"
             };
+            NOC.settings.enableHelp = NOC.settings.helpUrl && NOC.settings.helpUrl !== "";
             NOC.templates = {};
             Ext.setGlyphFontFamily("FontAwesome");
         </script>

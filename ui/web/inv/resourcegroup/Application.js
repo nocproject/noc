@@ -16,6 +16,7 @@ Ext.define("NOC.inv.resourcegroup.Application", {
     ],
     model: "NOC.inv.resourcegroup.Model",
     search: true,
+    helpId: "reference-resource-group",
 
     initComponent: function () {
         var me = this;
