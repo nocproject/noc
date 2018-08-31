@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ class Script(BaseScript):
 
     @false_on_cli_error
     def has_olt_cli(self):
-        cmd = self.cli("display ont ?")
+        cmd = self.cli("display ont ", command_submit="?")
         return bool(cmd)
 
     @false_on_cli_error
