@@ -18,7 +18,6 @@ from django.contrib.admin.widgets import AdminDateWidget
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.core.influxdb.client import InfluxDBClient
 from noc.core.clickhouse.connect import connection
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn
@@ -161,7 +160,7 @@ class ReportMetric(object):
         n = 0
         ex_res = defaultdict(list)
 
-        client = InfluxDBClient()
+        client = None
         mos_name = moss.keys()
         query = self.get_query(query_map, f_date, to_date)
         while mos_name[n:n + self.CHUNK_SIZE]:
@@ -182,7 +181,7 @@ class ReportTraffic(SimpleReport):
     title = _("Load Metrics")
     form = ReportForm
 
-    def get_data(self, request, reporttype, from_date=None, to_date=None, object_profile=None, percent=None,
+    def get_data(self, request, reporttype="ping", from_date=None, to_date=None, object_profile=None, percent=None,
                  filter_default=None, zero=None, interface_profile=None, managed_object=None,
                  selectors=None, administrative_domain=None, allow_archive=True, **kwargs):
 

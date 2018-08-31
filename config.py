@@ -276,14 +276,6 @@ class Config(BaseConfig):
         https_port = IntParameter(default=443)
         validate_certs = BooleanParameter(default=False, help="Have to be set as True")
 
-    class influxdb(ConfigSection):
-        addresses = ServiceParameter(service="influxdb", wait=True)
-        db = StringParameter(default="noc")
-        user = StringParameter()
-        password = SecretParameter()
-        request_timeout = SecondsParameter(default="10M")
-        connect_timeout = SecondsParameter(default="10s")
-
     installation_name = StringParameter(
         default="Unconfigured installation"
     )
