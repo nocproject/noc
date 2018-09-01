@@ -308,3 +308,37 @@ class SNMP(object):
                 keys |= set(lt)
             for k in sorted(keys):
                 yield tuple([k] + [t.get(k) for t in tables])
+
+    def get_chunked(self, oids, chunk_size=20, timeout_limits=3):
+        """
+        Fetch list of oids splitting to several operations when necessary
+
+        :param oids: List of oids
+        :param chunk_size: Maximal GET chunk size
+        :param timeout_limits: SNMP timeout limits
+        :return: dict of oid -> value for all retrieved values
+        """
+        results = {}
+        self.set_timeout_limits(timeout_limits)
+        while oids:
+            chunk, oids = oids[:chunk_size], oids[chunk_size:]
+            chunk = dict((x, x) for x in chunk)
+            try:
+                results.update(
+                    self.get(chunk)
+                )
+            except self.TimeOutError as e:
+                self.logger.error(
+                    "Failed to get SNMP OIDs %s: %s",
+                    oids, e
+                )
+            except self.FatalTimeoutError:
+                self.logger.error(
+                    "Fatal timeout error on: %s", oids
+                )
+                break
+            except self.SNMPError as e:
+                self.logger.error(
+                    "SNMP error code %s", e.code
+                )
+        return results

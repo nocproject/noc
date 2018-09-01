@@ -406,9 +406,7 @@ class Script(BaseScript):
         if not self.snmp_batch:
             self.logger.debug("Nothing to fetch via SNMP")
             return
-        # Optimize fetching, aggregating up to GET_CHUNK
-        # in single request
-        snmp_get_chunk = self.get_snmp_metrics_get_chunk()
+        # Build list of oids
         oids = set()
         for o in self.snmp_batch:
             if isinstance(o, six.string_types):
@@ -416,29 +414,11 @@ class Script(BaseScript):
             else:
                 oids.update(o)
         oids = list(oids)
-        results = {}  # oid -> value
-        self.snmp.set_timeout_limits(self.get_snmp_metrics_get_timeout())
-        while oids:
-            chunk, oids = oids[:snmp_get_chunk], oids[snmp_get_chunk:]
-            chunk = dict((x, x) for x in chunk)
-            try:
-                results.update(
-                    self.snmp.get(chunk)
-                )
-            except self.snmp.TimeOutError as e:
-                self.logger.error(
-                    "Failed to get SNMP OIDs %s: %s",
-                    oids, e
-                )
-            except self.snmp.FatalTimeoutError:
-                self.logger.error(
-                    "Fatal timeout error on: %s", oids
-                )
-                break
-            except self.snmp.SNMPError as e:
-                self.logger.error(
-                    "SNMP error code %s", e.code
-                )
+        results = self.snmp.get_chunked(
+            oids=oids,
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout()
+        )
         # Process results
         for oid in self.snmp_batch:
             ts = self.get_ts()

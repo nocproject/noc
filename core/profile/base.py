@@ -183,6 +183,11 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     snmp_metrics_get_chunk = 15
     # Timeout for snmp GET request
     snmp_metrics_get_timeout = 3
+    # Aggregate up to *snmp_ifstatus_get_chunk* oids
+    # to one SNMP GET request for get_interface_status_ex
+    snmp_ifstatus_get_chunk = 15
+    # Timeout for snmp GET request for get_interface_status_ex
+    snmp_ifstatus_get_timeout = 2
     # Allow CLI sessions by default
     enable_cli_session = True
     # True - Send multiline command at once
