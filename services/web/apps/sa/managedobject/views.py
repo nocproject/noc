@@ -925,17 +925,18 @@ class ManagedObjectApplication(ExtModelApplication):
         l1 = [
             {
                 "global_id": str(c.global_id),
-                "name": c.name,
+                "name": c.name or "",
                 "interface": c.interface,
                 "loca_id": c.local_id,
-                "serial": c.serial,
+                "serial": c.serial or "",
                 "status": c.status,
-                "description": c.description,
-                "address": c.ip,
-                "model": c.model,
-                "version": c.version,
-                "mac": c.mac,
-                "location": c.location
+                "description": c.description or "",
+                "address": c.ip or "",
+                "model": c.model or "",
+                "version": c.version or "",
+                "mac": c.mac or "",
+                "location": c.location or "",
+                "distance": str(c.distance)
                 # "row_class": get_style(i)
             } for c in CPEStatus.objects.filter(
                 managed_object=o.id)]
