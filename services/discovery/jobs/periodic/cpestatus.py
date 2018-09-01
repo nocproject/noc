@@ -31,6 +31,8 @@ class CPEStatusCheck(DiscoveryCheck):
             current = self.get_current_statuses()
         else:
             current = self.get_current_cpe()
+        if "id" in current:
+            current["local_id"] = current.pop("id")
         # Collect last statuses
         last = self.get_last_statuses(current)
         # Apply changes
