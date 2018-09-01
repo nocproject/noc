@@ -29,20 +29,20 @@ class Script(BaseScript):
     def get_getnext_retires(self):
         return self.MAX_GETNEXT_RETIRES
 
-    def get_snmp_metrics_get_timeout(self):
+    def get_snmp_ifstatus_get_timeout(self):
         """
         Timeout for snmp GET request
         :return:
         """
-        return self.profile.snmp_metrics_get_timeout
+        return self.profile.snmp_ifstatus_get_timeout
 
-    def get_snmp_metrics_get_chunk(self):
+    def get_snmp_ifstatus_get_chunk(self):
         """
         Aggregate up to *snmp_metrics_get_chunk* oids
         to one SNMP GET request
         :return:
         """
-        return self.profile.snmp_metrics_get_chunk
+        return self.profile.snmp_ifstatus_get_chunk
 
     def get_iftable(self, oid, ifindex=None):
         """
@@ -55,8 +55,8 @@ class Script(BaseScript):
         if ifindex:
             results = self.snmp.get_chunked(
                 oids=["%s.%s" % (oid, i) for i in ifindex],
-                chunk_size=self.get_snmp_metrics_get_chunk(),
-                timeout_limits=self.get_snmp_metrics_get_timeout()
+                chunk_size=self.get_snmp_ifstatus_get_chunk(),
+                timeout_limits=self.get_snmp_ifstatus_get_timeout()
             )
             for k, v in six.iteritems(results):
                 yield int(k.split(".")[-1]), v
@@ -67,8 +67,7 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         f = f or (lambda x: x)
-        if_index = [index for index in r]
-        for ifindex, v in self.get_iftable(mib, if_index):
+        for ifindex, v in self.get_iftable(mib, list(r)):
             s = r.get(ifindex)
             if s:
                 s[name] = f(v)
@@ -76,12 +75,10 @@ class Script(BaseScript):
     def get_data(self, interfaces=None):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
-        if_index = []
         unknown_interfaces = []
         if interfaces:
             for i in interfaces:
                 r[i["ifindex"]] = {"interface": i["interface"]}
-                if_index += [i["ifindex"]]
         else:
             for ifindex, name in self.get_iftable("IF-MIB::ifName"):
                 try:
@@ -91,7 +88,7 @@ class Script(BaseScript):
                     unknown_interfaces += [name]
                     continue
                 r[ifindex] = {"interface": v}
-                if_index += [ifindex]
+        if_index = list(r)
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -131,6 +128,6 @@ class Script(BaseScript):
         """
         return speed == self.HIGH_SPEED
 
-    def execute(self, interfaces=None):
+    def execute_snmp(self, interfaces=None, **kwargs):
         r = self.get_data(interfaces=interfaces)
         return r
