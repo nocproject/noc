@@ -83,7 +83,7 @@ class Platform(Document):
     def clean(self):
         self.full_name = "%s %s" % (self.vendor.name, self.name)
         if self.aliases:
-            self.aliases = sorted(self.aliases)
+            self.aliases = sorted([a for a in self.aliases if a != self.name])
         super(Platform, self).clean()
 
     def save(self, *args, **kwargs):
@@ -91,6 +91,8 @@ class Platform(Document):
         super(Platform, self).save(*args, **kwargs)
         if to_merge_aliases:
             for a in self.aliases:
+                if a == self.name:
+                    continue
                 self.merge_platform(a)
 
     @classmethod
@@ -208,7 +210,7 @@ class Platform(Document):
         refs = self._on_delete["check"] + self._on_delete["clean"] + self._on_delete["delete"]
         for model_name, field in refs:
             model = get_model(model_name)
-            for obj in model.objects.filter(**{field: self.id}):
+            for obj in model.objects.filter(**{field: ap.id}):
                 setattr(obj, field, self)
                 obj.save()
         # Finally delete aliases platform
