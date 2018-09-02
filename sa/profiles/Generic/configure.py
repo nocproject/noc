@@ -29,6 +29,6 @@ class Script(BaseScript):
 
         cli = safe_cli if ignore_cli_errors else self.cli
         with self.configure():
-            r = [cli(c) for c in commands]
+            r = {"output": [cli(c) for c in commands]}
         self.save_config()
         return r

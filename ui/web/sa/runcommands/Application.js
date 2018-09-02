@@ -270,27 +270,48 @@ Ext.define('NOC.sa.runcommands.Application', {
                     },
                     items: [
                         {
-                            xtype: 'combo',
-                            reference: 'sa-run-commands-mode',
-                            fieldLabel: __('Mode'),
-                            queryMode: 'local',
-                            displayField: 'name',
-                            valueField: 'value',
-                            editable: false,
-                            store: {
-                                data: [
-                                    {value: 'commands', name: __('Run Commands')},
-                                    {value: 'snippet', name: __('Run Snippet')},
-                                    {value: 'action', name: __('Run Action')}
-                                ]
+                            xtype: 'panel',
+                            border: false,
+                            defaults: {
+                                padding: 10
                             },
-                            listeners: {
-                                change: 'onConfigModeChange',
-                                afterrender: function(field) {
-                                    field.setValue('commands');
+                            layout: {
+                                type: 'hbox',
+                                align: 'middle'
+                            },
+                            items: [
+                                {
+                                    xtype: 'checkboxfield',
+                                    reference: 'ignore-cli-errors',
+                                    boxLabel: __('Ignore CLI errors'),
+                                    checked: true
+                                },
+                                {
+                                    xtype: 'combo',
+                                    reference: 'sa-run-commands-mode',
+                                    fieldLabel: __('Mode'),
+                                    labelWidth: 50,
+                                    queryMode: 'local',
+                                    displayField: 'name',
+                                    valueField: 'value',
+                                    editable: false,
+                                    store: {
+                                        data: [
+                                            {value: 'commands', name: __('Run Commands')},
+                                            {value: 'snippet', name: __('Run Snippet')},
+                                            {value: 'action', name: __('Run Action')}
+                                        ]
+                                    },
+                                    listeners: {
+                                        change: 'onConfigModeChange',
+                                        afterrender: function(field) {
+                                            field.setValue('commands');
+                                        }
+                                    }
                                 }
-                            }
-                        }, {
+                            ]
+                        },
+                        {
                             xtype: 'form',
                             reference: 'sa-run-commands-command-form',
                             width: '100%',

@@ -50,9 +50,14 @@ class MRTRequestHandler(AuthRequestHandler):
                 "id": str(oid),
                 "error": str(e)
             })
+        if r["errors"]:
+            raise tornado.gen.Return({
+                "id": str(oid),
+                "error": r["output"]
+            })
         raise tornado.gen.Return({
             "id": str(oid),
-            "result": r
+            "result": r["output"],
         })
 
     @tornado.gen.coroutine
@@ -68,6 +73,7 @@ class MRTRequestHandler(AuthRequestHandler):
         :param kwargs:
         :return:
         """
+        logger.info("Run task on parralels: %d", config.mrt.max_concurrency)
         metrics["mrt_requests"] += 1
         # Parse request
         req = ujson.loads(self.request.body)
@@ -95,11 +101,12 @@ class MRTRequestHandler(AuthRequestHandler):
                 metrics["mrt_access_denied"] += 1
             if len(futures) >= config.mrt.max_concurrency:
                 wi = tornado.gen.WaitIterator(*futures)
-                r = yield wi.next()
+                r = yield next(wi)
                 yield self.write_chunk(r)
             futures += [self.run_script(oid, d["script"], d.get("args"))]
         # Wait for rest
         wi = tornado.gen.WaitIterator(*futures)
         while not wi.done():
-            r = yield wi.next()
+            r = yield next(wi)
             yield self.write_chunk(r)
+        logger.info("Done")
