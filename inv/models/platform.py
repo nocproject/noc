@@ -83,7 +83,7 @@ class Platform(Document):
     def clean(self):
         self.full_name = "%s %s" % (self.vendor.name, self.name)
         if self.aliases:
-            self.aliases = sorted([a for a in self.aliases if a != self.name])
+            self.aliases = sorted(a for a in self.aliases if a != self.name)
         super(Platform, self).clean()
 
     def save(self, *args, **kwargs):
