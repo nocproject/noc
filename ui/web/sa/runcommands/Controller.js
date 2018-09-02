@@ -341,7 +341,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
                     'args': {
                         'commands': this.lookupReference('sa-run-commands-command-form').getValues().cmd.split('\n'),
                         'include_commands': 'true',
-                        'ignore_cli_errors': 'true'
+                        'ignore_cli_errors': JSON.stringify(this.lookupReference('ignore-cli-errors').getValue())
                     }
                 });
                 break;
