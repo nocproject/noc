@@ -5,6 +5,12 @@
             Platform: {{ object.vendor.name }} {{ object.name }}
         </th>
     </tr>
+    {% if platform.aliases %}
+    <tr>
+        <th scope="row">{{ _("Aliases") }}</th>
+        <td>{{", ".join(object.aliases)}}</td>
+    <tr>
+    {% endif %}
     <tr>
         <th scope="row">{{ _("Description") }}</th>
         <td>{{object.description}}</td>
