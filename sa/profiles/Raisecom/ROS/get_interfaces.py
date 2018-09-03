@@ -22,7 +22,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_vlans = re.compile(
-        r"^\s*(Interface: )?(?P<name>\d+|gigaethernet1/1/\d+)\s*\n"
+        r"^\s*(?:Interface: |: )?(?P<name>\d+|gigaethernet1/1/\d+)\s*\n"
         r"(^\s*Switch Mode: switch\n)?"
         r"(^\s*Reject frame type: \S+\n)?"
         r"^\s*Administrative\sMode:\s*(?P<adm_mode>.*)\n"
