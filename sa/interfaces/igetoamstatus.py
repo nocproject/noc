@@ -6,10 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
+from __future__ import absolute_import
+# NOC Modules
 from noc.core.interface.base import BaseInterface
-from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
-                  MACAddressParameter, StringParameter)
+from .base import (ListOfParameter, DictParameter, InterfaceNameParameter,
+                   MACAddressParameter, StringParameter)
 
 
 class IGetOAMStatus(BaseInterface):
