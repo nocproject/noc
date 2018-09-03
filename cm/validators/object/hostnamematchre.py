@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Hostname *MUST* match DB
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,11 +38,11 @@ class HostnameMatchRegexpValidator(BaseValidator):
         # Check regexp
         try:
             rx = re.compile(regexp)
-        except Exception, why:
+        except Exception as e:
             self.assert_error(
                 "Validator | Internal Error",
                 obj=self.rule.name,
-                msg=str(why)
+                msg=str(e)
             )
             return
         # Check regexp

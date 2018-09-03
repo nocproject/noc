@@ -2,19 +2,15 @@
 # ---------------------------------------------------------------------
 # Basic Junos parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
-from collections import defaultdict
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
 # NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 from noc.lib.text import ranges_to_list
 
 
@@ -51,7 +47,6 @@ class BaseQSW2800Parser(BaseParser):
                 # if inactive_level is not None and inactive_level >= len(context):
                 #    inactive_level = None
             elif "!" in l:
-                print("Skipping line")
                 continue
             elif context and len(context) >= inactive_level:
                 if context[-1] not in l:
@@ -103,7 +98,6 @@ class BaseQSW2800Parser(BaseParser):
 
     def on_snmp_location(self, tokens):
         self.get_system_fact().location = " ".join(tokens[2:])
-        print tokens
 
     def on_system_time_zone(self, tokens):
         self.get_system_fact().timezone = tokens[3]

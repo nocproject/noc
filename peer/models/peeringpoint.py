@@ -55,7 +55,8 @@ class PeeringPoint(models.Model):
             return self.hostname
 
     def sync_cm_prefix_list(self):
-        from noc.cm.models import PrefixList
+        from noc.cm.models.prefixlist import PrefixList
+
         peers_pl = set()
         peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if p.import_filter_name.strip()])
         peers_pl.update([p.export_filter_name for p in self.peer_set.filter(export_filter_name__isnull=False) if p.export_filter_name.strip()])

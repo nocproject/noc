@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Latest Change Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.nosql import get_db
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
-from noc.cm.models import Object
+from noc.cm.models.object import Object
 from noc.core.translation import ugettext as _
 
 

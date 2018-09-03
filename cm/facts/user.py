@@ -7,7 +7,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from base import BaseFact
+from __future__ import absolute_import
+from .base import BaseFact
 
 
 class User(BaseFact):

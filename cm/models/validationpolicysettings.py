@@ -2,16 +2,18 @@
 # ---------------------------------------------------------------------
 # Policy Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, ListField,
                                 EmbeddedDocumentField, BooleanField)
 # NOC modules
-from validationpolicy import ValidationPolicy
+from .validationpolicy import ValidationPolicy
 
 
 class ValidationPolicyItem(EmbeddedDocument):

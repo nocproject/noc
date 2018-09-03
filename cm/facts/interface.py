@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 # NOC modules
-from base import BaseFact
+from .base import BaseFact
 from noc.inv.models.interface import Interface as DBInterface
 
 logger = logging.getLogger(__name__)

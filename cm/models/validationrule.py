@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # Validation Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument

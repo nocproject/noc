@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # pyparsing parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from base import BaseParser
+from __future__ import absolute_import
+# NOC modules
+from .base import BaseParser
 
 
 class BasePyParser(BaseParser):
@@ -51,4 +53,4 @@ class BasePyParser(BaseParser):
                 )
 
     def on_tokens(self, tokens):
-        print "@@@", tokens
+        pass

@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import bisect
 import logging
 # NOC modules
-from base import BaseFact
+from .base import BaseFact
 from noc.inv.models.subinterface import SubInterface as DBSubInterface
 
 logger = logging.getLogger(__name__)
