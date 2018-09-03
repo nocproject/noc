@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
+from __future__ import absolute_import
+# NOC Modules
 from noc.core.interface.base import BaseInterface
-from base import (
-    DictParameter, DictListParameter, IntParameter,
-    StringParameter, FloatParameter, StringListParameter)
+from .base import (DictListParameter, IntParameter, StringParameter, FloatParameter, StringListParameter)
 
 
 class IGetMetrics(BaseInterface):
