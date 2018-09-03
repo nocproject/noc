@@ -108,7 +108,7 @@ class Engine(object):
         except TypeError:
             raise StopIteration
         while e:
-            if e.Slots.has_key("obj"):
+            if e.Slots.has_key("obj"):  # noqa
                 obj = e.Slots["obj"]
                 if hasattr(obj, "Index"):
                     # obj is a fact

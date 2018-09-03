@@ -2,11 +2,14 @@
 # ---------------------------------------------------------------------
 # Common system settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 from __future__ import print_function
+
+
 class BaseFact(object):
     ATTRS = []
     ID = []

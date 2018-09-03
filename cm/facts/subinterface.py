@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ class SubInterface(BaseFact):
     def __init__(self, name, interface=None, description=None,
                  admin_status=False, profile=None, vlan_ids=None,
                  ip_proxy_arp=False,
-                 ip_redirects=False, tagged_vlans=None, 
+                 ip_redirects=False, tagged_vlans=None,
                  untagged_vlan=None, ipv4_addresses=None,
                  ipv6_addresses=None, protocols=None, afi=None,
                  input_ipv4_filter=None, output_ipv4_filter=None,
