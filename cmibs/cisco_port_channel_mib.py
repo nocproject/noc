@@ -3,7 +3,7 @@
 # CISCO-PORT-CHANNEL-MIB
 #     Compiled MIB
 #     Do not modify this file directly
-#     Run ./noc make-cmib instead
+#     Run ./noc mib make_cmib instead
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
