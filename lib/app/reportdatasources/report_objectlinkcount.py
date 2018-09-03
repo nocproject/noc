@@ -19,16 +19,19 @@ class ReportObjectLinkCount(BaseReportColumn):
     """Report for MO link count"""
     name = "link_count"
     unknown_value = (0, )
-    builtin_sorted = False
+    builtin_sorted = True
 
     def extract(self):
+        sync_ids_set = set(self.sync_ids)
         value = get_db()["noc.links"].with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
                 {"$unwind": "$interfaces"},
                 {"$lookup": {"from": "noc.interfaces",
                              "localField": "interfaces", "foreignField": "_id", "as": "int"}},
-                {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}])
+                # {"$match": {"int.managed_object": {"$in": self.sync_ids}}},
+                {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}},
+                {"$sort": {"_id": 1}}])
         for v in value:
-            if not v["_id"]:
+            if not v["_id"] or v["_id"][0] not in sync_ids_set:
                 continue
             yield v["_id"][0], v["count"]
