@@ -26,9 +26,9 @@ class Script(BaseScript):
         r"^\s*ChassisId:\s+(?P<ch_id>\S+)\s*\n"
         r"^\s*PortIdSubtype:\s+(?P<port_id_subtype>\S+)\s*\n"
         r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
-        r"^\s*PortDesc:\s+(?P<port_descr>[\S\s]+)\n"
+        r"^\s*PortDesc:\s+(?P<port_descr>(.+\n)+)"
         r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc:\s+(?P<sys_descr>[\S\s]+)\n"
+        r"^\s*SysDesc:\s+(?P<sys_descr>(.+\n)+)"
         r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
@@ -40,9 +40,9 @@ class Script(BaseScript):
         r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
         r"^\s*PortIdSubtype\s*:\s+(?P<port_id_subtype>\S+)\s*\n"
         r"^\s*PortId\s*:\s+(?P<port_id>.+)\s*\n"
-        r"^\s*PortDesc\s*:\s+(?P<port_descr>[\S\s]+)\n"
+        r"^\s*PortDesc\s*:\s+(?P<port_descr>(.+\n)+)"
         r"^\s*SysName\s*:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc\s*:\s+(?P<sys_descr>[\S\s]+)\n"
+        r"^\s*SysDesc\s*:\s+(?P<sys_descr>(.+\n)+)"
         r"^\s*SysCapSupported\s*:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled\s*:\s+(?P<sys_caps_enabled>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
@@ -103,14 +103,14 @@ class Script(BaseScript):
                 "remote_port": match.group("port_id"),
                 "remote_capabilities": cap
             }
-            if match.group("sys_name") != "N/A":
-                n["remote_system_name"] = match.group("sys_name")
-            if match.group("sys_descr") != "N/A":
+            if match.group("sys_name").strip() != "N/A":
+                n["remote_system_name"] = match.group("sys_name").strip()
+            if match.group("sys_descr").strip() != "N/A":
                 sd = match.group("sys_descr").strip()
                 if "SysDesc:" in sd:
                     sd = sd.split()[-1]
                 n["remote_system_description"] = re.sub("\n\s{29,30}", "", sd)
-            if match.group("port_descr") != "N/A":
+            if match.group("port_descr").strip() != "N/A":
                 n["remote_port_description"] = \
                     re.sub("\n\s{29,30}", "", match.group("port_descr").strip())
                 match.group("port_descr")
