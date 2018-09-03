@@ -6,10 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
+from __future__ import absolute_import
+# NOC Modules
 from noc.core.interface.base import BaseInterface
-from base import (ListOfParameter, InterfaceNameParameter,
-                  DictParameter, FloatParameter, NoneParameter)
+from .base import (ListOfParameter, InterfaceNameParameter,
+                   DictParameter, FloatParameter, NoneParameter)
 
 
 class IGetDOMStatus(BaseInterface):
@@ -33,6 +35,6 @@ class IGetDOMStatus(BaseInterface):
         "optical_rx_dbm": (NoneParameter(required=False) |
                            FloatParameter(required=False)),
         "optical_tx_dbm": (NoneParameter(required=False) |
-                           FloatParameter(required=False)),
-        }))
+                           FloatParameter(required=False))
+    }))
     preview = "NOC.sa.managedobject.scripts.ShowDomStatus"
