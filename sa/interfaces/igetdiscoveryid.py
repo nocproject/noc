@@ -10,7 +10,7 @@
 from __future__ import absolute_import
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (DictParameter,   MACAddressParameter,
+from .base import (DictParameter, MACAddressParameter,
                    StringParameter, IPParameter, DictListParameter)
 
 

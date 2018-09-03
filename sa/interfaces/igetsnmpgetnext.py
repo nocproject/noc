@@ -11,7 +11,7 @@ from __future__ import absolute_import
 # NOC Modules
 from noc.core.interface.base import BaseInterface
 from .base import (ListOfParameter, OIDParameter,
-                  StringParameter, IntParameter, BooleanParameter, NoneParameter)
+                   StringParameter, IntParameter, BooleanParameter, NoneParameter)
 
 
 class IGetSNMPGetNext(BaseInterface):

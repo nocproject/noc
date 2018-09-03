@@ -35,6 +35,6 @@ class IGetDOMStatus(BaseInterface):
         "optical_rx_dbm": (NoneParameter(required=False) |
                            FloatParameter(required=False)),
         "optical_tx_dbm": (NoneParameter(required=False) |
-                           FloatParameter(required=False)),
-        }))
+                           FloatParameter(required=False))
+    }))
     preview = "NOC.sa.managedobject.scripts.ShowDomStatus"
