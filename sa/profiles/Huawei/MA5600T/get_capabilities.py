@@ -38,7 +38,7 @@ class Script(BaseScript):
 
     @false_on_cli_error
     def has_olt_cli(self):
-        cmd = self.cli("display ont ", command_submit="?")
+        cmd = self.cli("display ont global-config")
         return bool(cmd)
 
     @false_on_cli_error
