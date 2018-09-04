@@ -99,8 +99,8 @@ class Script(BaseScript):
         highspeed = set()
         for ifindex, s in self.get_iftable("IF-MIB::ifSpeed", if_index):
             ri = r.get(ifindex)
-            if ri:
-                s = int(s)
+            if ri and s is not None:
+                # s is None if OID is not exists
                 if self.is_high_speed(ri, s):
                     highspeed.add(ifindex)
                 elif s:
@@ -109,7 +109,7 @@ class Script(BaseScript):
         # Refer to ifHighSpeed if necessary
         if highspeed:
             for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed", if_index):
-                if ifindex in highspeed:
+                if ifindex in highspeed and s is not None:  # s is None if OID is not exists
                     s = int(s)
                     if s:
                         r[ifindex]["in_speed"] = s * 1000
