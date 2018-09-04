@@ -31,8 +31,8 @@ class ManagedObjectLoader(BaseLoader):
         "segment",
         "profile",
         "object_profile",
-        "termination_group",
-        "service_terminator",
+        "static_client_groups",
+        "static_service_groups",
         "scheme",
         "address",
         "port",
@@ -71,6 +71,8 @@ class ManagedObjectLoader(BaseLoader):
             v["tags"] = [x.strip().strip('"') for x in v["tags"].split(",")
                          if x.strip()] if v["tags"] else []
         v["profile"] = Profile.get_by_name(v["profile"])
+        v["static_client_groups"] = v["static_client_groups"] or []
+        v["static_service_groups"] = v["static_service_groups"] or []
         return v
 
     def purge(self):
