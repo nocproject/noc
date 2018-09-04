@@ -94,17 +94,19 @@ logger = logging.getLogger(__name__)
     ("inv.Interface", "managed_object"),
     ("inv.SubInterface", "managed_object"),
     ("maintenance.Maintenance", "escalate_managed_object"),
+    ("maintenance.Maintenance", "direct_objects__object"),
     ("inv.ForwardingInstance", "managed_object"),
     ("sa.ManagedObject", "controller"),
-    ("sa.Service", "managed_object"),
     ("sla.SLAProbe", "managed_object")
 ], delete=[
     ("sa.ManagedObjectAttribute", "managed_object"),
     ("sa.CPEStatus", "managed_object"),
     ("cm.ObjectFact", "object"),
-    ("inv.MACDB", "managed_object")
+    ("inv.MACDB", "managed_object"),
+    ("sa.ServiceSummary", "managed_object")
 ], clean=[
-    ("ip.Address", "managed_object")
+    ("ip.Address", "managed_object"),
+    ("sa.Service", "managed_object")
 ])
 class ManagedObject(Model):
     """
