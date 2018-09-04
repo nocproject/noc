@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # Interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 # NOC modules
-from base import BaseFact
+from .base import BaseFact
 from noc.inv.models.interface import Interface as DBInterface
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class Interface(BaseFact):
              "aggregated_interface"]
     ID = ["name"]
 
-    def __init__(self, name, description=None, admin_status=False, 
+    def __init__(self, name, description=None, admin_status=False,
                  speed="auto", duplex="auto", protocols=None,
                  profile=None, type=None, mac=None, default_name=None,
                  aggregated_interface=None,

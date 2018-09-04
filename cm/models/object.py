@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # Configuration Management Object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 import datetime
 # Django modules
@@ -17,8 +18,8 @@ from noc.config import config
 from noc.core.fileutils import rewrite_when_differ, read_file, in_dir
 from noc.cm.vcs import vcs_registry
 from noc.lib.validators import is_int
-from objectnotify import ObjectNotify
 from noc.main.models.notificationgroup import NotificationGroup
+from .objectnotify import ObjectNotify
 
 
 class Object(models.Model):
@@ -246,5 +247,5 @@ class Object(models.Model):
 
 
 # Avoid circular references
-from prefixlist import PrefixList
-from rpsl import RPSL
+from .prefixlist import PrefixList
+from .rpsl import RPSL

@@ -2,17 +2,17 @@
 # ---------------------------------------------------------------------
 # python and pyrule tags
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Third-party modules
 from django import template
 
 
 VARTYPES = ["internal", "hidden", "str", "mac", "bool", "int"]
 
-#
-# Parsers
-#
+
 def do_var(parser, token):
     """
     {% var <name> <type> %}
@@ -50,8 +50,8 @@ def do_python(parser, token):
     parser.delete_first_token()
     try:
         return PythonNode(nodelist)
-    except SyntaxError, why:
-        raise template.TemplateSyntaxError("Python syntax error: %s" % why)
+    except SyntaxError as e:
+        raise template.TemplateSyntaxError("Python syntax error: %s" % e)
 
 
 #
@@ -86,7 +86,7 @@ class PythonNode(template.Node):
             "context": context
         }
         # Execute block
-        exec self.code in ctx
+        exec(self.code, ctx)
         # Render output
         return "".join(self.output)
 

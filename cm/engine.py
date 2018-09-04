@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Validation engine
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -108,7 +108,7 @@ class Engine(object):
         except TypeError:
             raise StopIteration
         while e:
-            if e.Slots.has_key("obj"):
+            if "obj" in e.Slots:  # noqa
                 obj = e.Slots["obj"]
                 if hasattr(obj, "Index"):
                     # obj is a fact
@@ -193,7 +193,7 @@ class Engine(object):
                         clips.ErrorStream.Read()
                     )
                     continue
-                except:
+                except Exception:
                     error_report()
                     continue
                 rules += [(r, cfg)]
@@ -464,7 +464,8 @@ class Engine(object):
             "(return (python-call py-match-re ?rx ?s))"
         )
 
-#
+
+# Avoid circular references
 from noc.cm.validators.base import BaseValidator
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm

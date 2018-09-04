@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # RefBookData
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from django.db import models
 # NOC modules
-from refbook import RefBook
+from .refbook import RefBook
 from noc.core.model.fields import TextArrayField
 
 

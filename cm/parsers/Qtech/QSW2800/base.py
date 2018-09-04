@@ -2,64 +2,52 @@
 # ---------------------------------------------------------------------
 # Basic Junos parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
-from collections import defaultdict
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
 # NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 from noc.lib.text import ranges_to_list
 
 
 class BaseQSW2800Parser(BaseParser):
-
-    def __init__(self, managed_object):
-        super(BaseQSW2800Parser, self).__init__(managed_object)
-
     def parse(self, config):
         VALUE = OneOrMore(Word(alphanums + "-/.:_+[],") | QuotedString("\""))
         context = []
         inactive_level = 1
-        for l in config.splitlines():
-            no = False
-            l = l.rstrip()
-            if "no " in l:
-                l = l.replace("no ", "")
-                no = True
-            # if l == "{master}":
-            if not l:
+        for line in config.splitlines():
+            line = line.rstrip()
+            if "no " in line:
+                line = line.replace("no ", "")
+            if not line:
                 continue
-            elif l.startswith(" "*inactive_level):
+            elif line.startswith(" " * inactive_level):
                 inactive_level = len(context) + 1
-                context += [l.split()[0].strip()]
-            elif "set" in l:
+                context += [line.split()[0].strip()]
+            elif "set" in line:
                 inactive_level = len(context) + 1
-            elif "exit" in l:
+            elif "exit" in line:
                 context.pop(-1)
                 inactive_level = len(context) - 1
-            elif "!" in l and context:
+            elif "!" in line and context:
                 context = []
                 inactive_level = inactive_level - 1
                 # continue
                 # if inactive_level is not None and inactive_level >= len(context):
                 #    inactive_level = None
-            elif "!" in l:
-                print("Skipping line")
+            elif "!" in line:
                 continue
             elif context and len(context) >= inactive_level:
-                if context[-1] not in l:
+                if context[-1] not in line:
                     context.pop(-1)
-                    context += [l.split()[0].strip()]
+                    context += [line.split()[0].strip()]
             else:
-                context += [l.split()[0].strip()]
-            cp = " ".join(context).split() + l.split()
+                context += [line.split()[0].strip()]
+            cp = " ".join(context).split() + line.split()
             h = self.handlers
             # print cp
             for p in cp:
@@ -89,11 +77,11 @@ class BaseQSW2800Parser(BaseParser):
         return r
 
     def on_interface_context(self, tokens):
-        iface = self.get_interface_fact(tokens[2])
-        si = self.get_subinterface_fact(tokens[2])
+        self.get_interface_fact(tokens[2])
+        self.get_subinterface_fact(tokens[2])
 
     def on_sub_interface_context(self, tokens):
-        si = self.get_subinterface_fact(tokens[2])
+        self.get_subinterface_fact(tokens[2])
 
     def on_system_host_name(self, tokens):
         self.get_system_fact().hostname = tokens[-1]
@@ -103,7 +91,6 @@ class BaseQSW2800Parser(BaseParser):
 
     def on_snmp_location(self, tokens):
         self.get_system_fact().location = " ".join(tokens[2:])
-        print tokens
 
     def on_system_time_zone(self, tokens):
         self.get_system_fact().timezone = tokens[3]
@@ -166,9 +153,9 @@ class BaseQSW2800Parser(BaseParser):
     def on_vlan(self, tokens):
         """
          if - vlan range
-         database - 
-        :param tokens: 
-        :return: 
+         database -
+        :param tokens:
+        :return:
         """
         if "-" not in tokens[-1] and "database" not in tokens:
             self.get_vlan_fact(int(tokens[-1].strip()))
@@ -189,7 +176,7 @@ class BaseQSW2800Parser(BaseParser):
     def on_static_route(self, tokens):
         """
         ip default-gateway 1.2.5.9
-        :param tokens: 
+        :param tokens:
         """
         # print tokens
         if tokens[2] == "default-gateway":
