@@ -25,4 +25,5 @@ this Manual and additional editions of this text.
     /api
     /technologies
     /glossary
+    /releases
     /todos
