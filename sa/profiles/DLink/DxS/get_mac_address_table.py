@@ -17,6 +17,7 @@ from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3600
 from noc.sa.profiles.DLink.DxS import DGS3620
 import re
+import six
 
 
 class Script(BaseScript):
@@ -33,6 +34,8 @@ class Script(BaseScript):
         if mac is not None:
             mac = mac.lower()
         iface_name = self.scripts.get_ifindexes()
+        # Invert dictionary
+        iface_name = {v: k for k, v in six.iteritems(iface_name)}
         # http://www.dlink.ru/ru/faq/59/print_262.html
         # vlan mac iface type
         r = []
@@ -52,7 +55,7 @@ class Script(BaseScript):
             if v[1] == 0:  # 0 port - is a commutator's MAC
                 iface = "CPU"
             else:
-                iface = iface_name[str(v[1])]
+                iface = iface_name[v[1]]
             if interface is not None and iface != interface:
                 continue
             vlan_id = int(v[0].split('.')[0])
@@ -62,12 +65,12 @@ class Script(BaseScript):
                 "interfaces": [iface],
                 "mac": m,
                 "type": {
-                    # "1": "D",  # Other
-                    # "2": "D",  # Invalid
-                    "3": "D",  # Learned
-                    "4": "C",  # Self
-                    "5": "S"   # mgmt
-                }[str(v[2])],
+                    # 1: "D",  # Other
+                    # 2: "D",  # Invalid
+                    3: "D",  # Learned
+                    4: "C",  # Self
+                    5: "S"   # mgmt
+                }[int(v[2])],
                 "vlan_id": vlan_id,
             }]
         return r
