@@ -17,6 +17,7 @@ from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3600
 from noc.sa.profiles.DLink.DxS import DGS3620
 import re
+import six
 
 
 class Script(BaseScript):
@@ -34,7 +35,7 @@ class Script(BaseScript):
             mac = mac.lower()
         iface_name = self.scripts.get_ifindexes()
         # Invert dictionary
-        iface_name = dict(zip(iface_name.values(), iface_name.keys()))
+        iface_name = {v: k for k, v in six.iteritems(iface_name)}
         # http://www.dlink.ru/ru/faq/59/print_262.html
         # vlan mac iface type
         r = []
