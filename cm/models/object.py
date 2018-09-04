@@ -23,7 +23,7 @@ from .objectnotify import ObjectNotify
 
 
 class Object(models.Model):
-    class Meta:
+    class Meta(object):
         abstract = True
 
     repo_path = models.CharField("Repo Path", max_length=128, unique=True)
@@ -151,8 +151,12 @@ class Object(models.Model):
     @classmethod
     def get_object_class(self, repo):
         if repo == "prefix-list":
+            from .prefixlist import PrefixList
+
             return PrefixList
         elif repo == "rpsl":
+            from .rpsl import RPSL
+
             return RPSL
         else:
             raise Exception("Invalid repo '%s'" % repo)
@@ -244,8 +248,3 @@ class Object(models.Model):
         if user.is_superuser:
             return True
         return False
-
-
-# Avoid circular references
-from .prefixlist import PrefixList
-from .rpsl import RPSL
