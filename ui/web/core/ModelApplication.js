@@ -614,6 +614,18 @@ Ext.define("NOC.core.ModelApplication", {
                                 }
                             },
                             {
+                                text: __("Append"),
+                                glyph: NOC.glyph.sign_in,
+                                handler: function() {
+                                    var grid = this.up("panel"),
+                                        position = grid.store.data.length,
+                                    rowEditing = grid.plugins[0];
+                                    rowEditing.cancelEdit();
+                                    grid.store.insert(position, {});
+                                    rowEditing.startEdit(position, 0);
+                                }
+                            },
+                            {
                                 text: __("Delete"),
                                 glyph: NOC.glyph.times,
                                 handler: function() {
