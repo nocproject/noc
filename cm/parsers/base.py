@@ -72,7 +72,7 @@ class BaseParser(object):
         if not self.system_fact:
             self.system_fact = System(
                 profile=self.managed_object.profile.name,
-                vendor=self.managed_object.vendor.code if self.managed_object.vendor else None,
+                vendor=self.managed_object.vendor.name if self.managed_object.vendor else None,
                 platform=self.managed_object.platform.name if self.managed_object.platform else None,
                 version=self.managed_object.version.version if self.managed_object.version else None,
             )

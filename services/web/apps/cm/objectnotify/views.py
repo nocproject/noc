@@ -15,11 +15,11 @@ from noc.core.translation import ugettext as _
 
 
 class ObjectNotifyAdmin(admin.ModelAdmin):
-    list_display=["type","administrative_domain","notify_immediately","notify_delayed","notification_group"]
-    list_filter=["type","administrative_domain","notification_group"]
+    list_display = ["type", "administrative_domain", "notify_immediately", "notify_delayed", "notification_group"]
+    list_filter = ["type", "administrative_domain", "notification_group"]
 
 
 class ObjectNotifyApplication(ModelApplication):
-    model=ObjectNotify
-    model_admin=ObjectNotifyAdmin
+    model = ObjectNotify
+    model_admin = ObjectNotifyAdmin
     menu = [_("Setup"), _("Object Notifies")]
