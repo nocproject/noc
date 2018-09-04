@@ -23,7 +23,7 @@ from .objectnotify import ObjectNotify
 
 
 class Object(models.Model):
-    class Meta:
+    class Meta(object):
         abstract = True
 
     repo_path = models.CharField("Repo Path", max_length=128, unique=True)
