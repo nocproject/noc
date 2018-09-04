@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -18,7 +16,7 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    def execute(self):
+    def execute_cli(self):
         v = self.profile.get_version(self)
         return {
             "first_chassis_mac": v["mac"],

@@ -2,13 +2,11 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,7 +17,7 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    def execute(self):
+    def execute_cli(self):
         v = self.profile.get_version(self)
         return {
             "vendor": "Raisecom",
