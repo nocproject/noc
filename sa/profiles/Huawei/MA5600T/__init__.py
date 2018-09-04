@@ -38,6 +38,8 @@ class Profile(BaseProfile):
     pattern_prompt = \
         r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
+    # Found on MA5616, V800R015C10
+    send_on_syntax_error = BaseProfile.send_backspaces
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "scroll 512"
