@@ -21,6 +21,7 @@ from noc.main.models.textindex import full_text_search
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
+from noc.core.model.decorator import on_delete_check
 from noc.core.datastream.decorator import datastream
 from .afi import AFI_CHOICES
 from .vrf import VRF
@@ -30,6 +31,9 @@ from .addressprofile import AddressProfile
 @datastream
 @full_text_search
 @workflow
+@on_delete_check(check=[
+    ("ip.Address", "ipv6_transition")
+])
 class Address(models.Model):
     class Meta(object):
         verbose_name = _("Address")

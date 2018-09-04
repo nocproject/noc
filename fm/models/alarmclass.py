@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # AlarmClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import hashlib
 import os
 from threading import Lock
@@ -16,22 +17,28 @@ from mongoengine import fields
 import cachetools
 # NOC modules
 import noc.lib.nosql as nosql
-from alarmseverity import AlarmSeverity
-from alarmclassvar import AlarmClassVar
-from datasource import DataSource
-from alarmrootcausecondition import AlarmRootCauseCondition
-from alarmclasscategory import AlarmClassCategory
-from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
+from .alarmseverity import AlarmSeverity
+from .alarmclassvar import AlarmClassVar
+from .datasource import DataSource
+from .alarmrootcausecondition import AlarmRootCauseCondition
+from .alarmclasscategory import AlarmClassCategory
+from .alarmplugin import AlarmPlugin
 
 id_lock = Lock()
 handlers_lock = Lock()
 
 
 @bi_sync
+@on_delete_check(check=[
+    ("fm.ActiveAlarm", "alarm_class"),
+    ("fm.AlarmClassConfig", "alarm_class"),
+    ("fm.ArchivedAlarm", "alarm_class")
+])
 class AlarmClass(nosql.Document):
     """
     Alarm class
@@ -344,5 +351,6 @@ class AlarmClass(nosql.Document):
             else:
                 return self.control_timeN or None
 
+
 # Avoid circular references
-from alarmclassconfig import AlarmClassConfig
+from .alarmclassconfig import AlarmClassConfig

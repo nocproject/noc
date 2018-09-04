@@ -30,9 +30,14 @@ def template_validator(value):
 
 
 @on_delete_check(check=[
+    ("fm.AlarmTrigger", "template"),
+    ("fm.ActiveAlarm", "clear_template"),
+    ("fm.EventTrigger", "template"),
     ("ip.AddressProfile", "name_template"),
     ("ip.AddressProfile", "fqdn_template"),
     ("ip.PrefixProfile", "name_template"),
+    ("main.SystemTemplate", "template"),
+    ("sa.ManagedObjectProfile", "beef_path_template"),
     ("sa.ManagedObjectProfile", "config_mirror_template"),
     ("vc.VPNProfile", "name_template")
 ])

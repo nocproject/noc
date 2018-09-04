@@ -24,7 +24,9 @@ id_lock = Lock()
 
 
 @bi_sync
-@on_delete_check(check=[])
+@on_delete_check(check=[
+    ("inv.NetworkSegment", "allocation_group")
+])
 class AllocationGroup(Document):
     meta = {
         "collection": "allocationgroups",

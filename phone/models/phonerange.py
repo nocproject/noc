@@ -26,7 +26,7 @@ from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.lib.nosql import ForeignKeyField
-from noc.core.model.decorator import on_save, on_delete
+from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.defer import call_later
 from noc.lib.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
@@ -38,6 +38,10 @@ id_lock = Lock()
 @on_save
 @resourcegroup
 @on_delete
+@on_delete_check(check=[
+    ("phone.PhoneNumber", "phone_range"),
+    ("phone.PhoneRange", "parent")
+])
 class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",
