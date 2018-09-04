@@ -108,6 +108,34 @@ def parse_p_oid(bytes msg):
     return out
 
 
+cdef inline char* _write_int(char* ptr, int v):
+    if v >= (1 << 28):  # 5 blocks of 7 bits
+        ptr[0] = ((v >> 28) & 0x7f) | 0x80
+        ptr[1] = ((v >> 21) & 0x7f) | 0x80
+        ptr[2] = ((v >> 14) & 0x7f) | 0x80
+        ptr[3] = ((v >> 7) & 0x7f) | 0x80
+        ptr[5] = v & 0x7f
+        return ptr + 5
+    elif v >= (1 << 21):  # 4 blocks of 7 bits
+        ptr[0] = ((v >> 21) & 0x7f) | 0x80
+        ptr[1] = ((v >> 14) & 0x7f) | 0x80
+        ptr[2] = ((v >> 7) & 0x7f) | 0x80
+        ptr[3] = v & 0x7f
+        return ptr + 4
+    elif v >= (1 << 14):  # 3 blocks of 7 bits
+        ptr[0] = ((v >> 14) & 0x7f) | 0x80
+        ptr[1] = ((v >> 7) & 0x7f) | 0x80
+        ptr[2] = v & 0x7f
+        return ptr + 3
+    elif v >= (1 << 7):  # 2 blocks of 7 bits
+        ptr[0] = ((v >> 7) & 0x7f) | 0x80
+        ptr[1] = v & 0x7f
+        return ptr + 2
+    else:
+        ptr[0] = v & 0x7f
+        return ptr + 1
+
+
 def encode_oid(bytes msg):
     """
     >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
@@ -138,18 +166,13 @@ def encode_oid(bytes msg):
                 o_ptr += 1
                 sn = 2
             else:
-                while v > 0x7f:
-                    o_ptr[0] = (v & 0x7f) | 0x80
-                    o_ptr += 1
-                    v >>= 7
-                o_ptr[0] = v
-                o_ptr += 1
+                o_ptr = _write_int(o_ptr, v)
             v = 0
         else:
-            v = (v << 8) + (x - 0x30)
+            v = (v * 10) + (x - 0x30)
         ptr += 1
     if sn == 2:
-        o_ptr[0] = v
+        o_ptr = _write_int(o_ptr, v)
     # Write length
-    out[1] = o_ptr - out - 1
-    return bytes(out[:o_ptr - out + 1])
+    out[1] = o_ptr - out - 2
+    return bytes(out[:o_ptr - out])
