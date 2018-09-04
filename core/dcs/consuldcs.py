@@ -419,9 +419,13 @@ class ConsulDCS(DCSBase):
             manifest = None
             # Non-blocking for a first time
             # Block until change every next try
-            index, cv = yield self.consul.kv.get(
-                key=prefix, index=index, recurse=True
-            )
+            try:
+                index, cv = yield self.consul.kv.get(
+                    key=prefix, index=index, recurse=True
+                )
+            except ConsulRepeatableErrors:
+                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                continue
             for e in cv:
                 if e["Key"] == manifest_path:
                     cas = e["ModifyIndex"]
