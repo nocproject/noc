@@ -82,26 +82,74 @@ def parse_p_oid(bytes msg):
     cdef char[1024] out
     cdef char* ptr
     cdef char* o_ptr
+    cdef int l_msg = len(msg)
 
     ptr = msg
-    optr = out
+    o_ptr = out
     if ptr[0] == "+":
-        optr += snprintf(optr, 1024 - (optr - out), "1.3")
+        o_ptr += snprintf(o_ptr, 1024 - (o_ptr - out), "1.3")
     else:
-        optr += snprintf(
-            optr,
-            1024 - (optr - out),
+        o_ptr += snprintf(
+            o_ptr,
+            1024 - (o_ptr - out),
             "%u.%u",
             <unsigned int>(ptr[0] // 40),
             <unsigned int>(ptr[0] % 40)
         )
     ptr += 1
     b = 0
-    for i in range(1, len(msg)):
+    for i in range(1, l_msg):
         v = ptr[0]
         ptr += 1
         b = (b << 7) + (v & 0x7f)
         if not (v & 0x80):
-            optr += snprintf(optr, 1024 - (optr - out), ".%u", b)
+            o_ptr += snprintf(o_ptr, 1024 - (o_ptr - out), ".%u", b)
             b = 0
     return out
+
+
+def encode_oid(bytes msg):
+    """
+    >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
+    '\\x06\\x08+\\x06\\x01\\x02\\x01\\x01\\x05\\x00'
+
+    :param msg:
+    :return:
+    """
+    cdef int v = 0
+    cdef int nv = 0
+    cdef int sn = 0
+    cdef char x
+    cdef char *ptr = msg
+    cdef char[1024] out
+    cdef char* o_ptr = out + 2
+    cdef l_msg = len(msg)
+
+    out[0] = 0x6  # OID primitive
+    # out[1] should be length
+    for _ in range(l_msg):
+        x = ptr[0]
+        if x < 0x30 or x > 0x39:
+            if sn == 0:
+                nv = v
+                sn = 1
+            elif sn == 1:
+                o_ptr[0] = nv * 40 + v
+                o_ptr += 1
+                sn = 2
+            else:
+                while v > 0x7f:
+                    o_ptr[0] = (v & 0x7f) | 0x80
+                    o_ptr += 1
+                    v >>= 7
+                o_ptr[0] = v
+                o_ptr += 1
+            v = 0
+        else:
+            v = (v << 8) + (x - 0x30)
+        ptr += 1
+    if sn == 2:
+        o_ptr[0] = v
+    # Write length
+    out[1] = o_ptr - out - 1
+    return bytes(out[:o_ptr - out + 1])

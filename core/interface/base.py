@@ -2,30 +2,52 @@
 # ----------------------------------------------------------------------
 # Interface base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
+# Third-party modules
+import six
 # NOC modules
 from .error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 
+RESERVED_NAMES = {"returns", "template", "form", "preview"}
 
-class BaseInterface(object):
+
+class BaseInterfaceMetaclass(type):
+    def __new__(mcs, name, bases, attrs):
+        n = type.__new__(mcs, name, bases, attrs)
+        for k in attrs:
+            if k in RESERVED_NAMES:
+                continue
+            if issubclass(attrs[k].__class__, Parameter):
+                p = attrs[k]
+                n._INPUT_PARAMS += [(k, p)]
+                n._INPUT_MAP[k] = p
+                if p.required and p.default is not None:
+                    n._INPUT_DEFAULTS[k] = p.default
+                if p.required:
+                    n._REQUIRED_INPUT.add(k)
+        return n
+
+
+class BaseInterface(six.with_metaclass(BaseInterfaceMetaclass, object)):
     template = None  # Relative template path in sa/templates/
     form = None
     preview = None
-    RESERVED_NAMES = ("returns", "template", "form", "preview")
+    _INPUT_PARAMS = []  # Populated by metaclass
+    _INPUT_MAP = {}  # name -> parameter, Populated by metaclass
+    _INPUT_DEFAULTS = {}  # name -> default, populated by metaclass
+    _REQUIRED_INPUT = set()  # name of required input params
 
     def gen_parameters(self):
         """
         Generator yielding (parameter name, parameter instance) pairs
         """
-        for n, p in self.__class__.__dict__.items():
-            if issubclass(p.__class__, Parameter) and n not in self.RESERVED_NAMES:
-                yield (n, p)
+        return self._INPUT_PARAMS
 
     @property
     def has_required_params(self):
@@ -35,50 +57,48 @@ class BaseInterface(object):
         """
         Clean up all parameters except "returns"
         """
-        in_kwargs = kwargs.copy()
-        out_kwargs = {}
-        for n, p in self.gen_parameters():
-            if n not in in_kwargs and p.required:
-                if p.default is not None:
-                    out_kwargs[n] = p.default
-                else:
-                    raise InterfaceTypeError("Parameter '%s' required" % n)
-            if n in in_kwargs:
-                if not (in_kwargs[n] is None and not p.required):
-                    try:
-                        if __profile:
-                            out_kwargs[n] = p.script_clean_input(__profile,
-                                                                 in_kwargs[n])
-                        else:
-                            out_kwargs[n] = p.clean(in_kwargs[n])
-                    except InterfaceTypeError as e:
-                        raise InterfaceTypeError("Invalid value for '%s': %s" % (n, e))
-                del in_kwargs[n]
-        # Copy other parameters
-        for k, v in in_kwargs.items():
-            if k != "__profile":
-                out_kwargs[k] = v
-        return out_kwargs
+        out = self._INPUT_DEFAULTS.copy()
+        for k in kwargs:
+            param = self._INPUT_MAP.get(k)
+            if param:
+                value = kwargs[k]
+                # Skip Nones
+                if value is None:
+                    continue
+                # Clean parameter
+                try:
+                    if __profile:
+                        out[k] = param.script_clean_input(__profile, value)
+                    else:
+                        out[k] = param.clean(value)
+                except InterfaceTypeError as e:
+                    raise InterfaceTypeError("Invalid value for '%s': %s" % (k, e))
+            elif k != "__profile":
+                # Not found, pass as-is
+                out[k] = kwargs[k]
+        # Check all required parameters present
+        missed = self._REQUIRED_INPUT - set(out)
+        if missed:
+            raise InterfaceTypeError("Parameter '%s' required" % missed.pop())
+        return out
 
     def clean_result(self, result):
         """
         Clean up returned result
         """
-        try:
-            rp = self.returns
-        except AttributeError:
-            return result  # No return result restriction
-        return rp.clean(result)
+        rp = getattr(self, "returns", None)
+        if rp:
+            rp.clean(result)
+        return result
 
     def script_clean_input(self, __profile, **kwargs):
         return self.clean(__profile, **kwargs)
 
     def script_clean_result(self, __profile, result):
-        try:
-            rp = self.returns
-        except AttributeError:
-            return result
-        return rp.script_clean_result(__profile, result)
+        rp = getattr(self, "returns", None)
+        if rp:
+            rp.script_clean_result(__profile, result)
+        return result
 
     def template_clean_result(self, __profile, result):
         return result
