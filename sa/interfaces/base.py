@@ -524,7 +524,7 @@ class DictParameter(Parameter):
         self._defaults = dict(
             (k, attrs[k].default)
             for k in self.attrs
-            if self.attrs[k].default
+            if self.attrs[k].default is not None
         )
         self._required_input = set(k for k in self.attrs if self.attrs[k].required)
 
