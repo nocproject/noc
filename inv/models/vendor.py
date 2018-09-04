@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import threading
 import operator
 import uuid
@@ -18,13 +19,14 @@ import cachetools
 import six
 # NOC modules
 from noc.lib.prettyjson import to_json
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
 
 
 @bi_sync
+@on_save
 @on_delete_check(check=[
     ("inv.ObjectModel", "vendor"), ("inv.Platform", "vendor"), ("inv.Firmware", "vendor"),
     ("sa.ManagedObject", "vendor"), ("sa.ManagedObjectSelector", "filter_vendor")
@@ -98,6 +100,13 @@ class Vendor(Document):
             self.full_name = self.name
         #
         super(Vendor, self).clean()
+
+    def on_save(self):
+        if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
+            from .platform import Platform
+
+            for p in Platform.objects.filter(vendor=self.id):
+                p.save()  # Rebuild full name
 
     def to_json(self):
         return to_json({
