@@ -11,6 +11,8 @@ from __future__ import print_function
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.models import get_model, iter_model_id, is_document
+from noc.core.datastream.loader import loader as ds_loader
+from noc.config import config
 
 
 class Command(BaseCommand):
@@ -89,10 +91,12 @@ class Command(BaseCommand):
         model.ensure_indexes()
 
     def index_datastreams(self):
-        from noc.services.datastream.streams.managedobject import ManagedObjectDataStream
-
-        self.print("[%s] Indexing datastream" % ManagedObjectDataStream.name)
-        ManagedObjectDataStream.ensure_collection()
+        for name in ds_loader.iter_datastreams():
+            if not getattr(config.datastream, "enable_%s" % name, False):
+                continue
+            ds = ds_loader.get_datastream(name)
+            self.print("[%s] Indexing datastream" % ds.name)
+            ds.ensure_collection()
 
 
 if __name__ == "__main__":
