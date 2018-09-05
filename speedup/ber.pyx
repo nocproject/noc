@@ -180,19 +180,26 @@ def encode_oid(bytes msg):
 
 cdef inline int _write_raw_int(char* ptr, int value):
     cdef int n = 0
-    if value & 0x808080:  # 7th bit in each octet
-        # Write leading zero
-        ptr[0] = 0
-        ptr += 1
-        n += 1
-    if value < 0xFF:
+    if value <= 0xFF:
+        if value & 0x80:
+            ptr[0] = 0
+            ptr += 1
+            n += 1
         ptr[0] = value
         return n + 1
-    if value < 0xFFFF:
+    if value <= 0xFFFF:
+        if value & 0x8000:
+            ptr[0] = 0
+            ptr += 1
+            n += 1
         ptr[0] = (value >> 8) & 0xFF
         ptr[1] = value  & 0xFF
         return n + 2
-    if value < 0xFFFFFF:
+    if value <= 0xFFFFFF:
+        if value & 0x800000:
+            ptr[0] = 0
+            ptr += 1
+            n += 1
         ptr[0] = (value >> 16) & 0xFF
         ptr[1] = (value >> 8) & 0xFF
         ptr[2] = value  & 0xFF
