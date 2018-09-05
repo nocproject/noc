@@ -282,16 +282,17 @@ class FloatParameter(Parameter):
         super(FloatParameter, self).__init__(required=required, default=default)
 
     def clean(self, value):
-        if value is None and self.default is not None:
-            return self.default
-        try:
-            i = float(value)
-        except ValueError:
+        if not isinstance(value, float):
+            if value is None and self.default is not None:
+                return self.default
+            try:
+                value = float(value)
+            except ValueError:
+                self.raise_error(value)
+        if ((self.min_value is not None and value < self.min_value) or
+                (self.max_value is not None and value > self.max_value)):
             self.raise_error(value)
-        if ((self.min_value is not None and i < self.min_value) or
-                (self.max_value is not None and i > self.max_value)):
-            self.raise_error(value)
-        return i
+        return value
 
 
 class ListParameter(Parameter):
