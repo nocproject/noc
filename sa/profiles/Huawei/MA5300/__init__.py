@@ -51,7 +51,14 @@ class Profile(BaseProfile):
     def setup_session(self, script):
         script.cli("config", ignore_errors=True)
         script.cli("terminal type vt100", ignore_errors=True)
+        script.cli("line vty 0 3", ignore_errors=True)
         script.cli("history size 0", ignore_errors=True)
-        script.cli("length 0", cached=True, ignore_errors=True)
-        script.cli("exit", cached=True, ignore_errors=True)
+        script.cli("length 0", ignore_errors=True)
+        script.cli("exit", ignore_errors=True)
         script.cli("cls", ignore_errors=True)
+
+    def shutdown_session(self, script):
+        script.cli("config", ignore_errors=True)
+        script.cli("line vty 0 3", ignore_errors=True)
+        script.cli("no length 0", ignore_errors=True)
+        script.cli("exit", ignore_errors=True)
