@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5300.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -17,13 +17,5 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-#	self.cli("cls")
-        self.cli("conf t")
-        self.cli("line vty 0 3")
-#        self.cli("length 0")
-#        self.cli("no length")
-        
         config = self.cli("show running-config")
         return config
-#        return self.cleaned_config(config)
-
