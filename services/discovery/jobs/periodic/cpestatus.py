@@ -36,7 +36,6 @@ class CPEStatusCheck(DiscoveryCheck):
         for c in six.itervalues(current):
             if "id" in c:
                 c["local_id"] = c.pop("id")
-        print current
         # Collect last statuses
         last = self.get_last_statuses(current)
         # Apply changes
