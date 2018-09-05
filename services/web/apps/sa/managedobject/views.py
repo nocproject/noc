@@ -927,7 +927,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "global_id": str(c.global_id),
                 "name": c.name or "",
                 "interface": c.interface,
-                "loca_id": c.local_id,
+                "local_id": c.local_id,
                 "serial": c.serial or "",
                 "status": c.status,
                 "description": c.description or "",

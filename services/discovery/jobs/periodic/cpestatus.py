@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import six
 # Third-party modules
 from pymongo import InsertOne, UpdateOne, UpdateMany
 # NOC modules
@@ -31,8 +33,10 @@ class CPEStatusCheck(DiscoveryCheck):
             current = self.get_current_statuses()
         else:
             current = self.get_current_cpe()
-        if "id" in current:
-            current["local_id"] = current.pop("id")
+        for c in six.itervalues(current):
+            if "id" in c:
+                c["local_id"] = c.pop("id")
+        print current
         # Collect last statuses
         last = self.get_last_statuses(current)
         # Apply changes
