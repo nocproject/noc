@@ -46,7 +46,7 @@ Ext.define("NOC.sa.managedobject.CPEPanel", {
                     type: "string"
                 },
                 {
-                    name: "loca_id",
+                    name: "local_id",
                     type: "string"
                 },
                 {
