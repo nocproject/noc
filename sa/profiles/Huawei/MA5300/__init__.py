@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     name = "Huawei.MA5300"
     pattern_more = [
         (r"--- More:", " "),
-        (r"---- More \(Press CTRL\+C break\) ---", " "),
+        (r"\s*---- More \(Press CTRL\+C break\) ---\s*", " "),
         (r"Note: Terminal", "\n"),
         (r"Warning: Battery is low power!", "\n"),
         (r"\{\s<cr>.*\s\}:", "\n"),
@@ -37,6 +37,7 @@ class Profile(BaseProfile):
         r"(% Unknown command, the error locates at \'^\'|  Logged Fail!|" \
         r"System is busy, please try after a while)"
     rogue_chars = [
+        re.compile(r"\x1b\[39D\s+\x1b\[39D"),
         re.compile(r"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
         re.compile(r"\r\n\s+Note: Terminal users login \(IP: \S+ \)"),
         re.compile(r"\r\nWarning: Battery is low power!"),
