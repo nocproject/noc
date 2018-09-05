@@ -124,15 +124,18 @@ def test_encode_choice():
     raise NotImplementedError()
 
 
-def test_encode_int():
+@pytest.mark.parametrize("value,raw", [    
+    (0, "\x02\x01\x00"),
+    (1, "\x02\x01\x01"),
+    (127, "\x02\x01\x7f"),
+    (128, "\x02\x02\x00\x80"),
+    (256, "\x02\x02\x01\x00"),
+    (-128, "\x02\x01\x80"),
+    (-129, "\x02\x02\xff\x7f")
+])
+def test_encode_int(value, raw):
     encoder = BEREncoder()
-    assert encoder.encode_int(0) == "\x02\x01\x00"
-    assert encoder.encode_int(1) == "\x02\x01\x01"
-    assert encoder.encode_int(127) == "\x02\x01\x7f"
-    assert encoder.encode_int(128) == "\x02\x02\x00\x80"
-    assert encoder.encode_int(256) == "\x02\x02\x01\x00"
-    assert encoder.encode_int(-128) == "\x02\x01\x80"
-    assert encoder.encode_int(-129) == "\x02\x02\xff\x7f"
+    assert encoder.encode_int(value) == raw
 
 
 def test_encode_real():

@@ -176,3 +176,45 @@ def encode_oid(bytes msg):
     # Write length
     out[1] = o_ptr - out - 2
     return bytes(out[:o_ptr - out])
+
+
+cdef inline int _write_raw_int(char* ptr, int value):
+    cdef int n = 0
+    if value & 0x808080:  # 7th bit in each octet
+        # Write leading zero
+        ptr[0] = 0
+        ptr += 1
+        n += 1
+    if value < 0xFF:
+        ptr[0] = value
+        return n + 1
+    if value < 0xFFFF:
+        ptr[0] = (value >> 8) & 0xFF
+        ptr[1] = value  & 0xFF
+        return n + 2
+    if value < 0xFFFFFF:
+        ptr[0] = (value >> 16) & 0xFF
+        ptr[1] = (value >> 8) & 0xFF
+        ptr[2] = value  & 0xFF
+        return n + 3
+    ptr[0] = (value >> 24) & 0xFF
+    ptr[1] = (value >> 16) & 0xFF
+    ptr[2] = (value >> 8) & 0xFF
+    ptr[3] = value  & 0xFF
+    return n + 4
+
+
+def encode_int(int value):
+    if value == 0:
+        return bytes("\x02\x01\x00")
+    cdef char[32] out
+    cdef int n
+    out[0] = 0x2  # Type
+    if value > 0:
+        if value <= 0x7f:
+            out[1] = 1  # size
+            out[2] = value
+            return bytes(out[:3])
+        n = _write_raw_int(out + 2, value)
+        out[1] = n
+        return bytes(out[:n + 2])
