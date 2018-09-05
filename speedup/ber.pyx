@@ -109,31 +109,31 @@ def parse_p_oid(bytes msg):
 
 
 cdef inline char* _write_int(char* ptr, int v):
-    if v >= (1 << 28):  # 5 blocks of 7 bits
-        ptr[0] = ((v >> 28) & 0x7f) | 0x80
-        ptr[1] = ((v >> 21) & 0x7f) | 0x80
-        ptr[2] = ((v >> 14) & 0x7f) | 0x80
-        ptr[3] = ((v >> 7) & 0x7f) | 0x80
-        ptr[5] = v & 0x7f
-        return ptr + 5
-    elif v >= (1 << 21):  # 4 blocks of 7 bits
+    if v < 0x80:  # 1 block
+        ptr[0] = v & 0x7f
+        return ptr + 1
+    if v < (1 << 7):  # 2 blocks of 7 bits
+        ptr[0] = ((v >> 7) & 0x7f) | 0x80
+        ptr[1] = v & 0x7f
+        return ptr + 2
+    if v < (1 << 14):  # 3 blocks of 7 bits
+        ptr[0] = ((v >> 14) & 0x7f) | 0x80
+        ptr[1] = ((v >> 7) & 0x7f) | 0x80
+        ptr[2] = v & 0x7f
+        return ptr + 3
+    if v < (1 << 21):
         ptr[0] = ((v >> 21) & 0x7f) | 0x80
         ptr[1] = ((v >> 14) & 0x7f) | 0x80
         ptr[2] = ((v >> 7) & 0x7f) | 0x80
         ptr[3] = v & 0x7f
         return ptr + 4
-    elif v >= (1 << 14):  # 3 blocks of 7 bits
-        ptr[0] = ((v >> 14) & 0x7f) | 0x80
-        ptr[1] = ((v >> 7) & 0x7f) | 0x80
-        ptr[2] = v & 0x7f
-        return ptr + 3
-    elif v >= (1 << 7):  # 2 blocks of 7 bits
-        ptr[0] = ((v >> 7) & 0x7f) | 0x80
-        ptr[1] = v & 0x7f
-        return ptr + 2
-    else:
-        ptr[0] = v & 0x7f
-        return ptr + 1
+    # 5 blocks
+    ptr[0] = ((v >> 28) & 0x7f) | 0x80
+    ptr[1] = ((v >> 21) & 0x7f) | 0x80
+    ptr[2] = ((v >> 14) & 0x7f) | 0x80
+    ptr[3] = ((v >> 7) & 0x7f) | 0x80
+    ptr[4] = v & 0x7f
+    return ptr + 5
 
 
 def encode_oid(bytes msg):
