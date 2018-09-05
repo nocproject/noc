@@ -124,7 +124,7 @@ def test_encode_choice():
     raise NotImplementedError()
 
 
-@pytest.mark.parametrize("value,raw", [    
+@pytest.mark.parametrize("value,raw", [
     (0, "\x02\x01\x00"),
     (1, "\x02\x01\x01"),
     (127, "\x02\x01\x7f"),
