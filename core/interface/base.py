@@ -20,6 +20,10 @@ RESERVED_NAMES = {"returns", "template", "form", "preview"}
 class BaseInterfaceMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
+        n._INPUT_PARAMS = []  # Populated by metaclass
+        n._INPUT_MAP = {}  # name -> parameter, Populated by metaclass
+        n._INPUT_DEFAULTS = {}  # name -> default, populated by metaclass
+        n._REQUIRED_INPUT = set()  # name of required input params
         for k in attrs:
             if k in RESERVED_NAMES:
                 continue
@@ -38,10 +42,10 @@ class BaseInterface(six.with_metaclass(BaseInterfaceMetaclass, object)):
     template = None  # Relative template path in sa/templates/
     form = None
     preview = None
-    _INPUT_PARAMS = []  # Populated by metaclass
-    _INPUT_MAP = {}  # name -> parameter, Populated by metaclass
-    _INPUT_DEFAULTS = {}  # name -> default, populated by metaclass
-    _REQUIRED_INPUT = set()  # name of required input params
+    # _INPUT_PARAMS = []  # Populated by metaclass
+    # _INPUT_MAP = {}  # name -> parameter, Populated by metaclass
+    # _INPUT_DEFAULTS = {}  # name -> default, populated by metaclass
+    # _REQUIRED_INPUT = set()  # name of required input params
 
     def gen_parameters(self):
         """
