@@ -63,12 +63,13 @@ class StringParameter(Parameter):
                                               default=default)
 
     def clean(self, value):
-        if value is None and self.default is not None:
-            return self.default
-        try:
-            value = str(value)
-        except Exception:
-            self.raise_error(value)
+        if not isinstance(value, str):
+            if value is None and self.default is not None:
+                return self.default
+            try:
+                value = str(value)
+            except Exception:
+                self.raise_error(value)
         if self.choices and value not in self.choices:
             self.raise_error(value)
         return value
