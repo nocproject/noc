@@ -110,18 +110,18 @@ def parse_p_oid(bytes msg):
 
 cdef inline char* _write_int(char* ptr, int v):
     if v < 0x80:  # 1 block
-        ptr[0] = v & 0x7f
+        ptr[0] = v
         return ptr + 1
-    if v < (1 << 7):  # 2 blocks of 7 bits
+    if v < (1 << 14):  # 2 blocks of 7 bits
         ptr[0] = ((v >> 7) & 0x7f) | 0x80
         ptr[1] = v & 0x7f
         return ptr + 2
-    if v < (1 << 14):  # 3 blocks of 7 bits
+    if v < (1 << 21):  # 3 blocks of 7 bits
         ptr[0] = ((v >> 14) & 0x7f) | 0x80
         ptr[1] = ((v >> 7) & 0x7f) | 0x80
         ptr[2] = v & 0x7f
         return ptr + 3
-    if v < (1 << 21):
+    if v < (1 << 28):  # 4 blocks
         ptr[0] = ((v >> 21) & 0x7f) | 0x80
         ptr[1] = ((v >> 14) & 0x7f) | 0x80
         ptr[2] = ((v >> 7) & 0x7f) | 0x80
