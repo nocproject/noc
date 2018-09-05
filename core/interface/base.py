@@ -88,7 +88,7 @@ class BaseInterface(six.with_metaclass(BaseInterfaceMetaclass, object)):
         """
         rp = getattr(self, "returns", None)
         if rp:
-            rp.clean(result)
+            return rp.clean(result)
         return result
 
     def script_clean_input(self, __profile, **kwargs):
@@ -97,7 +97,7 @@ class BaseInterface(six.with_metaclass(BaseInterfaceMetaclass, object)):
     def script_clean_result(self, __profile, result):
         rp = getattr(self, "returns", None)
         if rp:
-            rp.script_clean_result(__profile, result)
+            return rp.script_clean_result(__profile, result)
         return result
 
     def template_clean_result(self, __profile, result):
