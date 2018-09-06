@@ -33,13 +33,13 @@ class Script(BaseScript):
     rx_dsl = re.compile(
         r"^(?P<port>\d+) Configuration\s*\n"
         r"^\s*\n"
-        r"(^\s*name\s+(?P<name>\S+)\s*\n)?"
+        r"(^\s*name(?P<name>.*)\n)?"
         r"(^\s*state\s+(?P<admin_status>enabled|disabled)\s*\n)?",
         re.MULTILINE
     )
     rx_dsl_vpi_vci = re.compile(
         r"^\s*(?P<name>\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+llc-bridged\s+"
-        r"((?P<vlan_ids>\d+(, \d+)*)\s+)?\S+\s*\n",
+        r"((?P<vlan_ids>\d+(, \d+)*)\s*)?\S*\s*\n",
         re.MULTILINE
     )
     rx_inband = re.compile(
@@ -102,11 +102,13 @@ class Script(BaseScript):
                 "subinterfaces": []
             }
             if match.group("admin_status"):
-                iface["admin_status"] = match.group("name") == "enabled"
-            if match.group("name"):
-                iface["description"] = match.group("name")
+                iface["admin_status"] = match.group("admin_status") == "enabled"
+            if match.group("name") and match.group("name").strip():
+                iface["description"] = match.group("name").strip()
             for match in self.rx_dsl_vpi_vci.finditer(p):
                 sub = match.groupdict()
+                sub["name"] = "%s/%s" % (iface["name"], sub["name"])
+                sub["admin_status"] = iface["admin_status"]
                 sub["enabled_afi"] = ["BRIDGE", "ATM"]
                 if sub["vlan_ids"]:
                     sub["vlan_ids"] = [
