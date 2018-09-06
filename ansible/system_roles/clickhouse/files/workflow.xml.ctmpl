@@ -7,7 +7,7 @@
             <max>3600</max>
         </lifetime>
         <layout>
-            <complex_key_hashed  />
+            <hashed  />
         </layout>
         <source>
             <http>
