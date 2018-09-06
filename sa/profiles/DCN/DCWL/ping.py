@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DCN.DCWL.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,26 +18,42 @@ class Script(BaseScript):
     interface = IPing
 
     rx_result = re.compile(
-        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss$",
+        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
+        r"(packets received|received),(?:\s|\s\S+ errors, )\d+% packet loss$",
         re.MULTILINE)
     rx_stat = re.compile(
         r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)\s.",
         re.MULTILINE)
+    rx_count = re.compile(
+        r"^\d+ bytes from \d\S+\d+: seq=(\d+) ttl=\d+ time=\S+ ms",
+        re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None,
                 size=None, df=None):
-        cmd = "ping %s -c 5" % address
-        if count:
-            cmd += " count %d" % int(count)
+        if count is None:
+            count = 5
+        cmd = "ping %s -c %d" % (address, int(count))
         if size:
-            cmd += " size %d" % int(size)
-        # Don't implemented, may be in future firmware revisions ?
-        # if source_address:
-        #    cmd+=" source %s" % source_address
-        # if df:
-        #    cmd+=" df-bit"
+            cmd += " -s %d" % int(size)
+        if source_address:
+            cmd += " -I %s" % source_address
         ping = self.cli(cmd)
         result = self.rx_result.search(ping)
+        """
+        Workaround for this incident
+
+        PING 10.218.217.227 (10.218.217.227): 56 data bytes
+        64 bytes from 10.218.217.227: seq=0 ttl=61 time=15.436 ms
+        64 bytes from 10.218.217.227: seq=1 ttl=61 time=15.265 ms
+        64 bytes from 10.218.217.227: seq=2 ttl=61 time=15.365 ms
+        ping: sendto: Network is unreachable
+        Invalid command.
+
+        """
+        if not result and "Network is unreachable" in ping:
+            result = self.rx_count.findall(ping)
+            return {"success": len(result), "count": count}
+
         r = {
             "success": result.group("success"),
             "count": result.group("count"),
