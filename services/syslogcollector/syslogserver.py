@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Syslog server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import logging
 import time
 # NOC modules
+from noc.core.perf import metrics
 from noc.core.ioloop.udpserver import UDPServer
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class SyslogServer(UDPServer):
         self.service = service
 
     def on_read(self, data, address):
-        self.service.perf_metrics["syslog_msg_in"] += 1
+        metrics["syslog_msg_in"] += 1
         cfg = self.service.lookup_config(address[0])
         if not cfg:
             return  # Invalid event source

@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Login service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ from noc.services.login.logout import LogoutRequestHandler
 from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
 from noc.main.models.apikey import APIKey
+from noc.core.perf import metrics
 from noc.config import config
 
 
@@ -73,14 +74,14 @@ class LoginService(UIService):
             )
             try:
                 user = backend.authenticate(**credentials)
-                self.perf_metrics['auth_try', ('method', method)] += 1
+                metrics['auth_try', ('method', method)] += 1
             except backend.LoginError as e:
                 self.logger.info("[%s] Login Error: %s", method, e)
-                self.perf_metrics['auth_fail', ('method', method)] += 1
+                metrics['auth_fail', ('method', method)] += 1
                 le = str(e)
                 continue
             self.logger.info("Authorized credentials %s as user %s", c, user)
-            self.perf_metrics['auth_success', ('method', method)] += 1
+            metrics['auth_success', ('method', method)] += 1
             # Set cookie
             handler.set_secure_cookie(
                 "noc_user",
