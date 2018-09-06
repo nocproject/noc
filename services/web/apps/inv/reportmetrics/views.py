@@ -130,16 +130,17 @@ class ReportMetric(object):
                      "ping": "ping"}
         def_map = {"q_select": ["managed_object"],
                    "q_from": [],  # q_from = "from %s" % map_table[reporttype]
-                   "q_where": ["managed_object IN (%s)",
-                               "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" %
-                               (ts_from_date, ts_from_date, ts_to_date)],
+                   "q_where": ["(ts >= toDateTime(%d) AND ts <= toDateTime(%d))" %
+                               (ts_from_date, ts_to_date)],
                    "q_group": ["managed_object"]}
         for e in query_map:
             if e.startswith("q_"):
                 def_map[e] += query_map[e]
         query = " ".join(["select %s" % ",".join(def_map["q_select"]),
                           "from %s" % map_table[self.reporttype],
-                          "where %s" % " and ".join(def_map["q_where"]),
+                          "prewhere %s" % "date >= toDate(%d) AND date <= toDate(%d) AND %s" % (
+                              ts_from_date, ts_to_date, "managed_object IN (%s)"),
+                          "where %s" % " AND ".join(def_map["q_where"]),
                           "group by %s" % ",".join(def_map["q_group"])])
         return query
 
@@ -147,14 +148,14 @@ class ReportMetric(object):
         n = 0
         client = connection()
 
-        mos_name = moss.keys()
+        mos_name = sorted(moss)
         query = self.get_query_ch(query_map, f_date, to_date)
-        self.CHUNK_SIZE = 10000
-        while mos_name[n:n + self.CHUNK_SIZE]:
-            m_r = ", ".join(moss.keys())
-            for row in client.execute(query % m_r):
+        self.CHUNK_SIZE = 4000
+        while mos_name:
+            mos_name, m_r = mos_name[self.CHUNK_SIZE:], mos_name[:self.CHUNK_SIZE]
+            for row in client.execute(query % ", ".join(m_r)):
                 yield row[0:2], row[2:]
-            n += self.CHUNK_SIZE
+            n += 1
 
     def do_query(self, moss, query_map, f_date, to_date):
         n = 0
@@ -181,7 +182,7 @@ class ReportTraffic(SimpleReport):
     title = _("Load Metrics")
     form = ReportForm
 
-    def get_data(self, request, reporttype="ping", from_date=None, to_date=None, object_profile=None, percent=None,
+    def get_data(self, request, reporttype=None, from_date=None, to_date=None, object_profile=None, percent=None,
                  filter_default=None, zero=None, interface_profile=None, managed_object=None,
                  selectors=None, administrative_domain=None, allow_archive=True, **kwargs):
 
@@ -222,7 +223,6 @@ class ReportTraffic(SimpleReport):
                 mos = mos.filter(object_profile=object_profile)
 
         columns = [_("Managed Object"), _("Address")]
-        moss = dict((mo.name, mo) for mo in mos)
         iface_dict = {}
 
         d_url = {
@@ -283,14 +283,21 @@ class ReportTraffic(SimpleReport):
                                            "q_group": ["path"]})
             report_map["ping"].update({
                 "q_select": ["managed_object", "round(quantile(0.98)(rtt) / 1000, 2)", "avg(attempts)"]})
-            moss = {str(mo.bi_id): mo for mo in mos}
-
+            moss = {str(mo[0]): mo for mo in mos.values_list("bi_id", "id", "name", "address")}
+        else:
+            moss = {mo[0]: mo for mo in mos.values_list("name", "id", "name", "address")}
+        # mos_s = set(mos.values_list("id", flat=True))
         if reporttype in ["load_interfaces", "errors"]:
-            iface_dict = {(
-                iface.managed_object, iface.name
-            ): (
-                iface.description, iface.in_speed, iface.out_speed
-            ) for iface in Interface.objects.filter(managed_object__in=mos, type="physical")}
+            ifaces = Interface._get_collection()
+            xx = set(mos.values_list("id", flat=True))
+            for iface in ifaces.find(
+                    {"type": "physical"},
+                    {"managed_object": 1, "name": 1, "description": 1, "in_speed": 1, "out_speed": 1}):
+                if iface["managed_object"] not in xx:
+                    continue
+                iface_dict[(iface["managed_object"],
+                            iface["name"])] = (iface.get("description", ""),
+                                               iface.get("in_speed", 0), iface.get("out_speed", 0))
 
         columns += report_map[reporttype]["columns"]
         if percent:
@@ -313,17 +320,17 @@ class ReportTraffic(SimpleReport):
             if not l:
                 continue
             mo = moss[l[0]]
-            d_url["biid"] = mo.bi_id
-            d_url["oname"] = mo.name.replace("#", "%23")
+            d_url["biid"] = l[0]
+            d_url["oname"] = mo[2].replace("#", "%23")
             if zero and allow_archive and not sum(data):
                 # For InfluxDB query
                 continue
             if reporttype in ["load_interfaces", "errors"]:
                 d_url["iname"] = l[1]
-                res = [mo.name, mo.address, l[1]]
+                res = [mo[2], mo[3], l[1]]
                 res += data
                 if "load_interfaces" in reporttype:
-                    i_d = iface_dict.get((mo, l[1]), ["", "", ""])
+                    i_d = iface_dict.get((mo[1], l[1]), ["", "", ""])
                     res.insert(3, i_d[0])
                     if percent:
                         in_p = float(data[0])
@@ -334,7 +341,7 @@ class ReportTraffic(SimpleReport):
                         out_p = float(data[1])
                         res += [round((out_p / 1000.0) / (i_d[2] / 100.0), 2) if i_d[2] and out_p > 0 else 0]
             else:
-                res = [mo.name, mo.address]
+                res = [mo[2], mo[3]]
                 res += data
             res += [url % d_url, interval]
             r += [res]
