@@ -557,16 +557,16 @@ class DiscoveryCheck(object):
         self.logger.debug("Searching port by MAC: %s:%s", mo.name, mac)
         key = (mo, mac)
         if key not in self.if_mac_cache:
-            li = list(Interface.objects.filter(
+            i = Interface.objects.filter(
                 managed_object=mo,
                 mac=mac,
                 type="physical"
-            ))
-            if len(li) == 1:
-                li = li[0]
+            )[:2]
+            if len(i) == 1:
+                i = i[0]
             else:
-                li = None  # Non unique or not found
-            self.if_mac_cache[key] = li
+                i = None  # Non unique or not found
+            self.if_mac_cache[key] = i
         return self.if_mac_cache[key]
 
     def get_interface_by_ip(self, ip, mo=None):
