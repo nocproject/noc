@@ -33,7 +33,7 @@ class Script(BaseScript):
                               r"\s+dot1q-tunnel is enable",
                               re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         # Get portchannels
         pc_members = []
         portchannels = self.scripts.get_portchannel()
