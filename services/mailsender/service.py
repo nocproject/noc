@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # mailsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ import pytz
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
+from noc.core.perf import metrics
 
 
 class MailSenderService(Service):
@@ -120,7 +121,7 @@ class MailSenderService(Service):
                     "[%s] SMTP Authentication error: %s",
                     message_id, e
                 )
-                self.perf_metrics['smtp_response', ('code', e.smtp_code)] += 1
+                metrics['smtp_response', ('code', e.smtp_code)] += 1
                 return False
         # Send mail
         try:
@@ -135,7 +136,7 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] MAIL FROM '%s' failed: %s %s",
                                   message_id, from_address, code, resp)
-                self.perf_metrics['smtp_response', ('code', code)] += 1
+                metrics['smtp_response', ('code', code)] += 1
                 return False
             # RCPT TO
             code, resp = smtp.rcpt(address, [])
@@ -143,7 +144,7 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] RCPT TO '%s' failed: %s %s",
                                   message_id, address, code, resp)
-                self.perf_metrics['smtp_response', ('code', code)] += 1
+                metrics['smtp_response', ('code', code)] += 1
                 return False
             # Data
             code, resp = smtp.data(msg)
@@ -151,10 +152,10 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] DATA failed: %s %s",
                                   message_id, code, resp)
-                self.perf_metrics['smtp_response', ('code', code)] += 1
+                metrics['smtp_response', ('code', code)] += 1
                 return False
             self.logger.info("[%s] Message sent: %s", message_id, resp)
-            self.perf_metrics['smtp_response', ('code', code)] += 1
+            metrics['smtp_response', ('code', code)] += 1
         except smtplib.SMTPException as e:
             self.logger.error("[%s] SMTP Error: %s", message_id, e)
             smtp.rset()

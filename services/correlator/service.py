@@ -36,6 +36,7 @@ from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from services.correlator import utils
 from noc.lib.dateutils import total_seconds
+from noc.core.perf import metrics
 
 
 class CorrelatorService(Service):
@@ -181,7 +182,7 @@ class CorrelatorService(Service):
                 # Root cause found
                 self.logger.info("%s is root cause for %s (Rule: %s)",
                                  root.id, a.id, rc.name)
-                self.perf_metrics["alarm_correlated_rule"] += 1
+                metrics["alarm_correlated_rule"] += 1
                 a.set_root(root)
                 return True
         return False
@@ -209,7 +210,7 @@ class CorrelatorService(Service):
                         "%s is root cause for %s (Reverse rule: %s)",
                         a.id, ca.id, rc.name
                     )
-                    self.perf_metrics["alarm_correlated_rule"] += 1
+                    metrics["alarm_correlated_rule"] += 1
                     ca.set_root(a)
                     found = True
         return found
@@ -224,7 +225,7 @@ class CorrelatorService(Service):
             self.logger.info("Managed object is not managed. Do not raise alarm")
             return
         if e.managed_object.id != managed_object.id:
-            self.perf_metrics["alarm_change_mo"] += 1
+            metrics["alarm_change_mo"] += 1
             self.logger.info(
                 "Changing managed object to %s",
                 managed_object.name
@@ -251,7 +252,7 @@ class CorrelatorService(Service):
                         a.alarm_class.name, a.id
                     )
                     a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
-                    self.perf_metrics["alarm_reopen"] += 1
+                    metrics["alarm_reopen"] += 1
             if a:
                 # Active alarm found, refresh
                 self.logger.info(
@@ -270,7 +271,7 @@ class CorrelatorService(Service):
                     # Refresh last update
                     a.last_update = e.timestamp
                     a.save()
-                self.perf_metrics["alarm_contribute"] += 1
+                metrics["alarm_contribute"] += 1
                 return
         # Calculate alarm coverage
         summary = ServiceSummary.get_object_summary(managed_object)
@@ -317,7 +318,7 @@ class CorrelatorService(Service):
             e.event_class.name,
             a.alarm_class.name, a.id, a.vars
         )
-        self.perf_metrics["alarm_raise"] += 1
+        metrics["alarm_raise"] += 1
         self.correlate(r, a)
         # Notify about new alarm
         if not a.root:
@@ -361,7 +362,7 @@ class CorrelatorService(Service):
                     )
             except:  # noqa. Can probable happens anything from handler
                 error_report()
-                self.perf_metrics["error", ("type", "alarm_handler")] += 1
+                metrics["error", ("type", "alarm_handler")] += 1
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
@@ -375,7 +376,7 @@ class CorrelatorService(Service):
             # Silently drop alarm
             self.logger.debug("Alarm severity is 0, dropping")
             a.delete()
-            self.perf_metrics["alarm_drop"] += 1
+            metrics["alarm_drop"] += 1
             return
 
     def clear_alarm(self, r, e):
@@ -385,7 +386,7 @@ class CorrelatorService(Service):
                 "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring",
                 e.id
             )
-            self.perf_metrics["unknown_object"] += 1
+            metrics["unknown_object"] += 1
             return
         if r.unique:
             discriminator, vars = r.get_vars(e)
@@ -407,7 +408,7 @@ class CorrelatorService(Service):
                     "Cleared by disposition rule '%s'" % r.u_name,
                     ts=e.timestamp
                 )
-                self.perf_metrics["alarm_clear"] += 1
+                metrics["alarm_clear"] += 1
 
     def get_delayed_event(self, r, e):
         """
@@ -473,7 +474,7 @@ class CorrelatorService(Service):
         self.get_executor("max").submit(self.dispose_worker, message, event_id, event)
 
     def dispose_worker(self, message, event_id, event_hint=None):
-        self.perf_metrics["alarm_dispose"] += 1
+        metrics["alarm_dispose"] += 1
         try:
             if event_hint:
                 event = self.get_event_from_hint(event_hint)
@@ -482,7 +483,7 @@ class CorrelatorService(Service):
             if event:
                 self.dispose_event(event)
         except Exception:
-            self.perf_metrics["alarm_dispose_error"] += 1
+            metrics["alarm_dispose_error"] += 1
             error_report()
         self.ioloop.add_callback(message.finish)
 
@@ -497,8 +498,8 @@ class CorrelatorService(Service):
         e = ActiveEvent.get_by_id(event_id)
         if not e:
             self.logger.info("[%s] Event not found, skipping", event_id)
-            self.perf_metrics["event_lookup_failed"] += 1
-        self.perf_metrics["event_lookups"] += 1
+            metrics["event_lookup_failed"] += 1
+        metrics["event_lookups"] += 1
         return e
 
     def get_event_from_hint(self, hint):
@@ -507,7 +508,7 @@ class CorrelatorService(Service):
         :param hint:
         :return:
         """
-        self.perf_metrics["event_hints"] += 1
+        metrics["event_hints"] += 1
         e = ActiveEvent.from_json(hint)
         # Prevent TypeError: can't compare offset-naive and offset-aware datetimes
         # when calculating alarm timestamp
@@ -597,7 +598,7 @@ class CorrelatorService(Service):
                 if can_correlate(alarm, a):
                     self.logger.info("[%s] Set root to %s", alarm.id, a.id)
                     alarm.set_root(a)
-                    self.perf_metrics["alarm_correlated_topology"] += 1
+                    metrics["alarm_correlated_topology"] += 1
                     break
         # Correlate neighbors' alarms
         for d in na:

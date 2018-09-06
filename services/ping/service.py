@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Ping service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.core.error import NOCError
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
+from noc.core.perf import metrics
 from noc.services.ping.probesetting import ProbeSetting
 from noc.services.ping.datastream import PingDataStreamClient
 
@@ -68,7 +69,7 @@ class PingService(Service):
         except OSError as e:
             self.logger.info("Cannot set nice level to -20: %s", e)
         #
-        self.perf_metrics["down_objects"] = 0
+        metrics["down_objects"] = 0
         # Open ping sockets
         self.ping = Ping(self.ioloop, tos=config.ping.tos)
         # Send spooled messages every 250ms
@@ -145,10 +146,10 @@ class PingService(Service):
         ps.task.stop()
         ps.task = None
         del self.probes[id]
-        self.perf_metrics["ping_probe_delete"] += 1
+        metrics["ping_probe_delete"] += 1
         if ps.status is not None and not ps.status:
-            self.perf_metrics["down_objects"] -= 1
-        self.perf_metrics["ping_objects"] = len(self.probes)
+            metrics["down_objects"] -= 1
+        metrics["ping_objects"] = len(self.probes)
 
     def _create_probe(self, data):
         """
@@ -163,8 +164,8 @@ class PingService(Service):
         )
         ps.task = pt
         pt.start()
-        self.perf_metrics["ping_probe_create"] += 1
-        self.perf_metrics["ping_objects"] = len(self.probes)
+        metrics["ping_probe_create"] += 1
+        metrics["ping_objects"] = len(self.probes)
 
     def _change_probe(self, data):
         self.logger.info("Update probe: %s (%ds)", data["address"], data["interval"])
@@ -175,8 +176,8 @@ class PingService(Service):
             self.logger.info("Changing address: %s -> %s", ps.address, data["address"])
             ps.address = data["address"]
         ps.update(**data)
-        self.perf_metrics["ping_probe_update"] += 1
-        self.perf_metrics["ping_objects"] = len(self.probes)
+        metrics["ping_probe_update"] += 1
+        metrics["ping_objects"] = len(self.probes)
 
     @tornado.gen.coroutine
     def ping_check(self, ps):
@@ -187,11 +188,11 @@ class PingService(Service):
         t0 = time.time()
         if ps.id not in self.probes:
             return
-        self.perf_metrics["ping_check_total"] += 1
+        metrics["ping_check_total"] += 1
         if ps.time_cond:
             dt = datetime.datetime.fromtimestamp(t0)
             if not eval(ps.time_cond, {"T": dt}):
-                self.perf_metrics["ping_check_skips"] += 1
+                metrics["ping_check_skips"] += 1
                 return
         rtt, attempts = yield self.ping.ping_check_rtt(
             ps.address,
@@ -202,19 +203,19 @@ class PingService(Service):
         )
         s = rtt is not None
         if s:
-            self.perf_metrics["ping_check_success"] += 1
+            metrics["ping_check_success"] += 1
         else:
-            self.perf_metrics["ping_check_fail"] += 1
+            metrics["ping_check_fail"] += 1
         if ps and s != ps.status:
             if s:
-                self.perf_metrics["down_objects"] -= 1
+                metrics["down_objects"] -= 1
             else:
-                self.perf_metrics["down_objects"] += 1
+                metrics["down_objects"] += 1
             if config.ping.throttle_threshold:
                 # Process throttling
                 down_ratio = (
-                    float(self.perf_metrics["down_objects"]) * 100.0 /
-                    float(self.perf_metrics["ping_objects"])
+                    float(metrics["down_objects"]) * 100.0 /
+                    float(metrics["ping_objects"])
                 )
                 if self.is_throttled:
                     restore_ratio = config.ping.restore_threshold or config.ping.throttle_threshold

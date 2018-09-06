@@ -15,9 +15,9 @@ import tornado.ioloop
 import tornado.gen
 # NOC modules
 from noc.config import config
-from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.service.base import Service
+from noc.core.perf import metrics
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 
