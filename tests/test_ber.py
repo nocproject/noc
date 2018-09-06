@@ -124,15 +124,20 @@ def test_encode_choice():
     raise NotImplementedError()
 
 
-def test_encode_int():
+@pytest.mark.parametrize("value,raw", [
+    (0, "\x02\x01\x00"),
+    (1, "\x02\x01\x01"),
+    (127, "\x02\x01\x7f"),
+    (128, "\x02\x02\x00\x80"),
+    (256, "\x02\x02\x01\x00"),
+    (0x2085, "\x02\x02\x20\x85"),
+    (0x208511, "\x02\x03\x20\x85\x11"),
+    (-128, "\x02\x01\x80"),
+    (-129, "\x02\x02\xff\x7f")
+])
+def test_encode_int(value, raw):
     encoder = BEREncoder()
-    assert encoder.encode_int(0) == "\x02\x01\x00"
-    assert encoder.encode_int(1) == "\x02\x01\x01"
-    assert encoder.encode_int(127) == "\x02\x01\x7f"
-    assert encoder.encode_int(128) == "\x02\x02\x00\x80"
-    assert encoder.encode_int(256) == "\x02\x02\x01\x00"
-    assert encoder.encode_int(-128) == "\x02\x01\x80"
-    assert encoder.encode_int(-129) == "\x02\x02\xff\x7f"
+    assert encoder.encode_int(value) == raw
 
 
 def test_encode_real():
@@ -150,6 +155,24 @@ def test_encode_null():
     assert encoder.encode_null() == "\x05\x00"
 
 
-def test_encode_oid():
+@pytest.mark.parametrize("oid,raw", [
+    ("1.3.6.1.2.1.1.5.0", "\x06\x08+\x06\x01\x02\x01\x01\x05\x00"),
+    ("1.3.6.0", "\x06\x03+\x06\x00"),
+    ("1.3.6.127", "\x06\x03+\x06\x7f"),
+    ("1.3.6.128", "\x06\x04+\x06\x81\x00"),
+    ("1.3.6.255", "\x06\x04+\x06\x81\x7f"),
+    ("1.3.6.256", "\x06\x04+\x06\x82\x00"),
+    ("1.3.6.16383", "\x06\x04+\x06\xff\x7f"),
+    ("1.3.6.16384", "\x06\x05+\x06\x81\x80\x00"),
+    ("1.3.6.65535", "\x06\x05+\x06\x83\xff\x7f"),
+    ("1.3.6.65535", "\x06\x05+\x06\x83\xff\x7f"),
+    ("1.3.6.2097151", "\x06\x05+\x06\xff\xff\x7f"),
+    ("1.3.6.2097152", "\x06\x06+\x06\x81\x80\x80\x00"),
+    ("1.3.6.16777215", "\x06\x06+\x06\x87\xff\xff\x7f"),
+    ("1.3.6.268435455", "\x06\x06+\x06\xff\xff\xff\x7f"),
+    ("1.3.6.268435456", "\x06\x07+\x06\x81\x80\x80\x80\x00"),
+    ("1.3.6.2147483647", "\x06\x07+\x06\x87\xff\xff\xff\x7f")
+])
+def test_encode_oid(oid, raw):
     encoder = BEREncoder()
-    assert encoder.encode_oid("1.3.6.1.2.1.1.5.0") == "\x06\x08+\x06\x01\x02\x01\x01\x05\x00"
+    assert encoder.encode_oid(oid) == raw

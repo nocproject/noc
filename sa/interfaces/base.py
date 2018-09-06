@@ -18,7 +18,7 @@ from noc.core.mac import MAC
 from noc.lib.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
-from noc.core.interface.parameter import ORParameter
+from noc.core.interface.parameter import ORParameter  # noqa
 
 
 class NoneParameter(Parameter):
@@ -27,7 +27,7 @@ class NoneParameter(Parameter):
     >>> NoneParameter().clean("None") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: NoneParameter: 'None'
+    ValueError: NoneParameter: 'None'
     """
     def __init__(self, required=True):
         super(NoneParameter, self).__init__(required=required)
@@ -55,7 +55,7 @@ class StringParameter(Parameter):
     >>> StringParameter(choices=["1","2"]).clean("3") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: StringParameter: '3'.
+    ValueError: StringParameter: '3'.
     """
     def __init__(self, required=True, default=None, choices=None):
         self.choices = choices
@@ -63,12 +63,13 @@ class StringParameter(Parameter):
                                               default=default)
 
     def clean(self, value):
-        if value is None and self.default is not None:
-            return self.default
-        try:
-            value = str(value)
-        except:
-            self.raise_error(value)
+        if not isinstance(value, str):
+            if value is None and self.default is not None:
+                return self.default
+            try:
+                value = str(value)
+            except Exception:
+                self.raise_error(value)
         if self.choices and value not in self.choices:
             self.raise_error(value)
         return value
@@ -80,7 +81,7 @@ class UnicodeParameter(StringParameter):
             return self.default
         try:
             value = unicode(value)
-        except:
+        except Exception:
             self.raise_error(value)
         if self.choices and value not in self.choices:
             self.raise_error(value)
@@ -98,7 +99,7 @@ class REStringParameter(StringParameter):
     >>> REStringParameter("ex+p").clean("ex") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: REStringParameter: 'ex'
+    ValueError: REStringParameter: 'ex'
     >>> REStringParameter("ex+p",default="exxp").clean("regexp 1")
     'regexp 1'
     >>> REStringParameter("ex+p",default="exxp").clean(None)
@@ -122,11 +123,11 @@ class REParameter(StringParameter):
     """
     Check Regular Expression
     >>> REParameter().clean(".+?")
-    ".+?"
+    '.+?'
     >>> REParameter().clean("+") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: REParameter: '+'
+    ValueError: REParameter: '+'
     """
     def clean(self, value):
         try:
@@ -144,7 +145,7 @@ class PyExpParameter(StringParameter):
     >>> PyExpParameter().clean("a =!= b") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: REParameter: 'a =!= b'
+    ValueError: REParameter: 'a =!= b'
     """
     def clean(self, value):
         try:
@@ -171,7 +172,7 @@ class BooleanParameter(Parameter):
     >>> BooleanParameter().clean([]) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: BooleanParameter: [].
+    ValueError: BooleanParameter: [].
     >>> BooleanParameter(default=False).clean(None)
     False
     >>> BooleanParameter(default=True).clean(None)
@@ -205,15 +206,15 @@ class IntParameter(Parameter):
     >>> IntParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IntParameter: 'not a number'
+    ValueError: IntParameter: 'not a number'
     >>> IntParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IntParameter: 5
+    ValueError: IntParameter: 5
     >>> IntParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IntParameter: 10
+    ValueError: IntParameter: 10
     >>> IntParameter(max_value=10, default=7).clean(5)
     5
     >>> IntParameter(max_value=10, default=7).clean(None)
@@ -221,11 +222,11 @@ class IntParameter(Parameter):
     >>> IntParameter(max_value=10, default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IntParameter: 15
+    ValueError: IntParameter: 15
     >>> IntParameter().clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IntParameter: None
+    ValueError: IntParameter: None
     None
     """
     def __init__(self, required=True, default=None,
@@ -256,23 +257,23 @@ class FloatParameter(Parameter):
     >>> FloatParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: FloatParameter: 'not a number'
+    ValueError: FloatParameter: 'not a number'
     >>> FloatParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: FloatParameter: 5
+    ValueError: FloatParameter: 5
     >>> FloatParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: FloatParameter: 10
+    ValueError: FloatParameter: 10
     >>> FloatParameter(max_value=10,default=7).clean(5)
-    5
+    5.0
     >>> FloatParameter(max_value=10,default=7).clean(None)
-    7
+    7.0
     >>> FloatParameter(max_value=10,default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: FloatParameter: 15
+    ValueError: FloatParameter: 15
     """
     def __init__(self, required=True, default=None,
                  min_value=None, max_value=None):
@@ -281,16 +282,17 @@ class FloatParameter(Parameter):
         super(FloatParameter, self).__init__(required=required, default=default)
 
     def clean(self, value):
-        if value is None and self.default is not None:
-            return self.default
-        try:
-            i = float(value)
-        except ValueError:
+        if not isinstance(value, float):
+            if value is None and self.default is not None:
+                return self.default
+            try:
+                value = float(value)
+            except ValueError:
+                self.raise_error(value)
+        if ((self.min_value is not None and value < self.min_value) or
+                (self.max_value is not None and value > self.max_value)):
             self.raise_error(value)
-        if ((self.min_value is not None and i < self.min_value) or
-                (self.max_value is not None and i > self.max_value)):
-            self.raise_error(value)
-        return i
+        return value
 
 
 class ListParameter(Parameter):
@@ -299,13 +301,13 @@ class ListParameter(Parameter):
             return self.default
         try:
             return list(value)
-        except:
+        except ValueError:
             self.raise_error(value)
 
     def form_clean(self, value):
         try:
             return self.clean(eval(value, {}, {}))
-        except:
+        except Exception:
             self.raise_error(value)
 
 
@@ -321,13 +323,13 @@ class InstanceOfParameter(Parameter):
     >>> InstanceOfParameter(cls=C).clean(1) and "Ok" #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: InstanceOfParameter: 1
+    ValueError: InstanceOfParameter: 1
     >>> InstanceOfParameter(cls="C").clean(C()) and "Ok"
     'Ok'
     >>> InstanceOfParameter(cls="C").clean(1) and "Ok" #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: InstanceOfParameter: 1
+    ValueError: InstanceOfParameter: 1
     """
     def __init__(self, cls, required=True, default=None):
         super(InstanceOfParameter, self).__init__(required=required,
@@ -354,7 +356,7 @@ class InstanceOfParameter(Parameter):
         try:
             if self.is_valid(value):
                 return value
-        except:
+        except Exception:
             pass
         self.raise_error(value)
 
@@ -370,17 +372,17 @@ class SubclassOfParameter(Parameter):
     >>> SubclassOfParameter(cls=C).clean(1) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: SubclassOfParameter: 1
+    ValueError: SubclassOfParameter: 1
     >>> SubclassOfParameter(cls="C").clean(C2) and "Ok"
     'Ok'
     >>> SubclassOfParameter(cls=C).clean(1) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: SubclassOfParameter: 1
+    ValueError: SubclassOfParameter: 1
     >>> SubclassOfParameter(cls=C2).clean(C3) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: SubclassOfParameter: <class base.C3>
+    ValueError: SubclassOfParameter: <class base.C3>
     >>> SubclassOfParameter(cls="C",required=False).clean(None)
     """
     def __init__(self, cls, required=True, default=None):
@@ -418,7 +420,7 @@ class SubclassOfParameter(Parameter):
         try:
             if self.is_valid(value):
                 return value
-        except:
+        except Exception:
             pass
         self.raise_error(value)
 
@@ -432,7 +434,7 @@ class ListOfParameter(ListParameter):
     >>> ListOfParameter(element=IntParameter()).clean([1,2,"x"]) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: IntParameter: 'x'
+    ValueError: IntParameter: 'x'
     >>> ListOfParameter(element=StringParameter()).clean([1,2,3,"x"])
     ['1', '2', '3', 'x']
     >>> ListOfParameter(element=StringParameter(),default=[]).clean(None)
@@ -444,7 +446,7 @@ class ListOfParameter(ListParameter):
     >>> ListOfParameter(element=[StringParameter(), IntParameter()]).clean([("a",1), ("b", "x")])   #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: IntParameter: 'x'
+    ValueError: IntParameter: 'x'
     """
     def __init__(self, element, required=True, default=None, convert=False):
         self.element = element
@@ -460,7 +462,10 @@ class ListOfParameter(ListParameter):
             value = [value]
         v = super(ListOfParameter, self).clean(value)
         if self.is_list:
-            return [[e.clean(vv) for e, vv in zip(self.element, v)] for v in value]
+            return [
+                [e.clean(vv) for e, vv in zip(self.element, nv)]
+                for nv in value
+            ]
         else:
             return [self.element.clean(x) for x in v]
 
@@ -469,7 +474,10 @@ class ListOfParameter(ListParameter):
             return self.default
         v = super(ListOfParameter, self).script_clean_input(profile, value)
         if self.is_list:
-            return [[e.script_clean_input(profile, vv) for e, vv in zip(self.element, v)] for v in value]
+            return [
+                [e.script_clean_input(profile, vv) for e, vv in zip(self.element, nv)]
+                for nv in value
+            ]
         else:
             return [self.element.script_clean_input(profile, x) for x in v]
 
@@ -478,9 +486,15 @@ class ListOfParameter(ListParameter):
             return self.default
         v = super(ListOfParameter, self).script_clean_result(profile, value)
         if self.is_list:
-            return [[e.script_clean_result(profile, vv) for e, vv in zip(self.element, v)] for v in value]
+            return [
+                [e.script_clean_result(profile, vv) for e, vv in zip(self.element, nv)]
+                for nv in value
+            ]
         else:
-            return [self.element.script_clean_result(profile, x) for x in v]
+            return [
+                self.element.script_clean_result(profile, x)
+                for x in v
+            ]
 
 
 class StringListParameter(ListOfParameter):
@@ -503,12 +517,18 @@ class DictParameter(Parameter):
     >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","x":"ten"}) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: DictParameter: {'i': '10', 'x': 'ten'}
+    ValueError: DictParameter: {'i': '10', 'x': 'ten'}
     """
     def __init__(self, required=True, default=None, attrs=None, truncate=False):
         super(DictParameter, self).__init__(required=required, default=default)
-        self.attrs = attrs
+        self.attrs = attrs or {}
         self.truncate = truncate
+        self._defaults = dict(
+            (k, attrs[k].default)
+            for k in self.attrs
+            if self.attrs[k].default is not None
+        )
+        self._required_input = set(k for k in self.attrs if self.attrs[k].required)
 
     def clean(self, value):
         if value is None and self.default is not None:
@@ -517,36 +537,23 @@ class DictParameter(Parameter):
             self.raise_error(value)
         if not self.attrs:
             return value
-        in_value = value.copy()
-        out_value = {}
-        for a_name, attr in self.attrs.items():
-            if a_name not in in_value and attr.required:
-                if attr.default is not None:
-                    out_value[a_name] = attr.default
-                else:
-                    self.raise_error(
-                        value,
-                        "Attribute '%s' is required in %s" % (
-                            a_name, value))
-            if a_name in in_value:
+        out = self._defaults.copy()
+        for k in value:
+            param = self.attrs.get(k)
+            if param:
+                v = value[k]
+                if v is None:
+                    continue
                 try:
-                    out_value[a_name] = attr.clean(in_value[a_name])
+                    out[k] = param.clean(v)
                 except InterfaceTypeError as e:
-                    if not in_value[a_name] and not attr.required:
-                        if attr.default:
-                            out_value[a_name] = attr.default
-                        else:
-                            pass
-                    else:
-                        self.raise_error(
-                            value,
-                            "Invalid value for '%s': %s" % (a_name, e))
-                del in_value[a_name]
-        # Copy left items
-        if not self.truncate:
-            for k, v in in_value.items():
-                out_value[k] = v
-        return out_value
+                    self.raise_error("Invalid value for '%s': %s" % (k, e))
+            elif not self.truncate:
+                out[k] = value[k]
+        missed = self._required_input - set(out)
+        if missed:
+            raise InterfaceTypeError("Parameter '%s' required" % missed.pop())
+        return out
 
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
@@ -584,12 +591,9 @@ class DictParameter(Parameter):
                 self.raise_error(value, "Attribute '%s' required" % a_name)
             if a_name in in_value:
                 try:
-                    out_value[a_name] = attr.script_clean_result(profile,
-                                                             in_value[a_name])
-                except InterfaceTypeError as e:
-                    self.raise_error(
-                        value,
-                        "Invalid value for '%s': %s" % (a_name, str(e)))
+                    out_value[a_name] = attr.script_clean_result(profile, in_value[a_name])
+                except InterfaceTypeError:
+                    self.raise_error(value, "Invalid value for '%s'" % a_name)
                 del in_value[a_name]
         for k, v in in_value.items():
             out_value[k] = v
@@ -651,7 +655,7 @@ class IPv4Parameter(StringParameter):
     >>> IPv4Parameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPvParameter: '192.168.0.256'
+    ValueError: IPvParameter: '192.168.0.256'
     """
     def clean(self, value):
         if value is None and self.default is not None:
@@ -671,7 +675,7 @@ class IPv4Parameter(StringParameter):
         try:
             if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
-        except:
+        except ValueError:
             self.raise_error(value)
         # Avoid output like 001.002.003.004
         v = ".".join("%d" % int(c) for c in X)
@@ -685,15 +689,15 @@ class IPv4PrefixParameter(StringParameter):
     >>> IPv4PrefixParameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPv4PrefixParameter: '192.168.0.256'
+    ValueError: IPv4PrefixParameter: '192.168.0.256'
     >>> IPv4PrefixParameter().clean("192.168.0.0/33") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPv4PrefixParameter: '192.168.0.0/33'
+    ValueError: IPv4PrefixParameter: '192.168.0.0/33'
     >>> IPv4PrefixParameter().clean("192.168.0.0/-5") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPv4PrefixParameter: '192.168.0.0/-5'
+    ValueError: IPv4PrefixParameter: '192.168.0.0/-5'
     """
     def clean(self, value):
         if value is None and self.default is not None:
@@ -704,7 +708,7 @@ class IPv4PrefixParameter(StringParameter):
         n, m = v.split("/", 1)
         try:
             m = int(m)
-        except:
+        except ValueError:
             self.raise_error(value)
         if m < 0 or m > 32:
             self.raise_error(value)
@@ -714,7 +718,7 @@ class IPv4PrefixParameter(StringParameter):
         try:
             if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
-        except:
+        except ValueError:
             self.raise_error(value)
         return v
 
@@ -737,7 +741,7 @@ class IPv6Parameter(StringParameter):
     >>> IPv6Parameter().clean('g::')  #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: IPv6Parameter: 'g::'.
+    ValueError: IPv6Parameter: 'g::'.
     >>> IPv6Parameter().clean("0:00:0:0:0::1")
     '::1'
     >>> IPv6Parameter().clean("::ffff:c0a8:1")
@@ -763,15 +767,15 @@ class IPv6PrefixParameter(StringParameter):
     >>> IPv6PrefixParameter().clean("2001:db8::/129") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: IPv6PrefixParameter: '2001:db8::/129'
+    ValueError: IPv6PrefixParameter: '2001:db8::/129'
     >>> IPv6PrefixParameter().clean("2001:db8::/g") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: IPv6PrefixParameter: '2001:db8::/g'
+    ValueError: IPv6PrefixParameter: '2001:db8::/g'
     >>> IPv6PrefixParameter().clean("2001:db8::") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: IPv6PrefixParameter: '2001:db8::'
+    ValueError: IPv6PrefixParameter: '2001:db8::'
     """
     def clean(self, value):
         if value is None and self.default is not None:
@@ -782,7 +786,7 @@ class IPv6PrefixParameter(StringParameter):
         n, m = v.split("/", 1)
         try:
             m = int(m)
-        except:
+        except ValueError:
             self.raise_error(value)
         if m < 0 or m > 128:
             self.raise_error(value)
@@ -832,11 +836,11 @@ class VLANIDParameter(IntParameter):
     >>> VLANIDParameter().clean(5000) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: VLANIDParameter: 5000
+    ValueError: VLANIDParameter: 5000
     >>> VLANIDParameter().clean(0) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: VLANIDParameter: 0
+    ValueError: VLANIDParameter: 0
     """
     def __init__(self, required=True, default=None):
         super(VLANIDParameter, self).__init__(required=required, default=default,
@@ -854,10 +858,13 @@ class VLANStackParameter(ListOfParameter):
     >>> VLANStackParameter().clean([10, 0])
     [10, 0]
     """
+
     def __init__(self, required=True, default=None):
-        super(VLANStackParameter, self).__init__(element=IntParameter(),
-                                           required=required,
-                                           default=default, convert=True)
+        super(VLANStackParameter, self).__init__(
+            element=IntParameter(),
+            required=required,
+            default=default, convert=True
+        )
 
     def clean(self, value):
         value = super(VLANStackParameter, self).clean(value)
@@ -879,13 +886,12 @@ class VLANIDListParameter(ListOfParameter):
     [1, 2, 3]
     """
     def __init__(self, required=True, default=None):
-        super(VLANIDListParameter, self).__init__(element=VLANIDParameter(),
-                                           required=required, default=default)
+        super(VLANIDListParameter, self).__init__(
+            element=VLANIDParameter(),
+            required=required, default=default
+        )
 
 
-#
-#
-#
 class VLANIDMapParameter(StringParameter):
     def clean(self, value):
         """
@@ -914,7 +920,7 @@ class MACAddressParameter(StringParameter):
     >>> MACAddressParameter().clean("1234.5678.9abc.def0") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: MACAddressParameter: '1234.5678.9ABC.DEF0'
+    ValueError: MACAddressParameter: '1234.5678.9ABC.DEF0'
     >>> MACAddressParameter().clean("12:34:56:78:9A:BC")
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC")
@@ -926,11 +932,11 @@ class MACAddressParameter(StringParameter):
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: MACAddressParameter: '12:34:56:78:9A:BC:DE'
+    ValueError: MACAddressParameter: '12:34:56:78:9A:BC:DE'
     >>> MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
+    ValueError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
     >>> MACAddressParameter().clean("aabb-ccdd-eeff")
     'AA:BB:CC:DD:EE:FF'
     >>> MACAddressParameter().clean("aabbccddeeff")
@@ -942,7 +948,7 @@ class MACAddressParameter(StringParameter):
     >>> MACAddressParameter(accept_bin=False).clean("\\xa8\\xf9K\\x80\\xb4\\xc0") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: MACAddressParameter: '\xa8\xf9K\x80\xb4\xc0'.
+    ValueError: MACAddressParameter: '\xa8\xf9K\x80\xb4\xc0'.
     """
     def __init__(self, required=True, default=None, accept_bin=True):
         self.accept_bin = accept_bin
@@ -979,7 +985,7 @@ class OIDParameter(Parameter):
     >>> OIDParameter().clean("1.3.6.1.2.1.1.X.0")  #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: OIDParameter: '1.3.6.1.2.1.1.X.0'
+    ValueError: OIDParameter: '1.3.6.1.2.1.1.X.0'
     """
     def clean(self, value):
         def is_false(v):
@@ -1009,51 +1015,51 @@ class RDParameter(Parameter):
         '100000:100'
         """
         try:
-            l, r = value.split(":")
-            r = long(r)
+            left, right = value.split(":", 1)
+            right = long(right)
         except ValueError:
             self.raise_error(value)
-        if r < 0:
+        if right < 0:
             self.raise_error(value)
-        if "." in l:
+        if "." in left:
             # IP:N
             try:
-                l = IPv4Parameter().clean(l)
+                left = IPv4Parameter().clean(left)
             except InterfaceTypeError:
                 self.raise_error(value)
-            if r > 65535:
+            if right > 65535:
                 self.raise_error(value)
         else:
             # ASN:N
             try:
-                if l.endswith("L") or l.endswith("l"):
-                    l = l[:-1]
-                l = int(l)
+                if left.endswith("L") or left.endswith("l"):
+                    left = left[:-1]
+                left = int(left)
             except ValueError:
                 self.raise_error(value)
-            if l < 0:
+            if left < 0:
                 self.raise_error(value)
-            if l > 65535:
-                if r > 65535:  # 4-byte ASN
+            if left > 65535:
+                if right > 65535:  # 4-byte ASN
                     self.raise_error(value)
             else:
-                if r > 0xFFFFFFFF:  # 2-byte ASN
+                if right > 0xFFFFFFFF:  # 2-byte ASN
                     self.raise_error(value)
-        return "%s:%s" % (l, r)
+        return "%s:%s" % (left, right)
 
 
 class GeoPointParameter(Parameter):
     """
     >>> GeoPointParameter().clean([180, 90])
-    [180, 90]
+    [180.0, 90.0]
     >>> GeoPointParameter().clean([75.5, "90"])
-    [75.5, 90]
+    [75.5, 90.0]
     >>> GeoPointParameter().clean("[180, 85.5]")
-    [180, 85.5]
+    [180.0, 85.5]
     >>> GeoPointParameter().clean([1])  #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    InterfaceTypeError: GeoPointParameter: [1]
+    ValueError: GeoPointParameter: [1]
     """
     def clean(self, value):
         if type(value) in (list, tuple):
@@ -1069,8 +1075,7 @@ class GeoPointParameter(Parameter):
             if not v or "," not in v:
                 self.raise_error(value)
             s = v[0]
-            if (s not in ("(", "[") or (s == "(" and v[-1] != ")") or
-                (s == "[" and v[-1]) != "]"):
+            if s not in ("(", "[") or (s == "(" and v[-1] != ")") or (s == "[" and v[-1]) != "]":
                 self.raise_error(value)
             return self.clean(v[1:-1].split(","))
         else:
@@ -1197,9 +1202,7 @@ class ObjectIdParameter(REStringParameter):
             "^[0-9a-f]{24}$", required=required, default=default
         )
 
-#
-# Module Test
-#
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

@@ -10,7 +10,7 @@
 import math
 import struct
 # NOC modules
-from noc.speedup.ber import parse_tlv_header, parse_p_oid
+from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_oid, encode_int
 
 
 class DecodeError(Exception):
@@ -358,22 +358,19 @@ class BEREncoder(object):
         """
         if data == 0:
             return "\x02\x01\x00"
-        elif data > 0:
-            r = self.struct_Q.pack(data).lstrip("\x00")
-            if r[0] >= "\x80":
-                r = "\x00" + r
-        elif data < 0:
-            data = -data
-            r = self.struct_Q.pack(data).lstrip("\x00")
-            ln = len(r)
-            comp = 1 << (ln * 8 - 1)
-            if comp < data:
-                comp <<= 8
-            r = self.struct_Q.pack(comp - data).lstrip("\x00")
-            if r:
-                r = chr(ord(r[0]) | 0x80) + r[1:]
-            else:
-                r = "\x80" + "\x00" * (ln - 1)
+        if data > 0:
+            return encode_int(data)
+        data = -data
+        r = self.struct_Q.pack(data).lstrip("\x00")
+        ln = len(r)
+        comp = 1 << (ln * 8 - 1)
+        if comp < data:
+            comp <<= 8
+        r = self.struct_Q.pack(comp - data).lstrip("\x00")
+        if r:
+            r = chr(ord(r[0]) | 0x80) + r[1:]
+        else:
+            r = "\x80" + "\x00" * (ln - 1)
         return self.encode_tlv(2, True, r)
 
     def encode_real(self, data):
@@ -416,7 +413,11 @@ class BEREncoder(object):
             9, True, "0x03%dE%s%d" % (m, "" if e else "+", e))
 
     def encode_null(self):
-        return self.encode_tlv(5, True, "")
+        """
+        05 00
+        :return:
+        """
+        return "\x05\x00"
 
     def encode_oid(self, data):
         """
@@ -426,20 +427,7 @@ class BEREncoder(object):
         :param data:
         :return:
         """
-        d = [int(x) for x in data.split(".")]
-        r = [chr(d[0] * 40 + d[1])]
-        for v in d[2:]:
-            if v < 0x7f:
-                r += [chr(v)]
-            else:
-                rr = []
-                while v:
-                    rr += [(v & 0x7f) | 0x80]
-                    v >>= 7
-                rr.reverse()
-                rr[-1] &= 0x7f
-                r += [chr(x) for x in rr]
-        return self.encode_tlv(6, True, "".join(r))
+        return encode_oid(data)
 
 
 def decode(msg):

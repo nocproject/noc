@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # IGetLLDPNeighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 # Python modules
 from __future__ import absolute_import
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, DictParameter, StringParameter, IntParameter,
+from .base import (DictListParameter, StringParameter, IntParameter,
                    InterfaceNameParameter, MACAddressParameter, IPv4Parameter)
 
 
@@ -45,11 +46,11 @@ from .base import (ListOfParameter, DictParameter, StringParameter, IntParameter
 # For local(7) - convert to integer and return untouched
 #
 class IGetLLDPNeighbors(BaseInterface):
-    returns = ListOfParameter(element=DictParameter(attrs={
+    returns = DictListParameter(attrs={
         "local_interface": InterfaceNameParameter(),
         # Should be set when platform advertises not LldpPortIdSubtype==5
         "local_interface_id": IntParameter(required=False) | MACAddressParameter(required=False) | IPv4Parameter(required=False),
-        "neighbors": ListOfParameter(element=DictParameter(attrs={
+        "neighbors": DictListParameter(attrs={
             # LldpChassisIdSubtype TC, macAddress(4)
             "remote_chassis_id_subtype": IntParameter(default=4),
             # Remote chassis ID
@@ -61,6 +62,6 @@ class IGetLLDPNeighbors(BaseInterface):
             "remote_system_name": StringParameter(required=False),
             "remote_system_description": StringParameter(required=False),
             # LldpSystemCapabilitiesMap TC bitmask
-            "remote_capabilities": IntParameter(default=0),
-        }))
-    }))
+            "remote_capabilities": IntParameter(default=0)
+        })
+    })

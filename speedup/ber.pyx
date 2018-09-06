@@ -82,26 +82,146 @@ def parse_p_oid(bytes msg):
     cdef char[1024] out
     cdef char* ptr
     cdef char* o_ptr
+    cdef int l_msg = len(msg)
 
     ptr = msg
-    optr = out
+    o_ptr = out
     if ptr[0] == "+":
-        optr += snprintf(optr, 1024 - (optr - out), "1.3")
+        o_ptr += snprintf(o_ptr, 1024 - (o_ptr - out), "1.3")
     else:
-        optr += snprintf(
-            optr,
-            1024 - (optr - out),
+        o_ptr += snprintf(
+            o_ptr,
+            1024 - (o_ptr - out),
             "%u.%u",
             <unsigned int>(ptr[0] // 40),
             <unsigned int>(ptr[0] % 40)
         )
     ptr += 1
     b = 0
-    for i in range(1, len(msg)):
+    for i in range(1, l_msg):
         v = ptr[0]
         ptr += 1
         b = (b << 7) + (v & 0x7f)
         if not (v & 0x80):
-            optr += snprintf(optr, 1024 - (optr - out), ".%u", b)
+            o_ptr += snprintf(o_ptr, 1024 - (o_ptr - out), ".%u", b)
             b = 0
     return out
+
+
+cdef inline char* _write_int(char* ptr, int v):
+    if v < 0x80:  # 1 block
+        ptr[0] = v
+        return ptr + 1
+    if v < (1 << 14):  # 2 blocks of 7 bits
+        ptr[0] = ((v >> 7) & 0x7f) | 0x80
+        ptr[1] = v & 0x7f
+        return ptr + 2
+    if v < (1 << 21):  # 3 blocks of 7 bits
+        ptr[0] = ((v >> 14) & 0x7f) | 0x80
+        ptr[1] = ((v >> 7) & 0x7f) | 0x80
+        ptr[2] = v & 0x7f
+        return ptr + 3
+    if v < (1 << 28):  # 4 blocks
+        ptr[0] = ((v >> 21) & 0x7f) | 0x80
+        ptr[1] = ((v >> 14) & 0x7f) | 0x80
+        ptr[2] = ((v >> 7) & 0x7f) | 0x80
+        ptr[3] = v & 0x7f
+        return ptr + 4
+    # 5 blocks
+    ptr[0] = ((v >> 28) & 0x7f) | 0x80
+    ptr[1] = ((v >> 21) & 0x7f) | 0x80
+    ptr[2] = ((v >> 14) & 0x7f) | 0x80
+    ptr[3] = ((v >> 7) & 0x7f) | 0x80
+    ptr[4] = v & 0x7f
+    return ptr + 5
+
+
+def encode_oid(bytes msg):
+    """
+    >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
+    '\\x06\\x08+\\x06\\x01\\x02\\x01\\x01\\x05\\x00'
+
+    :param msg:
+    :return:
+    """
+    cdef int v = 0
+    cdef int nv = 0
+    cdef int sn = 0
+    cdef char x
+    cdef char *ptr = msg
+    cdef char[1024] out
+    cdef char* o_ptr = out + 2
+    cdef l_msg = len(msg)
+
+    out[0] = 0x6  # OID primitive
+    # out[1] should be length
+    for _ in range(l_msg):
+        x = ptr[0]
+        if x < 0x30 or x > 0x39:
+            if sn == 0:
+                nv = v
+                sn = 1
+            elif sn == 1:
+                o_ptr[0] = nv * 40 + v
+                o_ptr += 1
+                sn = 2
+            else:
+                o_ptr = _write_int(o_ptr, v)
+            v = 0
+        else:
+            v = (v * 10) + (x - 0x30)
+        ptr += 1
+    if sn == 2:
+        o_ptr = _write_int(o_ptr, v)
+    # Write length
+    out[1] = o_ptr - out - 2
+    return bytes(out[:o_ptr - out])
+
+
+cdef inline int _write_raw_int(char* ptr, int value):
+    cdef int n = 0
+    if value <= 0xFF:
+        if value & 0x80:
+            ptr[0] = 0
+            ptr += 1
+            n += 1
+        ptr[0] = value
+        return n + 1
+    if value <= 0xFFFF:
+        if value & 0x8000:
+            ptr[0] = 0
+            ptr += 1
+            n += 1
+        ptr[0] = (value >> 8) & 0xFF
+        ptr[1] = value  & 0xFF
+        return n + 2
+    if value <= 0xFFFFFF:
+        if value & 0x800000:
+            ptr[0] = 0
+            ptr += 1
+            n += 1
+        ptr[0] = (value >> 16) & 0xFF
+        ptr[1] = (value >> 8) & 0xFF
+        ptr[2] = value  & 0xFF
+        return n + 3
+    ptr[0] = (value >> 24) & 0xFF
+    ptr[1] = (value >> 16) & 0xFF
+    ptr[2] = (value >> 8) & 0xFF
+    ptr[3] = value  & 0xFF
+    return n + 4
+
+
+def encode_int(int value):
+    if value == 0:
+        return bytes("\x02\x01\x00")
+    cdef char[32] out
+    cdef int n
+    out[0] = 0x2  # Type
+    if value > 0:
+        if value <= 0x7f:
+            out[1] = 1  # size
+            out[2] = value
+            return bytes(out[:3])
+        n = _write_raw_int(out + 2, value)
+        out[1] = n
+        return bytes(out[:n + 2])

@@ -141,7 +141,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         self.capabilities = capabilities or {}
         self.timeout = timeout or self.get_timeout()
         self.start_time = None
-        self.args = self.clean_input(args or {})
+        self._interface = self.interface()
+        self.args = self.clean_input(args) if args else {}
         self.cli_stream = None
         self.mml_stream = None
         if self.parent:
@@ -220,13 +221,13 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         """
         Cleanup input parameters against interface
         """
-        return self.interface().script_clean_input(self.profile, **args)
+        return self._interface.script_clean_input(self.profile, **args)
 
     def clean_output(self, result):
         """
         Clean script result against interface
         """
-        return self.interface().script_clean_result(self.profile, result)
+        return self._interface.script_clean_result(self.profile, result)
 
     def run(self):
         """
