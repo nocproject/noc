@@ -257,7 +257,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 finally:
                     if not self.parent:
                         # Close SNMP socket when necessary
-                        self.snmp.close()
+                        self.close_snmp()
                         # Close CLI socket when necessary
                         self.close_cli_stream()
                         # Close MML socket when necessary
@@ -854,6 +854,12 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 self.cli_stream.shutdown_session()
                 self.cli_stream.close()
             self.cli_stream = None
+
+    def close_snmp(self):
+        if self.parent:
+            return
+        self.snmp.close()
+        self.snmp = None
 
     def mml(self, cmd, **kwargs):
         """
