@@ -21,6 +21,26 @@ Ext.define("NOC.core.FormPanel", {
     initComponent: function() {
         var me = this;
 
+        if(me.restUrl) {
+            Ext.Ajax.request({
+                url: me.restUrl + 'launch_info/',
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    var me = this,
+                        li = Ext.decode(response.responseText);
+                    if(li.params.hasOwnProperty("cust_form_fields")) {
+                        Ext.each(li.params["cust_form_fields"],
+                            function(field) {
+                                me.items.first().add(Ext.create(field))
+                            });
+                    }
+                },
+                failure: function() {
+                    NOC.error(__("Failed add custom fields to form "));
+                }
+            });
+        }
         me.formTitle = Ext.create("Ext.container.Container", {
             minWidth: me.formMinWidth,
             maxWidth: me.formMaxWidth,
