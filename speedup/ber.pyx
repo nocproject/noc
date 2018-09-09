@@ -151,7 +151,7 @@ def encode_oid(bytes msg):
     cdef char *ptr = msg
     cdef char[1024] out
     cdef char* o_ptr = out + 2
-    cdef l_msg = len(msg)
+    cdef int l_msg = len(msg)
 
     out[0] = 0x6  # OID primitive
     # out[1] should be length
