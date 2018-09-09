@@ -2,10 +2,12 @@
 # ----------------------------------------------------------------------
 # SNMP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import weakref
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -33,13 +35,17 @@ class SNMP(object):
     SNMPError = SNMPError
 
     def __init__(self, script):
-        self.script = script
+        self._script = weakref.ref(script)
         self.ioloop = None
         self.result = None
         self.logger = PrefixLoggerAdapter(script.logger, self.name)
         self.timeouts_limit = 0
         self.timeouts = 0
         self.socket = None
+
+    @property
+    def script(self):
+        return self._script()
 
     def set_timeout_limits(self, n):
         """

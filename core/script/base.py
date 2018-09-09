@@ -858,8 +858,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     def close_snmp(self):
         if self.parent:
             return
-        self.snmp.close()
-        self.snmp = None
+        if self.snmp:
+            self.snmp.close()
+            self.snmp = None
 
     def mml(self, cmd, **kwargs):
         """
