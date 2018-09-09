@@ -126,7 +126,8 @@ class SNMP(object):
 
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
-        return self.result
+        r, self.result = self.result, None
+        return r
 
     def set(self, *args):
         """
@@ -158,7 +159,8 @@ class SNMP(object):
         else:
             raise ValueError("Invalid varbinds")
         self.get_ioloop().run_sync(run)
-        return self.result
+        r, self.result = self.result, None
+        return r
 
     def count(self, oid, filter=None, version=None):
         """
@@ -188,7 +190,8 @@ class SNMP(object):
 
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
-        return self.result
+        r, self.result = self.result, None
+        return r
 
     def getnext(self, oid, community_suffix=None,
                 filter=None, cached=False,
@@ -222,7 +225,8 @@ class SNMP(object):
 
         version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
-        return self.result
+        r, self.result = self.result, None
+        return r
 
     def get_table(self, oid, community_suffix=None, cached=False):
         """
