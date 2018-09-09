@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Syslog server
+# SNMP Trap Server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import time
 from noc.core.ioloop.udpserver import UDPServer
 from noc.lib.escape import fm_escape
 from noc.core.snmp.trap import decode_trap
-from noc.core.snmp.ber import DecodeError
 from noc.config import config
 
 
@@ -32,7 +31,7 @@ class TrapServer(UDPServer):
             return  # Invalid event source
         try:
             community, varbinds = decode_trap(data)
-        except DecodeError as e:
+        except ValueError as e:
             self.service.perf_metrics["error", ("type", "decode_failed")] += 1
             logger.error("Failed to decode trap: %s", data.encode("hex"))
             logger.error("Decoder error: %s", e)

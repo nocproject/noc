@@ -19,7 +19,7 @@ from noc.core.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
                                parse_get_response, parse_get_response_raw)
 from noc.core.snmp.set import set_pdu
 from noc.core.snmp.error import (NO_ERROR, NO_SUCH_NAME,
-                                 SNMPError, TIMED_OUT, UNREACHABLE)
+                                 SNMPError, TIMED_OUT, UNREACHABLE, BER_ERROR)
 from noc.core.ioloop.udp import UDPSocket
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
@@ -74,10 +74,14 @@ def snmp_get(address, oids, port=161,
             sock.settimeout(prev_timeout)
         else:
             sock.close()
-    if raw_varbinds:
-        resp = parse_get_response_raw(data)
-    else:
-        resp = parse_get_response(data)
+    try:
+        if raw_varbinds:
+            resp = parse_get_response_raw(data)
+        else:
+            resp = parse_get_response(data)
+    except ValueError:
+        # Broken response
+        raise SNMPError(code=BER_ERROR, oid=oids[0])
     if resp.error_status == NO_ERROR:
         # Success
         if oid_map:
@@ -205,7 +209,10 @@ def snmp_count(address, oid, port=161,
             else:
                 sock.close()
         # Parse response
-        resp = parse_get_response(data)
+        try:
+            resp = parse_get_response(data)
+        except ValueError:
+            raise SNMPError(code=BER_ERROR, oid=oid)
         if resp.error_status == NO_SUCH_NAME:
             # NULL result
             break
@@ -294,10 +301,13 @@ def snmp_getnext(address, oid, port=161,
             close_socket()
             raise SNMPError(code=UNREACHABLE, oid=oid)
         # Parse response
-        if raw_varbinds:
-            resp = parse_get_response_raw(data)
-        else:
-            resp = parse_get_response(data)
+        try:
+            if raw_varbinds:
+                resp = parse_get_response_raw(data)
+            else:
+                resp = parse_get_response(data)
+        except ValueError:
+            raise SNMPError(code=BER_ERROR, oid=oid)
         if resp.error_status == NO_SUCH_NAME:
             # NULL result
             break
@@ -359,7 +369,10 @@ def snmp_set(address, varbinds, port=161,
             sock.settimeout(None)
         else:
             sock.close()
-    resp = parse_get_response(data)
+    try:
+        resp = parse_get_response(data)
+    except ValueError:
+        raise SNMPError(code=BER_ERROR, oid=varbinds[0][0])
     if resp.error_status != NO_ERROR:
         oid = None
         if resp.error_index and resp.varbinds:
