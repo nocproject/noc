@@ -86,7 +86,7 @@ Ext.define("NOC.core.FormPanel", {
         });
         Ext.apply(me, {items: me.formPanel});
         me.callParent();
-        me.form = me.items.first().getForm()
+        me.form = me.formPanel.getForm()
     },
     //
     preview: function(record, backItem) {
