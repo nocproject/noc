@@ -8,10 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+import time
 # NOC modules
 from .base import BaseCollector
 from noc.lib.nosql import get_db
-from noc.lib.dateutils import humanize_timedelta
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 
@@ -32,8 +32,8 @@ class FMObjectCollector(BaseCollector):
         db = get_db()
 
         yield ("events_active_total", ), db.noc.events.active.estimated_document_count()
-        yield ("events_active_first", ), db.noc.events.new.find_one(sort=[("timestamp", 1)])["timestamp"].isoformat()
-
+        yield ("events_active_first", ), time.mktime(
+            db.noc.events.new.find_one(sort=[("timestamp", 1)])["timestamp"].timetuple())
         yield ("alarms_active_total", ), db.noc.alarms.active.estimated_document_count()
         yield ("alarms_archived_total", ), db.noc.alarms.active.estimated_document_count()
         yield ("alarms_active_first", ), db.noc.alarms.active.estimated_document_count()
