@@ -32,7 +32,7 @@ Ext.define("NOC.core.FormPanel", {
                     if(li.params.hasOwnProperty("cust_form_fields")) {
                         Ext.each(li.params["cust_form_fields"],
                             function(field) {
-                                me.items.first().add(Ext.create(field))
+                                me.formPanel.add(Ext.create(field))
                             });
                     }
                 },
@@ -57,35 +57,34 @@ Ext.define("NOC.core.FormPanel", {
         // Append configured fields
         formFields = formFields.concat(me.getFormFields());
 
-        Ext.apply(me, {
-            items: [{
-                xtype: 'form',
-                layout: 'anchor',
-                border: true,
-                padding: 4,
-                bodyPadding: 4,
-                autoScroll: true,
-                defaults: {
-                    anchor: "100%",
-                    enableKeyEvents: true,
-                    listeners: {
-                        specialkey: {
-                            scope: me,
-                            fn: me.onFormSpecialKey
-                        }
+        me.formPanel = Ext.create({
+            xtype: 'form',
+            layout: 'anchor',
+            border: true,
+            padding: 4,
+            bodyPadding: 4,
+            autoScroll: true,
+            defaults: {
+                anchor: "100%",
+                enableKeyEvents: true,
+                listeners: {
+                    specialkey: {
+                        scope: me,
+                        fn: me.onFormSpecialKey
                     }
-                },
-                items: formFields,
-                dockedItems: {
-                    xtype: "toolbar",
-                    dock: "top",
-                    layout: {
-                        overflowHandler: "Menu"
-                    },
-                    items: me.getFormToolbar()
                 }
-            }]
+            },
+            items: formFields,
+            dockedItems: {
+                xtype: "toolbar",
+                dock: "top",
+                layout: {
+                    overflowHandler: "Menu"
+                },
+                items: me.getFormToolbar()
+            }
         });
+        Ext.apply(me, {items: me.formPanel});
         me.callParent();
         me.form = me.items.first().getForm()
     },
