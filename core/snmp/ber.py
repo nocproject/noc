@@ -423,7 +423,20 @@ class BEREncoder(object):
         :param data:
         :return:
         """
-        return encode_oid(data)
+        d = [int(x) for x in data.split(".")]
+        r = [chr(d[0] * 40 + d[1])]
+        for v in d[2:]:
+            if v < 0x7f:
+                r += [chr(v)]
+            else:
+                rr = []
+                while v:
+                    rr += [(v & 0x7f) | 0x80]
+                    v >>= 7
+                rr.reverse()
+                rr[-1] &= 0x7f
+                r += [chr(x) for x in rr]
+        return self.encode_tlv(6, True, "".join(r))
 
 
 def decode(msg):
