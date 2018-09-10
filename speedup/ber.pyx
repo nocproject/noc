@@ -147,11 +147,11 @@ def encode_oid(bytes msg):
     cdef int v = 0
     cdef int nv = 0
     cdef int sn = 0
-    cdef char x
-    cdef char *ptr = msg
+    cdef unsigned char *ptr = msg
+    cdef unsigned char x
     cdef char[1024] out
     cdef char* o_ptr = out + 2
-    cdef l_msg = len(msg)
+    cdef int l_msg = len(msg)
 
     out[0] = 0x6  # OID primitive
     # out[1] should be length
@@ -175,7 +175,7 @@ def encode_oid(bytes msg):
         o_ptr = _write_int(o_ptr, v)
     # Write length
     out[1] = o_ptr - out - 2
-    return bytes(out[:o_ptr - out])
+    return out[:o_ptr - out]
 
 
 cdef inline int _write_raw_int(char* ptr, int value):

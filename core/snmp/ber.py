@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ASN.1 BER utitities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,11 +10,7 @@
 import math
 import struct
 # NOC modules
-from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_oid, encode_int
-
-
-class DecodeError(Exception):
-    pass
+from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int
 
 
 def did(tag_class, is_constructed, tag_id):
@@ -51,7 +47,7 @@ class BERDecoder(object):
                 pt = "implicit " + pt
             if tag_class:
                 pt += " application %d" % tag_class
-            raise DecodeError(
+            raise ValueError(
                 "Cannot find BER decoder for %s class %d (0x%X): %s" % (
                     pt, tag, tag, value.encode('hex'))
             )
@@ -137,11 +133,11 @@ class BERDecoder(object):
                 elif f & 0x3f == 0x03:  # ISO 6093 NR3 form
                     return float(msg[1:])  # 0123e456
             except ValueError:
-                raise DecodeError("Invalid REAL representation: %s" % msg[1:])
+                raise ValueError("Invalid REAL representation: %s" % msg[1:])
         elif f & 0x40:  # infinitive, 8.5.8
             return float("-inf" if f & 0x01 else "inf")
         else:
-            raise DecodeError("Unknown REAL encoding: %s" % f)
+            raise ValueError("Unknown REAL encoding: %s" % f)
 
     def parse_p_bitstring(self, msg):
         unused = ord(msg[0])
@@ -427,7 +423,20 @@ class BEREncoder(object):
         :param data:
         :return:
         """
-        return encode_oid(data)
+        d = [int(x) for x in data.split(".")]
+        r = [chr(d[0] * 40 + d[1])]
+        for v in d[2:]:
+            if v < 0x7f:
+                r += [chr(v)]
+            else:
+                rr = []
+                while v:
+                    rr += [(v & 0x7f) | 0x80]
+                    v >>= 7
+                rr.reverse()
+                rr[-1] &= 0x7f
+                r += [chr(x) for x in rr]
+        return self.encode_tlv(6, True, "".join(r))
 
 
 def decode(msg):
