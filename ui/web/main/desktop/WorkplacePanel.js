@@ -41,17 +41,17 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     },
     // Launch application in tab
     launchTab: function(panel_class, title, params, node) {
-        var me = this, tab;
-        me.app = Ext.create(panel_class, {
-            noc: params,
-            title: title,
-            closable: true
-        });
+        var me = this, tab,
+            app = Ext.create(panel_class, {
+                noc: params,
+                title: title,
+                closable: true
+            });
         tab = me.add({
             title: title,
             closable: true,
             layout: "fit",
-            items: [me.app],
+            items: app,
             listeners: {
                 scope: me,
                 beforeclose: me.onTabClose
@@ -112,10 +112,5 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         var me = this;
         me.expandButton.setGlyph(NOC.glyph.expand);
         me.expandButton.setTooltip(__("Collapse panels"));
-    },
-    //
-    getApp: function() {
-        var me = this;
-        return me.app;
     }
 });
