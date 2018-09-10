@@ -67,22 +67,25 @@ class FMObjectCollector(BaseCollector):
         alarms_all = alarms_rooted.union(alarms_nroored)
 
         for pool_name, pool_mos in self.pool_mappings:
-            yield ("alarms_active_pool_count", ("pool", pool_name)), len(pool_mos.intersection(alarms_all))
-            yield ("alarms_active_rooted_pool_count", ("pool", pool_name)), len(pool_mos.intersection(alarms_rooted))
-            yield ("alarms_active_nonrooted_pool_count", ("pool", pool_name)), len(pool_mos.intersection(alarms_nroored))
+            yield ("alarms_active_pool_count",
+                   ("pool", pool_name)), len(pool_mos.intersection(alarms_all))
+            yield ("alarms_active_rooted_pool_count",
+                   ("pool", pool_name)), len(pool_mos.intersection(alarms_rooted))
+            yield ("alarms_active_nonrooted_pool_count",
+                   ("pool", pool_name)), len(pool_mos.intersection(alarms_nroored))
         yield ("alarms_active_broken_count", ), broken_alarms
 
         for shard in set(TTSystem.objects.filter(is_active=True).values_list("shard_name")):
-            yield ("escalation_pool_count", ("shard", shard)), \
-                  db["noc.scheduler.escalation.%s" % shard].estimated_document_count()
+            yield ("escalation_pool_count",
+                   ("shard", shard)), db["noc.scheduler.escalation.%s" % shard].estimated_document_count()
             first_escalation = db["noc.scheduler.escalator.%s" % shard].find_one(sort=[("ts", -1)])
             if first_escalation:
                 # yield ("escalation_last_ts", ("shard", shard)), time.mktime(last_escalation["ts"].timetuple())
-                yield ("escalation_first_lag_ts", ("shard", shard)), \
-                      self.calc_lag(time.mktime(first_escalation["ts"].timetuple()), now)
+                yield ("escalation_first_lag_ts",
+                       ("shard", shard)), self.calc_lag(time.mktime(first_escalation["ts"].timetuple()), now)
 
             last_escalation = db["noc.scheduler.escalator.%s" % shard].find_one(sort=[("ts", 1)])
             if last_escalation:
                 # yield ("escalation_last_ts", ("shard", shard)), time.mktime(last_escalation["ts"].timetuple())
-                yield ("escalation_lag_ts", ("shard", shard)), \
-                      self.calc_lag(time.mktime(last_escalation["ts"].timetuple()), now)
+                yield ("escalation_lag_ts",
+                       ("shard", shard)), self.calc_lag(time.mktime(last_escalation["ts"].timetuple()), now)
