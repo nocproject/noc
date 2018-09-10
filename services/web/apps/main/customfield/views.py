@@ -21,3 +21,6 @@ class CustomFieldApplication(ExtModelApplication):
     model = CustomField
     icon = "icon_cog_add"
     query_fields = ["name", "description", "table"]
+
+    def field_table__label(self, obj):
+        return obj.table
