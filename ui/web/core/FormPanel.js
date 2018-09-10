@@ -21,6 +21,26 @@ Ext.define("NOC.core.FormPanel", {
     initComponent: function() {
         var me = this;
 
+        if(me.restUrl) {
+            Ext.Ajax.request({
+                url: me.restUrl + 'launch_info/',
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    var me = this,
+                        li = Ext.decode(response.responseText);
+                    if(li.params.hasOwnProperty("cust_form_fields")) {
+                        Ext.each(li.params["cust_form_fields"],
+                            function(field) {
+                                me.formPanel.add(Ext.create(field))
+                            });
+                    }
+                },
+                failure: function() {
+                    NOC.error(__("Failed add custom fields to form "));
+                }
+            });
+        }
         me.formTitle = Ext.create("Ext.container.Container", {
             minWidth: me.formMinWidth,
             maxWidth: me.formMaxWidth,
@@ -37,37 +57,36 @@ Ext.define("NOC.core.FormPanel", {
         // Append configured fields
         formFields = formFields.concat(me.getFormFields());
 
-        Ext.apply(me, {
-            items: [{
-                xtype: 'form',
-                layout: 'anchor',
-                border: true,
-                padding: 4,
-                bodyPadding: 4,
-                autoScroll: true,
-                defaults: {
-                    anchor: "100%",
-                    enableKeyEvents: true,
-                    listeners: {
-                        specialkey: {
-                            scope: me,
-                            fn: me.onFormSpecialKey
-                        }
+        me.formPanel = Ext.create({
+            xtype: 'form',
+            layout: 'anchor',
+            border: true,
+            padding: 4,
+            bodyPadding: 4,
+            autoScroll: true,
+            defaults: {
+                anchor: "100%",
+                enableKeyEvents: true,
+                listeners: {
+                    specialkey: {
+                        scope: me,
+                        fn: me.onFormSpecialKey
                     }
-                },
-                items: formFields,
-                dockedItems: {
-                    xtype: "toolbar",
-                    dock: "top",
-                    layout: {
-                        overflowHandler: "Menu"
-                    },
-                    items: me.getFormToolbar()
                 }
-            }]
+            },
+            items: formFields,
+            dockedItems: {
+                xtype: "toolbar",
+                dock: "top",
+                layout: {
+                    overflowHandler: "Menu"
+                },
+                items: me.getFormToolbar()
+            }
         });
+        Ext.apply(me, {items: me.formPanel});
         me.callParent();
-        me.form = me.items.first().getForm()
+        me.form = me.formPanel.getForm()
     },
     //
     preview: function(record, backItem) {
