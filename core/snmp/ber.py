@@ -10,7 +10,7 @@
 import math
 import struct
 # NOC modules
-from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_oid, encode_int
+from noc.speedup.ber import parse_tlv_header, parse_p_oid, encode_int
 
 
 def did(tag_class, is_constructed, tag_id):
