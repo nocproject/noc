@@ -1350,6 +1350,7 @@ Ext.define("NOC.core.ModelApplication", {
                 } else {
                     NOC.info(r);
                 }
+                me.reloadStore();
             },
             failure: function() {
                 NOC.error(__("Failed"));
