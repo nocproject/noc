@@ -131,7 +131,6 @@ class Service(object):
         self.ioloop = None
         self.logger = None
         self.service_id = str(uuid.uuid4())
-        self.perf_metrics = metrics
         self.executors = {}
         self.start_time = time.time()
         self.pid = os.getpid()
@@ -664,11 +663,11 @@ class Service(object):
         Subscribe message to channel
         """
         def call_json_handler(message):
-            self.perf_metrics[metric_in] += 1
+            metrics[metric_in] += 1
             try:
                 data = ujson.loads(message.body)
             except ValueError as e:
-                self.perf_metrics[metric_decode_fail] += 1
+                metrics[metric_decode_fail] += 1
                 self.logger.debug("Cannot decode JSON message: %s", e)
                 return True  # Broken message
             if isinstance(data, dict):
@@ -678,27 +677,27 @@ class Service(object):
                 with ErrorReport():
                     r = handler(message, data)
             if r:
-                self.perf_metrics[metric_processed] += 1
+                metrics[metric_processed] += 1
             elif message.is_async():
                 message.on("finish", on_finish)
             else:
-                self.perf_metrics[metric_deferred] += 1
+                metrics[metric_deferred] += 1
             return r
 
         def call_raw_handler(message):
-            self.perf_metrics[metric_in] += 1
+            metrics[metric_in] += 1
             with ErrorReport():
                 r = handler(message, message.body)
             if r:
-                self.perf_metrics[metric_processed] += 1
+                metrics[metric_processed] += 1
             elif message.is_async():
                 message.on("finish", on_finish)
             else:
-                self.perf_metrics[metric_deferred] += 1
+                metrics[metric_deferred] += 1
             return r
 
         def on_finish(*args, **kwargs):
-            self.perf_metrics[metric_processed] += 1
+            metrics[metric_processed] += 1
 
         t = topic.replace(".", "_")
         metric_in = "nsq_msg_in_%s" % t
@@ -950,7 +949,7 @@ class Service(object):
         remote_ip = handler.request.remote_ip
         if status == 200 and uri == "/mon/" and method == "GET":
             self.logger.debug("Monitoring request (%s)", remote_ip)
-            self.perf_metrics["mon_requests"] += 1
+            metrics["mon_requests"] += 1
         elif (status == 200 or status == 429) and uri.startswith("/health/") and method == "GET":
             pass
         elif status == 200 and uri == ("/metrics") and method == "GET":
@@ -961,8 +960,8 @@ class Service(object):
                 method, uri, remote_ip,
                 1000.0 * handler.request.request_time()
             )
-            self.perf_metrics["http_requests", ("method", method.lower())] += 1
-            self.perf_metrics["http_response", ("status", status)] += 1
+            metrics["http_requests", ("method", method.lower())] += 1
+            metrics["http_response", ("status", status)] += 1
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:

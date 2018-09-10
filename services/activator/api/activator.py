@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Activator API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.core.http.client import fetch
+from noc.core.perf import metrics
 from noc.config import config
 
 
@@ -62,7 +63,7 @@ class ActivatorAPI(API):
         """
         script_class = loader.get_script(name)
         if not script_class:
-            self.service.perf_metrics["error", ("type", "invalid_script")] += 1
+            metrics["error", ("type", "invalid_script")] += 1
             raise APIError("Invalid script: %s" % name)
         script = script_class(
             service=self.service,
@@ -78,7 +79,7 @@ class ActivatorAPI(API):
         try:
             result = script.run()
         except script.ScriptError as e:
-            self.service.perf_metrics["error", ("type", "script_error")] += 1
+            metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
         return result
 
@@ -109,7 +110,7 @@ class ActivatorAPI(API):
             self.logger.debug("SNMP GET %s %s returns %s",
                               address, oid, result)
         except SNMPError as e:
-            self.service.perf_metrics["error", ("type", "snmp_v1_error")] += 1
+            metrics["error", ("type", "snmp_v1_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s",
                               address, oid, e)
@@ -142,7 +143,7 @@ class ActivatorAPI(API):
             self.logger.debug("SNMP GET %s %s returns %s",
                               address, oid, result)
         except SNMPError as e:
-            self.service.perf_metrics["error", ("type", "snmp_v2_error")] += 1
+            metrics["error", ("type", "snmp_v2_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s",
                               address, oid, e)
@@ -171,7 +172,7 @@ class ActivatorAPI(API):
         if 200 <= code <= 299:
             raise tornado.gen.Return(body)
         else:
-            self.service.perf_metrics["error", ("type", "http_error_%s" % code)] += 1
+            metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             raise tornado.gen.Return(None)
 
