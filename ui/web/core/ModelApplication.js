@@ -1155,6 +1155,11 @@ Ext.define("NOC.core.ModelApplication", {
     onResetFilters: function() {
         var me = this;
         me.filterPanel.getForm().reset();
+        Ext.each(me.filterPanel.query(".button[enableToggle]"),
+            function(b) {
+                b.toggle(false);
+                b.fireHandler();
+            });
         me.onFilter();
     },
     //
