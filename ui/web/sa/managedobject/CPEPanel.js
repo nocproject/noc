@@ -106,7 +106,7 @@ Ext.define("NOC.sa.managedobject.CPEPanel", {
                     },
                     {
                         text: __("Loca Id"),
-                        dataIndex: "loca_id"
+                        dataIndex: "local_id"
                     },
                     {
                         text: __("Location"),

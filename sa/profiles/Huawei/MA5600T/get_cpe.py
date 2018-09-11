@@ -111,7 +111,9 @@ class Script(BaseScript):
             parts = self.splitter.split(v)
             parse_result = parse_kv(self.detail_map, parts[1])
             r[ont_id]["distance"] = float(parse_result.get("ont_distance", 0))
-            r[ont_id]["ip"] = parse_result.get("ont_address", "").split("/")[0]
+            address = parse_result.get("ont_address", "")
+            if address:
+                r[ont_id]["ip"] = parse_result.get("ont_address", "").split("/")[0]
         return list(six.itervalues(r))
 
     def execute_snmp(self, **kwargs):
