@@ -117,14 +117,13 @@ class Script(BaseScript):
                 stp = self.rx_stp.findall(c)
 
         # Get ifname and description
-        i = []
         c = self.cli("show interfaces description").split("\n\n")
         i = self.rx_sh_int_des.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
         if not i:
             i = self.rx_sh_int_des2.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
 
         interfaces = []
-        mtu = []
+        mtu = None
         for res in i:
             mac = None
             ifindex = 0
@@ -134,7 +133,7 @@ class Script(BaseScript):
                 v = self.cli("show interface %s" % name)
                 time.sleep(0.5)
                 for match in self.rx_sh_int.finditer(v):
-                    ifname = match.group("interface")
+                    # ifname = match.group("interface")
                     ifindex = match.group("ifindex")
                     mac = match.group("mac")
                     mtu = match.group("mtu")
@@ -164,12 +163,13 @@ class Script(BaseScript):
 
             sub = {
                 "name": self.profile.convert_interface_name(name),
-                "mtu": mtu,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "description": description.strip(),
                 "enabled_afi": []
             }
+            if mtu:
+                sub["mtu"] = mtu
             if ifindex:
                 sub["snmp_ifindex"] = ifindex
             if mac:
