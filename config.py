@@ -517,12 +517,33 @@ class Config(BaseConfig):
 
     class datastream(ConfigSection):
         enable_administrativedomain = BooleanParameter(default=True)
+        enable_administrativedomain_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for Adm. Domain datastream (Mongo greater 3.6 needed)")
         enable_cfgping = BooleanParameter(default=True)
+        enable_cfgping_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgPing datastream (Mongo greater 3.6 needed)")
         enable_cfgsyslog = BooleanParameter(default=True)
+        enable_cfgsyslog_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgSyslog datastream (Mongo greater 3.6 needed)")
         enable_cfgtrap = BooleanParameter(default=True)
-        enable_dnszone = BooleanParameter(default=True)
+        enable_cfgtrap_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgTrap datastream (Mongo greater 3.6 needed)")
+        enable_dnszone = BooleanParameter(default=False)
+        enable_dnszone_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for DNS Zone datastream (Mongo greater 3.6 needed)")
         enable_managedobject = BooleanParameter(default=True)
+        enable_managedobject_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for ManagedObject datastream (Mongo greater 3.6 needed)")
         enable_resourcegroup = BooleanParameter(default=True)
+        enable_resourcegroup_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for ResourceGroup datastream (Mongo greater 3.6 needed)")
 
     class help(ConfigSection):
         base_url = StringParameter(default="https://docs.getnoc.com")

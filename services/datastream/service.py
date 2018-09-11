@@ -61,15 +61,19 @@ class DataStreamService(Service):
     def on_activate(self):
         # Detect we have working .watch() implementation
         if self.has_watch():
-            waiter = self.watch_waiter
+            has_watch = True
         else:
             self.logger.warning(
                 "Realtime change tracking is not available, using polling emulation."
             )
-            waiter = self.sleep_waiter
+            has_watch = False
         # Start watcher threads
         self.ds_queue = {}
         for ds in self.get_datastreams():
+            if has_watch and getattr(config.datastream, "enable_%s_wait" % ds.name):
+                waiter = self.watch_waiter
+            else:
+                waiter = self.sleep_waiter
             self.logger.info("Starting %s waiter thread", ds.name)
             queue = Queue.Queue()
             self.ds_queue[ds.name] = queue
