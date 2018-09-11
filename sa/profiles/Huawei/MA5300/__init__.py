@@ -49,8 +49,9 @@ class Profile(BaseProfile):
     snmp_metrics_get_timeout = 5
 
     def setup_session(self, script):
-        script.cli("config", ignore_errors=True)
         script.cli("terminal type vt100", ignore_errors=True)
+        script.cli("no debug all", ignore_errors=True)
+        script.cli("config", ignore_errors=True)
         script.cli("line vty 0 3", ignore_errors=True)
         script.cli("history size 0", ignore_errors=True)
         script.cli("length 0", ignore_errors=True)
