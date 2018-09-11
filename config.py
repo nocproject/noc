@@ -466,6 +466,12 @@ class Config(BaseConfig):
     class selfmon(ConfigSection):
         enable_managedobject = BooleanParameter(default=True)
         managedobject_ttl = IntParameter(default=30)
+        enable_task = BooleanParameter(default=False)
+        task_ttl = IntParameter(default=30)
+        enable_inventory = BooleanParameter(default=False)
+        inventory_ttl = IntParameter(default=30)
+        enable_fm = BooleanParameter(default=False)
+        fm_ttl = IntParameter(default=30)
 
     class sentry(ConfigSection):
         url = StringParameter(default="")
