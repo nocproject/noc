@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.core.script.error import CLIOperationError
+from noc.core.lldp import LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME
 
 
 class Profile(BaseProfile):
@@ -32,6 +33,18 @@ class Profile(BaseProfile):
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
+
+    matchers = {
+        # LLDP neighbor information should replace port_id to remote_port_description
+        "is_lldp_convert_mac_to_name": {
+            "platform": {
+                "$in": [
+                    "DGS-3426", "DGS-3426G", "DGS-3426P", "DGS-3427", "DGS-3450",
+                    "DGS-3612", "DGS-3612G", "DGS-3627", "DGS-3627G", "DGS-3650"
+                ]
+            }
+        }
+    }
     #
     # Version comparison
     # Version format:
@@ -60,7 +73,7 @@ class Profile(BaseProfile):
         r"^((?P<re_vendor>(RMON|D-Link))\s)?"
         r"((?P<re_platform>(D[EXG]S\S+))\s)?"
         r"((?P<re_firmware>R\S+)\s)?"
-        r"Port\s+(?P<re_port>\d+)?"
+        r"Port\s*(?P<re_port>\d+)?"
         r"( on Unit (?P<re_slot>\d+))?$"
     )
 
@@ -105,6 +118,21 @@ class Profile(BaseProfile):
             return s[6:]
         else:
             return s
+
+    def clean_lldp_neighbor(self, obj, neighbor):
+        neighbor = super(Profile, self).clean_lldp_neighbor(obj, neighbor)
+        if (
+            neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC and
+            obj.matchers.is_lldp_convert_mac_to_name
+        ):
+            if neighbor.get("remote_port_description") is None:
+                self.script.logger.warning("Can't get remote_port_description")
+                return neighbor
+            # Platform reports single MAC address for every port
+            # But leaks interface name to remote_port_description
+            neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
+            neighbor["remote_port"] = self.convert_interface_name(neighbor["remote_port_description"])
+        return neighbor
 
     cluster_member = None
     dlink_pager = False
