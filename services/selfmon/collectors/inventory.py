@@ -20,6 +20,7 @@ class InventoryObjectCollector(BaseCollector):
 
     def iter_metrics(self):
 
-        yield ("iface_count"), Interface.objects.filter().count()
-        yield ("link_count"), Link.objects.filter().count()
-        yield ("subinterface_count"), SubInterface.objects.filter().count()
+        # @todo by POOL / Adm Domain
+        yield ("inventory_iface_count"), Interface.objects.filter().count()
+        yield ("inventory_link_count"), Link.objects.filter().count()
+        yield ("inventory_subinterface_count"), SubInterface.objects.filter().count()

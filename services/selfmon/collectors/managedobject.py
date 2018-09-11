@@ -29,6 +29,6 @@ class ManagedObjectCollector(BaseCollector):
             pool = Pool.get_by_id(pool_id)
             if not pool:
                 continue
-            yield ("managedobject_managed", ("pool", pool.name)), pool_managed
-            yield ("managedobject_unmanaged", ("pool", pool.name)), pool_managed
-            yield ("managedobject_total", ("pool", pool.name)), pool_managed + pool_unmanaged
+            yield ("inventory_managedobject_managed", ("pool", pool.name)), pool_managed
+            yield ("inventory_managedobject_unmanaged", ("pool", pool.name)), pool_managed
+            yield ("inventory_managedobject_total", ("pool", pool.name)), pool_managed + pool_unmanaged
