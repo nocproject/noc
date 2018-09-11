@@ -43,6 +43,13 @@ Ext.define("Ext.ux.form.GridField", {
             handler: me.onAddRecord
         });
 
+        me.appendButton = Ext.create("Ext.button.Button", {
+            text: __("Append"),
+            glyph: NOC.glyph.sign_in,
+            scope: me,
+            handler: Ext.pass(me.onAddRecord, true)
+        });
+
         me.deleteButton = Ext.create("Ext.button.Button", {
             text: __("Delete"),
             glyph: NOC.glyph.minus,
@@ -62,6 +69,7 @@ Ext.define("Ext.ux.form.GridField", {
         // Build toolbar
         toolbar = [
             me.addButton,
+            me.appendButton,
             me.deleteButton,
             "-",
             me.cloneButton
@@ -143,12 +151,16 @@ Ext.define("Ext.ux.form.GridField", {
         me.cloneButton.setDisabled(false);
     },
     //
-    onAddRecord: function() {
+    onAddRecord: function(self, evt, toEnd) {
         var me = this,
-            rowEditing = me.grid.plugins[0];
+            rowEditing = me.grid.plugins[0],
+            position = 0;
+        if(toEnd) {
+            position = me.grid.store.data.length;
+        }
         rowEditing.cancelEdit();
-        me.grid.store.insert(0, {});
-        rowEditing.startEdit(0, 0);
+        me.grid.store.insert(position, {});
+        rowEditing.startEdit(position, 0);
     },
     //
     onDeleteRecord: function() {
