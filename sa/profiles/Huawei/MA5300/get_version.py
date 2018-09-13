@@ -3,7 +3,7 @@
 # Huawei.MA5300.get_version
 # sergey.sadovnikov@gmail.com
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -12,6 +12,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
+
 
 class Script(BaseScript):
     name = "Huawei.MA5300.get_version"
@@ -33,4 +34,3 @@ class Script(BaseScript):
             "version": version
         }
         return r
-

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5300.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -29,6 +29,6 @@ class Script(BaseScript):
         vlans = match.group("vlans").strip().replace("(default)", "")
         for vlan_id in self.expand_rangelist(vlans):
             r += [{
-                    "vlan_id": vlan_id
-                }]
+                "vlan_id": vlan_id
+            }]
         return r

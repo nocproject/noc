@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     name = "Huawei.MA5300"
     pattern_more = [
         (r"--- More:", " "),
-        (r"---- More \(Press CTRL\+C break\) ---", " "),
+        (r"\s*---- More \(Press CTRL\+C break\) ---\s*", " "),
         (r"Note: Terminal", "\n"),
         (r"Warning: Battery is low power!", "\n"),
         (r"\{\s<cr>.*\s\}:", "\n"),
@@ -37,6 +37,7 @@ class Profile(BaseProfile):
         r"(% Unknown command, the error locates at \'^\'|  Logged Fail!|" \
         r"System is busy, please try after a while)"
     rogue_chars = [
+        re.compile(r"\x1b\[39D\s+\x1b\[39D"),
         re.compile(r"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
         re.compile(r"\r\n\s+Note: Terminal users login \(IP: \S+ \)"),
         re.compile(r"\r\nWarning: Battery is low power!"),
@@ -48,9 +49,17 @@ class Profile(BaseProfile):
     snmp_metrics_get_timeout = 5
 
     def setup_session(self, script):
-        script.cli("config", ignore_errors=True)
         script.cli("terminal type vt100", ignore_errors=True)
+        script.cli("no debug all", ignore_errors=True)
+        script.cli("config", ignore_errors=True)
+        script.cli("line vty 0 3", ignore_errors=True)
         script.cli("history size 0", ignore_errors=True)
-        script.cli("length 0", cached=True, ignore_errors=True)
-        script.cli("exit", cached=True, ignore_errors=True)
+        script.cli("length 0", ignore_errors=True)
+        script.cli("exit", ignore_errors=True)
         script.cli("cls", ignore_errors=True)
+
+    def shutdown_session(self, script):
+        script.cli("config", ignore_errors=True)
+        script.cli("line vty 0 3", ignore_errors=True)
+        script.cli("no length 0", ignore_errors=True)
+        script.cli("exit", ignore_errors=True)

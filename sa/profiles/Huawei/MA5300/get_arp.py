@@ -3,7 +3,7 @@
 # Huawei.MA5300.get_arp
 # sergey.sadovnikov@gmail.com
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -37,4 +37,3 @@ class Script(BaseScript):
                 "interface": match.group("interface")
             })
         return r
-
