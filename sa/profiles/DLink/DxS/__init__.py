@@ -125,6 +125,9 @@ class Profile(BaseProfile):
             neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC and
             obj.matchers.is_lldp_convert_mac_to_name
         ):
+            if neighbor.get("remote_port_description") is None:
+                # self.script.logger.warning("Can't get remote_port_description")
+                return neighbor
             # Platform reports single MAC address for every port
             # But leaks interface name to remote_port_description
             neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
