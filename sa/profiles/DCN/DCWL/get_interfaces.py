@@ -17,28 +17,6 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
-    INTERFACE_TYPES = {
-
-        "lo": "loopback",  # Loopback
-
-    }
-
-    INTERFACE_TYPES2 = {
-
-        "brv": "unknown",  # No comment
-        "eth": "physical",  # No comment
-        "wla": "physical",  # No comment
-
-    }
-
-    @classmethod
-    def get_interface_type(cls, name):
-        c = cls.INTERFACE_TYPES2.get(name[:3])
-        if c:
-            return c
-        c = cls.INTERFACE_TYPES.get(name[:2])
-        return c
-
     FREQ = {
         "bg-n": "2400GHz",
         "a-n": "5150GHz"
@@ -59,69 +37,63 @@ class Script(BaseScript):
         c = cls.IEEE.get(name)
         return c
 
+    @staticmethod
+    def parse_block(block):
+        r = {}
+        for line in block.splitlines():
+            line = line.split(' ', 1)
+            if len(line) != 2:
+                continue
+            r[line[0].strip()] = line[1].strip()
+        return r
+
     def execute(self):
         interfaces = []
         wres = {}
         w = self.cli("get radio all detail")
-        for wline in w.splitlines():
-            wr = wline.split(" ", 1)
-            if wr[0] == "name":
-                wname = wr[1].strip()
-            if wr[0].strip() == "mode":
-                mode = wr[1].strip()
-                freq = self.get_interface_freq(mode)
-                ieee_mode = self.get_interface_ieee(mode)
-            if wr[0].strip() == "channel":
-                channel = wr[1].strip()
-            if wr[0].strip() == "n-bandwidth":
-                channelbandwidth = wr[1].strip()
-                wres[wname] = {"ieee_mode": ieee_mode,
-                               "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
+        for block in w.split("\n\n"):
+            wr = self.parse_block(block)
+            if "name" not in wr:
+                continue
+            wres[wr["name"]] = {"ieee_mode": self.get_interface_ieee(wr["mode"]),
+                                "channel": wr["channel"],
+                                "freq": self.get_interface_freq(wr["mode"]),
+                                "channelbandwidth": wr["n-bandwidth"]}
+
         c = self.cli("get interface all detail")
-        for line in c.splitlines():
-            r = line.split(' ', 1)
-            ip_address = None
-            if r[0] == "name":
-                name = r[1].strip()
-                iftype = self.get_interface_type(name)
-                if not name:
-                    self.logger.info(
-                        "Ignoring unknown interface type: '%s", iftype
-                    )
-                    continue
-            if r[0] == "mac":
-                mac = r[1].strip()
-                if "eth" in name:
-                    iface = {
-                        "type": iftype,
-                        "name": name,
-                        "mac": mac,
-                        "subinterfaces": [{
-                            "name": name,
-                            "mac": mac,
-                            "enabled_afi": ["BRIDGE"],
-                        }]
-                    }
-                    interfaces += [iface]
-            if r[0] == "ip":
-                ip_address = r[1].strip()
-            if r[0] == "mask":
-                ip_subnet = r[1].strip()
+        for block in c.split("\n\n"):
+            r = self.parse_block(block)
+            name = r.get("name")
+            if "name" not in r:
+                self.logger.info("Nothing name in block: %s" % block)
+                continue
+
+            iftype = self.profile.get_interface_type(name)
+            if not iftype:
+                self.logger.info("Ignoring unknown interface type: '%s", iftype)
+                continue
+            ip_address, ip_subnet = r.get("ip") or r.get("static-ip"), r.get("mask") or r.get("static-mask")
+
+            if ("eth" in name and "mac" in r) or (ip_subnet and ip_address):
+                interfaces += [{
+                    "type": iftype,
+                    "name": name,
+                    "subinterfaces": []
+                }]
+                sub = {
+                    "name": name,
+                    "enabled_afi": [],
+                }
+                if r.get("mac"):
+                    interfaces[-1]["mac"] = r["mac"]
+                    sub["mac"] = r["mac"]
+                    sub["enabled_afi"] += ["BRIDGE"]
                 # ip address + ip subnet
-                if ip_subnet or ip_address:
+                if ip_subnet and ip_address:
                     ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-                    iface = {
-                        "type": iftype,
-                        "name": name,
-                        "mac": mac,
-                        "subinterfaces": [{
-                            "name": name,
-                            "mac": mac,
-                            "enabled_afi": ["IPv4"],
-                            "ipv4_addresses": [ip_address],
-                        }]
-                    }
-                    interfaces += [iface]
+                    sub["ipv4_addresses"] = [ip_address]
+                    sub["enabled_afi"] += ["IPv4"]
+                interfaces[-1]["subinterfaces"] += [sub]
 
         descr_template = "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz"
         for line in c.splitlines():

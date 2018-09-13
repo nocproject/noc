@@ -27,7 +27,7 @@ class Script(GetMetricsScript):
         ["Interface | DOM | RxPower", "Interface | DOM | TxPower",
          "Interface | DOM | Voltage", "Interface | DOM | Bias Current"
          "Interface | DOM | Temperature"],
-        # has_capability="Network | PON | OLT",
+        has_capability="Network | PON | OLT",
         access="C",  # CLI version
         volatile=False
     )
