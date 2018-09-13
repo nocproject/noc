@@ -21,6 +21,7 @@ class Profile(BaseProfile):
     ]
     pattern_prompt = r"^(?P<hostname>((?!\n)[\s\S])+)> "
     pattern_syntax_error = r"Command not found"
+    pattern_operation_error = r"ERROR: Can't stat show result"
 #    command_disable_pager = "terminal datadump"
 #    command_super = "enable"
     username_submit = "\r"
