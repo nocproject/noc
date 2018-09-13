@@ -738,7 +738,6 @@ Ext.define("NOC.core.ModelApplication", {
                 width: me.iconSize,
                 items: me.alignButton(me.applyPermissions(me.formToolbar))
             });
-            console.log("open");
             me.formPanel.getRefItems()[0].addDocked(me.formButtonToolbar);
         }
         me.form = me.formPanel.items.first().getForm();
