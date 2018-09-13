@@ -40,6 +40,7 @@ Ext.define("NOC.core.ModelApplication", {
     helpId: undefined,
     listHelpId: undefined,
     formHelpId: undefined,
+    iconSize: 26,
     //
     navTooltipTemplate: new Ext.XTemplate(
         '<tpl if="data.name">',
@@ -187,8 +188,7 @@ Ext.define("NOC.core.ModelApplication", {
         }
         gridToolbar = gridToolbar.concat(me.gridToolbar);
         gridToolbar.push("->");
-        me.totalField = Ext.create("Ext.button.Button", {
-        });
+        me.totalField = Ext.create("Ext.button.Button", {});
         gridToolbar.push(me.totalField);
         if(NOC.settings.enableHelp && (me.helpId || me.listHelpId)) {
             me.listHelpButton = Ext.create("Ext.button.Button", {
@@ -472,6 +472,7 @@ Ext.define("NOC.core.ModelApplication", {
     createForm: function() {
         var me = this,
             focusField = null,
+            formToolbar = [],
             autoFocusFields;
         //
         me.saveButton = Ext.create("Ext.button.Button", {
@@ -528,7 +529,19 @@ Ext.define("NOC.core.ModelApplication", {
         });
         //
         // Default toolbar items
-        var formToolbar = [
+        if(me.formToolbar && me.formToolbar.length) {
+            me.menuButton = Ext.create("Ext.button.Button", {
+                tooltip: __("Show/Hide button"),
+                glyph: NOC.glyph.bars,
+                scope: me,
+                handler: me.toggleLeftToolbar
+            });
+            formToolbar = [
+                me.menuButton,
+                "-"
+            ];
+        }
+        formToolbar = formToolbar.concat([
             me.saveButton,
             me.closeButton,
             "-",
@@ -536,7 +549,7 @@ Ext.define("NOC.core.ModelApplication", {
             me.deleteButton,
             "-",
             me.cloneButton
-        ];
+        ]);
         // Add View button
         if(me.onPreview) {
             formToolbar.push({
@@ -551,10 +564,6 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             });
         }
-        if(me.formToolbar && me.formToolbar.length) {
-            formToolbar.push("-");
-        }
-        formToolbar = formToolbar.concat(me.formToolbar);
         //
         if(NOC.settings.enableHelp && (me.helpId || me.formHelpId)) {
             me.formHelpButton = Ext.create("Ext.button.Button", {
@@ -619,7 +628,7 @@ Ext.define("NOC.core.ModelApplication", {
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         position = grid.store.data.length,
-                                    rowEditing = grid.plugins[0];
+                                        rowEditing = grid.plugins[0];
                                     rowEditing.cancelEdit();
                                     grid.store.insert(position, {});
                                     rowEditing.startEdit(position, 0);
@@ -692,7 +701,7 @@ Ext.define("NOC.core.ModelApplication", {
             itemId: "form",
             layout: "fit",
             items: {
-                xtype: 'form',
+                xtype: "form",
                 layout: me.formLayout,
                 border: true,
                 padding: 4,
@@ -709,19 +718,29 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 },
                 items: formFields,
-                dockedItems: {
+                dockedItems: [{
                     xtype: "toolbar",
                     dock: "top",
                     layout: {
                         overflowHandler: "Menu"
                     },
                     items: me.applyPermissions(formToolbar)
-                }
+                }, me.formButtonToolbar]
             },
             getDefaultFocus: function() {
                 return focusField;
             }
         });
+        if(me.formToolbar && me.formToolbar.length) {
+            me.formButtonToolbar = Ext.create({
+                xtype: "toolbar",
+                dock: "left",
+                width: me.iconSize,
+                items: me.alignButton(me.applyPermissions(me.formToolbar))
+            });
+            console.log("open");
+            me.formPanel.getRefItems()[0].addDocked(me.formButtonToolbar);
+        }
         me.form = me.formPanel.items.first().getForm();
         // detect autofocus field
         autoFocusFields = Ext.ComponentQuery.query("[autoFocus=true]", me.formPanel);
@@ -1956,5 +1975,28 @@ Ext.define("NOC.core.ModelApplication", {
                 html: element.tooltip
             });
         }
+    },
+    //
+    toggleLeftToolbar: function() {
+        var me = this;
+        if(me.formButtonToolbar.getWidth() === me.iconSize) {
+            me.formButtonToolbar.setWidth("100%");
+        } else {
+            me.formButtonToolbar.setWidth(me.iconSize);
+        }
+    },
+    //
+    alignButton: function(buttons) {
+        var acc = [];
+        Ext.each(buttons, function(btn) {
+            if(Ext.isFunction(btn.setTextAlign)) {
+                btn.setTextAlign("left");
+            }
+            if(Ext.isFunction(btn.setTooltip) && !btn.tooltip && btn.getText()) {
+                btn.setTooltip(btn.getText());
+            }
+            acc.push(btn);
+        });
+        return acc;
     }
 });
