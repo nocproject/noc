@@ -8,7 +8,6 @@
 
 # Python modules
 from __future__ import absolute_import
-from itertools import count
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.lib.text import parse_kv
@@ -37,53 +36,57 @@ class Script(GetMetricsScript):
         self.collect_cpe_metrics(metrics)
 
     def collect_cpe_metrics(self, metrics):
-        m_id = max(m.id for m in metrics)
-        c_metrics = set(m.metric for m in metrics)
-        m_id = count(m_id)
         onts = self.scripts.get_cpe_status()  # Getting ONT List
         self.cli("config")
         self.cli("interface gpon 0/0")  # Fix from cpes
         for cc in onts:
-            if "status" in cc and cc["status"] == "active":
-                frame, slot, port, cpe_id = cc["id"].split("/")
-                ipath = [cc["global_id"], "", "", "0"]
-                v = self.cli("display ont optical-info %s %s" % (port, cpe_id))
-                m = parse_kv(self.kv_map, v)
-            else:
+            if cc.get("status", "") != "active":
                 continue
-            self.logger.info("Collect %s", m)
-            if m.get("temp_c") is not None and "Interface | DOM | Temperature" in c_metrics:
-                self.set_metric(id=next(m_id),
+            frame, slot, port, cpe_id = cc["id"].split("/")
+            ipath = [cc["global_id"], "", "", "0"]
+            mpath = ["", "", "", "/".join([frame, slot, port])]
+            v = self.cli("display ont optical-info %s %s" % (port, cpe_id))
+            m = parse_kv(self.kv_map, v)
+
+            self.logger.debug("Collect %s, %s, %s", m, ipath, mpath)
+            if m.get("temp_c") is not None:
+                self.set_metric(id=("Interface | DOM | Temperature", mpath),
                                 metric="Interface | DOM | Temperature",
                                 path=ipath,
-                                value=float(m["temp_c"]))
-            if m.get("voltage_v") is not None and "Interface | DOM | Voltage" in c_metrics:
-                self.set_metric(id=next(m_id),
+                                value=float(m["temp_c"]),
+                                multi=True)
+            if m.get("voltage_v") is not None:
+                self.set_metric(id=("Interface | DOM | Voltage", mpath),
                                 metric="Interface | DOM | Voltage",
                                 path=ipath,
-                                value=float(m["voltage_v"]))
-            if m.get("optical_rx_dbm") is not None and "Interface | DOM | RxPower" in c_metrics:
-                self.set_metric(id=next(m_id),
+                                value=float(m["voltage_v"]),
+                                multi=True)
+            if m.get("optical_rx_dbm") is not None:
+                self.set_metric(id=("Interface | DOM | RxPower", mpath),
                                 metric="Interface | DOM | RxPower",
                                 path=ipath,
-                                value=float(m["optical_rx_dbm"]))
-            if m.get("optical_rx_dbm_cpe") is not None and "Interface | DOM | RxPower" in c_metrics:
-                self.set_metric(id=next(m_id),
+                                value=float(m["optical_rx_dbm"]),
+                                multi=True)
+            if m.get("optical_rx_dbm_cpe") is not None:
+                self.set_metric(id=("Interface | DOM | RxPower", mpath),
                                 metric="Interface | DOM | RxPower",
                                 path=["", "", "", cc["interface"], cc["id"]],
                                 value=float(m["optical_rx_dbm_cpe"]
                                             if "," not in m["optical_rx_dbm_cpe"] else
-                                            m["optical_rx_dbm_cpe"].split(",")[0]))
-            if m.get("current_ma") is not None and "Interface | DOM | Bias Current" in c_metrics:
-                self.set_metric(id=next(m_id),
+                                            m["optical_rx_dbm_cpe"].split(",")[0]),
+                                multi=True)
+            if m.get("current_ma") is not None:
+                self.set_metric(id=("Interface | DOM | Bias Current", mpath),
                                 metric="Interface | DOM | Bias Current",
                                 path=ipath,
-                                value=float(m["current_ma"]))
-            if m.get("optical_tx_dbm") is not None and "Interface | DOM | TxPower" in c_metrics:
-                self.set_metric(id=next(m_id),
+                                value=float(m["current_ma"]),
+                                multi=True)
+            if m.get("optical_tx_dbm") is not None:
+                self.set_metric(id=("Interface | DOM | TxPower", mpath),
                                 metric="Interface | DOM | TxPower",
                                 path=ipath,
-                                value=float(m["optical_tx_dbm"]))
+                                value=float(m["optical_tx_dbm"]),
+                                multi=True)
 
         self.cli("quit")
         self.cli("quit")
