@@ -6,8 +6,7 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-'''
-'''
+
 from noc.core.profile.base import BaseProfile
 
 
@@ -32,3 +31,25 @@ class Profile(BaseProfile):
             """Leave switch context"""
             if exc_type is None:
                 self.script.cli("exit\r")
+
+    INTERFACE_TYPES = {
+
+        "lo": "loopback",  # Loopback
+
+    }
+
+    INTERFACE_TYPES2 = {
+
+        "brv": "unknown",  # No comment
+        "eth": "physical",  # No comment
+        "wla": "physical",  # No comment
+
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        c = cls.INTERFACE_TYPES2.get(name[:3])
+        if c:
+            return c
+        c = cls.INTERFACE_TYPES.get(name[:2])
+        return c
