@@ -80,6 +80,7 @@ class Script(BaseScript):
             cap = 0
             for c in match.group("sys_caps_enabled").strip().split(","):
                 cap |= {
+                    "N/A": 0,
                     "Other": 1,
                     "Repeater/Hub": 2,
                     "Bridge/Switch": 4,
