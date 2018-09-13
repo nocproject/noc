@@ -21,10 +21,15 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     CAPS_MAP = {
-        "O": 1, "r": 2, "B": 4,
-        "W": 8, "R": 16, "T": 32,
-        "C": 64, "S": 128, "D": 256,
-        "H": 512, "TP": 1024,
+        "O": 1, "Other": 1,
+        "r": 2, "Repeater": 2,
+        "B": 4, "Bridge": 4,
+        "W": 8, "Access Point": 8,
+        "R": 16, "Router": 16,
+        "T": 32, "Telephone": 32,
+        "C": 64, "Cable Device": 64,
+        "S": 128, "Station only": 128,
+        "D": 256, "H": 512, "TP": 1024,
     }
 
     rx_detail = re.compile(
