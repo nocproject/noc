@@ -14,6 +14,7 @@ import ujson
 import tornado.gen
 # Python modules
 from noc.core.service.authhandler import AuthRequestHandler
+from noc.core.service.error import RPCRemoteError, RPCError
 from noc.core.perf import metrics
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
@@ -31,6 +32,7 @@ class MRTRequestHandler(AuthRequestHandler):
     def write_chunk(self, obj):
         data = ujson.dumps(obj)
         self.write("%s|%s" % (len(data), data))
+        logger.debug("%s|%s" % (len(data), data))
         yield self.flush()
 
     @tornado.gen.coroutine
@@ -43,6 +45,17 @@ class MRTRequestHandler(AuthRequestHandler):
             logger.debug("Run script %s %s %s", oid, script, args)
             r = yield self.service.sae.script(oid, script, args)
             metrics["mrt_success"] += 1
+        except RPCRemoteError as e:
+            raise tornado.gen.Return({
+                "id": str(oid),
+                "error": str(e)
+            })
+        except RPCError as e:
+            logger.error("RPC Error: %s" % str(e))
+            raise tornado.gen.Return({
+                "id": str(oid),
+                "error": str(e)
+            })
         except Exception as e:
             error_report()
             metrics["mrt_failed"] += 1
@@ -102,6 +115,7 @@ class MRTRequestHandler(AuthRequestHandler):
             if len(futures) >= config.mrt.max_concurrency:
                 wi = tornado.gen.WaitIterator(*futures)
                 r = yield next(wi)
+                futures.pop(wi.current_index)
                 yield self.write_chunk(r)
             futures += [self.run_script(oid, d["script"], d.get("args"))]
         # Wait for rest
