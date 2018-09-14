@@ -12,6 +12,7 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.lib.validators import is_int
 
 
 class Profile(BaseProfile):
@@ -135,8 +136,10 @@ class Profile(BaseProfile):
         r = []
         if name.startswith("port "):
             r += [name[5:]]
-        else:
-            r += ["port %s" % name]
+        elif name.startswith("port"):
+            r += [name[4:]]
+        elif is_int(name):
+            r += ["port %s" % name, "port%s" % name]
         return r
 
     def convert_interface_name(self, interface):
