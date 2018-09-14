@@ -26,7 +26,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
     rx_mac = re.compile(r"^\s+MAC address: (?P<mac>\S+)", re.MULTILINE)
-    rx_status = re.compile(r"^.+\d\s+(?P<oper_status>up|down)", re.MULTILINE)
+    rx_status = re.compile(r"^.+\d\s+(?P<oper_status>up|down|off)", re.MULTILINE)
 
     def normalize_ifname(self, port):
         port = port.strip()
@@ -132,6 +132,8 @@ class Script(BaseScript):
                     match = self.rx_status.search(c)
                     i["oper_status"] = match.group("oper_status") == "up"
                     i["subinterfaces"][0]["oper_status"] = match.group("oper_status") == "up"
+                    i["admin_status"] = match.group("oper_status") != "off"
+                    i["subinterfaces"][0]["admin_status"] = match.group("oper_status") != "off"
                 except self.CLISyntaxError:
                     pass
         c = self.cli("show management")
