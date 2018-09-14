@@ -86,7 +86,6 @@ class MRTRequestHandler(AuthRequestHandler):
         :param kwargs:
         :return:
         """
-        logger.info("Run task on parralels: %d", config.mrt.max_concurrency)
         metrics["mrt_requests"] += 1
         # Parse request
         req = ujson.loads(self.request.body)
@@ -95,6 +94,8 @@ class MRTRequestHandler(AuthRequestHandler):
         # Object ids
         ids = set(int(d["id"]) for d in req
                   if "id" in d and "script" in d)
+        logger.info("Run task on parralels: %d (Max concurrent %d), for User: %s",
+                    len(req), config.mrt.max_concurrency, self.current_user)
         # Check access
         qs = ManagedObject.objects.filter(id__in=list(ids))
         if not self.current_user.is_superuser:
