@@ -7,11 +7,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
 # NOC modules
 from noc.core.service.base import Service
-from .mrt import MRTRequestHandler
+from noc.services.mrt.mrt import MRTRequestHandler
 from noc.config import config
 
 
