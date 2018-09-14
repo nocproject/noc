@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_capabilities_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import re
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 from noc.core.mib import mib
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -40,6 +41,13 @@ class Script(BaseScript):
         "show ip sla monitor configuration"
     ]
 
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled
+        """
+        r = self.snmp.get(mib["LLDP-MIB::lldpLocChassisIdSubtype", 0])
+        return is_int(r) and r >= 1
+
     @false_on_cli_error
     def has_lldp_cli(self):
         """
@@ -52,9 +60,8 @@ class Script(BaseScript):
         """
         Check box has cdp enabled
         """
-        # ciscoCdpMIB::cdpGlobalRun
-        r = self.snmp.get("1.3.6.1.4.1.9.9.23.1.3.1.0")
-        return r == 1
+        r = self.snmp.get(mib["CISCO-CDP-MIB::cdpGlobalRun", 0])
+        return is_int(r) and r == 1
 
     @false_on_cli_error
     def has_cdp_cli(self):
