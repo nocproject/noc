@@ -12,6 +12,7 @@ from collections import defaultdict
 from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -52,6 +53,7 @@ class ManagedObjectDataStream(DataStream):
         cls._apply_remote_system(mo, r)
         cls._apply_pool(mo, r)
         cls._apply_version(mo, r)
+        cls._apply_caps(mo, r)
         cls._apply_segment(mo, r)
         cls._apply_administrative_domain(mo, r)
         cls._apply_object_profile(mo, r)
@@ -126,6 +128,20 @@ class ManagedObjectDataStream(DataStream):
                 "name": qs(mo.object_profile.remote_system.name)
             }
             r["object_profile"]["remote_id"] = mo.object_profile.remote_id
+
+    @staticmethod
+    def _apply_caps(mo, r):
+        # Get caps
+        cdata = ObjectCapabilities.get_capabilities(mo)
+        if not cdata:
+            return
+        caps = []
+        for cname in sorted(cdata):
+            caps += [{
+                "name": cname,
+                "value": str(cdata[cname])
+            }]
+        r["capabilities"] = caps
 
     @staticmethod
     def _apply_interfaces(mo, r):
@@ -226,17 +242,15 @@ class ManagedObjectDataStream(DataStream):
     def _get_link(iface, links, ifcache):
         r = []
         for link in links:
-            rr = []
             for i in link["interfaces"]:
                 ro, rname = ifcache[i]
                 if ro == iface["managed_object"]:
                     continue
-                rr += [{
+                r += [{
                     "object": str(ro),
                     "interface": qs(rname),
                     "method": link.get("discovery_method") or ""
                 }]
-            r += [rr]
         return r
 
     @staticmethod
