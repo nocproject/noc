@@ -26,7 +26,7 @@ class Command(BaseCommand):
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
             "-v", "--verbose",
-            action="store_true",
+            action="count",
             help="Verbose output"
         )
         run_parser.add_argument(
@@ -70,7 +70,7 @@ class Command(BaseCommand):
         # Run tests
         args = []
         if verbose:
-            args += ["-v"]
+            args += ["-" + ("v" * verbose)]
         if test_report:
             args += [
                 "--html=%s" % test_report,
