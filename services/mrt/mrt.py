@@ -14,6 +14,7 @@ import ujson
 import tornado.gen
 # Python modules
 from noc.core.service.authhandler import AuthRequestHandler
+from noc.core.service.error import RPCRemoteError, RPCError
 from noc.core.perf import metrics
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
@@ -31,6 +32,7 @@ class MRTRequestHandler(AuthRequestHandler):
     def write_chunk(self, obj):
         data = ujson.dumps(obj)
         self.write("%s|%s" % (len(data), data))
+        logger.debug("%s|%s" % (len(data), data))
         yield self.flush()
 
     @tornado.gen.coroutine
@@ -43,6 +45,17 @@ class MRTRequestHandler(AuthRequestHandler):
             logger.debug("Run script %s %s %s", oid, script, args)
             r = yield self.service.sae.script(oid, script, args)
             metrics["mrt_success"] += 1
+        except RPCRemoteError as e:
+            raise tornado.gen.Return({
+                "id": str(oid),
+                "error": str(e)
+            })
+        except RPCError as e:
+            logger.error("RPC Error: %s" % str(e))
+            raise tornado.gen.Return({
+                "id": str(oid),
+                "error": str(e)
+            })
         except Exception as e:
             error_report()
             metrics["mrt_failed"] += 1
@@ -73,7 +86,6 @@ class MRTRequestHandler(AuthRequestHandler):
         :param kwargs:
         :return:
         """
-        logger.info("Run task on parralels: %d", config.mrt.max_concurrency)
         metrics["mrt_requests"] += 1
         # Parse request
         req = ujson.loads(self.request.body)
@@ -82,6 +94,8 @@ class MRTRequestHandler(AuthRequestHandler):
         # Object ids
         ids = set(int(d["id"]) for d in req
                   if "id" in d and "script" in d)
+        logger.info("Run task on parralels: %d (Max concurrent %d), for User: %s",
+                    len(req), config.mrt.max_concurrency, self.current_user)
         # Check access
         qs = ManagedObject.objects.filter(id__in=list(ids))
         if not self.current_user.is_superuser:
@@ -102,6 +116,7 @@ class MRTRequestHandler(AuthRequestHandler):
             if len(futures) >= config.mrt.max_concurrency:
                 wi = tornado.gen.WaitIterator(*futures)
                 r = yield next(wi)
+                del futures[wi.current_index]
                 yield self.write_chunk(r)
             futures += [self.run_script(oid, d["script"], d.get("args"))]
         # Wait for rest
