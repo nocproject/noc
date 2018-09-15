@@ -193,7 +193,7 @@ class ManagedObjectDataStream(DataStream):
         if iface.get("mac"):
             r["mac"] = iface["mac"]
         if iface.get("aggregated_interface"):
-            r["aggregated_interface"] = ifcache[iface["aggregated_interface"]]
+            r["aggregated_interface"] = ifcache[iface["aggregated_interface"]][-1]
         # Apply profile
         if iface.get("profile"):
             profile = InterfaceProfile.get_by_id(iface["profile"])
