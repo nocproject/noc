@@ -54,7 +54,7 @@ class Command(BaseCommand):
     def handle_check(self, check_cmd, *args, **options):
         return getattr(self, "handle_check_%s" % check_cmd)(*args, **options)
 
-    def handle_run(self, tests=None, verbose=False, vverbose=False, statistics=False,
+    def handle_run(self, tests=None, verbose=False, statistics=False,
                    coverage_report=False, test_report=None, *args, **options):
         def run_tests(args):
             self.print("Running test")
