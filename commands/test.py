@@ -26,7 +26,7 @@ class Command(BaseCommand):
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
             "-v", "--verbose",
-            action="store_true",
+            action="count",
             help="Verbose output"
         )
         run_parser.add_argument(
@@ -54,7 +54,7 @@ class Command(BaseCommand):
     def handle_check(self, check_cmd, *args, **options):
         return getattr(self, "handle_check_%s" % check_cmd)(*args, **options)
 
-    def handle_run(self, tests=None, verbose=False, statistics=False,
+    def handle_run(self, tests=None, verbose=False, vverbose=False, statistics=False,
                    coverage_report=False, test_report=None, *args, **options):
         def run_tests(args):
             self.print("Running test")
@@ -70,7 +70,7 @@ class Command(BaseCommand):
         # Run tests
         args = []
         if verbose:
-            args += ["-v"]
+            args += ["-" + ("v" * verbose)]
         if test_report:
             args += [
                 "--html=%s" % test_report,
