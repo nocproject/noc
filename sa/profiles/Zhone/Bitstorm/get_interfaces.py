@@ -82,9 +82,10 @@ class Script(BaseScript):
                 "subinterfaces": [{
                     "name": match.group('port'),
                     "enabled_afi": ["BRIDGE"],
-                    "untagged_vlan": int(match.group('vlan_id'))
                 }]
             }
+            if int(match.group('vlan_id')) > 0:
+                iface["subinterfaces"][0]["untagged_vlan"] = int(match.group('vlan_id'))
             if "admin_status" in match.groupdict():
                 iface["admin_status"] = match.group("admin_status") == "up"
                 iface["subinterfaces"][0]["admin_status"] = \
@@ -112,7 +113,7 @@ class Script(BaseScript):
                 sub["enabled_afi"] = ["BRIDGE", "ATM"]
                 if sub["vlan_ids"]:
                     sub["vlan_ids"] = [
-                        int(x) for x in sub["vlan_ids"].split(", ")
+                        int(x) for x in sub["vlan_ids"].split(", ") if int(x) > 0
                     ]
                 iface["subinterfaces"] += [sub]
 
@@ -187,6 +188,8 @@ class Script(BaseScript):
         v = self.cli("show vlan configuration all")
         for match in self.rx_vlan.finditer(v):
             vlan_id = match.group("vlan_id")
+            if int(vlan_id) < 1:
+                continue
             tagged = match.group("tagged").strip()
             if tagged:
                 tagged = tagged.split(", ")

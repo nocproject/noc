@@ -84,9 +84,7 @@ class Script(BaseScript):
             "number": number,
             "vendor": "Huawei",
             "description": "",
-            "part_no": [part_no],
-            "revision": None,
-            "mfg_date": ""
+            "part_no": [part_no]
         }
         r.update(parse_kv({"board_serial_number": "serial",
                            "device_serial_number": "serial",
@@ -455,7 +453,6 @@ class Script(BaseScript):
                     "vendor": "HUAWEI",
                     "serial": match.group("serial"),
                     "part_no": [match.group("part_no")],
-                    "revision": None,
                     "mfg_date": match.group("mdate")
                 }]
 

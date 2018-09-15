@@ -103,6 +103,7 @@ class Script(BaseScript):
                 }]
             }
             if cfg["vlan"]:
-                i["subinterfaces"][0]["vlan_ids"] = int(cfg["vlan"])
+                if int(cfg["vlan"]) > 0:
+                    i["subinterfaces"][0]["vlan_ids"] = int(cfg["vlan"])
             ifaces += [i]
         return [{"interfaces": ifaces}]
