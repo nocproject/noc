@@ -2066,5 +2066,22 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     onValidationSettings: function() {
         var me = this;
         me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
+    },
+    //
+    cleanData: function(v) {
+        Ext.each(v.metrics, function(m) {
+            if(m.low_error === "") {
+                m.low_error = null;
+            }
+            if(m.low_warn === "") {
+                m.low_warn = null;
+            }
+            if(m.high_warn === "") {
+                m.high_warn = null;
+            }
+            if(m.high_error === "") {
+                m.high_error = null;
+            }
+        });
     }
 });
