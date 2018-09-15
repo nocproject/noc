@@ -45,7 +45,7 @@ class MRTRequestHandler(AuthRequestHandler):
                     "id": str(oid),
                     "running": True
                 })
-                logger.debug("Run script %s %s %s", oid, script, args)
+                logger.debug("[%s] Run script %s %s %s", span.context, oid, script, args)
                 r = yield self.service.sae.script(oid, script, args)
                 metrics["mrt_success"] += 1
             except RPCRemoteError as e:
@@ -113,6 +113,8 @@ class MRTRequestHandler(AuthRequestHandler):
         ids = set(qs.values_list("id", flat=True))
         with Span(sample=int(self.service.use_telemetry), server="MRT", service="commands",
                   client=self.current_user, in_label=req) as span:
+            if self.service.use_telemetry:
+                logger.info("[%s] Enable telemetry for task, user: %s", span.span_id, self.current_user)
             futures = []
             for d in req:
                 if "id" not in d or "script" not in d:
