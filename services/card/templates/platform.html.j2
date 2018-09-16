@@ -5,7 +5,7 @@
             Platform: {{ object.vendor.name }} {{ object.name }}
         </th>
     </tr>
-    {% if platform.aliases %}
+    {% if object.aliases %}
     <tr>
         <th scope="row">{{ _("Aliases") }}</th>
         <td>{{", ".join(object.aliases)}}</td>
