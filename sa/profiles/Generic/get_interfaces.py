@@ -31,8 +31,10 @@ class Script(BaseScript):
     INTERFACE_TYPES = {
         1: "other",
         6: "physical",  # ethernetCsmacd
+        23: "tunnel",  # ppp
         24: "loopback",  # softwareLoopback
         117: "physical",  # gigabitEthernet
+        131: "tunnel",  # tunnel
         135: "SVI",  # l2vlan
         161: "aggregated",  # ieee8023adLag
         53: "SVI"  # propVirtual
@@ -41,7 +43,7 @@ class Script(BaseScript):
     INTERFACE_NAMES = set()
 
     def get_interface_type(self, snmp_type):
-        return self.INTERFACE_TYPES.get(snmp_type, "other")
+        return self.INTERFACE_TYPES.get(snmp_type, "unknown")
 
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
@@ -180,7 +182,9 @@ class Script(BaseScript):
                 "snmp_ifindex": l,
             }
             if i["name"] in portchannel_members:
-                i["aggregated_interface"], i["enabled_protocols"] = portchannel_members[i["name"]]
+                i["aggregated_interface"] = portchannel_members[i["name"]]
+                # TODO: find interface in IEEE8023-LAG-MIB
+                # i["enabled_protocols"] = ["LACP"]
             if i["name"] in aggregated:
                 i["type"] = "aggregated"
             if iface["mac_address"]:
