@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -50,6 +50,8 @@ class Script(BaseScript):
                             MAC(neigh["remote_chassis_id"])
                     if neigh["remote_port_subtype"] == 3:
                         neigh["remote_port"] = MAC(neigh["remote_port"])
+                    # Found on some devices
+                    neigh["remote_port"] = neigh["remote_port"].rstrip("\x00")
                     r += [{
                         "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
                         # @todo if local interface subtype != 5
