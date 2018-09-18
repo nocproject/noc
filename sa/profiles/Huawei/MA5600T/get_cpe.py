@@ -28,6 +28,7 @@ class Script(BaseScript):
         "online": "active",  # associated
         "offline": "inactive",  # disassociating
     }
+    INACTIVE_STATE = {"initial"}
 
     detail_map = {"ont distance(m)": "ont_distance",
                   "ont ip 0 address/mask": "ont_address",
@@ -71,13 +72,24 @@ class Script(BaseScript):
                 while len(parts) > 2:
                     header, body = parts[:2]
                     parts = parts[2:]
-                    head = parse_table_header(header.splitlines())
+                    header = header.splitlines()
+                    if len(header[0]) - len(header[0].lstrip()) - 2:
+                        # pylint: disable=line-too-long
+                        # Align first line by two whitespace if header:
+                        # '  -----------------------------------------------------------------------------',
+                        # '                                       F/S/P   ONT         SN         Control     Run      Config   Match    Protect',
+                        # '          ID                     flag        state    state    state    side',
+                        # '  -----------------------------------------------------------------------------'
+                        header[0] = header[0][len(header[0]) - len(str.lstrip(header[0])) - 2:]
+                    head = parse_table_header(header)
                     del head[2]  # remove empty header
                     tables_data += self.parse_table1(body, head)
                 else:
                     pass
                     # summary = parts
                 for t in tables_data:
+                    if "Config state" in t and t["Config state"][0] in self.INACTIVE_STATE:
+                        continue
                     if "ONT-ID" in t:
                         ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), t["ONT-ID"][0])
                         if ont_id in r:
