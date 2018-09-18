@@ -727,8 +727,12 @@ class ManagedObjectApplication(ExtModelApplication):
             return {
                 "error": str(e)
             }
+        if result["errors"]:
+            return {
+                "error": result["output"]
+            }
         return {
-            "result": result
+            "result": result["output"]
         }
 
     @view(url="(?P<id>\d+)/caps/$", method=["GET"],
