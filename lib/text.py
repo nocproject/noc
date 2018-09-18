@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 import re
 import six
-import numpy as np
 from itertools import izip_longest
 
 #
@@ -514,6 +513,7 @@ def parse_table_header(v):
     {10: 'Config Master', 18: 'Current Master', 26: 'Agg Control', 33: 'Min Active',
      43: 'Ld Share Algorithm', 49: 'Flags ', 59: 'Ld Share Group', 63: 'Agg Mbr', 69: 'Link State'}
     """
+    from numpy import array
     head = []
     empty_header = None
     header = {}
@@ -524,7 +524,7 @@ def parse_table_header(v):
             head += [lines]
             continue
         if set(head[-1]) == {' '} and lines != empty_header:
-            head = np.array(head)
+            head = array(head)
             # Transpone list header string
             header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])
             header[num] = header[num].strip()
@@ -532,7 +532,7 @@ def parse_table_header(v):
         head += [lines]
     else:
         # last column
-        head = np.array(head)
+        head = array(head)
         header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
         header[num] = header[num].strip()
     return header
