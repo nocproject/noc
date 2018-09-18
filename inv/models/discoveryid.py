@@ -69,65 +69,54 @@ class DiscoveryID(Document):
     def __unicode__(self):
         return self.object.name
 
+    @staticmethod
+    def _macs_as_ints(ranges=None, additional=None):
+        """
+        Get all MAC addresses within ranges as integers
+        :param ranges: list of dicts {first_chassis_mac: ..., last_chassis_mac: ...}
+        :param additional: Optional list of additional macs
+        :return: List of integers
+        """
+        ranges = ranges or []
+        additional = additional or []
+        # Apply ranges
+        macs = set()
+        for r in ranges:
+            first = MAC(r["first_chassis_mac"])
+            last = MAC(r["last_chassis_mac"])
+            macs.update(m for m in range(int(first), int(last) + 1))
+        # Append additional macs
+        macs.update(int(MAC(m)) for m in additional)
+        return sorted(macs)
+
+    @staticmethod
+    def _macs_to_ranges(macs):
+        """
+        Convert list of macs (as integers) to MACRange
+        :param macs: List of integer
+        :return: List of MACRange
+        """
+        ranges = []
+        for mi in macs:
+            if ranges and mi - ranges[-1][1] == 1:
+                # Extend last range
+                ranges[-1][1] = mi
+            else:
+                # New range
+                ranges += [[mi, mi]]
+        return [MACRange(first_mac=str(MAC(r[0])), last_mac=str(MAC(r[1]))) for r in ranges]
+
     @classmethod
     def submit(cls, object, chassis_mac=None,
                hostname=None, router_id=None, additional_macs=None):
-        chassis_mac = chassis_mac or []
-        if additional_macs:
-            # Strip additional_macs intersected with chassis_mac
-            additional_macs = sorted(additional_macs)
-            for cm in chassis_mac:
-                if not cm:
-                    continue
-                first = cm["first_chassis_mac"]
-                last = cm["last_chassis_mac"]
-                ll = len(additional_macs)
-                start = bisect.bisect_left(additional_macs, first)
-                while start < ll and first <= additional_macs[start] <= last:
-                    del additional_macs[start]
-                    ll -= 1
-            # Append remaining additional macs as ranges
-            if additional_macs:
-                first = None
-                last = None
-                while additional_macs:
-                    n = int(MAC(additional_macs.pop(0)))
-                    if first is None:
-                        first = n
-                        last = n
-                    elif n - last == 1:
-                        last = n
-                    else:
-                        chassis_mac += [{
-                            "first_chassis_mac": MAC(first),
-                            "last_chassis_mac": MAC(last)
-                        }]
-                        first = None
-                if first:
-                    chassis_mac += [{
-                        "first_chassis_mac": MAC(first),
-                        "last_chassis_mac": MAC(last)
-                    }]
-        if chassis_mac:
-            chassis_mac = [
-                MACRange(
-                    first_mac=r["first_chassis_mac"],
-                    last_mac=r["last_chassis_mac"]
-                ) for r in chassis_mac if r
-            ]
-        else:
-            chassis_mac = []
-        # MAC index
-        macs = []
-        for r in chassis_mac:
-            first = MAC(r.first_mac)
-            last = MAC(r.last_mac)
-            macs += [m for m in range(int(first), int(last) + 1)]
-        #
+        # Process ranges
+        macs = cls._macs_as_ints(chassis_mac, additional_macs)
+        ranges = cls._macs_to_ranges(macs)
+        # Update database
         o = cls.objects.filter(object=object.id).first()
         if o:
             old_macs = set(m.first_mac for m in o.chassis_mac)
-            o.chassis_mac = chassis_mac
+            o.chassis_mac = ranges
             o.hostname = hostname
             o.router_id = router_id
             old_macs -= set(m.first_mac for m in o.chassis_mac)
@@ -137,7 +126,7 @@ class DiscoveryID(Document):
             o.macs = macs
             o.save()
         else:
-            cls(object=object, chassis_mac=chassis_mac,
+            cls(object=object, chassis_mac=ranges,
                 hostname=hostname, router_id=router_id, macs=macs).save()
 
     @classmethod
