@@ -102,7 +102,7 @@ class Script(BaseScript):
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
             aggregated += [i]
-            t = pc["type"] == "LACP"
+            t = pc["type"] in ["L", "LACP"]
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
         return aggregated, portchannel_members
@@ -182,9 +182,9 @@ class Script(BaseScript):
                 "snmp_ifindex": l,
             }
             if i["name"] in portchannel_members:
-                i["aggregated_interface"] = portchannel_members[i["name"]]
-                # TODO: find interface in IEEE8023-LAG-MIB
-                # i["enabled_protocols"] = ["LACP"]
+                i["aggregated_interface"], lacp = portchannel_members[i["name"]]
+                if lacp:
+                    i["enabled_protocols"] = ["LACP"]
             if i["name"] in aggregated:
                 i["type"] = "aggregated"
             if iface["mac_address"]:
