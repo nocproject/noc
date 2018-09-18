@@ -33,7 +33,7 @@ Ext.define("NOC.core.Rack", {
     TEXT_ANCHOR: "end",
 
     getRack: function(app, x, y, opts, content, side) {
-        var me = this,
+        var me = this, rear, front, acc,
             out = [],
             // Internal width
             i_width = Math.round(opts.width / me.SCALE),
@@ -109,7 +109,14 @@ Ext.define("NOC.core.Rack", {
         /*
          * Content
          */
-        Ext.each(content, function(device) {
+        rear = content.filter(function(dev) {
+            return dev.side === "r";
+        });
+        front = content.filter(function(dev) {
+            return dev.side === "f";
+        });
+        acc = side === "r" ? front.concat(rear) : rear.concat(front);
+        Ext.each(acc, function(device) {
             var shift = Math.round(me.U_HEIGH * device.shift / 3);
 
             var rect = {
