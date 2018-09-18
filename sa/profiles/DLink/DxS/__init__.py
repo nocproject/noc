@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.core.script.error import CLIOperationError
-from noc.core.lldp import LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME
+from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME
 
 
 class Profile(BaseProfile):
@@ -119,8 +119,16 @@ class Profile(BaseProfile):
         else:
             return s
 
+    rx_lldp_port = re.compile(r"^\d+(?:[\:\/]\d+)?$")
+
     def clean_lldp_neighbor(self, obj, neighbor):
         neighbor = super(Profile, self).clean_lldp_neighbor(obj, neighbor)
+        if (
+            neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_ALIAS and
+            bool(self.rx_lldp_port.search(neighbor["remote_port"]))
+        ):
+            neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
+            return neighbor
         if (
             neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC and
             obj.matchers.is_lldp_convert_mac_to_name
