@@ -17,6 +17,10 @@ from .base import BaseAuthBackend
 
 class LdapBackend(BaseAuthBackend):
     def authenticate(self, user=None, password=None, **kwargs):
+        # Validate username
+        if not self.check_user(user):
+            self.logger.error("Invalid username: %s", user)
+            raise self.LoginError("Invalid username")
         # Get domain
         domain, user = self.split_user_domain(user)
         if domain:
@@ -136,6 +140,13 @@ class LdapBackend(BaseAuthBackend):
             u.username, ", ".join(ug)
         )
         return u.username
+
+    @classmethod
+    def check_user(cls, user):
+        """
+        Check user has appropriate format
+        """
+        return user.count("\\") + user.count("@") <= 1
 
     @classmethod
     def split_user_domain(cls, user):
