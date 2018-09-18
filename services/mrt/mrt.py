@@ -38,7 +38,7 @@ class MRTRequestHandler(AuthRequestHandler):
 
     @tornado.gen.coroutine
     def run_script(self, oid, script, args, span_id=0):
-        with Span(server="MRT", service=script, sample=int(self.service.use_telemetry),
+        with Span(server="MRT", service=script, sample=int(config.mrt.enable_command_logging),
                   in_label=oid, parent=span_id) as span:
             try:
                 yield self.write_chunk({
@@ -111,7 +111,7 @@ class MRTRequestHandler(AuthRequestHandler):
             adm_domains = UserAccess.get_domains(self.current_user)
             qs = qs.filter(administrative_domain__in=adm_domains)
         ids = set(qs.values_list("id", flat=True))
-        with Span(sample=int(self.service.use_telemetry), server="MRT", service="commands",
+        with Span(sample=int(config.mrt.enable_command_logging), server="MRT", service="commands",
                   client=self.current_user, in_label=req) as span:
             if self.service.use_telemetry:
                 logger.info("[%s] Enable telemetry for task, user: %s", span.span_id, self.current_user)

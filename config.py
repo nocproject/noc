@@ -339,7 +339,7 @@ class Config(BaseConfig):
 
     class mrt(ConfigSection):
         max_concurrency = IntParameter(default=50)
-        enable_telemetry = BooleanParameter(default=False)
+        enable_command_logging = BooleanParameter(default=False)
 
     node = socket.gethostname()
 
