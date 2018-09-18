@@ -145,6 +145,7 @@ _MODELS = {
     "inv.Coverage": "noc.inv.models.coverage.Coverage",
     "inv.CoveredBuilding": "noc.inv.models.coveredbuilding.CoveredBuilding",
     "inv.CoveredObject": "noc.inv.models.coveredobject.CoveredObject",
+    "inv.DiscoveryID": "noc.inv.models.discoveryid.DiscoveryID",
     "inv.Firmware": "noc.inv.models.firmware.Firmware",
     "inv.FirmwarePolicy": "noc.inv.models.firmwarepolicy.FirmwarePolicy",
     "inv.ForwardingInstance": "noc.inv.models.forwardinginstance.ForwardingInstance",
