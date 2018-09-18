@@ -43,7 +43,7 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
     >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
     [['a', '', 'c'], ['ddd', 'eee', 'fff']]
-    >>> parse_table("VLAN Status  Name                             Ports\\n---- ------- -------------------------------- ---------------------------------\\n4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\\n                                              g0/10\\n", allow_wrap=True, n_row_delim=", ")
+    >>> parse_table("VLAN Status  Name                             Ports\\n---- ------- -------------------------------- ---------------------------------\\n4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\\n                                              g0/10\\n", allow_wrap=True, n_row_delim=", ")  # noqa
     [['4090', 'Static', 'VLAN4090', 'f0/5, f0/6, f0/7, f0/8, g0/9, g0/10']]
     """
     r = []
@@ -131,7 +131,7 @@ def strip_html_tags(s):
 #
 def xml_to_table(s, root, row):
     """
-    >>> xml_to_table('<?xml version="1.0" encoding="UTF-8" ?><response><action><row><a>1</a><b>2</b></row><row><a>3</a><b>4</b></row></action></response>','action','row')
+    >>> xml_to_table('<?xml version="1.0" encoding="UTF-8" ?><response><action><row><a>1</a><b>2</b></row><row><a>3</a><b>4</b></row></action></response>','action','row') # noqa
     [{'a': '1', 'b': '2'}, {'a': '3', 'b': '4'}]
     """
     # Detect root element
