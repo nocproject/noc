@@ -202,10 +202,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     //
     onCellEdit: function(editor, e) {
         var me = this;
-        if(e.field == "position_front") {
+        if(e.field === "position_front") {
             e.record.set("position_rear", 0);
         }
-        if(e.field == "position_rear") {
+        if(e.field === "position_rear") {
             e.record.set("position_front", 0);
         }
         // Submit
