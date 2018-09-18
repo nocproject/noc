@@ -20,6 +20,7 @@ import tornado.gen
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
 from noc.config import config
+from noc.lib.text import ch_escape
 
 forensic_logger = logging.getLogger("noc.core.forensic")
 span_lock = threading.Lock()
@@ -132,8 +133,8 @@ class Span(object):
             self.error_code or 0,
             q_tsv(self.error_text),
             self.sample,
-            q_tsv(self.in_label),
-            q_tsv(self.out_label)
+            ch_escape(q_tsv(self.in_label)),
+            ch_escape(q_tsv(self.out_label))
         ])
         with span_lock:
             spans += [row]
