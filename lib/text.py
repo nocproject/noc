@@ -26,6 +26,7 @@ rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
 def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None, n_row_delim=""):
+    # pylint: disable=line-too-long
     """
     :param s: Table for parsing
     :type s: str
@@ -130,6 +131,7 @@ def strip_html_tags(s):
 # Convert XML to list of elements
 #
 def xml_to_table(s, root, row):
+    # pylint: disable=line-too-long
     """
     >>> xml_to_table('<?xml version="1.0" encoding="UTF-8" ?><response><action><row><a>1</a><b>2</b></row><row><a>3</a><b>4</b></row></action></response>','action','row') # noqa
     [{'a': '1', 'b': '2'}, {'a': '3', 'b': '4'}]
