@@ -14,8 +14,9 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField
 import cachetools
 # NOC modules
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.main.models.style import Style
-from noc.lib.nosql import ForeignKeyField
+from noc.wf.models.workflow import Workflow
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -34,6 +35,7 @@ class PhoneNumberProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     style = ForeignKeyField(Style)
+    workflow = PlainReferenceField(Workflow)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 

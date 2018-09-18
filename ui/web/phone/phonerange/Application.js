@@ -56,6 +56,12 @@ Ext.define("NOC.phone.phonerange.Application", {
                     width: 100
                 },
                 {
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 200,
+                    renderer: NOC.render.Lookup("state")
+                },
+                {
                     text: __("Allocated"),
                     dataIndex: "to_allocate_numbers",
                     width: 50,
@@ -127,6 +133,12 @@ Ext.define("NOC.phone.phonerange.Application", {
                     xtype: "phone.phonerangeprofile.LookupField",
                     fieldLabel: __("Profile"),
                     allowBlank: false
+                },
+                {
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: true
                 },
                 {
                     name: "project",

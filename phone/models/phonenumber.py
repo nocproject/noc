@@ -24,6 +24,8 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.lib.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
+from noc.wf.models.state import State
+from noc.core.wf.decorator import workflow
 from .dialplan import DialPlan
 from .phonenumberprofile import PhoneNumberProfile
 
@@ -31,6 +33,7 @@ id_lock = Lock()
 
 
 @resourcegroup
+@workflow
 class PhoneNumber(Document):
     meta = {
         "collection": "noc.phonenumbers",
@@ -46,20 +49,10 @@ class PhoneNumber(Document):
 
     number = StringField()
     profile = PlainReferenceField(PhoneNumberProfile)
+    state = PlainReferenceField(State)
     dialplan = PlainReferenceField(DialPlan)
     phone_range = PlainReferenceField(PhoneRange)
     category = PlainReferenceField(NumberCategory)
-    status = StringField(
-        default="N",
-        choices=[
-            ("N", "New"),
-            ("F", "Free"),
-            ("A", "Allocated"),
-            ("R", "Reserved"),
-            ("O", "Out-of-order"),
-            ("C", "Cooldown")
-        ]
-    )
     description = StringField()
     service = PlainReferenceField(Service)
     project = ForeignKeyField(Project)

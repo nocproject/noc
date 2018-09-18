@@ -26,6 +26,8 @@ from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.lib.nosql import ForeignKeyField
+from noc.wf.models.state import State
+from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.defer import call_later
 from noc.lib.text import clean_number
@@ -37,6 +39,7 @@ id_lock = Lock()
 
 @on_save
 @resourcegroup
+@workflow
 @on_delete
 @on_delete_check(check=[
     ("phone.PhoneNumber", "phone_range"),
@@ -59,6 +62,7 @@ class PhoneRange(Document):
     name = StringField()
     description = StringField()
     profile = PlainReferenceField(PhoneRangeProfile)
+    state = PlainReferenceField(State)
     dialplan = PlainReferenceField(DialPlan)
     parent = PlainReferenceField("self")
     from_number = StringField()

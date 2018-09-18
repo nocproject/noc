@@ -38,6 +38,15 @@ Ext.define("NOC.phone.phonerangeprofile.Model", {
             persist: false
         },
         {
+            name: "workflow",
+            type: "string"
+        },
+        {
+            name: "workflow__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

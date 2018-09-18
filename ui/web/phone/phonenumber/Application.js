@@ -17,21 +17,13 @@ Ext.define("NOC.phone.phonenumber.Application", {
         "NOC.project.project.LookupField",
         "NOC.phone.phonenumber.LookupField",
         "NOC.sa.administrativedomain.LookupField",
-        "NOC.inv.resourcegroup.LookupField"
+        "NOC.inv.resourcegroup.LookupField",
+        "NOC.wf.state.LookupField"
     ],
     model: "NOC.phone.phonenumber.Model",
     rowClassField: "row_class",
     search: true,
     helpId: "reference-phone-number",
-
-    statusStore: [
-        ["N", "New"],
-        ["F", "Free"],
-        ["A", "Allocated"],
-        ["R", "Reserved"],
-        ["O", "Out-of-order"],
-        ["C", "Cooldown"]
-    ],
 
     protocolStore: [
         ["SIP", "SIP"],
@@ -67,9 +59,10 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     width: 100
                 },
                 {
-                    text: __("Status"),
-                    dataIndex: "status",
-                    width: 50
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 200,
+                    renderer: NOC.render.Lookup("state")
                 },
                 {
                     text: __("Protocol"),
@@ -114,7 +107,8 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     fieldLabel: __("Number"),
                     regex: /^\d+$/,
                     regexText: __("Must contain only numbers"),
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "profile",
@@ -123,24 +117,23 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: true
+                },
+                {
                     name: "phone_range",
                     xtype: "phone.phonerange.LookupField",
                     fieldLabel: __("Range"),
-                    allowBlank: true
+                    allowBlank: true,
+                    disabled: true
                 },
                 {
                     name: "category",
                     xtype: "phone.numbercategory.LookupField",
                     fieldLabel: __("Category"),
                     allowBlank: true
-                },
-                {
-                    name: "status",
-                    xtype: "combobox",
-                    fieldLabel: __("Status"),
-                    allowBlank: false,
-                    store: me.statusStore,
-                    uiStyle: "medium"
                 },
                 {
                     name: "protocol",
@@ -282,10 +275,10 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     lookup: "phone.numbercategory"
                 },
                 {
-                    title: __("By Status"),
-                    name: "status",
-                    ftype: "choices",
-                    store: me.statusStore
+                    title: __("By State"),
+                    name: "state",
+                    ftype: "lookup",
+                    lookup: "wf.state"
                 },
                 {
                     title: __("By Protocol"),
