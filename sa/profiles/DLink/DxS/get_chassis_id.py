@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.lib.validators import is_mac
 from noc.lib.text import parse_table
 from noc.core.mib import mib
-from noc.sa.interfaces.base import MACAddressParameter
+from noc.core.mac import MAC
 import re
 
 
@@ -29,11 +29,22 @@ class Script(BaseScript):
         r"[0-9A-F]{2}-[0-9A-F]{2})\s+CPU\s+Self\s*(?:\S*\s*)?$",
         re.MULTILINE)
 
+    OIDS_CHECK = [mib["LLDP-MIB::lldpLocChassisId"] + ".0",
+                  mib["BRIDGE-MIB::dot1dBaseBridgeAddress"] + ".0"]
+
     # Do not use noc.sa.profiles.Generic.get_chassis_id
     def execute_snmp(self):
         macs = []
+        for oid in self.OIDS_CHECK:
+            v = self.snmp.get(oid)
+            if v is None:
+                continue
+            mac = MAC(v)
+            if mac == "00:00:00:00:00:00" or mac in macs:
+                continue
+            macs += [mac]
         for oid, v in self.snmp.getnext(mib["IF-MIB::ifPhysAddress"]):
-            mac = MACAddressParameter().clean(v)
+            mac = MAC(v)
             if mac == "00:00:00:00:00:00" or mac in macs:
                 continue
             macs += [mac]
