@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
@@ -15,7 +16,7 @@ from mongoengine.fields import (StringField, BooleanField,
                                 ListField)
 import cachetools
 # NOC modules
-from slaprofile import SLAProfile
+from .slaprofile import SLAProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
