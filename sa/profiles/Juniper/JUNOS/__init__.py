@@ -51,7 +51,7 @@ class Profile(BaseProfile):
         },
         "is_work_em": {
             "platform": {
-                "$regex": "vrr|vsrx"
+                "$regex": "vrr|csrx"
             }
         }
     }
