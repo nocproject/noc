@@ -104,6 +104,8 @@ class PhoneNumber(Document):
         )
         # Set profile when necessary
         if not self.profile:
+            if not self.phone_range:
+                raise ValidationError("Either range or profile must be set")
             self.profile = self.phone_range.profile.default_number_profile
 
     @property
