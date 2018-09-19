@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // phone.phonerangeprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.phone.phonerangeprofile.Application");
@@ -10,7 +10,9 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.phone.phonerangeprofile.Model",
-        "NOC.main.style.LookupField"
+        "NOC.main.style.LookupField",
+        "NOC.wf.workflow.LookupField",
+        "NOC.phone.phonenumberprofile.LookupField"
     ],
     model: "NOC.phone.phonerangeprofile.Model",
     search: true,
@@ -25,6 +27,12 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
                     text: "Name",
                     dataIndex: "name",
                     width: 100
+                },
+                {
+                    text: __("Workflow"),
+                    dataIndex: "workflow",
+                    width: 150,
+                    renderer: NOC.render.Lookup("workflow")
                 },
                 {
                     text: "Description",
@@ -48,14 +56,26 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "cooldown",
-                    xtype: "numberfield",
-                    fieldLabel: __("Cooldown"),
-                    uiStyle: "small",
-                    minValue: 0,
-                    maxValue: 9999,
+                    name: "workflow",
+                    xtype: "wf.workflow.LookupField",
+                    fieldLabel: __("Workflow"),
                     allowBlank: false
                 },
+                {
+                    name: "default_number_profile",
+                    xtype: "phone.phonenumberprofile.LookupField",
+                    fieldLabel: __("Default Number Profile"),
+                    allowBlank: false
+                },
+                // {
+                //     name: "cooldown",
+                //     xtype: "numberfield",
+                //     fieldLabel: __("Cooldown"),
+                //     uiStyle: "small",
+                //     minValue: 0,
+                //     maxValue: 9999,
+                //     allowBlank: false
+                // },
                 {
                     name: "style",
                     xtype: "main.style.LookupField",
@@ -65,5 +85,13 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
             ]
         });
         me.callParent();
-    }
+    },
+    filters: [
+        {
+            title: __("By Workflow"),
+            name: "workflow",
+            ftype: "lookup",
+            lookup: "wf.workflow"
+        }
+    ]
 });

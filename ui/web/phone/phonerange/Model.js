@@ -25,6 +25,15 @@ Ext.define("NOC.phone.phonerange.Model", {
             persist: false
         },
         {
+            name: "state",
+            type: "string"
+        },
+        {
+            name: "state__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "name",
             type: "string"
         },

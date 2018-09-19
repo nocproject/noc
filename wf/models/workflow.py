@@ -33,6 +33,8 @@ id_lock = Lock()
     ("ip.PrefixProfile", "workflow"),
     ("crm.SubscriberProfile", "workflow"),
     ("crm.SupplierProfile", "workflow"),
+    ("phone.PhoneNumberProfile", "workflow"),
+    ("phone.PhoneRangeProfile", "workflow"),
     ("vc.VPNProfile", "workflow"),
     ("vc.VLANProfile", "workflow")
 ])
