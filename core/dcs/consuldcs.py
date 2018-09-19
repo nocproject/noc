@@ -2,29 +2,26 @@
 # ----------------------------------------------------------------------
 # Distributed coordinated storage
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
-
 import random
 import time
 import ujson
 import uuid
-
 # Third-party modules
 import consul.base
 import consul.tornado
 import tornado.gen
 import tornado.ioloop
+from six.moves.urllib.parse import unquote
 # NOC modules
 from noc.config import config
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
-from six.moves.urllib.parse import unquote
-
 from .base import DCSBase, ResolverBase
 
 ConsulRepearableCodes = set([500, 598, 599])
@@ -88,6 +85,7 @@ class ConsulResolver(ResolverBase):
         index = 0
         self.logger.info("[%s] Starting resolver", self.name)
         while not self.to_shutdown:
+            self.logger.debug("[%s] Requesting changes from index %d", self.name, index)
             try:
                 old_index = index
                 index, services = yield self.dcs.consul.health.service(
@@ -100,16 +98,17 @@ class ConsulResolver(ResolverBase):
                 if self.critical:
                     self.dcs.set_faulty_status("Consul error: %s" % e)
                 continue
-            if old_index == index:
-                self.dcs.set_faulty_status("Timed out")
-                continue  # Timed out
-            r = dict(
-                (str(svc["Service"]["ID"]), "%s:%s" % (
-                    str(svc["Service"]["Address"] or svc["Node"]["Address"]),
-                    str(svc["Service"]["Port"])))
-                for svc in services
-            )
-            self.set_services(r)
+            self.logger.debug("[%s] Returned index %d", self.name, index)
+            if index > old_index:
+                self.logger.debug("[%s] Index changed %s -> %s. Applying changes",
+                                  self.name, old_index, index)
+                r = dict(
+                    (str(svc["Service"]["ID"]), "%s:%s" % (
+                        str(svc["Service"]["Address"] or svc["Node"]["Address"]),
+                        str(svc["Service"]["Port"])))
+                    for svc in services
+                )
+                self.set_services(r)
         self.logger.info("[%s] Stopping resolver", self.name)
 
 
