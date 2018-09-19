@@ -15,7 +15,8 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Juniper.JUNOS"
-    pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
+    # Ignore this line: 'Last login: Tue Sep 18 09:17:21 2018 from 10.10.0.1'
+    pattern_username = "((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
     pattern_prompt = \
         r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?" \
         r"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
@@ -46,6 +47,11 @@ class Profile(BaseProfile):
         "is_olive": {
             "platform": {
                 "$regex": "olive"
+            }
+        },
+        "is_small_mx": {
+            "platform": {
+                "$regex": "^mx(5|80|104)(-t)?$"
             }
         }
     }
@@ -132,7 +138,7 @@ class Profile(BaseProfile):
     internal_interfaces = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
         r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|sp-|fab|mams-|"
-        r"bme|esi|ams)")
+        r"bme|esi|ams|rbeb|fti)")
     internal_interfaces_olive = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")
 
@@ -140,7 +146,11 @@ class Profile(BaseProfile):
         if script.is_olive:
             internal = self.internal_interfaces_olive
         else:
-            internal = self.internal_interfaces
+            if script.is_small_mx:
+                # On mx5-mx104 emX - is a internal interface
+                internal = self.internal_interfaces
+            else:
+                internal = self.internal_interfaces.replace("|em|", "|")
         # Skip internal interfaces
         if internal.search(name):
             return False
