@@ -11,7 +11,8 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
     requires: [
         "NOC.phone.phonerangeprofile.Model",
         "NOC.main.style.LookupField",
-        "NOC.wf.workflow.LookupField"
+        "NOC.wf.workflow.LookupField",
+        "NOC.phone.phonenumberprofile.LookupField"
     ],
     model: "NOC.phone.phonerangeprofile.Model",
     search: true,
@@ -55,20 +56,26 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "cooldown",
-                    xtype: "numberfield",
-                    fieldLabel: __("Cooldown"),
-                    uiStyle: "small",
-                    minValue: 0,
-                    maxValue: 9999,
-                    allowBlank: false
-                },
-                {
                     name: "workflow",
                     xtype: "wf.workflow.LookupField",
                     fieldLabel: __("Workflow"),
                     allowBlank: false
                 },
+                {
+                    name: "default_number_profile",
+                    xtype: "phone.phonenumberprofile.LookupField",
+                    fieldLabel: __("Default Number Profile"),
+                    allowBlank: false
+                },
+                // {
+                //     name: "cooldown",
+                //     xtype: "numberfield",
+                //     fieldLabel: __("Cooldown"),
+                //     uiStyle: "small",
+                //     minValue: 0,
+                //     maxValue: 9999,
+                //     allowBlank: false
+                // },
                 {
                     name: "style",
                     xtype: "main.style.LookupField",

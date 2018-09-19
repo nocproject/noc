@@ -82,6 +82,12 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     renderer: NOC.render.Lookup("category")
                 },
                 {
+                    text: __("Profile"),
+                    dataIndex: "profile",
+                    width: 150,
+                    renderer: NOC.render.Lookup("profile")
+                },
+                {
                     text: __("Administrative Domain"),
                     dataIndex: "administrative_domain",
                     width: 100,
@@ -273,6 +279,12 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     name: "category",
                     ftype: "lookup",
                     lookup: "phone.numbercategory"
+                },
+                {
+                    title: __("By Profile"),
+                    name: "profile",
+                    ftype: "lookup",
+                    lookup: "phone.phonenumberprofile"
                 },
                 {
                     title: __("By State"),

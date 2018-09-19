@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
@@ -18,6 +19,7 @@ from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
 from noc.core.model.decorator import on_delete_check
+from .phonenumberprofile import PhoneNumberProfile
 
 id_lock = Lock()
 
@@ -34,6 +36,8 @@ class PhoneRangeProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
+    # Default phone number profile
+    default_number_profile = PlainReferenceField(PhoneNumberProfile)
     # Cooldown time in days
     # Time when number will be automatically transferred from C to F state
     cooldown = IntField(default=30)

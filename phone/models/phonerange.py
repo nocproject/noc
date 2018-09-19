@@ -18,9 +18,6 @@ from mongoengine.queryset import Q
 from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
-from .dialplan import DialPlan
-from .phonerangeprofile import PhoneRangeProfile
-from .numbercategory import NumberCategory
 from noc.lib.nosql import PlainReferenceField
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
@@ -32,6 +29,9 @@ from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.defer import call_later
 from noc.lib.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
+from .dialplan import DialPlan
+from .phonerangeprofile import PhoneRangeProfile
+from .numbercategory import NumberCategory
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -258,8 +258,8 @@ class PhoneRange(Document):
             n = PhoneNumber(
                 dialplan=self.dialplan,
                 number=number,
-                status="N",
-                category=category
+                category=category,
+                profile=self.profile.default_number_profile
             )
             n.save()
 

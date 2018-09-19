@@ -102,6 +102,9 @@ class PhoneNumber(Document):
             dialplan=self.dialplan,
             from_number=self.number
         )
+        # Set profile when necessary
+        if not self.profile:
+            self.profile = self.phone_range.profile.default_number_profile
 
     @property
     def enum(self):
