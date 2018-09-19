@@ -49,9 +49,9 @@ class Profile(BaseProfile):
                 "$regex": "olive"
             }
         },
-        "is_small_mx": {
+        "is_work_em": {
             "platform": {
-                "$regex": "^mx(5|80|104)(-t)?$"
+                "$regex": "vrr|vsrx"
             }
         }
     }
@@ -146,11 +146,11 @@ class Profile(BaseProfile):
         if script.is_olive:
             internal = self.internal_interfaces_olive
         else:
-            if script.is_small_mx:
-                # On mx5-mx104 emX - is a internal interface
-                internal = self.internal_interfaces
-            else:
+            if script.is_work_em:
+                # em - is a working interface
                 internal = self.internal_interfaces.replace("|em|", "|")
+            else:
+                internal = self.internal_interfaces
         # Skip internal interfaces
         if internal.search(name):
             return False
