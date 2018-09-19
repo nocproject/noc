@@ -139,6 +139,10 @@ class Profile(BaseProfile):
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
         r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|sp-|fab|mams-|"
         r"bme|esi|ams|rbeb|fti)")
+    internal_interfaces_without_em = re.compile(
+        r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
+        r"jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|sp-|fab|mams-|"
+        r"bme|esi|ams|rbeb|fti)")
     internal_interfaces_olive = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")
 
@@ -148,7 +152,7 @@ class Profile(BaseProfile):
         else:
             if script.is_work_em:
                 # em - is a working interface
-                internal = self.internal_interfaces.replace("|em|", "|")
+                internal = self.internal_interfaces_without_em
             else:
                 internal = self.internal_interfaces
         # Skip internal interfaces
