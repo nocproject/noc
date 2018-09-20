@@ -39,7 +39,7 @@ class TaskObjectCollector(BaseCollector):
         return r
 
     def iter_metrics(self):
-        now = datetime.datetime.now() + datetime.timedelta(seconds=5)
+        now = datetime.datetime.now() - datetime.timedelta(seconds=5)
         late_q = {
             Job.ATTR_STATUS: Job.S_WAIT,
             Job.ATTR_TS: {
@@ -84,10 +84,11 @@ class TaskObjectCollector(BaseCollector):
                    ("pool", data.get("shard", ""))), late_count
             yield ("task_lag_seconds",
                    ("scheduler_name", data["name"]),
-                   ("pool", data.get("shard"))), lag
+                   ("pool", data.get("shard", ""))), lag
             yield ("task_box_time_avg_seconds",
                    ("scheduler_name", data["name"]),
-                   ("pool", data.get("shard"))), ldur[0]["avg"] if ldur and ldur[0]["avg"] is not None else 0
+                   ("pool", data.get("shard", ""))), ldur[0]["avg"] if ldur and ldur[0]["avg"] is not None else 0
             yield ("task_periodic_time_avg_seconds",
                    ("scheduler_name", data["name"]),
-                   ("pool", data.get("shard", ""))), ldur[1]["avg"] if len(ldur) > 1 and ldur[0]["avg"] is not None else 0
+                   ("pool", data.get("shard", ""))), \
+                ldur[1]["avg"] if len(ldur) > 1 and ldur[0]["avg"] is not None else 0
