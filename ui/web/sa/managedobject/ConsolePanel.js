@@ -116,8 +116,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
     },
     //
     submitCommand: function(cmd) {
-        var me = this,
-            v = me.consoleBody.html || "";
+        var me = this;
 
         // Maintain history
         if(me.cmdHistory.length === 0 || me.cmdHistory[me.cmdHistory.length - 1] != cmd) {
@@ -137,9 +136,10 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 if(data.error) {
-                    me.consoleOut("%%%" + data.error);
+                    // Exception
+                    me.consoleOut("%ERROR: " + data.error);
                 } else {
-                    me.consoleOut(data.result);
+                    me.consoleOut(data.result.output);
                 }
             },
             failure: function() {
