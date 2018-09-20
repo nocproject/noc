@@ -146,6 +146,7 @@ class Application(object):
         self.menu_url = None   # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
         self.j2_env = None
+        self.effective_permission = {}  # Effective permission for app
 
     @classmethod
     def add_to_class(cls, name, value):
@@ -189,6 +190,7 @@ class Application(object):
         # Leave only application permissions
         # and strip <module>:<app>:
         app_perms = [p[lps:] for p in user_perms & self.get_permissions()]
+        self.effective_permission = set(app_perms)
         return {
             "class": self.js_app_class,
             "title": unicode(self.title),

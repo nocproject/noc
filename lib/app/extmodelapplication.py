@@ -43,6 +43,7 @@ class ExtModelApplication(ExtApplication):
     pk_field_name = None  # Set by constructor
     clean_fields = {"id": IntParameter()}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
+    shadow_fields = {}  # field name -> shadow value (replace value in field shadow value)
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = set(["id", "bi_id"])
@@ -82,6 +83,9 @@ class ExtModelApplication(ExtApplication):
         # Add searchable custom fields
         self.query_fields += ["%s__%s" % (f.name, self.query_condition)
                               for f in self.get_custom_fields() if f.is_searchable]
+        if not self.config.web.restrict_view or \
+                (self.config.web.restrict_view and "update" in self.effective_permission):
+            self.shadow_fields = {}
 
     def get_validator(self, field):
         """
@@ -255,7 +259,10 @@ class ExtModelApplication(ExtApplication):
         for f in o._meta.local_fields:
             if fields and f.name not in fields:
                 continue  # Restrict to selected fields
-            if f.name == "tags":
+            if f.name in self.shadow_fields and getattr(o, f.name):
+                # Shadow fields (limit view only if update
+                r[f.name] = self.shadow_fields[f.name]
+            elif f.name == "tags":
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
             elif f.name == "shape":

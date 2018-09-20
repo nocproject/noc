@@ -500,6 +500,7 @@ class Config(BaseConfig):
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
         macdb_window = IntParameter(default=4 * 86400)
+        restrict_view = BooleanParameter(default=False, help="Shadow secured data on web")
 
     class datasource(ConfigSection):
         chunk_size = IntParameter(default=1000)
