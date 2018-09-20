@@ -37,10 +37,10 @@ class Script(BaseScript):
             try:
                 out = self.cli(cmd)
             except self.CLISyntaxError as e:
+                out = "%s%s" % (self.ERROR_PREFIX, str(e).strip())
                 if not ignore_cli_errors:
                     r["errors"] = True
                     break
-                out = "%s%s" % (self.ERROR_PREFIX, str(e).strip())
             if include_commands:
                 out = "%s%s%s" % (cmd, self.CMD_SEP, out)
             r["output"] += [out]
