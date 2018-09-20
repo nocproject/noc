@@ -14,6 +14,7 @@ import os
 import threading
 # NOC modules
 from noc.core.loader.base import BaseLoader
+from noc.config import config
 from .base import BaseProfile
 
 GENERIC_PROFILE = "Generic.Host"
@@ -40,19 +41,30 @@ class ProfileLoader(BaseLoader):
                 if not self.is_valid_name(name):
                     self.logger.error("Invalid profile name")
                     return None
-                if name == GENERIC_PROFILE:
-                    module_name = "noc.sa.profiles.Generic"
-                else:
-                    module_name = "noc.sa.profiles.%s" % name
-                for mn in ("%s.profile" % module_name, module_name):
-                    profile = self.find_class(mn, BaseProfile, name)
-                    if profile:
-                        if not profile.__module__.endswith(".profile"):
-                            self.logger.info(
-                                "Deprecation warning on %s profile: "
-                                "__init__.py should be moved to profile.py", name)
-                        profile.initialize()
-                        break
+                for p in config.get_customized_paths("", prefer_custom=True):
+                    path = os.path.join(p, "sa", "profiles", *name.split("."))
+                    if os.path.exists(os.path.join(path, "__init__.py")) \
+                            or os.path.exists(os.path.join(path, "profile.py")):
+                        if p:
+                            # Custom script
+                            base_name = os.path.basename(os.path.dirname(p))
+                        else:
+                            # Common script
+                            base_name = "noc"
+                        if name == GENERIC_PROFILE:
+                            module_name = "%s.sa.profiles.Generic" % base_name
+                        else:
+                            module_name = "%s.sa.profiles.%s" % (base_name, name)
+                        for mn in ("%s.profile" % module_name, module_name):
+                            profile = self.find_class(mn, BaseProfile, name)
+                            print(mn, profile)
+                            if profile:
+                                if not profile.__module__.endswith(".profile"):
+                                    self.logger.info(
+                                        "Deprecation warning on %s profile: "
+                                        "__init__.py should be moved to profile.py", name)
+                                profile.initialize()
+                                break
                 self.profiles[name] = profile
             return profile
 
@@ -76,9 +88,11 @@ class ProfileLoader(BaseLoader):
         Scan all available profiles
         """
         ns = set([GENERIC_PROFILE])
-        for path in glob.glob("sa/profiles/*/*/__init__.py"):
-            vendor, system = path.split(os.sep)[-3:-1]
-            ns.add("%s.%s" % (vendor, system))
+        for px in config.get_customized_paths(os.path.join("sa", "profiles"), prefer_custom=True):
+            px = os.path.join(px, "*", "*", "__init__.py")
+            for path in glob.glob(px):
+                vendor, system = path.split(os.sep)[-3:-1]
+                ns.add("%s.%s" % (vendor, system))
         with self.lock:
             self.all_profiles = ns
 
