@@ -46,13 +46,16 @@ class Script(BaseScript):
                                            ], bulk=True):
                 if v:
                     neigh = dict(zip(neighb, v[2:]))
+                    # cleaning
+                    neigh["remote_port"] = neigh["remote_port"].strip(" \x00")  # \x00 Found on some devices
                     if neigh["remote_chassis_id_subtype"] == 4:
                         neigh["remote_chassis_id"] = \
                             MAC(neigh["remote_chassis_id"])
                     if neigh["remote_port_subtype"] == 3:
-                        neigh["remote_port"] = MAC(neigh["remote_port"])
-                    # Found on some devices
-                    neigh["remote_port"] = neigh["remote_port"].rstrip("\x00")
+                        try:
+                            neigh["remote_port"] = MAC(neigh["remote_port"])
+                        except ValueError:
+                            self.logger.warning("Bad MAC address on Remote Neighbor: %s", neigh["remote_port"])
                     r += [{
                         "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
                         # @todo if local interface subtype != 5
