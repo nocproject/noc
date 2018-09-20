@@ -39,7 +39,7 @@ class TaskObjectCollector(BaseCollector):
         return r
 
     def iter_metrics(self):
-        now = datetime.datetime.now() + datetime.timedelta(seconds=5)
+        now = datetime.datetime.now() - datetime.timedelta(seconds=5)
         late_q = {
             Job.ATTR_STATUS: Job.S_WAIT,
             Job.ATTR_TS: {
