@@ -91,4 +91,4 @@ class TaskObjectCollector(BaseCollector):
             yield ("task_periodic_time_avg_seconds",
                    ("scheduler_name", data["name"]),
                    ("pool", data.get("shard", ""))), \
-                  ldur[1]["avg"] if len(ldur) > 1 and ldur[0]["avg"] is not None else 0
+                ldur[1]["avg"] if len(ldur) > 1 and ldur[0]["avg"] is not None else 0
