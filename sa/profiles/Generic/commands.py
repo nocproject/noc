@@ -25,33 +25,26 @@ class Script(BaseScript):
     name = "Generic.commands"
     interface = ICommands
     requires = []
+    ERROR_PREFIX = "%ERROR: "
+    CMD_SEP = "\n\n"
 
     def execute(self, commands, ignore_cli_errors=False, include_commands=False):
-        cli = self.safe_cli
-        r = {"errors": False,
-             "output": []}
-        for c in self.format_multiline(commands):
-            if include_commands:
-                r["output"] += [c + "\n\n" + cli(c)]
-            else:
-                r["output"] += [cli(c)]
-            if "%ERROR:" in r["output"][-1]:
+        r = {
+            "errors": False,
+            "output": []
+        }
+        for cmd in self.format_multiline(commands):
+            try:
+                out = self.cli(cmd)
+            except self.CLISyntaxError as e:
+                out = "%s%s" % (self.ERROR_PREFIX, str(e).strip())
                 if not ignore_cli_errors:
                     r["errors"] = True
                     break
+            if include_commands:
+                out = "%s%s%s" % (cmd, self.CMD_SEP, out)
+            r["output"] += [out]
         return r
-
-    def safe_cli(self, cmd):
-        """
-        Safer version of Script.cli. Always returns text on syntax error
-        :param cmd:
-        :return:
-        :rtype: str
-        """
-        try:
-            return self.cli(cmd)
-        except self.CLISyntaxError as e:
-            return "%%ERROR: %s" % e
 
     def format_multiline(self, commands):
         """
