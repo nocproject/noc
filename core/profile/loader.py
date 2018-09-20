@@ -57,7 +57,6 @@ class ProfileLoader(BaseLoader):
                             module_name = "%s.sa.profiles.%s" % (base_name, name)
                         for mn in ("%s.profile" % module_name, module_name):
                             profile = self.find_class(mn, BaseProfile, name)
-                            print(mn, profile)
                             if profile:
                                 if not profile.__module__.endswith(".profile"):
                                     self.logger.info(
