@@ -22,5 +22,6 @@ class InventoryObjectCollector(BaseCollector):
 
         # @todo by POOL / Adm Domain
         yield ("inventory_iface_count"), Interface.objects.filter().count()
+        yield ("inventory_iface_physical_count"), Interface.objects.filter(type="physical").count()
         yield ("inventory_link_count"), Link.objects.filter().count()
         yield ("inventory_subinterface_count"), SubInterface.objects.filter().count()
