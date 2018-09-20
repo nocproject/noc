@@ -4,7 +4,7 @@
 # OS:     VRP3
 # Compatible: 3.1
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -24,7 +24,8 @@ class Profile(BaseProfile):
          r"any other key: quit\)--", " "), (r"\[<frameId/slotId>\]", "\n"),
         (r"\(y/n\) \[n\]", "y\n"), (r"\[to\]\:", "\n")
     ]
-    pattern_unprivileged_prompt = r"^\S+?>"
+    # Do not match this line: "\r\n>>User name: "
+    pattern_unprivileged_prompt = r"^[^>]\S+?>"
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"Invalid parameter|Incorrect command"
     command_more = " "
