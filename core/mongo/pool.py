@@ -43,8 +43,7 @@ class Pool(BasePool):
                 self.opts.max_pool_size is None):
             max_waiters = None
         else:
-            max_waiters = (
-                    self.opts.max_pool_size * self.opts.wait_queue_multiple)
+            max_waiters = self.opts.max_pool_size * self.opts.wait_queue_multiple
 
         self._socket_semaphore = thread_util.create_semaphore(
             self.opts.max_pool_size, max_waiters)
@@ -116,7 +115,7 @@ class Pool(BasePool):
             else:
                 # Can raise ConnectionFailure.
                 sock_info = self._check(sock_info)
-        except:
+        except Exception:
             self._socket_semaphore.release()
             with self.lock:
                 self.active_sockets -= 1
