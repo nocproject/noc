@@ -98,9 +98,15 @@ class ConsulResolver(ResolverBase):
                 if self.critical:
                     self.dcs.set_faulty_status("Consul error: %s" % e)
                 continue
-            self.logger.debug("[%s] Returned index %d", self.name, index)
+            try:
+                index = int(index)
+            except ValueError:
+                self.logger.error("[%s] Invalid index format (%r), trying to recover",
+                                  self.name, index)
+                index = 0
+                continue
             if index > old_index:
-                self.logger.debug("[%s] Index changed %s -> %s. Applying changes",
+                self.logger.debug("[%s] Index changed %d -> %d. Applying changes",
                                   self.name, old_index, index)
                 r = dict(
                     (str(svc["Service"]["ID"]), "%s:%s" % (
