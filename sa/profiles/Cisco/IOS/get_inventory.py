@@ -119,7 +119,7 @@ class Script(BaseScript):
                         )
                         if not serial:
                             serial = t_sn
-                        if not part_no:
+                        if part_no is None or vendor is None:
                             continue
                     elif type == 'MOTHERBOARD':
                         part_no = "CISCO%s-MB" % match.group("descr")[1:5]
