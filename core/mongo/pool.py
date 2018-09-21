@@ -9,6 +9,7 @@
 # Python modules
 import os
 import threading
+from collections import deque
 # Third-party modules
 from pymongo import thread_util
 from pymongo.pool import Pool as BasePool
@@ -27,7 +28,7 @@ class Pool(BasePool):
         # Can override for testing: 0 to always check, None to never check.
         self._check_interval_seconds = 1
 
-        self.sockets = []
+        self.sockets = deque()
         self.lock = threading.Lock()
         self.active_sockets = 0
 
@@ -53,7 +54,7 @@ class Pool(BasePool):
         with self.lock:
             self.pool_id += 1
             self.pid = os.getpid()
-            sockets, self.sockets = self.sockets, []
+            sockets, self.sockets = self.sockets, deque()
             self.active_sockets = 0
 
         for sock_info in sockets:
@@ -67,7 +68,7 @@ class Pool(BasePool):
             with self.lock:
                 while (self.sockets and
                        self.sockets[-1].idle_time_seconds() > self.opts.max_idle_time_seconds):
-                    sock_info = self.sockets.pop(-1)
+                    sock_info = self.sockets.pop()
                     sock_info.close()
 
         while True:
@@ -83,7 +84,7 @@ class Pool(BasePool):
             try:
                 sock_info = self.connect()
                 with self.lock:
-                    self.sockets.insert(0, sock_info)
+                    self.sockets.appendleft(sock_info)
             finally:
                 self._socket_semaphore.release()
 
@@ -108,7 +109,7 @@ class Pool(BasePool):
                 # http://bugs.jython.org/issue1854
                 with self.lock:
                     # Can raise ConnectionFailure.
-                    sock_info = self.sockets.pop(0)
+                    sock_info = self.sockets.popleft()
             except IndexError:
                 # Can raise ConnectionFailure or CertificateError.
                 sock_info = self.connect()
@@ -133,7 +134,7 @@ class Pool(BasePool):
             elif not sock_info.closed:
                 sock_info.update_last_checkin_time()
                 with self.lock:
-                    self.sockets.insert(0, sock_info)
+                    self.sockets.appendleft(sock_info)
 
         self._socket_semaphore.release()
         with self.lock:
