@@ -19,8 +19,9 @@ class Profile(BaseProfile):
         (r"--More-- ", " "),
         (r"\[Yes/press any key for no\]", "Y")
     ]
-    pattern_prompt = r"(?P<hostname>\S+)> "
+    pattern_prompt = r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)> "
     pattern_syntax_error = r"Command not found"
+    pattern_operation_error = r"ERROR: Can't stat show result"
 #    command_disable_pager = "terminal datadump"
 #    command_super = "enable"
     username_submit = "\r"
