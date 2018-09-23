@@ -48,9 +48,6 @@ class MonitorApplication(ObjectListApplication):
         """
         Filter records for lookup
         """
-        print request
-        "----------"
-        print query
         status = request.POST.get("status")
         if not status:
             status = "R"
