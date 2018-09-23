@@ -21,6 +21,7 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
+from noc.core.datastream.decorator import datastream
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 from noc.config import config
@@ -32,6 +33,7 @@ from .alarmlog import AlarmLog
 ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 
 
+@datastream
 class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",

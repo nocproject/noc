@@ -2,24 +2,27 @@
 # ---------------------------------------------------------------------
 # ArchivedAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
-# Django modules
+# Third-party modules
 from django.template import Template, Context
 # NOC modules
 import noc.lib.nosql as nosql
 from noc.sa.models.managedobject import ManagedObject
-from alarmclass import AlarmClass
-from alarmlog import AlarmLog
-from alarmseverity import AlarmSeverity
+from noc.core.datastream.decorator import datastream
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.span import get_current_span
+from .alarmclass import AlarmClass
+from .alarmlog import AlarmLog
+from .alarmseverity import AlarmSeverity
 
 
+@datastream
 class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
@@ -241,5 +244,5 @@ class ArchivedAlarm(nosql.Document):
             )
 
 # Avoid circular references
-from activealarm import ActiveAlarm
+from .activealarm import ActiveAlarm
 

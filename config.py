@@ -521,6 +521,10 @@ class Config(BaseConfig):
         enable_administrativedomain_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for Adm. Domain datastream (Mongo greater 3.6 needed)")
+        enable_alarm = BooleanParameter(default=True)
+        enable_alarm_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for Alarm datastream (Mongo greater 3.6 needed)")
         enable_cfgping = BooleanParameter(default=True)
         enable_cfgping_wait = BooleanParameter(
             default=True,
