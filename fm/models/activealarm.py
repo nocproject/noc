@@ -14,7 +14,6 @@ from django.template import Template as DjangoTemplate
 from django.template import Context
 from mongoengine.errors import SaveConditionError
 # NOC modules
-from noc.config import config
 import noc.lib.nosql as nosql
 from noc.main.models import User
 from noc.main.models.style import Style
