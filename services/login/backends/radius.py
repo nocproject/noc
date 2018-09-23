@@ -19,7 +19,7 @@ from .base import BaseAuthBackend
 
 class RADIUSBackend(BaseAuthBackend):
     RADIUS_DICT = Dictionary(
-        "service/login/backends/radius.dict"
+        "services/login/backends/radius.dict"
     )
 
     def authenticate(self, user=None, password=None, **kwargs):
