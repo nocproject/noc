@@ -177,8 +177,6 @@ class ArchivedAlarm(nosql.Document):
         a.save()
         # @todo: Clear related correlator jobs
         self.delete()
-        # Remove pending control_notify job
-        #remove_job("fm.correlator", "control_notify", key=a.id)
         # Send notifications
         # Do not set notifications for child and for previously reopened
         # alarms
@@ -243,6 +241,6 @@ class ArchivedAlarm(nosql.Document):
                 }}
             )
 
+
 # Avoid circular references
 from .activealarm import ActiveAlarm
-
