@@ -19,13 +19,15 @@ from noc.core.translation import ugettext as _
 from noc.lib.app.modelapplication import ModelApplication
 
 
-class TaskMonitorApplication(ObjectListApplication):
+class MonitorApplication(ObjectListApplication):
     """
     sa.monitor application
     """
     title = _("Monitor")
     menu = _("Monitor")
     icon = "icon_monitor"
+
+    rx_time = re.compile(r"Completed. Status: SUCCESS\s\((?P<time>\S+)\)", re.MULTILINE)
 
     def get_job_data(self, scheduler, pool=None, status=None, key=None, jcls=None):
         result = []
@@ -46,7 +48,9 @@ class TaskMonitorApplication(ObjectListApplication):
         """
         Filter records for lookup
         """
-
+        print request
+        "----------"
+        print query
         status = request.POST.get("status")
         if not status:
             status = "R"
@@ -55,24 +59,44 @@ class TaskMonitorApplication(ObjectListApplication):
         for p in Pool.objects.filter():
             if p.name == "P0001":
                 continue
-            r = self.get_job_data("discovery", pool=p.name, status=status)
-            res += r
+            res += self.get_job_data("discovery", pool=p.name, status=status)
         return self.model.objects.filter(id__in=res)
+
+    def get_data(self, job, job_key, prefix, mo_id):
+        time = '--'
+        last_success = humanize_distance(job["last"]) if "last" in job else '--'
+        last_status = job.get(Job.ATTR_LAST_STATUS)
+        time_start = self.to_json(job.get(Job.ATTR_TS))
+        status = job["s"] if "s" in job else '--'
+        if status == Job.S_WAIT:
+            key = "discovery-%s-%s" % (job_key, mo_id)
+            joblog = get_db()["noc.joblog"].find_one({"_id": key})
+            if joblog and joblog.get("log"):
+                res = ModelApplication.render_plain_text(zlib.decompress(str(joblog.get("log"))))
+                match = self.rx_time.search(str(res))
+                if match:
+                    s = match.group("time").split(".")[0]
+                    if len(s) > 3:
+                        time = "%s sec" % (int(s) / 1000)
+                    else:
+                        time = "%s mc" % s
+        return {
+            '%s_time_start' % prefix: time_start,
+            '%s_last_success' % prefix: last_success,
+            '%s_status' % prefix: status,
+            '%s_time' % prefix: time,
+            '%s_duration' % prefix: "",
+            '%s_last_status' % prefix: last_status,
+        }
 
     def instance_to_dict(self, mo, fields=None):
 
-        rx_time = re.compile(r"Completed. Status: SUCCESS\s\((?P<time>\S+)\)", re.MULTILINE)
-        b_last_success = '--'
-        b_last_status = None
-        b_time_start = None
-        b_status = None
-        b_time = '--'
-        p_last_success = '--'
-        p_last_status = None
-        p_time_start = None
-        p_status = None
-        p_time = '--'
-
+        result = {
+            'id': str(mo.id),
+            'name': mo.name,
+            'address': mo.address,
+            'profile_name': mo.profile.name
+        }
         box_jcls = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         periodic_jcls = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
@@ -87,58 +111,11 @@ class TaskMonitorApplication(ObjectListApplication):
                                         key=mo.id,
                                         pool=mo.pool.name
                                         )
+
         if box_job:
-            b_last_success = humanize_distance(box_job["last"]) if "last" in box_job else '--'
-            b_last_status = box_job.get(Job.ATTR_LAST_STATUS)
-            b_time_start = self.to_json(box_job.get(Job.ATTR_TS))
-            b_status = box_job["s"] if "s" in box_job else '--'
-            if b_status == "W":
-                bkey = "discovery-%s-%s" % (box_jcls, mo.id)
-                bd = get_db()["noc.joblog"].find_one({"_id": bkey})
-                if bd and bd["log"]:
-                    br = ModelApplication.render_plain_text(zlib.decompress(str(bd["log"])))
-                    match = rx_time.search(str(br))
-                    if match:
-                        s = match.group("time").split(".")[0]
-                        if len(s) > 3:
-                            b_time = "%s sec" % (int(s) / 1000)
-                        else:
-                            b_time = "%s mc" % s
+            res = self.get_data(box_job, box_jcls, "b", mo.id)
+            result.update(res)
         if periodic_job:
-            # print periodic_job
-            p_last_success = humanize_distance(periodic_job["last"]) if "last" in periodic_job else '--'
-            p_last_status = periodic_job.get(Job.ATTR_LAST_STATUS)
-            p_time_start = self.to_json(periodic_job.get(Job.ATTR_TS))
-            # print p_time_start
-            p_status = periodic_job["s"] if "s" in periodic_job else '--'
-            if p_status == "W":
-                pkey = "discovery-%s-%s" % (periodic_jcls, mo.id)
-                pd = get_db()["noc.joblog"].find_one({"_id": pkey})
-                if pd and pd["log"]:
-                    pr = ModelApplication.render_plain_text(zlib.decompress(str(pd["log"])))
-                    match = rx_time.search(str(pr))
-                    if match:
-                        s = match.group("time").split(".")[0]
-                        if len(s) > 3:
-                            p_time = "%s sec" % (int(s) / 1000)
-                        else:
-                            p_time = "%s mc" % s
-        return {
-            'id': str(mo.id),
-            'name': mo.name,
-            'address': mo.address,
-            'profile_name': mo.profile.name,
-            'platform': mo.platform.name if mo.platform else "",
-            'b_time_start': b_time_start,
-            'b_last_success': b_last_success,
-            'b_status': b_status,
-            "b_time": b_time,
-            'b_duration': "",
-            'b_last_status': b_last_status,
-            'p_time_start': p_time_start,
-            'p_last_success': p_last_success,
-            'p_status': p_status,
-            'p_duration': "",
-            'p_last_status': p_last_status,
-            "p_time": p_time
-        }
+            res = self.get_data(periodic_job, periodic_jcls, "p", mo.id)
+            result.update(res)
+        return result
