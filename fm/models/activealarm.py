@@ -14,6 +14,7 @@ from django.template import Template as DjangoTemplate
 from django.template import Context
 from mongoengine.errors import SaveConditionError
 # NOC modules
+from noc.config import config
 import noc.lib.nosql as nosql
 from noc.main.models import User
 from noc.main.models.style import Style
@@ -113,6 +114,10 @@ class ActiveAlarm(nosql.Document):
 
     def __unicode__(self):
         return u"%s" % self.id
+
+    def iter_changed_datastream(self):
+        if config.datastream.enable_alarm:
+            yield "alarm", self.id
 
     def clean(self):
         super(ActiveAlarm, self).clean()

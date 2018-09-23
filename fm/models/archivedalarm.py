@@ -12,6 +12,7 @@ import datetime
 # Third-party modules
 from django.template import Template, Context
 # NOC modules
+from noc.config import config
 import noc.lib.nosql as nosql
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.datastream.decorator import datastream
@@ -86,6 +87,10 @@ class ArchivedAlarm(nosql.Document):
 
     def __unicode__(self):
         return u"%s" % self.id
+
+    def iter_changed_datastream(self):
+        if config.datastream.enable_alarm:
+            yield "alarm", self.id
 
     def log_message(self, message):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
