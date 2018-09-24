@@ -29,14 +29,15 @@ class Script(BaseScript):
         r"[0-9A-F]{2}-[0-9A-F]{2})\s+CPU\s+Self\s*(?:\S*\s*)?$",
         re.MULTILINE)
 
-    OIDS_CHECK = [mib["LLDP-MIB::lldpLocChassisId"] + ".0",
-                  mib["BRIDGE-MIB::dot1dBaseBridgeAddress"] + ".0"]
+    OIDS_CHECK = {
+        0: mib["LLDP-MIB::lldpLocChassisId", 0],
+        1: mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0]
+    }
 
     # Do not use noc.sa.profiles.Generic.get_chassis_id
     def execute_snmp(self):
         macs = []
-        for oid in self.OIDS_CHECK:
-            v = self.snmp.get(oid)
+        for v in self.snmp.get(self.OIDS_CHECK).values():
             if v is None:
                 continue
             mac = MAC(v)
