@@ -119,7 +119,7 @@ class Script(BaseScript):
                         )
                         if not serial:
                             serial = t_sn
-                        if part_no is None or vendor is None:
+                        if not part_no:
                             continue
                     elif type == 'MOTHERBOARD':
                         part_no = "CISCO%s-MB" % match.group("descr")[1:5]
@@ -195,6 +195,8 @@ class Script(BaseScript):
                     t_num = s.split()[0].split("/")[-1]
                     t_vendor, t_sn, t_rev, pid = \
                         self.get_idprom(s.split()[0], s.split()[-1].upper())
+                    if not pid:
+                        continue
                     objects += [{
                         "type": "XCVR",
                         "number": t_num,
