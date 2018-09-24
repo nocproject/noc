@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # InfiNet.WANFlexX.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -20,7 +20,7 @@ class Script(BaseScript):
     """
     name = "InfiNet.WANFlexX.get_interfaces"
     interface = IGetInterfaces
-    cache=True
+    cache = True
 
     rx_ifname = re.compile(r"^(?P<name>\S+): \S+ mtu (?P<mtu>\d+)$",
                            re.MULTILINE)
@@ -37,7 +37,8 @@ class Script(BaseScript):
         "et": "physical",
         "rf": "physical",
         "vl": "SVI",
-        "nu": "null"
+        "nu": "null",
+        "sv": "management"
     }
 
     def execute(self):
@@ -49,8 +50,8 @@ class Script(BaseScript):
             if not match:
                 continue
             ifname = match.group("name")
-            if ifname.startswith("svi"):  # tmp hack
-                continue
+            # if ifname.startswith("svi"):  # tmp hack
+            #    continue
             iface = {
                 "name": ifname,
                 "type": self.TYPE_MAP[ifname[:2]],
@@ -66,10 +67,23 @@ class Script(BaseScript):
                 mac = match.group("mac")
                 iface["mac"] = mac
                 iface["subinterfaces"][0]["mac"] = mac
+            else:
+                mac = ""  # For loopback interface
             # get SVI interfaces vlans
             match = self.rx_vlan.search(block)
             if match:
-                iface["subinterfaces"][0]["vlan_ids"] = [match.group("vlan")]
+                vlan_ids = match.group("vlan")
+                iface["subinterfaces"][0]["vlan_ids"] = [vlan_ids]
+            else:
+                vlan_ids = 0
+            """
+            vlan106: flags=8022<BROADCAST,VLAN,MULTICAST> mtu 1500
+            inet 0.0.0.0 netmask 0x0
+            ether 00:00:00:00:00:00
+            vlan: 0 parent interface: <none>
+            """
+            if mac == "00:00:00:00:00:00" or vlan_ids == 0:
+                continue
 
             ifaces += [iface]
         # collect interfaces ipv4 addresses
@@ -77,8 +91,7 @@ class Script(BaseScript):
         cmd = self.cli("netstat -i")
         for match in self.rx_ipaddr.finditer(cmd):
             ipv4_ifaces[match.group("ifname")] += [
-                match.group("ipaddr") + "/" + \
-                match.group("net").split("/")[1]
+                match.group("ipaddr") + "/" + match.group("net").split("/")[1]
             ]
         for iface in ifaces:
             if iface["name"] in ipv4_ifaces:
