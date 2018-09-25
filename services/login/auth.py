@@ -28,9 +28,11 @@ class AuthRequestHandler(tornado.web.RequestHandler):
             self.set_status(200, "OK")
             self.set_header("Remote-User", user)
 
-        def api_success(access):
+        def api_success(access, key_name=None):
             self.set_status(200, "OK")
             self.set_header("X-NOC-API-Access", access)
+            if key_name:
+                self.set_header("Remote-User", key_name)
 
         def fail():
             self.set_status(401, "Not authorized")
@@ -39,9 +41,9 @@ class AuthRequestHandler(tornado.web.RequestHandler):
         if user:
             return success(user)
         elif self.request.headers.get("Private-Token"):
-            a = self.service.get_api_access(self.request.headers.get("Private-Token"))
-            if a:
-                return api_success(a)
+            name, access = self.service.get_api_access(self.request.headers.get("Private-Token"))
+            if name and access:
+                return api_success(access, name)
         elif self.request.headers.get("Authorization"):
             # Fallback to the basic auth
             ah = self.request.headers.get("Authorization")
