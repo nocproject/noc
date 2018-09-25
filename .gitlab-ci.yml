@@ -30,7 +30,6 @@ test:empty:
     - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
     - cd /opt/noc
-    - ./noc syncdb --noinput
     - ./noc migrate
     - ./noc collection sync
     - ./noc migrate-ch --host clickhouse
