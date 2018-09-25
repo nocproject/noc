@@ -120,6 +120,8 @@ class Script(GetMetricsScript):
                             "tx-errors": "Interface | Errors | Out"}
         c = self.cli("get interface all detail")
         for block in c.split("\n\n"):
+            if not block:
+                continue
             ifaces += [dict(line.split(None, 1) for line in block.splitlines()
                             if len(line.split(None, 1)) == 2)]
         self.get_beacon_iface(ifaces)
@@ -159,6 +161,8 @@ class Script(GetMetricsScript):
         r_metrics = defaultdict(dict)
         w = self.cli("get radio all detail")
         for block in w.split("\n\n"):
+            if not block:
+                continue
             data = dict(line.split(None, 1) for line in block.splitlines()
                         if len(line.split(None, 1)) == 2)
             iface = data["name"].strip()
