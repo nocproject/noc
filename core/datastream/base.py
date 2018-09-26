@@ -8,6 +8,7 @@
 
 # Python modules
 import hashlib
+import datetime
 # Third-party modules
 import ujson
 import bson
@@ -268,6 +269,19 @@ class DataStream(object):
         with coll.watch() as stream:
             next(stream)
             return
+
+    @staticmethod
+    def qs(s):
+        """
+        Encode string to utf-8
+        :param s:
+        :return:
+        """
+        if not s:
+            return ""
+        if isinstance(s, datetime.datetime):
+            return s.isoformat()
+        return s.encode("utf-8")
 
     @classmethod
     def _parse_filter(cls, expr):

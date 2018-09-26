@@ -2,24 +2,28 @@
 # ---------------------------------------------------------------------
 # ArchivedAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
-# Django modules
+# Third-party modules
 from django.template import Template, Context
 # NOC modules
+from noc.config import config
 import noc.lib.nosql as nosql
 from noc.sa.models.managedobject import ManagedObject
-from alarmclass import AlarmClass
-from alarmlog import AlarmLog
-from alarmseverity import AlarmSeverity
+from noc.core.datastream.decorator import datastream
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.span import get_current_span
+from .alarmclass import AlarmClass
+from .alarmlog import AlarmLog
+from .alarmseverity import AlarmSeverity
 
 
+@datastream
 class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
@@ -83,6 +87,10 @@ class ArchivedAlarm(nosql.Document):
 
     def __unicode__(self):
         return u"%s" % self.id
+
+    def iter_changed_datastream(self):
+        if config.datastream.enable_alarm:
+            yield "alarm", self.id
 
     def log_message(self, message):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
@@ -174,8 +182,6 @@ class ArchivedAlarm(nosql.Document):
         a.save()
         # @todo: Clear related correlator jobs
         self.delete()
-        # Remove pending control_notify job
-        #remove_job("fm.correlator", "control_notify", key=a.id)
         # Send notifications
         # Do not set notifications for child and for previously reopened
         # alarms
@@ -240,6 +246,6 @@ class ArchivedAlarm(nosql.Document):
                 }}
             )
 
-# Avoid circular references
-from activealarm import ActiveAlarm
 
+# Avoid circular references
+from .activealarm import ActiveAlarm

@@ -19,6 +19,8 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.dns.models.dnszone import DNSZone
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.models import is_document
 
 
@@ -30,7 +32,8 @@ class Command(BaseCommand):
         "cfgsyslog": ManagedObject,
         "cfgtrap": ManagedObject,
         "dnszone": DNSZone,
-        "resourcegroup": ResourceGroup
+        "resourcegroup": ResourceGroup,
+        "alarm": (ActiveAlarm, ArchivedAlarm)
     }
 
     def add_arguments(self, parser):
@@ -68,12 +71,23 @@ class Command(BaseCommand):
             self.print(ds_name)
 
     def iter_id(self, model):
-        if is_document(model):
-            for d in model._get_collection().find({}, {"_id": 1}, no_cursor_timeout=True).sort("_id"):
-                yield d["_id"]
-        else:
-            for id in model.objects.values_list("id", flat=True):
-                yield id
+        if not isinstance(model, tuple):
+            model = (model,)
+        for m in model:
+            if is_document(m):
+                for d in m._get_collection().find({}, {"_id": 1}, no_cursor_timeout=True).sort("_id"):
+                    yield d["_id"]
+            else:
+                for id in m.objects.values_list("id", flat=True):
+                    yield id
+
+    def get_total(self, model):
+        if isinstance(model, tuple):
+            c = 0
+            for m in model:
+                c += m.objects.count()
+            return c
+        return model.objects.count()
 
     def handle_rebuild(self, datastream, *args, **kwargs):
         if not datastream:
@@ -84,7 +98,7 @@ class Command(BaseCommand):
         ds = loader.get_datastream(datastream)
         if not ds:
             self.die("Cannot initialize datastream")
-        total = model.objects.count()
+        total = self.get_total(model)
         STEP = 100
         report_interval = max(total // STEP, 1)
         next_report = report_interval
