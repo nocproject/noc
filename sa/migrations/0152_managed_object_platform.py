@@ -6,7 +6,7 @@ from noc.core.model.fields import DocumentReferenceField
 from noc.lib.nosql import get_db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         #
         # Platform and version
@@ -20,20 +20,20 @@ class Migration:
             mo.profile AS profile,
             mo.vendor AS vendor,
             a2.value AS platform,
-            a3.value AS version 
-          FROM 
-            sa_managedobject mo 
-            JOIN sa_managedobjectattribute a2 ON (mo.id = a2.managed_object_id) 
-            JOIN sa_managedobjectattribute a3 ON (mo.id = a3.managed_object_id) 
-          WHERE 
-            a2.key = 'platform' 
+            a3.value AS version
+          FROM
+            sa_managedobject mo
+            JOIN sa_managedobjectattribute a2 ON (mo.id = a2.managed_object_id)
+            JOIN sa_managedobjectattribute a3 ON (mo.id = a3.managed_object_id)
+          WHERE
+            a2.key = 'platform'
             AND a3.key = 'version'
         """)
         platforms = set()  # vendor, platform
         versions = set()  # profile, version
         for profile, vendor, platform, version in data:
-            platform = platform.strip()
-            vendor = vendor.strip()
+            platform = platform.strip() if platform else None
+            vendor = vendor.strip() if vendor else None
             if not platform or not vendor:
                 continue
             platforms.add((vendor, platform))
@@ -115,8 +115,8 @@ class Migration:
         )
         #
         for profile, vendor, platform, version in data:
-            platform = platform.strip()
-            vendor = vendor.strip()
+            platform = platform.strip() if platform else None
+            vendor = vendor.strip() if vendor else None
             if not platform or not vendor:
                 continue
             db.execute("""
@@ -127,7 +127,7 @@ class Migration:
                 WHERE
                   id IN (
                     SELECT mo.id
-                    FROM 
+                    FROM
                       sa_managedobject mo
                       JOIN sa_managedobjectattribute a2 ON (a2.managed_object_id = mo.id)
                       JOIN sa_managedobjectattribute a3 ON (a3.managed_object_id = mo.id)
@@ -158,7 +158,7 @@ class Migration:
                 SELECT managed_object_id
                 FROM sa_managedobjectattribute
                 WHERE
-                  key = 'image' 
+                  key = 'image'
                   AND value = %s
                 )
             """, [img, img])
