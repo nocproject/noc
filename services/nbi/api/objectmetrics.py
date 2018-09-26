@@ -23,6 +23,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.metrictype import MetricType
 from noc.core.clickhouse.connect import ClickhouseClient
 from noc.core.clickhouse.error import ClickhouseError
+from noc.sa.models.profile import Profile
 from ..base import NBIAPI
 
 
@@ -85,14 +86,17 @@ class ObjectMetricsAPI(NBIAPI):
             return 200, []
         # Map managed object id to bi_id
         id_to_bi = {}
-        for mo_id, bi_id in ManagedObject.objects.filter(
+        profiles = {}  # object id -> profile
+        for mo_id, bi_id, profile_id in ManagedObject.objects.filter(
                 id__in=list(objects)
-        ).values_list("id", "bi_id"):
+        ).values_list("id", "bi_id", "profile"):
             id_to_bi[str(mo_id)] = bi_id
+            profiles[str(mo_id)] = Profile.get_by_id(profile_id).get_profile()
         # Prepare queries
         scopes = {}  # table_name -> ([fields, ..], [where, ..])
         for mc in req["metrics"]:
-            ifaces = tuple(sorted(mc.get("interfaces", [])))
+            profile = profiles[mc["object"]]
+            ifaces = tuple(sorted(profile.convert_interface_name(i) for i in mc.get("interfaces", [])))
             for mn in mc["metric_types"]:
                 mt = MetricType.get_by_name(mn)
                 if not mt:
