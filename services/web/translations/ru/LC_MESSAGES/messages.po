@@ -2221,7 +2221,7 @@ msgstr "Профили объектов"
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:90
 #: services/web/apps/sa/reportprofilechecksdetailed/views.py:32
 msgid "Managed Objects Selector"
-msgstr "Селектор объетов"
+msgstr "Селектор объектов"
 
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:94
 msgid "Filter by Ping status"
