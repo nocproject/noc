@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_interfases
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -58,6 +58,8 @@ class Script(BaseScript):
         ifaces = copy.deepcopy(self.phys_interfaces)
         changed = False
         for l_iface in self.logical_interfaces:
+            if not self.profile.valid_interface_name(l_iface):
+                continue
             if vrf == "default":
                 v = self.cli("show ip interface %s" % l_iface)
             else:
@@ -109,7 +111,8 @@ class Script(BaseScript):
                         ip_address = match1.group("ip")
                         ip_subnet = match1.group("mask")
                         ip_address = "%s/%s" % (
-                        ip_address, IPv4.netmask_to_len(ip_subnet))
+                            ip_address, IPv4.netmask_to_len(ip_subnet)
+                        )
                         sub["ipv4_addresses"] += [ip_address]
                 if ", " in match.group("n_proto"):
                     # Need more examples
@@ -160,7 +163,6 @@ class Script(BaseScript):
                 ifaces += [iface]
                 changed = True
             else:
-                #continue
                 if "." in l_iface:
                     v = self.cli("show interface %s" % l_iface)
                     match = self.rx_iface1.search(v)
@@ -184,7 +186,7 @@ class Script(BaseScript):
                                         i['subinterfaces'][0]["enabled_protocols"]
                                     i['subinterfaces'][0].update(sub)
                                 # Need more examples
-                                #changed = True
+                                # changed = True
                                 break
 
         if changed:
