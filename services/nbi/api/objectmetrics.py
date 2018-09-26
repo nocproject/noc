@@ -70,7 +70,7 @@ class ObjectMetricsAPI(NBIAPI):
             return 400, "Invalid range"
         # Check time range
         delta = to_ts - from_ts
-        if delta.total_seconds > config.nbi.objectmetrics_max_interval:
+        if delta.total_seconds() > config.nbi.objectmetrics_max_interval:
             return 400, "Requested range too large"
         # Prepare data for queries
         objects = set()
@@ -123,12 +123,12 @@ class ObjectMetricsAPI(NBIAPI):
             # Build SQL request
             qx = []
             for wx in scopes[table][1]:
-                if len(wx) == 1:
+                if len(wx) == 1 or not wx[1]:
                     qx += ["(managed_object = %d)" % wx[0]]
                 elif len(wx[1]) == 1:
-                    qx += ["(managed_object = %d AND path[3] = '%s')" % (wx[0], wx[1][0])]
+                    qx += ["(managed_object = %d AND path[4] = '%s')" % (wx[0], wx[1][0])]
                 else:
-                    qx += ["(managed_object = %d AND path[3] IN (%s))" % (
+                    qx += ["(managed_object = %d AND path[4] IN (%s))" % (
                         wx[0], ", ".join("'%s'" % x for x in wx[1])
                     )]
             fields = ["ts", "managed_object", "path"] + sorted(scopes[table][0])
