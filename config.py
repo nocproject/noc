@@ -336,6 +336,7 @@ class Config(BaseConfig):
         timeout = SecondsParameter(default="3s")
         retry_writes = BooleanParameter(default=False)
         app_name = StringParameter()
+        max_idle_time = SecondsParameter(default="60s")
 
     class mrt(ConfigSection):
         max_concurrency = IntParameter(default=50)
@@ -616,6 +617,8 @@ class Config(BaseConfig):
                 self._mongo_connection_args["readPreference"] = "secondaryPreferred"
             elif len(hosts) > 1:
                 raise ValueError("Replica set name must be set")
+            if self.mongo.max_idle_time:
+                self._mongo_connection_args["maxIdleTimeMS"] = self.mongo.max_idle_time * 1000
             url = ["mongodb://"]
             if has_credentials:
                 url += ["%s:%s@" % (urllib.quote(self.mongo.user),
