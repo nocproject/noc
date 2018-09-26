@@ -26,7 +26,7 @@ Ext.define('NOC.core.TreeCombo', {
         type: 'hbox',
         align: 'bottom'
     },
-    border: 0,
+    border: false,
 
     config: {
         fieldValue: null, // type model

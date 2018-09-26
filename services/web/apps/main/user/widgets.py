@@ -33,7 +33,8 @@ class AccessWidget(forms.Widget):
         ul.permlist {
             margin:     0;
             padding:    0;
-            display:    inline;
+            display:    flex;
+            flex-wrap: wrap;
             list-style: none;
         }
 
