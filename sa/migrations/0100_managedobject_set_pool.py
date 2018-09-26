@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.db import models
 # Third-party modules
 from south.db import db
 # NOC models
-from noc.core.model.fields import DocumentReferenceField
 from noc.lib.nosql import get_db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         mdb = get_db()
         for d in mdb.noc.pools.find():
@@ -22,6 +19,9 @@ class Migration:
                 "UPDATE sa_managedobject SET pool=%s WHERE activator_id=%s",
                 [str(d["_id"]), pid]
             )
+        # Adjust scheme values
+        # For smooth develop -> post-microservice migration
+        db.execute("UPDATE sa_managedobject SET scheme = scheme + 1")
 
     def backwards(self):
         pass
