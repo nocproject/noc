@@ -43,6 +43,8 @@ def get_objects_metrics(managed_objects):
     mmm = set()
     op_fields_map = defaultdict(list)
     for op in ManagedObjectProfile.objects.filter(id__in=object_profiles):
+        if not op.metrics:
+            continue
         for mt in op.metrics:
             mmm.add(mts[mt["metric_type"]])
             op_fields_map[op.id] += [mts[mt["metric_type"]][1]]
@@ -98,7 +100,8 @@ def get_interface_metrics(managed_objects):
     ) * 1.5
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=query_interval or 3600)
     from_date = from_date.replace(microsecond=0)
-    SQL = """SELECT managed_object, path[4] as iface, argMax(ts, ts), argMax(load_in, ts), argMax(load_out, ts), argMax(errors_in, ts), argMax(errors_out, ts)
+    SQL = """SELECT managed_object, path[4] as iface, argMax(ts, ts), argMax(load_in, ts), argMax(load_out, ts),
+    argMax(errors_in, ts), argMax(errors_out, ts)
             FROM interface
             WHERE
               date >= toDate('%s')
