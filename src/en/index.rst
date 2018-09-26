@@ -5,7 +5,7 @@ The NOC |version| Manual
 ========================
 
 Welcome to the NOC |version| Manual!
-NOC is the scalable, high-performance and open-source OSS system for ISP,
+The NOC is the scalable, high-performance and open-source OSS system for ISP,
 service and content providers
 
 Community
