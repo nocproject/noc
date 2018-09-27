@@ -34,7 +34,7 @@ class ProfileLoader(BaseLoader):
         Load profile and return BaseProfile instance.
         Returns None when no profile found or loading error occured
         """
-        if name == "Generic.Host":
+        if name == GENERIC_PROFILE:
             name = "Generic"
         with self.lock:
             profile = self.profiles.get(name)
@@ -50,13 +50,10 @@ class ProfileLoader(BaseLoader):
                         if p:
                             # Custom script
                             base_name = os.path.basename(os.path.dirname(p))
+                            module_name = "%s.sa.profiles.%s" % (base_name, name)
                         else:
                             # Common script
-                            base_name = "noc"
-                        if name == GENERIC_PROFILE:
-                            module_name = "%s.sa.profiles.Generic" % base_name
-                        else:
-                            module_name = "%s.sa.profiles.%s" % (base_name, name)
+                            module_name = "noc.sa.profiles.%s" % name
                         for mn in ("%s.profile" % module_name, module_name):
                             profile = self.find_class(mn, BaseProfile, name)
                             if profile:
