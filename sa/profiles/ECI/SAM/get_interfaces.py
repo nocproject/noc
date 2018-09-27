@@ -15,7 +15,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 
 
-
 class Script(BaseScript):
     name = "ECI.SAM.get_interfaces"
     interface = IGetInterfaces
@@ -50,7 +49,7 @@ class Script(BaseScript):
         interfaces = []
         mac = None
         c = cmd.split("\n\n")
-        if (self.match_version(version__contains="IPNI")):
+        if self.match_version(version__contains="IPNI"):
             for i in c:
                 i = i.strip()
                 if not i:
