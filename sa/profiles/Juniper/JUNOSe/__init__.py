@@ -3,7 +3,7 @@
 # Vendor: Juniper
 # OS:     JUNOSe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -83,3 +83,14 @@ class Profile(BaseProfile):
                 elif match.group("name") == "SRP IOA":
                     r += ["FastEthernet%s/0" % match.group("slot")]
         return r
+
+    def valid_interface_name(self, name):
+        if "." in name:
+            try:
+                ifname, unit = name.split(".")
+            except ValueError:
+                return True
+            # See `logical-interface-unit-range`
+            if int(unit) > 16385:
+                return False
+        return True
