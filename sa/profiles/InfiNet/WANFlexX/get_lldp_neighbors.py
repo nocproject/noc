@@ -25,6 +25,9 @@ class Script(BaseScript):
     rx_PortID = re.compile(
         r"PortID:       \|\s*(?P<port_id>\S+)\s\((?P<port_subtype>[a-zN]*)",
         re.MULTILINE)
+    rx_PortDescr = re.compile(
+        r"PortDescr:    \|\s*(?P<port_descr>.+?)\|",
+        re.MULTILINE)
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
     def execute_cli(self):
@@ -39,22 +42,25 @@ class Script(BaseScript):
                 "local_interface": match.group("interface"),
                 "neighbors": [{
                     "remote_chassis_id_subtype": {
-                        "Interface alias": 1,
-                        "Port component": 2,
-                        "Local": 7,
-                        "ifName": 5,
-                        "mac": 3
-                    }[self.rx_ChassisID.search(lldp).group("chassis_sub")],
+                        "chassis component": 1,
+                        "interface alias": 2,
+                        "port component": 3,
+                        "mac": 4,
+                        "network address": 5,
+                        "interface name": 6,
+                        "local": 7
+                    }[self.rx_ChassisID.search(lldp).group("chassis_sub").lower()],
                     "remote_chassis_id":
                     self.rx_ChassisID.search(lldp).group("chassis_id"),
                     "remote_port_subtype": {
-                        "Interface alias": 1,
-                        "Port component": 2,
-                        "Local": 7,
-                        "ifName": 5,
-                        "mac": 3
-                    }[self.rx_PortID.search(lldp).group("port_subtype")],
-                    "remote_port": self.rx_PortID.search(lldp).group("port_id")
+                        "interface alias": 1,
+                        "port component": 2,
+                        "mac": 3,
+                        "ifname": 5,
+                        "local": 7,
+                    }[self.rx_PortID.search(lldp).group("port_subtype").lower()],
+                    "remote_port": self.rx_PortID.search(lldp).group("port_id"),
+                    "remote_port_description": self.rx_PortDescr.search(lldp).strip()
                 }]
             }]
         return result
