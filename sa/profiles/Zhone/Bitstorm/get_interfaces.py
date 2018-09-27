@@ -44,7 +44,7 @@ class Script(BaseScript):
     )
     rx_inband = re.compile(
         r"^Inband Management Address (?P<ifnum>\d+):\s*\n"
-        r"^\s*ip address\s+(?P<ip>\S+)( \(dhcp\))?\s*\n"
+        r"^\s*ip address\s+(?P<ip>\S+)( \((?:dhcp|bootp)\))?\s*\n"
         r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
         r"^\s*Vlan ID\s+(?P<vlan_id>\d+)\s*\n"
         r"^\s*port status\s+(?P<admin_status>enable|disable)\s*\n"
@@ -52,13 +52,13 @@ class Script(BaseScript):
         re.MULTILINE
     )
     rx_inband2 = re.compile(
-        r"^\s*ip address\s+(?P<ip>\S+)( \(dhcp\))?\s*\n"
+        r"^\s*ip address\s+(?P<ip>\S+)( \((?:dhcp|bootp)\))?\s*\n"
         r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
         r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n",
         re.MULTILINE
     )
     rx_outband = re.compile(
-        r"^\s*ip address\s+(?P<ip>\S+)( \(dhcp\))?\s*\n"
+        r"^\s*ip address\s+(?P<ip>\S+)( \((?:dhcp|bootp)\))?\s*\n"
         r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
         r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n"
         r"(^\s*Port Status\s+(?P<admin_status>enable|disable)\s*\n)?",
