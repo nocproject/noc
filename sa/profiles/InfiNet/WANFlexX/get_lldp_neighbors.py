@@ -60,7 +60,7 @@ class Script(BaseScript):
                         "local": 7,
                     }[self.rx_PortID.search(lldp).group("port_subtype").lower()],
                     "remote_port": self.rx_PortID.search(lldp).group("port_id"),
-                    "remote_port_description": self.rx_PortDescr.search(lldp).strip()
+                    "remote_port_description": self.rx_PortDescr.search(lldp).group("port_descr").strip()
                 }]
             }]
         return result
