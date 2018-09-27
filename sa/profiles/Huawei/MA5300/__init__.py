@@ -50,7 +50,6 @@ class Profile(BaseProfile):
 
     def setup_session(self, script):
         script.cli("terminal type vt100", ignore_errors=True)
-        script.cli("no debug all", ignore_errors=True)
         script.cli("config", ignore_errors=True)
         script.cli("line vty 0 3", ignore_errors=True)
         script.cli("history size 0", ignore_errors=True)
