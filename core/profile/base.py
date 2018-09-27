@@ -178,6 +178,9 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     cli_timeout_super = 10
     # Timeout waiting next setup sequence response
     cli_timeout_setup = 10
+    # Amount of retries for enable passwords
+    # Increase if box asks for enable password twice
+    cli_retries_super_password = 1
     # Aggregate up to *snmp_metrics_get_chunk* oids
     # to one SNMP GET request
     snmp_metrics_get_chunk = 15

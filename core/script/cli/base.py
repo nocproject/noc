@@ -79,6 +79,8 @@ class CLI(object):
         self.setup_complete = False
         self.to_raise_privileges = script.credentials.get("raise_privileges", True)
         self.state = "start"
+        # State retries
+        self.super_password_retries = self.profile.cli_retries_super_password
 
     def close(self):
         if self.script.session:
@@ -557,12 +559,17 @@ class CLI(object):
             (self.script.credentials.get("super_password", "") or "") +
             (self.profile.username_submit or "\n")
         )
+        if self.super_password_retries > 1:
+            unprivileged_handler = self.on_unprivileged_prompt
+            self.super_password_retries -= 1
+        else:
+            unprivileged_handler = (self.on_failure, CLILowPrivileges)
         self.expect({
             "prompt": self.on_prompt,
             "password": (self.on_failure, CLILowPrivileges),
             "super_password": (self.on_failure, CLILowPrivileges),
             "pager": self.send_pager_reply,
-            "unprivileged_prompt": (self.on_failure, CLILowPrivileges)
+            "unprivileged_prompt": unprivileged_handler
         }, self.profile.cli_timeout_password)
 
     @tornado.gen.coroutine
