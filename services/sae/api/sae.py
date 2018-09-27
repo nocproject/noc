@@ -205,8 +205,9 @@ class SAEAPI(API):
                 credentials["http_port"] = port
         # Build version
         if vendor and platform and version:
+            vendor = Vendor.get_by_id(vendor)
             version = {
-                "vendor": Vendor.get_by_id(vendor).code,
+                "vendor": vendor.code[0] if vendor.code else vendor.name,
                 "platform": Platform.get_by_id(platform).name,
                 "version": Firmware.get_by_id(version).version
             }
