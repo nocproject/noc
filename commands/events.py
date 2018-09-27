@@ -7,24 +7,36 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import re
+import datetime
+import time
 import hashlib
 from htmlentitydefs import name2codepoint
 # Third-party modules
 from bson import ObjectId
+from pymongo import DeleteMany
+from pymongo.errors import DocumentTooLarge
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.lib.validators import is_oid
 from noc.lib.escape import json_escape
 
+
+DEFAULT_CLEAN = datetime.timedelta(weeks=4)
+CLEAN_WINDOW = datetime.timedelta(weeks=1)
+
 name2codepoint["#39"] = 39
 rx_cp = re.compile("&(%s);" % "|".join(name2codepoint))
+
 
 def unescape(s):
     """
@@ -37,10 +49,6 @@ class Command(BaseCommand):
     help = "Manage events"
 
     def add_arguments(self, parser):
-        parser.add_argument("-a", "--action",
-                            dest="action",
-                            default="show",
-                            help="Action: show, reclassify"),
         parser.add_argument("-s", "--selector", dest="selector",
                             help="Selector name"),
         parser.add_argument("-o", "--object", dest="object",
@@ -60,6 +68,15 @@ class Command(BaseCommand):
                             help="Suppress duplicated subjects"),
         parser.add_argument("-l", "--limit", dest="limit", default=0, type=int,
                             help="Limit action to N records")
+        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers.add_parser("show")
+        subparsers.add_parser("json")
+        subparsers.add_parser("reclassify")
+        clean = subparsers.add_parser("clean")
+        clean.add_argument("--before", dest="before",
+                           help="Clear events before date")
+        clean.add_argument("--force", default=False,
+                           action="store_true", help="Really events remove")
 
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
     rx_float = re.compile(r"\d+\.\d+")
@@ -87,7 +104,7 @@ class Command(BaseCommand):
                 s = ManagedObjectSelector.objects.get(name=options["selector"])
             except ManagedObjectSelector.DoesNotExist:
                 self.die("Selector not found: %s" % options["selector"])
-            c = c.filter(managed_object__in=[o.id for o in s.managed_objects])
+            c = c.filter(managed_object__in=[mo.id for mo in s.managed_objects])
         if options["class"]:
             o = EventClass.objects.filter(name=options["class"]).first()
             if not o:
@@ -115,7 +132,7 @@ class Command(BaseCommand):
                 if ("source" in e.raw_vars and
                     e.raw_vars["source"] == "SNMP Trap" and
                     "1.3.6.1.6.3.1.1.4.1.0" in e.raw_vars and
-                            e.raw_vars["1.3.6.1.6.3.1.1.4.1.0"] == trap_oid):
+                        e.raw_vars["1.3.6.1.6.3.1.1.4.1.0"] == trap_oid):
                     yield e
             elif syslog_re:
                 if ("source" in e.raw_vars and
@@ -136,11 +153,11 @@ class Command(BaseCommand):
 
     def _handle(self, *args, **options):
         try:
-            handler = getattr(self, "handle_%s" % options["action"])
+            handler = getattr(self, "handle_%s" % options["cmd"])
+            events = self.get_events(options)
+            handler(options, events)
         except AttributeError:
             self.die("Invalid action: %s" % options["action"])
-        events = self.get_events(options)
-        handler(options, events)
 
     def handle_show(self, options, events, show_json=False):
         limit = int(options["limit"])
@@ -167,7 +184,7 @@ class Command(BaseCommand):
                 seen.add(sh)
             if show_json:
                 if spool:
-                    print spool + ","
+                    print(spool + ",")
                 s = ["    {"]
                 s += ["        \"profile\": \"%s\"," % json_escape(e.managed_object.profile.name)]
                 s += ["        \"raw_vars\": {"]
@@ -192,8 +209,8 @@ class Command(BaseCommand):
                 spool = "\n".join(s)
             else:
                 self.stdout.write("%s, %s, %s, %s\n" % (e.id, e.managed_object.name,
-                                          e.event_class.name,
-                                          subject))
+                                                        e.event_class.name,
+                                                        subject))
             if limit:
                 limit -= 1
                 if not limit:
@@ -201,7 +218,7 @@ class Command(BaseCommand):
         if show_json:
             if spool:
                 self.stdout.write(spool)
-            print "]"
+            print("]")
 
     def handle_json(self, option, events):
         return self.handle_show(option, events, show_json=True)
@@ -211,11 +228,59 @@ class Command(BaseCommand):
         limit = int(options["limit"])
         for e in events:
             e.mark_as_new("Reclassification requested via CLI")
-            print e.id
+            print(e.id)
             if limit:
                 limit -= 1
                 if not limit:
                     break
+
+    def handle_clean(self, options, events):
+        before = options.get("before")
+        if before:
+            datetime.datetime.strptime(before, "%Y-%m-%d")
+        else:
+            self.print("Before is not set, use default")
+            before = datetime.datetime.now() - DEFAULT_CLEAN
+        force = options.get("force")
+        aa = ActiveAlarm._get_collection()
+        ah = ArchivedAlarm._get_collection()
+        ae = ActiveEvent._get_collection()
+        event_ts = ae.find_one({"timestamp": {"$lte": before}}, limit=1, sort=[("timestamp", 1)])
+        event_ts = event_ts["timestamp"]
+        print("[%s] Cleaned before %s ... \n" % (
+            "events", before
+        ), end="")
+        bulk = []
+        window = CLEAN_WINDOW
+        while event_ts < before:
+            refer_event_ids = []
+            for e in [aa, ah]:
+                for ee in e.find({"timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW}},
+                                 {"opening_event": 1, "closing_event": 1}):
+                    if "opening_event" in ee:
+                        refer_event_ids += [ee["opening_event"]]
+                    if "closing_event" in ee:
+                        refer_event_ids += [ee["closing_event"]]
+            try:
+                clear_qs = {"timestamp": {"$gte": event_ts, "$lte": event_ts + CLEAN_WINDOW},
+                            "_id": {"$nin": refer_event_ids}}
+                self.print("Interval: %s, %s; Count: %d" % (event_ts, event_ts + CLEAN_WINDOW, ae.count(clear_qs)))
+                bulk += [DeleteMany(clear_qs)]
+                event_ts += window
+                if window != CLEAN_WINDOW:
+                    window = CLEAN_WINDOW
+            except DocumentTooLarge:
+                window = window // 2
+                if window < datetime.timedelta(hours=1):
+                    self.die("Too many events for delete in interval %s" % window)
+                event_ts -= window
+        if force:
+            self.print("All data before %s from active events will be Remove..\n" % before)
+            for i in reversed(range(1, 10)):
+                self.print("%d\n" % i)
+                time.sleep(1)
+            ae.bulk_write(bulk)
+
 
 if __name__ == "__main__":
     Command().run()
