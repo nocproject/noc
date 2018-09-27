@@ -34,6 +34,8 @@ class ProfileLoader(BaseLoader):
         Load profile and return BaseProfile instance.
         Returns None when no profile found or loading error occured
         """
+        if name == "Generic.Host":
+            name = "Generic"
         with self.lock:
             profile = self.profiles.get(name)
             if not profile:
