@@ -123,7 +123,7 @@ class LoginService(UIService):
 
     @cachetools.cachedmethod(operator.attrgetter("_apikey_cache"))
     def get_api_access(self, key):
-        return APIKey.get_access_str(key)
+        return APIKey.get_name_and_access_str(key)
 
 
 if __name__ == "__main__":

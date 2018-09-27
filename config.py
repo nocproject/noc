@@ -344,6 +344,10 @@ class Config(BaseConfig):
 
     node = socket.gethostname()
 
+    class nbi(ConfigSection):
+        max_threads = IntParameter(default=10)
+        objectmetrics_max_interval = SecondsParameter(default="3h")
+
     class nsqd(ConfigSection):
         addresses = ServiceParameter(service="nsqd",
                                      wait=True, near=True,
