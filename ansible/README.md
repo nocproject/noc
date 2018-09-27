@@ -12,7 +12,10 @@ Currently it under heavy development.
 Supported platforms are:
 
 * Debian 8
+* Debian 9
 * CentOS 7
 * RHEL 7
-* Ubuntu 16
-* FreeBSD 10.2+
+* Ubuntu 16.04
+* Ubuntu 18.04
+* FreeBSD 11+
+
