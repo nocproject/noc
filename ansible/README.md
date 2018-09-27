@@ -7,7 +7,7 @@ Several notes that it will not do:
 * backup your data, please do it by yourself
 * move data from one host to another.
 
-Supported platforms are:
+Supported platforms are: 
 
 * Debian 8
 * Debian 9
