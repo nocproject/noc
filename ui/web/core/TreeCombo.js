@@ -26,7 +26,7 @@ Ext.define('NOC.core.TreeCombo', {
         type: 'hbox',
         align: 'bottom'
     },
-    border: 0,
+    border: false,
 
     config: {
         fieldValue: null, // type model
@@ -193,7 +193,12 @@ Ext.define('NOC.core.TreeCombo', {
             this.autocomplete,
             {
                 xtype: 'button',
-                text: '<i class="fa fa-folder-open-o" aria-hidden="true"></i>',
+                style: {
+                    "background-color": "#fff",
+                    "border-color": "#d0d0d0",
+                    "border-left": "none"
+                },
+                text: '<i class="fa fa-folder-open-o" style="color: #919191" aria-hidden="true"></i>',
                 handler: function() {
                     var coord = me.getXY();
                     var x_coord = coord[0];

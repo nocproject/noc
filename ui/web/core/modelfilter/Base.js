@@ -12,6 +12,7 @@ Ext.define("NOC.core.modelfilter.Base", {
     ftype: "base",
     name: null,
     handler: undefined,
+    width: 180,
 
     onChange: function() {
         var me = this;

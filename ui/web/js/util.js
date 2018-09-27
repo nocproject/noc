@@ -608,25 +608,35 @@ Ext.define("NOC.form.field.VTypes", {
 // Predefined set of size and settings.
 // Applied to field as uiStyle property
 //
-NOC.uiStyles = {
-    // 3 letters
-    small: {
-        width: 50,
-        anchor: null
-    },
-    // 20 letters
-    medium: {
-        width: 155,
-        anchor: null
-    },
-    // 40 letters
-    large: {
-        width: 310,
-        anchor: null
-    },
-    // Full width
-    extra: {
-        anchor: "100%"
+NOC.uiStyles = function(style) {
+    switch(style) {
+        case "small": {
+            // 3 letters
+            return {
+                width: 50,
+                anchor: null
+            }
+        }
+        case "medium": {
+            // 20 letters
+            return {
+                width: Ext.create("NOC.core.modelfilter.Base").width - 25,
+                anchor: null
+            };
+        }
+        case "large": {
+            // 40 letters
+            return {
+                width: Ext.create("NOC.core.modelfilter.Base").width * 2,
+                anchor: null
+            }
+        }
+        case "extra": {
+            // Full width
+            return {
+                anchor: "100%"
+            };
+        }
     }
 };
 //

@@ -21,7 +21,7 @@ Ext.define("NOC.core.modelfilter.VC", {
                     fieldLabel: me.title,
                     labelAlign: "top",
                     itemId: me.name,
-                    width: 180,
+                    width: me.width,
                     listeners: {
                         change: {
                             scope: me,

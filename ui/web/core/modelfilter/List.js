@@ -29,7 +29,7 @@ Ext.define("NOC.core.modelfilter.List", {
         me.checkValue = Ext.create("Ext.form.ComboBox", {
             fieldLabel: __('Value'),
             labelAlign: "left",
-            width: 180,
+            width: me.width,
             store: me.valuesStore,
             queryMode: 'local',
             displayField: 'label',
@@ -43,7 +43,7 @@ Ext.define("NOC.core.modelfilter.List", {
         me.comboBox = Ext.create("Ext.form.ComboBox", {
             fieldLabel: me.title,
             labelAlign: "top",
-            width: 180,
+            width: me.width,
             store: me.listStore,
             queryMode: 'local',
             displayField: 'label',

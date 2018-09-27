@@ -20,7 +20,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
             widget = Ext.create("Ext.form.field.ComboBox", {
                 fieldLabel: me.title,
                 labelAlign: "top",
-                width: 180,
+                width: me.width,
                 store: me.valuesStore,
                 queryMode: 'local',
                 displayField: 'label',
@@ -36,7 +36,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
             var lookupConfig = {
                 fieldLabel: me.title,
                 labelAlign: "top",
-                width: 180,
+                width: me.width,
                 listeners: {
                     scope: me,
                     select: me.onChange,
