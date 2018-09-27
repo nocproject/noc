@@ -101,7 +101,7 @@ class Script(BaseScript):
                             r[ont_id].update({
                                 "vendor": t["Vendor ID"][0],
                                 "model": t["ONT"][0] + t["Model"][0] if t["Model"] else "",
-                                "version": t["Software Version"][0]
+                                "version": t["Software Version"][0] if t["Software Version"] else ""
                             })
                         continue
                     ont_id, serial = t["ONT ID"][0].split()
@@ -122,7 +122,10 @@ class Script(BaseScript):
             v = self.cli("display ont info %s %s %s %s" % tuple(ont_id.split("/")))
             parts = self.splitter.split(v)
             parse_result = parse_kv(self.detail_map, parts[1])
-            r[ont_id]["distance"] = float(parse_result.get("ont_distance", 0))
+            try:
+                r[ont_id]["distance"] = float(parse_result.get("ont_distance", 0))
+            except ValueError:
+                pass
             address = parse_result.get("ont_address", "")
             if address:
                 r[ont_id]["ip"] = parse_result.get("ont_address", "").split("/")[0]
