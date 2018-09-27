@@ -3,7 +3,7 @@
 # Vendor: Raisecom
 # OS:     RCIOS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,10 +15,15 @@ class Profile(BaseProfile):
     name = "Raisecom.RCIOS"
     pattern_username = r"^([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)> "
+    pattern_super_password = r"^Enable: "
+    cli_retries_super_password = 2
     command_super = "enable"
     pattern_prompt = r"^(?P<hostname>\S+)# "
     command_exit = "exit"
     pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
+    pattern_more = [
+        (r"^--More-- \(\d+% of \d+ bytes\)", "r")
+    ]
 
     INTERFACE_TYPES = {
         "3g": "tunnel",
@@ -30,14 +35,6 @@ class Profile(BaseProfile):
         "tu": "tunnel",
         "vl": "SVI",
     }
-
-    def setup_script(self, script):
-        if script.parent is None:
-            s_password = script.credentials.get("super_password", "")
-            self.pattern_more = [
-                (r"^--More-- \(\d+% of \d+ bytes\)", "r"),
-                (r"^Enable: ", s_password + "\n")
-            ]
 
     @classmethod
     def get_interface_type(cls, name):
