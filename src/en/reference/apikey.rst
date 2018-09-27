@@ -34,6 +34,8 @@ Access to :ref:`api-datastream`
 +===================================+===================================================================================+
 | `datastream:administrativedomain` | ref:`administrativedomain datastream<api-datastream-administrativedomain>` access |
 +-----------------------------------+-----------------------------------------------------------------------------------+
+| `datastream:alarm`                | ref:`alarm datastream<api-datastream-alarm>` access                               |
++-----------------------------------+-----------------------------------------------------------------------------------+
 | `datastream:resourcegroup`        | ref:`resourcegroup datastream<api-datastream-resourcegroup>` access               |
 +-----------------------------------+-----------------------------------------------------------------------------------+
 | `datastream:managedobject`        | ref:`managedobject datastream<api-datastream-managedobject>` access               |
