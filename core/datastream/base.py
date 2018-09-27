@@ -260,6 +260,15 @@ class DataStream(object):
         return int(id)
 
     @classmethod
+    def clean_id_bson(cls, id):
+        """
+        Convert arbitrary string id to bson int
+        :param id:
+        :return:
+        """
+        return bson.ObjectId(id)
+
+    @classmethod
     def wait(cls):
         """
         Block until datastream receives changes
