@@ -168,8 +168,9 @@ class Profile(BaseProfile):
         "Pos": None
     }
 
-    def get_interface_type(self, name):
-        return self.INTERFACE_TYPES.get(name)
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name)
 
     def generate_prefix_list(self, name, pl, strict=True):
         me = "ip ip-prefix %s permit %%s" % name
