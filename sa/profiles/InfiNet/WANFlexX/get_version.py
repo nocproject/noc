@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "InfiNet.WANFlexX.get_version"
     cache = True
     interface = IGetVersion
-    
+
     rx_ver = re.compile(r"^(?P<platform>.+?)\s+WANFleX\s+(?P<version>\S+)",
                         re.MULTILINE)
 
