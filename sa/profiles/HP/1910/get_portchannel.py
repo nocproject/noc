@@ -18,16 +18,13 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_po = re.compile(
-        r"^Aggregation Interface: Bridge-Aggregation(?P<port>\d+)$",
-        re.MULTILINE)
+        r"^Aggregation Interface: Bridge-Aggregation(?P<port>\d+)$", re.MULTILINE)
 
     rx_type = re.compile(
-        r"^Aggregation Mode: (?P<type>\S+)$",
-        re.MULTILINE)
+        r"^Aggregation Mode: (?P<type>\S+)$", re.MULTILINE)
 
     rx_iface = re.compile(
-        r"^\s+(?P<interface>\S+)\s+\S\s+\d+\s+\d\s+\S+$",
-        re.MULTILINE)
+        r"^\s+(?P<interface>\S+)\s+\S\s+\d+\s+\d\s+\S+$", re.MULTILINE)
 
     def execute(self):
         r = []
@@ -35,10 +32,8 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
-                        ["1.2.840.10006.300.43.1.1.1.1.6",
-                         "1.2.840.10006.300.43.1.1.2.1.1",
-                         "1.2.840.10006.300.43.1.1.1.1.5"],
-                        bulk=True):
+                    ["1.2.840.10006.300.43.1.1.1.1.6", "1.2.840.10006.300.43.1.1.2.1.1",
+                     "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
                     port = 'Po' + str(v[1])
                     s = self.hex_to_bin(v[2])
                     members = []
