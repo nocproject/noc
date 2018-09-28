@@ -1,3 +1,5 @@
+.. _api:
+
 =============
 API Reference
 =============
@@ -6,3 +8,5 @@ API Reference
     :titlesonly:
 
     /api/datastream
+    /api/nbi
+
