@@ -61,6 +61,10 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectionStore}',
                                 selection: '{selectionRow}'
                             },
+                            selModel: {
+                                mode: 'MULTI',
+                                selType: 'checkboxmodel'
+                            },
                             listeners: {
                                 selectionchange: 'onSelectionChange',
                                 itemdblclick: 'onSelectionDblClick',
@@ -96,33 +100,47 @@ Ext.define('NOC.sa.runcommands.Application', {
                                         listeners: {
                                             select: 'onSelectionSelectAll'
                                         }
-                                        // }, {
-                                        //     text: __('Unselect All'),
-                                        //     glyph: NOC.glyph.minus_circle,
-                                        //     tooltip: __('Unselect all devices'),
-                                        //     style: {
-                                        //         pointerEvents: 'all'
-                                        //     },
-                                        //     bind: {
-                                        //         disabled: '{!selectionGridHasSel}'
-                                        //     },
-                                        //     handler: 'onSelectionUnselectAll'
-                                        // }, '->', {
-                                        //     text: __('Select Checked'),
-                                        //     glyph: NOC.glyph.arrow_right,
-                                        //     tooltip: __('Move all selected devices to the right'),
-                                        //     style: {
-                                        //         pointerEvents: 'all'
-                                        //     },
-                                        //     bind: {
-                                        //         disabled: '{!selectionGridHasSel}'
-                                        //     },
-                                        //     handler: 'onSelectionAddChecked'
-                                        // }, '|', {
-                                        //     xtype: 'box',
-                                        //     bind: {
-                                        //         html: __('Selected : {total.selection}')
-                                        //     }
+                                    }, {
+                                        text: __('Unselect All'),
+                                        glyph: NOC.glyph.minus_circle,
+                                        tooltip: __('Unselect all devices'),
+                                        style: {
+                                            pointerEvents: 'all'
+                                        },
+                                        bind: {
+                                            disabled: '{!selectionGridHasSel}'
+                                        },
+                                        handler: 'onSelectionUnselectAll'
+                                    }, '->', {
+                                        text: __('Add'),
+                                        glyph: NOC.glyph.cart_plus,
+                                        tooltip: __('Move all selected devices to the basket'),
+                                        style: {
+                                            pointerEvents: 'all'
+                                        },
+                                        bind: {
+                                            disabled: '{!selectionGridHasSel}'
+                                        },
+                                        handler: 'onSelectionAddChecked'
+                                    }, '|', {
+                                        glyph: NOC.glyph.shopping_cart,
+                                        tooltip: __('Show/Hide Basket'),
+                                        style: {
+                                            pointerEvents: 'all'
+                                        },
+                                        bind: {
+                                            disabled: '{!hasRecords}',
+                                            text: '{total.selected}',
+                                            style: {
+                                                cursor: '{cursorIcon}'
+                                            }
+                                        },
+                                        handler: 'toggleBasket'
+                                    }, '|', {
+                                        xtype: 'box',
+                                        bind: {
+                                            html: __('Selected : {total.selection}')
+                                        }
                                     }]
                                 }
                             }],
@@ -136,22 +154,23 @@ Ext.define('NOC.sa.runcommands.Application', {
                             // stateful: true,
                             region: 'east',
                             width: '50%',
+
+                            collapsed: true,
+                            animCollapse: false,
+                            collapseMode: 'mini',
+                            hideCollapseTool: true,
+
                             resizable: true,
                             pageSize: 0,
                             border: false,
                             scrollable: true,
                             emptyText: __('nothing checked'),
                             split: {
-                                xtype: 'splitter',
-                                width: 1
+                                xtype: 'splitter'
                             },
                             bind: {
                                 store: '{selectedStore}',
                                 selection: '{selectedRow}'
-                            },
-                            selModel: {
-                                mode: 'MULTI',
-                                selType: 'checkboxmodel'
                             },
                             listeners: {
                                 itemdblclick: 'onSelectedDblClick',
@@ -160,20 +179,6 @@ Ext.define('NOC.sa.runcommands.Application', {
                             dockedItems: [{
                                 tbar: {
                                     items: [{
-                                        text: __('Remove Checked'),
-                                        glyph: NOC.glyph.arrow_left,
-                                        tooltip: __('Remove selected devices from right panel'),
-                                        style: {
-                                            pointerEvents: 'all'
-                                        },
-                                        bind: {
-                                            disabled: '{!selectedGridHasSel}',
-                                            style: {
-                                                cursor: '{cursorIcon}'
-                                            }
-                                        },
-                                        handler: 'onSelectedRemoveChecked'
-                                    }, {
                                         text: __('Remove All'),
                                         glyph: NOC.glyph.minus_circle,
                                         tooltip: __('Remove all devices from right panel'),
@@ -188,11 +193,20 @@ Ext.define('NOC.sa.runcommands.Application', {
                                         },
                                         handler: 'onSelectedRemoveAll'
                                     }, '->', {
-                                        xtype: 'box',
+                                        glyph: NOC.glyph.shopping_cart,
+                                        style: {
+                                            pointerEvents: 'all'
+                                        },
                                         bind: {
-                                            html: __('Total : {total.selected}')
-                                        }
-                                    }]
+                                            text: __('Total : {total.selected}'),
+                                            tooltip: __('Hide basket'),
+                                            style: {
+                                                cursor: '{cursorIcon}'
+                                            }
+                                        },
+                                        handler: 'toggleBasket'
+                                    }
+                                    ]
                                 }
                             }]
                         }
@@ -208,8 +222,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                     collapseMode: 'mini',
                     hideCollapseTool: true,
                     split: {
-                        xtype: 'splitter',
-                        width: 1
+                        xtype: 'splitter'
                     },
                     treeAlign: 'left',
                     resizable: true,
@@ -320,6 +333,9 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 margin: 10,
                                 padding: 20,
                                 width: '80%'
+                            },
+                            bind: {
+                                disabled: '{!hasRecords}'
                             },
                             dockedItems: [{
                                 xtype: 'toolbar',
