@@ -40,7 +40,7 @@ Ext.define("NOC.core.ModelApplication", {
     helpId: undefined,
     listHelpId: undefined,
     formHelpId: undefined,
-    iconSize: 26,
+    // iconSize: 26,
     //
     navTooltipTemplate: new Ext.XTemplate(
         '<tpl if="data.name">',
@@ -735,7 +735,7 @@ Ext.define("NOC.core.ModelApplication", {
             me.formButtonToolbar = Ext.create({
                 xtype: "toolbar",
                 dock: "left",
-                width: me.iconSize,
+                // width: me.iconSize,
                 items: me.alignButton(me.applyPermissions(me.formToolbar))
             });
             me.formPanel.getRefItems()[0].addDocked(me.formButtonToolbar);
@@ -1977,12 +1977,33 @@ Ext.define("NOC.core.ModelApplication", {
     },
     //
     toggleLeftToolbar: function() {
-        var me = this;
-        if(me.formButtonToolbar.getWidth() === me.iconSize) {
-            me.formButtonToolbar.setWidth("100%");
-        } else {
-            me.formButtonToolbar.setWidth(me.iconSize);
-        }
+        var me = this, text;
+        Ext.each(me.formButtonToolbar.items.items, function(btn) {
+            text = btn.getText();
+            if(btn._hideText) {
+                btn.setText(btn._text);
+                btn._hideText = false;
+                console.log('show');
+            } else {
+                // btn.setText();
+                btn._hideText = true;
+                console.log('hide');
+            }
+        });
+        // for(var i = 0; i < me.formButtonToolbar.items.items; i++) {
+        //     if(!me.formButtonToolbar.items.items[i]._text){
+        //         me.formButtonToolbar.items.items[i].setText();
+        //     } else {
+        //         me.formButtonToolbar.items.items[i].setText(btn._text);
+        //     }
+        // }
+
+        // quickly by time
+        // if(me.formButtonToolbar.getWidth() === me.iconSize) {
+        //     me.formButtonToolbar.setWidth("100%");
+        // } else {
+        //     me.formButtonToolbar.setWidth(me.iconSize);
+        // }
     },
     //
     alignButton: function(buttons) {
@@ -1990,9 +2011,12 @@ Ext.define("NOC.core.ModelApplication", {
         Ext.each(buttons, function(btn) {
             if(Ext.isFunction(btn.setTextAlign)) {
                 btn.setTextAlign("left");
+                btn._text = btn.getText();
+                btn._hideText = true;
+                btn.setText();
             }
-            if(Ext.isFunction(btn.setTooltip) && !btn.tooltip && btn.getText()) {
-                btn.setTooltip(btn.getText());
+            if(Ext.isFunction(btn.setTooltip) && !btn.tooltip && btn._text) {
+                btn.setTooltip(btn._text);
             }
             acc.push(btn);
         });
