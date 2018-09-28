@@ -49,6 +49,17 @@ Access to :ref:`api-datastream`
 | `datastream:cfgtrap`              | ref:`cfgtrap datastream<api-datastream-cfgtrap>` access                           |
 +-----------------------------------+-----------------------------------------------------------------------------------+
 
+.. _reference-apikey-roles-nbi:
+
+NBI API
+^^^^^^^
+
++---------------------+-----------------------------------------------------------+
+| API:Role            | Description                                               |
++=====================+===========================================================+
+| `nbi:objectmetrics` | ref:`NBI objectmetrics API<api-nbi-objectmetrics>` access |
++---------------------+-----------------------------------------------------------+
+
 Best Practices
 --------------
 * Grant separate API Keys for every connected system
