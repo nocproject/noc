@@ -35,9 +35,9 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
-                    ["1.2.840.10006.300.43.1.1.1.1.6",
-                    "1.2.840.10006.300.43.1.1.2.1.1",
-                    "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
+                        ["1.2.840.10006.300.43.1.1.1.1.6",
+                         "1.2.840.10006.300.43.1.1.2.1.1",
+                         "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
                     port = 'Po' + str(v[1])
                     s = self.hex_to_bin(v[2])
                     members = []
@@ -47,58 +47,61 @@ class Script(BaseScript):
                             iface = self.snmp.get(oid, cached=True)  # IF-MIB
                             members.append(iface)
 
-                    r.append({
-                        "interface": port,
-                        # ?????? type detection
-                        # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
-                        "type": "L" if v[3] == '1' else "S",
-                        "members": members,
-                        })
+                    r.append(
+                        {
+                            "interface": port,
+                            # ?????? type detection
+                            # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
+                            "type": "L" if v[3] == '1' else "S",
+                            "members": members,
+                        }
+                    )
                 return r
             except self.snmp.TimeOutError:
                 pass
-
         # Fallback to CLI
         data = self.cli("display link-aggregation verbose").split('\n')
         L = len(data) - 1
         i = 0
         while i < L:
-            l = data[i]
-            match = self.rx_po.search(l)
+            raw = data[i]
+            match = self.rx_po.search(raw)
             while not match:
                 if i == L:
                     break
                 i += 1
-                l = data[i]
-                match = self.rx_po.search(l)
+                raw = data[i]
+                match = self.rx_po.search(raw)
             if i == L:
                 break
             port = 'Po' + match.group("port")
             i += 1
-            l = data[i]
-            match = self.rx_type.search(l)
+            raw = data[i]
+            match = self.rx_type.search(raw)
             while not match:
                 i += 1
-                l = data[i]
-                match = self.rx_type.search(l)
+                raw = data[i]
+                match = self.rx_type.search(raw)
             typ = match.group("type")
             i += 1
-            l = data[i]
-            match = self.rx_iface.search(l)
+            raw = data[i]
+            match = self.rx_iface.search(raw)
             members = []
             while not match:
                 i += 1
-                l = data[i]
-                match = self.rx_iface.search(l)
+                raw = data[i]
+                match = self.rx_iface.search(raw)
             while match:
                 members.append(match.group("interface").replace('GE', 'gi'))
                 i += 1
-                l = data[i]
-                match = self.rx_iface.search(l)
+                raw = data[i]
+                match = self.rx_iface.search(raw)
 
-            r += [{
-                "interface": port,
-                "type": "L" if typ == "Dynamic" else "S",
-                "members": members,
-                }]
+            r += [
+                {
+                    "interface": port,
+                    "type": "L" if typ == "Dynamic" else "S",
+                    "members": members,
+                }
+            ]
         return r
