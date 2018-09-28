@@ -42,7 +42,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
             xtype: 'glyphactioncolumn',
             width: 25,
             items: [{
-                glyph: NOC.glyph.arrow_right,
+                glyph: NOC.glyph.cart_plus,
                 handler: 'onAddObject'
             }]
         }), function(col, index) {
@@ -54,7 +54,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
             xtype: 'glyphactioncolumn',
             width: 25,
             items: [{
-                glyph: NOC.glyph.arrow_left,
+                glyph: NOC.glyph.minus_circle,
                 handler: 'onRemoveObject'
             }]
         }].concat(defaultCols), function(col, index) {
@@ -62,7 +62,14 @@ Ext.define('NOC.sa.runcommands.Controller', {
         });
         selectedGrid1.getView().refresh();
         // page 2 init selected grid
-        Ext.Array.each(defaultCols, function(col, index) {
+        Ext.Array.each(defaultCols.concat([{
+            xtype: 'glyphactioncolumn',
+            width: 25,
+            items: [{
+                glyph: NOC.glyph.minus_circle,
+                handler: 'onRemoveObject'
+            }]
+        }]), function(col, index) {
             selectedGrid2.headerCt.insert(index + 1, col);
         });
         selectedGrid2.getView().refresh();
@@ -107,6 +114,10 @@ Ext.define('NOC.sa.runcommands.Controller', {
     //
     collapseFilter: function() {
         this.lookupReference('filter-panel').toggleCollapse();
+    },
+    //
+    toggleBasket: function() {
+        this.lookupReference('sa-run-commands-selected-grid-1').toggleCollapse();
     },
     //
     setRowClass: function(grid) {
@@ -198,9 +209,10 @@ Ext.define('NOC.sa.runcommands.Controller', {
     },
     //
     onSelectionAddChecked: function() {
-        this.lookupReference('sa-run-commands-selected-grid-1').getStore().loadData(
+        this.lookupReference('sa-run-commands-selected-grid-1').getStore().add(
             this.lookupReference('sa-run-commands-selection-grid').getSelection()
         );
+        this.getViewModel().set('total.selected', this.getStore('selectedStore').getCount());
     },
     //
     onSelectedRemoveChecked: function() {
@@ -561,7 +573,14 @@ Ext.define('NOC.sa.runcommands.Controller', {
             limit = Number.parseInt(n),
             start = Number.parseInt(m);
         if(Number.isInteger(limit) && Number.isInteger(start)) {
-            params = Ext.Object.merge({}, Ext.clone(this.lookupReference('sa-run-commands-selection-grid').getStore().filterParams), {__limit: limit, __start: start});
+            params = Ext.Object.merge(
+                {},
+                Ext.clone(this.lookupReference('sa-run-commands-selection-grid').getStore().filterParams),
+                {
+                    __limit: limit,
+                    __start: start
+                }
+            );
 
             selectionGrid.mask(__('Loading'));
             Ext.Ajax.request({
@@ -570,11 +589,11 @@ Ext.define('NOC.sa.runcommands.Controller', {
                 jsonData: params,
                 scope: me,
                 success: function(response) {
+                    var params = Ext.decode(response.request.requestOptions.data);
                     selectionGrid.unmask();
-                    me.lookupReference('sa-run-commands-selected-grid-1').getStore().insert(
-                        0,
-                        Ext.decode(response.responseText)
-                    );
+                    selectionGrid.getSelectionModel().selectRange(params.__start, params.__start + params.__limit - 1);
+                    me.lookupReference('sa-run-commands-selected-grid-1').getStore()
+                    .insert(0, Ext.decode(response.responseText));
                 },
                 failure: function() {
                     selectionGrid.unmask();
