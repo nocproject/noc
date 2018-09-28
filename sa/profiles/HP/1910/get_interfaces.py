@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # HP.1910.get_interfaces.py
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -198,7 +198,9 @@ class Script(BaseScript):
                         i += 1
                         match = self.rx_untag.search(ifaces[i])
                         untagged = match.group("untagged")
-                        if untagged is not 'none':
+                        if untagged == "none":
+                            pass
+                        else:
                             iface["subinterfaces"][0]["untagged_vlan"] = int(untagged)
 
                 interfaces += [iface]
