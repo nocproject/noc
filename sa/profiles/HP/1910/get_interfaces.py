@@ -116,20 +116,18 @@ class Script(BaseScript):
                 "oper_status": o_stat,
                 "mac": mac,
                 "description": description,
-                "subinterfaces": [
-                        {
-                            "name": ifname,
-                            "description": description,
-                            "admin_status": a_stat,
-                            "oper_status": o_stat,
-                            ip_ver: True,
-                            "enabled_afi": enabled_afi,
-                            ip_interfaces: ip_list,
-                            "mac": mac,
-                            "vlan_ids": self.expand_rangelist(vlan),
-                        }
-                    ]
-                }
+                "subinterfaces": [{
+                        "name": ifname,
+                        "description": description,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        ip_ver: True,
+                        "enabled_afi": enabled_afi,
+                        ip_interfaces: ip_list,
+                        "mac": mac,
+                        "vlan_ids": self.expand_rangelist(vlan),
+                }]
+            }
             interfaces += [iface]
 
         # Get L2 interfaces
@@ -161,17 +159,15 @@ class Script(BaseScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "mac": mac,
-                    "subinterfaces": [
-                            {
-                                "name": ifname,
-                                "admin_status": a_stat,
-                                "oper_status": o_stat,
-                                "mac": mac,
-                                #"snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
-                                #"snmp_ifindex": ifname.split('/')[2]
-                            }
-                        ]
-                    }
+                    "subinterfaces": [{
+                            "name": ifname,
+                            "admin_status": a_stat,
+                            "oper_status": o_stat,
+                            "mac": mac,
+                            # "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
+                            # "snmp_ifindex": ifname.split('/')[2]
+                    }]
+                }
 
                 # Portchannel member
                 if ifname in portchannel_members:
