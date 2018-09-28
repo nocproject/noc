@@ -79,9 +79,9 @@ class Script(BaseScript):
         # Get L3 interfaces
 
         # TODO Get router interfaces
-        #ospfs = self.get_ospfint()
-        #rips = self.get_ripint()
-        #bgps = self.get_bgpint()
+        # ospfs = self.get_ospfint()
+        # rips = self.get_ripint()
+        # bgps = self.get_bgpint()
 
         interfaces = []
         ifaces = self.cli("display interface")  # .strip(' ')
