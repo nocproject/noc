@@ -48,9 +48,9 @@ class Script(BaseScript):
     rx_untag = re.compile(r"^\s*Untagged\s+VLAN ID :\s+(?P<untagged>.+)$")
 
     types = {
-        "Fa": "physical",       # FastEthernet
-        "Gi": "physical",       # GigabitEthernet
-        "Po": "aggregated",     # Aggregated
+        "Fa": "physical",   # FastEthernet
+        "Gi": "physical",   # GigabitEthernet
+        "Po": "aggregated", # Aggregated
     }
 
     def get_ospfint(self):
@@ -116,17 +116,17 @@ class Script(BaseScript):
                 "mac": mac,
                 "description": description,
                 "subinterfaces": [
-                        {
-                            "name": ifname,
-                            "description": description,
-                            "admin_status": a_stat,
-                            "oper_status": o_stat,
-                            ip_ver: True,
-                            "enabled_afi": enabled_afi,
-                            ip_interfaces: ip_list,
-                            "mac": mac,
-                            "vlan_ids": self.expand_rangelist(vlan),
-                        }
+                    {
+                        "name": ifname,
+                        "description": description,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        ip_ver: True,
+                        "enabled_afi": enabled_afi,
+                        ip_interfaces: ip_list,
+                        "mac": mac,
+                        "vlan_ids": self.expand_rangelist(vlan),
+                    }
                 ]
             }
             interfaces += [iface]
@@ -161,14 +161,14 @@ class Script(BaseScript):
                     "oper_status": o_stat,
                     "mac": mac,
                     "subinterfaces": [
-                            {
-                                "name": ifname,
-                                "admin_status": a_stat,
-                                "oper_status": o_stat,
-                                "mac": mac,
-                                # "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
-                                # "snmp_ifindex": ifname.split('/')[2]
-                            }
+                        {
+                            "name": ifname,
+                            "admin_status": a_stat,
+                            "oper_status": o_stat,
+                            "mac": mac,
+                            # "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
+                            # "snmp_ifindex": ifname.split('/')[2]
+                        }
                     ]
                 }
 

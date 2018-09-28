@@ -17,14 +17,11 @@ class Script(BaseScript):
     name = "HP.1910.get_portchannel"
     interface = IGetPortchannel
 
-    rx_po = re.compile(
-        r"^Aggregation Interface: Bridge-Aggregation(?P<port>\d+)$", re.MULTILINE)
+    rx_po = re.compile(r"^Aggregation Interface: Bridge-Aggregation(?P<port>\d+)$", re.MULTILINE)
 
-    rx_type = re.compile(
-        r"^Aggregation Mode: (?P<type>\S+)$", re.MULTILINE)
+    rx_type = re.compile(r"^Aggregation Mode: (?P<type>\S+)$", re.MULTILINE)
 
-    rx_iface = re.compile(
-        r"^\s+(?P<interface>\S+)\s+\S\s+\d+\s+\d\s+\S+$", re.MULTILINE)
+    rx_iface = re.compile(r"^\s+(?P<interface>\S+)\s+\S\s+\d+\s+\d\s+\S+$", re.MULTILINE)
 
     def execute(self):
         r = []

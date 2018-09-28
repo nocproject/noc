@@ -25,7 +25,4 @@ class Script(BaseScript):
         v = self.cli("display device manuinfo", cached=True)
         match = self.rx_mac.search(v)
         mac = match.group("mac")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}
