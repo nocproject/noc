@@ -36,7 +36,7 @@ class Script(BaseScript):
             try:
                 for v in self.snmp.get_tables(
                     ["1.2.840.10006.300.43.1.1.1.1.6", "1.2.840.10006.300.43.1.1.2.1.1",
-                        "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
+                    "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
                     port = 'Po' + str(v[1])
                     s = self.hex_to_bin(v[2])
                     members = []
