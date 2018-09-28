@@ -48,9 +48,9 @@ class Script(BaseScript):
     rx_untag = re.compile(r"^\s*Untagged\s+VLAN ID :\s+(?P<untagged>.+)$")
 
     types = {
-        "Fa": "physical",   # FastEthernet
-        "Gi": "physical",   # GigabitEthernet
-        "Po": "aggregated", # Aggregated
+        "Fa": "physical",       # FastEthernet
+        "Gi": "physical",       # GigabitEthernet
+        "Po": "aggregated",     # Aggregated
     }
 
     def get_ospfint(self):
