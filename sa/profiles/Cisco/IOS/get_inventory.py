@@ -12,6 +12,7 @@ from itertools import groupby
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -50,6 +51,9 @@ class Script(BaseScript):
     rx_slot_id = re.compile(
         r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)"
         r"(?P<slot_id>[\d|\w]+).*", re.IGNORECASE)
+    rx_psu1 = re.compile("(?:PS|Power Supply) (?P<number>\d+) ")
+    rx_psu2 = re.compile("Power Supply (?P<number>\d+)$")
+
     slot_id = 0
 
     IGNORED_SERIAL = set([
@@ -192,6 +196,9 @@ class Script(BaseScript):
                     t_num = s.split()[0].split("/")[-1]
                     t_vendor, t_sn, t_rev, pid = \
                         self.get_idprom(s.split()[0], s.split()[-1].upper())
+                    if not pid:
+                        self.logger.debug("PID on Transiever: :%s is not set. Skipping...", s)
+                        continue
                     objects += [{
                         "type": "XCVR",
                         "number": t_num,
@@ -278,6 +285,14 @@ class Script(BaseScript):
             pid = ""
             match = self.rx_slot_id.search(name)
             if match:
+                if (
+                    "Container of Fan FRU" in name or
+                    "Container of Power Supply" in name or
+                    "Power Supply Container" in name or
+                    "Module Temperature Sensor" in name or
+                    "Supply Voltage Sensor" in name
+                ):
+                    return "SLOTID", None, None
                 return "SLOTID", match.group("slot_id"), None
         if (
             "Transceiver" in descr or
@@ -351,6 +366,8 @@ class Script(BaseScript):
                     pid = "CISCO7100"
             if (len(pid) - len(descr) == 2) and pid[len(descr)] == "-":
                 pid = descr
+            if is_int(name):  # Stacking
+                return "CHASSIS", int(name), pid
             return "CHASSIS", self.slot_id, pid
         elif ("SUP" in pid or "S2U" in pid) and "supervisor" in descr:
             # Sup2
@@ -403,14 +420,26 @@ class Script(BaseScript):
             return "DFC", None, pid
         elif name.startswith("PS "):
             # Power supply
+            match = self.rx_psu1.search(name)
+            if match:
+                self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
         elif name.startswith("Power Supply "):
+            match = self.rx_psu1.search(name)
+            if match:
+                self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
         elif "FRU Power Supply" in descr:
+            match = self.rx_psu2.search(name)
+            if match:
+                self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
         elif " Power Supply" in name:
             if pid == "PWR-2911-AC":
                 return "PSU", None, pid
+            match = self.rx_psu2.search(name)
+            if match:
+                self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
         elif pid.startswith("FAN") or pid == "WS-X4992":
             # Fan module
