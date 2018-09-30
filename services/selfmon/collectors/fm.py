@@ -77,6 +77,7 @@ class FMObjectCollector(BaseCollector):
         alarms_nroored = set()
         broken_alarms = 0
         for x in db.noc.alarms.active.find({}):
+            # @todo alarm source: Ping, Discovery, Syslog, SNMPTrap
             if "managed_object" not in x:
                 broken_alarms += 1
                 continue
@@ -97,15 +98,15 @@ class FMObjectCollector(BaseCollector):
 
         for shard in set(TTSystem.objects.filter(is_active=True).values_list("shard_name")):
             yield ("fm_escalation_pool_count",
-                   ("shard", shard)), db["noc.scheduler.escalation.%s" % shard].estimated_document_count()
-            first_escalation = db["noc.scheduler.escalator.%s" % shard].find_one(sort=[("ts", -1)])
+                   ("shard", shard)), db["noc.schedules.escalator.%s" % shard].estimated_document_count()
+            first_escalation = db["noc.schedules.escalator.%s" % shard].find_one(sort=[("ts", -1)])
             if first_escalation:
                 # yield ("escalation_last_ts", ("shard", shard)), time.mktime(last_escalation["ts"].timetuple())
                 yield ("fm_escalation_first_lag_seconds",
                        ("shard", shard)), self.calc_lag(time.mktime(first_escalation["ts"].timetuple()), now)
 
-            last_escalation = db["noc.scheduler.escalator.%s" % shard].find_one(sort=[("ts", 1)])
+            last_escalation = db["noc.schedules.escalator.%s" % shard].find_one(sort=[("ts", 1)])
             if last_escalation:
                 # yield ("escalation_last_ts", ("shard", shard)), time.mktime(last_escalation["ts"].timetuple())
                 yield ("fm_escalation_lag_seconds",
-                       ("shard", shard)), self.calc_lag(time.mktime(last_escalation["ts"].timetuple()), now)
+                       ("shard", shard)), now - time.mktime(last_escalation["ts"].timetuple())
