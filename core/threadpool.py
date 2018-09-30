@@ -177,6 +177,7 @@ class ThreadPoolExecutor(object):
                     try:
                         result = fn(*args, **kwargs)
                         future.set_result(result)
+                        result = None  # Release memory
                     except NOCError as e:
                         exc_info = sys.exc_info()
                         future.set_exception_info(e, exc_info[2])
