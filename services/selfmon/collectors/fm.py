@@ -14,6 +14,7 @@ from .base import BaseCollector
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
+from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.ttsystem import TTSystem
 
 
@@ -23,6 +24,20 @@ class FMObjectCollector(BaseCollector):
     pipeline = [{"$unwind": "$adm_path"},
                 {"$group": {"_id": {"adm_path": "$adm_path", "root": "$root"}, "tags": {"$sum": 1}}}
                 ]
+
+    late_alarm_pipeline = [
+        {"$match": {"alarm_class": AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed").id}},
+        # AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed") bson.ObjectId("5717afcdcc044b7708f53c2f")
+        {"$lookup": {"from": "noc.cache.object_status",
+                     "localField": "managed_object",
+                     "foreignField": "object", "as": "st"}},
+        {"$match": {"$and": [
+            {"st.status": True}
+        ]}},
+        {
+            "$count": "late_alarm"
+        }
+    ]
 
     pool_mappings = [
         (p.name,
@@ -55,6 +70,9 @@ class FMObjectCollector(BaseCollector):
             # yield ("alarms_active_last_ts", ), time.mktime(last_alarm["timestamp"].timetuple())
             yield ("fm_alarms_active_last_lag_seconds",), self.calc_lag(
                 time.mktime(last_alarm["timestamp"].timetuple()), now)
+        late_alarm = next(db.noc.alarms.active.aggregate(self.late_alarm_pipeline))
+        if late_alarm:
+            yield ("fm_alarms_active_late_count",), late_alarm["late_alarm"]
         alarms_rooted = set()
         alarms_nroored = set()
         broken_alarms = 0
