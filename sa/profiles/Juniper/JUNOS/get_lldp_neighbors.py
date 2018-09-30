@@ -93,10 +93,10 @@ class Script(BaseScript):
             # On some devices we are not seen `Port ID`
             if "remote_port" not in n and n["remote_port_subtype"] == 1:
                 n["remote_port"] = n["remote_port_description"]
-            elif "remote_port" not in n and n["remote_port_subtype"] == 5 \
-                    and n["remote_port_description"].endswith("L3"):
+            elif "remote_port" not in n and "remote_port_description" in n:
                 # Juniper.JUNOS mx10-t 11.4X27.62, LOCAL_NAME xe-0/0/0 L3
-                n["remote_port"] = n["remote_port_description"].split()[1]
+                n["remote_port"] = n["remote_port_description"]
+                n["remote_port_subtype"] = 1
             if match.group("name"):
                 n["remote_system_name"] = match.group("name")
             # Get capability
