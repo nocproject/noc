@@ -939,7 +939,7 @@ class ManagedObject(Model):
         if isinstance(data, list):
             # Convert list to plain text
             r = []
-            for d in sorted(data, key=operator.attrgetter("name")):
+            for d in sorted(data, key=operator.itemgetter("name")):
                 r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
             data = "\n".join(r)
         # Wipe out unnecessary parts
