@@ -34,6 +34,24 @@
       vars:
         goss_service_name: login
 
+- name: Install NOC mib
+  hosts: svc-mib-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - mib
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
+    - role: mib
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: mib
+
 - name: Install NOC mrt
   hosts: svc-mrt-exec
   become: "True"
