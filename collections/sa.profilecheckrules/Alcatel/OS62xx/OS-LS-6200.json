@@ -1,0 +1,13 @@
+{
+    "name": "Alcatel | OS62xx | OS-LS-6200",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "143c38f7-2c5f-4082-92d8-29f293ecc118",
+    "description": "OmniStack LS 6200",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.6486.800.1.1.2.2.4.1.1",
+    "action": "match",
+    "profile__name": "Alcatel.OS62xx"
+}
