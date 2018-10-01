@@ -3,7 +3,7 @@
 # Vendor: DLink
 # OS:     DVG
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,5 +25,5 @@ class Profile(BaseProfile):
     command_enter_config = "CD /"
     command_leave_config = "SUBMIT"
     command_save_config = "SAVE"
-    pattern_prompt = r"^> "
-    command_exit = "BYE"
+    pattern_prompt = r"^(>|\$) "
+    command_exit = "exit"
