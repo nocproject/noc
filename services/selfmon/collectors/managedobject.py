@@ -30,5 +30,5 @@ class ManagedObjectCollector(BaseCollector):
             if not pool:
                 continue
             yield ("inventory_managedobject_managed", ("pool", pool.name)), pool_managed
-            yield ("inventory_managedobject_unmanaged", ("pool", pool.name)), pool_managed
+            yield ("inventory_managedobject_unmanaged", ("pool", pool.name)), pool_unmanaged
             yield ("inventory_managedobject_total", ("pool", pool.name)), pool_managed + pool_unmanaged
