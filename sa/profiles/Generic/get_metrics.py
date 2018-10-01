@@ -30,6 +30,7 @@ from noc.core.script.oidrules.ifindex import InterfaceRule
 from noc.core.script.oidrules.match import MatcherRule
 from noc.core.script.oidrules.oids import OIDsRule
 from noc.core.script.oidrules.loader import load_rule, with_resolver
+from noc.config import config
 
 NS = 1000000000.0
 
@@ -158,18 +159,14 @@ class MetricScriptBase(BaseScriptMetaclass):
         """
         pp = script.name.rsplit(".", 1)[0]
         if pp == "Generic":
-            paths = [
-                os.path.join("sa", "profiles", "Generic", "snmp_metrics"),
-                os.path.join("custom", "sa", "profiles", "Generic", "snmp_metrics")
-            ]
+            paths = [p for p in config.get_customized_paths(
+                os.path.join("sa", "profiles", "Generic", "snmp_metrics"))]
         else:
             v, p = pp.split(".")
-            paths = [
-                os.path.join("sa", "profiles", "Generic", "snmp_metrics"),
-                os.path.join("sa", "profiles", v, p, "snmp_metrics"),
-                os.path.join("custom", "sa", "profiles", "Generic", "snmp_metrics"),
-                os.path.join("custom", "sa", v, p, "snmp_metrics")
-            ]
+            paths = zip([path for path in
+                         config.get_customized_paths(os.path.join("sa", "profiles", "Generic", "snmp_metrics"))
+                         ], [path for path in
+                             config.get_customized_paths(os.path.join("sa", "profiles", v, p, "snmp_metrics"))])
 
         for path in paths:
             if not os.path.exists(path):
