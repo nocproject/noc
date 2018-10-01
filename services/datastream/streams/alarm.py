@@ -16,6 +16,8 @@ from noc.fm.models.utils import get_alarm
 class AlarmDataStream(DataStream):
     name = "alarm"
 
+    clean_id = DataStream.clean_id_bson
+
     @classmethod
     def get_object(cls, id):
         alarm = get_alarm(id)
