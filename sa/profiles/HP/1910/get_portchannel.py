@@ -18,41 +18,11 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_po = re.compile(r"^Aggregation Interface: Bridge-Aggregation(?P<port>\d+)$", re.MULTILINE)
-
     rx_type = re.compile(r"^Aggregation Mode: (?P<type>\S+)$", re.MULTILINE)
+    rx_iface = re.compile(r"^\s+(?P<interface>\S+)\s+(S|U)\s+\d+\s+\d", re.MULTILINE)
 
-    rx_iface = re.compile(r"^\s+(?P<interface>\S+)\s+\S\s+\d+\s+\d\s+\S+$", re.MULTILINE)
-
-    def execute(self):
+    def execute_cli(self):
         r = []
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                for v in self.snmp.get_tables(
-                    ["1.2.840.10006.300.43.1.1.1.1.6", "1.2.840.10006.300.43.1.1.2.1.1",
-                     "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
-                    port = 'Po' + str(v[1])
-                    s = self.hex_to_bin(v[2])
-                    members = []
-                    for i in range(len(s)):
-                        if s[i] == '1':
-                            oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
-                            iface = self.snmp.get(oid, cached=True)  # IF-MIB
-                            members.append(iface)
-
-                    r.append(
-                        {
-                            "interface": port,
-                            # ?????? type detection
-                            # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
-                            "type": "L" if v[3] == '1' else "S",
-                            "members": members,
-                        }
-                    )
-                return r
-            except self.snmp.TimeOutError:
-                pass
-        # Fallback to CLI
         data = self.cli("display link-aggregation verbose").split('\n')
         L = len(data) - 1
         i = 0
@@ -97,4 +67,34 @@ class Script(BaseScript):
                     "members": members,
                 }
             ]
+
         return r
+
+    def execute_snmp(self):
+        r = []
+        if self.has_snmp():
+            try:
+                for v in self.snmp.get_tables(
+                    ["1.2.840.10006.300.43.1.1.1.1.6", "1.2.840.10006.300.43.1.1.2.1.1",
+                     "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
+                    port = 'Po' + str(v[1])
+                    s = self.hex_to_bin(v[2])
+                    members = []
+                    for i in range(len(s)):
+                        if s[i] == '1':
+                            oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
+                            iface = self.snmp.get(oid, cached=True)  # IF-MIB
+                            members.append(iface)
+
+                    r.append(
+                        {
+                            "interface": port,
+                            # ?????? type detection
+                            # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
+                            "type": "L" if v[3] == '1' else "S",
+                            "members": members,
+                        }
+                    )
+                return r
+            except self.snmp.TimeOutError:
+                pass

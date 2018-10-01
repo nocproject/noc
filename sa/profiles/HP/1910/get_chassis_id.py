@@ -20,8 +20,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^MAC_ADDRESS\s+:\s+(?P<mac>\S+)$", re.MULTILINE)
 
-    def execute(self):
-        # Fallback to CLI
+    def execute_cli(self):
         v = self.cli("display device manuinfo", cached=True)
         match = self.rx_mac.search(v)
         mac = match.group("mac")

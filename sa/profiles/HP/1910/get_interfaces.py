@@ -65,7 +65,7 @@ class Script(BaseScript):
         bgp = []
         return bgp
 
-    def execute(self):
+    def execute_cli(self):
 
         # Get portchannels
         portchannel_members = {}
