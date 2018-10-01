@@ -152,5 +152,37 @@ Ext.define("NOC.core.Application", {
     //
     clearNavTabTooltip: function() {
         NOC.app.app.clearActiveNavTabTooltip();
+    },
+    //
+    toggleLeftToolbar: function() {
+        var me = this;
+
+        me.formLeftToolbar.removeAll(false);
+        if(me.small) {
+            Ext.each(me.additionButtons, function(btn) {
+                btn.setText(btn.config.text);
+            });
+        } else {
+            Ext.each(me.additionButtons, function(btn) {
+                btn.setText();
+            });
+        }
+        me.formLeftToolbar.add(me.additionButtons);
+        me.small = !me.small;
+    },
+    //
+    alignButtons: function(buttons) {
+        var acc = [];
+        Ext.each(buttons, function(btn) {
+            if(Ext.isFunction(btn.setTextAlign)) {
+                btn.setTextAlign("left");
+                btn.setText();
+            }
+            if(Ext.isFunction(btn.setTooltip) && !btn.tooltip && btn.config.text) {
+                btn.setTooltip(btn.config.text);
+            }
+            acc.push(btn);
+        });
+        return acc;
     }
 });

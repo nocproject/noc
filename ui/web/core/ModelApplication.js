@@ -40,7 +40,6 @@ Ext.define("NOC.core.ModelApplication", {
     helpId: undefined,
     listHelpId: undefined,
     formHelpId: undefined,
-    // iconSize: 26,
     //
     navTooltipTemplate: new Ext.XTemplate(
         '<tpl if="data.name">',
@@ -725,20 +724,21 @@ Ext.define("NOC.core.ModelApplication", {
                         overflowHandler: "Menu"
                     },
                     items: me.applyPermissions(formToolbar)
-                }, me.formButtonToolbar]
+                }, me.formLeftToolbar]
             },
             getDefaultFocus: function() {
                 return focusField;
             }
         });
         if(me.formToolbar && me.formToolbar.length) {
-            me.formButtonToolbar = Ext.create({
+            me.additionButtons = me.alignButtons(me.applyPermissions(me.formToolbar), true);
+            me.formLeftToolbar = Ext.create({
                 xtype: "toolbar",
                 dock: "left",
-                // width: me.iconSize,
-                items: me.alignButton(me.applyPermissions(me.formToolbar))
+                items: me.additionButtons
             });
-            me.formPanel.getRefItems()[0].addDocked(me.formButtonToolbar);
+            me.formPanel.getRefItems()[0].addDocked(me.formLeftToolbar);
+            me.small = true;
         }
         me.form = me.formPanel.items.first().getForm();
         // detect autofocus field
@@ -1974,52 +1974,5 @@ Ext.define("NOC.core.ModelApplication", {
                 html: element.tooltip
             });
         }
-    },
-    //
-    toggleLeftToolbar: function() {
-        var me = this, text;
-        Ext.each(me.formButtonToolbar.items.items, function(btn) {
-            text = btn.getText();
-            if(btn._hideText) {
-                btn.setText(btn._text);
-                btn._hideText = false;
-                console.log('show');
-            } else {
-                // btn.setText();
-                btn._hideText = true;
-                console.log('hide');
-            }
-        });
-        // for(var i = 0; i < me.formButtonToolbar.items.items; i++) {
-        //     if(!me.formButtonToolbar.items.items[i]._text){
-        //         me.formButtonToolbar.items.items[i].setText();
-        //     } else {
-        //         me.formButtonToolbar.items.items[i].setText(btn._text);
-        //     }
-        // }
-
-        // quickly by time
-        // if(me.formButtonToolbar.getWidth() === me.iconSize) {
-        //     me.formButtonToolbar.setWidth("100%");
-        // } else {
-        //     me.formButtonToolbar.setWidth(me.iconSize);
-        // }
-    },
-    //
-    alignButton: function(buttons) {
-        var acc = [];
-        Ext.each(buttons, function(btn) {
-            if(Ext.isFunction(btn.setTextAlign)) {
-                btn.setTextAlign("left");
-                btn._text = btn.getText();
-                btn._hideText = true;
-                btn.setText();
-            }
-            if(Ext.isFunction(btn.setTooltip) && !btn.tooltip && btn._text) {
-                btn.setTooltip(btn._text);
-            }
-            acc.push(btn);
-        });
-        return acc;
     }
 });
