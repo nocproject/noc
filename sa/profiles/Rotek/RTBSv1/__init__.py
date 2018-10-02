@@ -40,7 +40,8 @@ class Profile(BaseProfile):
 
         def __enter__(self):
             """Enter switch context"""
-            self.script.cli("shell")
+            raise NotImplementedError("Not supported work on Shell")
+            # self.script.cli("shell")
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             """Leave switch context"""
