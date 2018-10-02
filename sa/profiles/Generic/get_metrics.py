@@ -157,17 +157,22 @@ class MetricScriptBase(BaseScriptMetaclass):
         :param script: Script class
         :return:
         """
+        def sort_path_key(s):
+            k1, k2 = 1, 1
+            if s.startswith(os.path.join("sa", "profiles")):
+                k1 = 0
+            if "Generic" in s:
+                k2 = 0
+            return k1, k2
         pp = script.name.rsplit(".", 1)[0]
         if pp == "Generic":
             paths = [p for p in config.get_customized_paths(
                 os.path.join("sa", "profiles", "Generic", "snmp_metrics"))]
         else:
             v, p = pp.split(".")
-            paths = zip([path for path in
-                         config.get_customized_paths(os.path.join("sa", "profiles", "Generic", "snmp_metrics"))
-                         ], [path for path in
-                             config.get_customized_paths(os.path.join("sa", "profiles", v, p, "snmp_metrics"))])
-
+            paths = sorted(config.get_customized_paths(os.path.join("sa", "profiles", "Generic", "snmp_metrics")) +
+                           config.get_customized_paths(os.path.join("sa", "profiles", v, p, "snmp_metrics")),
+                           key=sort_path_key)
         for path in paths:
             if not os.path.exists(path):
                 continue
