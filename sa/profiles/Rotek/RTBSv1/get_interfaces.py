@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -66,13 +67,11 @@ class Script(BaseScript):
             iface = {
                 "type": iftype,
                 "name": name,
-                "mac": mac,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "snmp_ifindex": ifindex,
                 "subinterfaces": [{
                     "name": name,
-                    "mac": mac,
                     "snmp_ifindex": ifindex,
                     "admin_status": admin_status,
                     "oper_status": oper_status,
@@ -80,20 +79,23 @@ class Script(BaseScript):
                     "enabled_afi": ["BRIDGE"]
                 }]
             }
+            if mac:
+                iface["mac"] = MAC(mac)
+                iface["subinterfaces"][0]["mac"] = MAC(mac)
             interfaces += [iface]
             for i in ss.items():
                 if int(i[0]) == ifindex:
                     a = self.cli("show interface %s ssid-broadcast" % name)
                     sb = a.split(":")[1].strip()
                     if sb == "on":
-                        ssid_broadcast = "Enable"
+                        ssid_broadcast = "enable"
                     else:
-                        ssid_broadcast = "Disable"
+                        ssid_broadcast = "disable"
+                        oper_status = False  # Do not touch !!!
                     vname = "%s.%s" % (name, i[1]["ssid"])
                     iface = {
-                        "type": "physical",
+                        "type": iftype,
                         "name": vname,
-                        "mac": mac,
                         "admin_status": admin_status,
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
@@ -102,7 +104,6 @@ class Script(BaseScript):
                         ),
                         "subinterfaces": [{
                             "name": vname,
-                            "mac": mac,
                             "snmp_ifindex": ifindex,
                             "admin_status": admin_status,
                             "oper_status": oper_status,
@@ -110,6 +111,9 @@ class Script(BaseScript):
                             "enabled_afi": ["BRIDGE"]
                         }]
                     }
+                    if mac:
+                        iface["mac"] = MAC(mac)
+                        iface["subinterfaces"][0]["mac"] = MAC(mac)
                     interfaces += [iface]
         return [{"interfaces": interfaces}]
 
@@ -118,10 +122,7 @@ class Script(BaseScript):
         ssid = {}
         i = ["ath0", "ath2"]
         for ri in i:
-            try:
-                s = self.cli("show interface %s ssid" % ri)
-            except self.CLISyntaxError:
-                continue
+            s = self.cli("show interface %s ssid" % ri)
             v = self.cli("show interface %s vlan-to-ssid" % ri)
             a = self.cli("show interface %s ssid-broadcast" % ri)
             i = self.cli("show interface wifi0 ieee-mode")
@@ -184,7 +185,7 @@ class Script(BaseScript):
                         "name": "%s.%s" % (ifname, ri[1]["ssid"]),
                         "admin_status": a_status,
                         "oper_status": o_status,
-                        "mac": mac,
+                        "mac": MAC(mac),
                         "snmp_ifindex": match.group("ifindex"),
                         "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s" % (ri[1]["ssid_broadcast"], ri[1]["ieee_mode"], ri[1]["channel"], ri[1]["freq"]),
                         "subinterfaces": [{
@@ -193,7 +194,7 @@ class Script(BaseScript):
                             "admin_status": a_status,
                             "oper_status": o_status,
                             "mtu": mtu,
-                            "mac": mac,
+                            "mac": MAC(mac),
                             "snmp_ifindex": match.group("ifindex"),
                             "untagged_vlan": int(ri[1]["vlan"]),
                         }]
