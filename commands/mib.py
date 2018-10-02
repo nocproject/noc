@@ -26,7 +26,14 @@ class Command(BaseCommand):
 
     rx_oid = re.compile("^\d+(\.\d+)+")
 
+    svc = open_sync_rpc("mib")
+
     def add_arguments(self, parser):
+        parser.add_argument(
+            "--local",
+            action="store_false",
+            help="Not use mib service for import"
+        )
         subparsers = parser.add_subparsers(dest="cmd")
         # get
         get_parser = subparsers.add_parser("get")
@@ -51,19 +58,8 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="SNMP OIDs"
         )
-        # lookup
-        lookup_parser.add_argument(
-            "oids",
-            nargs=argparse.REMAINDER,
-            help="SNMP OIDs"
-        )
         # import
         import_parser = subparsers.add_parser("import")
-        import_parser.add_argument(
-            "--local",
-            action="store_true",
-            help="Not use mib service for import"
-        )
         import_parser.add_argument(
             "paths",
             nargs=argparse.REMAINDER,
@@ -71,6 +67,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, cmd, *args, **options):
+        if options.get("local"):
+            self.svc = MIBAPI(ServiceStub(), None, None)
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_lookup(self, oids, *args, **kwargs):
@@ -79,8 +77,7 @@ class Command(BaseCommand):
 
     def lookup_mib(self, v):
         try:
-            svc = open_sync_rpc("mib")
-            r = svc.lookup(v)
+            r = self.svc.lookup(v)
             if r.get("status"):
                 self.print("%s = %s" % (r["name"], r["oid"]))
             else:
@@ -94,8 +91,7 @@ class Command(BaseCommand):
 
     def get_mib(self, v):
         try:
-            svc = open_sync_rpc("mib")
-            r = svc.get_text(v)
+            r = self.svc.get_text(v)
             if r.get("status"):
                 self.print(r["data"])
             else:
@@ -182,11 +178,7 @@ class Command(BaseCommand):
         with open(path) as f:
             data = f.read()
         try:
-            if local:
-                svc = MIBAPI(ServiceStub(), None, None)
-            else:
-                svc = open_sync_rpc("mib")
-            r = svc.compile(data)
+            r = self.svc.compile(data)
             if r.get("status"):
                 return True
             if r.get("code") == ERR_MIB_MISSED:
