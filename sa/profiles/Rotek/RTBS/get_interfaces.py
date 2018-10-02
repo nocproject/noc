@@ -10,6 +10,7 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.mac import MAC
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -83,14 +84,12 @@ class Script(BaseScript):
             iface = {
                 "type": iftype,
                 "name": name,
-                "mac": mac,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "snmp_ifindex": ifindex,
                 "subinterfaces": [
                     {
                         "name": name,
-                        "mac": mac,
                         "snmp_ifindex": ifindex,
                         "admin_status": admin_status,
                         "oper_status": oper_status,
@@ -99,20 +98,22 @@ class Script(BaseScript):
                     }
                 ]
             }
+            if mac:
+                iface["mac"] = MAC(mac)
+                iface["subinterfaces"][0]["mac"] = MAC(mac)
             interfaces += [iface]
             for i in ss.items():
                 if int(i[0]) == ifindex:
                     a = self.cli("show interface %s ssid-broadcast" % name)
                     sb = a.split(":")[1].strip()
                     if sb == "enabled":
-                        ssid_broadcast = "Enable"
+                        ssid_broadcast = "enable"
                     else:
-                        ssid_broadcast = "Disable"
+                        ssid_broadcast = "disable"
                     vname = "%s.%s" % (name, i[1]["ssid"])
                     iface = {
                         "type": "physical",
                         "name": vname,
-                        "mac": mac,
                         "admin_status": admin_status,
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
@@ -124,7 +125,6 @@ class Script(BaseScript):
                         "subinterfaces": [
                             {
                                 "name": vname,
-                                "mac": mac,
                                 "snmp_ifindex": ifindex,
                                 "admin_status": admin_status,
                                 "oper_status": oper_status,
@@ -133,6 +133,9 @@ class Script(BaseScript):
                             }
                         ]
                     }
+                    if mac:
+                        iface["mac"] = MAC(mac)
+                        iface["subinterfaces"][0]["mac"] = MAC(mac)
                     interfaces += [iface]
         return [{"interfaces": interfaces}]
 
@@ -211,7 +214,6 @@ class Script(BaseScript):
                             "name": "%s.%s" % (ifname, ri[1]["ssid"]),
                             "admin_status": a_stat,
                             "oper_status": o_status,
-                            "mac": mac,
                             "snmp_ifindex": match.group("ifindex"),
                             "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s" %
                             (
@@ -224,11 +226,13 @@ class Script(BaseScript):
                                     "enabled_afi": ["BRIDGE"],
                                     "admin_status": a_stat,
                                     "oper_status": o_status,
-                                    "mac": mac,
                                     "snmp_ifindex": match.group("ifindex"),
                                     "untagged_vlan": int(ri[1]["vlan"]),
                                 }
                             ]
                         }
+                        if mac:
+                            iface["mac"] = MAC(mac)
+                            iface["subinterfaces"][0]["mac"] = MAC(mac)
                         interfaces += [iface]
         return [{"interfaces": interfaces}]

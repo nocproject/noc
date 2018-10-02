@@ -30,7 +30,10 @@ class Script(BaseScript):
         }]
 
     def execute_cli(self):
-        c = self.cli("show interface list")
+        try:
+            c = self.cli("show interface list")
+        except self.CLISyntaxError:
+            raise NotImplementedError("Not support getting information by CLI")
         match = self.rx_iface.search(c)
         ifname = match.group("ifname")
         c = self.cli("show interface %s mac" % ifname)
