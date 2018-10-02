@@ -27,7 +27,7 @@ forms:
         - critial
 
 services:
-  mrt:
+  mib:
     level: global
     category: internal
     supervisord:
