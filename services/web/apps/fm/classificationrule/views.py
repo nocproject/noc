@@ -195,6 +195,11 @@ class EventClassificationRuleApplication(ExtDocApplication):
             r["body"] = body
         return r
 
+    IGNORED_OIDS = {
+        "RFC1213-MIB::sysUpTime.0",
+        "SNMPv2-MIB::sysUpTime.0"
+    }
+
     @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$",
           method=["GET"], access="create", api=True)
     def api_from_event(self, request, event_id):
@@ -221,15 +226,15 @@ class EventClassificationRuleApplication(ExtDocApplication):
         elif (event.source == "SNMP Trap" and
               "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
-        patterns = {}
+        patterns = {
+            "source": event.source
+        }
         for k in event.raw_vars:
             if k not in ("collector", "facility", "severity"):
                 patterns[k] = event.raw_vars[k]
         if hasattr(event, "resolved_vars"):
             for k in event.resolved_vars:
-                if k not in (
-                        "RFC1213-MIB::sysUpTime.0",
-                        "SNMPv2-MIB::sysUpTime.0") and not is_oid(k):
+                if k not in self.IGNORED_OIDS and not is_oid(k):
                     patterns[k] = event.resolved_vars[k]
         data["patterns"] = [
             {
