@@ -82,6 +82,8 @@ class DiscoveryID(Document):
         # Apply ranges
         macs = set()
         for r in ranges:
+            if not r:
+                continue
             first = MAC(r["first_chassis_mac"])
             last = MAC(r["last_chassis_mac"])
             macs.update(m for m in range(int(first), int(last) + 1))
