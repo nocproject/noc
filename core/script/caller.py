@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Script caller client
+# Script caller and session manager
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
+import threading
 import uuid
-import itertools
 # NOC modules
 from noc.core.service.client import open_sync_rpc
-from noc.core.script.loader import loader
 from noc.core.service.loader import get_dcs
 from noc.core.dcs.error import ResolutionError
 from noc.core.service.error import RPCNoService
@@ -22,77 +20,73 @@ CALLING_SERVICE = config.script.calling_service
 DEFAULT_IDLE_TIMEOUT = config.script.caller_timeout
 
 
-class Session(object):
-    """
-    SA session
-    """
-    _sessions = {}
-    _lock = Lock()
+class ScriptCaller(object):
+    def __init__(self, obj, name):
+        if "." in name:
+            self.name = name.split(".")[-1]
+        else:
+            self.name = name
+        self.object_id = obj.id
 
-    def __init__(self, object, idle_timeout=None):
-        self._object = object
-        self._id = str(uuid.uuid4())
-        self._idle_timeout = idle_timeout or DEFAULT_IDLE_TIMEOUT
-
-    def __del__(self):
-        self.close()
-
-    def __getattr__(self, name):
-        if not loader.has_script("%s.%s" % (
-                self._object.profile.name, name)):
-            raise AttributeError("Invalid script %s" % name)
-        return lambda **kwargs: self._call_script(name, kwargs)
-
-    def __contains__(self, item):
-        """
-        Check object has script name
-        """
-        if "." not in item:
-            # Normalize to full name
-            item = "%s.%s" % (self._object.profile.name, item)
-        return loader.has_script(item)
-
-    def __iter__(self):
-        return itertools.imap(
-                lambda y: y.split(".")[-1],
-                itertools.ifilter(
-                        lambda x: x.startswith(self._object.profile.name + "."),
-                        loader.iter_scripts()
-                )
+    def __call__(self, **kwargs):
+        smap = getattr(SessionContext._sessions, "smap", None)
+        if smap:
+            session = smap.get(self.object_id)
+            if session:
+                # Session call
+                return session(self.name, kwargs)
+        # Direct call
+        return open_sync_rpc(
+            "sae",
+            calling_service=config.script.calling_service
+        ).script(
+            self.object_id,
+            self.name,
+            kwargs,  # params
+            None  # timeout
         )
 
-    @classmethod
-    def _get_service(cls, session, pool=None):
-        with cls._lock:
-            svc = cls._sessions.get(session)
-        if not pool:
-            return svc
-        try:
-            nsvc = get_dcs().resolve_sync("activator-%s" % pool, hint=svc)
-        except ResolutionError:
-            raise RPCNoService("activator-%s" % pool)
-        if nsvc:
-            if (svc and svc != nsvc) or (not svc):
-                with cls._lock:
-                    cls._sessions[session] = nsvc
-        return nsvc
 
-    def _call_script(self, script, args, timeout=None):
-        # Call SAE
+class Session(object):
+    def __init__(self, object_id, idle_timeout=None):
+        self._object_id = object_id
+        self._idle_timeout = idle_timeout or config.script.caller_timeout
+        self._id = str(uuid.uuid4())
+        self._hints = [None]
+        self._pool = None
+
+    def _get_hints(self):
+        """
+        Get activator address
+        :param pool:
+        :return:
+        """
+        try:
+            svc = get_dcs().resolve_sync(
+                "activator-%s" % self._pool,
+                hint=self._hints[0]
+            )
+            self._hints[0] = svc
+        except ResolutionError:
+            raise RPCNoService("activator-%s" % self._pool)
+
+    def __call__(self, name, args, timeout=None):
+        # Call SAE for credentials
         data = open_sync_rpc(
             "sae",
             calling_service=CALLING_SERVICE
-        ).get_credentials(self._object.id)
-        # Resolve service address
-        service = self._get_service(self._id, data["pool"])
+        ).get_credentials(self._object_id)
+        self._pool = data["pool"]
+        # Get activator hints
+        hints = self._get_hints()
         # Call activator
         return open_sync_rpc(
             "activator",
-            pool=self._object.pool.name,
+            pool=data["pool"],
             calling_service=CALLING_SERVICE,
-            hints=[service]
+            hints=hints
         ).script(
-            "%s.%s" % (self._object.profile.name, script),
+            "%s.%s" % (data["profile"], name),
             data["credentials"],
             data["capabilities"],
             data["version"],
@@ -103,39 +97,39 @@ class Session(object):
         )
 
     def close(self):
-        service = self._get_service(self._id)
-        if service:
-            # Close at activator
-            # @todo: Use hints
-            open_sync_rpc(
-                "activator",
-                pool=self._object.pool.name,
-                calling_service=CALLING_SERVICE
-            ).close_session(self._id)
-            # Remove from cache
-            with self._lock:
-                try:
-                    del self._sessions[self._id]
-                except KeyError:
-                    pass
+        if not self._hints[0]:
+            return  # Not open
+        open_sync_rpc(
+            "activator",
+            pool=self._pool,
+            calling_service=CALLING_SERVICE,
+            hints=self._hints
+        ).close_session(self._id)
 
 
 class SessionContext(object):
+    # Thread-local storage holding session context for threads
+    _sessions = threading.local()
+
     def __init__(self, object, idle_timeout=None):
-        self._object = object
-        self._idle_timeout = idle_timeout or DEFAULT_IDLE_TIMEOUT
-        self._session = Session(self._object, self._idle_timeout)
-        self._object_scripts = None
+        self._object_id = object.id
+        self._idle_timeout = idle_timeout
 
     def __enter__(self):
-        self._object_scripts = getattr(self._object, "_scripts", None)
-        self._object._scripts = self._session
-        return self._session
+        # Store previous context for object, if nested
+        smap = getattr(self._sessions, "smap", None)
+        if not smap:
+            # Create dictionary in TLS
+            smap = {}
+            self._sessions.smap = smap
+        self._prev_context = smap.get(self._object_id)
+        # Put current context
+        smap[self._object_id] = Session(self._object_id, self._idle_timeout)
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._object._scripts = self._object_scripts
-        self._session.close()
-
-    def __getattr__(self, name):
-        if not name.startswith("_"):
-            return getattr(self._session, name)
+        session = self._sessions.smap.pop(self._object_id)
+        if self._prev_context:
+            # Restore previous context
+            self._sessions.smap[self._object_id] = self._prev_context
+        session.close()
