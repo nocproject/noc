@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Alcatel.OS62xx.get_vlans
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -15,16 +18,9 @@ class Script(BaseScript):
     def execute(self):
         vlans = self.cli("show vlan")
         r = []
-        in_body = False
-        for l in vlans.split("\n"):
-            l = l.strip()
-            if not in_body:
-                if l.startswith("----"):
-                    in_body = True
-                continue
-            try:
-                vlan_id, name, ports, vlan_type, auth = l.split()
-            except:
-                continue
-            r.append({"vlan_id": int(vlan_id), "name": name})
+        for v in parse_table(vlans, allow_wrap=True):
+            r += [{
+                "vlan_id": int(v[0]),
+                "name": v[1]
+            }]
         return r

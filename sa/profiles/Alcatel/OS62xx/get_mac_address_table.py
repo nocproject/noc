@@ -2,14 +2,13 @@
 # ----------------------------------------------------------------------
 # Alcatel.OS62xx.get_mac_address_table
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
