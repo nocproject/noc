@@ -668,6 +668,7 @@ class CLI(object):
 
     def set_script(self, script):
         self.script = script
+        self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
         if self.close_timeout:
             tornado.ioloop.IOLoop.instance().remove_timeout(self.close_timeout)
             self.close_timeout = None

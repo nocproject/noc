@@ -804,8 +804,12 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             # Try to get cached session's CLI
             with self.session_lock:
                 self.cli_stream = self.session_cli.get(self.session)
-                if self.cli_stream and self.cli_stream.is_closed:
-                    self.cli_stream = None
+                if self.cli_stream:
+                    if self.cli_stream.is_closed:
+                        # Stream closed by external reason,
+                        # mark as invalid and start new one
+                        self.cli_stream = None
+                    # Remove stream from pool to prevent cli session hijacking
                     del self.session_cli[self.session]
             if self.cli_stream:
                 if self.to_reuse_cli_session():
@@ -849,6 +853,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             return
         if self.cli_stream:
             if self.session and self.to_keep_cli_session():
+                # Return cli stream to pool
+                self.session_cli[self.session] = self.cli_stream
+                # Schedule stream closing
                 self.cli_stream.deferred_close(self.session_idle_timeout)
             else:
                 self.cli_stream.shutdown_session()
