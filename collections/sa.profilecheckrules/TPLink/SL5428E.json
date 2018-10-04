@@ -1,0 +1,14 @@
+{
+    "name": "TPLink | SL5428E",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "4d1ed8f9-12d6-4eb0-808f-08bff1ea1ed7",
+    "description": "JetStream  L2 Managed Switch",
+    "preference": 500,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.11863.1.1.1",
+    "action": "match",
+    "profile__name": "TPLink.SL5428E"
+}
+
