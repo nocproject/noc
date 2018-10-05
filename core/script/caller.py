@@ -69,6 +69,7 @@ class Session(object):
             self._hints[0] = svc
         except ResolutionError:
             raise RPCNoService("activator-%s" % self._pool)
+        return self._hints
 
     def __call__(self, name, args, timeout=None):
         # Call SAE for credentials
