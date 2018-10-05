@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,11 @@ class Script(BaseScript):
                     s = None
                 if s is None:
                     continue
-                r += [{"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}]
+                try:
+                    mac = MAC(s)
+                except ValueError:  # LLDP system_id is not MAC address
+                    continue
+                r += [{"first_chassis_mac": mac, "last_chassis_mac": mac}]
             return r
         else:
             raise self.NotSupportedError
