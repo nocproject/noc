@@ -921,6 +921,10 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 self.mml_stream.close()
             self.cli_stream = None
 
+    def close_current_session(self):
+        if self.session:
+            self.close_session(self.session)
+
     @classmethod
     def close_session(cls, session_id):
         """

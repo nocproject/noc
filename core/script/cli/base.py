@@ -83,15 +83,18 @@ class CLI(object):
         self.super_password_retries = self.profile.cli_retries_super_password
 
     def close(self):
-        if self.script.session:
-            self.script.close_session(self.script.session)
-        if self.iostream:
-            self.iostream.close()
+        self.script.close_current_session()
+        self.close_iostream()
         if self.ioloop:
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
             self.ioloop = None
         self.is_closed = True
+
+    def close_iostream(self):
+        if self.iostream:
+            self.logger.debug("Closing IOStream")
+            self.iostream.close()
 
     def set_state(self, state):
         self.logger.debug("Changing state to <%s>", state)
@@ -306,6 +309,8 @@ class CLI(object):
                     raise tornado.iostream.StreamClosedError()
             except tornado.gen.TimeoutError:
                 self.logger.info("Timeout error")
+                # IOStream must be closed to prevent hanging read callbacks
+                self.close_iostream()
                 raise tornado.gen.TimeoutError("Timeout")
             self.logger.debug("Received: %r", r)
             # Clean input

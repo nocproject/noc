@@ -67,15 +67,17 @@ class MMLBase(object):
             self.rx_mml_continue = None
 
     def close(self):
-        if self.script.session:
-            self.script.close_session(self.script.session)
-        if self.iostream:
-            self.iostream.close()
+        self.script.close_current_session()
+        self.close_iostream()
         if self.ioloop:
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
             self.ioloop = None
         self.is_closed = True
+
+    def close_iostream(self):
+        if self.iostream:
+            self.iostream.close()
 
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:

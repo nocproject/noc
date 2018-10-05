@@ -69,7 +69,6 @@ class Session(object):
             self._hints[0] = svc
         except ResolutionError:
             raise RPCNoService("activator-%s" % self._pool)
-        return self._hints
 
     def __call__(self, name, args, timeout=None):
         # Call SAE for credentials
@@ -79,13 +78,13 @@ class Session(object):
         ).get_credentials(self._object_id)
         self._pool = data["pool"]
         # Get activator hints
-        hints = self._get_hints()
+        self._get_hints()
         # Call activator
         return open_sync_rpc(
             "activator",
             pool=data["pool"],
             calling_service=CALLING_SERVICE,
-            hints=hints
+            hints=self._hints
         ).script(
             "%s.%s" % (data["profile"], name),
             data["credentials"],
