@@ -7,6 +7,7 @@
   become: "True"
   when:
     - http_proxy is defined
+    - http_proxy
   tags:
     - config
 
@@ -18,16 +19,17 @@
 
 - name: Install CentOS system packages pre
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: "True"
   become: "True"
-  with_items:
-    - unzip
-    - ca-certificates
+  vars:
+    packages:
+      - unzip
+      - ca-certificates
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 

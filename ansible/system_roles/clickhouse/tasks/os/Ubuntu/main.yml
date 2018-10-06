@@ -29,12 +29,13 @@
 
 - name: Install CH
   apt:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: present
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
-  with_items:
-    - clickhouse-client
-    - clickhouse-server-common
+  vars:
+    packages:
+      - clickhouse-client
+      - clickhouse-server-common
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

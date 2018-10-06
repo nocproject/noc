@@ -2,10 +2,11 @@
 - name: Install Ubuntu system packages
   become: "True"
   apt:
-    name: "{{item}}"
+    name: "{{ packages }}"
     update_cache: "True"
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  with_items:
+  vars:
+    packages:
     - ca-certificates
     - unzip
     - sudo

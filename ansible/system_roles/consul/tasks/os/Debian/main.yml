@@ -1,11 +1,9 @@
 ---
 - name: Install Debian consul depends
   apt:
-    name: "{{item}}"
+    name: python-virtualenv
     update_cache: "True"
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  with_items:
-    - python-virtualenv
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

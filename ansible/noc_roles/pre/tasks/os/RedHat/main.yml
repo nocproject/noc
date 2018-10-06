@@ -29,12 +29,13 @@
 - name: Install Rhel system packages pre
   become: "True"
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: "True"
-  with_items:
-    - unzip
-    - ca-certificates
+  vars:
+    packages:
+      - unzip
+      - ca-certificates
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

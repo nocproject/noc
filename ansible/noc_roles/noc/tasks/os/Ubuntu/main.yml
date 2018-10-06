@@ -1,24 +1,25 @@
 ---
 - name: Install Ubuntu system packages
   apt:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
-  with_items:
-    - python
-    - python-dev
-    - python-virtualenv
-    - git
-    - libjemalloc1
-    - gcc
-    - libpq-dev
-    - libffi6
-    - libffi-dev
-    - libmemcached11
-    - libmemcached-dev
-    - patch
-    - bzip2
-    - zlib1g-dev
+  vars:
+    packages:
+      - python
+      - python-dev
+      - python-virtualenv
+      - git
+      - libjemalloc1
+      - gcc
+      - libpq-dev
+      - libffi6
+      - libffi-dev
+      - libmemcached11
+      - libmemcached-dev
+      - patch
+      - bzip2
+      - zlib1g-dev
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

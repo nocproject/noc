@@ -40,15 +40,16 @@
 
 - name: ReInstall MongoDB on version change
   yum:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: latest
     update_cache: "True"
   when: mongo_repo_stat.changed
-  with_items:
-    - mongodb-org
-    - mongodb-org-server
-    - mongodb-org-shell
-    - mongodb-org-tools
+  vars:
+    packages:
+      - mongodb-org
+      - mongodb-org-server
+      - mongodb-org-shell
+      - mongodb-org-tools
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

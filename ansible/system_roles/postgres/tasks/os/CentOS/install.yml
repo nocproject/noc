@@ -15,14 +15,15 @@
 
 - name: "Install PostgreSQL"
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: "True"
-  with_items:
-    - postgresql{{postgres_version|replace(".","")}}-server
-    - postgresql{{postgres_version|replace(".","")}}-contrib
-    - postgresql{{postgres_version|replace(".","")}}-plpython
-    - python-psycopg2
+  vars:
+    packages:
+      - postgresql{{postgres_version|replace(".","")}}-server
+      - postgresql{{postgres_version|replace(".","")}}-contrib
+      - postgresql{{postgres_version|replace(".","")}}-plpython
+      - python-psycopg2
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

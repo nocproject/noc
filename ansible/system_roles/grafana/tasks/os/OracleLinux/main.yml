@@ -15,12 +15,13 @@
 
 - name: Install Grafana
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: "True"
-  with_items:
-    - "grafana-{{grafana_version}}"
-    - open-sans-fonts
+  vars:
+    packages:
+      - "grafana-{{grafana_version}}"
+      - open-sans-fonts
   tags:
     - requirements
   environment:
