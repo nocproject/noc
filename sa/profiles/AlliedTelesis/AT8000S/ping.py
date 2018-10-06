@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # coded by azhur
 # See LICENSE for details
 # ---------------------------------------------------------------------
@@ -16,9 +16,12 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.ping"
     interface = IPing
+
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
-        r"received, \d+% packet loss\nround-trip \(ms\) min/avg/max = "
+        r"received, \d+% packet loss\n", re.MULTILINE)
+    rx_result1 = re.compile(
+        "^round-trip \(ms\) min/avg/max = "
         r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE)
 
     def execute(self, address, size=None, count=None, timeout=None):
@@ -32,10 +35,15 @@ class Script(BaseScript):
         pr = self.cli(cmd)
         pr = self.strip_first_lines(pr, 1)
         match = self.rx_result.search(pr)
-        return {
+        r = {
             "success": match.group("success"),
             "count": match.group("count"),
-            "min": match.group("min"),
-            "avg": match.group("avg"),
-            "max": match.group("max")
         }
+        match = self.rx_result1.search(pr)
+        if match:
+            r.update({
+                "min": match.group("min"),
+                "avg": match.group("avg"),
+                "max": match.group("max")
+            })
+        return r

@@ -168,7 +168,12 @@ class Script(BaseScript):
                         "vlan_ids": [int(match.group("vlan_id"))]
                     }]
                 }
-                interfaces += [iface]
+                for i in interfaces:
+                    if i["name"] == ifname:
+                        i["subinterfaces"][0]["ipv4_addresses"] += match.group("address")
+                        break
+                else:
+                    interfaces += [iface]
         # Not implemented
         """
         for l in self.cli("show ipv6 interface").split("\n"):
