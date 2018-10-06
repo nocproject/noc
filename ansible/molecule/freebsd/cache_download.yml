@@ -20,6 +20,7 @@
 - name: install minio client
   pkgng:
     name: pkg
+    state: latest
   environment:
     IGNORE_OSVERSION: "yes"
 
