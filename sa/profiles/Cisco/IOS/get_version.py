@@ -77,7 +77,7 @@ class Script(BaseScript):
             # inventory
             # p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
             p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1001"])
-            if p and p.startswith("WS-C"):
+            if p and (p.startswith("WS-C") or p.startswith("ME-3")):
                 platform = p
                 s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1001"])
             else:
@@ -130,7 +130,7 @@ class Script(BaseScript):
                     # inventory
                     # p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
                     p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1001"])
-                    if p and p.startswith("WS-C"):
+                    if p and (p.startswith("WS-C") or p.startswith("ME-3")):
                         platform = p
                         s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1001"])
                     else:
