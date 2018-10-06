@@ -19,6 +19,12 @@
 
 - name: install minio client
   pkgng:
+    name: pkg
+  environment:
+    IGNORE_OSVERSION: "yes"
+
+- name: install minio client
+  pkgng:
     name: minio-client
   environment:
     IGNORE_OSVERSION: "yes"
