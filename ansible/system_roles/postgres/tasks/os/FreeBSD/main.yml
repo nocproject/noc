@@ -1,20 +1,19 @@
 ---
 - name: "Install PostgreSQL 1/2"
   pkgng:
-    name: "{{item}}"
+    name: 'postgresql{{postgres_version|replace(".","")}}-server'
     state: present
-  with_items:
-    - 'postgresql{{postgres_version|replace(".","")}}-server'
   tags:
     - requirements
 
 - name: "Install PostgreSQL 2/2"
   pkgng:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: present
-  with_items:
-    - 'py27-psycopg2'
-    - 'postgresql{{postgres_version|replace(".","")}}-contrib'
+  vars:
+    packages:
+      - 'py27-psycopg2'
+      - 'postgresql{{postgres_version|replace(".","")}}-contrib'
   tags:
     - requirements
 

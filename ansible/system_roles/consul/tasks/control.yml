@@ -1,11 +1,12 @@
 ---
 - name: Install python-consul and consulate
   pip:
-    name: "{{item}}"
+    name: "{{ packages }}"
     virtualenv: "{{consul_control_venv}}"
-  with_items:
-    - "python-consul=={{python_consul_version}}"
-    - consulate
+  vars:
+    packages:
+      - "python-consul=={{python_consul_version}}"
+      - consulate
   environment:
     https_proxy: "{{http_proxy}}"
   tags:
