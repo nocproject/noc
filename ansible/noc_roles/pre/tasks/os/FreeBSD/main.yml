@@ -8,6 +8,13 @@
   tags:
     - config
 
+- name: Force upgrade catalog
+  command: pkg update -f
+  environment:
+    IGNORE_OSVERSION: "yes"
+  when:
+    - molecule_yml is defined
+
 - name: Install FreeBSD system packages
   pkgng:
     name: "{{item}}"
