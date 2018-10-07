@@ -9,6 +9,7 @@
     - config
 
 - name: Force upgrade catalog
+  become: "True"
   command: pkg update -f
   environment:
     IGNORE_OSVERSION: "yes"
