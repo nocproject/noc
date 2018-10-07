@@ -13,10 +13,12 @@ import re
 import functools
 import datetime
 from functools import reduce
+import sys
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
+import tornado.concurrent
 import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -156,6 +158,38 @@ class CLI(object):
                 self.logger.debug("Resetting timeouts")
             self.current_timeout = None
 
+    def run_sync(self, func, *args, **kwargs):
+        """
+        Simplified implementation of IOLoop.run_sync
+        to distinguish real TimeoutErrors from incomplete futures
+        :param func:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        future_cell = [None]
+
+        def run():
+            try:
+                result = func(*args, **kwargs)
+                if result is not None:
+                    result = tornado.gen.convert_yielded(result)
+                future_cell[0] = result
+            except Exception:
+                future_cell[0] = tornado.concurrent.TracebackFuture()
+                future_cell[0].set_exc_info(sys.exc_info())
+            self.ioloop.add_future(future_cell[0], lambda future: self.ioloop.stop())
+
+        self.ioloop.add_callback(run)
+        self.ioloop.start()
+        if not future_cell[0].done():
+            self.logger.info("Incomplete feature left. Restarting IOStream")
+            self.close_iostream()
+            # Retain cryptic message as is,
+            # Mark feature as done
+            future_cell[0].set_exception(tornado.gen.TimeoutError('Operation timed out after %s seconds' % None))
+        return future_cell[0].result()
+
     def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None,
                 ignore_errors=False):
         if self.close_timeout:
@@ -178,7 +212,7 @@ class CLI(object):
             parser = self.read_until_prompt
         with Span(server=self.script.credentials.get("address"),
                   service=self.name, in_label=cmd) as s:
-            self.ioloop.run_sync(functools.partial(self.submit, parser))
+            self.run_sync(self.submit, parser)
             if self.error:
                 if s:
                     s.error_text = str(self.error)
