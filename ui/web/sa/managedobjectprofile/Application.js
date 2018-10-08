@@ -1557,11 +1557,10 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: false,
                                             store: [
                                                 ["D", __("Disabled")],
-                                                ["A", __("Always Mirror")],
-                                                ["C", __("Mirror on Change")]
+                                                ["A", __("Always Validate")],
+                                                ["C", __("Validate on Change")]
                                             ],
-                                            tooltip: __('If config validation policy worked: ' +
-                                                'Always after config dicovery or only if detect changes on config'),
+                                            tooltip: __('Will be checked on next box discovery run')
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryConfig.checked}"
                                             },
