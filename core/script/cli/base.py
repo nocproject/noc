@@ -97,6 +97,7 @@ class CLI(object):
         if self.iostream:
             self.logger.debug("Closing IOStream")
             self.iostream.close()
+            self.iostream = None
 
     def set_state(self, state):
         self.logger.debug("Changing state to <%s>", state)
