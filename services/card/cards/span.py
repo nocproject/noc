@@ -27,9 +27,9 @@ class Span(object):
         self.duration = int(duration)
         self.sample = int(sample)
         self.error_code = error_code
-        self.error_text = error_text
-        self.in_label = in_label
-        self.out_label = out_label
+        self.error_text = error_text.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
+        self.in_label = in_label.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
+        self.out_label = out_label.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
         self.children = []
         self.level = 0
         self.left = 0
