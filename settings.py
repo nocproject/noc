@@ -145,7 +145,7 @@ LANGUAGES = [
 ]
 
 # Available themes
-_ = lambda s: s
+_ = lambda s: s # noqa. _ should be a lambda not a function
 THEMES = [
     ("noc", _("NOC Theme")),
     ("gray", _("Classic gray"))
