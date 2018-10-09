@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,6 +28,8 @@ from noc.sa.interfaces.base import (
     EmbeddedDocumentParameter, DictParameter,
     InterfaceTypeError, DocumentParameter, ObjectIdParameter)
 from noc.lib.validators import is_int, is_uuid
+from noc.main.models.permission import Permission
+from noc.core.middleware.tls import get_user
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
@@ -42,8 +44,10 @@ class ExtDocApplication(ExtApplication):
     clean_fields = {"id": ObjectIdParameter()}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
     parent_model = None
+    secret_fields = None  # Set of sensitive fields. "secret" permission is required to show of modify
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
-    ignored_fields = set(["id", "bi_id"])
+    ignored_fields = {"id", "bi_id"}
+    SECRET_MASK = "********"
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -108,6 +112,12 @@ class ExtDocApplication(ExtApplication):
             h = getattr(self, fn)
             if callable(h):
                 self.custom_fields[fn[6:]] = h
+
+    def get_permissions(self):
+        p = super(ExtDocApplication, self).get_permissions()
+        if self.secret_fields:
+            p.add("%s:secret" % self.get_app_id().replace(".", ":"))
+        return p
 
     def get_custom_fields(self):
         from noc.main.models.customfield import CustomField
@@ -175,6 +185,11 @@ class ExtDocApplication(ExtApplication):
             (str(k), data[k] if data[k] != "" else None)
             for k in data if k not in self.ignored_fields
         )
+        # Protect sensitive fields
+        if self.secret_fields and not self.has_secret():
+            for f in self.secret_fields:
+                if f in data:
+                    del data[f]
         # Clean up fields
         for f in self.clean_fields:
             if f in data:
@@ -205,6 +220,14 @@ class ExtDocApplication(ExtApplication):
             del q[p]
         return q
 
+    def has_secret(self):
+        """
+        Check current user has *secret* permission on given app
+        :return:
+        """
+        perm_name = "%s:secret" % (self.get_app_id().replace(".", ":"))
+        return perm_name in Permission.get_effective_permissions(get_user())
+
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
         for n, f in o._fields.items():
@@ -214,7 +237,10 @@ class ExtDocApplication(ExtApplication):
             if v is not None:
                 v = f.to_python(v)
             if v is not None:
-                if isinstance(f, GeoPointField):
+                if self.secret_fields and n in self.secret_fields and not self.has_secret():
+                    # Sensitive fields (limit view only to *secret* permission)
+                    v = self.SECRET_MASK
+                elif isinstance(f, GeoPointField):
                     pass
                 elif isinstance(f, ForeignKeyField):
                     r["%s__label" % f.name] = unicode(v)
