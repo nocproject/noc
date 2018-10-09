@@ -22,7 +22,7 @@ class Script(BaseScript):
 
     rx_port = re.compile(
         "^\s*(?P<port>\d+)\s*(?P<admin_status>enable|disable)\s+"
-        r"(?P<oper_status>up|dowwn)", re.MULTILINE)
+        r"(?P<oper_status>up|down)", re.MULTILINE)
     rx_vlan = re.compile(
         r"^Port: (?P<port>\d+)\s*\n"
         r"^Administrative Mode:.+\n"
