@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.desktop application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.desktop.Application");
@@ -17,7 +17,8 @@ Ext.define("NOC.main.desktop.Application", {
         "Ext.ux.form.DictField",
         "Ext.ux.form.ColorField",
         "Ext.ux.grid.column.GlyphAction",
-        "NOC.core.CMText"
+        "NOC.core.CMText",
+        "NOC.core.PasswordField"
     ],
 
     initComponent: function() {

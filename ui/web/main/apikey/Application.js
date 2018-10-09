@@ -20,29 +20,14 @@ Ext.define("NOC.main.apikey.Application", {
         var me = this;
         me.keyField = Ext.create({
             name: "key",
-            xtype: "textfield",
+            xtype: "password",
             fieldLabel: __("API Key"),
-            inputType: "password",
             allowBlank: false,
             margin: "0 5 0 0",
             maxLength: 24,
             maxLengthText: __("The maximum length for this field is {0}"),
             minWidth: 390,
-            uiStyle: "large",
-            triggers: {
-                hide: {
-                    cls: "fas fa fa-eye",
-                    hidden: false,
-                    scope: me,
-                    handler: me.showKey
-                },
-                show: {
-                    cls: "fas fa fa-eye-slash",
-                    hidden: true,
-                    scope: me,
-                    handler: me.hideKey
-                }
-            }
+            uiStyle: "large"
         });
         me.keyGenerator = Ext.create("NOC.core.PasswordGenerator");
         Ext.apply(me, {
@@ -130,17 +115,5 @@ Ext.define("NOC.main.apikey.Application", {
     generateKey: function() {
         var me = this;
         me.keyField.setValue(me.keyGenerator.generate(24));
-    },
-    showKey: function() {
-        var me = this;
-        me.keyField.getTriggers().show.show();
-        me.keyField.getTriggers().hide.hide();
-        me.keyField.inputEl.dom.setAttribute("type", "text")
-    },
-    hideKey: function() {
-        var me = this;
-        me.keyField.getTriggers().hide.show();
-        me.keyField.getTriggers().show.hide();
-        me.keyField.inputEl.dom.setAttribute("type", "password");
     }
 });

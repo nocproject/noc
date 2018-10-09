@@ -636,7 +636,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "password",
-                                    xtype: "textfield",
+                                    xtype: "password",
                                     fieldLabel: __("Password"),
                                     tabIndex: 62,
                                     allowBlank: true,
@@ -645,7 +645,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "super_password",
-                                    xtype: "textfield",
+                                    xtype: "password",
                                     fieldLabel: __("Super Password"),
                                     allowBlank: true,
                                     inputType: "password",
@@ -653,7 +653,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "snmp_ro",
-                                    xtype: "textfield",
+                                    xtype: "password",
                                     fieldLabel: __("RO Community"),
                                     tabIndex: 63,
                                     allowBlank: true,
@@ -661,7 +661,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "snmp_rw",
-                                    xtype: "textfield",
+                                    xtype: "password",
                                     fieldLabel: __("RW Community"),
                                     tabIndex: 64,
                                     allowBlank: true,
@@ -910,7 +910,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "trap_community",
-                                    xtype: "textfield",
+                                    xtype: "password",
                                     fieldLabel: __("Trap Community"),
                                     allowBlank: true,
                                     groupEdit: true
