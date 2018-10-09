@@ -24,6 +24,6 @@ class CHStateDataSource(BaseDataSource):
                 a.id,
                 a.name,
                 a.workflow.name,
-                a.is_default,
-                a.is_productive
+                int(a.is_default),
+                int(a.is_productive)
             )
