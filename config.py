@@ -287,6 +287,8 @@ class Config(BaseConfig):
         default="en-us"
     )
 
+    theme = StringParameter(default="gray")
+
     listen = StringParameter(default="auto:0")
 
     log_format = StringParameter(

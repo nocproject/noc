@@ -54,6 +54,16 @@ class UserProfile(models.Model):
         null=True, blank=True,
         default=settings.LANGUAGE_CODE,
         choices=settings.LANGUAGES)
+    # Theme
+    theme = models.CharField(
+        "UI Theme",
+        max_length=10,
+        choices=[
+            ("gray", "Classic Gray"),
+            ("noc", "NOC Theme")
+        ],
+        default="gray"
+    )
     # Heatmap position
     heatmap_lon = models.FloatField("Longitude", blank=True, null=True)
     heatmap_lat = models.FloatField("Latitude", blank=True, null=True)

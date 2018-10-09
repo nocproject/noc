@@ -11,6 +11,7 @@ from noc.lib.app.extapplication import ExtApplication, view, PermitLogged
 from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
                                     DictParameter, ModelParameter)
 from noc.settings import LANGUAGES
+from noc.settings import THEMES
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.main.models.userprofile import UserProfile
@@ -33,6 +34,7 @@ class UserProfileApplication(ExtApplication):
         try:
             profile = user.get_profile()
             language = profile.preferred_language
+            theme = profile.theme
             contacts = [
                 {
                     "time_pattern": c.time_pattern.id,
@@ -44,6 +46,7 @@ class UserProfileApplication(ExtApplication):
             ]
         except UserProfile.DoesNotExist:
             language = None
+            theme = None
             contacts = []
         return {
             "username": user.username,
@@ -52,6 +55,7 @@ class UserProfileApplication(ExtApplication):
             )).strip(),
             "email": user.email,
             "preferred_language": language or "en",
+            "theme": theme or "gray",
             "contacts": contacts,
             "groups": [g.name for g in user.groups.all().order_by("name")]
         }
@@ -61,6 +65,9 @@ class UserProfileApplication(ExtApplication):
         validate={
             "preferred_language": StringParameter(
                 choices=[x[0] for x in LANGUAGES]
+            ),
+            "theme": StringParameter(
+                choices=[x[0] for x in THEMES]
             ),
             "contacts": ListOfParameter(
                 element=DictParameter(attrs={
@@ -74,13 +81,14 @@ class UserProfileApplication(ExtApplication):
             )
         }
     )
-    def api_save(self, request, preferred_language, contacts):
+    def api_save(self, request, preferred_language, theme, contacts):
         user = request.user
         try:
             profile = user.get_profile()
         except UserProfile.DoesNotExist:
             profile = UserProfile(user=user)
         profile.preferred_language = preferred_language
+        profile.theme = theme
         profile.save()
         # Setup contacts
         for c in profile.userprofilecontact_set.all():

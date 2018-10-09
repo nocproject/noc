@@ -53,7 +53,7 @@ class DesktopApplication(ExtApplication):
 
     def get_language(self, request):
         """
-        Get theme for request
+        Get language for request
         """
         user = request.user
         language = config.language
@@ -65,6 +65,21 @@ class DesktopApplication(ExtApplication):
             except Exception:
                 pass
         return language
+
+    def get_theme(self, request):
+        """
+        Get theme for request
+        """
+        user = request.user
+        theme = config.theme
+        if user.is_authenticated:
+            try:
+                profile = user.get_profile()
+                if profile.theme:
+                    theme = profile.theme
+            except Exception:
+                pass
+        return theme
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
     def view_desktop(self, request):
@@ -116,6 +131,7 @@ class DesktopApplication(ExtApplication):
         return self.render(
             request, "desktop.html",
             language=self.get_language(request),
+            theme=self.get_theme(request),
             apps=apps,
             setup=setup
         )

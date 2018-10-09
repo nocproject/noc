@@ -144,6 +144,13 @@ LANGUAGES = [
     ("pt_BR", _("Portuguese (BRAZIL)"))
 ]
 
+# Available themes
+_ = lambda s: s
+THEMES = [
+    ("noc", _("NOC Theme")),
+    ("gray", _("Classic gray"))
+]
+
 LOCALE_PATHS = ["locale"]
 
 # SOUTH_AUTO_FREEZE_APP = False

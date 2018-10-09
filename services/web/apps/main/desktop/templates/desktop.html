@@ -11,7 +11,7 @@
         <!-- favicon -->
         {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
         <!-- CSS -->
-        <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-gray/resources/theme-gray-all.css" />
+        <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-{{ theme }}/resources/theme-{{ theme }}-all.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
         <link rel="stylesheet" type="text/css" href="/ui/web/css/extjs.css" />
         <link rel="stylesheet" type="text/css" href="/ui/web/css/ux.css" />
@@ -28,7 +28,7 @@
         <script type="text/javascript" src="/ui/web/js/logging.js"></script>
         <script type="text/javascript" src="/ui/web/js/jsloader.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/ext-all.js"></script>
-        <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-gray/theme-gray.js"></script>
+        <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-{{ theme }}/theme-{{ theme }}.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/packages/charts/classic/charts.js"></script>
         <script type="text/javascript" src="/ui/pkg/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="/ui/pkg/codemirror/lib/codemirror.js"></script>
