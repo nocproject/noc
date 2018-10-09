@@ -648,6 +648,40 @@ class DateTimeParameter(StringParameter):
             self.raise_error(value)
 
 
+class DateTimeShiftParameter(StringParameter):
+    rx_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(\+\d{4})?$")
+
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        if isinstance(value, datetime.datetime):
+            return value.isoformat()
+        if value.lower() == "infinite":
+            return datetime.datetime(year=datetime.MAXYEAR, month=1, day=1)
+        if self.rx_datetime.match(value):
+            return value
+        self.raise_error(value)
+
+    def form_clean(self, value):
+        if value is None and self.default is not None:
+            value = self.default
+        if isinstance(value, basestring):
+            if "." in value:
+                dt, _, us = value.partition(".")
+                dt = datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
+                if "+" in us:
+                    us, offset = us.split("+")
+                us = int(us.rstrip("Z"), 10)
+                return dt + datetime.timedelta(microseconds=us)
+            else:
+                return datetime.datetime.strptime(value,
+                                                  "%Y-%m-%dT%H:%M:%S")
+        elif isinstance(value, datetime):
+            return value
+        else:
+            self.raise_error(value)
+
+
 class IPv4Parameter(StringParameter):
     """
     >>> IPv4Parameter().clean("192.168.0.1")

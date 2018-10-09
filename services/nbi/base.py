@@ -6,9 +6,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import pytz
 # NOC modules
 from noc.core.service.apiaccess import APIAccessRequestHandler
 from noc.core.log import PrefixLoggerAdapter
+from noc.config import config
 
 
 class NBIAPI(APIAccessRequestHandler):
@@ -20,6 +22,7 @@ class NBIAPI(APIAccessRequestHandler):
     def initialize(self, service):
         self.service = service
         self.logger = PrefixLoggerAdapter(self.service.logger, self.name)
+        self.tz = pytz.timezone(config.timezone)
 
     @property
     def executor(self):

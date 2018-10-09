@@ -17,7 +17,7 @@ import six
 # NOC modules
 from noc.config import config
 from noc.core.service.apiaccess import authenticated
-from noc.sa.interfaces.base import (DictParameter, DictListParameter, DateTimeParameter,
+from noc.sa.interfaces.base import (DictParameter, DictListParameter, DateTimeShiftParameter,
                                     StringParameter, StringListParameter)
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.metrictype import MetricType
@@ -28,8 +28,8 @@ from ..base import NBIAPI
 
 
 Request = DictParameter(attrs={
-    "from": DateTimeParameter(required=True),
-    "to": DateTimeParameter(required=True),
+    "from": DateTimeShiftParameter(required=True),
+    "to": DateTimeShiftParameter(required=True),
     "metrics": DictListParameter(attrs={
         "object": StringParameter(required=True),
         "interfaces": StringListParameter(required=False),
@@ -118,7 +118,8 @@ class ObjectMetricsAPI(NBIAPI):
             date_q = "date = '%s'" % from_date
         else:
             date_q = "date >= '%s' AND date <= '%s'" % (from_date, to_date)
-        date_q = "%s AND ts >= '%s' AND ts <= '%s'" % (date_q, from_ts.isoformat(), to_ts.isoformat())
+        date_q = "%s AND ts >= '%s' AND ts <= '%s'" % (date_q, from_ts.replace(tzinfo=None).isoformat(),
+                                                       to_ts.replace(tzinfo=None).isoformat())
         connect = ClickhouseClient()
         scope_data = {}
         for table in scopes:
@@ -187,7 +188,7 @@ class ObjectMetricsAPI(NBIAPI):
                     points, path = mdata
                     # Clean data type
                     points = sorted(
-                        ((p[0], mt.clean_value(p[1])) for p in points),
+                        ((p[0].replace(" ", "T"), mt.clean_value(p[1])) for p in points),
                         key=operator.itemgetter(0)
                     )
                     #
