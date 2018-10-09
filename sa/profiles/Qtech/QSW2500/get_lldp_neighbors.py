@@ -51,7 +51,6 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return {}
         for match in self.rx_int.finditer(c):
-            print match.group("interface")
             r = {
                 "local_interface": match.group("interface"),
                 "neighbors": [{
