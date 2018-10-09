@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>NOC Login</title>
-    <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-gray/resources/theme-gray-all.css" />
+    <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-{{ theme }}/resources/theme-{{ theme }}-all.css" />
     <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
     <script type="text/javascript" src="/ui/pkg/extjs/ext-all.js"></script>
-    <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-gray/theme-gray.js"></script>
+    <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-{{ theme }}/theme-{{ theme }}.js"></script>
     <!-- l10n -->
     <link rel="gettext" href="{{ hashed("/ui/" + name + "/translations/%s.json" % language) }}" lang="{{ language }}">
     <!-- Initialize RPC application -->

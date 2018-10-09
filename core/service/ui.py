@@ -40,6 +40,7 @@ class UIHandler(tornado.web.RequestHandler):
             request=self.request,
             language=language,
             brand=config.brand,
+            theme=config.theme,
             installation_name=config.installation_name,
             name=self.name,
             service=self.service
