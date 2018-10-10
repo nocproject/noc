@@ -1487,8 +1487,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             reference: "mirrorPolicy",
                                             fieldLabel: __("Mirror Policy"),
                                             allowBlank: false,
-                                            tooltip: __('Mirroring config policy worked inside Config discovery. ' +
-                                                'Saving config every discovery finished or when only config changed'),
+                                            tooltip: __('Mirror collected config after Config discovery. <br/>' +
+                                                'Always Mirror - mirror every discovery run <br/>' +
+                                                'Mirror on Change - save only if detect config changed'),
                                             displayField: "label",
                                             valueField: "id",
                                             store: {
@@ -1515,7 +1516,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 type: "config_mirror"
                                             },
                                             allowBlank: true,
-                                            tooltip: __('External storage for save config. ' +
+                                            tooltip: __('External storage for config save. ' +
                                                 'Setup in Main -> Setup -> Ext. storage'),
                                             bind: {
                                                 disabled: "{disableConfigPolicy}"
@@ -1531,7 +1532,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: true,
                                             tooltip: __('Save config path template. ' +
                                                 'Setup on Main -> Setup -> Templates, subject form.' +
-                                                'Simple is: {{ object.name }}.txt on subject'),
+                                                'Simple is: {{ object.name }}.txt on subject or <br/>' +
+                                                '{{datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}} for time'),
                                             bind: {
                                                 disabled: "{disableConfigPolicy}"
                                             },
@@ -1560,7 +1562,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 ["A", __("Always Validate")],
                                                 ["C", __("Validate on Change")]
                                             ],
-                                            tooltip: __('Will be checked on next box discovery run')
+                                            tooltip: __('Run config validate proccess: <br/>' +
+                                                'Always Validate - every discovery run<br/>' +
+                                                'Validate on Change - only if detect config changed'),
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryConfig.checked}"
                                             },
