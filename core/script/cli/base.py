@@ -13,10 +13,12 @@ import re
 import functools
 import datetime
 from functools import reduce
+import sys
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
+import tornado.concurrent
 import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -83,15 +85,19 @@ class CLI(object):
         self.super_password_retries = self.profile.cli_retries_super_password
 
     def close(self):
-        if self.script.session:
-            self.script.close_session(self.script.session)
-        if self.iostream:
-            self.iostream.close()
+        self.script.close_current_session()
+        self.close_iostream()
         if self.ioloop:
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
             self.ioloop = None
         self.is_closed = True
+
+    def close_iostream(self):
+        if self.iostream:
+            self.logger.debug("Closing IOStream")
+            self.iostream.close()
+            self.iostream = None
 
     def set_state(self, state):
         self.logger.debug("Changing state to <%s>", state)
@@ -153,6 +159,38 @@ class CLI(object):
                 self.logger.debug("Resetting timeouts")
             self.current_timeout = None
 
+    def run_sync(self, func, *args, **kwargs):
+        """
+        Simplified implementation of IOLoop.run_sync
+        to distinguish real TimeoutErrors from incomplete futures
+        :param func:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        future_cell = [None]
+
+        def run():
+            try:
+                result = func(*args, **kwargs)
+                if result is not None:
+                    result = tornado.gen.convert_yielded(result)
+                future_cell[0] = result
+            except Exception:
+                future_cell[0] = tornado.concurrent.TracebackFuture()
+                future_cell[0].set_exc_info(sys.exc_info())
+            self.ioloop.add_future(future_cell[0], lambda future: self.ioloop.stop())
+
+        self.ioloop.add_callback(run)
+        self.ioloop.start()
+        if not future_cell[0].done():
+            self.logger.info("Incomplete feature left. Restarting IOStream")
+            self.close_iostream()
+            # Retain cryptic message as is,
+            # Mark feature as done
+            future_cell[0].set_exception(tornado.gen.TimeoutError('Operation timed out after %s seconds' % None))
+        return future_cell[0].result()
+
     def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None,
                 ignore_errors=False):
         if self.close_timeout:
@@ -175,7 +213,7 @@ class CLI(object):
             parser = self.read_until_prompt
         with Span(server=self.script.credentials.get("address"),
                   service=self.name, in_label=cmd) as s:
-            self.ioloop.run_sync(functools.partial(self.submit, parser))
+            self.run_sync(self.submit, parser)
             if self.error:
                 if s:
                     s.error_text = str(self.error)
@@ -306,6 +344,8 @@ class CLI(object):
                     raise tornado.iostream.StreamClosedError()
             except tornado.gen.TimeoutError:
                 self.logger.info("Timeout error")
+                # IOStream must be closed to prevent hanging read callbacks
+                self.close_iostream()
                 raise tornado.gen.TimeoutError("Timeout")
             self.logger.debug("Received: %r", r)
             # Clean input
@@ -668,6 +708,7 @@ class CLI(object):
 
     def set_script(self, script):
         self.script = script
+        self.logger = PrefixLoggerAdapter(self.script.logger, self.name)
         if self.close_timeout:
             tornado.ioloop.IOLoop.instance().remove_timeout(self.close_timeout)
             self.close_timeout = None
