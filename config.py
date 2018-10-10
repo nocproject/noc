@@ -457,9 +457,9 @@ class Config(BaseConfig):
 
     class script(ConfigSection):
         timeout = SecondsParameter(default="2M", help="default sa script script timeout")
-        session_idle_timeout = SecondsParameter(default="1M", help="defeault session timeout")
+        session_idle_timeout = SecondsParameter(default="1M", help="default session timeout")
         caller_timeout = SecondsParameter(default="1M")
-        calling_service = StringParameter(default="MTManager")
+        calling_service = StringParameter(default="script")
 
     secret_key = StringParameter(default="12345")
 
