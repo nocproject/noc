@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Classifier service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -424,10 +424,10 @@ class ClassifierService(Service):
         resolved_vars = {
             "profile": event.managed_object.profile.name
         }
-        if event.source == E_SRC_SNMP_TRAP:
-            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
         # Store event variables
         event.raw_vars = data
+        if event.source == E_SRC_SNMP_TRAP:
+            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
         event.resolved_vars = resolved_vars
         # Get matched event class
         if pre_event:
