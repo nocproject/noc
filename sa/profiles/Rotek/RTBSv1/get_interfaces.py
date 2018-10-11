@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Rotek.RTBS.get_interfaces
+# Rotek.RTBSv1.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -83,38 +83,39 @@ class Script(BaseScript):
                 iface["mac"] = MAC(mac)
                 iface["subinterfaces"][0]["mac"] = MAC(mac)
             interfaces += [iface]
-            for i in ss.items():
-                if int(i[0]) == ifindex:
-                    a = self.cli("show interface %s ssid-broadcast" % name)
-                    sb = a.split(":")[1].strip()
-                    if sb == "on":
-                        ssid_broadcast = "enable"
-                    else:
-                        ssid_broadcast = "disable"
-                        oper_status = False  # Do not touch !!!
-                    vname = "%s.%s" % (name, i[1]["ssid"])
-                    iface = {
-                        "type": iftype,
-                        "name": vname,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "snmp_ifindex": ifindex,
-                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz" % (
-                            ssid_broadcast, i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"]
-                        ),
-                        "subinterfaces": [{
+            if self.is_platform_BS24:
+                for i in ss.items():
+                    if int(i[0]) == ifindex:
+                        a = self.cli("show interface %s ssid-broadcast" % name)
+                        sb = a.split(":")[1].strip()
+                        if sb == "on":
+                            ssid_broadcast = "enable"
+                        else:
+                            ssid_broadcast = "disable"
+                            oper_status = False  # Do not touch !!!
+                        vname = "%s.%s" % (name, i[1]["ssid"])
+                        iface = {
+                            "type": iftype,
                             "name": vname,
-                            "snmp_ifindex": ifindex,
                             "admin_status": admin_status,
                             "oper_status": oper_status,
-                            "mtu": mtu,
-                            "enabled_afi": ["BRIDGE"]
-                        }]
-                    }
-                    if mac:
-                        iface["mac"] = MAC(mac)
-                        iface["subinterfaces"][0]["mac"] = MAC(mac)
-                    interfaces += [iface]
+                            "snmp_ifindex": ifindex,
+                            "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz" % (
+                                ssid_broadcast, i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"]
+                            ),
+                            "subinterfaces": [{
+                                "name": vname,
+                                "snmp_ifindex": ifindex,
+                                "admin_status": admin_status,
+                                "oper_status": oper_status,
+                                "mtu": mtu,
+                                "enabled_afi": ["BRIDGE"]
+                            }]
+                        }
+                        if mac:
+                            iface["mac"] = MAC(mac)
+                            iface["subinterfaces"][0]["mac"] = MAC(mac)
+                        interfaces += [iface]
         return [{"interfaces": interfaces}]
 
     def execute_cli(self):

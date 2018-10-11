@@ -3,7 +3,7 @@
 # Vendor: Rotek
 # OS:     RTBSv1
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,3 +47,16 @@ class Profile(BaseProfile):
             """Leave switch context"""
             if exc_type is None:
                 self.script.cli("\r")
+
+    matchers = {
+        "is_platform_BS5": {
+            "platform": {
+                "$regex": r"^RT-BS5"
+            }
+        },
+        "is_platform_BS24": {
+            "platform": {
+                "$regex": r"^RT-BS24"
+            }
+        }
+    }
