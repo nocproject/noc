@@ -26,6 +26,7 @@ from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.debug import error_report
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
@@ -541,13 +542,29 @@ class DiscoveryCheck(object):
         name = mo.get_profile().convert_interface_name(name)
         self.logger.debug("Searching port by name: %s:%s", mo.name, name)
         key = (mo, name)
-        if key not in self.if_name_cache:
-            i = Interface.objects.filter(
-                managed_object=mo,
-                name=name
-            ).first()
-            self.if_name_cache[key] = i
-        return self.if_name_cache[key]
+        # Try check interface name
+        try:
+            if key not in self.if_name_cache:
+                i = Interface.objects.filter(
+                    managed_object=mo,
+                    name=name
+                ).first()
+                if i:
+                    self.if_name_cache[key] = i
+                for p in mo.get_profile().get_interface_names(name):
+                    i = Interface.objects.filter(
+                        managed_object=mo.id, name=p).first()
+                    if i:
+                        self.if_name_cache[key] = i
+            return self.if_name_cache[key]
+        except InterfaceTypeError:
+            pass
+        # Unable to decode
+        self.logger.info(
+            "Unable to decode name port id %s at %s",
+            name, mo
+        )
+        return None
 
     def get_interface_by_mac(self, mac, mo=None):
         """
@@ -763,13 +780,21 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         remote_object, remote_interface
                     )
                 continue
+            # Resolve local interface name
+            lli = self.get_interface_by_name(mo=self.object, name=li)
+            if not lli:
+                problems[li] = "Cannot resolve local interface %s:%r. Skipping" % (self.object, li)
+                self.logger.info(
+                    "Cannot resolve local interface %s:%r. Skipping",
+                    self.object, li
+                )
             # Submitting candidates
             self.logger.info(
                 "Link candidate: %s:%s - %s:%s",
-                self.object.name, li,
+                self.object.name, lli.name,
                 remote_object.name, remote_interface
             )
-            candidates[remote_object].add((li, remote_interface))
+            candidates[remote_object].add((lli.name, remote_interface))
 
         # Checking candidates from remote side
         for remote_object in candidates:
