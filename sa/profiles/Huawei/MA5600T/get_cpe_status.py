@@ -28,32 +28,6 @@ class Script(BaseScript):
         "offline": "inactive",  # disassociating
     }
 
-    def update_dict(self, s, d):
-        for k in d:
-            if k in s:
-                s[k] += d[k]
-            else:
-                s[k] = d[k]
-
-    def parse_table1(self, table, header):
-        r = []
-        for line in table.splitlines():
-            # parse table row
-            i = 0
-            field = {}
-            for num in sorted(header):
-                # Shift column border
-                left = i
-                right = num
-                v = line[left:right].strip()
-                field[header[num]] = [v] if v else []
-                i = num
-            if not field[header[min(header)]]:
-                self.update_dict(r[-1], field)
-            else:
-                r += [field]
-        return r
-
     def execute_cli(self, **kwargs):
         r = {}
         # v = self.cli("display ont info 0 all")
@@ -68,7 +42,7 @@ class Script(BaseScript):
                     parts = parts[2:]
                     head = parse_table_header(header.splitlines())
                     del head[2]  # remove empty header
-                    tables_data += self.parse_table1(body, head)
+                    tables_data += self.profile.parse_table1(body, head)
                 else:
                     pass
                     # summary = parts
@@ -78,11 +52,26 @@ class Script(BaseScript):
                         if ont_id in r:
                             r[ont_id]["description"] = t["Description"][0]
                         continue
-                    ont_id, serial = t["ONT ID"][0].split()
+                    status = "other"
+                    if "ONT ID" in t:
+                        ont_id, serial = t["ONT ID"][0].split()
+                        status = self.status_map[t["Run state"][0]]
+                    elif "ONT" in t:
+                        #  -----------------------------------------------------------------------------
+                        #  F/S/P   ONT         SN         Control     Run      Config   Match    Protect
+                        #                       ID                     flag        state    state    state    side
+                        #  -----------------------------------------------------------------------------
+                        #
+                        self.logger.warning("Shift header row. %s" % header)
+                        ont_id, serial = t["ONT"][0].split()
+                        status = self.status_map[t["Run ID"][0]]
+                    # else:
+                    #    self.logger.warning("Unknown ID")
+                    #    continue
                     ont_id = "%s/%s" % (t["F/S/P"][0].replace(" ", ""), ont_id)
                     r[ont_id] = {
                         "interface": t["F/S/P"][0].replace(" ", ""),
-                        "status": self.status_map[t["Run state"][0]],
+                        "status": status,
                         "id": ont_id,
                         "global_id": serial + t["SN"][0],
                         "type": "ont",
