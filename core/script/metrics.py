@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Varios metric converting functions
+# Various metric converting functions
 # to use in get_metrics scripts
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
 # Python modules
 from functools import reduce
 
@@ -75,3 +76,19 @@ def invert0(x):
     Invert 0 -> 1 if OK = 0, FALSE > 1
     """
     return 0 if x > 0 else 1
+
+
+def scale(n):
+    """
+    High-order function to scale result to arbitrary value.
+
+    f = scale(10)
+    f(5) -> 50
+
+    :param x: Scaling factor
+    :return: Callable, performing scaling
+    """
+    def inner(v):
+        return v * n
+
+    return inner
