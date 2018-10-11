@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import operator
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.sa.models.service import Service
 from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm

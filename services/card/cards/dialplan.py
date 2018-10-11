@@ -6,8 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.phone.models.dialplan import DialPlan
 from noc.phone.models.phonerange import PhoneRange
 

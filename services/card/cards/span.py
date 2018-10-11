@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 import datetime
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.core.clickhouse.connect import connection
 
 
