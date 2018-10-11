@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_summary_split = re.compile(r"^Device ID.+?\n",
                                   re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(
-        r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[\d/\.]*)\s+.+$")
+        r"^[\S+\s]*(?P<local_if>(?:Fa|Gi|Te)\d+[\d/\.]*)\s+.+$")
     rx_chassis_id = re.compile(
         r"^Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_remote_port = re.compile(
