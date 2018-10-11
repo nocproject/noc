@@ -214,8 +214,11 @@ class Script(BaseScript):
                     elif proto == "aenet":
                         # Aggregated
                         match = self.rx_log_ae.search(p)
-                        bundle = match.group("bundle")
-                        iface["aggregated_interface"] = bundle
+                        if not match:
+                            iface["aggregated_interface"] = "reth"
+                        else:
+                            bundle = match.group("bundle")
+                            iface["aggregated_interface"] = bundle
                     elif (
                         proto.lower() == "eth-switch" or
                         proto.lower() == "multiservice"
