@@ -41,6 +41,8 @@ class ReportFilterApplication(SimpleReport):
     def get_data(self, request, report_type=None, **kwargs):
 
         columns, columns_desr = [], []
+        sc_code = ["1.1", "1.2", "1.2.1", "1.2.1.1", "1.2.2", "1.2.2.1", "1.2.2.2",
+                   "1.2.2.2.1", "1.2.2.2.2", "1.2.2.2.2.1"]
         r_map = [
             (_("Not Managed"), "1is1"),
             (_("Is Managed"), "2is1"),
@@ -79,12 +81,19 @@ class ReportFilterApplication(SimpleReport):
                 m += [len(result[col.strip()].intersection(moss))]
                 summary[col] += m[-1]
             data += [SectionRow(name=p.name)]
-            data += [(x, y, self.calc_percent(x, y), url % (columns[columns_desr.index(x)], p.name))
-                     for x, y in zip(columns_desr, m)]
+            data += [(sc, x, y, self.calc_percent(x, y), url % (columns[columns_desr.index(x)], p.name))
+                     for sc, x, y in zip(sc_code, columns_desr, m)]
+            data += [("1.2.2.2.2.2", _("Is Managed, objects not processed yet"), 0, "")]
         data += [SectionRow(name="Summary")]
         summary = [summary[k] for k in columns]
-        data += [(x, y, self.calc_percent(x, y), url % (columns[columns_desr.index(x)], ""))
-                 for x, y in zip(columns_desr, summary)]
-        columns = ["ID", "Value", "Percent", TableColumn(_("Detail"), format="url")]
+        data += [(sc, x, y, self.calc_percent(x, y), url % (columns[columns_desr.index(x)], ""))
+                 for sc, x, y in zip(sc_code, columns_desr, summary)]
+        data += [("1.2.2.2.2.2", _("Is Managed, objects not processed yet"), 0, "")]
+        # columns = ["ID", "Value", "Percent", TableColumn(_("Detail"), format="url")]
+        columns = [_("PP"),
+                   _("Status"),
+                   _("Quantity"),
+                   _("Percent"),
+                   TableColumn(_("Detail"), format="url")]
 
-        return self.from_dataset(title=self.title, columns=columns, data=data, enumerate=True)
+        return self.from_dataset(title=self.title, columns=columns, data=data)
