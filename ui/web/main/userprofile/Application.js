@@ -34,19 +34,6 @@ Ext.define("NOC.main.userprofile.Application", {
             labelWidth: lw,
             allowBlank: false
         });
-        me.themeField = Ext.create('Ext.form.ComboBox', {
-            fieldLabel: __("Theme"),
-            labelWidth: lw,
-            store: {
-                data: [
-                    {"abbr": "gray", "name": "Classic Gray"},
-                    {"abbr": "noc", "name": "NOC Theme"}
-                ]
-            },
-            queryMode: 'local',
-            displayField: 'name',
-            valueField: 'abbr'
-        });
         me.groupsField = Ext.create("Ext.form.field.Display", {
             fieldLabel: __("Groups"),
             labelWidth: lw
@@ -152,7 +139,6 @@ Ext.define("NOC.main.userprofile.Application", {
                         me.nameField,
                         me.emailField,
                         me.languageField,
-                        me.themeField,
                         {
                             xtype: "fieldset",
                             title: __("Notification Contacts"),
@@ -209,7 +195,6 @@ Ext.define("NOC.main.userprofile.Application", {
         me.nameField.setValue(data.name);
         me.emailField.setValue(data.email);
         me.languageField.setValue(data.preferred_language);
-        me.themeField.setValue(data.theme);
         me.groupsField.setRawValue((data.groups || []).join(", "));
         me.contactsStore.loadData(data.contacts);
     },
@@ -218,7 +203,6 @@ Ext.define("NOC.main.userprofile.Application", {
         var me = this,
             data = {
                 preferred_language: me.languageField.getValue(),
-                theme: me.themeField.getValue(),
                 contacts: me.contactsStore.data.items.map(function(x) {
                     return x.data
                 })
