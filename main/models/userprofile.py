@@ -62,7 +62,7 @@ class UserProfile(models.Model):
             ("gray", "Classic Gray"),
             ("noc", "NOC Theme")
         ],
-        default="gray"
+        default=settings.THEME
     )
     # Heatmap position
     heatmap_lon = models.FloatField("Longitude", blank=True, null=True)

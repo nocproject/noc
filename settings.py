@@ -150,6 +150,7 @@ THEMES = [
     ("noc", _("NOC Theme")),
     ("gray", _("Classic gray"))
 ]
+THEME = config.theme
 
 LOCALE_PATHS = ["locale"]
 
