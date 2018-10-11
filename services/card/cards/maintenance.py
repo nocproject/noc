@@ -7,11 +7,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 # Third-party modules
 import jinja2
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.servicesummary import ServiceSummary
 

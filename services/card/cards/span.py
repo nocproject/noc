@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 import datetime
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.core.clickhouse.connect import connection
 
 
@@ -27,9 +28,9 @@ class Span(object):
         self.duration = int(duration)
         self.sample = int(sample)
         self.error_code = error_code
-        self.error_text = error_text
-        self.in_label = in_label
-        self.out_label = out_label
+        self.error_text = error_text.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
+        self.in_label = in_label.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
+        self.out_label = out_label.replace("\\r", "<br>").replace("\\n", "<br>").replace('\\', '')
         self.children = []
         self.level = 0
         self.left = 0

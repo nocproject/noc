@@ -2,16 +2,18 @@
 # ---------------------------------------------------------------------
 # Object card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
 import datetime
 import operator
 import itertools
 from collections import defaultdict
-from base import BaseCard
+from .base import BaseCard
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -22,7 +24,7 @@ from noc.core.perf import metrics
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.clickhouse.connect import connection
-from noc.sa.models.useraccess import UserAccess
+
 
 class ObjectCard(BaseCard):
     name = "object"
@@ -57,7 +59,7 @@ class ObjectCard(BaseCard):
                 metrics["error", ("type", "no_such_object")] += 1
                 break
 
-         # Get children
+        # Get children
         children = []
         for o in ManagedObject.objects.filter(container=self.object.id):
             # Alarms
@@ -201,7 +203,7 @@ class ObjectCard(BaseCard):
                          table,
                          from_date.date().isoformat(), from_date.isoformat(sep=" "),
                          ", ".join(bi_map))
-            #print SQL
+            # print SQL
             for result in ch.execute(post=SQL):
                 mo_bi_id, ts = result[:2]
                 mo = bi_map.get(mo_bi_id)
@@ -212,22 +214,4 @@ class ObjectCard(BaseCard):
                     metric_map[mo]["object"][f_name] = r
                     last_ts[mo] = max(ts, last_ts.get(mo, ts))
                     i += 1
-        return metric_map
-        SQL = """SELECT managed_object, argMax(ts, ts), argMax(temperature, ts) as temperature
-                FROM environment
-                WHERE
-                  date >= toDate('%s')
-                  AND ts >= toDateTime('%s')
-                  AND managed_object IN (%s)
-                GROUP BY managed_object
-                """ % (from_date.date().isoformat(), from_date.isoformat(sep=" "),
-                       ", ".join(bi_map))
-
-        for mo_bi_id, ts, temperature in ch.execute(post=SQL):
-            mo = bi_map.get(mo_bi_id)
-            if mo:
-                mtable += [[mo, ts, temperature]]
-                metric_map[mo]["temperature"] = temperature
-                last_ts[mo] = max(ts, last_ts.get(mo, ts))
-
         return metric_map

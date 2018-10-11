@@ -6,10 +6,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import ujson
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.topology.path import get_shortest_path
 

@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 import itertools
 from collections import defaultdict
@@ -17,7 +18,7 @@ from pymongo import ReadPreference
 # import geojson
 # import random
 # NOC modules
-from noc.services.card.cards.base import BaseCard
+from .base import BaseCard
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 from noc.maintenance.models.maintenance import Maintenance

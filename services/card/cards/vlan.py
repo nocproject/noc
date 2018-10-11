@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from collections import defaultdict
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.vlan import VLAN

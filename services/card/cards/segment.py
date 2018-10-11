@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
