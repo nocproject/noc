@@ -58,10 +58,7 @@ class UserProfile(models.Model):
     theme = models.CharField(
         "UI Theme",
         max_length=10,
-        choices=[
-            ("gray", "Classic Gray"),
-            ("noc", "NOC Theme")
-        ],
+        choices=settings.THEMES,
         default=settings.THEME
     )
     # Heatmap position
