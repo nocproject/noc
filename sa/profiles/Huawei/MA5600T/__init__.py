@@ -100,3 +100,32 @@ class Profile(BaseProfile):
         if self.rx_port_name.match(interface):
             return self.rx_port_name.findall(interface)[0][1]
         return interface
+
+    @staticmethod
+    def update_dict(s, d):
+        for k in d:
+            if k in s:
+                s[k] += d[k]
+            else:
+                s[k] = d[k]
+
+    def parse_table1(self, table, header):
+        r = []
+        for line in table.splitlines():
+            # parse table row
+            if len(line) - len(line.lstrip()) - 2:
+                line = line[len(line) - len(str.lstrip(line)) - 2:]
+            i = 0
+            field = {}
+            for num in sorted(header):
+                # Shift column border
+                left = i
+                right = num
+                v = line[left:right].strip()
+                field[header[num]] = [v] if v else []
+                i = num
+            if not field[header[min(header)]]:
+                self.update_dict(r[-1], field)
+            else:
+                r += [field]
+        return r
