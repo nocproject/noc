@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Object card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -215,23 +215,3 @@ class ObjectCard(BaseCard):
                     last_ts[mo] = max(ts, last_ts.get(mo, ts))
                     i += 1
         return metric_map
-        """
-        SQL = """"""SELECT managed_object, argMax(ts, ts), argMax(temperature, ts) as temperature
-                FROM environment
-                WHERE
-                  date >= toDate('%s')
-                  AND ts >= toDateTime('%s')
-                  AND managed_object IN (%s)
-                GROUP BY managed_object
-                """""" % (from_date.date().isoformat(), from_date.isoformat(sep=" "),
-                       ", ".join(bi_map))
-
-        for mo_bi_id, ts, temperature in ch.execute(post=SQL):
-            mo = bi_map.get(mo_bi_id)
-            if mo:
-                mtable += [[mo, ts, temperature]]
-                metric_map[mo]["temperature"] = temperature
-                last_ts[mo] = max(ts, last_ts.get(mo, ts))
-
-        return metric_map
-        """
