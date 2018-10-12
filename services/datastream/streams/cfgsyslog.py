@@ -34,14 +34,12 @@ class CfgSyslogDataStream(DataStream):
         event_processing_policy = str(event_processing_policy)
         mop_event_processing_policy = str(mop_event_processing_policy)
         effective_epp = event_processing_policy == "E" or (
-                event_processing_policy == "P" and mop_event_processing_policy == "E"
-        )
+            event_processing_policy == "P" and mop_event_processing_policy == "E")
         # Get effective event archiving policy
         syslog_archive_policy = str(syslog_archive_policy)
         mop_syslog_archive_policy = str(mop_syslog_archive_policy)
         effective_sap = syslog_archive_policy == "E" or (
-                syslog_archive_policy == "P" and mop_syslog_archive_policy == "E"
-        )
+            syslog_archive_policy == "P" and mop_syslog_archive_policy == "E")
         # Check syslog events may be processed
         if not effective_epp and not effective_sap:
             raise KeyError()
