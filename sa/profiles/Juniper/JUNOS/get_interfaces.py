@@ -214,9 +214,7 @@ class Script(BaseScript):
                     elif proto == "aenet":
                         # Aggregated
                         match = self.rx_log_ae.search(p)
-                        if not match:
-                            iface["aggregated_interface"] = "reth"
-                        else:
+                        if match:
                             bundle = match.group("bundle")
                             iface["aggregated_interface"] = bundle
                     elif (
