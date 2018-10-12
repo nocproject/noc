@@ -11,6 +11,7 @@ Ext.define("NOC.core.Application", {
     layout: "fit",
     permissions: {},  // User permissions
     navTooltipTemplate: undefined,
+    themeBodyPadding: 4,
 
     constructor: function(options) {
         var me = this;

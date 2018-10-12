@@ -696,7 +696,7 @@ Ext.define("NOC.core.ModelApplication", {
                 layout: me.formLayout,
                 border: true,
                 padding: 4,
-                bodyPadding: 4,
+                bodyPadding: me.themeBodyPadding,
                 autoScroll: true,
                 defaults: {
                     anchor: "100%",
@@ -1696,7 +1696,7 @@ Ext.define("NOC.core.ModelApplication", {
 
         form = Ext.create("Ext.form.Panel", {
             padding: 4,
-            bodyPadding: 4,
+            bodyPadding: me.themeBodyPadding,
             autoScroll: true,
             listeners: {
                 dirtychange: function(form, dirty) {
