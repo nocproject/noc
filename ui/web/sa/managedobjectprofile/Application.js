@@ -524,6 +524,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     fieldLabel: __("Alarm Weight"),
                                     allowBlank: false,
                                     uiStyle: "small"
+                                },
+                                {
+                                    name: "syslog_archive_policy",
+                                    xtype: "combobox",
+                                    labelWidth: 150,
+                                    fieldLabel: __("Syslog Archive Policy"),
+                                    store: [
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "D",
+                                    allowBlank: false,
+                                    uiStyle: "medium"
                                 }
                             ]
                         },

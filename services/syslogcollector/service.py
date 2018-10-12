@@ -9,6 +9,7 @@
 
 # Python modules
 import socket
+import datetime
 from collections import defaultdict, namedtuple
 # Third-party modules
 import tornado.ioloop
@@ -21,11 +22,11 @@ from noc.core.perf import metrics
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 
-SourceConfig = namedtuple("SourceConfig", ["id", "addresses"])
+SourceConfig = namedtuple("SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events"])
 
 
 class SyslogCollectorService(Service):
-    name = "syslogcollector"    #
+    name = "syslogcollector"
     leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
     require_nsq_writer = True
@@ -94,21 +95,34 @@ class SyslogCollectorService(Service):
             return None
         return cfg
 
-    def register_message(self, object, timestamp, message,
+    def register_message(self, cfg, timestamp, message,
                          facility, severity):
         """
         Spool message to be sent
         """
-        metrics["events_out"] += 1
-        self.messages += [{
-            "ts": timestamp,
-            "object": object,
-            "data": {
-                "source": "syslog",
-                "collector": config.pool,
-                "message": message
-            }
-        }]
+        if cfg.process_events:
+            # Send to classifier
+            metrics["events_out"] += 1
+            self.messages += [{
+                "ts": timestamp,
+                "object": cfg.id,
+                "data": {
+                    "source": "syslog",
+                    "collector": config.pool,
+                    "message": message
+                }
+            }]
+        if cfg.archive_events and cfg.bi_id:
+            # Archive message
+            metrics["events_archived"] += 1
+            now = datetime.datetime.now()
+            date = now.strftime("%Y-%m-%d")
+            ts = now.strftime("%Y-%m-%d %H:%M:%S")
+            msg = message.replace("\t", "\\t").replace("\n", "\\n")
+            self.register_metrics(
+                "syslog.date.ts.managed_object.facility.severity.message",
+                ["%s.%s.%s.%d.%d.%s" % (date, ts, cfg.bi_id, facility, severity, msg)]
+            )
 
     @tornado.gen.coroutine
     def send_messages(self):
@@ -165,7 +179,13 @@ class SyslogCollectorService(Service):
         else:
             old_addresses = set()
         # Build new config
-        cfg = SourceConfig(data["id"], tuple(data["addresses"]))
+        cfg = SourceConfig(
+            data["id"],
+            tuple(data["addresses"]),
+            data.get("bi_id"),  # For backward compatibility
+            data.get("process_events", True),  # For backward compatibility
+            data.get("archive_events", False)
+        )
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:

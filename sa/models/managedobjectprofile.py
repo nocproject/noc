@@ -391,7 +391,6 @@ class ManagedObjectProfile(models.Model):
         ],
         default="E"
     )
-    #
     # Raise alarms on discovery problems
     box_discovery_alarm_policy = models.CharField(
         "Box Discovery Alarm Policy",
@@ -465,6 +464,16 @@ class ManagedObjectProfile(models.Model):
             ("D", "Drop events")
         ],
         default="E"
+    )
+    # Collect and archive syslog events
+    syslog_archive_policy = models.CharField(
+        "SYSLOG Archive Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="D"
     )
     # Cache protocol neighbors up to *neighbor_cache_ttl* seconds
     # 0 - disable cache

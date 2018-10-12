@@ -459,6 +459,17 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Collect and archive syslog events
+    syslog_archive_policy = CharField(
+        "SYSLOG Archive Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "Profile")
+        ],
+        default="P"
+    )
     # Resource groups
     static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)

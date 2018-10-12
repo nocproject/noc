@@ -875,7 +875,20 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Trap Source IP"),
                                     allowBlank: true,
                                     groupEdit: true
-                                }]
+                                },
+                                {
+                                    name: "syslog_archive_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Syslog Archive Policy"),
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    allowBlank: false,
+                                    groupEdit: true
+                                }
+                            ]
                         }, {
                             xtype: "container",
                             items: [
@@ -914,7 +927,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Trap Community"),
                                     allowBlank: true,
                                     groupEdit: true
-                                }]
+                                }
+                            ]
                         }
                     ]
                 },
