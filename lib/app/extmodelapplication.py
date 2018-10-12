@@ -569,7 +569,7 @@ class ExtModelApplication(ExtApplication):
                 Tag.register_tag(t, repr(self.model))
         # Update attributes
         for k, v in attrs.items():
-            if k in self.secret_fields and "secret" not in self.effective_permission():
+            if self.secret_fields and k in self.secret_fields and "secret" not in self.effective_permission():
                 continue
             setattr(o, k, v)
         # Run models validators
