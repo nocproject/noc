@@ -70,6 +70,8 @@ class ReportFilterApplication(SimpleReport):
             "Remote error code 1": "Adapter failed"}
 
         decode, message = None, ""
+        if not problems:
+            return message
         for index, message in enumerate(problems):
             if not message:
                 continue
