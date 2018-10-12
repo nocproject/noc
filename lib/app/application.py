@@ -517,7 +517,10 @@ class Application(object):
         user_perms = Permission.get_effective_permissions(user)
         # Leave only application permissions
         # and strip <module>:<app>:
-        app_perms = [p[lps:] for p in user_perms & self.get_permissions()]
+        if user.is_superuser:
+            app_perms = [p[lps:] for p in self.get_permissions()]
+        else:
+            app_perms = [p[lps:] for p in user_perms & self.get_permissions()]
         self._effective_permission = set(app_perms)
 
     def user_access_list(self, user):
