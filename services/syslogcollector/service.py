@@ -121,7 +121,7 @@ class SyslogCollectorService(Service):
             msg = message.replace("\t", "\\t").replace("\n", "\\n")
             self.register_metrics(
                 "syslog.date.ts.managed_object.facility.severity.message",
-                ["%s.%s.%s.%d.%d.%s" % (date, ts, cfg.bi_id, facility, severity, msg)]
+                [str("%s\t%s\t%s\t%d\t%d\t%s" % (date, ts, cfg.bi_id, facility, severity, msg))]
             )
 
     @tornado.gen.coroutine
