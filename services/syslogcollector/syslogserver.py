@@ -10,6 +10,7 @@
 import logging
 import time
 # NOC modules
+from noc.config import config
 from noc.core.perf import metrics
 from noc.core.ioloop.udpserver import UDPServer
 
@@ -20,6 +21,12 @@ class SyslogServer(UDPServer):
     def __init__(self, service, io_loop=None):
         super(SyslogServer, self).__init__(io_loop)
         self.service = service
+
+    def enable_reuseport(self):
+        return config.syslogcollector.enable_reuseport
+
+    def enable_freebind(self):
+        return config.syslogcollector.enable_freebind
 
     def on_read(self, data, address):
         metrics["syslog_msg_in"] += 1
