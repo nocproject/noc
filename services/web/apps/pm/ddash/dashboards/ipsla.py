@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # IPSLA's dynamic dashboard
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
+# Python modules
+from __future__ import absolute_import
+# Third-Party modules
 import demjson
 from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
+# NOC modules
+from .base import BaseDashboard
+from sla.models.slaprobe import SLAProbe
 from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
-
-# NOC modules
-from base import BaseDashboard
-from sla.models.slaprobe import SLAProbe
 
 
 class IPSLADashboard(BaseDashboard):

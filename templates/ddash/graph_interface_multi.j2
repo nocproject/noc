@@ -1,0 +1,100 @@
+{% macro interface(interface, lindex) -%}
+{
+  "title": "${{interface.type}}",
+  "aliasColors": {},
+  "bars": false,
+  "internal_comment":"graph_interface_multi.j2",
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": {{lindex + 100}},
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "minSpan": 6,
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "repeat": "{{interface.type}}",
+  "scopedVars": {
+    "{{interface.type}}": {
+      "selected": true,
+      "text": "{{interface.ports[0].name}}({{interface.ports[0].descr}})",
+      "value": "{{interface.ports[0].name}}"
+    }
+  },
+  "seriesOverrides": [
+    {
+      "alias": "/.*Input/i",
+      "transform": "negative-Y"
+    }
+  ],
+  "span": 12,
+  "stack": true,
+  "steppedLine": false,
+  "targets": [
+    {
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(packets_in) as Input, avg(broadcast_in) as `Broadcast Input`, avg(multicast_in) as `Multicast Input`, avg(packets_out) as Output, avg(broadcast_out) as `Broadcast Output`, avg(multicast_out) as `Multicast Output` FROM $table WHERE managed_object = $bi_id and path[4]=toString(${{interface.type}}) and $timeFilter GROUP BY t ORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "interface",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "individual"
+  },
+  "type": "graph",
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "format": "pps",
+      "label": "packets/s",
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    },
+    {
+      "logBase": 1,
+      "show": true,
+      "max": null,
+      "format": "short",
+      "min": null,
+      "label": null
+    }
+  ]
+}
+{%- endmacro %}

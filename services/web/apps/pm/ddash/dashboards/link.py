@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Link's dynamic dashboard
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
+# Python modules
+from __future__ import absolute_import
+# Third-Party modules
 import demjson
 from jinja2 import Environment, FileSystemLoader
+# NOC modules
+from .base import BaseDashboard
 from noc.config import config
 from noc.inv.models.link import Link
-
-# NOC modules
-from base import BaseDashboard
 
 
 class LinkDashboard(BaseDashboard):

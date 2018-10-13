@@ -6,13 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+
+# Python modules
+from __future__ import absolute_import
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from dashboards.base import BaseDashboard
-from dashboards.mo import MODashboard
-from dashboards.link import LinkDashboard
-from dashboards.ipsla import IPSLADashboard
-from dashboards.container import ContainerDashboard
+from .dashboards.base import BaseDashboard
+from .dashboards.mo import MODashboard
+from .dashboards.link import LinkDashboard
+from .dashboards.ipsla import IPSLADashboard
+from .dashboards.container import ContainerDashboard
 from noc.core.translation import ugettext as _
 
 
@@ -37,8 +40,9 @@ class DynamicDashboardApplication(ExtApplication):
         if not dt:
             return self.response_not_found("Dashboard not found")
         oid = request.GET.get("id")
+        extra_template = request.GET.get("extra_template")
         try:
-            dashboard = dt(oid)
+            dashboard = dt(oid, extra_template)
         except BaseDashboard.NotFound:
             return self.response_not_found("Object not found")
         return dashboard.render()
