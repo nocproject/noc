@@ -69,6 +69,17 @@
       "url": "/ui/grafana/render/dashboard/script/noc.js?width=1800&dashboard=mo&id={{device_id}}"
     },
     {
+      "icon": "doc",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": true,
+      "type": "link",
+      "title": {%if extra_template == "iface" %}"Standart View"{% else %}"PacketsView"{% endif %},
+      "tooltip": {%if extra_template == "iface"%}"Interface by Load"{% else %}"Interface by Packets"{% endif %},
+      "url": "/ui/grafana/dashboard/script/noc.js?width=1800&dashboard=mo{%if extra_template %}{% else %}&extra_template=iface{% endif %}&id={{device_id}}"
+    },
+    {
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
@@ -120,7 +131,7 @@
               "title": "{{port.name}}",
               "internal_comment": "port_row",
               "panels": [
-                {% from "graph_interface_load.j2" import interface -%}
+                {%if extra_template == "iface" %}{% from "graph_interface_multi.j2" import interface -%}{% else %}{% from "graph_interface_load.j2" import interface -%}{% endif %}
                 {{interface(port, loop.index)}}
               ]
             }

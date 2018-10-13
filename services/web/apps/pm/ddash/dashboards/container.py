@@ -7,16 +7,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
+# Python modules
+from __future__ import absolute_import
+# Third-Party modules
 import demjson
-
 from jinja2 import Environment, FileSystemLoader
+# NOC modules
+from .base import BaseDashboard
 from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.object import Object
-
-# NOC modules
-from base import BaseDashboard
 
 
 class ContainerDashboard(BaseDashboard):
