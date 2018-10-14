@@ -25,6 +25,12 @@ class TrapServer(UDPServer):
         super(TrapServer, self).__init__(io_loop)
         self.service = service
 
+    def enable_reuseport(self):
+        return config.trapcollector.enable_reuseport
+
+    def enable_freebind(self):
+        return config.trapcollector.enable_freebind
+
     def on_read(self, data, address):
         metrics["trap_msg_in"] += 1
         cfg = self.service.lookup_config(address[0])
