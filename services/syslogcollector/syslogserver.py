@@ -43,7 +43,7 @@ class SyslogServer(UDPServer):
         ts = int(time.time())
         #
         self.service.register_message(
-            cfg.id, ts, data,
+            cfg, ts, data,
             facility=priority >> 3,
             severity=priority & 7
         )

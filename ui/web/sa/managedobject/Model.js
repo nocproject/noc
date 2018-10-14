@@ -340,6 +340,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: "P"
         },
         {
+            name: "syslog_archive_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
             name: "box_discovery_alarm_policy",
             type: "string",
             defaultValue: "P"

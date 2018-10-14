@@ -537,6 +537,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "syslog_archive_policy",
+            type: "string",
+            defaultValue: "D"
+        },
+        {
             name: "neighbor_cache_ttl",
             type: "int",
             defaultValue: 0
