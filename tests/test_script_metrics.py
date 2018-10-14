@@ -10,7 +10,8 @@
 import pytest
 # NOC modules
 from noc.core.script.metrics import (
-    percent, percent_invert, percent_usage, convert_percent_str, sum, subtract, is1, invert0
+    percent, percent_invert, percent_usage, convert_percent_str, sum, subtract, is1, invert0,
+    scale
 )
 
 
@@ -75,3 +76,14 @@ def test_is1(value, expected):
 @pytest.mark.parametrize("value,expected", [(-1, 1), (0, 1), (1, 0)])
 def test_invert0(value, expected):
     assert invert0(value) == expected
+
+
+@pytest.mark.parametrize("sf,value,expected", [
+    (1, 1, 1),
+    (0, 1, 0),
+    (10, 5, 50),
+    (8, 0.25, 2.0)
+])
+def test_scale(sf, value, expected):
+    f = scale(sf)
+    assert f(value) == expected
