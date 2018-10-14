@@ -148,7 +148,12 @@ def snmp_get(address, oids, port=161,
     else:
         oid = None
         if resp.error_index and resp.varbinds:
-            oid = resp.varbinds[resp.error_index - 1][0]
+            if resp.error_index & 0x8000:
+                # Some broken SNMP servers (i.e. Huawei) returns
+                # negative error index. Try to negotiate silently
+                oid = resp.varbinds[65536 - resp.error_index][0]
+            else:
+                oid = resp.varbinds[resp.error_index - 1][0]
         logger.debug("[%s] SNMP error: %s %s",
                      address, oid, resp.error_status)
         raise SNMPError(code=resp.error_status, oid=oid)
