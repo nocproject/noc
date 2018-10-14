@@ -36,7 +36,7 @@ class Script(BaseScript):
                 return {
                     "vendor": "Allied Telesis",
                     "platform": pl,
-                    "version": string.lstrip(ver, "v"),
+                    "version": ver.lstrip("v"),
                 }
             except self.snmp.TimeOutError:
                 pass
