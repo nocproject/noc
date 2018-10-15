@@ -41,7 +41,7 @@ class Script(BaseScript):
             "version": version,
             "attributes": {
                 "HW version": hardware,
-                "Serial Number": sn,
+                "Serial Number": sn
                 }
         }
         return r
