@@ -1,0 +1,8 @@
+{
+    "name": "Vector",
+    "uuid": "bafa7a71-80ee-4ca6-8625-8f2f23bc7244",
+    "code": "VECTOR",
+    "site": "https://www.vectorsolutions.net/",
+    "aliases": [],
+    "$collection": "inv.vendors"
+}
