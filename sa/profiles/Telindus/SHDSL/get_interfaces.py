@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Telindus.SHDSL.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
@@ -48,7 +49,9 @@ class Script(BaseScript):
                             "Ignoring unknown interface type: '%s", iftype
                         )
                         continue
-                    mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6." + str(i))
+                    s = self.snmp.get("1.3.6.1.2.1.2.2.1.6." + str(i))
+                    if s:
+                        mac = MACAddressParameter().clean(s)
                     astat = self.snmp.get("1.3.6.1.2.1.2.2.1.7." + str(i))
                     if astat == 1:
                         a_stat = True
