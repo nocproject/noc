@@ -16,7 +16,7 @@ from noc.ip.models.address import Address
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.lib.validators import is_fqdn
-from noc.core.ip import IP
+from noc.core.ip import IP, IPv4, PrefixDB
 
 
 DiscoveredAddress = namedtuple("DiscoveredAddress", [
@@ -214,6 +214,15 @@ class AddressCheck(DiscoveryCheck):
         Return addresses from DHCP leases
         :return:
         """
+        def get_vpn_id(ip):
+            try:
+                return vpn_db[IPv4(ip)]
+            except KeyError:
+                pass
+            if self.object.vrf:
+                return self.object.vrf.vpn_id
+            return GLOBAL_VRF
+
         if not self.object.object_profile.address_profile_dhcp:
             self.logger.info("Default DHCP address profile is not set. Skipping DHCP address discovery")
             return []
@@ -221,11 +230,20 @@ class AddressCheck(DiscoveryCheck):
         if "get_dhcp_binding" not in self.object.scripts:
             self.logger.info("No get_dhcp_binding script, skipping neighbor discovery")
             return []
+        # Build network -> vpn mappings
+        addresses = self.get_artefact("interface_prefix")
+        if not addresses:
+            self.logger.info("No interface_prefix artefact, skipping interface addresses")
+            return []
+        vpn_db = PrefixDB()
+        for a in addresses:
+            vpn_db[IPv4(a["address"]).first] = a["vpn_id"]
+        #
         self.logger.debug("Getting DHCP addresses")
         leases = self.object.scripts.get_dhcp_binding()
         r = [
             DiscoveredAddress(
-                vpn_id=self.object.vrf.vpn_id if self.object.vrf else GLOBAL_VRF,
+                vpn_id=get_vpn_id(a["ip"]),
                 address=a["ip"],
                 profile=self.object.object_profile.address_profile_dhcp,
                 source=SRC_DHCP,
