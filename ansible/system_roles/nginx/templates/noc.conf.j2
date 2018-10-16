@@ -268,6 +268,48 @@ server {
     }
 {% endif %}
 
+{% if 'svc-datastream-exec' in groups and groups['svc-datastream-exec'] | length > 0 %}
+
+    # datastream service api
+    location /api/datastream/ {
+        proxy_pass http://datastream;
+        auth_request /api/auth/auth/;
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
+    }
+{% endif %}
+
+{% if 'svc-nbi-exec' in groups and groups['svc-nbi-exec'] | length > 0 %}
+
+    # nbi service api
+    location /api/nbi/ {
+        proxy_pass http://nbi;
+        auth_request /api/auth/auth/;
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
+    }
+{% endif %}
+
     # Legacy django media
     location ^~ /media/ {
         alias {{ noc_root }}/django/contrib/admin/static/;

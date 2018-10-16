@@ -1,0 +1,43 @@
+---
+forms:
+  nbi:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: NBI service <br/>
+      <strong>Long description</strong>: Service for integration in external systems<br/>
+      <strong>Scale Recommendations</strong>: Two per HA installation <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/nbi/ target=_blank>NBI</a><br/>
+      <strong>Placement constraint</strong>: None<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 1
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
+
+services:
+  nbi:
+    level: global
+    category: internal
+    supervisord:
+      command: "./services/nbi/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 100
+      priority: 110
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc
