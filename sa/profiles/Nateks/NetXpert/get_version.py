@@ -49,6 +49,6 @@ class Script(BaseScript):
             "version": version,
             "attributes": {
                 "Boot PROM": bootrom,
-                "SN": sn
+                "Serial Number": sn
             }
         }
