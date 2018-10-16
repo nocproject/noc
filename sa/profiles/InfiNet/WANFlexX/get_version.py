@@ -42,6 +42,6 @@ class Script(BaseScript):
             "attributes": {
                 "HW version": hardware,
                 "Serial Number": sn
-                }
+            }
         }
         return r
