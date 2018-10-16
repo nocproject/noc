@@ -297,16 +297,14 @@ server {
         auth_request /api/auth/auth/;
         # internal;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/html text/json;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        auth_request_set $user $upstream_http_remote_user;
-        proxy_set_header Remote-User $user;
-        auth_request_set $groups $upstream_http_remote_groups;
-        proxy_set_header Remote-Groups $groups;
+        auth_request_set $apiaccess $upstream_http_x_noc_api_access;
+        proxy_set_header X-NOC-API-Access $apiaccess;
     }
 {% endif %}
 
