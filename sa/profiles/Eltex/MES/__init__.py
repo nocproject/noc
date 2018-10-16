@@ -7,8 +7,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Profile(BaseProfile):
@@ -36,7 +39,6 @@ class Profile(BaseProfile):
         r"(?:\(config[^\)]*\))?#"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
-    convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     INTERFACE_TYPES = {
         "as": "physical",    # Async
@@ -69,3 +71,23 @@ class Profile(BaseProfile):
     @classmethod
     def get_interface_type(cls, name):
         return cls.INTERFACE_TYPES.get((name[:2]).lower())
+
+    # Eltex-like translation
+    rx_eltex_interface_name = re.compile(
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
+        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)?",
+        re.IGNORECASE
+    )
+
+    def convert_interface_name(self, s):
+        """
+        >>> Profile().convert_interface_name_cisco("gi1/0/1")
+        'Gi 1/0/1'
+        >>> Profile().convert_interface_name_cisco("gi1/0/1?")
+        'Gi 1/0/1'
+        """
+        match = self.rx_eltex_interface_name.match(s)
+        if not match:
+            raise InterfaceTypeError("Invalid interface '%s'" % s)
+        return "%s %s" % (match.group("type").capitalize(),
+                          match.group("number"))
