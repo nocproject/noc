@@ -14,7 +14,7 @@
     src: "{{item.name}}"
     dest: "{{item.path}}"
     owner: "{{nginx_user}}"
-  notify: reload nginx
+r  notify: reload nginx
   with_items:
     - name: noc.conf.j2
       path: "{{ nginx_conf_path }}"

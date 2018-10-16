@@ -1,0 +1,2 @@
+{% if nbi.access_from and nbi.access_from is defined %}{% set ipadr = nbi.access_from.split(',') %}{% for ip in ipadr %}allow {{ ip }};\n{% endfor %}{% endif %}
+deny any;

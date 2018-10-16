@@ -25,6 +25,12 @@ forms:
         - warning
         - error
         - critial
+    access_from:
+      default:
+      type: text
+      label: "Allow access to service from IP:"
+      common: environment
+      description: "in CIDR notation, separated with comma"
 
 services:
   nbi:

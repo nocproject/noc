@@ -1,0 +1,2 @@
+{% if datastream.access_from and datastream.access_from is defined %}{% set ipadr = datastream.access_from.split(',') %}{% for ip in ipadr %}allow {{ ip }};\n{% endfor %}{% endif %}
+deny any;
