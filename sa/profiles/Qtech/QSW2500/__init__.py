@@ -11,6 +11,7 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.lib.validators import is_int
 
 
 class Profile(BaseProfile):
@@ -49,3 +50,10 @@ class Profile(BaseProfile):
         r"^Serial number: (?P<serial>\S+)\s*\n",
         re.MULTILINE
     )
+
+    def convert_interface_name(self, interface):
+        if is_int(interface):
+            return "port%s" % interface
+        elif " " in interface:
+            return interface.replace(" ", "")
+        return interface
