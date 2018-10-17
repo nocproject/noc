@@ -1,0 +1,13 @@
+{
+    "name": "Vector | Lambda | sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "337f0496-c5b7-41b2-bef5-368413141f7e",
+    "description": null,
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.11195.1",
+    "action": "match",
+    "profile__name": "Vector.Lambda"
+}
