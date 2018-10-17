@@ -274,7 +274,7 @@ server {
     location /api/datastream/ {
         proxy_pass http://datastream;
         auth_request /api/auth/auth/;
-{% if nbi_whitelist_access %}
+{% if nbi_whitelist_access | length > 0 %}
         include allow_ip_datastream.conf;
 {% endif %}
         # internal;
@@ -296,7 +296,7 @@ server {
     location /api/nbi/ {
         proxy_pass http://nbi;
         auth_request /api/auth/auth/;
-{% if nbi_whitelist_access %}
+{% if nbi_whitelist_access | length > 0 %}
         include allow_ip_nbi.conf;
 {% endif %}
         # internal;
