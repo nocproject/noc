@@ -25,7 +25,7 @@ forms:
         - warning
         - error
         - critial
-    access_from:
+    whitelist_access:
       default:
       type: text
       label: "Allow access to service from IP:"

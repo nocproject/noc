@@ -16,7 +16,7 @@ forms:
       min: 0
     mode:
       default: wait
-      label: Datastrem mode
+      label: Datastream mode
       type: list
       options:
         - pool
@@ -32,7 +32,7 @@ forms:
         - warning
         - error
         - critial
-    access_from:
+    whitelist_access:
       default:
       type: text
       label: "Allow access to service from IP:"
