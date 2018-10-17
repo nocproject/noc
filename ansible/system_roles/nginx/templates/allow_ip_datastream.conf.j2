@@ -1,7 +1,9 @@
 {% if datastream_whitelist_access and datastream_whitelist_access is defined -%}
     {%- set ipadr = datastream_whitelist_access.split(',') -%}
     {%- for ip in ipadr -%}
-        allow {{ ip }};\n
+        allow {{ ip }};
+
     {%- endfor -%}
 {%- endif %}
+
 deny any;
