@@ -27,7 +27,7 @@
     dest: "{{ nginx_conf_path }}/allow_ip_datastream.conf"
     owner: "{{nginx_user}}"
   notify: reload nginx
-  when: has_svc_datastream_whitelist_access is defined
+  when: datastream_whitelist_access is defined
   tags:
     - config
 
@@ -37,7 +37,7 @@
     dest: "{{ nginx_conf_path }}/allow_ip_nbi.conf"
     owner: "{{nginx_user}}"
   notify: reload nginx
-  when: has_svc_nbi_whitelist_access is defined
+  when: nbi_whitelist_access is defined
   tags:
     - config
 
