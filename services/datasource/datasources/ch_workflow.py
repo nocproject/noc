@@ -23,5 +23,5 @@ class CHWorkflowDataSource(BaseDataSource):
                 a.bi_id,
                 a.id,
                 a.name,
-                a.is_active
+                int(a.is_active)
             )
