@@ -27,8 +27,6 @@
     dest: "{{etc_prefix}}/nginx/allow_ip_datastream.conf"
     owner: "{{nginx_user}}"
   notify: reload nginx
-  when:
-    - datastream_whitelist_access is defined
   tags:
     - config
 
@@ -38,8 +36,6 @@
     dest: "{{etc_prefix}}/nginx/allow_ip_nbi.conf"
     owner: "{{nginx_user}}"
   notify: reload nginx
-  when:
-    - nbi_whitelist_access is defined
   tags:
     - config
 

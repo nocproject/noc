@@ -272,9 +272,7 @@ server {
     location /api/nbi/ {
         proxy_pass http://nbi;
         auth_request /api/auth/auth/;
-{% if nbi_whitelist_access | length > 2 %}
         include allow_ip_nbi.conf;
-{% endif %}
         # internal;
         gzip on;
         gzip_types text/css text/x-js text/json;
