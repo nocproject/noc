@@ -25,8 +25,11 @@ class FMObjectCollector(BaseCollector):
                 {"$group": {"_id": {"adm_path": "$adm_path", "root": "$root"}, "tags": {"$sum": 1}}}
                 ]
 
+    ping_failed_ac = AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed").id
+    discovery_failed_ac = {ac.id for ac in AlarmClass.objects.filter(name__contains="Discovery")}
+
     late_alarm_pipeline = [
-        {"$match": {"alarm_class": AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed").id}},
+        {"$match": {"alarm_class": ping_failed_ac}},
         # AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed") bson.ObjectId("5717afcdcc044b7708f53c2f")
         {"$lookup": {"from": "noc.cache.object_status",
                      "localField": "managed_object",
@@ -55,7 +58,6 @@ class FMObjectCollector(BaseCollector):
     def iter_metrics(self):
         db = get_db()
         now = time.time()
-
         yield ("fm_events_active_total", ), db.noc.events.active.estimated_document_count()
         last_event = db.noc.events.active.find_one(sort=[("timestamp", -1)])
         if last_event:
@@ -63,18 +65,22 @@ class FMObjectCollector(BaseCollector):
             yield ("fm_events_active_last_lag_seconds",), self.calc_lag(
                 time.mktime(last_event["timestamp"].timetuple()), now)
         yield ("fm_alarms_active_total", ), db.noc.alarms.active.estimated_document_count()
-        yield ("fm_alarms_archived_total", ), db.noc.alarms.active.estimated_document_count()
+        yield ("fm_alarms_archived_total", ), db.noc.alarms.archived.estimated_document_count()
         last_alarm = db.noc.alarms.active.find_one(filter={"timestamp": {"$exists": True}},
                                                    sort=[("timestamp", -1)])
         if last_alarm:
             # yield ("alarms_active_last_ts", ), time.mktime(last_alarm["timestamp"].timetuple())
             yield ("fm_alarms_active_last_lag_seconds",), self.calc_lag(
                 time.mktime(last_alarm["timestamp"].timetuple()), now)
-        late_alarm = next(db.noc.alarms.active.aggregate(self.late_alarm_pipeline))
+        late_alarm = next(db.noc.alarms.active.aggregate(self.late_alarm_pipeline), None)
+        # print(late_alarm)
         if late_alarm:
             yield ("fm_alarms_active_late_count",), late_alarm["late_alarm"]
         alarms_rooted = set()
         alarms_nroored = set()
+        alarms_ping = set()
+        alarms_discovery = set()
+        alarms_other = set()
         broken_alarms = 0
         for x in db.noc.alarms.active.find({}):
             # @todo alarm source: Ping, Discovery, Syslog, SNMPTrap
@@ -85,15 +91,26 @@ class FMObjectCollector(BaseCollector):
                 alarms_rooted.add(x["managed_object"])
             else:
                 alarms_nroored.add(x["managed_object"])
+            if x["alarm_class"] == self.ping_failed_ac:
+                alarms_ping.add(x["managed_object"])
+            elif x["alarm_class"] in self.discovery_failed_ac:
+                alarms_discovery.add(x["managed_object"])
+            else:
+                alarms_other.add(x["managed_object"])
         alarms_all = alarms_rooted.union(alarms_nroored)
-
         for pool_name, pool_mos in self.pool_mappings:
-            yield ("fm_alarms_active_pool_count",
-                   ("pool", pool_name)), len(pool_mos.intersection(alarms_all))
-            yield ("fm_alarms_active_rooted_pool_count",
-                   ("pool", pool_name)), len(pool_mos.intersection(alarms_rooted))
-            yield ("fm_alarms_active_nonrooted_pool_count",
-                   ("pool", pool_name)), len(pool_mos.intersection(alarms_nroored))
+            for ac_group, ids in [("availablility", alarms_ping),
+                                  ("discovery", alarms_discovery),
+                                  ("other", alarms_other)]:
+                yield ("fm_alarms_active_pool_count",
+                       ("pool", pool_name),
+                       ("ac_group", ac_group)), len(pool_mos.intersection(alarms_all).intersection(ids))
+                yield ("fm_alarms_active_withroot_pool_count",
+                       ("pool", pool_name),
+                       ("ac_group", ac_group)), len(pool_mos.intersection(alarms_rooted).intersection(ids))
+                yield ("fm_alarms_active_withoutroot_pool_count",
+                       ("pool", pool_name),
+                       ("ac_group", ac_group)), len(pool_mos.intersection(alarms_nroored).intersection(ids))
         yield ("alarms_active_broken_count", ), broken_alarms
 
         for shard in set(TTSystem.objects.filter(is_active=True).values_list("shard_name")):
