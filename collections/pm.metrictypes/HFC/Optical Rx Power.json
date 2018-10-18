@@ -1,5 +1,5 @@
 {
-    "name": "Optical | Rx Power",
+    "name": "HFC | Optical Rx Power",
     "$collection": "pm.metrictypes",
     "uuid": "53b27109-3deb-414b-a5a0-b2ff03f5ea52",
     "scope__name": "Object",
