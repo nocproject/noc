@@ -39,8 +39,8 @@ Ext.override(Ext.form.field.Base, {
         }
         // Apply uiStyle
         if(me.uiStyle) {
-            var style = Ext.apply({}, NOC.uiStyles[me.uiStyle] || {});
-            if(me.labelWidth && style.width && (me.labelAlign === "left" || me.labelAlign == "right")) {
+            var style = Ext.apply({}, NOC.uiStyles(me.uiStyle) || {});
+            if(me.labelWidth && style.width && (me.labelAlign === "left" || me.labelAlign === "right")) {
                 style.width += me.labelWidth;
             }
             if(style.width && me.getTriggers) {
@@ -61,13 +61,15 @@ Ext.override(Ext.form.field.Base, {
 Ext.override(Ext.tree.Column, {
     cellTpl: [
         '<tpl for="lines">',
-        '<img src="{parent.blankUrl}" class="{parent.childCls} {parent.elbowCls}-img ',
-        '{parent.elbowCls}-<tpl if=".">line<tpl else>empty</tpl>" role="presentation"/>',
+        '<div class="{parent.childCls} {parent.elbowCls}-img ',
+        '{parent.elbowCls}-<tpl if=".">line<tpl else>empty</tpl>" role="presentation">',
+        '</div>',
         '</tpl>',
 
 
-        '<img src="{blankUrl}" class="{childCls} {elbowCls}-img {elbowCls}',
-        '<tpl if="isLast">-end</tpl><tpl if="expandable">-plus {expanderCls}</tpl>" role="presentation"/>',
+        '<div class="{childCls} {elbowCls}-img {elbowCls}',
+        '<tpl if="isLast">-end</tpl><tpl if="expandable">-plus {expanderCls}</tpl>" role="presentation">',
+        '</div>',
         '<tpl if="checked !== null">',
         '<input type="button" {ariaCellCheckboxAttr}',
         ' class="{childCls} {checkboxCls}<tpl if="checked"> {checkboxCls}-checked</tpl>"/>',
@@ -77,9 +79,9 @@ Ext.override(Ext.tree.Column, {
         '<tpl if="glyphCls">' ,
             '<i class="{glyphCls}" style="font-size: 16px"></i> ',
         '<tpl else>',
-            '<img src="{blankUrl}" role="presentation" class="{childCls} {baseIconCls} ',
+            '<div role="presentation" class="{childCls} {baseIconCls} ',
             '{baseIconCls}-<tpl if="leaf">leaf<tpl else>parent</tpl> {iconCls}"',
-            '<tpl if="icon">style="background-image:url({icon})"</tpl>/>',
+            '<tpl if="icon">style="background-image:url({icon})"</tpl>></div>',
         '</tpl>',
         '<tpl if="href">',
         '<a href="{href}" role="link" target="{hrefTarget}" class="{textCls} {childCls}">{value}</a>',

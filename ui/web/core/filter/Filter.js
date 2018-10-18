@@ -30,7 +30,7 @@ Ext.define('NOC.core.filter.Filter', {
     initComponent: function() {
         this.defaults = {
             labelAlign: 'top',
-            minWidth: 270,
+            minWidth: this.minWidth - 30,
             width: '100%',
             margin: '5 10 0 18',
             uiStyle: undefined,
@@ -39,7 +39,7 @@ Ext.define('NOC.core.filter.Filter', {
         this.callParent();
     },
     scrollable: 'y',
-    minWidth: 300,
+    // minWidth: 300,
     title: __('Filter'),
     itemId: 'filterPanel',
     layout: {

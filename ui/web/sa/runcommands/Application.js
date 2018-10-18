@@ -142,8 +142,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                             scrollable: true,
                             emptyText: __('nothing checked'),
                             split: {
-                                xtype: 'splitter',
-                                width: 1
+                                xtype: 'splitter'
                             },
                             bind: {
                                 store: '{selectedStore}',

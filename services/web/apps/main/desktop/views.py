@@ -53,7 +53,7 @@ class DesktopApplication(ExtApplication):
 
     def get_language(self, request):
         """
-        Get theme for request
+        Get language for request
         """
         user = request.user
         language = config.language
@@ -93,6 +93,7 @@ class DesktopApplication(ExtApplication):
         setup = {
             "system_uuid": cp.system_uuid,
             "installation_name": config.installation_name,
+            "theme": config.web.theme,
             "logo_url": config.customization.logo_url,
             "logo_width": config.customization.logo_width,
             "logo_height": config.customization.logo_height,

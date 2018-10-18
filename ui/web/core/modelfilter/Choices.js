@@ -16,7 +16,7 @@ Ext.define("NOC.core.modelfilter.Choices", {
         me.combo = Ext.create("Ext.form.field.ComboBox", {
             fieldLabel: me.title,
             labelAlign: "top",
-            width: 180,
+            width: me.width,
             store: me.store,
             listeners: {
                 scope: me,

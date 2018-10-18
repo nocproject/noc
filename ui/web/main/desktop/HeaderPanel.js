@@ -23,13 +23,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     //split: true,
     header: false,
     app: null,
+    bodyPadding: 4,
     //
     initComponent: function() {
-        var me = this,
-            padding = 4,
-            magic = 4,
-            textHeight = 22,
-            headerHeight = padding + magic + Math.max(NOC.settings.logo_height, textHeight);
+        var me = this;
         // User menu
         me.userMenuButton = Ext.create("Ext.button.Button", {
             text: __("Anonymous"),
@@ -69,10 +66,6 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         });
         //
         Ext.apply(me, {
-            bodyPadding: padding,
-            height: headerHeight,
-            maxHeight: headerHeight,
-            minHeight: headerHeight,
             items: [
                 // NOC logo
                 Ext.create("Ext.Img",{

@@ -513,6 +513,7 @@ class Config(BaseConfig):
         ds_limit = IntParameter(default=1000)
 
     class web(ConfigSection):
+        theme = StringParameter(default="gray")
         api_row_limit = IntParameter(default=0)
         api_arch_alarm_limit = IntParameter(default=4 * 86400)
         language = StringParameter(default="en")

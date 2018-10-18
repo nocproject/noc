@@ -211,12 +211,13 @@ Ext.define("NOC.core.ModelApplication", {
                     title: __("Favorites"),
                     name: "fav_status",
                     ftype: "favorites"
-                }].concat(me.filters);
+                }].concat(me.filters),
+                baseField = Ext.create("NOC.core.modelfilter.Base");
             grid_rbar = {
                 xtype: "form",
                 autoScroll: true,
                 itemId: "filters",
-                width: 208,
+                width: baseField.width + 13,
                 title: __("Filter"),
                 padding: 4,
                 tools: [

@@ -19,6 +19,7 @@ Ext.define('NOC.core.TreePanel', {
     queryPrevLength: 0,
     itemId: 'treePanel',
     resizable: false,
+    iconWidth: 21,
 
     action: function() {
         console.error('You must declare action on item click!')
@@ -105,7 +106,7 @@ Ext.define('NOC.core.TreePanel', {
                             + value + '</b>';
                     }
                 }, {
-                    width: 21,
+                    width: this.iconWidth,
                     renderer: function() {
                         return '<i class="fa fa-location-arrow" aria-hidden="true"></i>';
                     }
@@ -146,7 +147,7 @@ Ext.define('NOC.core.TreePanel', {
                     return Ext.String.format('{0}<span style="padding-left: {1}px" title="{2}">{2}</span>', icon, padding, value);
                 }
             }, {
-                width: 21,
+                width: this.iconWidth,
                 renderer: function(value, metadata, record) {
                     if(hasChild(record.data)) {
                         return '<i class="fa fa-location-arrow" aria-hidden="true"></i>';

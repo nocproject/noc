@@ -18,7 +18,7 @@ Ext.define("NOC.core.modelfilter.Tree", {
         me.tree = Ext.create(wn, {
             labelAlign: "top",
             fieldLabel: me.title,
-            width: 180,
+            width: me.width,
             restUrl: '/' + me.lookup.replace('.', '/'),
             listeners: {
                 scope: me,

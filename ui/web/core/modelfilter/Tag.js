@@ -24,7 +24,7 @@ Ext.define("NOC.core.modelfilter.Tag", {
                     // createNewOnEnter: false,
                     // createNewOnBlur: false,
                     itemId: me.name,
-                    width: 180,
+                    width: me.width,
                     listeners: {
                         select: {
                             scope: me,
