@@ -251,7 +251,9 @@ server {
     location /api/datastream/ {
         proxy_pass http://datastream;
         auth_request /api/auth/auth/;
+{% if datastream_whitelist_access | length > 2 %}
         include allow_ip_datastream.conf;
+{% endif %}
         # internal;
         gzip on;
         gzip_types text/css text/x-js text/json;
@@ -272,7 +274,9 @@ server {
     location /api/nbi/ {
         proxy_pass http://nbi;
         auth_request /api/auth/auth/;
+{% if nbi_whitelist_access | length > 2 %}
         include allow_ip_nbi.conf;
+{% endif %}
         # internal;
         gzip on;
         gzip_types text/css text/x-js text/json;
