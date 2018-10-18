@@ -29,7 +29,7 @@
   notify: reload nginx
   when:
     - datastream_whitelist_access is defined
-    - "datastream_whitelist_access | length > 0"
+    - datastream_whitelist_access
   tags:
     - config
 
@@ -41,7 +41,7 @@
   notify: reload nginx
   when:
     - nbi_whitelist_access is defined
-    - "nbi_whitelist_access | length > 0"
+    - nbi_whitelist_access
   tags:
     - config
 
