@@ -12,7 +12,7 @@ forms:
       default: 1
       label: "Instances"
       type: int
-      max: 1
+      max: 8
       min: 0
     loglevel:
       default: info
