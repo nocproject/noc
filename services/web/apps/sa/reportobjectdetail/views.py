@@ -131,7 +131,7 @@ class ReportObjectDetailApplication(ExtApplication):
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
 
-        type_columns = ["Up/10G", "Up/1G", "Up/100M", "Down/-", "-"]
+        type_columns = ["Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"]
 
         cols = [
             "id",
@@ -200,9 +200,6 @@ class ReportObjectDetailApplication(ExtApplication):
             cmap = list(range(len(cols)))
 
         r = [translate_row(header_row, cmap)]
-        if "interface_type_count" in columns.split(","):
-            r[-1].extend(type_columns)
-
         mos = self.get_report_object(request.user, is_managed, administrative_domain,
                                      selector, pool, segment, ids)
 
@@ -226,6 +223,8 @@ class ReportObjectDetailApplication(ExtApplication):
         if "adm_path" in columns.split(","):
             ad_path = ReportAdPath()
             r[-1].extend([_("ADM_PATH1"), _("ADM_PATH1"), _("ADM_PATH1")])
+        if "interface_type_count" in columns.split(","):
+            r[-1].extend(type_columns)
         if "object_caps" in columns.split(","):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.ATTRS.values()
