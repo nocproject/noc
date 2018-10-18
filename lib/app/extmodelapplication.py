@@ -134,7 +134,6 @@ class ExtModelApplication(ExtApplication):
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_launch_info(self, request):
-        self.effective_permission(request.user)
         li = super(ExtModelApplication, self).get_launch_info(request)
         cf = self.get_custom_fields()
         if cf:
@@ -170,7 +169,6 @@ class ExtModelApplication(ExtApplication):
         """
         Filter records for lookup
         """
-        self.effective_permission(request.user)
         if query and self.query_fields:
             return self.model.objects.filter(self.get_Q(request, query))
         else:
@@ -569,7 +567,7 @@ class ExtModelApplication(ExtApplication):
                 Tag.register_tag(t, repr(self.model))
         # Update attributes
         for k, v in attrs.items():
-            if self.secret_fields and k in self.secret_fields and "secret" not in self.effective_permission():
+            if self.secret_fields and k in self.secret_fields and not self.has_secret():
                 continue
             setattr(o, k, v)
         # Run models validators
