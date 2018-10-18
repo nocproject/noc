@@ -21,7 +21,7 @@ class ReportObjectIfacesStatusStat(BaseReportColumn):
     name = "reportifacesstatusstat"
     # ["1G_UP", "1G_DOWN"]
     # ATTRS = list("-")
-    ATTRS = ["Up/10G", "Up/1G", "Up/100M", "Down/-", "-"]
+    ATTRS = ["Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"]
     unknown_value = ([""] * len(ATTRS), )
 
     def extract(self):
