@@ -7,15 +7,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import re
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Rotek.RTBSv1"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
+    pattern_prompt = r"^(?P<hostname>\S+)\s*>|\W*?#\s+?"
     pattern_syntax_error = r"(ERROR|show: not found)"
     command_submit = "\r"
     enable_cli_session = False
+    rogue_chars = [re.compile("\x1b7\x1b\[r\x1b\[999;999H\x1b\[6n")]
     command_exit = "exit\rlogout"
     INTERFACE_TYPES = {
         "et": "physical",
