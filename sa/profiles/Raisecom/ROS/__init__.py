@@ -12,7 +12,6 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
-from noc.lib.validators import is_int
 
 
 class Profile(BaseProfile):
@@ -132,20 +131,15 @@ class Profile(BaseProfile):
             match = self.rx_ver_2017.search(c)
             return match.groupdict()
 
-    def get_interface_names(self, name):
-        r = []
-        if name.startswith("port "):
-            r += [name[5:]]
-        elif name.startswith("port"):
-            r += [name[4:]]
-        elif is_int(name):
-            r += ["port %s" % name, "port%s" % name]
-        return r
+    rx_port = re.compile("^port(|\s+)(?P<port>\d+)")
 
     def convert_interface_name(self, interface):
         if interface.startswith("GE"):
             return interface.replace("GE", "gigaethernet")
         if interface.startswith("FE"):
             return interface.replace("FE", "fastethernet")
+        if self.rx_port.match(interface):
+            match = self.rx_port.match(interface)
+            return match.group("port")
         else:
             return interface
