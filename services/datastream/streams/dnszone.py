@@ -244,6 +244,8 @@ class DNSZoneDataStream(DataStream):
                 where=["address << %s"],
                 params=[zone.reverse_prefix]
         ):
+            if not a.fqdn:
+                continue
             yield RR(
                 zone=zone.name,
                 name=ptr(a.address)[:-length],
