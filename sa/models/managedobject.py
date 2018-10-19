@@ -53,14 +53,13 @@ from noc.main.models.textindex import full_text_search, TextIndex
 from noc.core.scheduler.job import Job
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
-from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
 from noc.inv.models.object import Object
 from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
-from noc.core.script.caller import SessionContext
+from noc.core.script.caller import SessionContext, ScriptCaller
 from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.matcher import match
@@ -1572,18 +1571,10 @@ class ManagedObjectAttribute(Model):
 
 # object.scripts. ...
 class ScriptsProxy(object):
-    class CallWrapper(object):
-        def __init__(self, obj, name):
-            self.name = name
-            self.object = obj
-
-        def __call__(self, **kwargs):
-            return MTManager.run(self.object, self.name, kwargs)
-
     def __init__(self, obj, caller=None):
         self._object = obj
         self._cache = {}
-        self._caller = caller or ScriptsProxy.CallWrapper
+        self._caller = caller or ScriptCaller
 
     def __getattr__(self, name):
         if name in self._cache:
