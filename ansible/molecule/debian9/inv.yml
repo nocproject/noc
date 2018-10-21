@@ -79,6 +79,7 @@ all:
           has_svc_memcached: true
           has_svc_mongod: true
           has_svc_mrt: true
+          has_svc_nbi: true
           has_svc_nginx: true
           has_svc_noc: true
           has_svc_nsqd: true
@@ -123,6 +124,8 @@ all:
           mrt_loglevel: info
           mrt_max_concurrency: 50
           mrt_power: 2
+          nbi_loglevel: info
+          nbi_power: 2
           nginx_cert: |
             -----BEGIN CERTIFICATE-----
             MIIFAzCCAuugAwIBAgIJAKrO/EVH/HOBMA0GCSqGSIb3DQEBCwUAMBgxFjAUBgNV
@@ -571,6 +574,26 @@ all:
               name: mrt
               pool: null
             - config:
+                loglevel: info
+                power: 2
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                - noc
+                level: global
+                supervisord:
+                  command: ./services/nbi/service.py
+                  oom_score_adj: 999
+                  priority: 100
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 1MB
+                  stopwaitsecs: 3
+              name: nbi
+              pool: null
+            - config:
                 backup_power: 1
                 loglevel: info
                 power: 4
@@ -861,7 +884,7 @@ all:
         noc_node_debian9: {}
     svc-datastream:
       children:
-        cfg-datastream-node_debian8:
+        cfg-datastream-node_debian9:
           hosts:
             noc_node_debian9: {}
         svc-datastream-read: {}
@@ -972,6 +995,15 @@ all:
         svc-nginx-read:
           hosts:
             noc_node_debian9: {}
+    svc-nbi:
+      children:
+        cfg-nbi-node_debian9:
+          hosts:
+            noc_node_debian9: {}
+        svc-nbi-read: {}
+    svc-nbi-exec:
+      hosts:
+        noc_node_debian9: {}
     svc-nginx-exec:
       hosts:
         noc_node_debian9: {}
