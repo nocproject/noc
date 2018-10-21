@@ -84,6 +84,7 @@ _MODELS = {
     "main.APIKey": "noc.main.models.apikey.APIKey",
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
+    "main.CHPolicy": "noc.main.models.chpolicy.CHPolicy",
     "main.CollectionCache": "noc.main.models.collectioncache.CollectionCache",
     "main.CronTab": "noc.main.models.crontab.CronTab",
     "main.CustomField": "noc.main.models.customfield.CustomField",
