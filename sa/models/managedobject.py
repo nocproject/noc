@@ -67,7 +67,7 @@ from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 11
+MANAGEDOBJECT_CACHE_VERSION = 12
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
