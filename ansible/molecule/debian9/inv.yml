@@ -580,7 +580,7 @@ all:
               environment:
                 category: internal
                 depends:
-                - noc
+                  - noc
                 level: global
                 supervisord:
                   command: ./services/nbi/service.py
