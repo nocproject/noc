@@ -44,6 +44,7 @@ all:
           datastream_loglevel: info
           datastream_power: 2
           datastream_mode: wait
+          datastream_whitelist_access: ""
           discovery_backup_power: 1
           discovery_loglevel: info
           discovery_max_threads: 10
