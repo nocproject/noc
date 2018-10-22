@@ -1,5 +1,6 @@
 {
   "$metric": "Environment | Temperature",
   "$type": "oid",
+  "path": ["","","", "Temperature"],
   "oid": "1.3.6.1.4.1.31926.1.2.0"
 }

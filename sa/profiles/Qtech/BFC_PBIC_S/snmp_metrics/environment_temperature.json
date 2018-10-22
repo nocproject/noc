@@ -3,14 +3,14 @@
   "$type": "oids",
   "oids": [{
     "oid": "1.3.6.1.3.55.1.1.0",
-    "path": ["","","", "Sensor 1"],
+    "path": ["","","", "Temperature Sensor 1"],
     "$type": "oid",
     "type": "gauge",
     "scale": 1
   },{
     "$type": "oid",
     "oid": "1.3.6.1.3.55.2.1.0",
-    "path": ["","","", "Sensor 2"],
+    "path": ["","","", "Temperature Sensor 2"],
     "type": "gauge",
     "scale": 1
   }]
