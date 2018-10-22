@@ -991,13 +991,13 @@ all:
         noc_node_debian8: {}
     svc-nbi:
       children:
-        cfg-nbi-node_debian9:
+        cfg-nbi-node_debian8:
           hosts:
-            noc_node_debian9: {}
+            noc_node_debian8: {}
         svc-nbi-read: {}
     svc-nbi-exec:
       hosts:
-        noc_node_debian9: {}
+        noc_node_debian8: {}
     svc-nginx:
       children:
         cfg-nginx-noc_node_debian8:
