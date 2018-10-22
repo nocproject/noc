@@ -324,7 +324,6 @@ all:
             - config:
                 loglevel: info
                 power: 2
-                mode: wait
               config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
               environment:
                 category: internal
@@ -417,6 +416,7 @@ all:
             - config:
                 loglevel: info
                 power: 2
+                mode: wait
               config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
               environment:
                 category: internal
@@ -886,7 +886,7 @@ all:
         noc_node_debian9: {}
     svc-datastream:
       children:
-        cfg-datastream-node_debian9:
+        cfg-datastream-noc_node_debian9:
           hosts:
             noc_node_debian9: {}
         svc-datastream-read: {}
@@ -989,6 +989,15 @@ all:
     svc-mrt-exec:
       hosts:
         noc_node_debian9: {}
+    svc-nbi:
+      children:
+        cfg-nbi-noc_node_debian9:
+          hosts:
+            noc_node_debian9: {}
+        svc-nbi-read: {}
+    svc-nbi-exec:
+      hosts:
+        noc_node_debian9: {}
     svc-nginx:
       children:
         cfg-nginx-noc_node_debian9:
@@ -997,15 +1006,6 @@ all:
         svc-nginx-read:
           hosts:
             noc_node_debian9: {}
-    svc-nbi:
-      children:
-        cfg-nbi-node_debian9:
-          hosts:
-            noc_node_debian9: {}
-        svc-nbi-read: {}
-    svc-nbi-exec:
-      hosts:
-        noc_node_debian9: {}
     svc-nginx-exec:
       hosts:
         noc_node_debian9: {}
