@@ -127,6 +127,7 @@ all:
           mrt_power: 2
           nbi_loglevel: info
           nbi_power: 2
+          nbi_whitelist_access: ""
           nginx_cert: |
             -----BEGIN CERTIFICATE-----
             MIIFAzCCAuugAwIBAgIJAKrO/EVH/HOBMA0GCSqGSIb3DQEBCwUAMBgxFjAUBgNV
