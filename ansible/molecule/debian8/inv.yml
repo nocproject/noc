@@ -886,7 +886,7 @@ all:
         noc_node_debian8: {}
     svc-datastream:
       children:
-        cfg-datastream-node_debian8:
+        cfg-datastream-noc_node_debian8:
           hosts:
             noc_node_debian8: {}
         svc-datastream-read: {}
@@ -991,7 +991,7 @@ all:
         noc_node_debian8: {}
     svc-nbi:
       children:
-        cfg-nbi-node_debian8:
+        cfg-nbi-noc_node_debian8:
           hosts:
             noc_node_debian8: {}
         svc-nbi-read: {}
