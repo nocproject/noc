@@ -583,7 +583,6 @@ all:
                 category: internal
                 depends:
                   - noc
-                  - nginx
                 level: global
                 supervisord:
                   command: ./services/nbi/service.py
