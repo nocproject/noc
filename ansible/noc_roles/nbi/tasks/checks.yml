@@ -3,7 +3,8 @@
   fail:
     msg: "nbi role have to be set with noc role to get own sources."
   when:
-    - has_svc_nbi is defined
     - has_svc_noc is not defined
-  tags:
-    - checks
+when:
+  - has_svc_nbi is defined
+tags:
+  - checks
