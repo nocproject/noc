@@ -1,6 +1,7 @@
 {
   "$metric": "Environment | Voltage",
   "$type": "oid",
+  "path": ["","","", "Voltage"],
   "oid": "1.3.6.1.4.1.5591.1.5.19.1.2.2",
   "scale": "scale(0.1)"
 }

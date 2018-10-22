@@ -3,14 +3,14 @@
   "$type": "oids",
   "oids": [{
     "oid": "1.3.6.1.4.1.41752.5.15.1.3.0",
-    "path": ["","","", "Current_Load"],
+    "path": ["","","", "ElectricCurrent_Load"],
     "$type": "oid",
     "type": "gauge",
     "scale": 1
   },{
     "$type": "oid",
     "oid": "1.3.6.1.4.1.41752.5.15.1.5.0",
-    "path": ["","","", "Current_Battery"],
+    "path": ["","","", "ElectricCurrent_Battery"],
     "type": "gauge",
     "scale": 1
   }]
