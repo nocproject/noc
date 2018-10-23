@@ -209,9 +209,10 @@ Ext.define('NOC.sa.runcommands.Controller', {
     },
     //
     onSelectionAddChecked: function() {
-        this.lookupReference('sa-run-commands-selected-grid-1').getStore().loadData(
+        this.lookupReference('sa-run-commands-selected-grid-1').getStore().add(
             this.lookupReference('sa-run-commands-selection-grid').getSelection()
         );
+        this.getViewModel().set('total.selected', this.getStore('selectedStore').getCount());
     },
     //
     onSelectedRemoveChecked: function() {
