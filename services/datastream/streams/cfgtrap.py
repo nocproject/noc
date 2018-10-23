@@ -40,7 +40,7 @@ class CfgTrapDataStream(DataStream):
             r["addresses"] += [str(address)]
         elif str(trap_source_type) == "s" and trap_source_ip:
             r["addresses"] = [str(trap_source_ip)]
-        elif trap_source_type== "l":
+        elif trap_source_type == "l":
             # Loopback address
             r["addresses"] = cls._get_loopback_addresses(mo_id)
             if not r["addresses"]:
@@ -81,7 +81,7 @@ class CfgTrapDataStream(DataStream):
             }
         }, {
             "_id": 0,
-            "ipv4_addresses":1
+            "ipv4_addresses": 1
         }):
             for a in d.get("ipv4_addresses", []):
                 r += [str(a).split("/")[0]]

@@ -58,7 +58,7 @@ class CfgSyslogDataStream(DataStream):
         elif syslog_source_type == "s" and syslog_source_ip:
             # Syslog source set manually
             r["addresses"] = [str(syslog_source_ip)]
-        elif syslog_source_type== "l":
+        elif syslog_source_type == "l":
             # Loopback address
             r["addresses"] = cls._get_loopback_addresses(mo_id)
             if not r["addresses"]:
@@ -99,7 +99,7 @@ class CfgSyslogDataStream(DataStream):
             }
         }, {
             "_id": 0,
-            "ipv4_addresses":1
+            "ipv4_addresses": 1
         }):
             for a in d.get("ipv4_addresses", []):
                 r += [str(a).split("/")[0]]
