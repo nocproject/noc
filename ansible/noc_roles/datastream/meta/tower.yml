@@ -34,7 +34,7 @@ forms:
         - critial
     whitelist_access:
       type: text
-      label: "Allow access to service from IP:"
+      label: "Restrict access to service from IPs:"
       common: environment
       description: "in CIDR notation, separated with comma"
 
