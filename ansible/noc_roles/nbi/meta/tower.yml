@@ -1,26 +1,19 @@
 ---
 forms:
-  datastream:
+  nbi:
     description: >
       <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: Provides data for dns, ping, *collectors <br/>
-      <strong>Long description</strong>: Used to stream changes to noc services <br/>
-      <strong>Scale Recommendations</strong>:  At least one per system <br/>
-      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/datastream/ target=_blank>Datastream</a><br/>
-      <strong>Placement constraint</strong>: On node with mongo<br/>
+      <strong>Short description</strong>: NBI service <br/>
+      <strong>Long description</strong>: Service for integration in external systems<br/>
+      <strong>Scale Recommendations</strong>: Two per HA installation <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/nbi/ target=_blank>NBI</a><br/>
+      <strong>Placement constraint</strong>: On nginx <br/>
     power:
       default: 1
       label: "Instances"
       type: int
       max: 8
       min: 0
-    mode:
-      default: wait
-      label: Datastream mode
-      type: list
-      options:
-        - pool
-        - wait
     loglevel:
       default: info
       label: Loglevel
@@ -39,18 +32,17 @@ forms:
       description: "in CIDR notation, separated with comma"
 
 services:
-  datastream:
+  nbi:
     level: global
     category: internal
     supervisord:
-      command: "./services/datastream/service.py"
+      command: "./services/nbi/service.py"
       process_name: "%(program_name)s-%(process_num)02d"
-      oom_score_adj: 999
-      priority: 100
+      oom_score_adj: 100
+      priority: 110
       startretries: 999
       stopwaitsecs: 3
-      stdout_logfile_maxbytes: 1MB
+      stdout_logfile_maxbytes: 10MB
       stdout_logfile_backups: 3
     depends:
       - noc
-      - mongod

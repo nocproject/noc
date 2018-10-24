@@ -50,6 +50,8 @@
     - role: scheduler
     - role: discovery
     - role: bi
+    - role: datastream
+    - role: nbi
 
 
 - import_playbook: additional_roles/custom/service.yml

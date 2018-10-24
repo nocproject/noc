@@ -44,6 +44,7 @@ all:
           datastream_loglevel: info
           datastream_power: 2
           datastream_mode: wait
+          datastream_whitelist_access: ""
           discovery_backup_power: 1
           discovery_loglevel: info
           discovery_max_threads: 10
@@ -79,6 +80,7 @@ all:
           has_svc_memcached: true
           has_svc_mongod: true
           has_svc_mrt: true
+          has_svc_nbi: true
           has_svc_nginx: true
           has_svc_noc: true
           has_svc_nsqd: true
@@ -123,6 +125,9 @@ all:
           mrt_loglevel: info
           mrt_max_concurrency: 50
           mrt_power: 2
+          nbi_loglevel: info
+          nbi_power: 2
+          nbi_whitelist_access: ""
           nginx_cert: |
             -----BEGIN CERTIFICATE-----
             MIIFAzCCAuugAwIBAgIJAKrO/EVH/HOBMA0GCSqGSIb3DQEBCwUAMBgxFjAUBgNV
@@ -219,7 +224,6 @@ all:
           noc_dc: DC
           noc_env: NOC
           noc_env_type: eval
-          noc_web_host: noc_node_oel7
           noc_group: noc
           noc_installation_name: Unconfigured installation
           noc_python_interpreter: python
@@ -572,6 +576,26 @@ all:
               name: mrt
               pool: null
             - config:
+                loglevel: info
+                power: 2
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                level: global
+                supervisord:
+                  command: ./services/nbi/service.py
+                  oom_score_adj: 999
+                  priority: 100
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 1MB
+                  stopwaitsecs: 3
+              name: nbi
+              pool: null
+            - config:
                 backup_power: 1
                 loglevel: info
                 power: 4
@@ -712,6 +736,7 @@ all:
               pool: null
           noc_user: noc
           noc_version: microservices
+          noc_web_host: noc_node_oel7
           node_id: 1
           nsqd_max_messages_in_memory: 10000
           nsqd_max_msg_size: 1048576
@@ -964,6 +989,15 @@ all:
     svc-mrt-exec:
       hosts:
         noc_node_oel7: {}
+    svc-nbi:
+      children:
+        cfg-nbi-noc_node_oel7:
+          hosts:
+            noc_node_oel7: {}
+        svc-nbi-read: {}
+    svc-nbi-exec:
+      hosts:
+        noc_node_oel7: {}
     svc-nginx:
       children:
         cfg-nginx-noc_node_oel7:
@@ -1008,7 +1042,6 @@ all:
     svc-nsqlookupd-exec:
       hosts:
         noc_node_oel7: {}
-
     svc-pgbouncer:
       children:
         cfg-pgbouncer-noc_node_oel7:
