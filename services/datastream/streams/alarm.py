@@ -10,6 +10,7 @@
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.core.datastream.base import DataStream
+from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.utils import get_alarm
 
 
@@ -153,3 +154,23 @@ class AlarmDataStream(DataStream):
                     },
                     "summary": si.summary
                 }]
+
+    @classmethod
+    def get_meta(cls, data):
+        return {
+            "alarmclass": data["alarm_class"]["id"]
+        }
+
+    @classmethod
+    def filter_alarmclass(cls, *args):
+        ids = [str(AlarmClass.get_by_name(a).id) for a in args if AlarmClass.get_by_name(a)]
+        if len(ids) == 1:
+            return {
+                "%s.alarmclass" % cls.F_META: ids[0]
+            }
+        else:
+            return {
+                "%s.alarmclass" % cls.F_META: {
+                    "$in": ids
+                }
+            }
