@@ -1,0 +1,311 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th scope="row">{{ _("Name") }}</th>
+        <td>{{object.name}}</td>
+    <tr>
+    {% if object.description %}
+    <tr>
+        <th scope="row">{{ _("Description") }}</th>
+        <td>{{object.description}}</td>
+    <tr>
+    {% endif %}
+    {% if vrfs %}
+    <tr>
+        <th scope="row">{{ _("VRF") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("State") }}</th>
+                </thead>
+                <tbody>
+                    {% for vrf in vrfs %}
+                        <tr>
+                            <td><a href="/api/card/view/vrf/{{ vrf.id }}/">{{ vrf.name }}</a></td>
+                            <td>{{ vrf.state.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if prefixes %}
+    <tr>
+        <th scope="row">{{ _("Prefix") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("VRF") }}</th>
+                    <th>{{ _("Prefix") }}</th>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("State") }}</th>
+                </thead>
+                <tbody>
+                    {% for prefix in prefixes %}
+                        <tr>
+                            <td><a href="/api/card/view/vrf/{{ prefix.vrf.id }}/">{{ prefix.vrf.name }}</a></td>
+                            <td><a href="/api/card/view/prefix/{{ prefix.id }}/">{{ prefix.prefix }}</a></td>
+                            <td>{{ prefix.name }}</td>
+                            <td>{{ vrf.state.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if addresses %}
+    <tr>
+        <th scope="row">{{ _("Address") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("VRF") }}</th>
+                    <th>{{ _("Address") }}</th>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("State") }}</th>
+                </thead>
+                <tbody>
+                    {% for address in addresses %}
+                        <tr>
+                            <td><a href="/api/card/view/vrf/{{ address.vrf.id }}/">{{ address.vrf.name }}</a></td>
+                            <td><a href="/api/card/view/address/{{ address.id }}/">{{ address.address }}</a></td>
+                            <td>{{ address.name }}</td>
+                            <td>{{ address.state.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if dns_zones %}
+    <tr>
+        <th scope="row">{{ _("DNS Zone") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("Serial") }}</th>
+                </thead>
+                <tbody>
+                    {% for zone in dns_zones %}
+                        <tr>
+                            <td>{{ zone.name }}</td>
+                            <td>{{ zone.serial }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if interfaces %}
+    <tr>
+        <th scope="row">{{ _("Interface") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Object") }}</th>
+                    <th>{{ _("Interface") }}</th>
+                </thead>
+                <tbody>
+                    {% for iface in interfaces %}
+                        <tr>
+                            <td><a href="/api/card/view/managedobject/{{ iface.managed_object.id }}/">{{ iface.managed_object.name }}</a></td>
+                            <td>{{ iface.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if sub_interfaces %}
+    <tr>
+        <th scope="row">{{ _("Sub.Interfaces") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Object") }}</th>
+                    <th>{{ _("Sub.Interface") }}</th>
+                </thead>
+                <tbody>
+                    {% for siface in sub_interfaces %}
+                        <tr>
+                            <td><a href="/api/card/view/managedobject/{{ siface.managed_object.id }}/">{{ siface.managed_object.name }}</a></td>
+                            <td>{{ siface.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if assets %}
+    <tr>
+        <th scope="row">{{ _("as-set") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Name") }}</th>
+                </thead>
+                <tbody>
+                    {% for asset in assets %}
+                        <tr>
+                            <td>{{ asset.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if ases %}
+    <tr>
+        <th scope="row">{{ _("AS") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("AS") }}</th>
+                </thead>
+                <tbody>
+                    {% for asn in ases %}
+                        <tr>
+                            <td>{{ asn.name }}</td>
+                            <td>{{ asn.asn }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if peers %}
+    <tr>
+        <th scope="row">{{ _("Peer") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Peer") }}</th>
+                </thead>
+                <tbody>
+                    {% for peer in peers %}
+                        <tr>
+                            <td>{{ peer.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if phoneranges %}
+    <tr>
+        <th scope="row">{{ _("Phone Range") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Dialplan") }}</th>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("Range") }}</th>
+                    <th>{{ _("State") }}</th>
+                </thead>
+                <tbody>
+                    {% for r in phoneranges %}
+                        <tr>
+                            <td><a href="/api/card/view/dialplan/{{ r.dialplan.id }}">{{ r.dialplan.name }}</a></td>
+                            <td>{{ r.name }}</td>
+                            <td>{{ r.from_number }} - {{ r.to_number }}</td>
+                            <td>{{ r.state.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if phonenumbers %}
+    <tr>
+        <th scope="row">{{ _("Phone Number") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Dialplan") }}</th>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("Number") }}</th>
+                    <th>{{ _("State") }}</th>
+                </thead>
+                <tbody>
+                    {% for n in phonenumbers %}
+                        <tr>
+                            <td><a href="/api/card/view/dialplan/{{ n.dialplan.id }}">{{ n.dialplan.name }}</a></td>
+                            <td>{{ n.name }}</td>
+                            <td>{{ n.number }}</td>
+                            <td>{{ r.state.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if vpns %}
+    <tr>
+        <th scope="row">{{ _("VPN") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Numner") }}</th>
+                </thead>
+                <tbody>
+                    {% for vpn in vpns %}
+                        <tr>
+                            <td>{{ vpn.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if vlans %}
+    <tr>
+        <th scope="row">{{ _("VLAN") }}</th>
+        <td>
+            <table>
+                <thead>
+                    <th>{{ _("Segment") }}</th>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("VLAN") }}</th>
+                </thead>
+                <tbody>
+                    {% for vlan in vlans %}
+                        <tr>
+                            <td><a href="/api/card/view/segment/{{ vlan.segment.id }}">{{ vlan.segment.name }}</a></td>
+                            <td>{{ vlan.name }}</td>
+                            <td>{{ vlan.vlan }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+</tbody>
+</table>
