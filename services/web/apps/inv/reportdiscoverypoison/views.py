@@ -22,9 +22,9 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
         # Find object with equal ID
         find = DiscoveryID._get_collection().aggregate([
             {"$group": {
-                "_id": "$chassis_mac",
+                "_id": "$macs",
                 "count": {"$sum": 1}
-                }},
+            }},
             {"$match": {"count": {"$gt": 1}}}
         ])
 
@@ -37,9 +37,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             reason = "Other"
 
             for r in DiscoveryID._get_collection().find({
-                "chassis_mac": {
-                    "$elemMatch": f["_id"][0]
-                }
+                "macs": f["_id"][0]
             }, {"_id": 0, "object": 1}):
                 # ManagedObject.get_by_id(o)
                 mo = ManagedObject.get_by_id(r["object"])
