@@ -251,7 +251,7 @@ server {
     location /api/datastream/ {
         proxy_pass http://datastream;
         auth_request /api/auth/auth/;
-        {% if datastream_whitelist_access and datastream_whitelist_access is defined %}
+        {% if datastream_whitelist_access and datastream_whitelist_access is defined and 'svc-datastream-exec' in groups and groups['svc-datastream-exec'] | length > 0 %}
         include allow_ip_datastream.conf;
         {% endif %}
         # internal;
@@ -274,7 +274,7 @@ server {
     location /api/nbi/ {
         proxy_pass http://nbi;
         auth_request /api/auth/auth/;
-        {% if nbi_whitelist_access and nbi_whitelist_access is defined %}
+        {% if nbi_whitelist_access and nbi_whitelist_access is defined and 'svc-nbi-exec' in groups and groups['svc-nbi-exec'] | length > 0 %}
         include allow_ip_nbi.conf;
         {% endif %}
         # internal;
