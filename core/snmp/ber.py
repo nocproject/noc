@@ -170,6 +170,8 @@ class BERDecoder(object):
         return None
 
     def parse_a_ipaddress(self, msg):
+        if not msg:
+            raise ValueError("Invalid IP Address: '%s'" % msg.encode("hex"))
         return "%d.%d.%d.%d" % (
             ord(msg[0]), ord(msg[1]), ord(msg[2]), ord(msg[3]))
 
