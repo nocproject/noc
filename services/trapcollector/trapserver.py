@@ -38,7 +38,7 @@ class TrapServer(UDPServer):
             return  # Invalid event source
         try:
             community, varbinds = decode_trap(data)
-        except ValueError as e:
+        except Exception as e:
             metrics["error", ("type", "decode_failed")] += 1
             logger.error("Failed to decode trap: %s", data.encode("hex"))
             logger.error("Decoder error: %s", e)
