@@ -34,6 +34,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "ip.vrf.LookupField",
                     fieldLabel: __("VRF"),
                     allowBlank: false,
+                    uiStyle: "large",
                     readOnly: true
                 },
                 {
@@ -41,7 +42,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "textfield",
                     fieldLabel: __("Address"),
                     allowBlank: false,
-                    uiStyle: "medium",
+                    uiStyle: "large",
                     bind: {
                         readOnly: "{!isNew}"
                     }
@@ -51,14 +52,14 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "large"
                 },
                 {
                     name: "fqdn",
                     xtype: "textfield",
                     fieldLabel: __("FQDN"),
                     allowBlank: true,
-                    uiStyle: "medium",
+                    uiStyle: "large",
                     regex: /^[0-9a-z\-]+(\.[0-9a-z\-]+)+$/
                 },
                 {
