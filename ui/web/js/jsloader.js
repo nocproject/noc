@@ -22,7 +22,9 @@ function load_scripts(urls, scope, callback) {
 
                 var head = document.getElementsByTagName("head")[0];
                 head.appendChild(script_node);
-                window._noc_load_callback = function() {load(u, cb);};
+                window._noc_load_callback = function() {
+                    load(u, cb);
+                };
                 if(next_on_load) {
                     script_node.onreadystatechange = function() {
                         if(this.readyState == "complete")
@@ -41,22 +43,34 @@ function load_scripts(urls, scope, callback) {
 function new_load_scripts(urls, scope, callback) {
     var head = document.getElementsByTagName("head")[0],
         load_script = function(url, callback) {
+            var file_ref;
             // Already loaded?
             if(_noc_loaded_scripts[url]) {
                 console.log("Using cached script " + url);
                 callback();
             } else {
-                console.log("Loading script " + url);
-                var script_node = document.createElement("script");
-                script_node.type = "text/javascript";
-                script_node.src = url;
-                script_node.onload = function() {callback(); };
-                script_node.onreadystatechange = function() {
-                    if(this.readyState == "complete") {
+                if(url.split(".")[1] === "js") {
+                    console.log("Loading script " + url);
+                    file_ref = document.createElement("script");
+                    file_ref.type = "text/javascript";
+                    file_ref.src = url;
+                } else if(url.split(".")[1] === "css") {
+                    console.log("Loading style " + url);
+                    file_ref = document.createElement("link");
+                    file_ref.rel = "stylesheet";
+                    file_ref.type = "text/css";
+                    file_ref.href = url;
+
+                }
+                file_ref.onload = function() {
+                    callback();
+                };
+                file_ref.onreadystatechange = function() {
+                    if(this.readyState === "complete") {
                         callback();
                     }
                 };
-                head.appendChild(script_node);
+                head.appendChild(file_ref);
             }
         },
         load_chain = function(urls) {

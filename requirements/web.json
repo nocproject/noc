@@ -54,10 +54,6 @@
       "version": "4.0.5"
     },
     {
-      "name": "openlayers",
-      "version": "2.13"
-    },
-    {
       "name": "pdfmake",
       "version": "0.1.17"
     },

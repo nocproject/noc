@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
-// inv.inv Map panel
+// inv.inv Leaflet Map panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.plugins.map.MapPanel");
@@ -42,39 +42,12 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
     initComponent: function() {
         var me = this;
-        // Base Layers
-        me.requireGoogleAPI = false;
-        me.baseLayers = [];
-
-        if(NOC.settings.gis.base.enable_osm) {
-            // OpenStreetMap layer
-            me.baseLayers.push({
-                text: __("OpenStreetMap"),
-                layerType: "osm",
-                scope: me,
-                handler: me.onSelectBaseLayer
-            });
-        }
-        if(NOC.settings.gis.base.enable_google_sat) {
-            // Google sattelite layer
-            me.baseLayers.push({
-                text: __("Google Sattelite"),
-                layerType: "google_sat",
-                scope: me,
-                handler: me.onSelectBaseLayer
-            });
-            me.requireGoogleAPI = true;
-        }
-        if(NOC.settings.gis.base.enable_google_roadmap) {
-            // Google roadmap layer
-            me.baseLayers.push({
-                text: __("Google Roadmap"),
-                layerType: "google_roadmap",
-                scope: me,
-                handler: me.onSelectBaseLayer
-            });
-            me.requireGoogleAPI = true;
-        }
+        //
+        me.infoTemplate = '<b>{0}</b><br><i>{1}</i><br><hr><a id="{2}" href="api/card/view/object/{3}/" target="_blank">Show...</a>';
+        // Layers holder
+        me.layers = [];
+        // Object layer
+        me.objectLayer = undefined;
         //
         me.centerButton = Ext.create("Ext.button.Button", {
             tooltip: __("Center to object"),
@@ -82,23 +55,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             scope: me,
             handler: me.centerToObject
         });
-
-        me.zoomInButton = Ext.create("Ext.button.Button", {
-            tooltip: __("Zoom in"),
-            glyph: NOC.glyph.search_plus,
-            disabled: true,
-            scope: me,
-            handler: me.onZoomIn
-        });
-
-        me.zoomOutButton = Ext.create("Ext.button.Button", {
-            tooltip: __("Zoom out"),
-            glyph: NOC.glyph.search_minus,
-            disabled: true,
-            scope: me,
-            handler: me.onZoomOut
-        });
-
         me.zoomLevelButton = Ext.create("Ext.button.Button", {
             tooltip: __("Zoom to level"),
             text: __("1:100 000"),
@@ -113,7 +69,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 })
             }
         });
-
+        //
         me.setPositionButton = Ext.create("Ext.button.Button", {
             tooltip: __("Set position"),
             glyph: NOC.glyph.map_marker,
@@ -123,24 +79,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 toggle: me.onSetPositionToggle
             }
         });
-
-        me.layersButton = Ext.create("Ext.button.Button", {
-            tooltip: __("Setup layers"),
-            text: __("Layers"),
-            glyph: NOC.glyph.align_justify,
-            menu: {
-                items: []
-            }
-        });
-
-        me.baseLayerButton = Ext.create("Ext.button.Button", {
-            tooltip: __("Select base layer"),
-            text: me.baseLayers[0].text,
-            menu: {
-                items: me.baseLayers
-            }
-        });
-
         // Map panel
         Ext.apply(me, {
             dockedItems: [{
@@ -148,429 +86,377 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 dock: "top",
                 items: [
                     me.centerButton,
-                    me.zoomInButton,
-                    me.zoomOutButton,
                     me.zoomLevelButton,
                     "-",
-                    me.setPositionButton,
-                    "->",
-                    me.layersButton,
-                    me.baseLayerButton
+                    me.setPositionButton
                 ]
             }],
             items: [
                 {
                     xtype: "panel",
                     // Generate unique id
-                    html: "<div id='ol-map-" + me.id + "' style='width: 100%; height: 100%;'></div>"
+                    html: "<div id='leaf-map-" + me.id + "' style='width: 100%; height: 100%;'></div>"
                 }
             ]
         });
         me.callParent();
-        //
-        me.infoTemplate = '<b>{0}</b><br><i>{1}</i><br><hr><a id="{2}" href="api/card/view/object/{3}/" target="_blank">Show...</a>';
-    },
-    //
-    //
-    createMap: function(zoom, x, y, objectLayer, layers) {
-        var me = this,
-            mapDiv = "ol-map-" + me.id;
-
-        me.objectX = x;
-        me.objectY = y;
-        me.objectZoom = zoom;
-
-        me.projGeo = new OpenLayers.Projection("EPSG:4326");
-        me.projMap = new OpenLayers.Projection("EPSG:900913");
-        //
-        me.graticuleControl = new OpenLayers.Control.Graticule({
-            visible: false
-        });
-        //
-        me.setPositionControl = new OpenLayers.Control.Click({
-            scope: me,
-            fn: me.onSetPositionClick
-        });
-        // Create OpenLayers map
-        me.olMap = new OpenLayers.Map(mapDiv, {
-            projection: me.projMap,
-            displayProjection: me.projMap,
-            controls: [
-                new OpenLayers.Control.Navigation(),
-                // new OpenLayers.Control.PanZoomBar(),
-                new OpenLayers.Control.KeyboardDefaults(),
-                new OpenLayers.Control.ScaleLine({geodesic: true}),
-                new OpenLayers.Control.MousePosition({
-                    displayProjection: me.projGeo
-                }),
-                me.graticuleControl,
-                me.setPositionControl
-            ]
-        });
-        // Create base layers
-        Ext.each(me.baseLayers, function(v) {
-            switch(v.layerType) {
-                case "osm":
-                    me.olMap.addLayer(new OpenLayers.Layer.OSM(v.text));
-                    break;
-                case "google_sat":
-                    me.olMap.addLayer(
-                        new OpenLayers.Layer.Google(v.text, {
-                            type: "satellite"
-                        })
-                    );
-                    break;
-                case "google_roadmap":
-                    me.olMap.addLayer(
-                        new OpenLayers.Layer.Google(v.text, {
-                            type: "roadmap"
-                        })
-                    );
-                    break;
-                default:
-                    console.log("Invalid base layer " + v.layerType);
-            }
-        });
-        // Create OSM layer
-        me.olMap.addLayer(
-            new OpenLayers.Layer.OSM("OSM")
-        );
-        // Center map
-        me.centerToObject();
-        // Create vector layers
-        me.objectLayer = null;
-        zoom = me.olMap.getZoom();
-        me.layerZoom = []; // {<layer>, <min zoom>, <max zoom>, isVisible}
-        for(var i in layers) {
-            var ld = layers[i],
-                layer = new OpenLayers.Layer.Vector(ld.name, {
-                    protocol: new OpenLayers.Protocol.HTTP({
-                        url: "/inv/inv/plugin/map/layers/" + ld.code + "/",
-                        format: new OpenLayers.Format.GeoJSON({}),
-                        srsInBBOX: true
-                    }),
-                    strategies: [new OpenLayers.Strategy.BBOX()],
-                    visibility: ld.is_visible && (zoom >= ld.min_zoom) && (zoom <= ld.max_zoom),
-                    styleMap: new OpenLayers.StyleMap({
-                        default: {
-                            pointRadius: ld.point_radius,
-                            strokeWidth: ld.stroke_width,
-                            strokeColor: ld.stroke_color,
-                            fillColor: ld.fill_color,
-                            label: ld.show_labels ? "${label}" : "",
-                            labelAlign: "lb",
-                            labelXOffset: 7,
-                            labelOutlineColor: "white",
-                            labelOutlineWidth: 3,
-                            strokeDashstyle: ld.strokeDashstyle,
-                            graphicName: ld.point_graphic
-                        },
-                        select: {
-                            labelAlign: "lb",
-                            labelOutlineColor: "#FFFFCC",
-                            strokeColor: "yellow"
-                        }
-                    })
-                });
-            me.olMap.addLayer(layer);
-            if(ld.code == objectLayer) {
-                me.objectLayer = layer;
-            }
-            // Set up zoom levels
-            me.layerZoom.push({
-                layer: layer,
-                code: ld.code,
-                minZoom: ld.min_zoom,
-                maxZoom: ld.max_zoom,
-                isVisible: ld.is_visible
-            });
-            // Add to layers menu
-            me.layersButton.menu.add({
-                text: ld.name,
-                checked: ld.is_visible,
-                scope: me,
-                checkHandler: me.onChangeLayerVisibility,
-                layerCode: ld.code
-            });
-        }
-        //
-        me.olMap.events.on({
-            zoomend: Ext.bind(me.setLayerVisibility, me),
-            featureclick: Ext.bind(me.onFeatureClick, me),
-            featureover: Ext.bind(me.onFeatureOver, me),
-            featureout: Ext.bind(me.onFeatureOut, me)
-        });
-        me.setLayerVisibility();
-        me.infoPopup = null;
-        // Install context menu
-        me.mapDom = Ext.select("#" + mapDiv).elements[0];
-        me.mapDom.oncontextmenu = Ext.bind(me.onContextMenu, me);
     },
     //
     preview: function(data) {
         var me = this,
-            urls = [];
+            urls = [
+                "/ui/pkg/leaflet/leaflet.js",
+                "/ui/pkg/leaflet/leaflet.css"
+            ];
         me.currentId = data.id;
-        me.contextMenuData = data.add_menu;
-        urls.push("/ui/pkg/openlayers/OpenLayers.js");
-        if(me.requireGoogleAPI) {
-            urls.push("@" + window.location.protocol + "//maps.google.com/maps/api/js?sensor=false&callback=_noc_load_callback")
-        }
-        urls.push("/ui/web/js/OpenLayers.js");
-        load_scripts(urls, me, function() {
-            me.createMap(data.zoom, data.x, data.y, data.layer, data.layers);
+        new_load_scripts(urls, me, function() {
+            me.createMap(data);
         });
     },
     //
-    centerToObject: function() {
-        var me = this;
-        me.olMap.setCenter(
-            new OpenLayers.LonLat(me.objectX, me.objectY).transform(
-                me.projGeo, me.projMap),
-            me.objectZoom
-        );
-        me.updateZoomButtons();
-    },
-    //
-    onZoomIn: function() {
-        var me = this;
-        me.olMap.zoomIn();
-        me.updateZoomButtons();
-    },
-    //
-    onZoomOut: function() {
-        var me = this;
-        me.olMap.zoomOut();
-        me.updateZoomButtons();
-    },
-    //
-    updateZoomButtons: function() {
+    createLayer: function(cfg, objectLayer) {
         var me = this,
-            z = me.olMap.zoom;
-        me.zoomInButton.setDisabled(z >= me.maxZoomLevel);
-        me.zoomOutButton.setDisabled(z <= me.minZoomLevel);
-        me.zoomLevelButton.setText(me.zoomLevels[z]);
-    },
-    //
-    onZoomLevel: function(item, e) {
-        var me = this;
-        me.olMap.zoomTo(item.zoomLevel);
-        me.updateZoomButtons();
-    },
-    //
-    onSelectBaseLayer: function(item, e) {
-        var me = this;
-        me.baseLayerButton.setText(item.text);
-        me.olMap.setBaseLayer(me.olMap.getLayersByName(item.text)[0]);
-    },
-    //
-    onSetPositionClick: function(e) {
-        var me = this,
-            mc = me.olMap.getLonLatFromPixel(e.xy);
-        me.setPositionButton.toggle(false);
-        mc.transform(me.projMap, me.projGeo);
-        Ext.Ajax.request({
-            url: "/inv/inv/" + me.currentId + "/plugin/map/set_geopoint/",
-            method: "POST",
-            jsonData: {
-                srid: me.projGeo.projCode,
-                x: mc.lon,
-                y: mc.lat
+            layer;
+        layer = L.geoJSON({
+            "type": "FeatureCollection",
+            "features": []
+        }, {
+            nocCode: cfg.code,
+            nocMinZoom: cfg.min_zoom,
+            nocMaxZoom: cfg.max_zoom,
+            pointToLayer: function(geoJsonPoint, latlng) {
+                return L.circleMarker(latlng, {
+                    color: cfg.fill_color,
+                    fillColor: cfg.fill_color,
+                    fillOpacity: 1,
+                    radius: 5
+                });
             },
-            scope: me,
-            success: function() {
-                me.objectLayer.loaded = false;
-                me.objectLayer.setVisibility(true);
-                me.objectLayer.refresh({force: true});
+            style: function(json) {
+                return {
+                    color: cfg.fill_color,
+                    fillColor: cfg.fill_color,
+                    strokeColor: cfg.stroke_color,
+                    weight: cfg.stroke_width
+                };
             },
-            failure: function(response) {
-                NOC.error(__("Failed to set position"));
+            filter: function(geoJsonFeature) {
+                // Remove invisible layers on zoom
+                var zoom = me.map.getZoom();
+                return (zoom >= cfg.min_zoom) && (zoom <= cfg.max_zoom)
             }
         });
+        if(cfg.code === objectLayer) {
+            me.objectLayer = layer;
+        }
+        layer.bindPopup(Ext.bind(me.onFeatureClick, me));
+        layer.on("add", Ext.bind(me.visibilityHandler, me));
+        layer.on("remove", Ext.bind(me.visibilityHandler, me));
+        if(cfg.is_visible) {
+            layer.addTo(me.map);
+        }
+        me.layersControl.addOverlay(layer, cfg.name);
+        return layer;
     },
     //
-    onSetPositionToggle: function(button, pressed, eOpts) {
-        var me = this;
-        if(pressed) {
-            me.setPositionControl.activate();
-        } else {
-            me.setPositionControl.deactivate();
-        }
-    },
-    // Adjust vector layers visibility
-    setLayerVisibility: function() {
+    loadLayer: function(layer) {
         var me = this,
-            zoom = me.olMap.getZoom();
-        Ext.each(me.layerZoom, function(l) {
-            l.layer.setVisibility(l.isVisible && (zoom >= l.minZoom) && (zoom <= l.maxZoom));
-        });
-    },
-    //
-    showObjectPopup: function(feature, data) {
-        var me = this,
-            showLinkId = "noc-ol-tip-show-link-" + me.id,
-            text, ttEl, showLink;
-        text = Ext.String.format(me.infoTemplate, data.name, data.model, showLinkId, data.id);
-        if(!Ext.Object.isEmpty(data.moname)) {
-            var listLenght = 10;
-            var objects = Object.keys(data.moname).map(function(key) {
-                return '<li><a href="api/card/view/managedobject/' + key + '/" target="_blank">'
-                    + data.moname[key].moname.replace(/\s/g, "&nbsp;") + '</a></li>'
-            }).slice(0, listLenght).join("");
-            text += "<br><hr>Objects:<br><ul>" + objects + "</ul>";
-            if(Object.keys(data.moname).length >= listLenght) {
-                text += "<br>More...";
-            }
-        }
-        if(me.infoPopup) {
-            me.olMap.removePopup(me.infoPopup);
-            me.infoPopup.destroy();
-            me.infoPopup = null;
-        }
-        me.infoPopup = new OpenLayers.Popup.FramedCloud(
-            "popup",
-            OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
-            null,
-            text,
-            null,
-            true
-        );
-        me.olMap.addPopup(me.infoPopup);
-        ttEl = Ext.get(me.infoPopup.contentDiv);
-        showLink = ttEl.select("#" + showLinkId).elements[0];
-        showLink.onclick = function() {
-            me.app.showObject(data.id);
-        }
-    },
-    //
-    onFeatureClick: function(e) {
-        var me = this;
-        if(!e.feature.attributes.object) {
+            zoom = me.map.getZoom();
+        if((zoom < layer.options.nocMinZoom) || (zoom > layer.options.nocMaxZoom)) {
+            // Not visible
+            layer.clearLayers();
             return;
         }
-        Ext.Ajax.request({
-            url: "/inv/inv/" + e.feature.attributes.object + "/plugin/map/object_data/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                me.showObjectPopup(e.feature, Ext.decode(response.responseText));
-            },
-            failure: function() {
-                NOC.error(__("Failed to get data"));
-            }
+        if(me.map.hasLayer(layer)) {
+            Ext.Ajax.request({
+                url: "/inv/inv/plugin/map/layers/" + me.getQuery(layer.options.nocCode),
+                method: 'GET',
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    layer.clearLayers();
+                    if(!Ext.Object.isEmpty(data)) {
+                        layer.addData(data);
+                    }
+                },
+                failure: function() {
+                    NOC.error(__('Failed to get layer'));
+                }
+            });
+        }
+    },
+    //
+    getQuery: function(layerCode) {
+        return Ext.String.format(layerCode + "/?bbox={0},EPSG%3A4326", this.map.getBounds().toBBoxString());
+    },
+    //
+    onRefresh: function() {
+        var me = this;
+        Ext.each(me.layers, function(layer) {
+            me.loadLayer(layer);
         });
     },
     //
-    onFeatureOver: function(e) {
+    createMap: function(data) {
         var me = this,
-            text = "text";
-        e.feature.renderIntent = "select";
-        e.feature.layer.drawFeature(e.feature);
+            osm,
+            mapDiv = "leaf-map-" + me.id,
+            mapDom = Ext.select("#" + mapDiv).elements[0];
+        osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {});
+        me.center = [data.y, data.x];
+        me.contextMenuData = data.add_menu;
+        me.initScale = data.zoom;
+        //
+        me.map = L.map(mapDom, {
+            zoomControl: false
+        }).setView(me.center, me.initScale);
+        me.map.addLayer(osm);
+        me.map.on("contextmenu", Ext.bind(me.onContextMenu, me));
+        me.map.on("moveend", Ext.bind(me.onRefresh, me));
+        me.map.on("zoomend", Ext.bind(me.onZoomEnd, me));
+        me.map.on("click", Ext.bind(me.onSetPositionClick, me));
+        //
+        L.control.zoom({
+            zoomInTitle: __("Zoom in..."),
+            zoomOutTitle: __("Zoom out...")
+        }).addTo(me.map);
+        //
+        me.layersControl = L.control.layers();
+        me.layersControl.addBaseLayer(osm, __("OpenStreetMap"));
+        me.layersControl.addBaseLayer(
+            L.tileLayer(
+                'http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                {
+                    // maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                }
+            ), __("Google Roadmap"));
+        me.layersControl.addBaseLayer(
+            L.tileLayer(
+                'http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',
+                {
+                    // maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                }
+            ), __("Google Hybrid"));
+        me.layersControl.addBaseLayer(
+            L.tileLayer(
+                'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+                {
+                    // maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                }
+            ), __("Google Satellite"));
+        me.layersControl.addBaseLayer(
+            L.tileLayer(
+                'http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+                {
+                    // maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                }
+            ), __("Google Terrain"));
+        me.layersControl.addTo(me.map);
+        me.layers = [];
+        Ext.each(data.layers, function(cfg) {
+            me.layers.push(me.createLayer(cfg, data.layer));
+        });
+        me.onRefresh();
     },
     //
-    onFeatureOut: function(e) {
-        var me = this;
-        e.feature.renderIntent = "default";
-        e.feature.layer.drawFeature(e.feature);
-    },
-    //
-    onChangeLayerVisibility: function(item, checked) {
-        var me = this;
+    visibilityHandler: function(e) {
+        var me = this, status = e.type === "add";
         Ext.Ajax.request({
             url: "/inv/inv/plugin/map/layer_visibility/",
             method: "POST",
             jsonData: {
-                layer: item.layerCode,
-                status: checked
+                layer: e.target.options.nocCode,
+                status: status
             },
             scope: me,
             success: function() {
-                Ext.each(me.layerZoom, function(v) {
-                    if(v.code == item.layerCode) {
-                        v.isVisible = checked;
-                        me.setLayerVisibility();
-                    }
-                });
+                var me = this;
+                if(status) {
+                    me.loadLayer(e.target);
+                }
             },
             failure: function() {
                 NOC.error(__("Failed to change layer settings"));
             }
         });
+
     },
     //
-    getContextMenuAddItems: function(items) {
+    centerToObject: function() {
         var me = this;
-        Ext.each(items, function(i) {
-            if(i.menu) {
-                i.menu = me.getContextMenuAddItems(i.menu);
-            } else if(i.objectTypeId) {
-                i.listeners = {
-                    scope: me,
-                    click: me.onContextMenuAdd
-                }
+        me.map.setView(me.center, me.initScale);
+        me.updateZoomButtons();
+    },
+    //
+    onFeatureClick: function(e) {
+        var me = this, result;
+        if(!e.feature.properties.object) {
+            return __("no object");
+        }
+        Ext.Ajax.request({
+            url: "/inv/inv/" + e.feature.properties.object + "/plugin/map/object_data/",
+            method: "GET",
+            async: false,
+            scope: me,
+            success: function(response) {
+                var me = this;
+                result = me.showObjectPopup(e.feature, Ext.decode(response.responseText));
+            },
+            failure: function() {
+                result = __("Failed to get data");
             }
         });
-        return items;
+        return result;
+    },
+    //
+    showObjectPopup: function(feature, data) {
+        var me = this,
+            showLinkId = "noc-leaf-tip-show-link-" + me.id,
+            text;
+        text = Ext.String.format(me.infoTemplate, data.name, data.model, showLinkId, data.id);
+        if(!Ext.Object.isEmpty(data.moname)) {
+            var listLength = 10;
+            var objects = Object.keys(data.moname).map(function(key) {
+                return '<li><a href="api/card/view/managedobject/' + key + '/" target="_blank">'
+                    + data.moname[key].moname.replace(/\s/g, "&nbsp;") + '</a></li>'
+            }).slice(0, listLength).join("");
+            text += "<br><hr>Objects:<br><ul>" + objects + "</ul>";
+            if(Object.keys(data.moname).length >= listLength) {
+                text += "<br>More...";
+            }
+        }
+        return text;
+    },
+    //
+    onContextMenu: function(event) {
+        var me = this,
+            m = me.getContextMenu();
+        me.event = event;
+        m.showAt(event.originalEvent.clientX, event.originalEvent.clientY);
     },
     //
     getContextMenu: function() {
-        var me = this;
+        var me = this,
+            addHandler = function(items) {
+                Ext.each(items, function(item) {
+                    if(item.hasOwnProperty("menu")) {
+                        addHandler(item.menu);
+                    } else if(item.hasOwnProperty("objectTypeId")) {
+                        item.listeners = {
+                            scope: me,
+                            click: me.onContextMenuAdd
+                        }
+                    }
+                });
+                return items;
+            };
         // Return cached
         if(me.contextMenu) {
             return me.contextMenu;
         }
-        // create new
-        // @todo: Install handlers?
         me.contextMenu = Ext.create("Ext.menu.Menu", {
             renderTo: me.mapDom,
             items: [
                 {
                     text: __("Add"),
-                    menu: me.getContextMenuAddItems(me.contextMenuData)
+                    menu: addHandler(me.contextMenuData)
                 }
             ]
         });
         return me.contextMenu;
     },
     //
-    onContextMenu: function(e) {
-        var me = this,
-            m = me.getContextMenu();
-        //
-        e = e ? e : window.event;
-        // Calculate map position
-        console.log(e.layerX, e.layerY);
-        me.newPosition = me.olMap.getLonLatFromPixel(new OpenLayers.Pixel(e.layerX, e.layerY));
-        me.newPosition.transform(me.projMap, me.projGeo);
-        // Show context menu
-        m.setLocalXY(e.layerX, e.layerY);
-        m.show();
-        // Disable default context menu
-        if(e.preventDefault) {
-            e.preventDefault(); // normal browsers
-        } else {
-            return false; // MSIE
-        }
-    },
-    //
-    onContextMenuAdd: function(item, e, eOpts) {
+    onContextMenuAdd: function(item) {
         var me = this;
         Ext.create("NOC.inv.inv.plugins.map.AddObjectForm", {
             app: me,
             objectModelId: item.objectTypeId,
             objectModelName: item.text,
-            newPosition: me.newPosition,
-            positionSRID: me.projGeo.projCode
+            newPosition: {
+                lon: me.event.latlng.lng,
+                lat: me.event.latlng.lat
+            },
+            positionSRID: "EPSG:4326"
         }).show();
     },
     //
-    reloadLayer: function(code) {
+    onZoomLevel: function(item) {
         var me = this;
-        Ext.each(me.layerZoom, function(l) {
-            if(l.code == code) {
-                l.layer.loaded = false;
-                l.layer.refresh({force: true});
-            }
-        });
+        me.map.setZoom(item.zoomLevel);
+        me.updateZoomButtons();
+    },
+    //
+    updateZoomButtons: function() {
+        var me = this;
+        me.zoomLevelButton.setText(me.zoomLevels[me.map.getZoom()]);
+    },
+    //
+    onZoomEnd: function() {
+        var me = this;
+        me.updateZoomButtons();
+    },
+    //
+    onSetPositionClick: function(e) {
+        var me = this;
+        if(me.setPositionButton.pressed) {
+            me.setPositionButton.toggle(false);
+            Ext.Ajax.request({
+                url: "/inv/inv/" + me.currentId + "/plugin/map/set_geopoint/",
+                method: "POST",
+                jsonData: {
+                    srid: "EPSG:4326",
+                    x: e.latlng.lng,
+                    y: e.latlng.lat
+                },
+                scope: me,
+                success: function() {
+                    var data = {
+                            crs: "EPSG:4326",
+                            type: "FeatureCollection",
+                            features: [
+                                {
+                                    geometry:
+                                        {
+                                            type: "Point",
+                                            coordinates: [e.latlng.lng, e.latlng.lat]
+                                        },
+                                    type: "Feature",
+                                    id: me.currentId,
+                                    properties:
+                                        {
+                                            object: me.currentId,
+                                            label: ""
+                                        }
+                                }]
+                        },
+                        layers = me.objectLayer.getLayers().filter(function(layer) {
+                            return layer.feature.id !== me.currentId
+                        });
+                    me.objectLayer.clearLayers();
+                    layers.map(function(layer) {
+                        layer.addTo(me.objectLayer);
+                    });
+                    me.objectLayer.addData(data);
+                    if(!me.map.hasLayer(me.objectLayer)) {
+                        me.objectLayer.addTo(me.map);
+                    }
+                },
+                failure: function() {
+                    NOC.error(__("Failed to set position"));
+                }
+            });
+        }
+    },
+    //
+    onSetPositionToggle: function(self) {
+        if(self.pressed) {
+            $('.leaflet-container').css('cursor', 'crosshair');
+        } else {
+            $('.leaflet-container').css('cursor', '');
+        }
     }
 });
