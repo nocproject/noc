@@ -45,19 +45,19 @@ class ProjectCard(BaseCard):
         # Get project's subinterfaces
         sub_interfaces = list(SubInterface.objects.filter(project=self.object).order_by("name"))
         # Get project's ASes
-        ases = list(AS.objects.filter(project=self.object).order_by("name"))
+        ases = list(AS.objects.filter(project=self.object).order_by("as_name"))
         # Get project's as-sets
         assets = list(ASSet.objects.filter(project=self.object).order_by("name"))
         # Get project's peers
-        peers = list(Peer.objects.filter(project=self.object).order_by("name"))
+        peers = list(Peer.objects.filter(project=self.object).order_by("peer_group"))
         # Get project's phone numbers
-        phonenumbers = list(PhoneNumber.objects.filter(project=self.object).order_by("name"))
+        phonenumbers = list(PhoneNumber.objects.filter(project=self.object).order_by("number"))
         # Get project'a phone ranges
         phoneranges = list(PhoneRange.objects.filter(project=self.object).order_by("name"))
         # Get project's phone numbers
         vpns = list(VPN.objects.filter(project=self.object).order_by("name"))
         # Get project'a phone ranges
-        vlans = list(VLAN.objects.filter(project=self.object).order_by("name"))
+        vlans = list(VLAN.objects.filter(project=self.object).order_by("id"))
         return {
             "object": self.object,
             "vrfs": vrfs,
