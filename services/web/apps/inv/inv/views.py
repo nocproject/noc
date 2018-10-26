@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import inspect
 import os
 # NOC modules
@@ -35,7 +36,7 @@ class InvApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         # Load plugins
-        from plugins.base import InvPlugin
+        from .plugins.base import InvPlugin
         self.plugins = {}
         for f in os.listdir("services/web/apps/inv/inv/plugins/"):
             if (not f.endswith(".py") or
@@ -52,23 +53,6 @@ class InvApplication(ExtApplication):
                     assert o.name
                     self.plugins[o.name] = o(self)
 
-    def get_root(self):
-        """
-        Get root container
-        """
-        if not hasattr(self, "root_container"):
-            rm = ObjectModel.objects.get(name="Root")
-            rc = list(Object.objects.filter(model=rm))
-            if len(rc) == 0:
-                raise Exception("No root object")
-            elif len(rc) == 1:
-                self.root_container = rc[0]
-                return self.root_container
-            else:
-                raise Exception("Multiple root objects")
-        else:
-            return self.root_container
-
     def get_plugin_data(self, name):
         return {
             "name": name,
@@ -78,27 +62,34 @@ class InvApplication(ExtApplication):
     @view("^node/$", method=["GET"],
           access="read", api=True)
     def api_node(self, request):
-        container = None
+        children = []
         if request.GET and "node" in request.GET:
             container = request.GET["node"]
-            if container == "root":
-                container = self.get_root()
-            elif not is_objectid(container):
-                raise Exception("Invalid node")
+            if is_objectid(container):
+                container = Object.get_by_id(container)
+                if not container:
+                    return self.response_not_found()
+                children = [
+                    (o.name, o)
+                    for o in Object.objects.filter(container=container.id)
+                ]
+                # Collect inner connections
+                children += [
+                    (name, o) for name, o, _ in container.get_inner_connections()
+                ]
+            elif container == "root":
+                cmodels = [
+                    d["_id"]
+                    for d in ObjectModel._get_collection().find({"data.container.container": True}, {"_id": 1})
+                ]
+                children = [
+                    (o.name, o)
+                    for o in Object.objects.filter(__raw__={"container": None, "model": {"$in": cmodels}})
+                ]
+
             else:
-                container = self.get_object_or_404(Object, id=container)
+                return self.response_bad_request()
         r = []
-        if not container:
-            container = self.get_root()
-        # Collect children objects
-        children = [
-            (o.name, o)
-            for o in Object.objects.filter(container=container.id)
-        ]
-        # Collect inner connections
-        children += [
-            (name, o) for name, o, _ in container.get_inner_connections()
-        ]
         # Build node interface
         for name, o in children:
             m_plugins = o.model.plugins or []
@@ -153,12 +144,17 @@ class InvApplication(ExtApplication):
     )
     def api_add_group(self, request, type, name, container=None,
                       serial=None):
-        if container is None:
-            c = self.get_root()
-        else:
-            c = self.get_object_or_404(Object, id=container)
-        m = self.get_object_or_404(ObjectModel, id=type)
-        o = Object(name=name, model=m, container=c.id)
+        if is_objectid(container):
+            c = Object.get_by_id(container)
+            if not c:
+                return self.response_not_found()
+            c = c.id
+        elif container:
+            return self.response_bad_request()
+        m = ObjectModel.get_by_id(type)
+        if not m:
+            return self.response_not_found()
+        o = Object(name=name, model=m, container=c)
         if serial and m.get_data("asset", "part_no0"):
             o.set_data("asset", "serial", serial)
         o.save()
@@ -208,9 +204,10 @@ class InvApplication(ExtApplication):
             "id": str(o.id),
             "name": o.name
         }]
-        root = self.get_root().id
-        while o.container and o.container != root:
-            o = Object.objects.get(id=o.container)
+        while o.container:
+            o = Object.get_by_id(o.container)
+            if not o:
+                break
             path = [{
                 "id": str(o.id),
                 "name": o.name
