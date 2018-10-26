@@ -114,12 +114,14 @@
                 <thead>
                     <th>{{ _("Object") }}</th>
                     <th>{{ _("Interface") }}</th>
+                    <th>{{ _("State") }}</th>
                 </thead>
                 <tbody>
                     {% for iface in interfaces %}
                         <tr>
                             <td><a href="/api/card/view/managedobject/{{ iface.managed_object.id }}/">{{ iface.managed_object.name }}</a></td>
                             <td>{{ iface.name }}</td>
+                            <td>{{ iface.state }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
