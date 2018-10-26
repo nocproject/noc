@@ -15,18 +15,16 @@ Ext.define("NOC.project.project.Application", {
     search: true,
     initComponent: function() {
         var me = this;
-        me.ITEM_RESOURCES = me.registerItem("NOC.project.project.ProjectResources");
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             formToolbar: [
-                {
-                    itemId: "resources",
-                    text: __("Resources"),
-                    glyph: NOC.glyph.list,
-                    tooltip: __("Show Allocated resources"),
-                    hasAccess: NOC.hasPermission("read"),
-                    scope: me,
-                    handler: me.onProjectResources
-                }
+                me.cardButton
             ],
             columns: [
                 {
@@ -68,13 +66,19 @@ Ext.define("NOC.project.project.Application", {
         });
         me.callParent();
     },
-    onProjectResources: function() {
+    onCard: function() {
         var me = this;
-        me.previewItem(me.ITEM_RESOURCES, me.currentRecord);
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/project/" + me.currentRecord.get("id") + "/"
+            );
+        }
     },
     //
     onPreview: function(record) {
         var me = this;
-        me.previewItem(me.ITEM_RESOURCES, record);
+        window.open(
+            "/api/card/view/project/" + record.get("id") + "/"
+        );
     }
 });
