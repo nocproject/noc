@@ -21,6 +21,28 @@
   tags:
     - config
 
+- name: Setup datastream_whitelist_access
+  template:
+    src: allow_ip_datastream.conf.j2
+    dest: "{{etc_prefix}}/nginx/allow_ip_datastream.conf"
+    owner: "{{nginx_user}}"
+  notify: reload nginx
+  when:
+    - datastream_whitelist_access is defined
+  tags:
+    - config
+
+- name: Setup nbi_whitelist_access
+  template:
+    src: allow_ip_nbi.conf.j2
+    dest: "{{etc_prefix}}/nginx/allow_ip_nbi.conf"
+    owner: "{{nginx_user}}"
+  notify: reload nginx
+  when:
+    - nbi_whitelist_access is defined
+  tags:
+    - config
+
 - name: place nginx ct template
   import_role:
     name: consul-template

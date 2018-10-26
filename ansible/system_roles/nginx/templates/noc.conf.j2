@@ -174,29 +174,6 @@ server {
     }
 {% endif %}
 
-{% if 'svc-datastream-exec' in groups and groups['svc-datastream-exec'] | length > 0 %}
-    # Datastream service api
-    location /api/datastream/ {
-        proxy_pass http://datastream;
-        auth_request /api/auth/auth/;
-        # internal;
-        gzip on;
-        gzip_types text/css text/x-js text/json;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Scheme $scheme;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        auth_request_set $user $upstream_http_remote_user;
-        proxy_set_header Remote-User $user;
-        auth_request_set $groups $upstream_http_remote_groups;
-        proxy_set_header Remote-Groups $groups;
-        auth_request_set $apiaccess $upstream_http_x_noc_api_access;
-        proxy_set_header X-NOC-API-Access $apiaccess;
-        access_log  {{ nginx_log_dir }}/datastream.access.log noc_format;
-    }
-{% endif %}
-
 {% if 'svc-mrt-exec' in groups and groups['svc-mrt-exec'] | length > 0 %}
     # mrt service api
     location /api/mrt/ {
@@ -265,6 +242,52 @@ server {
         proxy_set_header Remote-User $user;
         auth_request_set $groups $upstream_http_remote_groups;
         proxy_set_header Remote-Groups $groups;
+    }
+{% endif %}
+
+{% if 'svc-datastream-exec' in groups and groups['svc-datastream-exec'] | length > 0 %}
+
+    # datastream service api
+    location /api/datastream/ {
+        proxy_pass http://datastream;
+        auth_request /api/auth/auth/;
+        {% if datastream_whitelist_access and datastream_whitelist_access is defined and 'svc-datastream-exec' in groups and groups['svc-datastream-exec'] | length > 0 %}
+        include allow_ip_datastream.conf;
+        {% endif %}
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js text/json;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $apiaccess $upstream_http_x_noc_api_access;
+        proxy_set_header X-NOC-API-Access $apiaccess;
+        access_log  {{ nginx_log_dir }}/datastream.access.log noc_format;
+    }
+{% endif %}
+
+{% if 'svc-nbi-exec' in groups and groups['svc-nbi-exec'] | length > 0 %}
+
+    # nbi service api
+    location /api/nbi/ {
+        proxy_pass http://nbi;
+        auth_request /api/auth/auth/;
+        {% if nbi_whitelist_access and nbi_whitelist_access is defined and 'svc-nbi-exec' in groups and groups['svc-nbi-exec'] | length > 0 %}
+        include allow_ip_nbi.conf;
+        {% endif %}
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js text/json;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $apiaccess $upstream_http_x_noc_api_access;
+        proxy_set_header X-NOC-API-Access $apiaccess;
+        access_log  {{ nginx_log_dir }}/nbi.access.log noc_format;
     }
 {% endif %}
 
