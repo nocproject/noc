@@ -64,7 +64,7 @@ Ext.define("NOC.inv.inv.plugins.map.AddObjectForm", {
         me.callParent();
         me.form.getForm().setValues({
             objectmodel: "Zhopa",
-            display_position: me.newPosition.toString()
+            display_position: "lon=" + me.newPosition.lon + ",lat=" + me.newPosition.lat
         });
     },
     //
@@ -75,7 +75,6 @@ Ext.define("NOC.inv.inv.plugins.map.AddObjectForm", {
     onPressAdd: function() {
         var me = this,
             values = me.form.getValues();
-        console.log(values);
         Ext.Ajax.request({
             url: "/inv/inv/plugin/map/",
             method: "POST",
