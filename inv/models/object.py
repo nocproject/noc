@@ -41,7 +41,8 @@ id_lock = Lock()
 @on_save
 @on_delete_check(check=[
     ("sa.ManagedObject", "container"),
-    ("inv.CoveredObject", "object")
+    ("inv.CoveredObject", "object"),
+    ("inv.Object", "container")
 ])
 class Object(Document):
     """
@@ -63,7 +64,7 @@ class Object(Document):
     name = StringField()
     model = PlainReferenceField(ObjectModel)
     data = DictField()
-    container = ObjectIdField(required=False)
+    container = ReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
     # Map
     layer = ReferenceField(Layer)
