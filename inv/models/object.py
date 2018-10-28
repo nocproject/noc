@@ -13,7 +13,7 @@ import operator
 from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DictField, ObjectIdField,
+from mongoengine.fields import (StringField, DictField,
                                 ListField, PointField, ReferenceField,
                                 LongField)
 from mongoengine import signals
