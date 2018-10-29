@@ -27,6 +27,7 @@ class Script(BaseScript):
     TIMEOUT = 240
     BULK = False
 
+    rx_phys = re.compile(r"\S+\sinterface:\s(?P<ifname>\S+),\s", re.MULTILINE)
     rx_phy_name = re.compile(
         r"^Physical interface: (?P<ifname>\S+)"
         r"( \(\S+, \S+\))?( \(Extended Port)?\s*, "
@@ -78,12 +79,16 @@ class Script(BaseScript):
         l3_ids = {}
         vlans_requested = False
         interfaces = []
-        ifaces = self.scripts.get_interface_status()
-        time.sleep(10)
-        for I in ifaces:
-            if "." in I["interface"]:
-                continue
-            v = self.cli("show interfaces %s" % I["interface"])
+        ifaces = []
+
+        q = self.cli("show interfaces media | match interface:")
+        for q in q.splitlines():
+            match = self.rx_phys.search(q)
+            if match:
+                ifaces.append(match.group("ifname"))
+
+        for iface in ifaces:
+            v = self.cli("show interfaces %s" % iface)
             L = self.rx_log_split.split(v)
             phy = L.pop(0)
             phy = phy.replace(" )", "")
@@ -96,7 +101,7 @@ class Script(BaseScript):
                 iftype = "loopback"
             elif name.startswith("fxp") or name.startswith("me"):
                 iftype = "management"
-            elif name.startswith("ae") or name.startswith("reth"):
+            elif name.startswith("ae") or name.startswith("reth") or name.startswith("fab") or name.startswith("swfab"):
                 iftype = "aggregated"
             elif name.startswith("vlan"):
                 iftype = "SVI"
