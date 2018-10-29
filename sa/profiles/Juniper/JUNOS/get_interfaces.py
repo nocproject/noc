@@ -12,6 +12,7 @@ import time
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_mac
 
 
 class Script(BaseScript):
@@ -137,8 +138,9 @@ class Script(BaseScript):
             match = self.rx_phy_mac.search(phy)
             if match:
                 mac = match.group("mac")
-                iface["mac"] = mac
-                def_si["mac"] = mac
+                if is_mac(mac):
+                    iface["mac"] = mac
+                    def_si["mac"] = mac
             match = self.rx_mtu.search(phy)
             if match:
                 def_si["mtu"] = match.group("mtu")
