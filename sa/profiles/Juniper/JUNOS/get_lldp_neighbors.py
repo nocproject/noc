@@ -58,7 +58,6 @@ class Script(BaseScript):
     def execute_cli(self):
         return self.execute_switch()
 
-
     # Match mx, ex, qfx, acx
     def execute_switch(self):
         r = []
