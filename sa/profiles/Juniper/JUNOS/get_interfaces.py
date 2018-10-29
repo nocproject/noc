@@ -108,7 +108,7 @@ class Script(BaseScript):
                 iftype = "SVI"
             elif name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
                 iftype = "physical"
-            elif name.startswith(("ipip", "gre", "gr", "ip", "st")):
+            elif name.startswith(("gr", "ip", "st")):
                 iftype = "tunnel"
             else:
                 iftype = "unknown"
