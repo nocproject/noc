@@ -20,6 +20,7 @@ ignorable_redis_errors = (
     redis.exceptions.TimeoutError
 )
 
+
 class RedisCache(BaseCache):
     def __init__(self):
         super(RedisCache, self).__init__()
