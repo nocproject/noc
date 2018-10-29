@@ -97,20 +97,21 @@ class Script(BaseScript):
             if name.endswith(")"):
                 name = name[:-1]
             # Detect interface type
+
             if name.startswith("lo"):
                 iftype = "loopback"
-            elif name.startswith("fxp") or name.startswith("me"):
+            elif name.startswith(("fxp", "me", "em")):
                 iftype = "management"
-            elif name.startswith("ae") or name.startswith("reth") or name.startswith("fab") or name.startswith("swfab"):
+            elif name.startswith(("ae", "reth", "fab", "swfab")):
                 iftype = "aggregated"
-            elif name.startswith("vlan"):
+            elif name.startswith(("vlan", "vme", "irb")):
                 iftype = "SVI"
-            elif name.startswith("vme"):
-                iftype = "SVI"
-            elif name.startswith("irb"):
-                iftype = "SVI"
-            else:
+            elif name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
                 iftype = "physical"
+            elif name.startswith(("ipip", "gre", "gr", "ip", "st")):
+                iftype = "tunnel"
+            else:
+                iftype = "unknown"
             # Get interface parameters
             iface = {
                 "name": name,
