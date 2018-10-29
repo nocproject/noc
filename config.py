@@ -435,6 +435,11 @@ class Config(BaseConfig):
 
     pool = StringParameter(default=os.environ.get("NOC_POOL", ""))
 
+    class redis(ConfigSection):
+        addresses = ServiceParameter(service="redis", wait=True, full_result=True)
+        db = IntParameter(default=0)
+        default_ttl = SecondsParameter(default="1d")
+
     class rpc(ConfigSection):
         retry_timeout = StringParameter(
             default="0.1,0.5,1,3,10,30"

@@ -24,7 +24,7 @@ mistune==0.5
 mongoengine==0.15.3
 networkx==1.11
 numpy==1.9.2
-tornado==4.5
+tornado==4.5.3
 requests==2.2.1
 supervisor==3.3.1
 supervisor-serialrestart==0.1.1
@@ -43,4 +43,6 @@ pylibmc==1.5.1
 demjson==2.2.4
 crontab==0.22.0
 fs==2.0.21
-
+tornadis==0.8.1
+hiredis==0.2.0
+redis==2.10.6
