@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Ubiquiti.AirOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
 
     rx_version = re.compile("^\S+\.v(?P<version>[^@]+)$")
 
-    def execute(self):
+    def execute_cli(self):
         # Replace # with @ to prevent prompt matching
         v = self.cli("cat /etc/version").strip()
         v_match = self.rx_version.search(v)
@@ -31,3 +31,15 @@ class Script(BaseScript):
             "platform": board,
             "version": v_match.group("version")
         }
+
+    def execute_snmp(self):
+        try:
+            platform = self.snmp.get("1.2.840.10036.3.1.2.1.3.5")
+            version = self.snmp.get("1.2.840.10036.3.1.2.1.4.5")
+            return {
+                "vendor": "Ubiquiti",
+                "platform": platform,
+                "version": version
+            }
+        except self.snmp.TimeOutError:
+            raise self.UnexpectedResultError

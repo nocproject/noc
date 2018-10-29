@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Ubiquiti.AirOS.get_config
+# Ubiquiti.AirOS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetconfig import IGetConfig
+
+# NOC modules
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "Ubiquiti.AirOS.get_config"
-    interface = IGetConfig
 
-    def execute_cli(self):
-        config = self.cli("cat /tmp/system.cfg")
-        return self.cleaned_config(config)
+    name = "Ubiquiti.AirOS.get_interfaces"
+    interface = IGetInterfaces
+    BULK = False

@@ -68,7 +68,7 @@ class Script(BaseScript):
         if "::" in oid:
             oid = mib[oid]
         for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk):
+                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk()):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
