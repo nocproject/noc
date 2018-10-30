@@ -2,7 +2,7 @@
     "name": "Interface | RF | TxPower",
     "$collection": "pm.metrictypes",
     "uuid": "5a4b0978-bd41-408f-89ec-eb6403e653c6",
-    "scope__name": "Object",
+    "scope__name": "Interface",
     "field_name": "rf_tx_dbm",
     "field_type": "Float32",
     "description": "RF Tx power",
