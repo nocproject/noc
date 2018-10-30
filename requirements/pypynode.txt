@@ -24,7 +24,7 @@ mistune==0.5
 mongoengine==0.13.0
 networkx==1.11
 tornado==4.5
-requests==2.2.1
+requests==2.20.0
 supervisor==3.3.1
 supervisor-serialrestart==0.1.1
 mercurial>=3.4.2
