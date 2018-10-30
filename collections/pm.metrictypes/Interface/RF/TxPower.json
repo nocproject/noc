@@ -1,10 +1,10 @@
 {
-    "name": "HFC | RF Tx Power",
+    "name": "Interface | RF | TxPower",
     "$collection": "pm.metrictypes",
     "uuid": "5a4b0978-bd41-408f-89ec-eb6403e653c6",
     "scope__name": "Object",
-    "field_name": "rf_tx_power",
+    "field_name": "rf_tx_dbm",
     "field_type": "Float32",
-    "description": "RF output power",
+    "description": "RF Tx power",
     "measure": "dBuV"
 }
