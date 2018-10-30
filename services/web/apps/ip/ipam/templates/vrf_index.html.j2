@@ -99,10 +99,10 @@ document.currentAFI = {{ prefix.afi }};
 document.currentPrefix = "{{ prefix.prefix }}";
 </script>
 <!-- long description -->
-{% if long_description %}
+{% if prefix.description %}
     <div class="row" style="padding: 0 10px 0 10px;">
         <div class="description">
-            <pre>{{long_description}}</pre>
+            <pre>{{prefix.description}}</pre>
         </div>
     </div>
 {% endif %}
