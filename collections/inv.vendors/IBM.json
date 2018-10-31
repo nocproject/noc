@@ -1,8 +1,8 @@
 {
-    "name": "Agilent-Avago",
-    "uuid": "ade4c9a5-4d77-418a-ace5-26974bc94557",
-    "full_name": "Agilent-Avago",
-    "code": ["AGILENT"],
-    "site": "http://www.avagotech.com/",
+    "name": "IBM",
+    "uuid": "41a1d731-b78b-4a68-a5fe-630a43267deb",
+    "full_name": "IBM",
+    "code": ["IBM"],
+    "site": "https://www.ibm.com/",
     "$collection": "inv.vendors"
 }
