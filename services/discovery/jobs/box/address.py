@@ -534,5 +534,5 @@ class AddressCheck(DiscoveryCheck):
         if prefix.profile.seen_propagation_policy == "E":
             return  # Do not propagate upwards
         # Propagate upwards
-        if prefix.parent and prefix.parent.seen_propagation_policy != "D":
+        if prefix.parent and prefix.parent.profile.seen_propagation_policy != "D":
             self.propagate_seen(prefix.parent)

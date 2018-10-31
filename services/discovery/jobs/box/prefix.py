@@ -340,5 +340,5 @@ class PrefixCheck(DiscoveryCheck):
         prefix.fire_event("seen")
         self.propagated_prefixes.add(prefix.id)
         if (prefix.profile.seen_propagation_policy == "P" and
-                prefix.parent and prefix.parent.seen_propagation_policy != "D"):
+                prefix.parent and prefix.parent.profile.seen_propagation_policy != "D"):
             self.fire_seen(prefix.parent)
