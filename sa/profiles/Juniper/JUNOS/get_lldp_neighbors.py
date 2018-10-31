@@ -56,7 +56,9 @@ class Script(BaseScript):
     }
 
     def execute_cli(self):
-        return self.execute_switch()
+        if self.is_has_lldp:
+            return self.execute_switch()
+        raise self.NotSupportedError()
 
     # Match mx, ex, qfx, acx
     def execute_switch(self):
