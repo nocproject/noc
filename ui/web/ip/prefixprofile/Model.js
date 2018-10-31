@@ -77,6 +77,10 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "seen_propagation_policy",
+            type: "string"
         }
     ]
 });

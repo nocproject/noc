@@ -48,6 +48,7 @@ class PrefixCheck(DiscoveryCheck):
     name = "prefix"
 
     def handler(self):
+        self.propagated_prefixes = set()
         prefixes = self.get_prefixes()
         self.sync_prefixes(prefixes)
 
@@ -206,7 +207,7 @@ class PrefixCheck(DiscoveryCheck):
             p.source
         )
         p.save()
-        p.fire_event("seen")
+        self.fire_seen(p)
         metrics["prefix_created"] += 1
 
     def apply_prefix_changes(self, prefix, discovered_prefix):
@@ -250,7 +251,7 @@ class PrefixCheck(DiscoveryCheck):
                 discovered_prefix.prefix, discovered_prefix.vpn_id
             )
             metrics["prefix_update_denied"] += 1
-        prefix.fire_event("seen")
+        self.fire_seen(prefix)
 
     def has_prefix_permission(self, vrf, prefix):
         """
@@ -327,3 +328,17 @@ class PrefixCheck(DiscoveryCheck):
             prefix.prefix.startswith("169.254.") or
             prefix.prefix.startswith("fe80:")
         )
+
+    def fire_seen(self, prefix):
+        """
+        Fire `seen` event and process `seen_propagation_policy`
+        :param prefix:
+        :return:
+        """
+        if prefix.id in self.propagated_prefixes:
+            return  # Already processed
+        prefix.fire_event("seen")
+        self.propagated_prefixes.add(prefix.id)
+        if (prefix.profile.seen_propagation_policy == "P" and
+                prefix.parent and prefix.parent.seen_propagation_policy != "D"):
+            self.fire_seen(prefix.parent)

@@ -52,6 +52,7 @@ class AddressCheck(DiscoveryCheck):
     name = "address"
 
     def handler(self):
+        self.propagated_prefixes = set()
         addresses = self.get_addresses()
         self.sync_addresses(addresses)
 
@@ -333,7 +334,7 @@ class AddressCheck(DiscoveryCheck):
             a.name, a.fqdn, a.mac, a.profile.name, a.source
         )
         a.save()
-        a.fire_event("seen")
+        self.fire_seen(a)
         metrics["address_created"] += 1
 
     def apply_address_changes(self, address, discovered_address):
@@ -401,7 +402,7 @@ class AddressCheck(DiscoveryCheck):
                 discovered_address.address
             )
             metrics["address_update_denied"] += 1
-        address.fire_event("seen")
+        self.fire_seen(address)
 
     def has_address_permission(self, vrf, address):
         """
@@ -505,3 +506,33 @@ class AddressCheck(DiscoveryCheck):
             address.address == "::1" or
             address.address.startswith("fe80:")
         )
+
+    def fire_seen(self, address):
+        """
+        Fire `seen` event and process `seen_propagation_policy`
+        :param address:
+        :return:
+        """
+        address.fire_event("seen")
+        if address.profile.seen_propagation_policy == "D":
+            return  # Disabled
+        self.propagate_seen(address.prefix)
+
+    def propagate_seen(self, prefix):
+        """
+        Propagate `seen` through prefix hierarchy
+        :param prefix:
+        :return:
+        """
+        if prefix.id in self.propagated_prefixes:
+            return  # Already processed
+        self.propagated_prefixes.add(prefix.id)
+        if prefix.profile.seen_propagation_policy == "D":
+            return  # Disabled
+        # Fire seen
+        prefix.fire_event("seen")
+        if prefix.profile.seen_propagation_policy == "E":
+            return  # Do not propagate upwards
+        # Propagate upwards
+        if prefix.parent and prefix.parent.seen_propagation_policy != "D":
+            self.propagate_seen(prefix.parent)

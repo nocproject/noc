@@ -69,6 +69,14 @@ class PrefixProfile(Document):
             ("D", "Disable")
         ], default="D"
     )
+    # Send seen event to parent
+    seen_propagation_policy = StringField(
+        choices=[
+            ("P", "Propagate"),
+            ("E", "Enable"),
+            ("D", "Disable")
+        ], default="P"
+    )
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems

@@ -79,6 +79,10 @@ Ext.define("NOC.ip.addressprofile.Model", {
             name: "fqdn_template__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "seen_propagation_policy",
+            type: "string"
         }
     ]
 });
