@@ -83,10 +83,7 @@ class Script(BaseScript):
         ifaces = []
 
         q = self.cli("show interfaces media | match interface:")
-        for q in q.splitlines():
-            match = self.rx_phys.search(q)
-            if match:
-                ifaces.append(match.group("ifname"))
+        ifaces = self.rx_phys.findall(q)
 
         for iface in ifaces:
             v = self.cli("show interfaces %s" % iface)
@@ -98,21 +95,28 @@ class Script(BaseScript):
             if name.endswith(")"):
                 name = name[:-1]
             # Detect interface type
-
             if name.startswith("lo"):
                 iftype = "loopback"
-            elif name.startswith(("fxp", "me", "em")):
+            elif name.startswith(("fxp", "me")):
                 iftype = "management"
             elif name.startswith(("ae", "reth", "fab", "swfab")):
                 iftype = "aggregated"
-            elif name.startswith(("vlan", "vme", "irb")):
+            elif name.startswith(("vlan", "vme")):
+                iftype = "SVI"
+            elif name.startswith("irb"):
                 iftype = "SVI"
             elif name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
                 iftype = "physical"
             elif name.startswith(("gr", "ip", "st")):
                 iftype = "tunnel"
+            elif name.startswith("em"):
+                if self.is_work_em:
+                    iftype = "physical"
+                else:
+                    iftype = "management"
             else:
                 iftype = "unknown"
+
             # Get interface parameters
             iface = {
                 "name": name,
@@ -138,6 +142,7 @@ class Script(BaseScript):
             match = self.rx_phy_mac.search(phy)
             if match:
                 mac = match.group("mac")
+                # is_mac() needed for gre interface, because in the field Current address: Unspecified
                 if is_mac(mac):
                     iface["mac"] = mac
                     def_si["mac"] = mac
@@ -222,9 +227,8 @@ class Script(BaseScript):
                     elif proto == "aenet":
                         # Aggregated
                         match = self.rx_log_ae.search(p)
-                        if match:
-                            bundle = match.group("bundle")
-                            iface["aggregated_interface"] = bundle
+                        bundle = match.group("bundle")
+                        iface["aggregated_interface"] = bundle
                     elif (
                         proto.lower() == "eth-switch" or
                         proto.lower() == "multiservice"
