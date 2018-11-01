@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # maintenance.maintenance application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ class MaintenanceApplication(ExtDocApplication):
             "escalation_tt": None,
             "is_completed": o.is_completed,
             "direct_objects": [],
+            "affected_objects": [],
             "direct_segments": [],
             "subject": o.subject,
             "time_pattern": o.time_pattern.id if o.time_pattern else None,
