@@ -1,10 +1,8 @@
 ---
 - name: Install FreeBSD system packages
   pkgng:
-    name: "{{item}}"
+    name: py27-virtualenv
     state: present
-  with_items:
-    - py27-virtualenv
   tags:
     - requirements
 

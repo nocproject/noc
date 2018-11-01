@@ -7,7 +7,6 @@
 - block:
     - name: Clone NOC
       command: git clone "{{noc_repo}}" "{{noc_root}}"
-      creates: "{{noc_root}}/.git"
       environment:
         https_proxy: "{{http_proxy}}"
 

@@ -36,16 +36,17 @@
 
 - name: ReInstall MongoDB on version change
   apt:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: latest
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   when: mongo_repo_stat.changed
-  with_items:
-    - mongodb-org
-    - mongodb-org-server
-    - mongodb-org-shell
-    - mongodb-org-tools
+  vars:
+    packages:
+      - mongodb-org
+      - mongodb-org-server
+      - mongodb-org-shell
+      - mongodb-org-tools
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

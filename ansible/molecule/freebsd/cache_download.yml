@@ -17,9 +17,18 @@
   vars:
     ansible_python_interpreter: /usr/bin/python
 
+- name: update pkg
+  pkgng:
+    name: pkg
+    state: latest
+  environment:
+    IGNORE_OSVERSION: "yes"
+
 - name: install minio client
   pkgng:
     name: minio-client
+  environment:
+    IGNORE_OSVERSION: "yes"
 
 - name: config cache url
   command: "minio-client config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}"

@@ -1,11 +1,12 @@
 ---
 - name: Install CentOS system packages
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     update_cache: "True"
-  with_items:
-    - libssh2
-    - libssh2-devel
+  vars:
+    packages:
+      - libssh2
+      - libssh2-devel
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

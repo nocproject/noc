@@ -1,11 +1,9 @@
 ---
 - name: Install RedHat consul depends
   yum:
-    name: "{{ item }}"
+    name: python-virtualenv
     state: present
     update_cache: "True"
-  with_items:
-    - python-virtualenv
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

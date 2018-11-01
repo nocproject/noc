@@ -36,21 +36,22 @@
 
 - name: Install RedHat system packages 1/2
   yum:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: present
     update_cache: "True"
-  with_items:
-    - git
-    - python-virtualenv
-    - gcc
-    - postgresql{{postgres_version|replace(".","")}}
-    - postgresql{{postgres_version|replace(".","")}}-devel
-    - patch
-    - libffi
-    - libffi-devel
-    - libmemcached
-    - zlib-devel
-    - bzip2
+  vars:
+    packages:
+      - git
+      - python-virtualenv
+      - gcc
+      - postgresql{{postgres_version|replace(".","")}}
+      - postgresql{{postgres_version|replace(".","")}}-devel
+      - patch
+      - libffi
+      - libffi-devel
+      - libmemcached
+      - zlib-devel
+      - bzip2
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -59,11 +60,12 @@
 
 - name: Install RedHat system packages 2/2
   yum:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: present
-  with_items:
-    - jemalloc
-    - libmemcached-devel
+  vars:
+    packages:
+      - jemalloc
+      - libmemcached-devel
   environment:
     http_proxy: "{{http_proxy}}"
 

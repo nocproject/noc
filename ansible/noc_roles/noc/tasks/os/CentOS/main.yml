@@ -15,11 +15,13 @@
 
 - name: Install CentOS system packages 1/2
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
-    update_cache: "False"
-  with_items:
-    - epel-release
+    update_cache: "True"
+  become: "True"
+  vars:
+    packages:
+      - epel-release
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -28,24 +30,25 @@
 
 - name: Install CentOS system packages 2/2
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: "True"
-  with_items:
-    - git
-    - patch
-    - python-virtualenv
-    - gcc
-    - postgresql{{ postgres_version|replace(".","") }}
-    - postgresql-devel
-    - postgresql{{ postgres_version|replace(".","") }}-devel
-    - libffi
-    - libffi-devel
-    - libmemcached
-    - libmemcached-devel
-    - zlib-devel
-    - jemalloc
-    - bzip2
+  vars:
+    packages:
+      - git
+      - patch
+      - python-virtualenv
+      - gcc
+      - postgresql{{ postgres_version|replace(".","") }}
+      - postgresql-devel
+      - postgresql{{ postgres_version|replace(".","") }}-devel
+      - libffi
+      - libffi-devel
+      - libmemcached
+      - libmemcached-devel
+      - zlib-devel
+      - jemalloc
+      - bzip2
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

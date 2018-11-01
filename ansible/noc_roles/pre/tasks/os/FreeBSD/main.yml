@@ -8,17 +8,26 @@
   tags:
     - config
 
+- name: Force upgrade catalog
+  become: "True"
+  command: pkg update -f
+  environment:
+    IGNORE_OSVERSION: "yes"
+  when:
+    - molecule_yml is defined
+
 - name: Install FreeBSD system packages
   pkgng:
-    name: "{{item}}"
+    name: "{{ packages }}"
     state: present
   become: "True"
-  with_items:
-    - ca_root_nss
-    - sudo
-    - curl
-    - unzip
-    - gtar
+  vars:
+    packages:
+      - ca_root_nss
+      - sudo
+      - curl
+      - unzip
+      - gtar
   tags:
     - requirements
 

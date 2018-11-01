@@ -2,16 +2,17 @@
 - name: Install Ubuntu system packages
   become: "True"
   apt:
-    name: "{{item}}"
+    name: "{{ packages }}"
     update_cache: "True"
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  with_items:
-    - ca-certificates
-    - unzip
-    - sudo
-    - curl
-    - apt-transport-https
-    - dbus  # to setup hostname
+  vars:
+    packages:
+      - ca-certificates
+      - unzip
+      - sudo
+      - curl
+      - apt-transport-https
+      - dbus  # to setup hostname
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

@@ -47,24 +47,25 @@
 
 - name: Install OEL system packages
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
     update_cache: "True"
-  with_items:
-    - git
-    - patch
-    - python-virtualenv
-    - gcc
-    - postgresql{{ postgres_version|replace(".","") }}
-    - postgresql-devel
-    - postgresql{{ postgres_version|replace(".","") }}-devel
-    - libffi
-    - libffi-devel
-    - libmemcached
-    - libmemcached-devel
-    - zlib-devel
-    - jemalloc
-    - bzip2
+  vars:
+    packages:
+      - git
+      - patch
+      - python-virtualenv
+      - gcc
+      - postgresql{{ postgres_version|replace(".","") }}
+      - postgresql-devel
+      - postgresql{{ postgres_version|replace(".","") }}-devel
+      - libffi
+      - libffi-devel
+      - libmemcached
+      - libmemcached-devel
+      - zlib-devel
+      - jemalloc
+      - bzip2
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
