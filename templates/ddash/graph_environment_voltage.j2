@@ -12,7 +12,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n  $timeSeries as t, \n  avg(voltage) as `Environment | Voltage`\nFROM \n  $table \nWHERE managed_object=$bi_id \n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "query": "SELECT \n    t, \n    groupArray((sensor, Voltage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as sensor, \n        avg(voltage) as `Voltage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        and like(path[4],'Voltage%')\n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "database": "noc",
       "tableLoading": false,
       "table": "environment",
