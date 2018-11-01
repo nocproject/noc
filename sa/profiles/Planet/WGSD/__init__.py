@@ -3,12 +3,13 @@
 # Vendor: Planet
 # OS:     WGSD
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.lib.validators import is_int
 
 
 class Profile(BaseProfile):
@@ -35,9 +36,19 @@ class Profile(BaseProfile):
         "e": "physical",    # Ethernet
         "g": "physical",    # GigabitEthernet
         "c": "aggregated",  # Port-channel/Portgroup
+        "v": "SVI"  # VLAN,
 
     }
 
     @classmethod
     def get_interface_type(cls, name):
         return cls.INTERFACE_TYPES.get((name[:1]).lower())
+
+    def convert_interface_name(self, s):
+        """
+        >>> Profile().convert_interface_name("19")
+        'vlan 19'
+        """
+        if is_int(s):
+            return "vlan %s" % s
+        return s

@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Planet.WGSD.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 # NOC modules
+from noc.lib.text import parse_table
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
@@ -48,10 +49,12 @@ class Script(BaseScript):
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
-    rx_sh_int_des = rx_in = re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)"
-                                       r"\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
-                                       re.MULTILINE)
-    rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
+    rx_sh_int_des = re.compile(
+        r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)"
+        r"\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
+        re.MULTILINE)
+    rx_sh_int_des2 = re.compile(
+        r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(
         r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
@@ -72,6 +75,7 @@ class Script(BaseScript):
 
     def execute(self):
         d = {}
+
         if self.has_snmp():
             try:
                 for s in self.snmp.getnext("1.3.6.1.2.1.31.1.1.1.1"):
@@ -90,6 +94,7 @@ class Script(BaseScript):
                     }
             except self.snmp.TimeOutError:
                 pass
+
         # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -184,13 +189,11 @@ class Script(BaseScript):
                     iface["enabled_protocols"] += ["LACP"]
             iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
             # Vlans
-            """
-            cmd = self.cli("show interfaces switchport %s" % name)
-            time.sleep(1)
+            cmd = self.cli("show interfaces switchport ethernet %s" % name)
             rcmd = cmd.split("\n\n")
             tvlan = []
             utvlan = None
-            for vlan in parse_table(rcmd[0]):
+            for vlan in parse_table(rcmd[1]):
                 vlan_id = vlan[0]
                 rule = vlan[2]
                 if rule == "Tagged":
@@ -201,7 +204,6 @@ class Script(BaseScript):
             if utvlan:
                 iface["subinterfaces"][0]["untagged_vlan"] = utvlan
             cmd = self.cli("show ip interface %s" % name)
-            time.sleep(1)
             for match in self.rx_sh_ip_int.finditer(cmd):
                 if not match:
                     continue
@@ -218,15 +220,12 @@ class Script(BaseScript):
                     enabled_afi += ["IPv4"]
                 iface["subinterfaces"][0]["enabled_afi"] = enabled_afi
                 iface["subinterfaces"][0][ip_interfaces] = ip_list
-            """
 
             interfaces += [iface]
 
         ip_iface = self.cli("show ip interface")
         for match in self.rx_sh_ip_int.finditer(ip_iface):
             ifname = match.group("interface")
-            if "vlan" in ifname:
-                continue
             typ = self.profile.get_interface_type(ifname)
             ip = match.group("ip")
             netmask = match.group("mask")
@@ -253,7 +252,7 @@ class Script(BaseScript):
             else:
                 o_stat = True
             iface = {
-                "name": name,
+                "name": ifname,
                 "type": typ,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
