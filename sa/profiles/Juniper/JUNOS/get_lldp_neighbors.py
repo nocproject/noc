@@ -8,10 +8,12 @@
 
 # Python modules
 import re
+import six
 # NOC modules
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.base import IntParameter
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -54,6 +56,21 @@ class Script(BaseScript):
         "Interface name": 5,
         "Locally assigned": 7
     }
+
+    def get_local_iface(self):
+        r = {}
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        # Get LocalPort Table
+        for v in self.snmp.get_tables([mib["LLDP-MIB::lldpLocPortNum"],
+                                       mib["LLDP-MIB::lldpLocPortIdSubtype"],
+                                       mib["LLDP-MIB::lldpLocPortId"],
+                                       mib["LLDP-MIB::lldpLocPortDesc"]]):
+            iface_name = names[int(v[3])]
+            if iface_name.endswith(".0"):
+                iface_name = iface_name[:-2]
+            r[v[0]] = {"local_interface": iface_name,
+                       "local_interface_subtype": v[2]}
+        return r
 
     def execute_cli(self):
         if self.is_has_lldp:
