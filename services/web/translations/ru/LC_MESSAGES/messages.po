@@ -206,7 +206,7 @@ msgstr "Оплачен до"
 
 #: services/web/apps/dns/reportmissedp2p/views.py:19
 msgid "Missed Link Addresses"
-msgstr "Отсутсвуют адреса линка"
+msgstr "Отсутствуют адреса линка"
 
 #: services/web/apps/dns/reportmissedreverse/views.py:17
 msgid "Missed Reverse Zones"
