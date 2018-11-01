@@ -9,6 +9,7 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -29,6 +30,15 @@ class Script(BaseScript):
         """
         r = self.cli("show lldp | match Enabled")
         return "Enabled" in r
+
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled
+        """
+        for v, r in self.snmp.getnext(mib["LLDP-MIB::lldpPortConfigTLVsTxEnable"], bulk=False):
+            if r != '\x00':
+                return True
+        return False
 
     @false_on_cli_error
     def has_oam_cli(self):

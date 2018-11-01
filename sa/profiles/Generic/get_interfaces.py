@@ -163,7 +163,7 @@ class Script(BaseScript):
                 iface_name, num = iface["interface"].rsplit(".", 1)
                 if num.isdigit():
                     vlan_ids = int(iface["interface"].rsplit(".", 1)[-1])
-                    if vlan_ids < 4095:
+                    if 1 <= vlan_ids < 4095:
                         s["vlan_ids"] = vlan_ids
                 if l in ip_ifaces:
                     s["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]
