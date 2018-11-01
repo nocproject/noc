@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Huawei.VRP.get_vlans
+# Generic.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -15,7 +13,7 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Huawei.VRP.get_vlans"
+    name = "Generic.get_vlans"
     interface = IGetVlans
 
     def execute_snmp(self, **kwargs):
@@ -51,26 +49,4 @@ class Script(BaseScript):
                 result, cmp=lambda x, y: (x["vlan_id"] > y["vlan_id"]) - (x["vlan_id"] < y["vlan_id"])
             )
         else:
-            raise self.NotSupportedError()
-
-    def execute_cli(self):
-        # Try CLI
-        rx_vlan_line_vrp5 = re.compile(
-            r"^(?P<vlan_id>\d{1,4})\s*?.*?",
-            re.IGNORECASE | re.DOTALL | re.MULTILINE)
-        rx_vlan_line_vrp3 = re.compile(
-            r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?"
-            r"(?:Name|Description):\s+(?P<name>.*?)\n"
-            r".*?(\n\n|$)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
-
-        if self.is_kernelgte_5:
-            vlans = self.cli("display vlan", cached=True)
-            return [{
-                "vlan_id": int(match.group("vlan_id"))
-            } for match in rx_vlan_line_vrp5.finditer(vlans)]
-        else:
-            vlans = self.cli("display vlan all", cached=True)
-            return [{
-                "vlan_id": int(match.group("vlan_id")),
-                "name": match.group("name")
-            } for match in rx_vlan_line_vrp3.finditer(vlans)]
+            raise NotImplementedError()
