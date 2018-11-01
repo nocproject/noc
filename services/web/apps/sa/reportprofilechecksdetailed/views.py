@@ -100,18 +100,21 @@ class ReportFilterApplication(SimpleReport):
             data += [SectionRow(name=pool.name)]
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
-        mos = set(mos.values_list("id", flat=True))
+        mos = list(mos.values_list("id", flat=True).order_by("id"))
+        mos_s = set(mos)
         report = ReportModelFilter()
         result = report.proccessed(",".join(columns))
 
-        mo_hostname = ReportObjectsHostname1(sync_ids=sorted(mos))
+        mo_hostname = ReportObjectsHostname1(sync_ids=mos)
         mo_hostname = mo_hostname.get_dictionary()
-        d_result = ReportDiscoveryResult(sync_ids=sorted(mos))
+        d_result = ReportDiscoveryResult(sync_ids=mos)
         d_result = d_result.get_dictionary()
         for col in columns:
-            for mo_id in result[col.strip()].intersection(mos):
+            for mo_id in result[col.strip()].intersection(mos_s):
                 mo = ManagedObject.get_by_id(mo_id)
-                problem = self.decode_problem(d_result[mo_id])
+                problem = self.decode_problem(d_result.get(mo_id))
+                if not problem and mo_id not in d_result:
+                    problem = "Discovery disabled"
                 data += [(
                     mo.name,
                     mo.address,
