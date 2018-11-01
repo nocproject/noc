@@ -12,6 +12,7 @@ import re
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 from noc.core.mib import mib
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -39,6 +40,13 @@ class Script(BaseScript):
         "show ip sla configuration",
         "show ip sla monitor configuration"
     ]
+
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled
+        """
+        r = self.snmp.get(mib["LLDP-MIB::lldpLocChassisIdSubtype", 0])
+        return is_int(r) and r >= 1
 
     @false_on_cli_error
     def has_lldp_cli(self):
@@ -78,8 +86,7 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show spanning-tree")
-        if ("No spanning tree instance exists" in r or
-                "No spanning tree instances exist" in r):
+        if ("No spanning tree instance exists" in r or "No spanning tree instances exist" in r):
             return False
         return True
 
@@ -127,7 +134,7 @@ class Script(BaseScript):
         else:
             return False
 
-    rx_ip_sla_probe_entry = re.compile("Entry Number: \d+",
+    rx_ip_sla_probe_entry = re.compile(r"Entry Number: \d+",
                                        re.IGNORECASE | re.MULTILINE)
 
     @false_on_cli_error
