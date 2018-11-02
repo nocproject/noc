@@ -82,7 +82,8 @@ Ext.define("NOC.ip.addressprofile.Model", {
         },
         {
             name: "seen_propagation_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "D"
         }
     ]
 });
