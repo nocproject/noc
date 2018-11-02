@@ -561,18 +561,6 @@ class Object(Document):
         return cls.objects.filter(data__management__managed_object=mo)
 
     @classmethod
-    def get_root(cls):
-        """
-        Returns Root container
-        """
-        root = getattr(cls, "_root_container", None)
-        if not root:
-            rm = ObjectModel.objects.get(name="Root")
-            root = Object.objects.get(model=rm.id)
-            cls._root_container = root
-        return root
-
-    @classmethod
     def get_by_path(cls, path, hints=None):
         """
         Get object by given path.
@@ -580,7 +568,7 @@ class Object(Document):
         :param hints: {name: object_id} dictionary for getting object in path
         :returns: Object instance. None if not found
         """
-        current = cls.get_root()
+        current = Object.objects.filter(name=path[0], container=None).first()
         for p in path:
             if not current:
                 break

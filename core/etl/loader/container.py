@@ -58,10 +58,10 @@ class ContainerLoader(BaseLoader):
                 if " | " in path:
                     parent = self.get_container(path.rsplit(" | ", 1)[0])
                 else:
-                    parent = Object.get_root()
+                    parent = None
                 self.containers[path] = Object(
                     name=pp[-1],
-                    container=parent.id,
+                    container=parent.id if parent else None,
                     model=self.get_model(self.CONTAINER_MODEL)
                 )
                 self.containers[path].save()
