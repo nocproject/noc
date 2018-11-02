@@ -23,21 +23,44 @@
         - groups['svc-clickhouse-exec'] | length > 1
         - "'svc-ha-clickhouse-exec' not in groups"
 
-    - name: check clickhouse server for sse42 support
-      command: grep -q sse4_2 /proc/cpuinfo
-      register: sse42_support
-      failed_when: "False"
-      changed_when: "False"
-      check_mode: "False"
+    - block:
+        - name: check clickhouse server for sse42 support
+          command: grep -q sse4_2 /proc/cpuinfo
+          register: sse42_support
+          failed_when: "False"
+          changed_when: "False"
+          check_mode: "False"
 
-    - name: fail if SSE 4.2 not supported
-      fail:
-        msg: |
-          Clickhouse role have to be set on server with sse42 support.
-          More info https://clickhouse.yandex/docs/en/getting_started/
-          Quick test with "grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported""
+        - name: fail if SSE 4.2 not supported
+          fail:
+            msg: |
+              Clickhouse role have to be set on server with sse42 support.
+              More info https://clickhouse.yandex/docs/en/getting_started/
+              Quick test with "grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported""
+          when:
+            - sse42_support.rc != 0
       when:
-        - sse42_support.rc != 0
+        - ansible_distribution != 'FreeBSD'
+
+    - block:
+        - name: check clickhouse server for sse42 support
+          command: grep -q SSE4.2 /var/run/dmesg.boot
+          register: sse42_support
+          failed_when: "False"
+          changed_when: "False"
+          check_mode: "False"
+
+        - name: fail if SSE 4.2 not supported
+          fail:
+            msg: |
+              Clickhouse role have to be set on server with sse42 support.
+              More info https://clickhouse.yandex/docs/en/getting_started/
+              Quick test with "grep -q SSE4.2 /var/run/dmesg.boot && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported""
+          when:
+            - sse42_support.rc != 0
+      when:
+        - ansible_distribution = 'FreeBSD'
+
   when:
     - has_svc_clickhouse is defined
   tags:
