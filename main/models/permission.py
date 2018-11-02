@@ -16,6 +16,7 @@ from django.contrib.auth.models import User, Group
 import cachetools
 
 perm_lock = Lock()
+id_lock = Lock()
 
 
 class Permission(Model):
@@ -41,10 +42,28 @@ class Permission(Model):
     groups = ManyToManyField(
         Group, related_name="noc_group_permissions")
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        p = Permission.objects.filter(id=id)[:1]
+        if p:
+            return p[0]
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        p = Permission.objects.filter(name=name)[:1]
+        if p:
+            return p[0]
+        return None
 
     def get_implied_permissions(self):
         if not self.implied:
@@ -175,12 +194,15 @@ class Permission(Model):
             site.autodiscover()
         new_perms = set()
         implied_permissions = {}
+        diverged_permissions = {}  # new -> old
         for app in site.apps.values():
             new_perms = new_perms.union(app.get_permissions())
             for p in app.implied_permissions:
                 ips = sorted([normalize(app, pp)
                               for pp in app.implied_permissions[p]])
                 implied_permissions[normalize(app, p)] = ips
+            for p in app.diverged_permissions:
+                diverged_permissions[normalize(app, p)] = normalize(app, app.diverged_permissions[p])
         # Check all implied permissions are present
         for p in implied_permissions:
             if p not in new_perms:
@@ -191,11 +213,14 @@ class Permission(Model):
         #
         old_perms = set(Permission.objects.values_list("name", flat=True))
         # New permissions
+        created_perms = {}  # name -> permission
         for name in new_perms - old_perms:
             # @todo: add implied permissions
-            Permission(name=name, implied=get_implied(name)).save()
+            p = Permission(name=name, implied=get_implied(name))
+            p.save()
             print("+ %s" % name)
-        # Check impiled permissions match
+            created_perms[name] = p
+        # Check implied permissions match
         for name in old_perms.intersection(new_perms):
             implied = get_implied(name)
             p = Permission.objects.get(name=name)
@@ -207,3 +232,20 @@ class Permission(Model):
         for name in old_perms - new_perms:
             print("- %s" % name)
             Permission.objects.get(name=name).delete()
+        # Diverge created permissions
+        for name in created_perms:
+            op_name = diverged_permissions.get(name)
+            if not op_name:
+                continue
+            # Ger original permission
+            op = Permission.get_by_name(op_name)
+            if not op:
+                continue
+            print(": %s -> (%s, %s)" % (op_name, op_name, name))
+            # Migrate users
+            dp = created_perms[name]
+            for u in op.users.all():
+                dp.users.add(u)
+            # Migrate groups
+            for g in op.groups.all():
+                dp.groups.add(g)
