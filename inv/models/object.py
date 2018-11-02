@@ -179,9 +179,7 @@ class Object(Document):
         :return:
         """
         if self.container:
-            c = Object.get_by_id(self.container)
-            if c:
-                return c.get_path() + [self.id]
+            return self.container.get_path() + [self.id]
         return [self.id]
 
     def get_data(self, interface, key):
@@ -448,7 +446,7 @@ class Object(Document):
                 if x.model.name == "Lost&Found":
                     return x
             # Up level
-            c = Object.objects.get(id=c)
+            c = Object.objects.get(id=c.id)
             c = c.container
         return None
 
@@ -585,7 +583,7 @@ class Object(Document):
         :returns: Object instance. None if not found
         """
         current = Object.objects.filter(name=path[0], container=None).first()
-        for p in path:
+        for p in path[1:]:
             if not current:
                 break
             if hints and p in hints:
