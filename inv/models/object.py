@@ -517,12 +517,9 @@ class Object(Document):
         """
         c = self.container
         while c:
-            o = Object.get_by_id(c)
-            if not o:
-                break
-            if o.get_data("pop", "level"):
-                return o
-            c = o.container
+            if c.get_data("pop", "level"):
+                return c
+            c = c.container
         return None
 
     def get_coordinates_zoom(self):
