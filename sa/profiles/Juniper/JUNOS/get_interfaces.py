@@ -13,6 +13,7 @@ import time
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
+
 class Script(BaseScript):
     """
     Juniper.JUNOS.get_interfaces
