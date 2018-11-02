@@ -1,0 +1,13 @@
+{
+    "name": "Planar | SDO3000 | sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c9787914-78e5-4e8c-8199-e50e6076c2c8",
+    "description": null,
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.32108.1.7",
+    "action": "match",
+    "profile__name": "Planar.SDO3000"
+}
