@@ -27,6 +27,7 @@ class Script(BaseScript):
     TIMEOUT = 240
     BULK = False
 
+    rx_phys = re.compile(r"\S+\sinterface:\s(?P<ifname>\S+),\s", re.MULTILINE)
     rx_phy_name = re.compile(
         r"^Physical interface: (?P<ifname>\S+)"
         r"( \(\S+, \S+\))?( \(Extended Port)?\s*, "
@@ -37,8 +38,9 @@ class Script(BaseScript):
         r"^\s+Description:\s+(?P<description>.+?)\s*$", re.MULTILINE
     )
     rx_phy_ifindex = re.compile(r"SNMP ifIndex: (?P<ifindex>\d+)")
+    # # Do not match 'Unspecified'
     rx_phy_mac = re.compile(
-        r"^\s+Current address: (?P<mac>\S+),", re.MULTILINE
+        r"^\s+Current address: (?P<mac>([0-9A-Fa-f]{2}\:){5}[0-9A-Fa-f]{2}),", re.MULTILINE
     )
     rx_log_split = re.compile(
         r"^\s+Logical interface\s+", re.MULTILINE
@@ -78,12 +80,13 @@ class Script(BaseScript):
         l3_ids = {}
         vlans_requested = False
         interfaces = []
-        ifaces = self.scripts.get_interface_status()
-        time.sleep(10)
-        for I in ifaces:
-            if "." in I["interface"]:
-                continue
-            v = self.cli("show interfaces %s" % I["interface"])
+        ifaces = []
+
+        q = self.cli("show interfaces media | match interface:")
+        ifaces = self.rx_phys.findall(q)
+
+        for iface in ifaces:
+            v = self.cli("show interfaces %s" % iface)
             L = self.rx_log_split.split(v)
             phy = L.pop(0)
             phy = phy.replace(" )", "")
@@ -94,18 +97,26 @@ class Script(BaseScript):
             # Detect interface type
             if name.startswith("lo"):
                 iftype = "loopback"
-            elif name.startswith("fxp") or name.startswith("me"):
+            elif name.startswith(("fxp", "me")):
                 iftype = "management"
-            elif name.startswith("ae") or name.startswith("reth"):
+            elif name.startswith(("ae", "reth", "fab", "swfab")):
                 iftype = "aggregated"
-            elif name.startswith("vlan"):
-                iftype = "SVI"
-            elif name.startswith("vme"):
+            elif name.startswith(("vlan", "vme")):
                 iftype = "SVI"
             elif name.startswith("irb"):
                 iftype = "SVI"
-            else:
+            elif name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
                 iftype = "physical"
+            elif name.startswith(("gr", "ip", "st")):
+                iftype = "tunnel"
+            elif name.startswith("em"):
+                if self.is_work_em:
+                    iftype = "physical"
+                else:
+                    iftype = "management"
+            else:
+                iftype = "unknown"
+
             # Get interface parameters
             iface = {
                 "name": name,
