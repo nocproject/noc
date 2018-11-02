@@ -122,7 +122,7 @@ class Object(Document):
 
     def on_save(self):
         def get_coordless_objects(o):
-            r = set([str(o.id)])
+            r = {str(o.id)}
             for co in Object.objects.filter(container=o.id):
                 g = co.data.get("geopoint")
                 if g and g.get("x") and g.get("y"):
@@ -383,20 +383,16 @@ class Object(Document):
         """
         Return list of container names
         """
-        c = self.container
-        if c is None:
+        current = self.container
+        if current is None:
             for _, ro, rn in self.get_outer_connections():
                 return ro.get_name_path() + [rn]
             return [unicode(self)]
         np = [unicode(self)]
-        while c:
-            o = Object.objects.filter(id=c).first()
-            if o:
-                np = [unicode(o)] + np
-                c = o.container
-            else:
-                break
-        return np[1:]
+        while current:
+            np.insert(0, unicode(current))
+            current = current.container
+        return np
 
     def log(self, message, user=None, system=None,
             managed_object=None, op=None):
