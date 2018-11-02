@@ -589,34 +589,31 @@ class Object(Document):
         # Changed object
         if not hasattr(document, "_changed_fields") or "container" not in document._changed_fields:
             return
+        # Old pop
         old_container = getattr(document, "_cache_container", None)
         old_pop = None
-        new_pop = None
-        # Old pop
         if old_container:
             c = old_container
             while c:
-                o = Object.objects.get(id=c)
-                if o.get_data("pop", "level"):
-                    old_pop = o.id
+                if c.get_data("pop", "level"):
+                    old_pop = c
                     break
-                c = o.container
+                c = c.container
         # New pop
-        pop = document.get_pop()
-        if pop:
-            new_pop = pop.id
+        new_pop = document.get_pop()
+        # Check if pop moved
         if old_pop != new_pop:
             if old_pop:
                 call_later(
                     "noc.inv.util.pop_links.update_pop_links",
                     20,
-                    pop_id=old_pop
+                    pop_id=old_pop.id
                 )
             if new_pop:
                 call_later(
                     "noc.inv.util.pop_links.update_pop_links",
                     20,
-                    pop_id=new_pop
+                    pop_id=new_pop.id
                 )
 
     @classmethod
