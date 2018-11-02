@@ -1488,7 +1488,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }
                 return false;
             };
-        return NOC.hasPermission("update") && check(me.fields);
+        return me.hasPermission("update") && check(me.fields);
     },
     //
     createGroupForm: function() {

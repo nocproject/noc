@@ -67,7 +67,7 @@ class ManagedObjectApplication(ExtModelApplication):
     secret_fields = {"password", "super_password", "snmp_ro", "snmp_rw"}
     # Inlines
     attrs = ModelInline(ManagedObjectAttribute)
-    cfg = RepoInline("config")
+    cfg = RepoInline("config", access="config")
 
     extra_permissions = ["alarm", "change_interface"]
     implied_permissions = {
@@ -75,6 +75,10 @@ class ManagedObjectApplication(ExtModelApplication):
             "inv:networksegment:lookup",
             "main:handler:lookup"
         ]
+    }
+    diverged_permissions = {
+        "config": "read",
+        "console": "script"
     }
     order_map = {
         "address": " cast_test_to_inet(address) ",
@@ -724,6 +728,29 @@ class ManagedObjectApplication(ExtModelApplication):
         params = self.deserialize(request.raw_post_data)
         try:
             result = o.scripts[name](**params)
+        except Exception as e:
+            return {
+                "error": str(e)
+            }
+        return {
+            "result": result
+        }
+
+    @view(url="^(?P<id>\d+)/console/$",
+          method=["POST"], access="console", api=True)
+    def api_console_command(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return {
+                "error": "Access denied"
+            }
+        if "commands" not in o.scripts:
+            return {
+                "error": "Script not found: commands"
+            }
+        params = self.deserialize(request.raw_post_data)
+        try:
+            result = o.scripts.commands(**params)
         except Exception as e:
             return {
                 "error": str(e)
