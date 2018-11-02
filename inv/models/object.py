@@ -13,9 +13,7 @@ import operator
 from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DictField,
-                                ListField, PointField, ReferenceField,
-                                LongField)
+from mongoengine.fields import StringField, DictField, ListField, PointField, LongField
 from mongoengine import signals
 import cachetools
 import six
@@ -64,10 +62,10 @@ class Object(Document):
     name = StringField()
     model = PlainReferenceField(ObjectModel)
     data = DictField()
-    container = ReferenceField("self", required=False)
+    container = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
     # Map
-    layer = ReferenceField(Layer)
+    layer = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
     #
     tags = ListField(StringField())
@@ -136,7 +134,7 @@ class Object(Document):
             # Rebuild connection layers
             for ct in self.REBUILD_CONNECTIONS:
                 for c, _, _ in self.get_genderless_connections(ct):
-                    c.save()  #
+                    c.save()
             # Update nested objects
             from noc.sa.models.managedobject import ManagedObject
             mos = get_coordless_objects(self)
@@ -148,6 +146,31 @@ class Object(Document):
                     y=geo.get("y"),
                     default_zoom=self.layer.default_zoom
                 )
+        if self._created:
+            if self.container:
+                pop = self.get_pop()
+                if pop:
+                    pop.update_pop_links()
+        # Changed container
+        elif hasattr(self, "_changed_fields") and "container" in self._changed_fields:
+            # Old pop
+            old_container_id = getattr(self, "_old_container", None)
+            old_pop = None
+            if old_container_id:
+                c = Object.get_by_id(old_container_id)
+                while c:
+                    if c.get_data("pop", "level"):
+                        old_pop = c
+                        break
+                    c = c.container
+            # New pop
+            new_pop = self.get_pop()
+            # Check if pop moved
+            if old_pop != new_pop:
+                if old_pop:
+                    old_pop.update_pop_links()
+                if new_pop:
+                    new_pop.update_pop_links()
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):
@@ -573,54 +596,19 @@ class Object(Document):
             ).first()
         return current
 
-    @classmethod
-    def change_container(cls, sender, document, target=None,
-                         created=False, **kwargs):
-        if created:
-            if document.container:
-                pop = document.get_pop()
-                if pop:
-                    call_later(
-                        "noc.inv.util.pop_links.update_pop_links",
-                        20,
-                        pop_id=pop.id
-                    )
-            return
-        # Changed object
-        if not hasattr(document, "_changed_fields") or "container" not in document._changed_fields:
-            return
-        # Old pop
-        old_container = getattr(document, "_cache_container", None)
-        old_pop = None
-        if old_container:
-            c = old_container
-            while c:
-                if c.get_data("pop", "level"):
-                    old_pop = c
-                    break
-                c = c.container
-        # New pop
-        new_pop = document.get_pop()
-        # Check if pop moved
-        if old_pop != new_pop:
-            if old_pop:
-                call_later(
-                    "noc.inv.util.pop_links.update_pop_links",
-                    20,
-                    pop_id=old_pop.id
-                )
-            if new_pop:
-                call_later(
-                    "noc.inv.util.pop_links.update_pop_links",
-                    20,
-                    pop_id=new_pop.id
-                )
+    def update_pop_links(self, delay=20):
+        call_later(
+            "noc.inv.util.pop_links.update_pop_links",
+            delay,
+            pop_id=self.id
+        )
 
     @classmethod
     def _pre_init(cls, sender, document, values, **kwargs):
         """
         Object pre-initialization
         """
+        # Store original container id
         if "container" in values and values["container"]:
             document._cache_container = values["container"]
 
@@ -643,7 +631,6 @@ class Object(Document):
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
-signals.post_save.connect(Object.change_container, sender=Object)
 signals.pre_init.connect(Object._pre_init, sender=Object)
 
 # Avoid circular references
