@@ -126,9 +126,6 @@ class IPAMApplication(ExtApplication):
         while p:
             path = [p] + path
             p = p.parent
-        # Process description
-        short_description = prefix.short_description
-        long_description = prefix.description if prefix.description != short_description else None
         # List of nested prefixes
         # @todo: prefetch_related
         prefixes = list(prefix.children_set.select_related().order_by("prefix"))
@@ -307,8 +304,6 @@ class IPAMApplication(ExtApplication):
             vrf=vrf,
             prefix=prefix,
             path=path,
-            short_description=short_description,
-            long_description=long_description,
             prefixes=prefixes,
             addresses=addresses,
             prefix_info=prefix_info,
