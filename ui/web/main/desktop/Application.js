@@ -32,6 +32,7 @@ Ext.define("NOC.main.desktop.Application", {
         me.launchedTabs = {};
         me.idleTimeout = 0;
         me.idleTimerId = -1;
+        me.idleDeadline = null;
         //
         me.navStore = Ext.create("Ext.data.TreeStore", {
             root: {
@@ -333,40 +334,46 @@ Ext.define("NOC.main.desktop.Application", {
     setIdleTimeout: function(timeout) {
         var me = this;
 
-        me.stopIdleTimer();
         me.idleTimeout = timeout * 1000;
         if(me.idleTimeout) {
-            //
-            console.log("Set idle timeout to", me.idleTimeout, "ms");
-            me.idleTimerId = Ext.Function.defer(me.onIdle, me.idleTimeout, me);
+            me.idleDeadline = Date.now() + me.idleTimeout;
+            me.idleTimerId = Ext.Function.defer(me.onCheckIdle, me.idleTimeout, me);
             Ext.getDoc().on({
-                scope: me,
-                mousemove: me.resetIdleTimer,
-                keydown: me.resetIdleTimer
+                mousemove: {
+                    fn: me.touchIdleTimer,
+                    scope: me,
+                    buffer: 1000
+                },
+                keydown: {
+                    fn:me.touchIdleTimer,
+                    scope: me,
+                    buffer: 1000
+                }
             });
         }
         //
-        window.NOCIdleHandler = Ext.bind(me.resetIdleTimer, me);
+        window.NOCIdleHandler = Ext.bind(me.touchIdleTimer, me);
     },
     //
-    stopIdleTimer: function() {
-        var me = this;
-        if(me.idleTimerId != -1) {
+    onCheckIdle: function() {
+        var me = this,
+            now = Date.now();
+        if(now >= me.idleDeadline) {
+            // Deadline reached, logout
+            me.restartReason = "Autologout";
+            me.onLogout();
+        } else {
+            // Schedule next check
             clearTimeout(me.idleTimerId);
-            me.idleTimerId = -1;
-            Ext.getDoc().un({
-                scope: me,
-                mousemove: me.resetIdleTimer,
-                keydown: me.resetIdleTimer
-            });
+            me.idleTimerId = Ext.Function.defer(me.onCheckIdle, me.idleDeadline - now, me);
         }
     },
     //
-    resetIdleTimer: function() {
+    touchIdleTimer: function() {
         var me = this;
-        clearTimeout(me.idleTimerId);
         if(me.idleTimeout) {
-            me.idleTimerId = Ext.Function.defer(me.onLogout, me.idleTimeout, me);
+            // Set new idle deadline
+            me.idleDeadline = Date.now() + me.idleTimeout;
         }
     },
     //
