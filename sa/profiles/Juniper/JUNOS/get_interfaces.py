@@ -12,8 +12,6 @@ import time
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.validators import is_mac
-
 
 class Script(BaseScript):
     """
@@ -39,8 +37,9 @@ class Script(BaseScript):
         r"^\s+Description:\s+(?P<description>.+?)\s*$", re.MULTILINE
     )
     rx_phy_ifindex = re.compile(r"SNMP ifIndex: (?P<ifindex>\d+)")
+    # # Do not match 'Unspecified'
     rx_phy_mac = re.compile(
-        r"^\s+Current address: (?P<mac>\S+),", re.MULTILINE
+        r"^\s+Current address: (?P<mac>([0-9A-Fa-f]{2}\:){5}[0-9A-Fa-f]{2}),", re.MULTILINE
     )
     rx_log_split = re.compile(
         r"^\s+Logical interface\s+", re.MULTILINE
@@ -142,10 +141,8 @@ class Script(BaseScript):
             match = self.rx_phy_mac.search(phy)
             if match:
                 mac = match.group("mac")
-                # is_mac() needed for gre interface, because in the field Current address: Unspecified
-                if is_mac(mac):
-                    iface["mac"] = mac
-                    def_si["mac"] = mac
+                iface["mac"] = mac
+                def_si["mac"] = mac
             match = self.rx_mtu.search(phy)
             if match:
                 def_si["mtu"] = match.group("mtu")
