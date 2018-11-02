@@ -99,10 +99,10 @@ document.currentAFI = {{ prefix.afi }};
 document.currentPrefix = "{{ prefix.prefix }}";
 </script>
 <!-- long description -->
-{% if long_description %}
+{% if prefix.description %}
     <div class="row" style="padding: 0 10px 0 10px;">
         <div class="description">
-            <pre>{{long_description}}</pre>
+            <pre>{{prefix.description}}</pre>
         </div>
     </div>
 {% endif %}
@@ -165,7 +165,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
         <tr style="display:none" id="at-p-start"></tr>
         {% for f, pp, p, is_bookmarked  in l_prefixes %}
             {% if f %}
-                <tr {% if p.style %}class="{{p.style.css_class_name}}"{% endif %}>
+                <tr {% if p.profile and p.profile.style %}class="{{p.profile.style.css_class_name}}"{% endif %}>
                     <td>
                         <a href="/ip/ipam/{{ p.vrf.id }}/{{ p.afi }}/{{ p.prefix }}/toggle_bookmark/"><i class="fa fa-2x fa-star {% if is_bookmarked %}favorite-active{% else %}favorite-inactive{% endif %}" title="Toggle Bookmark"></i></a>
                     </td>
