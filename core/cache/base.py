@@ -73,17 +73,6 @@ class BaseCache(object):
     def __contains__(self, item):
         return self.get(item) is not None
 
-    def incr(self, key, delta=1, version=None):
-        value = self.get(key, version=version)
-        if value is None:
-            raise ValueError("Key '%s' not found" % key)
-        new_value = value + delta
-        self.set(key, new_value, version=version)
-        return new_value
-
-    def decr(self, key, delta=1, version=None):
-        return self.incr(key, -delta, version=version)
-
     @classmethod
     def get_cache(cls):
         logger.info("Using cache backend: %s", config.cache.cache_class)

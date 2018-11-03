@@ -128,21 +128,3 @@ class MemcachedCache(BaseCache):
                 )
             except ignorable_memcache_errors:
                 metrics["error", ("type", "memcache_delete_many_failed")] += 1
-
-    def incr(self, key, delta=1, version=None):
-        k = self.make_key(key, version)
-        with self.pool.reserve(block=True) as cache:
-            try:
-                return cache.incr(k, delta)
-            except ignorable_memcache_errors:
-                metrics["error", ("type", "memcache_incr_failed")] += 1
-                return None
-
-    def decr(self, key, delta=1, version=None):
-        k = self.make_key(key, version)
-        with self.pool.reserve(block=True) as cache:
-            try:
-                return cache.decr(k, delta)
-            except ignorable_memcache_errors:
-                metrics["error", ("type", "memcache_decr_failed")] += 1
-                return None

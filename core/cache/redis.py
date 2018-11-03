@@ -95,17 +95,3 @@ class RedisCache(BaseCache):
             self.redis.delete(*[self.make_key(k, version) for k in keys])
         except ignorable_redis_errors:
             metrics["error", ("type", "redis_delete_many_failed")] += 1
-
-    def incr(self, key, delta=1, version=None):
-        k = self.make_key(key, version)
-        try:
-            return self.redis.incr(k, delta)
-        except ignorable_redis_errors:
-            metrics["error", ("type", "redis_incr_failed")] += 1
-
-    def decr(self, key, delta=1, version=None):
-        k = self.make_key(key, version)
-        try:
-            return self.redis.decr(k, delta)
-        except ignorable_redis_errors:
-            metrics["error", ("type", "redis_decr_failed")] += 1
