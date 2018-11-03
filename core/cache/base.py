@@ -83,5 +83,6 @@ class BaseCache(object):
             logger.error("Cannot load cache backend: Fallback to dummy")
             return BaseCache()
 
+
 # cache singleton
 cache = BaseCache.get_cache()
