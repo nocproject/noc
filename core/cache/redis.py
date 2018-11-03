@@ -47,6 +47,8 @@ class RedisCache(BaseCache):
         :param v:
         :return:
         """
+        if v is None:
+            return v
         return loads(v)
 
     def get(self, key, default=None, version=None):
