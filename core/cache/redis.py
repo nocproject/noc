@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 # Third-party modules
 import redis
+from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
@@ -30,6 +31,24 @@ class RedisCache(BaseCache):
             db=config.redis.db
         )
 
+    @staticmethod
+    def serialize(v):
+        """
+        Convert value to wire format
+        :param v:
+        :return:
+        """
+        return dumps(v, HIGHEST_PROTOCOL)
+
+    @staticmethod
+    def deserialize(v):
+        """
+        Convert wire format to value
+        :param v:
+        :return:
+        """
+        return loads(v)
+
     def get(self, key, default=None, version=None):
         """
         Returns value or raise KeyError
@@ -40,7 +59,7 @@ class RedisCache(BaseCache):
         """
         k = self.make_key(key, version)
         try:
-            v = self.redis.get(k)
+            v = self.deserialize(self.redis.get(k))
         except ignorable_redis_errors:
             metrics["error", ("type", "redis_get_failed")] += 1
             v = None
@@ -60,7 +79,7 @@ class RedisCache(BaseCache):
         k = self.make_key(key, version)
         ttl = ttl or config.redis.default_ttl
         try:
-            self.redis.set(k, value, ex=ttl)
+            self.redis.set(k, self.serialize(value), ex=ttl)
         except ignorable_redis_errors:
             metrics["error", ("type", "redis_set_failed")] += 1
 
@@ -78,13 +97,13 @@ class RedisCache(BaseCache):
         except ignorable_redis_errors:
             metrics["error", ("type", "redis_get_many_failed")] += 1
             return None
-        return dict(zip(keys, r))
+        return dict((k, self.deserialize(v)) for k, v in zip(keys, r))
 
     def set_many(self, data, ttl=None, version=None):
         ttl = ttl or config.redis.default_ttl
         pipe = self.redis.pipeline()
         for k in data:
-            pipe.set(self.make_key(k, version), data[k], ex=ttl)
+            pipe.set(self.make_key(k, version), self.serialize(data[k]), ex=ttl)
         try:
             pipe.execute()
         except ignorable_redis_errors:
