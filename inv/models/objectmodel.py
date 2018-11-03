@@ -129,6 +129,7 @@ class ObjectModel(Document):
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -137,6 +138,11 @@ class ObjectModel(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return ObjectModel.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        return ObjectModel.objects.filter(name=name).first()
 
     def get_data(self, interface, key):
         v = self.data.get(interface, {})

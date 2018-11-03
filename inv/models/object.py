@@ -439,14 +439,14 @@ class Object(Document):
         return ObjectLog.objects.filter(object=self.id).order_by("ts")
 
     def get_lost_and_found(self):
+        m = ObjectModel.get_by_name("Lost&Found")
         c = self.container
         while c:
             # Check siblings
-            for x in Object.objects.filter(container=c):
-                if x.model.name == "Lost&Found":
-                    return x
-            # Up level
-            c = Object.objects.get(id=c.id)
+            lf = Object.objects.filter(container=c, model=m).first()
+            if lf:
+                return lf
+            # Up one level
             c = c.container
         return None
 
@@ -582,16 +582,15 @@ class Object(Document):
         :param hints: {name: object_id} dictionary for getting object in path
         :returns: Object instance. None if not found
         """
-        current = Object.objects.filter(name=path[0], container=None).first()
-        for p in path[1:]:
+        current = None
+        for p in path:
+            current = Object.objects.filter(name=p, container=current).first()
             if not current:
-                break
-            if hints and p in hints:
-                return Object.get_by_id(hints[p])
-            current = Object.objects.filter(
-                name=p,
-                container=current.id
-            ).first()
+                return None
+            if hints:
+                h = hints.get(p)
+                if h:
+                    return Object.get_by_id(h)
         return current
 
     def update_pop_links(self, delay=20):
