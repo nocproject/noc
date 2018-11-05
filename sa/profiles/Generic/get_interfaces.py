@@ -68,7 +68,7 @@ class Script(BaseScript):
         if "::" in oid:
             oid = mib[oid]
         for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk):
+                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk()):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
@@ -163,7 +163,7 @@ class Script(BaseScript):
                 iface_name, num = iface["interface"].rsplit(".", 1)
                 if num.isdigit():
                     vlan_ids = int(iface["interface"].rsplit(".", 1)[-1])
-                    if vlan_ids < 4095:
+                    if 1 <= vlan_ids < 4095:
                         s["vlan_ids"] = vlan_ids
                 if l in ip_ifaces:
                     s["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]

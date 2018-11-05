@@ -26,10 +26,6 @@ Ext.define("NOC.dns.dnsserver.Model", {
         {
             name: "description",
             type: "string"
-        },
-        {
-            name: "sync",
-            type: "string"
         }
     ]
 });

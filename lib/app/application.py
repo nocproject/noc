@@ -121,6 +121,10 @@ class Application(object):
     glyph = "file"
     extra_permissions = []  # List of additional permissions, not related with views
     implied_permissions = {}  # permission -> list of implied permissions
+    # When existing permission should be split to separate more granular,
+    # it must be set in diverged_permissions like
+    # new_permission -> old_permission
+    diverged_permissions = {}  # permission -> base permission
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class

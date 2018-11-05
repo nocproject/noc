@@ -12,7 +12,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((concat('Environment | Electric Current ',path[3], ' ', path[4]), d)) AS groupArr\nFROM \n    ( SELECT \n          $timeSeries as t, \n        path[3],\n        path[4], \n        avg(elec_current) d \n        from $table \n        WHERE \n            $timeFilter\n            AND  managed_object=$bi_id\n        GROUP BY t, path[3],path[4]\n        having d != 0\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+      "query": "SELECT \n    t, \n    groupArray((sensor, ElectricCurrent)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as sensor, \n        avg(elec_current) as `ElectricCurrent` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        and like(path[4],'ElectricCurrent%')\n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "database": "noc",
       "tableLoading": false,
       "table": "environment",

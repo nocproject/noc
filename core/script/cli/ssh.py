@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SSH CLI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -106,12 +106,13 @@ class SSHIOStream(IOStream):
                 except _libssh2.Error as e:
                     self.logger.debug("Cannot close channel clearly: %s", e)
                 self.channel = None
-            self.logger.debug("Closing ssh session")
-            try:
-                self.session.close()
-            except _libssh2.Error as e:
-                self.logger.debug("Cannot close session clearly: %s", e)
-            self.session = None
+            if self.session:
+                self.logger.debug("Closing ssh session")
+                try:
+                    self.session.close()
+                except _libssh2.Error as e:
+                    self.logger.debug("Cannot close session clearly: %s", e)
+                self.session = None
         super(SSHIOStream, self).close(exc_info=exc_info)
 
     def auth_publickey(self):

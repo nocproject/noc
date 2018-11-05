@@ -49,12 +49,12 @@ function new_load_scripts(urls, scope, callback) {
                 console.log("Using cached script " + url);
                 callback();
             } else {
-                if(url.split(".")[1] === "js") {
+                if(Ext.String.endsWith(url, ".js")) {
                     console.log("Loading script " + url);
                     file_ref = document.createElement("script");
                     file_ref.type = "text/javascript";
                     file_ref.src = url;
-                } else if(url.split(".")[1] === "css") {
+                } else if(Ext.String.endsWith(url, ".css")) {
                     console.log("Loading style " + url);
                     file_ref = document.createElement("link");
                     file_ref.rel = "stylesheet";
@@ -62,15 +62,17 @@ function new_load_scripts(urls, scope, callback) {
                     file_ref.href = url;
 
                 }
-                file_ref.onload = function() {
-                    callback();
-                };
-                file_ref.onreadystatechange = function() {
-                    if(this.readyState === "complete") {
+                if(file_ref) {
+                    file_ref.onload = function() {
                         callback();
-                    }
-                };
-                head.appendChild(file_ref);
+                    };
+                    file_ref.onreadystatechange = function() {
+                        if(this.readyState === "complete") {
+                            callback();
+                        }
+                    };
+                    head.appendChild(file_ref);
+                }
             }
         },
         load_chain = function(urls) {

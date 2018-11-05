@@ -115,6 +115,18 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "seen_propagation_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Seen propagation"),
+                    allowBlank: false,
+                    store: [
+                        ["P", __("Propagate")],
+                        ["E", __("Enable")],
+                        ["D", __("Disable")]
+                    ],
+                    uiStyle: "medium"
+                },
+                {
                     xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),

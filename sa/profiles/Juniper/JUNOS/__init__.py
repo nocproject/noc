@@ -36,7 +36,7 @@ class Profile(BaseProfile):
     matchers = {
         "is_has_lldp": {
             "platform": {
-                "$regex": "ex|mx|qfx|acx"
+                "$regex": "ex|mx|qfx|acx|srx"
             }
         },
         "is_switch": {

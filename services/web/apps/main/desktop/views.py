@@ -35,7 +35,6 @@ class DesktopApplication(ExtApplication):
         self.restrict_to_group = self.get_group(config.login.restrict_to_group)
         self.single_session_group = self.get_group(config.login.single_session_group)
         self.mutual_exclusive_group = self.get_group(config.login.mutual_exclusive_group)
-        self.idle_timeout = config.login.idle_timeout
 
     def get_group(self, name):
         """
@@ -157,7 +156,7 @@ class DesktopApplication(ExtApplication):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "can_change_credentials": True,
-            "idle_timeout": self.idle_timeout,
+            "idle_timeout": config.login.idle_timeout,
             "navigation": {
                 "id": "root",
                 "iconCls": "fa fa-globe",

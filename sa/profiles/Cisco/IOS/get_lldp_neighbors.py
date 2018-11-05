@@ -9,10 +9,10 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.sa.interfaces.base import MACAddressParameter, IPv4Parameter
+from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 
 
 class Script(BaseScript):
@@ -34,7 +34,7 @@ class Script(BaseScript):
         r"^System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_descr = re.compile(r"^Port Description:\s*(?P<descr>.+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             v = self.cli("show lldp neighbors")

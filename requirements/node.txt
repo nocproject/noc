@@ -25,7 +25,7 @@ mongoengine==0.15.3
 networkx==1.11
 numpy==1.9.2
 tornado==4.5.3
-requests==2.2.1
+requests==2.20.0
 supervisor==3.3.1
 supervisor-serialrestart==0.1.1
 mercurial>=3.4.2

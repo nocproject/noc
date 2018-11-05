@@ -49,6 +49,13 @@ class AddressProfile(Document):
     name_template = ForeignKeyField(Template)
     # Template.subject to render Address.fqdn
     fqdn_template = ForeignKeyField(Template)
+    # Send seen event to prefix
+    seen_propagation_policy = StringField(
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ], default="D"
+    )
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Network Map Panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.log('Defining NOC.inv.map.Maintenance');
@@ -35,6 +35,8 @@ Ext.define('NOC.inv.map.Maintenance', {
         me.dockMaintenance = Ext.create('Ext.form.Panel', {
             dock: 'top',
             bodyPadding: 10,
+            maxHeight: 400,
+            scrollable: true,
             items: [
                 {
                     xtype: 'container',
