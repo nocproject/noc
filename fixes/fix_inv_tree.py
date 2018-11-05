@@ -39,7 +39,7 @@ def fix():
         for l in lfs[1:]:
             for ls in Object.objects.filter(container=l.id):
                 logging.info("    ... moving %s to primary Lost&Found", unicode(ls))
-                ls.container = l0.id
+                ls.container = l0
                 ls.save()
             logging.info("   ... removing duplicated Lost&Found %s", l)
             l.delete()

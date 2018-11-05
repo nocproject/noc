@@ -13,9 +13,7 @@ import operator
 from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DictField, ObjectIdField,
-                                ListField, PointField, ReferenceField,
-                                LongField)
+from mongoengine.fields import StringField, DictField, ListField, PointField, LongField
 from mongoengine import signals
 import cachetools
 import six
@@ -41,7 +39,8 @@ id_lock = Lock()
 @on_save
 @on_delete_check(check=[
     ("sa.ManagedObject", "container"),
-    ("inv.CoveredObject", "object")
+    ("inv.CoveredObject", "object"),
+    ("inv.Object", "container")
 ])
 class Object(Document):
     """
@@ -63,10 +62,10 @@ class Object(Document):
     name = StringField()
     model = PlainReferenceField(ObjectModel)
     data = DictField()
-    container = ObjectIdField(required=False)
+    container = PlainReferenceField("self", required=False)
     comment = GridVCSField("object_comment")
     # Map
-    layer = ReferenceField(Layer)
+    layer = PlainReferenceField(Layer)
     point = PointField(auto_index=True)
     #
     tags = ListField(StringField())
@@ -121,7 +120,7 @@ class Object(Document):
 
     def on_save(self):
         def get_coordless_objects(o):
-            r = set([str(o.id)])
+            r = {str(o.id)}
             for co in Object.objects.filter(container=o.id):
                 g = co.data.get("geopoint")
                 if g and g.get("x") and g.get("y"):
@@ -135,7 +134,7 @@ class Object(Document):
             # Rebuild connection layers
             for ct in self.REBUILD_CONNECTIONS:
                 for c, _, _ in self.get_genderless_connections(ct):
-                    c.save()  #
+                    c.save()
             # Update nested objects
             from noc.sa.models.managedobject import ManagedObject
             mos = get_coordless_objects(self)
@@ -147,6 +146,31 @@ class Object(Document):
                     y=geo.get("y"),
                     default_zoom=self.layer.default_zoom
                 )
+        if self._created:
+            if self.container:
+                pop = self.get_pop()
+                if pop:
+                    pop.update_pop_links()
+        # Changed container
+        elif hasattr(self, "_changed_fields") and "container" in self._changed_fields:
+            # Old pop
+            old_container_id = getattr(self, "_old_container", None)
+            old_pop = None
+            if old_container_id:
+                c = Object.get_by_id(old_container_id)
+                while c:
+                    if c.get_data("pop", "level"):
+                        old_pop = c
+                        break
+                    c = c.container
+            # New pop
+            new_pop = self.get_pop()
+            # Check if pop moved
+            if old_pop != new_pop:
+                if old_pop:
+                    old_pop.update_pop_links()
+                if new_pop:
+                    new_pop.update_pop_links()
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):
@@ -155,9 +179,7 @@ class Object(Document):
         :return:
         """
         if self.container:
-            c = Object.get_by_id(self.container)
-            if c:
-                return c.get_path() + [self.id]
+            return self.container.get_path() + [self.id]
         return [self.id]
 
     def get_data(self, interface, key):
@@ -382,20 +404,16 @@ class Object(Document):
         """
         Return list of container names
         """
-        c = self.container
-        if c is None:
+        current = self.container
+        if current is None:
             for _, ro, rn in self.get_outer_connections():
                 return ro.get_name_path() + [rn]
             return [unicode(self)]
         np = [unicode(self)]
-        while c:
-            o = Object.objects.filter(id=c).first()
-            if o:
-                np = [unicode(o)] + np
-                c = o.container
-            else:
-                break
-        return np[1:]
+        while current:
+            np.insert(0, unicode(current))
+            current = current.container
+        return np
 
     def log(self, message, user=None, system=None,
             managed_object=None, op=None):
@@ -421,14 +439,14 @@ class Object(Document):
         return ObjectLog.objects.filter(object=self.id).order_by("ts")
 
     def get_lost_and_found(self):
+        m = ObjectModel.get_by_name("Lost&Found")
         c = self.container
         while c:
             # Check siblings
-            for x in Object.objects.filter(container=c):
-                if x.model.name == "Lost&Found":
-                    return x
-            # Up level
-            c = Object.objects.get(id=c)
+            lf = Object.objects.filter(container=c, model=m).first()
+            if lf:
+                return lf
+            # Up one level
             c = c.container
         return None
 
@@ -520,12 +538,9 @@ class Object(Document):
         """
         c = self.container
         while c:
-            o = Object.get_by_id(c)
-            if not o:
-                break
-            if o.get_data("pop", "level"):
-                return o
-            c = o.container
+            if c.get_data("pop", "level"):
+                return c
+            c = c.container
         return None
 
     def get_coordinates_zoom(self):
@@ -560,18 +575,6 @@ class Object(Document):
         return cls.objects.filter(data__management__managed_object=mo)
 
     @classmethod
-    def get_root(cls):
-        """
-        Returns Root container
-        """
-        root = getattr(cls, "_root_container", None)
-        if not root:
-            rm = ObjectModel.objects.get(name="Root")
-            root = Object.objects.get(model=rm.id)
-            cls._root_container = root
-        return root
-
-    @classmethod
     def get_by_path(cls, path, hints=None):
         """
         Get object by given path.
@@ -579,69 +582,30 @@ class Object(Document):
         :param hints: {name: object_id} dictionary for getting object in path
         :returns: Object instance. None if not found
         """
-        current = cls.get_root()
+        current = None
         for p in path:
+            current = Object.objects.filter(name=p, container=current).first()
             if not current:
-                break
-            if hints and p in hints:
-                return Object.get_by_id(hints[p])
-            current = Object.objects.filter(
-                name=p,
-                container=current.id
-            ).first()
+                return None
+            if hints:
+                h = hints.get(p)
+                if h:
+                    return Object.get_by_id(h)
         return current
 
-    @classmethod
-    def change_container(cls, sender, document, target=None,
-                         created=False, **kwargs):
-        if created:
-            if document.container:
-                pop = document.get_pop()
-                if pop:
-                    call_later(
-                        "noc.inv.util.pop_links.update_pop_links",
-                        20,
-                        pop_id=pop.id
-                    )
-            return
-        # Changed object
-        if not hasattr(document, "_changed_fields") or "container" not in document._changed_fields:
-            return
-        old_container = getattr(document, "_cache_container", None)
-        old_pop = None
-        new_pop = None
-        # Old pop
-        if old_container:
-            c = old_container
-            while c:
-                o = Object.objects.get(id=c)
-                if o.get_data("pop", "level"):
-                    old_pop = o.id
-                    break
-                c = o.container
-        # New pop
-        pop = document.get_pop()
-        if pop:
-            new_pop = pop.id
-        if old_pop != new_pop:
-            if old_pop:
-                call_later(
-                    "noc.inv.util.pop_links.update_pop_links",
-                    20,
-                    pop_id=old_pop
-                )
-            if new_pop:
-                call_later(
-                    "noc.inv.util.pop_links.update_pop_links",
-                    20,
-                    pop_id=new_pop
-                )
+    def update_pop_links(self, delay=20):
+        call_later(
+            "noc.inv.util.pop_links.update_pop_links",
+            delay,
+            pop_id=self.id
+        )
 
     @classmethod
     def _pre_init(cls, sender, document, values, **kwargs):
         """
         Object pre-initialization
         """
+        # Store original container id
         if "container" in values and values["container"]:
             document._cache_container = values["container"]
 
@@ -664,7 +628,6 @@ class Object(Document):
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
-signals.post_save.connect(Object.change_container, sender=Object)
 signals.pre_init.connect(Object._pre_init, sender=Object)
 
 # Avoid circular references
