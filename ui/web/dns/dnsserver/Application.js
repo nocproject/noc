@@ -26,12 +26,6 @@ Ext.define("NOC.dns.dnsserver.Application", {
             width: 100
         },
         {
-            text: __("Sync"),
-            dataIndex: "sync",
-            renderer: NOC.render.Lookup("sync"),
-            width: 150
-        },
-        {
             text: __("Description"),
             dataIndex: "description",
             flex: 1
@@ -54,12 +48,6 @@ Ext.define("NOC.dns.dnsserver.Application", {
             name: "description",
             xtype: "textfield",
             fieldLabel: __("Description"),
-            allowBlank: true
-        },
-        {
-            name: "sync",
-            xtype: "main.sync.LookupField",
-            fieldLabel: __("Sync channel"),
             allowBlank: true
         }
     ]
