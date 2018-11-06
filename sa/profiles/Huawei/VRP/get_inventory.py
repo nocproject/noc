@@ -173,6 +173,8 @@ class Script(BaseScript):
         else:
             if i_type == "CHASSIS":
                 f = self.rx_mainboard.search(v)
+                if not f:
+                    f = self.rx_mainboard_ne.search(v)
                 r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
             else:
                 # Do not parse empty lines
