@@ -81,9 +81,6 @@ class MapPlugin(InvPlugin):
         """
         p = o.container
         while p:
-            p = Object.objects.filter(id=p).first()
-            if not p:
-                return
             if p.get_data("geopoint", "x") and p.get_data("geopoint", "y"):
                 return p
             p = p.container

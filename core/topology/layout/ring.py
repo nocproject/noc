@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Ring layout class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,16 +13,17 @@ import math
 import networkx as nx
 import numpy as np
 # NOC modules
+from noc.config import config
 from .tree import TreeLayout
 
 
 class RingLayout(TreeLayout):
     # Ring edge length
-    L = 150
+    L = config.layout.ring_ring_edge
     # Chain edge step
-    LL = 120
+    TREE_DY = config.layout.ring_chain_edge
     # Spacing between parallel chains
-    S = 100
+    TREE_DX = config.layout.ring_chain_spacing
     # Position of first node
     A0 = - math.pi / 2.0
 
@@ -105,7 +106,7 @@ class RingLayout(TreeLayout):
         # Partition by ring
         # Remove all ring edges, splitting graph to series
         # of trees
-        GG = G.subgraph(G)
+        GG = nx.Graph(G.subgraph(G))
         for u, v in zip(ring, ring[1:] + [ring[0]]):
             GG.remove_edge(u, v)
         # Get all remaining connected components

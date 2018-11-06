@@ -205,11 +205,9 @@ class InvApplication(ExtApplication):
             "name": o.name
         }]
         while o.container:
-            o = Object.get_by_id(o.container)
-            if not o:
-                break
-            path = [{
+            o = o.container
+            path.insert(0, {
                 "id": str(o.id),
                 "name": o.name
-            }] + path
+            })
         return path
