@@ -30,6 +30,9 @@ class Script(BaseScript):
         s = parse_kv({"mac address": "mac"}, v)
         if s:
             s = s["mac"].replace(" ", ":")
-            return {"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}
+            return [{
+                "first_chassis_mac": MAC(s),
+                "last_chassis_mac": MAC(s)
+            }]
         else:
             raise self.NotSupportedError

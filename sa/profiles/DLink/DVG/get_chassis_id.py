@@ -31,7 +31,7 @@ class Script(BaseScript):
         if not match:
             raise self.NotSupportedError()
         mac = match.group("mac")
-        return {
+        return [{
             "first_chassis_mac": mac,
             "last_chassis_mac": mac
-        }
+        }]

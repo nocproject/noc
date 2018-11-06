@@ -59,10 +59,13 @@ class Script(BaseScript):
                     except ValueError:
                         pass
         # Filter and convert macs
-        return [{
+        r = [{
             "first_chassis_mac": mac,
             "last_chassis_mac": mac
         } for mac in sorted(macs) if not self.is_ignored_mac(mac)]
+        if not r:
+            raise NotImplementedError
+        return r
 
     def get_oids_by_caps(self, oids_map):
         """
