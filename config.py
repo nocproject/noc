@@ -287,6 +287,14 @@ class Config(BaseConfig):
         default="en-us"
     )
 
+    class layout(ConfigSection):
+        ring_ring_edge = IntParameter(default=150)
+        ring_chain_edge = IntParameter(default=150)
+        ring_chain_spacing = IntParameter(default=100)
+        tree_horizontal_step = IntParameter(default=100)
+        tree_vertical_step = IntParameter(default=100)
+        tree_max_levels = IntParameter(default=4)
+
     listen = StringParameter(default="auto:0")
 
     log_format = StringParameter(

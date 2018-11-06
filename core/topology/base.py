@@ -14,9 +14,9 @@ from noc.lib.text import split_alnum
 
 
 class BaseTopology(object):
-    CAPS = set([
+    CAPS = {
         "Network | STP"
-    ])
+    }
 
     def __init__(self, node_hints=None, link_hints=None):
         self.node_hints = node_hints or {}
@@ -75,7 +75,7 @@ class BaseTopology(object):
             "ports": [],
             "caps": list(oc)
         })
-        self.G.add_node(mo_id, attrs)
+        self.G.add_node(mo_id, **attrs)
 
     def add_cloud(self, link, attrs=None):
         """
@@ -104,7 +104,7 @@ class BaseTopology(object):
             "shape_width": getattr(stencil, "width", 0),
             "shape_height": getattr(stencil, "height", 0),
         })
-        self.G.add_node(link_id, attrs)
+        self.G.add_node(link_id, **attrs)
 
     def add_link(self, o1, o2, attrs=None):
         """
@@ -119,7 +119,7 @@ class BaseTopology(object):
             "type": "link"
         })
         #
-        self.G.add_edge(o1, o2, a)
+        self.G.add_edge(o1, o2, **a)
 
     @staticmethod
     def get_object_stencil(mo):
@@ -149,7 +149,7 @@ class BaseTopology(object):
         for p in self.G.node[uplink]["ports"]:
             id_to_name[p["id"]] = sorted(p["ports"], key=split_alnum)[0]
         for dl in downlinks:
-            for p in self.G.edge[uplink][dl]["ports"]:
+            for p in self.G.edges[uplink, dl]["ports"]:
                 if p in id_to_name:
                     dl_map[dl] = id_to_name[p]
                     break
