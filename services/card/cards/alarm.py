@@ -10,6 +10,8 @@
 from __future__ import absolute_import
 import datetime
 import operator
+# Third-party modules
+from mongoengine.errors import DoesNotExist
 # NOC modules
 from .base import BaseCard
 from noc.fm.models.utils import get_alarm
@@ -53,8 +55,8 @@ class AlarmCard(BaseCard):
                             "id": o.id,
                             "name": o.name
                         })
-                    c = o.container
-                except Object.DoesNotExist:
+                    c = o.container.id if o.container else None
+                except DoesNotExist:
                     metrics["error", ("type", "user_not_found")] += 1
                     break
         # Build log
