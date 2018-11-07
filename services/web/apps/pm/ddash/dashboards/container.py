@@ -12,6 +12,7 @@ from __future__ import absolute_import
 # Third-Party modules
 import demjson
 from jinja2 import Environment, FileSystemLoader
+from mongoengine.errors import DoesNotExist
 # NOC modules
 from .base import BaseDashboard
 from noc.config import config
@@ -42,8 +43,8 @@ class ContainerDashboard(BaseDashboard):
                             "id": str(o.id),
                             "name": o.name
                         })
-                    c = o.container
-                except Object.DoesNotExist:
+                    c = o.container.id if o.container else None
+                except DoesNotExist:
                     break
         self.object_data = {
             "container_path": cp

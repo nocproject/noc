@@ -14,6 +14,7 @@ import datetime
 # Third-party modules
 import bson
 from pymongo import ReadPreference
+from mongoengine.errors import DoesNotExist
 # NOC modules
 from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
@@ -249,8 +250,8 @@ class AlarmApplication(ExtApplication):
                     o = Object.objects.get(id=c)
                     if o.container:
                         cp.insert(0, o.name)
-                    c = o.container
-                except Object.DoesNotExist:
+                    c = o.container.id if o.container else None
+                except DoesNotExist:
                     break
             d["container_path"] = " | ".join(cp)
             if not self.location(mo.container.id)[0]:
