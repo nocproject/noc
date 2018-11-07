@@ -126,7 +126,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         // Display
         me.consoleOut(me.prompt + cmd);
         Ext.Ajax.request({
-            url: "/sa/managedobject/" + me.currentRecord.get("id") + "/commands/",
+            url: "/sa/managedobject/" + me.currentRecord.get("id") + "/console/",
             method: "POST",
             scope: me,
             jsonData: {
