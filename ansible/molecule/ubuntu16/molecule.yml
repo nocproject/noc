@@ -20,7 +20,7 @@ lint:
 platforms:
   - name: noc_node_ubuntu16
     template: packer-ubuntu16
-    memory: 3072
+    memory: 4128
     cpu: 2
 provisioner:
   name: ansible
