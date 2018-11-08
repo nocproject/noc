@@ -249,7 +249,7 @@ Ext.define('NOC.core.TreeCombo', {
         }, me, {delegate: '.x-mask'});
     },
 
-    restoreById: function(id) {
+    restoreById: function(id, silent) {
         var me = this;
 
         if(id === '_root_') {
@@ -263,7 +263,7 @@ Ext.define('NOC.core.TreeCombo', {
                 url: this.restUrl + '/' + id + '/get_path/',
                 callback: function(records) {
                     if(records) {
-                        me.selectNode(records.pop());
+                        me.selectNode(records.pop(), silent);
                         if(records.length === 0) {
                             me.panel.selectListRow();
                             return;
@@ -279,7 +279,7 @@ Ext.define('NOC.core.TreeCombo', {
         }
     },
 
-    selectNode: function(node) {
+    selectNode: function(node, silent) {
         this.setFieldValue(node);
         this.comboStore.load({
             params: {__query: node.data.label},
@@ -287,7 +287,9 @@ Ext.define('NOC.core.TreeCombo', {
             callback: function(records) {
                 if(records) {
                     this.autocomplete.setValue(node.data.label);
-                    this.fireEvent('select', this.autocomplete, node);
+                    if(!silent) {
+                        this.fireEvent('select', this.autocomplete, node);
+                    }
                 }
             }
         });

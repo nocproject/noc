@@ -334,10 +334,9 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
 
         if(me.segmentCombo.getValue() == null) {
-            me.segmentCombo.restoreById(segmentId);
+            me.segmentCombo.restoreById(segmentId, true);
         }
         me.setHistoryHash(segmentId);
-        // @todo: Remove
         me.mapPanel.loadSegment(segmentId);
         me.currentSegmentId = segmentId;
         // @todo: Restrict to permissions
