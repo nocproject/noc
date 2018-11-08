@@ -12,7 +12,6 @@ import re
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.base import IntParameter
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS
 
 
 class Script(BaseScript):
@@ -92,8 +91,7 @@ class Script(BaseScript):
             if match.group("p_descr"):
                 n["remote_port_description"] = match.group("p_descr")
             # On some devices we are not seen `Port ID`
-            if "remote_port" not in n and n["remote_port_subtype"] == LLDP_PORT_SUBTYPE_ALIAS\
-                    and "remote_port_description" in n:
+            if "remote_port" not in n and n["remote_port_subtype"] == 1 and "remote_port_description" in n:
                 n["remote_port"] = n["remote_port_description"]
             elif "remote_port" not in n and "remote_port_description" in n:
                 # Juniper.JUNOS mx10-t 11.4X27.62, LOCAL_NAME xe-0/0/0 L3
