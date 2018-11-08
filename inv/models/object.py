@@ -620,7 +620,7 @@ class Object(Document):
             if addr:
                 return addr
             if current.container:
-                current = Object.get_by_id(current.container)
+                current = Object.get_by_id(current.container.id)
             else:
                 break
         return None
