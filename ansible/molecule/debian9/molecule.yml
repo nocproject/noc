@@ -20,7 +20,7 @@ lint:
 platforms:
   - name: noc_node_debian9
     template: packer-debian9
-    memory: 3072
+    memory: 4128
     cpu: 2
 provisioner:
   name: ansible
