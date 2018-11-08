@@ -17,7 +17,7 @@ class Script(GetMetricsScript):
     name = "Alstec.24xx.get_metrics"
 
     @metrics(
-        ["CPU | Usage"],
+        ["CPU | Load | 1min"],
         volatile=False,
         access="C"  # CLI version
     )
@@ -26,12 +26,12 @@ class Script(GetMetricsScript):
         v = parse_table(v)
         if v:
             self.set_metric(
-                id=("CPU | Usage", None),
-                value=round(float(v[-1][-1][:-1]))
+                id=("CPU | Load | 1min", None),
+                value=float(v[-1][-1][:-1])
             )
 
     @metrics(
-        ["Memory | Usage"],
+        ["Memory | Load | 1min"],
         volatile=False,
         access="C"  # CLI version
     )
@@ -51,7 +51,7 @@ class Script(GetMetricsScript):
             used = int(r.get("ram:used").split(" ")[0])
             total = int(r.get("ram:total").split(" ")[0])
             self.set_metric(
-                id=("Memory | Usage", None),
+                id=("Memory | Load | 1min", None),
                 value=round(used * 100.0 / total)
             )
 
