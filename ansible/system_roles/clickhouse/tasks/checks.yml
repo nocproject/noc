@@ -59,7 +59,7 @@
           when:
             - sse42_support.rc != 0
       when:
-        - ansible_distribution = 'FreeBSD'
+        - ansible_distribution == 'FreeBSD'
 
   when:
     - has_svc_clickhouse is defined
