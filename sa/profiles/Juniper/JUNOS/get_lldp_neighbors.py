@@ -103,12 +103,17 @@ class Script(BaseScript):
             ]
             n["remote_chassis_id"] = match.group("id")
             n["remote_port_subtype"] = self.PORT_TYPE[match.group("p_type")]
-            n["remote_port"] = match.group("p_id")
+            if match.group("p_id"):
+                n["remote_port"] = match.group("p_id")
             if match.group("p_descr"):
                 n["remote_port_description"] = match.group("p_descr")
             # On some devices we are not seen `Port ID`
-            if not n["remote_port"] and n["remote_port_subtype"] == 1:
+            if "remote_port" not in n and n["remote_port_subtype"] == 1 and "remote_port_description" in n:
                 n["remote_port"] = n["remote_port_description"]
+            elif "remote_port" not in n and "remote_port_description" in n:
+                # Juniper.JUNOS mx10-t 11.4X27.62, LOCAL_NAME xe-0/0/0 L3
+                n["remote_port"] = n["remote_port_description"]
+                n["remote_port_subtype"] = 1
             if match.group("name"):
                 n["remote_system_name"] = match.group("name")
             # Get capability
