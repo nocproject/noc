@@ -65,7 +65,7 @@
           register: installed_version
 
         - name: Check installed consul version
-          shell: '/usr/local/bin/consul version  | grep -Po "^Consul v\K(\d.\d.\d)"'
+          shell: '/usr/local/bin/consul version | sed -n ''s/^Consul v\([[:digit:]].[[:digit:]].[[:digit:]]\).*/\1/p'''
           register: current_consul_version
           when:
             - installed_version.stat.exists
