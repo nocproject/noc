@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Clickhouse models
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -186,27 +186,6 @@ class Model(six.with_metaclass(ModelBase)):
             else:
                 changed |= ensure_columns(cls._meta.db_table)
         return changed
-
-    @classmethod
-    def get_model_class(cls, name):
-        """
-        Returns model class referred by name
-        @todo: Process custom/
-        :param name:
-        :return:
-        """
-        mname = name.split("-")[0]
-        try:
-            m = __import__("noc.bi.models.%s" % mname, {}, {}, "*")
-        except ImportError:
-            return None
-        for a in dir(m):
-            o = getattr(m, a)
-            if not hasattr(o, "_meta"):
-                continue
-            if getattr(o._meta, "db_table", None) == mname:
-                return o
-        return None
 
     @classmethod
     def transform_query(cls, query, user):
