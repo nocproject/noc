@@ -12,6 +12,7 @@ import re
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
+
 class Script(BaseScript):
     name = "NSN.TIMOS.get_capabilities"
     cache = True
@@ -52,7 +53,7 @@ class Script(BaseScript):
         Check box has bfd enabled
         """
         cmd = self.cli("show router bfd interface")
-        return not "No Matching Entries Found" in cmd
+        return "No Matching Entries Found" not in cmd
 
     @false_on_cli_error
     def has_lacp_cli(self):

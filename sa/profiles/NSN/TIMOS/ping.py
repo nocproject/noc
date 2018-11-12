@@ -26,8 +26,9 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
-    def execute_cli(self, address, count=None, source_address=None,
-                size=None, df=None, *args, **kwargs):
+    def execute_cli(
+        self, address, count=None, source_address=None, size=None, df=None, *args, **kwargs
+    ):
         cmd = "ping %s" % address
         if count:
             cmd += " times %d" % int(count)
@@ -36,9 +37,9 @@ class Script(BaseScript):
         if source_address:
             cmd += " source %s" % source_address
         if size:
-            cmd+=" size %d" % int(size)
+            cmd += " size %d" % int(size)
         if df:
-            cmd+=" do-not-fragment"
+            cmd += " do-not-fragment"
         v = self.cli(cmd)
         match = self.rx_result.search(v)
         if match:

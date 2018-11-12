@@ -28,7 +28,7 @@ class Script(BaseScript):
         r"^Port\sId\s+:\s(?P<remote_port>.+?)\n"
         r"^Port\sDescription\s+:\s(?P<remote_port_description>.+?)\n"
         r"^System\sName\s+:\s(?P<remote_system_name>\S+)\n",
-        re.MULTILINE )
+        re.MULTILINE)
 
     CAPS_MAP = {
         "other": 1,
