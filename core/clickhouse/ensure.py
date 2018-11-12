@@ -2,35 +2,30 @@
 # ----------------------------------------------------------------------
 # Ensure ClickHouse database schema
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 import logging
 # NOC modules
 from noc.config import config
+from .loader import loader
 
 logger = logging.getLogger(__name__)
+BIMODELS_PREFIX = os.path.join("bi", "models")
 
 
 def ensure_bi_models(connect=None):
-    from noc.core.clickhouse.model import Model
-
     logger.info("Ensuring BI models:")
-    models = set()
-    # Get models
-    for f in os.listdir("bi/models"):
-        if f.startswith("_") or not f.endswith(".py"):
-            continue
-        mn = f[:-3]
-        model = Model.get_model_class(mn)
-        if model:
-            models.add(model)
     # Ensure fields
     changed = False
-    for model in models:
+    for name in loader.iter_models():
+        model = loader.get_model(name)
+        if not model:
+            continue
         logger.info("Ensure table %s" % model._meta.db_table)
         changed |= model.ensure_table(connect=connect)
     return changed
@@ -55,6 +50,7 @@ def ensure_all_pm_scopes():
         return
     # Replicated configuration
     ch = connection(read_only=False)
-    for host, port in ch.execute("SELECT host_address, port FROM system.clusters WHERE cluster = %s", args=[config.clickhouse.cluster]):
+    for host, port in ch.execute("SELECT host_address, port FROM system.clusters WHERE cluster = %s",
+                                 args=[config.clickhouse.cluster]):
         c = connection(host=host, port=port, read_only=False)
         ensure_pm_scopes(c)

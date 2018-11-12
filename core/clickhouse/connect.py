@@ -34,7 +34,7 @@ class ClickhouseClient(object):
         else:
             self.addresses = [str(x) for x in config.clickhouse.rw_addresses]
 
-    def execute(self, sql=None, args=None, nodb=False, post=None):
+    def execute(self, sql=None, args=None, nodb=False, post=None, extra=None):
         def q(v):
             # @todo: quote dates
             if isinstance(v, six.string_types):
@@ -45,6 +45,8 @@ class ClickhouseClient(object):
         qs = []
         if not nodb:
             qs += ["database=%s" % config.clickhouse.db]
+        if extra:
+            qs += ["%s=%s" % (k, v) for k, v in extra]
         if sql:
             if args:
                 sql = sql % tuple(q(v) for v in args)
