@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -15,21 +15,26 @@ import re
 class Script(BaseScript):
     name = "Cisco.NXOS.get_arp"
     interface = IGetARP
-    rx_line = re.compile(r"(?P<ip>([0-9]{1,3}\.){3}[0-9]{1,3})\s+\S+\s+(?P<mac>\S+)\s+(?P<interface>\S+)")
+
+    rx_line = re.compile(
+        r"^(?P<ip>([0-9]{1,3}\.){3}[0-9]{1,3})\s+\S+\s+(?P<mac>\S+)\s+(?P<interface>\S+)",
+        re.MULTILINE
+    )
 
     def execute(self, vrf=None):
         if vrf:
             s = self.cli("show ip arp vrf %s | no-more" % vrf)
         else:
-            s = self.cli("show ip arp all | no-more")
+            try:
+                s = self.cli("show ip arp all | no-more")
+            except self.CLISyntaxError:
+                s = self.cli("show ip arp vrf all | no-more")
+
         r = []
-        for l in s.split("\n"):
-            match = self.rx_line.match(l.strip())
-            if not match:
-                continue
+        for match in self.rx_line.finditer(s):
             mac = match.group("mac")
             if mac.lower() == "incomplete":
-                r.append({"ip": match.group("ip"), "mac": None, "interface": None})
+                r += [{"ip": match.group("ip"), "mac": None, "interface": None}]
             else:
-                r.append({"ip": match.group("ip"), "mac": match.group("mac"), "interface": match.group("interface")})
+                r += [match.groupdict()]
         return r
