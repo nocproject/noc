@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "InfiNet.WANFlexX"
     pattern_more = [(r"^-- more --$", " ")]
-    pattern_prompt = r"(?P<hostname>\S+?)#\d+>"
+    pattern_prompt = r"(?P<hostname>\S+?)[#|\$]\d+>"
     command_submit = "\r"
     username_submit = "\r"
     password_submit = "\r"
