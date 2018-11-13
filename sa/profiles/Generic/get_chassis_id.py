@@ -6,8 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.snmp.error import SNMPError
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 from noc.core.mib import mib
@@ -21,9 +24,7 @@ class Script(BaseScript):
     # capability -> [oid, ...]
     SNMP_GET_OIDS = {
         "SNMP": [
-            mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0]
-        ],
-        "Network | LLDP": [
+            mib["BRIDGE-MIB::dot1dBaseBridgeAddress", 0],
             mib["LLDP-MIB::lldpLocChassisId", 0]
         ]
     }
@@ -33,15 +34,25 @@ class Script(BaseScript):
     #
     IGNORED_MACS = {
         "00:00:00:00:00:00",  # Empty MAC
+        "00:01:02:03:04:00",  # Very Smart programmer
         "FF:FF:FF:FF:FF:FF"  # Broadcast
     }
+
+    def snmp_safe(self, oids):
+        r = {}
+        for k, v in six.iteritems(oids):
+            try:
+                r.update(self.snmp.get({k: v}))
+            except SNMPError:
+                continue
+        return r
 
     def execute_snmp(self):
         macs = set()
         # Process SNMP GET
         oids = self.get_snmp_get_oids()
         if oids:
-            r = self.snmp.get(dict(zip(oids, oids)))
+            r = self.snmp_safe(dict(zip(oids, oids)))
             for k in r:
                 v = r[k]
                 if v:
