@@ -1,0 +1,13 @@
+{
+    "name": "NSN | TIMOS | 7210_SAS_S",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "2be657bd-d601-4393-a7bb-0be5086ea8c7",
+    "description": "",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.6527.6.2.1.2.9.9",
+    "action": "match",
+    "profile__name": "NSN.TIMOS"
+}
