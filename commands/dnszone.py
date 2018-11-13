@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import argparse
+import itertools
 import re
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
@@ -20,10 +21,19 @@ from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
 from noc.lib.validators import is_int
 from noc.dns.utils.rr import RR
+from noc.lib.text import split_alnum
 
 
 class Command(BaseCommand):
     help = "DNS zone manipulation tool"
+    # Time multipliers
+    TIMES = {
+        "s": 1,
+        "m": 60,
+        "h": 3600,
+        "d": 86400,
+        "w": 604800
+    }
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -289,7 +299,7 @@ class Command(BaseCommand):
         seen_soa = False
         for l in self.iter_zone_lines(data):
             if l.startswith("$TTL "):
-                ttl = int(l[5:].strip())
+                ttl = self.parse_ttl(l[5:])
                 continue
             if l.startswith("$ORIGIN "):
                 zone = l[8:].strip()
@@ -344,13 +354,33 @@ class Command(BaseCommand):
                     priority=rprio
                 )
 
-    def from_idna(self, s):
+    @staticmethod
+    def from_idna(s):
         """
         Convert IDNA domain name to unicode
         """
         if not s:
             return
         return ".".join(unicode(x, "idna") for x in s.split("."))
+
+    @classmethod
+    def parse_ttl(cls, line):
+        """
+        Parse RFC2308 TTL
+        :param line:
+        :return:
+        """
+        parts = split_alnum(line.strip())
+        v = 0
+        for t, mult in itertools.izip_longest(parts[::2], parts[1::2]):
+            if mult is None:
+                v += t
+                break
+            m = cls.TIMES.get(mult.lower())
+            if not m:
+                raise ValueError("Invalid TTL")
+            v += t * m
+        return v
 
 
 if __name__ == "__main__":
