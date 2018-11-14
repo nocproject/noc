@@ -34,7 +34,7 @@ class RR(object):
         else:
             self._content = rdata
         if type == "PTR":
-            self._order = tuple(int(x) for x in name.split("."))
+            self._order = tuple(self.maybe_int(x) for x in name.split("."))
         l_suffix = len(self.to_idna(zone)) + 1
         self._sorder = self._idna[:-l_suffix]
 
@@ -93,3 +93,10 @@ class RR(object):
             return unicode(n, "utf-8").lower().encode("idna")
         else:
             return n
+
+    @staticmethod
+    def maybe_int(v):
+        try:
+            return int(v)
+        except ValueError:
+            return v

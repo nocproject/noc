@@ -155,7 +155,9 @@ class Command(BaseCommand):
                 self.print("Setting profile to '%s'" % zone_profile.name)
                 z.profile = zone_profile
             # Apply changes
-            if not dry_run:
+            if dry_run:
+                z.clean()  # Set type
+            else:
                 z.save()
             #  Clean zone when necessary
             if clean:
@@ -196,7 +198,10 @@ class Command(BaseCommand):
                         force=force
                     )
                 elif rr.type == "PTR":
-                    address = zp + name
+                    if "." in name:
+                        address = zp + ".".join(reversed(name.split(".")))
+                    else:
+                        address = zp + name
                     self.create_address(
                         zone, vrf, address,
                         rr.rdata,
@@ -259,10 +264,10 @@ class Command(BaseCommand):
             # Strip one-line comments
             if ";" in line:
                 line = line.split(";", 1)[0].rstrip()
-                if not line.strip():
-                    continue  # Empty line
             else:
                 line = line.rstrip()
+            if not line.strip():
+                continue  # Empty line
             # Replace tabs
             line = line.replace("\t", "        ")
             # Merge enclosed lines
