@@ -20,7 +20,7 @@ upload:
   stage: upload
   image: registry.getnoc.com/infrastructure/s3helper:master
   script:
-    - /tmp/mc -q cp -r build/* cdn/$S3_BUCKET/$CI_COMMIT_SLUG
+    - /tmp/mc -q cp -r build/* cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG
   tags:
     - docker
   only:
