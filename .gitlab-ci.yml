@@ -1,0 +1,29 @@
+---
+stages:
+  - build
+  - upload
+
+build_docs:
+  stage: build
+  image: registry.getnoc.com/infrastructure/docs:master
+  script:
+    - sphinx-build -a -E -b html src/en build/en
+    - python ./scripts/build-go.py build/en/objects.inv
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/
+    expire_in: 1 day
+
+upload:
+  stage: upload
+  image: registry.getnoc.com/infrastructure/s3helper:master
+  script:
+    - /tmp/mc -q cp -r build/* cdn/$S3_BUCKET/$CI_COMMIT_SLUG
+  tags:
+    - docker
+  only:
+    refs:
+      - master
+      - /^release-\d+\.\d+/
