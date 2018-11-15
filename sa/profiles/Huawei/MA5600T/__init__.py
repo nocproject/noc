@@ -32,7 +32,9 @@ class Profile(BaseProfile):
         (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\> \}", "\n"),
         (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
         (r"\{ groupindex\<K\>\|<cr> \}\:", "\n"),
-        (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n")
+        (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n"),
+        # The ONT automatic loading policy will be deleted
+        (r"\s*Are you sure to proceed\(y/n\)\[[yn]\]", "y\n")
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \
