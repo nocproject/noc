@@ -67,7 +67,8 @@ class Script(BaseScript):
             return "MOD", number, pid
         elif (
             (
-                "LC" in descr or "Line Card" in descr or "Linecard" in descr
+                "LC" in descr or "Line Card" in descr or "Linecard" in descr or
+                "Interface Module" in descr
             ) and "module mau" not in name and not name.startswith("chassis")
         ):
             number = name.split()[1].split("/")[1]
@@ -75,7 +76,7 @@ class Script(BaseScript):
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
-        elif "XFP" in pid or "GLC" in pid or "SFP" in descr:
+        elif "XFP" in pid or "GLC" in pid or "CFP-" in pid or "SFP" in descr:
             number = name.split()[2].split("/")[-1]
             if not pid:
                 pid = self.get_transceiver_pid(descr)

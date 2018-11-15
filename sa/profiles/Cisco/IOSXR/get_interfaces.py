@@ -204,7 +204,7 @@ class Script(BaseScript):
         """
         m = {}
         if self.has_snmp():
-            return self.get_ifindexes()
+            return self.scripts.get_ifindexes()
         else:
             s = self.cli("show snmp interface")
             for l in s.splitlines():
