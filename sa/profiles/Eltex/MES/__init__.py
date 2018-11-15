@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces.base import InterfaceTypeError
+from noc.lib.validators import is_int
 
 
 class Profile(BaseProfile):
@@ -87,7 +88,10 @@ class Profile(BaseProfile):
         'Gi 1/0/1'
         """
         match = self.rx_eltex_interface_name.match(s)
-        if not match:
+        if is_int(s):
+            return "Vl %s" % s
+        elif match:
+            return "%s %s" % (match.group("type").capitalize(),
+                              match.group("number"))
+        else:
             raise InterfaceTypeError("Invalid interface '%s'" % s)
-        return "%s %s" % (match.group("type").capitalize(),
-                          match.group("number"))

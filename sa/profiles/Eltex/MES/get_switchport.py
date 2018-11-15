@@ -25,138 +25,148 @@ class Script(BaseScript):
     rx_vlan_stack = re.compile(
         r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
-    def execute(self):
-
+    def execute_snmp(self):
         # Get portchannels
         portchannels = self.scripts.get_portchannel()
         portchannel_members = []
         for p in portchannels:
             portchannel_members += p["members"]
 
-
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
-#        try:
-#            cmd = self.cli("show vlan-stacking")
-#            for match in self.rx_vlan_stack.finditer(cmd):
-#                if match.group("role").lower() == "tunnel":
-#                    vlan_stack_status[int(match.group("interface"))] = True
-#        except self.CLISyntaxError:
-#            pass
+        #        try:
+        #            cmd = self.cli("show vlan-stacking")
+        #            for match in self.rx_vlan_stack.finditer(cmd):
+        #                if match.group("role").lower() == "tunnel":
+        #                    vlan_stack_status[int(match.group("interface"))] = True
+        #        except self.CLISyntaxError:
+        #            pass
+        # Get switchport index, name and description
+        iface_name = {}
+        iface_descr = {}
+        interface_status = {}
 
-        # Try snmp first
-        if self.has_snmp():
-            try:
-                # Get switchport index, name and description
-                iface_name = {}
-                iface_descr = {}
-                interface_status = {}
-                N = None
-                for v in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1",
-                                               "1.3.6.1.2.1.31.1.1.1.18",
-                                               "1.3.6.1.2.1.2.2.1.8"],
-                                              bulk=True):
-                    if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
-                        name = v[1]
-                        iface_name.update({v[0]: name})
-                        iface_descr.update({name: v[2]})
-                        if name[:2].lower() != 'po':
-                            interface_status.update({name: v[3]})
+        for v in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1",
+                                       "1.3.6.1.2.1.31.1.1.1.18",
+                                       "1.3.6.1.2.1.2.2.1.8"],
+                                      bulk=True):
+            if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
+                name = v[1]
+                iface_name.update({v[0]: name})
+                iface_descr.update({name: v[2]})
+                if name[:2].lower() != 'po':
+                    interface_status.update({name: v[3]})
 
-                # Make a list of tags for each interface or portchannel
-                port_vlans = {}
-                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.4.3.1.2",
-                                               "1.3.6.1.2.1.17.7.1.4.3.1.4"],
-                                              bulk=True):
-                    tagged = v[1]
-                    untagged = v[2]
+        # Make a list of tags for each interface or portchannel
+        port_vlans = {}
+        for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.4.3.1.2",
+                                       "1.3.6.1.2.1.17.7.1.4.3.1.4"],
+                                      bulk=True):
+            tagged = v[1]
+            untagged = v[2]
 
-                    s = self.hex_to_bin(untagged)
-                    un = []
-                    for i in iface_name:
-                        j = int(i) - 1
-                        if j < 1008:
-                            iface = iface_name[i]
-                            if iface not in port_vlans:
-                                port_vlans.update({iface: {
-                                    "tagged": [],
-                                    "untagged": '1',
-                                    }})
-                            if s[j] == '1':
-                                port_vlans[iface]["untagged"] = v[0]
-                                un += [j]
+            s = self.hex_to_bin(untagged)
+            un = []
+            for i in iface_name:
+                j = int(i) - 1
+                if j < 1008:
+                    iface = iface_name[i]
+                    if iface not in port_vlans:
+                        port_vlans.update({iface: {
+                            "tagged": [],
+                            "untagged": '1',
+                        }})
+                    if s[j] == '1':
+                        port_vlans[iface]["untagged"] = v[0]
+                        un += [j]
 
-                    s = self.hex_to_bin(tagged)
-                    for i in iface_name:
-                        j = int(i) - 1
-                        if j < 1008 and s[j] == '1' and j not in un:
-                            iface = iface_name[i]
-                            if iface not in port_vlans:
-                                port_vlans.update({iface: {
-                                    "tagged": [],
-                                    "untagged": '',
-                                    }})
-                            port_vlans[iface]["tagged"].append(v[0])
+            s = self.hex_to_bin(tagged)
+            for i in iface_name:
+                j = int(i) - 1
+                if j < 1008 and s[j] == '1' and j not in un:
+                    iface = iface_name[i]
+                    if iface not in port_vlans:
+                        port_vlans.update({iface: {
+                            "tagged": [],
+                            "untagged": '',
+                        }})
+                    port_vlans[iface]["tagged"].append(v[0])
 
-                # Get switchport data and overall result
-                r = []
-                swp = {}
-                write = False
-                for name in interface_status:
-                    if name in portchannel_members:
-                        for p in portchannels:
-                            if name in p["members"]:
-                                name = p["interface"]
-                                status = False
-                                for interface in p["members"]:
-                                    if interface_status.get(interface):
-                                        status = True
-                                description = iface_descr[name]
-                                if not description:
-                                    description = ''
-                                members = p["members"]
-                                portchannels.remove(p)
-                                write = True
-                                break
-                    else:
-                        if interface_status.get(name):
-                            status = True
-                        else:
-                            status = False
+        # Get switchport data and overall result
+        r = []
+        swp = {}
+        write = False
+        for name in interface_status:
+            if name in portchannel_members:
+                for p in portchannels:
+                    if name in p["members"]:
+                        name = p["interface"]
+                        status = False
+                        for interface in p["members"]:
+                            if interface_status.get(interface):
+                                status = True
                         description = iface_descr[name]
                         if not description:
                             description = ''
-                        members = []
+                        members = p["members"]
+                        portchannels.remove(p)
                         write = True
-                    if write:
-                        if name not in port_vlans:
-                            tagged = []
-                        else:
-                            tagged = port_vlans[name]["tagged"]
-                        swp = {
-                            "status": status,
-                            "description": description,
-                            "802.1Q Enabled": len(port_vlans.get(name,
-                                                                 '')) > 0,
-                            "802.1ad Tunnel": vlan_stack_status.get(name,
-                                                                    False),
-                            "tagged": tagged,
-                            }
-                        if name in port_vlans:
-                            if port_vlans[name]["untagged"]:
-                                swp["untagged"] = port_vlans[name]["untagged"]
-                        swp["interface"] = name
-                        swp["members"] = members
-                        r.append(swp)
-                        write = False
-                return r
-            except self.snmp.TimeOutError:
-                pass
+                        break
+            else:
+                if interface_status.get(name):
+                    status = True
+                else:
+                    status = False
+                description = iface_descr[name]
+                if not description:
+                    description = ''
+                members = []
+                write = True
+            if write:
+                if name not in port_vlans:
+                    tagged = []
+                else:
+                    tagged = port_vlans[name]["tagged"]
+                swp = {
+                    "status": status,
+                    "description": description,
+                    "802.1Q Enabled": len(port_vlans.get(name,
+                                                         '')) > 0,
+                    "802.1ad Tunnel": vlan_stack_status.get(name,
+                                                            False),
+                    "tagged": tagged,
+                }
+                if name in port_vlans:
+                    if port_vlans[name]["untagged"]:
+                        swp["untagged"] = port_vlans[name]["untagged"]
+                swp["interface"] = name
+                swp["members"] = members
+                r.append(swp)
+                write = False
+        return r
 
+    def execute_cli(self):
+        # Get portchannels
+        portchannels = self.scripts.get_portchannel()
+        portchannel_members = []
+        for p in portchannels:
+            portchannel_members += p["members"]
+
+        # TODO
+        # Get 802.1ad status if supported
+        vlan_stack_status = {}
+        #        try:
+        #            cmd = self.cli("show vlan-stacking")
+        #            for match in self.rx_vlan_stack.finditer(cmd):
+        #                if match.group("role").lower() == "tunnel":
+        #                    vlan_stack_status[int(match.group("interface"))] = True
+        #        except self.CLISyntaxError:
+        #            pass
         # Fallback to CLI
         # Get interafces status
         interface_status = {}
+
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
@@ -173,7 +183,7 @@ class Script(BaseScript):
                 port_vlans.update({interface: {
                     "tagged": [],
                     "untagged": '',
-                    }
+                }
                 })
             cmd = self.cli("show interfaces switchport %s" % interface)
             for vlan in parse_table(cmd, allow_wrap=True):
@@ -237,7 +247,7 @@ class Script(BaseScript):
                     "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
                     "802.1ad Tunnel": vlan_stack_status.get(name, False),
                     "tagged": port_vlans[name]["tagged"],
-                    }
+                }
                 if port_vlans[name]["untagged"]:
                     swp["untagged"] = port_vlans[name]["untagged"]
                 swp["interface"] = name

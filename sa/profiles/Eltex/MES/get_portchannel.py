@@ -8,9 +8,12 @@
 
 # Python modules
 import re
+import six
+from collections import defaultdict
 # NOC modules
-from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -25,40 +28,17 @@ class Script(BaseScript):
 
     rx_lacp = re.compile(r"^\s+Attached Lag id:$", re.MULTILINE)
 
-    """
     def execute_snmp(self):
-        r = []
-        # Try SNMP
-        if self.has_snmp():
-            try:
-                for v in self.snmp.get_tables(
-                    ["1.2.840.10006.300.43.1.1.1.1.6",
-                    "1.2.840.10006.300.43.1.1.2.1.1",
-                    "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
-                    oid = "1.3.6.1.2.1.31.1.1.1.1." + v[1]
-                    port = self.snmp.get(oid, cached=True)  # IF-MIB
-                    s = self.hex_to_bin(v[2])
-                    print port
-                    print s
-                    members = []
-                    for i in range(len(s)):
-                        if s[i] == '1':
-                            oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
-                            iface = self.snmp.get(oid, cached=True)  # IF-MIB
-                            members.append(iface)
-
-                    if members:
-                        r.append({
-                            "interface": port,
-                            # ?????? type detection
-                            # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
-                            "type": "L" if v[3] == '1' else "S",
-                            "members": members,
-                            })
-                return r
-            except self.snmp.TimeOutError:
-                pass
-    """
+        r = defaultdict(list)
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        for ifindex, sel_pc, att_pc in self.snmp.get_tables(
+                [mib["IEEE8023-LAG-MIB::dot3adAggPortSelectedAggID"],
+                 mib["IEEE8023-LAG-MIB::dot3adAggPortAttachedAggID"]]):
+            if att_pc:
+                r[names[int(att_pc)]] += [names[int(ifindex)]]
+        return [{"interface": pc,
+                 "type": "L",
+                 "members": r[pc]} for pc in r if pc.startswith("Po")]
 
     def execute_cli(self):
         res = []
