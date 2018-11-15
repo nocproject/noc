@@ -202,7 +202,7 @@ class ReportObjectDetailApplication(ExtApplication):
         r = [translate_row(header_row, cmap)]
         mos = self.get_report_object(request.user, is_managed, administrative_domain,
                                      selector, pool, segment, ids)
-
+        columns_filter = set(columns.split(","))
         mos_id = tuple(mos.order_by("id").values_list("id", flat=True))
         mos_filter = None
         if detail_stat:
@@ -211,28 +211,34 @@ class ReportObjectDetailApplication(ExtApplication):
             mos_filter = set(mos_id).intersection(ids[0])
             mos_id = sorted(mos_filter)
         avail = {}
-        if "avail" in columns.split(","):
+        if "avail" in columns_filter:
             avail = ObjectStatus.get_statuses(mos_id)
         link_count = iter(ReportObjectLinkCount(mos_id))
         iface_count = iter(ReportObjectIfacesTypeStat(mos_id))
-        container_lookup = iter(ReportContainer(mos_id))
-        iss = iter(ReportObjectIfacesStatusStat(mos_id))
+        if "container" in columns_filter:
+            container_lookup = iter(ReportContainer(mos_id))
+        else:
+            container_lookup = None
+        if "interface_type_count" in columns_filter:
+            iss = iter(ReportObjectIfacesStatusStat(mos_id))
+        else:
+            iss = None
         hn = iter(ReportObjectsHostname1(mos_id))
         rc = iter(ReportObjectConfig(mos_id))
         # ccc = iter(ReportObjectCaps(mos_id))
-        if "adm_path" in columns.split(","):
+        if "adm_path" in columns_filter:
             ad_path = ReportAdPath()
             r[-1].extend([_("ADM_PATH1"), _("ADM_PATH1"), _("ADM_PATH1")])
-        if "interface_type_count" in columns.split(","):
+        if "interface_type_count" in columns_filter:
             r[-1].extend(type_columns)
-        if "object_caps" in columns.split(","):
+        if "object_caps" in columns_filter:
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.ATTRS.values()
             ccc = iter(object_caps)
             r[-1].extend(caps_columns)
-        if "object_tags" in columns.split(","):
+        if "object_tags" in columns_filter:
             r[-1].extend([_("OBJECT_TAGS")])
-        if "sorted_tags" in columns.split(","):
+        if "sorted_tags" in columns_filter:
             tags = set()
             for s in ManagedObject.objects.filter().exclude(
                     tags=None).values_list('tags', flat=True).distinct():
@@ -256,7 +262,10 @@ class ReportObjectDetailApplication(ExtApplication):
                 "vendor", "platform", "version", "tags").order_by("id"):
             if (mos_filter and mo_id not in mos_filter) or not mos_id:
                 continue
-            mo_continer = next(container_lookup)
+            if container_lookup:
+                mo_continer = next(container_lookup)
+            else:
+                mo_continer = [{}]
             r += [translate_row(row([
                 mo_id,
                 name,
@@ -279,15 +288,15 @@ class ReportObjectDetailApplication(ExtApplication):
                 next(link_count)[0],
                 next(rc)[0]
             ]), cmap)]
-            if "adm_path" in columns.split(","):
+            if "adm_path" in columns_filter:
                 r[-1].extend([ad] + list(ad_path[ad]))
-            if "interface_type_count" in columns.split(","):
+            if "interface_type_count" in columns_filter:
                 r[-1].extend(next(iss)[0])
-            if "object_caps" in columns.split(","):
+            if "object_caps" in columns_filter:
                 r[-1].extend(next(ccc)[0])
-            if "object_tags" in columns.split(","):
+            if "object_tags" in columns_filter:
                 r[-1].append(",".join(tags if tags else []))
-            if "sorted_tags" in columns.split(","):
+            if "sorted_tags" in columns_filter:
                 out_tags = [""] * len(tags_o)
                 try:
                     if tags:
@@ -296,9 +305,8 @@ class ReportObjectDetailApplication(ExtApplication):
                 except ValueError:
                     logger.warning("Bad value for tag: %s", m)
                 r[-1].extend(out_tags)
-            if "discovery_problem" in columns.split(","):
+            if "discovery_problem" in columns_filter:
                 r[-1].extend(next(dp)[0])
-
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")

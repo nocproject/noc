@@ -240,7 +240,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         mos_id = list(mos.order_by("id").values_list("id", flat=True))
         mo_hostname = {}
         maintenance = []
-        if mos_id:
+        if mos_id and (selector or ex_selector):
             match["managed_object"] = {"$in": mos_id}
         if "maintenance" in columns.split(","):
             maintenance = Maintenance.currently_affected()
@@ -250,6 +250,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         moss = ReportAlarmObjects(mos_id).get_all()
         # container_lookup = ReportContainer(mos_id)
         container_lookup = None
+        subject = "alarm_subject" in columns
         loc = AlarmApplication([])
         if source in ["archive", "both"]:
             # Archived Alarms
@@ -300,7 +301,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     Platform.get_by_id(moss[a["managed_object"]][9]) if moss[a["managed_object"]][9] else "",
                     Firmware.get_by_id(moss[a["managed_object"]][10]) if moss[a["managed_object"]][10] else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
-                    ArchivedAlarm.objects.get(id=a["_id"]).subject,
+                    ArchivedAlarm.objects.get(id=a["_id"]).subject if subject else "",
                     "",
                     total_objects,
                     total_subscribers,
@@ -353,7 +354,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     Platform.get_by_id(moss[a["managed_object"]][9]) if moss[a["managed_object"]][9] else "",
                     Firmware.get_by_id(moss[a["managed_object"]][10]) if moss[a["managed_object"]][10] else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
-                    ActiveAlarm.objects.get(id=a["_id"]).subject,
+                    ActiveAlarm.objects.get(id=a["_id"]).subject if subject else None,
                     "Yes" if a["managed_object"] in maintenance else "No",
                     total_objects,
                     total_subscribers,
