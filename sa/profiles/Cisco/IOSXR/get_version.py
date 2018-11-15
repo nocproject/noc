@@ -33,7 +33,7 @@ class Script(BaseScript):
         r"Version\s+(?P<version>\S+)\[\S+\]"
     )
     rx_snmp_ver2 = re.compile(
-        r"Cisco IOS XR Software \((?P<platform>\S+)\), Version\s+"
+        r"Cisco IOS XR Software \((?:Cisco )?(?P<platform>\S+)\),\s+Version\s+"
         r"(?P<version>\d\S+)"
     )
 
