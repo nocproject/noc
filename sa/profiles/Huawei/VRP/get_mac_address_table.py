@@ -52,7 +52,7 @@ class Script(BaseScript):
                     continue
                 if interface is not None and match.group("interfaces") != interface:
                     continue
-                r+= [{
+                r += [{
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
