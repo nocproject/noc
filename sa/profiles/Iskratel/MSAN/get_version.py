@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -21,9 +21,9 @@ class Script(BaseScript):
 
     rx_ver = re.compile(r"Software Version\.+ (?P<version>\S+)")
 
-    def execute(self):
+    def execute_cli(self):
         v = self.profile.get_hardware(self)
-        if "api_ver" in v:
+        if "api_ver" in v and v["api_ver"] is not None:
             version = v["api_ver"]
         else:
             c = self.cli("show version")

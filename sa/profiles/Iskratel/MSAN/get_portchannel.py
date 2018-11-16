@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,9 +21,13 @@ class Script(BaseScript):
         r"^(?P<iface>\d+/\d+).+?Static\s+(?P<port1>\d+/\d+).+?"
         r"(?P<port2>\d+/\d+)", re.MULTILINE | re.DOTALL)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
-        for match in self.rx_p.finditer(self.cli("show port-channel all")):
+        try:
+            c = self.cli("show port-channel all")
+        except self.CLISyntaxError:
+            return []
+        for match in self.rx_p.finditer(c):
             r += [{
                 "interface": match.group("iface"),
                 "members": [match.group("port1"), match.group("port2")],
