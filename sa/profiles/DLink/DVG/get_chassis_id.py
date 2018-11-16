@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DVG.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,30 +11,27 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
     name = "DLink.DVG.get_chassis_id"
     interface = IGetChassisID
+    # Always try SNMP first
+    always_prefer = "S"
 
     rx_mac = re.compile(r"^WAN MAC \[+(?P<mac>\S+)+\]$", re.MULTILINE)
-    OIDS_CHECK = ["1.3.6.1.2.1.2.2.1.6.2"]
+    SNMP_GET_OIDS = {
+        "SNMP": mib["IF-MIB::ifPhysAddress", 2]
+    }
 
     def execute_cli(self):
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                return self.execute_snmp()
-            except self.snmp.TimeOutError:
-                pass
-
-        # Fallback to CLI
-        match = self.re_search(self.rx_mac,
-                               self.cli("GET STATUS WAN", cached=True))
+        r = self.cli("GET STATUS WAN", cached=True)
+        match = self.re_search(self.rx_mac, r)
         if not match:
             raise self.NotSupportedError()
         mac = match.group("mac")
-        return {
+        return [{
             "first_chassis_mac": mac,
             "last_chassis_mac": mac
-        }
+        }]

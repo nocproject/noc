@@ -114,6 +114,11 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     mml_protocols = {
         "telnet": "noc.core.script.mml.telnet.TelnetMML"
     }
+    # Override access preferences for script
+    # S - always try SNMP first
+    # C - always try CLI first
+    # None - use default preferences
+    always_prefer = None
 
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
@@ -946,8 +951,18 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             mml_stream.close()
 
     def get_access_preference(self):
-        return self.credentials.get("access_preference",
-                                    self.DEFAULT_ACCESS_PREFERENCE)
+        preferred = self.get_always_preferred()
+        r = self.credentials.get("access_preference", self.DEFAULT_ACCESS_PREFERENCE)
+        if preferred and preferred in r:
+            return preferred + "".join(x for x in r if x != preferred)
+        return r
+
+    def get_always_preferred(self):
+        """
+        Return always preferred access method
+        :return:
+        """
+        return self.always_prefer
 
     def has_cli_access(self):
         return "C" in self.get_access_preference()
