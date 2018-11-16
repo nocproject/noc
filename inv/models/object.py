@@ -557,7 +557,7 @@ class Object(Document):
                 zoom = c.layer.default_zoom or 11
                 return x, y, zoom
             if c.container:
-                c = Object.get_by_id(c.container)
+                c = Object.get_by_id(c.container.id)
                 if c:
                     continue
             break
