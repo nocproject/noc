@@ -344,12 +344,15 @@ TABLE {
     opacity: 1;
 }
 
-.x-form-trigger.fa {
+.x-form-trigger.theme-classic {
     display: table-cell;
     background-image: none !important;
     padding-top: 5px;
     border: 1px solid #b5b8c8;
-    background-color: #d7dbed;
+}
+
+.x-form-trigger.theme-noc {
+    display: table-cell;
 }
 
 .noc-wc-state-base-body {
