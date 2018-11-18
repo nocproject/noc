@@ -26,7 +26,8 @@ class BaseCard(object):
                                                 prefer_custom=True)
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
-    DEFAULT_SERVICE_TITLE_TEMPLATE = "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> {%endif %}{{ object.profile.name }}: {{ object.order_id }}"
+    DEFAULT_SERVICE_TITLE_TEMPLATE = "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> "
+    DEFAULT_SERVICE_TITLE_TEMPLATE += "{%endif %}{{ object.profile.name }}: {{ object.order_id }}"
     # Card javascript
     card_js = []
     card_css = []
