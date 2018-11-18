@@ -36,8 +36,71 @@ forms:
       type: text
       default: ""
       label: "Allow access to service from IPs:"
-      common: environment
       description: "in CIDR notation, separated with comma"
+    enable_administrativedomain:
+      label: "enable_administrativedomain"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_administrativedomain_wait:
+      label: "enable_administrativedomain_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_alarm:
+      label: "enable_alarm"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_alarm_wait:
+      label: "enable_alarm_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_cfgping:
+      label: "enable_cfgping"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
+    enable_cfgping_wait:
+      label: "enable_cfgping_wait"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
+    enable_cfgsyslog:
+      label: "enable_cfgsyslog"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
+    enable_cfgsyslog_wait:
+      label: "enable_cfgsyslog_wait"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
+    enable_cfgtrap:
+      label: "enable_cfgtrap"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
+    enable_cfgtrap_wait:
+      label: "enable_cfgtrap_wait"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
+    enable_dnszone:
+      label: "enable_dnszone"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_dnszone_wait:
+      label: "enable_dnszone_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_managedobject:
+      label: "enable_managedobject"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_managedobject_wait:
+      label: "enable_managedobject_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_resourcegroup:
+      label: "enable_resourcegroup"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_resourcegroup_wait:
+      label: "enable_resourcegroup_wait"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
 
 services:
   datastream:

@@ -1,2 +1,19 @@
 ---
 datastream_mode: wait
+datastream_whitelist_access: ""
+datastream_enable_administrativedomain: False  # yamllint disable-line rule:truthy
+datastream_enable_administrativedomain_wait: False  # yamllint disable-line rule:truthy
+datastream_enable_alarm: False  # yamllint disable-line rule:truthy
+datastream_enable_alarm_wait: False  # yamllint disable-line rule:truthy
+datastream_enable_cfgping: True  # yamllint disable-line rule:truthy
+datastream_enable_cfgping_wait: True  # yamllint disable-line rule:truthy
+datastream_enable_cfgsyslog: True  # yamllint disable-line rule:truthy
+datastream_enable_cfgsyslog_wait: True  # yamllint disable-line rule:truthy
+datastream_enable_cfgtrap: True  # yamllint disable-line rule:truthy
+datastream_enable_cfgtrap_wait: True  # yamllint disable-line rule:truthy
+datastream_enable_dnszone: False  # yamllint disable-line rule:truthy
+datastream_enable_dnszone_wait: False  # yamllint disable-line rule:truthy
+datastream_enable_managedobject: False  # yamllint disable-line rule:truthy
+datastream_enable_managedobject_wait: False  # yamllint disable-line rule:truthy
+datastream_enable_resourcegroup: False  # yamllint disable-line rule:truthy
+datastream_enable_resourcegroup_wait: False  # yamllint disable-line rule:truthy
