@@ -232,7 +232,7 @@ class BaseCard(object):
                 path += [c.name]
             c = c.container
             if c:
-                c = Object.get_by_id(c)
+                c = Object.get_by_id(c.id)
         if not path:
             metrics["error", ("type", "no_such_path")] += 1
             return _("N/A")
