@@ -32,8 +32,8 @@ def get_objects_metrics(managed_objects):
     bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
     query_interval = ManagedObjectProfile.get_max_metrics_interval(
         set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=bi_map.keys()))
-    ) * 1.5
-    from_date = datetime.datetime.now() - datetime.timedelta(seconds=query_interval or 3600)
+    ) * 2
+    from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)
 
     # @todo Left Join
@@ -98,7 +98,7 @@ def get_interface_metrics(managed_objects):
     query_interval = ManagedObjectProfile.get_max_metrics_interval(
         set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=bi_map.keys()))
     ) * 1.5
-    from_date = datetime.datetime.now() - datetime.timedelta(seconds=query_interval or 3600)
+    from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)
     SQL = """SELECT managed_object, path[4] as iface, argMax(ts, ts), argMax(load_in, ts), argMax(load_out, ts),
     argMax(errors_in, ts), argMax(errors_out, ts)
