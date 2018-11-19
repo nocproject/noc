@@ -333,6 +333,11 @@ class Command(BaseCommand):
                 if parts[0] == "IN" or parts[0] in self.RR_TYPES:
                     # missed name
                     parts = [""] + parts
+                # Record ttl
+                if is_int(parts[1]):
+                    rttl = int(parts.pop(1))
+                else:
+                    rttl = None
                 if parts[1] == "IN":
                     # Remove IN
                     parts = [parts[0]] + parts[2:]
@@ -345,7 +350,6 @@ class Command(BaseCommand):
                 # Process value
                 t = parts[1]
                 v = parts[2:]
-                rttl = None
                 if len(v) > 1 and is_int(v[0]):
                     rprio = int(v[0])
                     v = v[1:]
