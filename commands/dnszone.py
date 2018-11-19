@@ -290,7 +290,8 @@ class Command(BaseCommand):
 
     rx_soa = re.compile(
         r"^(?P<zone>\S+)\s+(?:IN\s+)?SOA\s+(\S+)\s+(\S+)\s+"
-        r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
+        r"(\d+)\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+",
+        re.IGNORECASE
     )
 
     def iter_bind_zone_rr(self, data):
@@ -315,7 +316,10 @@ class Command(BaseCommand):
                 if match:
                     z = match.group("zone")
                     if z and z != "@":
-                        zone = z
+                        if z.endswith("."):
+                            zone = z
+                        else:
+                            zone = "%s.%s" % (z, zone)
                     yield RR(
                         zone=zone.strip("."),
                         name="",
