@@ -26,7 +26,7 @@ FOOTER = """;;
 
 class ZoneFile(object):
     TABSTOP = 8
-    MAX_TXT = 250
+    MAX_TXT = 128
 
     def __init__(self, data):
         records = data.get("records", [])
@@ -117,6 +117,7 @@ $TTL %(ttl)d
             l1 = self.TABSTOP
             l2 = self.TABSTOP
         mask = "%%-%ds%%-%ds%%s" % (l1, l2)
+        txt_cmask = "%s%%s" % (" " * l1)
         # Add RRs
         for r in rr:
             if self.is_idna(r[0]):
@@ -125,7 +126,7 @@ $TTL %(ttl)d
                 content = self.split_txt(r[2])
                 z += [mask % (r[0], r[1], content.pop(0))]
                 for c in content:
-                    z += [mask % ("", "", c)]
+                    z += [txt_cmask % c]
             else:
                 z += [mask % tuple(r)]
         z += [FOOTER]
@@ -168,8 +169,9 @@ $TTL %(ttl)d
             return [value]
         if value[0] == "\"" and value[-1] == "\"":
             value = value[1:-1]
-        v = []
+        v = ["("]
         while value:
-            v.insert(0, "\"%s\"" % value[-cls.MAX_TXT:])
-            value = value[:-cls.MAX_TXT]
+            v += ["\"%s\"" % value[:cls.MAX_TXT]]
+            value = value[cls.MAX_TXT:]
+        v += [")"]
         return v
