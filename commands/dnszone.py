@@ -302,6 +302,12 @@ class Command(BaseCommand):
     def has_unquoted(item, v):
         return not item.startswith("\"") and v in item
 
+    rx_mq = re.compile("\"\s+\"")
+
+    @classmethod
+    def merge_mq(cls, value):
+        return cls.rx_mq.sub("", value)
+
     @classmethod
     def iter_zone_lines(cls, f):
         """
@@ -410,6 +416,9 @@ class Command(BaseCommand):
                 value = " ".join(v)
                 if t in ("CNAME", "PTR"):
                     value = self.from_idna(value)
+                elif t == "TXT":
+                    # Merge multiple values
+                    value = self.merge_mq(value)
                 yield RR(
                     zone=zone,
                     name=self.from_idna(name),
