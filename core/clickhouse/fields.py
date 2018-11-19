@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python collections
+from datetime import datetime
 import itertools
 from functools import partial
 import socket
@@ -81,6 +82,17 @@ class BaseField(object):
         """
         return "'%s'" % self.to_tsv(value)
 
+    def to_python(self, value):
+        """
+        Use method when field convert to python object
+        :param value:
+        :return:
+        """
+        return value
+
+    def get_select_sql(self):
+        return self.name
+
 
 class StringField(BaseField):
     db_type = "String"
@@ -97,6 +109,12 @@ class DateField(BaseField):
         else:
             return value.strftime("%Y-%m-%d")
 
+    def to_python(self, value):
+        if not value or value == self.default_value:
+            return None
+        else:
+            return datetime.strptime(value, "%Y-%m-%d")
+
 
 class DateTimeField(BaseField):
     db_type = "DateTime"
@@ -108,6 +126,12 @@ class DateTimeField(BaseField):
         else:
             return value.strftime("%Y-%m-%d %H:%M:%S")
 
+    def to_python(self, value):
+        if not value or value == self.default_value:
+            return None
+        else:
+            return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+
 
 class UInt8Field(BaseField):
     db_type = "UInt8"
@@ -118,6 +142,12 @@ class UInt8Field(BaseField):
             return str(self.default_value)
         else:
             return str(value)
+
+    def to_python(self, value):
+        if not value:
+            return self.default_value
+        else:
+            return int(value)
 
 
 class UInt16Field(UInt8Field):
@@ -158,6 +188,12 @@ class Float32Field(BaseField):
         else:
             return str(value)
 
+    def to_python(self, value):
+        if not value:
+            return self.default_value
+        else:
+            return float(value)
+
 
 class Float64Field(Float32Field):
     db_type = "Float64"
@@ -169,6 +205,12 @@ class BooleanField(UInt8Field):
 
     def to_tsv_array(self, value):
         return "'1'" if value else "'0'"
+
+    def to_python(self, value):
+        if not value:
+            return False
+        else:
+            return value == "1"
 
 
 class ArrayField(BaseField):
@@ -184,6 +226,12 @@ class ArrayField(BaseField):
 
     def get_db_type(self):
         return "Array(%s)" % self.field_type.get_db_type()
+
+    def to_python(self, value):
+        if not value or value == "[]":
+            return []
+        else:
+            return [self.field_type.to_python(x.strip("\'\" ")) for x in value[1:-1].split(",")]
 
 
 class ReferenceField(BaseField):
@@ -214,6 +262,12 @@ class IPv4Field(BaseField):
         :param value:
         :return:
         """
+        if value is None:
+            return "0"
+        else:
+            return str(struct.unpack("!I", socket.inet_aton(value))[0])
+
+    def to_python(self, value):
         if value is None:
             return "0"
         else:
@@ -291,3 +345,17 @@ class NestedField(ArrayField):
     @staticmethod
     def get_create_nested_sql(name, type):
         return "`%s` Array(%s)" % (name, type)
+
+    def to_python(self, value):
+        if value is None or not value:
+            return []
+        else:
+            return [{k: self.field_type._fields[k].to_python(v) for k, v in dict(zip(self.field_type._fields_order, v.split(":"))).iteritems()}
+                    for v in value.split(",")]
+
+    def get_select_sql(self):
+        splitter = ",':',"
+        last_field = "%s.%s" % (self.name, self.field_type._fields_order[-1])
+        m = ["toString(%s.%s[indexOf(%s, x)])" % (self.name, x, last_field) for x in self.field_type._fields_order[:-1]]
+        r = ["arrayStringConcat(arrayMap(x -> concat(", splitter.join(m), ", ':', toString(x)), %s),',')" % last_field]
+        return "".join(r)
