@@ -252,8 +252,58 @@ class Command(BaseCommand):
             if not dry_run:
                 a.save()
 
+    rx_q = re.compile("(\"[^\"]*\")")
+
+    @classmethod
+    def iter_tokenize(cls, s):
+        start = 0
+        for match in cls.rx_q.finditer(s):
+            if start < match.start():
+                yield s[start:match.start()]
+            yield match.group(0)
+            start = match.end()
+        if start < len(s) - 1:
+            yield s[start:]
+
+    @classmethod
+    def iter_tabify(cls, iter):
+        """
+        Replace tabs to spaces in non-quoted parts
+        :param iter:
+        :return:
+        """
+        for item in iter:
+            if cls.has_unquoted(item, "\t"):
+                yield item.replace("\t", "        ")
+            else:
+                yield item
+
+    @classmethod
+    def iter_strip_comments(cls, iter):
+        """
+        Cut comments to end of line
+        :param iter:
+        :return:
+        """
+        for item in iter:
+            if cls.has_unquoted(item, ";"):
+                p = item.split(";", 1)[0].rstrip()
+                if p:
+                    yield p
+                break
+            else:
+                yield item
+
     @staticmethod
-    def iter_zone_lines(f):
+    def is_quoted(item):
+        return item.startswith("\"")
+
+    @staticmethod
+    def has_unquoted(item, v):
+        return not item.startswith("\"") and v in item
+
+    @classmethod
+    def iter_zone_lines(cls, f):
         """
         Yields zone data line by line
         :param f: File object
@@ -261,32 +311,34 @@ class Command(BaseCommand):
         """
         enclosed_line = []
         for line in f:
-            # Strip one-line comments
-            if ";" in line:
-                line = line.split(";", 1)[0].rstrip()
-            else:
-                line = line.rstrip()
-            if not line.strip():
-                continue  # Empty line
-            # Replace tabs
-            line = line.replace("\t", "        ")
-            # Merge enclosed lines
-            if enclosed_line:
-                if ")" in line:
-                    # Close enclosed line
-                    enclosed_line += [line.split(")", 1)[0].rstrip()]
-                    yield " ".join(enclosed_line)
-                    enclosed_line = []
+            collected = []
+            for item in cls.iter_strip_comments(cls.iter_tabify(cls.iter_tokenize(line))):
+                if enclosed_line:
+                    if cls.has_unquoted(item, ")"):
+                        # Closing )
+                        p = item.split(")", 1)
+                        enclosed_line += [p[0] + " "]
+                        if len(p) > 1:
+                            enclosed_line += [p[1] + " "]
+                        collected += enclosed_line
+                        enclosed_line = []
+                    else:
+                        enclosed_line += [item]
                 else:
-                    # Collect data
-                    enclosed_line += [line]
-            else:
-                if "(" in line:
-                    # Start enclosed line
-                    enclosed_line += [line.split("(", 1)[0] + " "]
-                else:
-                    # Plain line
-                    yield line
+                    if cls.has_unquoted(item, "("):
+                        # Starting (
+                        p = item.split("(", 1)
+                        enclosed_line += [p[0] + " "]
+                        if len(p) > 1:
+                            enclosed_line += [p[1] + " "]
+                    else:
+                        # Plain item
+                        collected += [item]
+            if collected and not enclosed_line:
+                line = "".join(collected)
+                if line.strip():
+                    # Not empty
+                    yield line.rstrip()
 
     rx_soa = re.compile(
         r"^(?P<zone>\S+)\s+(?:IN\s+)?SOA\s+(\S+)\s+(\S+)\s+"
