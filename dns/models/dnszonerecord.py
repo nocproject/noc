@@ -33,7 +33,7 @@ class DNSZoneRecord(models.Model):
     ttl = models.IntegerField(_("TTL"), null=True, blank=True)
     type = models.CharField(_("Type"), max_length=16)
     priority = models.IntegerField(_("Priority"), null=True, blank=True)
-    content = models.CharField(_("Content"), max_length=256)
+    content = models.CharField(_("Content"), max_length=65536)
     tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
