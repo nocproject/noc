@@ -26,6 +26,7 @@ FOOTER = """;;
 
 class ZoneFile(object):
     TABSTOP = 8
+    MAX_TXT = 250
 
     def __init__(self, data):
         records = data.get("records", [])
@@ -120,7 +121,13 @@ $TTL %(ttl)d
         for r in rr:
             if self.is_idna(r[0]):
                 z += ["; %s" % self.from_idna(r[0])]
-            z += [mask % tuple(r)]
+            if r[1] == "TXT":
+                content = self.split_txt(r[2])
+                z += [mask % (r[0], r[1], content.pop(0))]
+                for c in content:
+                    z += [mask % ("", "", c)]
+            else:
+                z += [mask % tuple(r)]
         z += [FOOTER]
         return "\n".join(z)
 
@@ -147,3 +154,22 @@ $TTL %(ttl)d
             elif rr > 0:
                 z += ["%d %s" % (rr, t)]
         return " ".join(z)
+
+    @classmethod
+    def split_txt(cls, value):
+        """
+        Split TXT to up-to MAX_TXT parts
+        :param value:
+        :return:
+        """
+        if len(value) <= cls.MAX_TXT:
+            if not value[0] == "\"":
+                value = "\"%s\"" % value
+            return [value]
+        if value[0] == "\"" and value[-1] == "\"":
+            value = value[1:-1]
+        v = []
+        while value:
+            v.insert(0, "\"%s\"" % value[-cls.MAX_TXT:])
+            value = value[:-cls.MAX_TXT]
+        return v
