@@ -74,7 +74,7 @@ def update_object(ds_name, object_id):
     :param object_id:
     :return:
     """
-    ds = loader.get_datastream(ds_name)
+    ds = loader[ds_name]
     if not ds:
         return
     r = ds.update_object(object_id)

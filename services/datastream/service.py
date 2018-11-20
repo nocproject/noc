@@ -36,10 +36,10 @@ class DataStreamService(Service):
 
     def get_datastreams(self):
         r = []
-        for name in loader.iter_datastreams():
+        for name in loader:
             if not getattr(config.datastream, "enable_%s" % name, False):
                 continue
-            ds = loader.get_datastream(name)
+            ds = loader[name]
             if ds:
                 self.logger.info("[%s] Initializing datastream", name)
                 r += [ds]
@@ -90,8 +90,8 @@ class DataStreamService(Service):
         :return: True if .watch() is working
         """
         # Get one datastream collection
-        dsn = next(loader.iter_datastreams())
-        ds = loader.get_datastream(dsn)
+        dsn = next(loader)
+        ds = loader[dsn]
         coll = ds.get_collection()
         # Check pymongo has .watch
         if not hasattr(coll, "watch"):

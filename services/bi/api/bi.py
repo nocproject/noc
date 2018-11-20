@@ -128,8 +128,8 @@ class BIAPI(API):
     @classmethod
     def get_bi_datasources(cls):
         result = []
-        for mn in loader.iter_models():
-            model = loader.get_model(mn)
+        for mn in loader:
+            model = loader[mn]
             if not model:
                 continue
             r = {
@@ -167,7 +167,7 @@ class BIAPI(API):
                              lock=lambda _: model_lock)
     def get_model(cls, name):
         # Static datasource
-        model = loader.get_model(name)
+        model = loader[name]
         if model:
             return model
         # Dynamic datasource
@@ -388,7 +388,7 @@ class BIAPI(API):
         if "field_name" not in params:
             metrics["error", ("type", "get_hierarchy_no_field_name")] += 1
             raise APIError("No field name")
-        model = loader.get_model(params["datasource"])
+        model = loader[params["datasource"]]
         if not model:
             metrics["error", ("type", "get_hierarchy_invalid_datasource")] += 1
             raise APIError("Invalid datasource")
