@@ -184,16 +184,16 @@ Ext.define("NOC.core.combotree.ComboTree", {
     setValue: function(value) {
         var me = this;
         if(value == null || value === "") {
-            me.value = value;
+            me.callParent(null);
             me.setRawValue(value);
             me.getTrigger("clear").hide();
-            return;
+            return me;
         }
         me.getTrigger("clear").show();
         if(value.hasOwnProperty(me.valueField)) { // Ext.data.NodeInterface
-            me.value = value[me.valueField];
+            me.callParent([value[me.valueField]]);
             me.setRawValue(me.getDisplayValue(value));
-            return;
+            return me;
         }
         // ToDo use simple 'restUrl/<item_id>', which property use as label?
         Ext.Ajax.request({
@@ -204,8 +204,10 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 var k, data = Ext.decode(response.responseText).data;
                 for(k = 0; k < data.length; k++) {
                     if(data[k].id === value) {
-                        me.value = value;
-                        me.setRawValue(data[k][me.displayField]);
+                        var v = {};
+                        v[me.valueField] = value;
+                        v[me.displayField] = data[k][me.displayField];
+                        me.setValue(v);
                         break;
                     }
                 }
