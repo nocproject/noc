@@ -113,7 +113,7 @@ class DateField(BaseField):
         if not value or value == self.default_value:
             return None
         else:
-            return datetime.strptime(value, "%Y-%m-%d")
+            return datetime.strptime(value, "%Y-%m-%d").date()
 
 
 class DateTimeField(BaseField):
@@ -350,7 +350,9 @@ class NestedField(ArrayField):
         if value is None or not value:
             return []
         else:
-            return [{k: self.field_type._fields[k].to_python(v) for k, v in dict(zip(self.field_type._fields_order, v.split(":"))).iteritems()}
+            return [{k: self.field_type._fields[k].to_python(v.strip("'")) for k, v in
+                     dict(zip(self.field_type._fields_order,
+                              v.split(":"))).iteritems()}
                     for v in value.split(",")]
 
     def get_select_sql(self):
