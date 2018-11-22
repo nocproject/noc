@@ -18,6 +18,7 @@ from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
+
 @on_delete_check(check=[
     ("sa.ManagedObjectProfile", "caps_profile")
 ])
