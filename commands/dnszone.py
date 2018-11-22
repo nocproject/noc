@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import argparse
+import itertools
 import re
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
@@ -20,10 +21,19 @@ from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
 from noc.lib.validators import is_int
 from noc.dns.utils.rr import RR
+from noc.lib.text import split_alnum
 
 
 class Command(BaseCommand):
     help = "DNS zone manipulation tool"
+    # Time multipliers
+    TIMES = {
+        "s": 1,
+        "m": 60,
+        "h": 3600,
+        "d": 86400,
+        "w": 604800
+    }
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -145,7 +155,9 @@ class Command(BaseCommand):
                 self.print("Setting profile to '%s'" % zone_profile.name)
                 z.profile = zone_profile
             # Apply changes
-            if not dry_run:
+            if dry_run:
+                z.clean()  # Set type
+            else:
                 z.save()
             #  Clean zone when necessary
             if clean:
@@ -186,7 +198,10 @@ class Command(BaseCommand):
                         force=force
                     )
                 elif rr.type == "PTR":
-                    address = zp + name
+                    if "." in name:
+                        address = zp + ".".join(reversed(name.split(".")))
+                    else:
+                        address = zp + name
                     self.create_address(
                         zone, vrf, address,
                         rr.rdata,
@@ -237,8 +252,64 @@ class Command(BaseCommand):
             if not dry_run:
                 a.save()
 
+    rx_q = re.compile("(\"[^\"]*\")")
+
+    @classmethod
+    def iter_tokenize(cls, s):
+        start = 0
+        for match in cls.rx_q.finditer(s):
+            if start < match.start():
+                yield s[start:match.start()]
+            yield match.group(0)
+            start = match.end()
+        if start < len(s) - 1:
+            yield s[start:]
+
+    @classmethod
+    def iter_tabify(cls, iter):
+        """
+        Replace tabs to spaces in non-quoted parts
+        :param iter:
+        :return:
+        """
+        for item in iter:
+            if cls.has_unquoted(item, "\t"):
+                yield item.replace("\t", "        ")
+            else:
+                yield item
+
+    @classmethod
+    def iter_strip_comments(cls, iter):
+        """
+        Cut comments to end of line
+        :param iter:
+        :return:
+        """
+        for item in iter:
+            if cls.has_unquoted(item, ";"):
+                p = item.split(";", 1)[0].rstrip()
+                if p:
+                    yield p
+                break
+            else:
+                yield item
+
     @staticmethod
-    def iter_zone_lines(f):
+    def is_quoted(item):
+        return item.startswith("\"")
+
+    @staticmethod
+    def has_unquoted(item, v):
+        return not item.startswith("\"") and v in item
+
+    rx_mq = re.compile("\"\s+\"")
+
+    @classmethod
+    def merge_mq(cls, value):
+        return cls.rx_mq.sub("", value)
+
+    @classmethod
+    def iter_zone_lines(cls, f):
         """
         Yields zone data line by line
         :param f: File object
@@ -246,36 +317,39 @@ class Command(BaseCommand):
         """
         enclosed_line = []
         for line in f:
-            # Strip one-line comments
-            if ";" in line:
-                line = line.split(";", 1)[0].rstrip()
-                if not line.strip():
-                    continue  # Empty line
-            else:
-                line = line.rstrip()
-            # Replace tabs
-            line = line.replace("\t", "        ")
-            # Merge enclosed lines
-            if enclosed_line:
-                if ")" in line:
-                    # Close enclosed line
-                    enclosed_line += [line.split(")", 1)[0].rstrip()]
-                    yield " ".join(enclosed_line)
-                    enclosed_line = []
+            collected = []
+            for item in cls.iter_strip_comments(cls.iter_tabify(cls.iter_tokenize(line))):
+                if enclosed_line:
+                    if cls.has_unquoted(item, ")"):
+                        # Closing )
+                        p = item.split(")", 1)
+                        enclosed_line += [p[0] + " "]
+                        if len(p) > 1:
+                            enclosed_line += [p[1] + " "]
+                        collected += enclosed_line
+                        enclosed_line = []
+                    else:
+                        enclosed_line += [item]
                 else:
-                    # Collect data
-                    enclosed_line += [line]
-            else:
-                if "(" in line:
-                    # Start enclosed line
-                    enclosed_line += [line.split("(", 1)[0] + " "]
-                else:
-                    # Plain line
-                    yield line
+                    if cls.has_unquoted(item, "("):
+                        # Starting (
+                        p = item.split("(", 1)
+                        enclosed_line += [p[0] + " "]
+                        if len(p) > 1:
+                            enclosed_line += [p[1] + " "]
+                    else:
+                        # Plain item
+                        collected += [item]
+            if collected and not enclosed_line:
+                line = "".join(collected)
+                if line.strip():
+                    # Not empty
+                    yield line.rstrip()
 
     rx_soa = re.compile(
         r"^(?P<zone>\S+)\s+(?:IN\s+)?SOA\s+(\S+)\s+(\S+)\s+"
-        r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
+        r"(\d+)\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+\s+(\d+[smhdw]?)+",
+        re.IGNORECASE
     )
 
     def iter_bind_zone_rr(self, data):
@@ -289,7 +363,7 @@ class Command(BaseCommand):
         seen_soa = False
         for l in self.iter_zone_lines(data):
             if l.startswith("$TTL "):
-                ttl = int(l[5:].strip())
+                ttl = self.parse_ttl(l[5:])
                 continue
             if l.startswith("$ORIGIN "):
                 zone = l[8:].strip()
@@ -300,7 +374,10 @@ class Command(BaseCommand):
                 if match:
                     z = match.group("zone")
                     if z and z != "@":
-                        zone = z
+                        if z.endswith("."):
+                            zone = z
+                        else:
+                            zone = "%s.%s" % (z, zone)
                     yield RR(
                         zone=zone.strip("."),
                         name="",
@@ -314,6 +391,11 @@ class Command(BaseCommand):
                 if parts[0] == "IN" or parts[0] in self.RR_TYPES:
                     # missed name
                     parts = [""] + parts
+                # Record ttl
+                if is_int(parts[1]):
+                    rttl = int(parts.pop(1))
+                else:
+                    rttl = None
                 if parts[1] == "IN":
                     # Remove IN
                     parts = [parts[0]] + parts[2:]
@@ -326,7 +408,6 @@ class Command(BaseCommand):
                 # Process value
                 t = parts[1]
                 v = parts[2:]
-                rttl = None
                 if len(v) > 1 and is_int(v[0]):
                     rprio = int(v[0])
                     v = v[1:]
@@ -335,6 +416,9 @@ class Command(BaseCommand):
                 value = " ".join(v)
                 if t in ("CNAME", "PTR"):
                     value = self.from_idna(value)
+                elif t == "TXT":
+                    # Merge multiple values
+                    value = self.merge_mq(value)
                 yield RR(
                     zone=zone,
                     name=self.from_idna(name),
@@ -344,13 +428,33 @@ class Command(BaseCommand):
                     priority=rprio
                 )
 
-    def from_idna(self, s):
+    @staticmethod
+    def from_idna(s):
         """
         Convert IDNA domain name to unicode
         """
         if not s:
             return
         return ".".join(unicode(x, "idna") for x in s.split("."))
+
+    @classmethod
+    def parse_ttl(cls, line):
+        """
+        Parse RFC2308 TTL
+        :param line:
+        :return:
+        """
+        parts = split_alnum(line.strip())
+        v = 0
+        for t, mult in itertools.izip_longest(parts[::2], parts[1::2]):
+            if mult is None:
+                v += t
+                break
+            m = cls.TIMES.get(mult.lower())
+            if not m:
+                raise ValueError("Invalid TTL")
+            v += t * m
+        return v
 
 
 if __name__ == "__main__":
