@@ -338,7 +338,6 @@ class Script(BaseScript):
                     break  # Metric collected
         # Request snmp metrics from box
         if self.snmp_batch:
-            print(self.snmp_batch)
             self.collect_snmp_metrics()
         # Apply custom metric collection processes
         self.collect_profile_metrics(metrics)
@@ -536,7 +535,6 @@ class Script(BaseScript):
             if not multi and id in self.seen_ids:
                 self.logger.debug("Nothing multi metric already seen %s", id)
                 return  # Already seen
-            print("Metric", metric, path)
         self.metrics += [{
             "id": id,
             "ts": ts or self.get_ts(),
