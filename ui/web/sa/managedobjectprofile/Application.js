@@ -12,6 +12,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.sa.managedobjectprofile.Model",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.authprofile.LookupField",
+        "NOC.sa.capsprofile.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
@@ -34,6 +35,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     viewModel: {
         data: {
             enableBoxDiscoveryConfig: false,
+            enableBoxDiscoveryCaps: false,
             enableBoxDiscoveryVPNInterface: false,
             enableBoxDiscoveryVPNMPLS: false,
             enableBoxDiscoveryPrefixInterface: false,
@@ -688,7 +690,17 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_caps",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Caps")
+                                            boxLabel: __("Caps"),
+                                            reference: "enableBoxDiscoveryCaps"
+                                        },
+                                        {
+                                            name: "caps_profile",
+                                            xtype: "sa.capsprofile.LookupField",
+                                            fieldLabel: __("Caps Profile"),
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryCaps.checked}"
+                                            }
                                         },
                                         {
                                             name: "enable_box_discovery_interface",

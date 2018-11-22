@@ -462,6 +462,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             persist: false
         },
         {
+            name: "caps_profile",
+            type: "string"
+        },
+        {
+            name: "caps_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "mac_collect_all",
             type: "boolean"
         },

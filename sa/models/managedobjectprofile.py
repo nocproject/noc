@@ -16,7 +16,6 @@ from django.db import models
 import cachetools
 # NOC modules
 from noc.main.models.style import Style
-from .authprofile import AuthProfile
 from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
@@ -37,6 +36,8 @@ from noc.vc.models.vpnprofile import VPNProfile
 from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
 from noc.core.datastream.decorator import datastream
+from .authprofile import AuthProfile
+from .capsprofile import CapsProfile
 
 
 m_valid = DictListParameter(attrs={
@@ -380,6 +381,8 @@ class ManagedObjectProfile(models.Model):
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
     bi_id = models.BigIntegerField(unique=True)
+    # Caps discovery settings
+    caps_profile = DocumentReferenceField(CapsProfile, null=False, blank=False)
     # Object alarms can be escalated
     escalation_policy = models.CharField(
         "Escalation Policy",
