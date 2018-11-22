@@ -8,7 +8,6 @@
 
 # Python modules
 import datetime
-from collections import namedtuple
 # NOC modules
 from noc.core.clickhouse.model import Model, NestedModel
 from noc.core.clickhouse.fields import (
