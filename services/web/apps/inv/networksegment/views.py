@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from django.db.models import Count
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.networksegment import NetworkSegment
@@ -39,15 +41,31 @@ class NetworkSegmentApplication(ExtDocApplication):
             "has_children": o.has_children
         }
 
-    def field_count(self, o):
-        return ManagedObject.objects.filter(segment=o).count()
+    def bulk_field_count(self, data):
+        segments = [d["id"] for d in data]
+        counts = dict(ManagedObject.objects.filter(segment__in=segments)
+                      .values("segment")
+                      .annotate(cnt=Count("segment"))
+                      .values_list("segment", "cnt"))
+        for row in data:
+            row["count"] = counts.get(row["id"], 0)
+        return data
 
     @view("^(?P<id>[0-9a-f]{24})/get_path/$",
           access="read", api=True)
     def api_get_path(self, request, id):
         o = self.get_object_or_404(NetworkSegment, id=id)
-        path = [NetworkSegment.objects.get(id=ns) for ns in o.get_path()]
-        return {"data": [{"level": path.index(p) + 1, "id": str(p.id), "label": unicode(p.name)} for p in path]}
+        path = [NetworkSegment.get_by_id(ns) for ns in o.get_path()]
+        return {
+            "data": [
+                {
+                    "level": level + 1,
+                    "id": str(p.id),
+                    "label": unicode(p.name)
+                }
+                for level, p in enumerate(path)
+            ]
+        }
 
     @view("^(?P<id>[0-9a-f]{24})/effective_settings/$",
           access="read", api=True)

@@ -117,7 +117,6 @@ class ManagedObject(Model):
         verbose_name_plural = "Managed Objects"
         db_table = "sa_managedobject"
         app_label = "sa"
-        ordering = ["name"]
 
     name = CharField("Name", max_length=64, unique=True)
     is_managed = BooleanField("Is Managed?", default=True)
