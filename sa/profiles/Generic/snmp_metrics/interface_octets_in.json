@@ -1,0 +1,14 @@
+{
+  "$metric": "Interface | Octets | In",
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHCInOctets.{{ ifIndex }}",
+    "type": "delta"
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifInOctets.{{ ifIndex }}",
+    "type": "delta"
+  }
+}

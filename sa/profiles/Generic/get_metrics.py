@@ -268,7 +268,7 @@ class Script(BaseScript):
         self.ts = None
         # SNMP batch to be collected by collect_snmp_metrics
         # oid -> BatchConfig
-        self.snmp_batch = {}
+        self.snmp_batch = defaultdict(list)
         # Collected metric ids
         self.seen_ids = set()
         # get_path_hash(metric type, path) -> metric config
@@ -389,13 +389,13 @@ class Script(BaseScript):
         """
         for m in self.metric_configs[metric]:
             for oid, vtype, scale, path in rule.iter_oids(self, m):
-                self.snmp_batch[oid] = BatchConfig(
+                self.snmp_batch[oid] += [BatchConfig(
                     id=m.id,
                     metric=m.metric,
                     path=path,
                     type=vtype,
                     scale=scale
-                )
+                )]
                 # Mark as seen to stop further processing
                 self.seen_ids.add(m.id)
 
@@ -424,58 +424,59 @@ class Script(BaseScript):
         # Process results
         for oid in self.snmp_batch:
             ts = self.get_ts()
-            if isinstance(oid, six.string_types):
-                if oid in results:
-                    v = results[oid]
-                    if v is None:
-                        continue
-                else:
-                    self.logger.error(
-                        "Failed to get SNMP OID %s",
-                        oid
-                    )
-                    continue
-            elif callable(self.snmp_batch[oid].scale):
-                # Multiple oids and calculated value
-                v = []
-                for o in oid:
-                    if o in results:
-                        vv = results[o]
-                        if vv is None:
+            for batch in self.snmp_batch[oid]:
+                if isinstance(oid, six.string_types):
+                    if oid in results:
+                        v = results[oid]
+                        if v is None:
                             break
-                        else:
-                            v += [vv]
                     else:
                         self.logger.error(
                             "Failed to get SNMP OID %s",
-                            o
+                            oid
                         )
                         break
-                # Check result does not contain None
-                if len(v) < len(oid):
+                elif callable(batch.scale):
+                    # Multiple oids and calculated value
+                    v = []
+                    for o in oid:
+                        if o in results:
+                            vv = results[o]
+                            if vv is None:
+                                break
+                            else:
+                                v += [vv]
+                        else:
+                            self.logger.error(
+                                "Failed to get SNMP OID %s",
+                                o
+                            )
+                            break
+                    # Check result does not contain None
+                    if len(v) < len(oid):
+                        self.logger.error(
+                            "Cannot calculate complex value for %s "
+                            "due to missed values: %s",
+                            oid, v
+                        )
+                        continue
+                else:
                     self.logger.error(
-                        "Cannot calculate complex value for %s "
-                        "due to missed values: %s",
-                        oid, v
+                        "Cannot evaluate complex oid %s. "
+                        "Scale must be callable",
+                        oid
                     )
                     continue
-            else:
-                self.logger.error(
-                    "Cannot evaluate complex oid %s. "
-                    "Scale must be callable",
-                    oid
+                bv = batch
+                self.set_metric(
+                    id=bv.id,
+                    metric=bv.metric,
+                    value=v,
+                    ts=ts,
+                    path=bv.path,
+                    type=bv.type,
+                    scale=bv.scale
                 )
-                continue
-            bv = self.snmp_batch[oid]
-            self.set_metric(
-                id=bv.id,
-                metric=bv.metric,
-                value=v,
-                ts=ts,
-                path=bv.path,
-                type=bv.type,
-                scale=bv.scale
-            )
 
     def get_ifindex(self, name):
         return self.ifindexes.get(name)
