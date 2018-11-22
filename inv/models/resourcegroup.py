@@ -96,3 +96,10 @@ class ResourceGroup(Document):
     def iter_changed_datastream(self):
         if config.datastream.enable_resourcegroup:
             yield "resourcegroup", self.id
+
+    @property
+    def has_children(self):
+        return bool(
+            ResourceGroup.objects.filter(
+                parent=self.id).only("id").first()
+        )
