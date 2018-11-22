@@ -27,19 +27,19 @@ class Script(BaseScript):
         r"^port(?P<port>\d+)\s+(?P<chassis_id>\S+)", re.MULTILINE
     )
     rx_int = re.compile(
-        r"^Port port(?P<interface>\d+)\s+has 1  remotes:\s*\n"
+        r"^Port\s+port(?P<interface>\d+)\s+has\s+1\s+remotes:\s*\n"
         r"^\s*\n"
-        r"^Remote1\s*\n"
+        r"^Remote\s*1\s*\n"
         r"^-+\s*\n"
-        r"^ChassisIdSubtype\s*: (?P<chassis_subtype>\S+)\s*\n"
-        r"(^ChassisId\s*: (?P<chassis_id>\S+)\s*\n)?"  # See Notes
-        r"^PortIdSubtype\s*: (?P<port_subtype>\S+)\s*\n"
-        r"^PortId\s*: (?P<port_id>.+)\n"
-        r"^PortDesc\s*: (?P<port_descr>.+)\n"
-        r"^SysName\s*: (?P<sys_name>.+)\n"
-        r"^SysDesc\s*: (?P<sys_descr>(.+\n)+)"
+        r"^ChassisIdSubtype\s*:\s+(?P<chassis_subtype>\S+)\s*\n"
+        r"(^ChassisId\s*:\s+(?P<chassis_id>\S+)\s*\n)?"  # See Notes
+        r"^PortIdSubtype\s*:\s+(?P<port_subtype>\S+)\s*\n"
+        r"^PortId\s*:\s+(?P<port_id>.+)\n"
+        r"^PortDesc\s*:\s+(?P<port_descr>.+)\n"
+        r"^SysName\s*:\s+(?P<sys_name>.+)\n"
+        r"^SysDesc\s*:\s+(?P<sys_descr>(.+\n)+)"
         r"^SysCapSupported\s*:.*\n"
-        r"^SysCapEnabled\s*: (?P<caps>.+)\s*\n",
+        r"^SysCapEnabled\s*:\s+(?P<caps>.+)\s*\n",
         re.MULTILINE
     )
 
@@ -86,7 +86,12 @@ class Script(BaseScript):
                 if not c:
                     break
                 caps |= {
+                    "Other": 1,
+                    "Repeater/Hub": 2,
                     "Bridge/Switch": 4,
+                    "Router": 16,
+                    "Telephone": 32,
+                    "Station": 128
                 }[c]
             neighbor["remote_capabilities"] = caps
             result += [{
