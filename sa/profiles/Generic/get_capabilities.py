@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # Generic.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import functools
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilities import IGetCapabilities
@@ -27,8 +29,6 @@ class Script(BaseScript):
 
     # Dict of capability -> oid to check against snmp GET
     CHECK_SNMP_GET = {}
-    #
-    SNMP_VERSIONS = (SNMP_v2c, SNMP_v1)
     #
     SNMP_CAPS = {
         SNMP_v1: "SNMP | v1",
@@ -69,17 +69,6 @@ class Script(BaseScript):
             r = self.check_snmp_get(self.SNMP_GET_CHECK_OID)
             self._has_snmp = r
         return r
-
-    def get_snmp_versions(self):
-        """
-        Get SNMP version
-        :return: Working SNMP versions set or empty set
-        """
-        sv = set()
-        for v in self.SNMP_VERSIONS:
-            if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=v):
-                sv.add(v)
-        return sv
 
     def has_snmp_bulk(self):
         return self.check_snmp_getnext(self.SNMP_BULK_CHECK_OID,
@@ -317,64 +306,87 @@ class Script(BaseScript):
         """
         pass
 
-    def execute(self):
+    def is_requested(self, section):
+        """
+        Check if section is requested
+        :param section:
+        :return:
+        """
+        if self.requested:
+            return section in self.requested
+        return True
+
+    def execute(self, only=None):
+        # Requested capabilities
+        if only:
+            self.requested = set(only)
+        else:
+            self.requested = None
+        #
         caps = {}
-        svs = self.get_snmp_versions()
-        if svs:
-            # SNMP is enabled
-            caps["SNMP"] = True
-            self.capabilities["SNMP"] = True
-            for v in self.SNMP_CAPS:
-                caps[self.SNMP_CAPS[v]] = v in svs
-                self.capabilities[self.SNMP_CAPS[v]] = v in svs
-            if svs & set([SNMP_v2c, SNMP_v3]) and self.has_snmp_bulk():
-                caps["SNMP | Bulk"] = True
-            if self.has_snmp_ifmib(version=list(svs)[-1]):
-                caps["SNMP | IF-MIB"] = True
-                if self.has_snmp_ifmib_hc(list(svs)[-1]):
-                    caps["SNMP | IF-MIB | HC"] = True
-            for cap, oid in self.CHECK_SNMP_GET.iteritems():
-                if self.check_snmp_get(oid):
-                    caps[cap] = True
+        if self.is_requested("snmp"):
+            snmp_version = None
+            if self.is_requested("snmp_v1") and self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v1):
+                caps["SNMP | v1"] = True
+                snmp_version = SNMP_v1
+            if self.is_requested("snmp_v2c") and self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v2c):
+                caps["SNMP | v2c"] = True
+                snmp_version = SNMP_v2c
+                if self.has_snmp_bulk():
+                    caps["SNMP | Bulk"] = True
+            if snmp_version:
+                # SNMP is enabled
+                caps["SNMP"] = True
+                # Update script's capabilities
+                # for valid following snmp.get
+                self.capabilities.update(caps)
+                # Check mibs
+                if self.has_snmp_ifmib(version=snmp_version):
+                    caps["SNMP | IF-MIB"] = True
+                    if self.has_snmp_ifmib_hc(version=snmp_version):
+                        caps["SNMP | IF-MIB | HC"] = True
+                for cap, oid in six.iteritems(self.CHECK_SNMP_GET):
+                    if self.check_snmp_get(oid, version=snmp_version):
+                        caps[cap] = True
         else:
             caps["SNMP"] = False
             for v in self.SNMP_CAPS:
                 caps[v] = False
-        if self.has_stp():
+        if self.is_requested("stp") and self.has_stp():
             caps["Network | STP"] = True
-        if self.has_lldp():
+        if self.is_requested("lldp") and self.has_lldp():
             caps["Network | LLDP"] = True
-        if self.has_cdp():
+        if self.is_requested("cdp") and self.has_cdp():
             caps["Network | CDP"] = True
-        if self.has_oam():
+        if self.is_requested("oam") and self.has_oam():
             caps["Network | OAM"] = True
-        if self.has_udld():
+        if self.is_requested("udld") and self.has_udld():
             caps["Network | UDLD"] = True
         if self.has_ipv6():
             caps["Network | IPv6"] = True
-        if self.has_hsrp():
+        if self.is_requested("hsrp") and self.has_hsrp():
             caps["Network | HSRP"] = True
-        if self.has_vrrp_v2():
+        if self.is_requested("vrrp") and self.has_vrrp_v2():
             caps["Network | VRRP | v2"] = True
-        if self.has_vrrp_v3():
+        if self.is_requested("vrrpv3") and self.has_vrrp_v3():
             caps["Network | VRRP | v3"] = True
-        if self.has_bgp():
+        if self.is_requested("bgp") and self.has_bgp():
             caps["Network | BGP"] = True
-        if self.has_ospf_v2():
+        if self.is_requested("ospf") and self.has_ospf_v2():
             caps["Network | OSPF | v2"] = True
-        if self.has_ospf_v3():
+        if self.is_requested("ospfv3") and self.has_ospf_v3():
             caps["Network | OSPF | v3"] = True
-        if self.has_isis():
+        if self.is_requested("isis") and self.has_isis():
             caps["Network | ISIS"] = True
-        if self.has_ldp():
+        if self.is_requested("ldp") and self.has_ldp():
             caps["Network | LDP"] = True
-        if self.has_rsvp():
+        if self.is_requested("rsvp") and self.has_rsvp():
             caps["Network | RSVP"] = True
-        if self.has_lacp():
+        if self.is_requested("lacp") and self.has_lacp():
             caps["Network | LACP"] = True
-        if self.has_bfd():
+        if self.is_requested("bfd") and self.has_bfd():
             caps["Network | BFD"] = True
-        if self.has_rep():
+        if self.is_requested("rep") and self.has_rep():
             caps["Network | REP"] = True
         self.call_method(
             cli_handler="execute_platform_cli",

@@ -58,7 +58,7 @@ class StringParameter(Parameter):
     ValueError: StringParameter: '3'.
     """
     def __init__(self, required=True, default=None, choices=None):
-        self.choices = choices
+        self.choices = set(choices) if choices else None
         super(StringParameter, self).__init__(required=required,
                                               default=default)
 
@@ -504,9 +504,9 @@ class StringListParameter(ListOfParameter):
     >>> StringListParameter().clean(["1",2,"3"])
     ['1', '2', '3']
     """
-    def __init__(self, required=True, default=None, convert=False):
+    def __init__(self, required=True, default=None, convert=False, choices=None):
         super(StringListParameter, self).__init__(
-            element=StringParameter(), required=required,
+            element=StringParameter(choices=None), required=required,
             default=default, convert=convert)
 
 
