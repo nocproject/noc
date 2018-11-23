@@ -72,6 +72,7 @@ class Script(BaseScript):
 
     def has_snmp_bulk(self):
         return self.check_snmp_getnext(self.SNMP_BULK_CHECK_OID,
+                                       version=SNMP_v2c,
                                        bulk=True)
 
     def has_snmp_ifmib(self, version=None):
@@ -334,7 +335,7 @@ class Script(BaseScript):
                 snmp_version = SNMP_v2c
                 if self.has_snmp_bulk():
                     caps["SNMP | Bulk"] = True
-            if snmp_version:
+            if snmp_version is not None:
                 # SNMP is enabled
                 caps["SNMP"] = True
                 # Update script's capabilities
