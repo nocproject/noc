@@ -1,0 +1,8 @@
+{
+    "name": "Network | RSVP",
+    "$collection": "inv.capabilities",
+    "uuid": "b94b10ab-9ca5-4f1a-98ce-64e66c8dbefb",
+    "description": "RSVP (Resource ReSerVation Protocol) is enabled",
+    "type": "bool",
+    "card_template": null
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Network | LDP",
+    "$collection": "inv.capabilities",
+    "uuid": "c3ce5b89-b3ef-44d8-926a-82143879e6c9",
+    "description": "LDP (Label Distribution Protocol) is enabled",
+    "type": "bool",
+    "card_template": null
+}

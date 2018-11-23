@@ -1,0 +1,8 @@
+{
+    "name": "Network | VRRP | v3",
+    "$collection": "inv.capabilities",
+    "uuid": "54812941-27b2-4177-99b2-1f6e9a96525b",
+    "description": "VRRP (Virtual Router Redundancy Protocol) version 3 is enabled",
+    "type": "bool",
+    "card_template": null
+}
