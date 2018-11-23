@@ -1,0 +1,6 @@
+{
+  "$metric": "Interface | RF | TxPower",
+  "$type": "oid",
+  "path": ["","","", "Output"],
+  "oid": "1.3.6.1.4.1.11195.1.5.16.1.2.2"
+}

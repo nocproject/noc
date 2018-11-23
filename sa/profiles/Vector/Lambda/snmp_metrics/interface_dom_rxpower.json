@@ -1,5 +1,5 @@
 {
-  "$metric": "HFC | Optical Rx Power",
+  "$metric": "Interface | DOM | RxPower",
   "$type": "oids",
   "oids": [{
     "$type": "oid",

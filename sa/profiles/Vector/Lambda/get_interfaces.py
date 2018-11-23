@@ -23,6 +23,7 @@ class Script(BaseScript):
         r"IP addr\s+:\s+(?P<ip>\S+)\n"
         r"Netmask\s+:\s+(?P<mask>\S+)\n", re.MULTILINE
     )
+    rx_port = re.compile(r"Receiver (?P<port>\S) power")
 
     def execute_cli(self, **kwargs):
         net = self.cli("net dump")
@@ -48,6 +49,23 @@ class Script(BaseScript):
                 "admin_status": True,
                 "oper_status": True,
             }]
+        }]
+
+        dev = self.cli("dev dump")
+        for match in self.rx_port.finditer(dev):
+            iface += [{
+                "name": "Input %s" % match.group("port"),
+                "admin_status": True,
+                "oper_status": True,
+                "type": "physical",
+                "subinterfaces": []
+            }]
+        iface += [{
+            "name": "Output",
+            "admin_status": True,
+            "oper_status": True,
+            "type": "physical",
+            "subinterfaces": []
         }]
 
         return [{"interfaces": iface}]
