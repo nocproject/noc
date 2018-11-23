@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -23,13 +23,11 @@ class Script(BaseScript):
         r"^(?P<id>\d+)\s+(?P<name>\S+)?\s+\S+\s*",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             c = self.cli("show vlan brief", cached=True)
         except self.CLISyntaxError:
-            # Iskratel SGR Not clearing command line when SyntaxError
-            self.cli("\x1b[B")
             raise self.NotSupportedError
         for match in self.rx_vlan.finditer(c):
             if match.group('id') == "1":
