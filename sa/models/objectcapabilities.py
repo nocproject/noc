@@ -38,7 +38,9 @@ class CapsItem(EmbeddedDocument):
 @datastream
 class ObjectCapabilities(Document):
     meta = {
-        "collection": "noc.sa.objectcapabilities"
+        "collection": "noc.sa.objectcapabilities",
+        "strict": False,
+        "auto_create_index": False
     }
     object = ForeignKeyField(ManagedObject, primary_key=True)
     caps = ListField(EmbeddedDocumentField(CapsItem))

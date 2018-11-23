@@ -20,8 +20,12 @@ class CapsCheck(DiscoveryCheck):
     required_script = "get_capabilities"
 
     def handler(self):
-        self.logger.info("Checking capabilities")
-        result = self.object.scripts.get_capabilities()
+        sections = self.object.object_profile.caps_profile.get_sections(
+            self.object.object_profile,
+            self.object.segment.profile
+        )
+        self.logger.info("Checking capabilities: %s", ", ".join(sections))
+        result = self.object.scripts.get_capabilities(only=sections)
         self.logger.debug("Received capabilities: \n%s",
                           ujson.dumps(result, indent=4))
         self.update_caps(result, source="caps")
