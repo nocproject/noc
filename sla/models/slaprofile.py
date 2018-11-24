@@ -11,16 +11,14 @@ from threading import Lock
 import operator
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    StringField, BooleanField, FloatField, ReferenceField, ListField,
-    EmbeddedDocumentField, IntField)
+from mongoengine.fields import (StringField, BooleanField, ReferenceField, ListField,
+                                EmbeddedDocumentField)
 import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.lib.nosql import ForeignKeyField
-from noc.core.window import wf_choices
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
