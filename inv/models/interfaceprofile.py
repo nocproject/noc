@@ -12,7 +12,7 @@ import operator
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, LongField,
-                                ReferenceField, FloatField, ListField,
+                                ReferenceField, ListField,
                                 EmbeddedDocumentField, IntField)
 import cachetools
 # NOC modules
@@ -24,7 +24,6 @@ from noc.pm.models.metrictype import MetricType
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
-from noc.core.window import wf_choices
 
 id_lock = Lock()
 
