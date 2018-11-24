@@ -600,7 +600,12 @@ Ext.define("NOC.form.field.VTypes", {
         return me.handlerRe.test(val);
     },
     handlerRe: /^noc(\.[a-zA-Z_][a-zA-Z0-9_]*)+$/,
-    handlerText: "Invalid handler format"
+    handlerText: "Invalid handler format",
+
+    float: function(val, field) {
+        return !isNaN(parseFloat(val))
+    },
+    floatText: "Invalid floating number"
 });
 
 //

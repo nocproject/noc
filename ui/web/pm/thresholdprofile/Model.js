@@ -26,6 +26,26 @@ Ext.define("NOC.pm.thresholdprofile.Model", {
         {
             name: "name",
             type: "string"
+        },
+        {
+            name: "window_type",
+            type: "string"
+        },
+        {
+            name: "window",
+            type: "integer"
+        },
+        {
+            name: "window_function",
+            type: "string"
+        },
+        {
+            name: "window_config",
+            type: "string"
+        },
+        {
+            name: "thresholds",
+            type: "auto"
         }
     ]
 });

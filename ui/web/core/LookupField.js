@@ -146,6 +146,10 @@ Ext.define("NOC.core.LookupField", {
         }
         mv[me.valueField] = rv;
         mv[me.displayField] = record.get(me.name + "__label");
+        if(mv[me.displayField] === undefined) {
+            // Incomplete input data. Just use value as label
+            mv[me.displayField] = rv
+        }
         return me.store.getModel().create(mv)
     }
 });

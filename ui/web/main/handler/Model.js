@@ -38,6 +38,10 @@ Ext.define("NOC.main.handler.Model", {
         {
             name: "allow_resolver",
             type: "boolean"
+        },
+        {
+            name: "allow_threshold",
+            type: "boolean"
         }
     ]
 });
