@@ -26,10 +26,8 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
-from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
-                                    IntParameter, StringParameter)
+from noc.sa.interfaces.base import DictListParameter, ObjectIdParameter, BooleanParameter
 from noc.core.bi.decorator import bi_sync
-from noc.core.window import wf_choices
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
 from noc.vc.models.vpnprofile import VPNProfile
@@ -45,21 +43,6 @@ m_valid = DictListParameter(attrs={
     "enable_box": BooleanParameter(default=False),
     "enable_periodic": BooleanParameter(default=True),
     "is_stored": BooleanParameter(default=True),
-    "window_type": StringParameter(
-        choices=["m", "t"],
-        default="m"),
-    "window": IntParameter(default=1),
-    "window_function": StringParameter(choices=[x[0] for x in wf_choices], default="last"),
-    "window_config": StringParameter(default=""),
-    "window_related": BooleanParameter(default=False),
-    "low_error": IntParameter(required=False),
-    "high_error": IntParameter(required=False),
-    "low_warn": IntParameter(required=False),
-    "high_warn": IntParameter(required=False),
-    "low_error_weight": IntParameter(default=10),
-    "low_warn_weight": IntParameter(default=1),
-    "high_warn_weight": IntParameter(default=1),
-    "high_error_weight": IntParameter(default=10),
     "threshold_profile": ObjectIdParameter(required=False)
 })
 
