@@ -28,6 +28,10 @@ class Profile(BaseProfile):
         ("More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
         ("^ --More-- ", " ")
     ]
+    config_volatile = [
+        r"enable password 7 \S+( level \d+)?\n",
+        r"username \S+ password 7 \S+( author\-group \S+)?\n"
+    ]
 
     rx_iface = re.compile("^[fgvn]\d+\S*$")
 
