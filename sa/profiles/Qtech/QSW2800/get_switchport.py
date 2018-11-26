@@ -9,8 +9,9 @@
 # Python modules
 import re
 # NOC modules
-from noc.sa.profiles.Generic.get_switchport import Script as BaseScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -52,7 +53,13 @@ class Script(BaseScript):
 
         # Get tags
         # Get vlans
-        vlans = [vlan["vlan_id"] for vlan in self.scripts.get_vlans()]
+        vlans = set()
+        cmd = self.cli("show vlan brief")
+        for line in cmd.splitlines():
+            for k in line.split():
+                if is_int(k):
+                    vlans.add(int(k))
+        # vlans = [vlan["vlan_id"] for vlan in self.scripts.get_vlans()]
 
         # Get descriptions
         descr = {}
