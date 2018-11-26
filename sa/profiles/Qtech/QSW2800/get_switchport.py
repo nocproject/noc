@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_switchport import Script as BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.lib.validators import is_int
 
