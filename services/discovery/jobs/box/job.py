@@ -72,6 +72,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
 
     is_box = True
 
+    default_contexts = ("counters", "metric_windows", "active_thresholds")
+
     def handler(self, **kwargs):
         with Span(sample=self.object.box_telemetry_sample), bulk_datastream_changes():
             has_cli = "C" in self.object.get_access_preference()
@@ -169,9 +171,3 @@ class BoxDiscoveryJob(MODiscoveryJob):
 
     def get_alarm_weight(self):
         return self.object.object_profile.box_discovery_alarm_weight
-
-    def init_context(self):
-        if "counters" not in self.context:
-            self.context["counters"] = {}
-        if "metrics_window" not in self.context:
-            self.context["metric_windows"] = {}

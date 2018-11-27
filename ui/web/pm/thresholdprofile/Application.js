@@ -146,13 +146,6 @@ Ext.define("NOC.pm.thresholdprofile.Application", {
                             allowBlank: true
                         },
                         {
-                            name: "weight",
-                            xtype: "numberfield",
-                            fieldLabel: __("Weight"),
-                            allowBlank: true,
-                            uiStyle: "small"
-                        },
-                        {
                             name: "open_event_class",
                             xtype: "fm.eventclass.LookupField",
                             fieldLabel: __("Open Event Class"),
