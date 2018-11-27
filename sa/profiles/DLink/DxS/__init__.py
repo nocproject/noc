@@ -28,7 +28,7 @@ class Profile(BaseProfile):
     command_exit = "logout"
     command_save_config = "save"
     rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
-    config_volatile = ["^%.*?$"]
+    config_volatile = ["^%.*?$", "^config time \d\d.*?\n"]
     telnet_naws = "\x00\x7f\x00\x7f"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
@@ -42,6 +42,13 @@ class Profile(BaseProfile):
                     "DGS-3426", "DGS-3426G", "DGS-3426P", "DGS-3427", "DGS-3450",
                     "DGS-3612", "DGS-3612G", "DGS-3627", "DGS-3627G", "DGS-3650"
                 ]
+            }
+        },
+        # IF-MIB::ifPhysAddress return equal values, but
+        # LLDP-MIB::lldpLocPortId return different values
+        "is_bad_ifmib_snmp": {
+            "platform": {
+                "$regex": r"^DES-3200-\d\dF*/C1"
             }
         }
     }
