@@ -73,9 +73,7 @@ class FMObjectCollector(BaseCollector):
             yield ("fm_alarms_active_last_lag_seconds",), self.calc_lag(
                 time.mktime(last_alarm["timestamp"].timetuple()), now)
         late_alarm = next(db.noc.alarms.active.aggregate(self.late_alarm_pipeline), None)
-        # print(late_alarm)
-        if late_alarm:
-            yield ("fm_alarms_active_late_count",), late_alarm["late_alarm"]
+        yield ("fm_alarms_active_late_count",), late_alarm["late_alarm"] if late_alarm else 0
         alarms_rooted = set()
         alarms_nroored = set()
         alarms_ping = set()
@@ -111,7 +109,7 @@ class FMObjectCollector(BaseCollector):
                 yield ("fm_alarms_active_withoutroot_pool_count",
                        ("pool", pool_name),
                        ("ac_group", ac_group)), len(pool_mos.intersection(alarms_nroored).intersection(ids))
-        yield ("alarms_active_broken_count", ), broken_alarms
+        yield ("errors", ("type", "fm_alarms_active_broken"), ), broken_alarms
 
         for shard in set(TTSystem.objects.filter(is_active=True).values_list("shard_name")):
             yield ("fm_escalation_pool_count",
