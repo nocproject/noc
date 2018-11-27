@@ -78,7 +78,7 @@ class Script(BaseScript):
                 for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
                     if not x:
                         continue
-                    r += [x]
+                    r += [x.strip()]
                 if r:
                     return r
             except self.snmp.TimeOutError:
@@ -92,7 +92,7 @@ class Script(BaseScript):
             v = v[0].groupdict()
             v = dict(x.split("=", 1) for x in v["part_body"].splitlines())
             if "BarCode" in v:
-                r += [v["BarCode"]]
+                r += [v["BarCode"].strip()]
         return r
 
     def parse_version(self, v):
@@ -136,7 +136,7 @@ class Script(BaseScript):
         for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
             if not x:
                 continue
-            serial += [x]
+            serial += [x.strip()]
 
         r = {
             "vendor": "Huawei",
