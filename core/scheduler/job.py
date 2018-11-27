@@ -84,6 +84,9 @@ class Job(object):
         E_RETRY: "RETRY"
     }
 
+    # List of contexts should be initialized
+    default_contexts = None
+
     class JobFailed(Exception):
         pass
 
@@ -114,7 +117,11 @@ class Job(object):
         """
         Perform context initialization
         """
-        pass
+        if not self.default_contexts:
+            return
+        for ctx in self.default_contexts:
+            if ctx not in self.context:
+                self.context[ctx] = {}
 
     @tornado.gen.coroutine
     def run(self):

@@ -19,6 +19,8 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclass import EventClass
 from noc.core.window import wf_choices
 from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.window import get_window_function
+
 
 id_lock = Lock()
 
@@ -32,7 +34,6 @@ class ThresholdConfig(EmbeddedDocument):
     clear_value = FloatField()
     # Umbrella alarm class
     alarm_class = PlainReferenceField(AlarmClass)
-    weight = IntField()
     # Send event to correlator
     open_event_class = PlainReferenceField(EventClass)
     close_event_class = PlainReferenceField(EventClass)
@@ -43,6 +44,36 @@ class ThresholdConfig(EmbeddedDocument):
     template = ForeignKeyField(Template)
 
     def __unicode__(self):
+        return "%s %s" % (self.op, self.value)
+
+    def is_open_match(self, value):
+        """
+        Check if threshold profile is matched for open condition
+        :param value:
+        :return:
+        """
+        return (
+            (self.op == "<" and value < self.value) or
+            (self.op == "<=" and value <= self.value) or
+            (self.op == ">=" and value >= self.value) or
+            (self.op == ">" and value > self.value)
+        )
+
+    def is_clear_match(self, value):
+        """
+        Check if threshold profile is matched for clear condition
+        :param value:
+        :return:
+        """
+        return not (
+            (self.clear_op == "<" and value < self.clear_value) or
+            (self.clear_op == "<=" and value <= self.clear_value) or
+            (self.clear_op == ">=" and value >= self.clear_value) or
+            (self.clear_op == ">" and value > self.clear_value)
+        )
+
+    @property
+    def name(self):
         return "%s %s" % (self.op, self.value)
 
 
@@ -90,3 +121,21 @@ class ThresholdProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return ThresholdProfile.objects.filter(id=id).first()
+
+    def get_window_function(self):
+        """
+        Returns window funciton or None if invalid name given
+        :returns: Callable or None
+        """
+        return get_window_function(self.window_function)
+
+    def find_threshold(self, name):
+        """
+        Find Threshold Config by name
+        :param name: Threshold name
+        :return: ThresholdConfig or None
+        """
+        for cfg in self.thresholds:
+            if cfg.name == name:
+                return cfg
+        return None

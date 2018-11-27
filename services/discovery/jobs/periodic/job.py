@@ -29,6 +29,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     context_version = 1
 
     is_periodic = True
+    default_contexts = ("counters", "metric_windows", "active_thresholds")
 
     def handler(self, **kwargs):
         with Span(sample=self.object.periodic_telemetry_sample), bulk_datastream_changes():
@@ -54,12 +55,6 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             MACCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_metrics:
             MetricsCheck(self).run()
-
-    def init_context(self):
-        if "counters" not in self.context:
-            self.context["counters"] = {}
-        if "metric_windows" not in self.context:
-            self.context["metric_windows"] = {}
 
     def can_run(self):
         return (super(PeriodicDiscoveryJob, self).can_run() and
