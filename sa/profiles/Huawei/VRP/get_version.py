@@ -78,7 +78,7 @@ class Script(BaseScript):
                 for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
                     if not x:
                         continue
-                    r += [x.strip()]
+                    r += [x.strip(" \x00")]
                 if r:
                     return r
             except self.snmp.TimeOutError:
@@ -136,7 +136,7 @@ class Script(BaseScript):
         for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
             if not x:
                 continue
-            serial += [x.strip()]
+            serial += [x.strip(" \x00")]
 
         r = {
             "vendor": "Huawei",
