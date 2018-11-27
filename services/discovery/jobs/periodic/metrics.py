@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Metric collector
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,10 +26,7 @@ from noc.inv.models.subinterface import SubInterface
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
-from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.pm.models.thresholdprofile import ThresholdProfile
-from noc.core.window import get_window_function
 from noc.core.handler import get_handler
 
 
@@ -42,7 +39,7 @@ NS = 1000000000.0
 MT_COUNTER = "counter"
 MT_BOOL = "bool"
 MT_DELTA = "delta"
-MT_COUNTER_DELTA = set([MT_COUNTER, MT_DELTA])
+MT_COUNTER_DELTA = {MT_COUNTER, MT_DELTA}
 
 WT_MEASURES = "m"
 WT_TIME = "t"
@@ -55,14 +52,10 @@ metrics_lock = Lock()
 
 MetricConfig = namedtuple("MetricConfig", [
     "metric_type",
-    "enable_box", "enable_periodic",
+    "enable_box",
+    "enable_periodic",
     "is_stored",
-    "window_type", "window", "window_function", "window_config",
-    "window_related",
-    "low_error", "low_warn", "high_warn", "high_error",
-    "low_error_severity", "low_warn_severity", "high_warn_severity", "high_error_severity",
-    "threshold_profile",
-    "process_thresholds"
+    "threshold_profile"
 ])
 
 
@@ -127,12 +120,6 @@ class MetricsCheck(DiscoveryCheck):
         2: 3000
     }
 
-    AC_PM_THRESHOLDS = AlarmClass.get_by_name("NOC | PM | Out of Thresholds")
-    AC_PM_LOW_ERROR = AlarmClass.get_by_name("NOC | PM | Low Error")
-    AC_PM_HIGH_ERROR = AlarmClass.get_by_name("NOC | PM | High Error")
-    AC_PM_LOW_WARN = AlarmClass.get_by_name("NOC | PM | Low Warning")
-    AC_PM_HIGH_WARN = AlarmClass.get_by_name("NOC | PM | High Warning")
-
     SLA_CAPS = [
         "Cisco | IP | SLA | Probes"
     ]
@@ -159,34 +146,16 @@ class MetricsCheck(DiscoveryCheck):
             mt = MetricType.get_by_id(mt_id)
             if not mt:
                 continue
-            le = m.get("low_error")
-            lw = m.get("low_warn")
-            he = m.get("high_error")
-            hw = m.get("high_warn")
-            lew = AlarmSeverity.severity_for_weight(int(m.get("low_error_weight", 10)))
-            lww = AlarmSeverity.severity_for_weight(int(m.get("low_warn_weight", 1)))
-            hew = AlarmSeverity.severity_for_weight(int(m.get("high_error_weight", 1)))
-            hww = AlarmSeverity.severity_for_weight(int(m.get("high_warn_weight", 10)))
-            threshold_profile = None
             if m.get("threshold_profile"):
                 threshold_profile = ThresholdProfile.get_by_id(m.get("threshold_profile"))
+            else:
+                threshold_profile = None
             r[mt.name] = MetricConfig(
                 mt,
                 m.get("enable_box", True),
                 m.get("enable_periodic", True),
                 m.get("is_stored", True),
-                m.get("window_type", "m"),
-                int(m.get("window", 1)),
-                m.get("window_function", "last"),
-                m.get("window_config"),
-                m.get("window_related", False),
-                int(le) if le is not None else None,
-                int(lw) if lw is not None else None,
-                int(hw) if hw is not None else None,
-                int(he) if he is not None else None,
-                lew, lww, hww, hew,
-                threshold_profile,
-                le is not None or lw is not None or he is not None or hw is not None
+                threshold_profile
             )
         return r
 
@@ -210,15 +179,7 @@ class MetricsCheck(DiscoveryCheck):
             m.metric_type,
             m.enable_box, m.enable_periodic,
             m.is_stored,
-            m.window_type, m.window, m.window_function,
-            m.window_config, m.window_related,
-            m.low_error, m.low_warn, m.high_warn, m.high_error,
-            AlarmSeverity.severity_for_weight(m.low_error_weight),
-            AlarmSeverity.severity_for_weight(m.low_warn_weight),
-            AlarmSeverity.severity_for_weight(m.high_warn_weight),
-            AlarmSeverity.severity_for_weight(m.high_error_weight),
-            m.threshold_profile,
-            m.low_error is not None or m.low_warn is not None or m.high_warn is not None or m.high_error is not None
+            m.threshold_profile
         )
 
     @classmethod
@@ -486,7 +447,7 @@ class MetricsCheck(DiscoveryCheck):
                     )
                     continue
                 n_metrics += 1
-            if cfg.process_thresholds and m.abs_value is not None:
+            if cfg.threshold_profile and m.abs_value is not None:
                 alarms += self.process_thresholds(m, cfg)
         return n_metrics, data, alarms
 
@@ -590,7 +551,9 @@ class MetricsCheck(DiscoveryCheck):
         value = m.abs_value
         ts = m.ts // 1000000000
         # Do not store single-value windows
-        drop_window = cfg.window_type == "m" and cfg.window == 1
+        window_type = cfg.threshold_profile.window_type
+        ws = cfg.threshold_profile.window
+        drop_window = window_type == "m" and ws == 1
         # Restore window
         if drop_window:
             window = [(ts, value)]
@@ -601,19 +564,19 @@ class MetricsCheck(DiscoveryCheck):
             window = states.get(key, [])
             window += [(ts, value)]
             # Trim window according to policy
-            if cfg.window_type == WT_MEASURES:
+            if window_type == WT_MEASURES:
                 # Leave fixed amount of measures
-                window = window[-cfg.window:]
-                window_full = len(window) == cfg.window
-            elif cfg.window_type == WT_TIME:
+                window = window[-ws:]
+                window_full = len(window) == ws
+            elif window_type == WT_TIME:
                 # Time-based window
-                window_full = ts - window[0][0] >= cfg.window
-                while ts - window[0][0] > cfg.window:
+                window_full = ts - window[0][0] >= ws
+                while ts - window[0][0] > ws:
                     window.pop(0)
             else:
                 self.logger.error(
                     "Cannot calculate thresholds for %s (%s): Invalid window type '%s'",
-                    m.metric, m.path, cfg.window_type
+                    m.metric, m.path, window_type
                 )
                 return None
             # Store back to context
@@ -625,15 +588,15 @@ class MetricsCheck(DiscoveryCheck):
             )
             return None
         # Process window function
-        wf = get_window_function(cfg.window_function)
+        wf = cfg.threshold_profile.get_window_function()
         if not wf:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): Invalid window function %s",
-                m.metric, m.path, cfg.window_function
+                m.metric, m.path, cfg.threshold_profile.window_function
             )
             return None
         try:
-            return wf(window, cfg.window_config)
+            return wf(window, cfg.threshold_profile.window_config)
         except ValueError as e:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): %s",
@@ -648,87 +611,53 @@ class MetricsCheck(DiscoveryCheck):
         :param cfg: MetricConfig
         :return: List of umbrella alarm details
         """
-        w_value = self.get_window_function(m, cfg)
         alarms = []
+        # Check if profile has configured thresholds
+        if not cfg.threshold_profile.thresholds:
+            return alarms
+        w_value = self.get_window_function(m, cfg)
         if w_value is None:
             return alarms
-        # Check thresholds
+        # Metrics path
         path = m.metric
         if m.path:
             path += " | ".join(m.path)
-        alarm_cfg = None
-        if cfg.low_error is not None and w_value <= cfg.low_error:
-            alarm_cfg = {
-                "alarm_class": self.AC_PM_LOW_ERROR,
-                "path": path,
-                "severity": cfg.low_error_severity,
-                "vars": {
-                    "path": path,
-                    "metric": m.metric,
-                    "value": w_value,
-                    "threshold": cfg.low_error,
-                    "window_type": cfg.window_type,
-                    "window": cfg.window,
-                    "window_function": cfg.window_function
-                }
-            }
-        elif cfg.low_warn is not None and w_value <= cfg.low_warn:
-            alarm_cfg = {
-                "alarm_class": self.AC_PM_LOW_WARN,
-                "path": path,
-                "severity": cfg.low_warn_severity,
-                "vars": {
-                    "path": path,
-                    "metric": m.metric,
-                    "value": w_value,
-                    "threshold": cfg.low_warn,
-                    "window_type": cfg.window_type,
-                    "window": cfg.window,
-                    "window_function": cfg.window_function
-                }
-            }
-        elif cfg.high_error is not None and w_value >= cfg.high_error:
-            alarm_cfg = {
-                "alarm_class": self.AC_PM_HIGH_ERROR,
-                "path": path,
-                "severity": cfg.high_error_severity,
-                "vars": {
-                    "path": path,
-                    "metric": m.metric,
-                    "value": w_value,
-                    "threshold": cfg.high_error,
-                    "window_type": cfg.window_type,
-                    "window": cfg.window,
-                    "window_function": cfg.window_function
-                }
-            }
-        elif cfg.high_warn is not None and w_value >= cfg.high_warn:
-            alarm_cfg = {
-                "alarm_class": self.AC_PM_HIGH_WARN,
-                "path": path,
-                "severity": cfg.high_warn_severity,
-                "vars": {
-                    "path": path,
-                    "metric": m.metric,
-                    "value": w_value,
-                    "threshold": cfg.high_warn,
-                    "window_type": cfg.window_type,
-                    "window": cfg.window,
-                    "window_function": cfg.window_function
-                }
-            }
-        if alarm_cfg is not None:
-            alarms += [alarm_cfg]
-            # Apply umbrella filter handler
-            if cfg.threshold_profile and cfg.threshold_profile.umbrella_filter_handler:
-                try:
-                    handler = get_handler(cfg.threshold_profile.umbrella_filter_handler)
-                    if handler:
-                        alarms = [handler(self, a) for a in alarms]
-                        # Remove filtered alarms
-                        alarms = [a for a in alarms if a]
-                except Exception as e:
-                    self.logger.error("Exception when loading handler %s", e)
+        # Get active threshold name
+        active = self.job.context["active_thresholds"].get(path)
+        if active:
+            # Check we should close existing threshold
+            threshold = cfg.threshold_profile.find_threshold(active)
+            if threshold:
+                if threshold.is_clear_match(w_value):
+                    # Close threshold
+                    active = None  # Reset threshold
+                    del self.job.context["active_thresholds"][path]
+                    if threshold.close_event_class:
+                        # @todo
+                        pass
+                    if threshold.close_handler:
+                        # @todo
+                        pass
+                elif threshold.alarm_class:
+                    # Remain umbrella alarm
+                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, w_value)
+        if not active:
+            # Check opening thresholds only if no active threshold remains
+            for threshold in cfg.threshold_profile.thresholds:
+                if not threshold.is_open_match(w_value):
+                    continue
+                # Set context
+                self.job.context["active_thresholds"][path] = threshold.name
+                if threshold.open_event_class:
+                    # @todo
+                    pass
+                if threshold.open_handler:
+                    # @todo
+                    pass
+                if threshold.alarm_class:
+                    # Raise umbrella alarm
+                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, w_value)
+                break
         return alarms
 
     def send_metrics(self, data):
@@ -756,3 +685,40 @@ class MetricsCheck(DiscoveryCheck):
         # Spool data
         for f in chains:
             self.service.register_metrics(f, chains[f])
+
+    def get_umbrella_alarm_cfg(self, metric_config, threshold, value):
+        """
+        Get configuration for umbrella alarm
+        :param threshold_profile:
+        :param threshold:
+        :param metric_config:
+        :param value:
+        :return: List of dicts or empty list
+        """
+        path = metric_config.metric
+        if metric_config.path:
+            path += " | ".join(metric_config.path)
+
+        alarm_cfg = {
+            "alarm_class": threshold.alarm_class.name,
+            "path": path,
+            "severity": threshold.alarm_class.default_severity.severity,
+            "vars": {
+                "path": path,
+                "metric": metric_config.metric,
+                "value": value,
+                "window_type": metric_config.threshold_profile.window_type,
+                "window": metric_config.threshold_profile.window,
+                "window_function": metric_config.threshold_profile.window_function
+            }
+        }
+        if metric_config.threshold_profile.umbrella_filter_handler:
+            try:
+                handler = get_handler(metric_config.threshold_profile.umbrella_filter_handler)
+                if handler:
+                    alarm_cfg = handler(self, alarm_cfg)
+                    if not alarm_cfg:
+                        return []
+            except Exception as e:
+                self.logger.error("Exception when loading handler %s", e)
+        return [alarm_cfg]
