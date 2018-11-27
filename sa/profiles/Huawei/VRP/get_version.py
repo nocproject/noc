@@ -60,7 +60,40 @@ class Script(BaseScript):
                                       r".+Version (?P<version>\S+)\s*(\((?P<platform>\S+)\s+(?P<image>\S+)\))?.*?",
                                       re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
+    rx_parts = re.compile(r"\[Slot_(?P<slot_n>\d+)\]\n"
+                          r"(.+\n)+\n\n"
+                          r"\[(?P<slot_type>(Main_Board|Port_\d+))\]\n"
+                          r"(.*\n){1,4}\n"
+                          r"\[(?P<part_name>Board\sProperties)\]\n"
+                          r"(?P<part_body>(.+\n)+)\n", re.IGNORECASE | re.MULTILINE)
+
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
+
+    def parse_serial(self):
+        r = []
+        if self.has_snmp():
+            # Trying SNMP
+            try:
+                # SNMPv2-MIB::sysDescr.0
+                for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
+                    if not x:
+                        continue
+                    r += [x]
+                if r:
+                    return r
+            except self.snmp.TimeOutError:
+                pass
+        try:
+            v = self.cli("display elabel slot 0")
+        except self.CLISyntaxError:
+            return []
+        v = list(self.rx_parts.finditer(v))
+        if v:
+            v = v[0].groupdict()
+            v = dict(x.split("=", 1) for x in v["part_body"].splitlines())
+            if "BarCode" in v:
+                r += [v["BarCode"]]
+        return r
 
     def parse_version(self, v):
         match_re_list = [
@@ -99,6 +132,11 @@ class Script(BaseScript):
 
         v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
         platform, version, image = self.parse_version(v)
+        serial = []
+        for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
+            if not x:
+                continue
+            serial += [x]
 
         r = {
             "vendor": "Huawei",
@@ -108,6 +146,8 @@ class Script(BaseScript):
         if image:
             r["version"] = "%s (%s)" % (version, image)
             r["image"] = image
+        if serial:
+            r["attributes"] = {"Serial Number": serial[0]}
         return r
 
     def execute_cli(self):
@@ -135,4 +175,7 @@ class Script(BaseScript):
         if image:
             r["version"] = "%s (%s)" % (version, image)
             r["image"] = image
+        serial = self.parse_serial()
+        if serial:
+            r["attributes"] = {"Serial Number": serial[0]}
         return r
