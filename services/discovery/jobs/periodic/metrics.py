@@ -636,8 +636,12 @@ class MetricsCheck(DiscoveryCheck):
                         # @todo
                         pass
                     if threshold.close_handler:
-                        # @todo
-                        pass
+                        handler = get_handler(threshold.close_handler)
+                        if handler:
+                            try:
+                                handler(self, cfg, threshold, w_value)
+                            except Exception as e:
+                                self.logger.error("Exception when calling close handler: %s", e)
                 elif threshold.alarm_class:
                     # Remain umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, w_value)
@@ -652,8 +656,13 @@ class MetricsCheck(DiscoveryCheck):
                     # @todo
                     pass
                 if threshold.open_handler:
-                    # @todo
-                    pass
+                    # Call handler
+                    handler = get_handler(threshold.open_handler)
+                    if handler:
+                        try:
+                            handler(self, cfg, threshold, w_value)
+                        except Exception as e:
+                            self.logger.error("Exception when calling open handler: %s", e)
                 if threshold.alarm_class:
                     # Raise umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, w_value)
