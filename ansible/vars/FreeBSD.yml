@@ -5,6 +5,7 @@ etc_prefix: /usr/local/etc
 noc_var_lib: /var/db/noc
 noc_reports_dir: "{{noc_var_lib}}/reports"
 noc_crashinfo_dir: "{{noc_var_lib}}/var/cp/crashinfo/new"
+bi_export_dir: "{{noc_var_lib}}/bi"
 
 clickhouse_service_name: clickhouse
 ch_log_dir: /var/log/clickhouse-server
