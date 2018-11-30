@@ -3,22 +3,23 @@
 etc_prefix: /usr/local/etc
 
 noc_var_lib: /var/db/noc
+noc_reports_dir: "{{noc_var_lib}}/reports"
+noc_crashinfo_dir: "{{noc_var_lib}}/var/cp/crashinfo/new"
+
+clickhouse_service_name: clickhouse
+ch_log_dir: /var/log/clickhouse-server
+ch_data_dir: /var/db/clickhouse
+ch_run_dir: /var/run/clickhouse
+
+consul_bin_path: /usr/local/bin
+consul_template_bin_path: /usr/local/bin
+consul_template_group: wheel
 
 grafana_home: /usr/local/share/grafana
 grafana_system_service: grafana
 grafana_dashboard_dir: /var/db/grafana/dashboards
 grafana_plugins_dir: /var/db/grafana/plugins
 grafana_provisioning_dir: /var/db/grafana/provisioning
-
-influx_path: /usr/local/bin/influx
-influxdb_conf: /usr/local/etc/influxd.conf
-influxdb_db_path: /var/db/influxdb
-influxdb_db_path_meta: "{{ influxdb_db_path }}/meta"
-influxdb_db_path_data: "{{ influxdb_db_path }}/data"
-influxdb_db_path_wal: "{{ influxdb_db_path }}/wal"
-influxdb_group: influxd
-influxdb_system_service: influxd
-influxdb_user: influxd
 
 mongo_arbiter_pid: " "
 mongo_log_path: /var/db/mongodb/mongod.log
@@ -35,10 +36,11 @@ nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
 nginx_reload_command: "service nginx reload"
 nginx_user: www
 
-telegraf_reload_command: "service telegraf restart"
+nsd_log_dir: /var/log/nsq
+nsq_root: /usr/local/nsq
 
-nsqd_reload_command: "service nsqd restart"
-nsqadmin_reload_command: "service nsqadmin restart"
+pgbouncer_user: pgbouncer
+pgbouncer_path_pid: /var/run/pgbouncer
 
 postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
@@ -52,23 +54,11 @@ postgres_proccess: postgres
 
 tower_path: /usr/local/tower
 
-consul_bin_path: /usr/local/bin
-consul_template_bin_path: /usr/local/bin
-consul_template_group: wheel
+telegraf_reload_command: "service telegraf restart"
+nsqd_reload_command: "service nsqd restart"
+nsqadmin_reload_command: "service nsqadmin restart"
 
 pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -I/usr/local/include"
 pip_ldflags: "-L/usr/local/lib"
 
-nsd_log_dir: /var/log/nsq
-nsq_root: /usr/local/nsq
-
-
 fake_shell: /sbin/nologin
-
-clickhouse_service_name: clickhouse
-ch_log_dir: /var/log/clickhouse-server
-ch_data_dir: /var/lib/clickhouse
-ch_run_dir: /var/run/clickhouse
-
-pgbouncer_user: pgbouncer
-pgbouncer_path_pid: /var/run/pgbouncer
