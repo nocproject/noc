@@ -708,7 +708,7 @@ class MetricsCheck(DiscoveryCheck):
         :return: List of dicts or empty list
         """
         alarm_cfg = {
-            "alarm_class": threshold.alarm_class.name,
+            "alarm_class": threshold.alarm_class,
             "path": path,
             "severity": threshold.alarm_class.default_severity.severity,
             "vars": {
