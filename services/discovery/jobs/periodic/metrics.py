@@ -647,7 +647,7 @@ class MetricsCheck(DiscoveryCheck):
                                 self.logger.error("Exception when calling close handler: %s", e)
                 elif threshold.alarm_class:
                     # Remain umbrella alarm
-                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, w_value)
+                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
         if not active:
             # Check opening thresholds only if no active threshold remains
             for threshold in cfg.threshold_profile.thresholds:
@@ -668,7 +668,7 @@ class MetricsCheck(DiscoveryCheck):
                             self.logger.error("Exception when calling open handler: %s", e)
                 if threshold.alarm_class:
                     # Raise umbrella alarm
-                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, w_value)
+                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
                 break
         return alarms
 
@@ -698,7 +698,7 @@ class MetricsCheck(DiscoveryCheck):
         for f in chains:
             self.service.register_metrics(f, chains[f])
 
-    def get_umbrella_alarm_cfg(self, metric_config, threshold, value):
+    def get_umbrella_alarm_cfg(self, metric_config, threshold, path, value):
         """
         Get configuration for umbrella alarm
         :param threshold_profile:
@@ -707,10 +707,6 @@ class MetricsCheck(DiscoveryCheck):
         :param value:
         :return: List of dicts or empty list
         """
-        path = metric_config.metric_type
-        if metric_config.path:
-            path += " | ".join(metric_config.path)
-
         alarm_cfg = {
             "alarm_class": threshold.alarm_class.name,
             "path": path,
