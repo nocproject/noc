@@ -23,6 +23,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
@@ -123,6 +124,8 @@ class MetricsCheck(DiscoveryCheck):
     SLA_CAPS = [
         "Cisco | IP | SLA | Probes"
     ]
+
+    AC_PM_THRESHOLDS = AlarmClass.get_by_name("NOC | PM | Out of Thresholds")
 
     def __init__(self, *args, **kwargs):
         super(MetricsCheck, self).__init__(*args, **kwargs)
@@ -704,7 +707,7 @@ class MetricsCheck(DiscoveryCheck):
         :param value:
         :return: List of dicts or empty list
         """
-        path = metric_config.metric
+        path = metric_config.metric_type
         if metric_config.path:
             path += " | ".join(metric_config.path)
 
@@ -714,7 +717,7 @@ class MetricsCheck(DiscoveryCheck):
             "severity": threshold.alarm_class.default_severity.severity,
             "vars": {
                 "path": path,
-                "metric": metric_config.metric,
+                "metric": metric_config.metric_type,
                 "value": value,
                 "window_type": metric_config.threshold_profile.window_type,
                 "window": metric_config.threshold_profile.window,
