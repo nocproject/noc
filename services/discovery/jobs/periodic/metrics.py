@@ -713,7 +713,7 @@ class MetricsCheck(DiscoveryCheck):
             "severity": threshold.alarm_class.default_severity.severity,
             "vars": {
                 "path": path,
-                "metric": metric_config.metric_type,
+                "metric": metric_config.metric_type.name,
                 "value": value,
                 "window_type": metric_config.threshold_profile.window_type,
                 "window": metric_config.threshold_profile.window,
