@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Data Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,12 +11,12 @@ import logging
 import gzip
 import os
 import csv
-import time
 import itertools
 from collections import namedtuple
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
+from noc.core.backport.time import perf_counter
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ class BaseExtractor(object):
         # Fetch data
         self.logger.info("Extracting %s from %s",
                          self.name, self.system.name)
-        t0 = time.time()
+        t0 = perf_counter()
         data = []
         n = 0
         seen = set()
@@ -108,7 +108,7 @@ class BaseExtractor(object):
             n += 1
             if n % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", n)
-        dt = time.time() - t0
+        dt = perf_counter() - t0
         speed = n / dt
         self.logger.info(
             "%d records extracted in %.2fs (%d records/s)",

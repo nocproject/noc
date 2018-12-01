@@ -10,7 +10,6 @@
 # Python modules
 from collections import defaultdict
 import contextlib
-import time
 import zlib
 import datetime
 import types
@@ -41,6 +40,7 @@ from noc.core.span import Span
 from noc.core.error import ERR_UNKNOWN
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
+from noc.core.backport.time import perf_counter
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -109,9 +109,9 @@ class MODiscoveryJob(PeriodicJob):
 
     @contextlib.contextmanager
     def check_timer(self, name):
-        t = time.time()
+        t = perf_counter()
         yield
-        self.check_timings += [(name, time.time() - t)]
+        self.check_timings += [(name, perf_counter() - t)]
 
     def set_problem(self, check=None, alarm_class=None, path=None,
                     message=None, fatal=False):

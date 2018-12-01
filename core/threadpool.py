@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ThreadPool class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from tornado.gen import with_timeout
 from noc.config import config
 from noc.core.span import Span, get_current_span
 from noc.core.error import NOCError, ERR_UNKNOWN
+from noc.core.backport.time import perf_counter
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class ThreadPoolExecutor(object):
         self.name = name or "threadpool"
         self.done_event = None
         self.done_future = None
-        self.started = time.time()
+        self.started = perf_counter()
         self.waiters = []
         if config.thread_stack_size:
             threading.stack_size(config.thread_stack_size)
@@ -78,7 +79,7 @@ class ThreadPoolExecutor(object):
                     e.acquire()
                 self.waiters.insert(0, e)
             # Wait for condition or timeout
-            t = time.time()
+            t = perf_counter()
             if not endtime:
                 endtime = t + timeout
             delay = 0.0005
@@ -95,7 +96,7 @@ class ThreadPoolExecutor(object):
                     raise IdleTimeout()
                 delay = min(delay * 2, remaining, 0.05)
                 time.sleep(delay)
-                t = time.time()
+                t = perf_counter()
 
     def _qsize(self):
         return len(self.queue)
@@ -241,7 +242,7 @@ class ThreadPoolExecutor(object):
                 "%s_running_workers" % self.name: workers - idle,
                 "%s_submitted_tasks" % self.name: self.submitted_tasks,
                 "%s_queued_jobs" % self.name: len(self.queue),
-                "%s_uptime" % self.name: time.time() - self.started
+                "%s_uptime" % self.name: perf_counter() - self.started
             })
 
 

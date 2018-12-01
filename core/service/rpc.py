@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # RPC Wrapper
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ import ujson
 import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.backport.time import perf_counter
 from .client import (RPCError, RPCNoService, RPCHTTPError,
                      RPCException, RPCRemoteError)
 from noc.core.http.client import fetch
@@ -98,7 +99,7 @@ class RPCProxy(object):
                                 code, body
                             ))
 
-            t0 = time.time()
+            t0 = perf_counter()
             self._logger.debug(
                 "[%sCALL>] %s.%s(%s, %s)",
                 "SYNC " if self._sync else "",
@@ -131,7 +132,7 @@ class RPCProxy(object):
                     break
                 else:
                     yield tornado.gen.sleep(t)
-            t = time.time() - t0
+            t = perf_counter() - t0
             self._logger.debug(
                 "[CALL<] %s.%s (%.2fms)",
                 self._service_name,

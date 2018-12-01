@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -37,6 +37,7 @@ from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, SPAN_FIELDS
 from noc.core.tz import setup_timezone
+from noc.core.backport.time import perf_counter
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -132,7 +133,7 @@ class Service(object):
         self.logger = None
         self.service_id = str(uuid.uuid4())
         self.executors = {}
-        self.start_time = time.time()
+        self.start_time = perf_counter()
         self.pid = os.getpid()
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
@@ -641,7 +642,7 @@ class Service(object):
             "node": config.node,
             "pid": self.pid,
             # Current process uptime
-            "uptime": time.time() - self.start_time
+            "uptime": perf_counter() - self.start_time
         }
         if self.pooled:
             r["pool"] = config.pool

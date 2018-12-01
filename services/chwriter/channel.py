@@ -3,14 +3,15 @@
 # ----------------------------------------------------------------------
 # Write channel service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import time
 import urllib
+# NOC modules
 from noc.config import config
+from noc.core.backport.time import perf_counter
 
 
 class Channel(object):
@@ -35,8 +36,8 @@ class Channel(object):
         self.encoded_sql = urllib.quote(self.sql.encode('utf8'))
         self.n = 0
         self.data = []
-        self.last_updated = time.time()
-        self.last_flushed = time.time()
+        self.last_updated = perf_counter()
+        self.last_flushed = perf_counter()
         self.flushing = False
         self.url = "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
             address,
@@ -55,7 +56,7 @@ class Channel(object):
     def is_expired(self):
         if self.n:
             return False
-        t = time.time()
+        t = perf_counter()
         if self.data or self.flushing:
             return False
         return t - self.last_updated > config.chwriter.channel_expire_interval
@@ -65,7 +66,7 @@ class Channel(object):
             return False
         if self.n >= config.chwriter.batch_size:
             return True
-        t = time.time()
+        t = perf_counter()
         return (t - self.last_flushed) * 1000 >= config.chwriter.batch_delay_ms
 
     def get_data(self):
@@ -79,7 +80,7 @@ class Channel(object):
 
     def stop_flushing(self):
         self.flushing = False
-        self.last_flushed = time.time()
+        self.last_flushed = perf_counter()
 
     def get_insert_sql(self):
         return self.sql

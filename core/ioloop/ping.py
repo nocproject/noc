@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  PingSocket implementation
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2017 The NOC Project
+#  Copyright (C) 2007-2018 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ from tornado.util import errno_from_exception
 from noc.speedup.ip import build_icmp_echo_request
 from noc.core.perf import metrics
 from noc.config import config
+from noc.core.backport.time import perf_counter
 
 logger = logging.getLogger(__name__)
 
@@ -191,7 +192,7 @@ class PingSocket(object):
 
     def build_echo_request(self, size, request_id, seq):
         # Pad to size
-        ts = self.io_loop.time()
+        ts = perf_counter()
         payload = (TS_STRUCT.pack(ts) + "A" * (size - self.HEADER_SIZE - 8))[:size - self.HEADER_SIZE]
         return build_icmp_echo_request(request_id, seq, payload)
 
@@ -258,7 +259,7 @@ class Ping4Socket(PingSocket):
             rtt = None
             if len(msg) > 36:
                 t0 = TS_STRUCT.unpack(msg[28:36])[0]
-                rtt = self.io_loop.time() - t0
+                rtt = perf_counter() - t0
             return True, addr, req_id, seq, rtt
         elif icmp_type in (ICMPv4_UNREACHABLE, ICMPv4_TTL_EXCEEDED):
             if plen >= 48:
@@ -304,7 +305,7 @@ class Ping6Socket(PingSocket):
         rtt = None
         if len(payload) >= 8:
             t0 = TS_STRUCT.unpack(payload[:8])[0]
-            rtt = self.io_loop.time() - t0
+            rtt = perf_counter() - t0
         if icmp_type == ICMPv6_ECHOREPLY:
             return True, addr, req_id, seq, rtt
         else:

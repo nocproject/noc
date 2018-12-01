@@ -10,7 +10,6 @@
 from __future__ import absolute_import
 import re
 import logging
-import time
 import itertools
 import operator
 from threading import Lock
@@ -33,6 +32,7 @@ from .error import (ScriptError, CLISyntaxError, CLIOperationError,
 from noc.config import config
 from noc.core.span import Span
 from noc.core.matcher import match
+from noc.core.backport.time import perf_counter
 
 
 class BaseScriptMetaclass(type):
@@ -240,7 +240,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         """
         with Span(server="activator", service=self.name,
                   in_label=self.credentials.get("address")):
-            self.start_time = time.time()
+            self.start_time = perf_counter()
             self.logger.debug("Running. Input arguments: %s, timeout %s",
                               self.args, self.timeout)
             # Use cached result when available
@@ -272,7 +272,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             # Clean result
             result = self.clean_output(result)
             self.logger.debug("Result: %s", result)
-            runtime = time.time() - self.start_time
+            runtime = perf_counter() - self.start_time
             self.logger.info("Complete (%.2fms)", runtime * 1000)
         return result
 

@@ -8,7 +8,6 @@
 
 # Python modules
 from __future__ import absolute_import
-import time
 import hashlib
 from collections import OrderedDict
 # Third-party modules
@@ -20,6 +19,7 @@ from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.backport.time import perf_counter
 
 __all__ = ["Model", "NestedModel"]
 
@@ -314,11 +314,11 @@ class Model(six.with_metaclass(ModelBase)):
             sql = " ".join(sql)
             # Execute query
             ch = connection()
-            t0 = time.time()
+            t0 = perf_counter()
             if dry_run:
                 return sql
             r = ch.execute(sql)
-            dt = time.time() - t0
+            dt = perf_counter() - t0
         return {
             "fields": aliases,
             "result": r,

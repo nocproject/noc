@@ -16,6 +16,7 @@ from noc.core.http.client import fetch
 from noc.config import config
 from noc.core.perf import metrics
 from noc.services.chwriter.channel import Channel
+from noc.core.backport.time import perf_counter
 
 
 class CHWriterService(Service):
@@ -107,7 +108,7 @@ class CHWriterService(Service):
     @tornado.gen.coroutine
     def report(self):
         nm = metrics["records_written"].value
-        t = self.ioloop.time()
+        t = perf_counter()
         if self.last_ts:
             speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
@@ -144,7 +145,7 @@ class CHWriterService(Service):
         channel.start_flushing()
         n = channel.n
         data = channel.get_data()
-        t0 = self.ioloop.time()
+        t0 = perf_counter()
         self.logger.debug("[%s] Sending %s records", channel.name, n)
         written = False
         suspended = False
@@ -161,7 +162,7 @@ class CHWriterService(Service):
                 self.logger.info(
                     "[%s] %d records sent in %.2fms",
                     channel.name,
-                    n, (self.ioloop.time() - t0) * 1000
+                    n, (perf_counter() - t0) * 1000
                 )
                 metrics["records_written"] += n
                 metrics["records_buffered"] -= n

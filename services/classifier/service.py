@@ -41,6 +41,7 @@ from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.services.classifier.exception import EventProcessingFailed
+from noc.core.backport.time import perf_counter
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -783,7 +784,7 @@ class ClassifierService(Service):
 
     @tornado.gen.coroutine
     def report(self):
-        t = self.ioloop.time()
+        t = perf_counter()
         if self.last_ts:
             r = []
             for m in CR:
