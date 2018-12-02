@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import difflib
 import zlib
@@ -17,8 +18,8 @@ import gridfs.errors
 from mercurial.mdiff import patch
 import bsdiff4
 # NOC modules
-from revision import Revision
 from noc.lib.nosql import get_db, ObjectId
+from .revision import Revision
 
 
 class GridVCS(object):
@@ -119,8 +120,10 @@ class GridVCS(object):
                 dt, delta = self.get_delta(data, old_data)
                 delta = self.compress(delta, self.DEFAULT_COMPRESS)
                 # Save delta
-                self.fs.put(delta, object=object, ts=f.ts, ft=dt,
-                    encoding=self.ENCODING, c=self.DEFAULT_COMPRESS)
+                self.fs.put(
+                    delta, object=object, ts=f.ts, ft=dt,
+                    encoding=self.ENCODING, c=self.DEFAULT_COMPRESS
+                )
                 # Remove old version
                 self.fs.delete(f._id)
             except gridfs.errors.NoFile:
