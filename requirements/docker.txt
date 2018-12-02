@@ -3,6 +3,7 @@ pylibmc==1.5.1
 ldap3==1.2.2
 pyrad==2.0
 atomiclong==0.1.1
+bsdiff4==1.1.5
 csiphash==0.0.5
 http-parser==0.8.3
 psycopg2==2.7.3.2
