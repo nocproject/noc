@@ -33,6 +33,7 @@ from noc.core.script.oidrules.loader import load_rule, with_resolver
 from noc.config import config
 
 NS = 1000000000.0
+PROFILES_PATH = os.path.join("sa", "profiles")
 
 
 class MetricConfig(object):
@@ -158,12 +159,19 @@ class MetricScriptBase(BaseScriptMetaclass):
         :return:
         """
         def sort_path_key(s):
-            k1, k2 = 1, 1
-            if s.startswith(os.path.join("sa", "profiles")):
-                k1 = 0
-            if "Generic" in s:
-                k2 = 0
-            return k1, k2
+            """
+            M - Main, C - Custom, G - Generic, P - profile
+            \|G|P
+            -+-+-
+            M|3|1
+            C|2|0
+            :param s:
+            :return:
+            """
+            if s.startswith(PROFILES_PATH):
+                return 3 if "Generic" in s else 1
+            else:
+                return 2 if "Generic" in s else 0
         pp = script.name.rsplit(".", 1)[0]
         if pp == "Generic":
             paths = [p for p in config.get_customized_paths(
@@ -403,7 +411,6 @@ class Script(BaseScript):
         """
         Collect all scheduled SNMP metrics
         """
-
         # Run snmp batch
         if not self.snmp_batch:
             self.logger.debug("Nothing to fetch via SNMP")
