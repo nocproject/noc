@@ -1,0 +1,8 @@
+{
+    "name": "Network | ISIS",
+    "$collection": "inv.capabilities",
+    "uuid": "af9c7138-0321-4a10-85c2-447e2d9ce66a",
+    "description": "ISIS (Intermediate System - Intermediate System Protocol) is enabled",
+    "type": "bool",
+    "card_template": null
+}
