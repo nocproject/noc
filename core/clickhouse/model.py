@@ -29,6 +29,7 @@ class ModelBase(type):
         cls = type.__new__(mcs, name, bases, attrs)
         cls._fields = {}
         cls._display_fields = OrderedDict()
+        cls._model_field = {}
         cls._tsv_encoders = {}
         cls._meta = ModelMeta(
             engine=getattr(cls.Meta, "engine", None),
@@ -40,11 +41,14 @@ class ModelBase(type):
         for k in attrs:
             if isinstance(attrs[k], BaseField):
                 attrs[k].contribute_to_class(cls, k)
-                cls._display_fields[k] = attrs[k]
-                cls._display_fields[k].name = k
+                cls._model_field[k] = attrs[k]
+                cls._model_field[k].name = k
         cls._fields_order = sorted(
             cls._fields, key=lambda x: cls._fields[x].field_number
         )
+        for f in sorted(cls._model_field, key=lambda x: cls._model_field[x].field_number):
+            cls._display_fields[f] = cls._model_field[f]
+            cls._display_fields[f].name = f
         cls._tsv_order = [cls._tsv_encoders[f] for f in cls._fields_order]
         return cls
 
@@ -114,6 +118,14 @@ class Model(six.with_metaclass(ModelBase)):
     @classmethod
     def to_tsv(cls, **kwargs):
         return "\t".join(f(kwargs) for f in cls._tsv_order) + "\n"
+
+    @classmethod
+    def to_python(cls, row, **kwargs):
+        r = {}
+        for num, f in enumerate(cls._display_fields):
+            # print(num, f)
+            r[f] = cls._model_field[f].to_python(row[num])
+        return r
 
     @classmethod
     def get_fingerprint(cls):
