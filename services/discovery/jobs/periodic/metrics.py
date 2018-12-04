@@ -648,6 +648,10 @@ class MetricsCheck(DiscoveryCheck):
                 elif threshold.alarm_class:
                     # Remain umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
+            else:
+                # Threshold has been reconfigured or deleted
+                active = None
+                del self.job.context["active_thresholds"][path]
         if not active:
             # Check opening thresholds only if no active threshold remains
             for threshold in cfg.threshold_profile.thresholds:
