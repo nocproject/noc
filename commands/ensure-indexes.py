@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Ensure MongoDB indexes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,8 @@ from __future__ import print_function
 from noc.core.management.base import BaseCommand
 from noc.models import get_model, iter_model_id, is_document
 from noc.core.datastream.loader import loader as ds_loader
+from noc.core.gridvcs.base import GridVCS
+from noc.core.gridvcs.utils import REPOS
 from noc.config import config
 
 
@@ -42,6 +44,8 @@ class Command(BaseCommand):
             self.index_model(model_id, model)
         # Index datastreams
         self.index_datastreams()
+        # Index GridVCS
+        self.index_gridvcs()
         # @todo: Detect changes
         self.print("OK")
 
@@ -97,6 +101,10 @@ class Command(BaseCommand):
             ds = ds_loader.get_datastream(name)
             self.print("[%s] Indexing datastream" % ds.name)
             ds.ensure_collection()
+
+    def index_gridvcs(self):
+        for repo in REPOS:
+            GridVCS(repo).ensure_collection()
 
 
 if __name__ == "__main__":
