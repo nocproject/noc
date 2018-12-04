@@ -10,7 +10,6 @@
 from __future__ import absolute_import
 import itertools
 import logging
-import time
 import random
 import threading
 import sys

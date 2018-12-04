@@ -138,7 +138,7 @@ class PingSocket(object):
                 metrics["ignorable_ping_errors"] += 1
                 return  # Exit silently
             metrics["ping_recvfrom_errors"] += 1
-            raise socket.error, e
+            raise socket.error(e)
         status, address, req_id, seq, rtt = self.parse_reply(msg, addr[0])
         if status is None:
             metrics["ping_unknown_icmp_packets"] += 1
@@ -177,10 +177,10 @@ class PingSocket(object):
         (RFC-1071)
         """
         lm = len(msg)
-        l = lm // 2
+        lh = lm // 2
         # Calculate the sum of network-ordered shorts
-        s = sum(struct.unpack("!" + "H" * l, msg[:2 * l]))
-        if lm < l:
+        s = sum(struct.unpack("!" + "H" * lh, msg[:2 * lh]))
+        if lm < lh:
             # Add remaining octet
             s += ord(msg[-1])
         # Truncate to 32 bits
@@ -357,7 +357,7 @@ class Ping(object):
         socket = self.get_socket(address)
         if not socket:
             raise tornado.gen.Return(None)
-        req_id = self.iter_request.next() & 0xFFFF
+        req_id = next(self.iter_request) & 0xFFFF
         result = policy == self.CHECK_ALL and count > 0
         for seq in range(count):
             r = yield socket.ping(address, timeout, size, req_id, seq)
@@ -386,7 +386,7 @@ class Ping(object):
         socket = self.get_socket(address)
         if not socket:
             raise tornado.gen.Return(None)
-        req_id = self.iter_request.next() & 0xFFFF
+        req_id = next(self.iter_request) & 0xFFFF
         result = policy == self.CHECK_ALL and count > 0
         rtts = []
         attempt = 0
