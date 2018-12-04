@@ -9,15 +9,10 @@
 # Python modules
 from __future__ import print_function
 import argparse
-import os
 # NOC modules
-from noc.core.management.base import BaseCommand, CommandError
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.management.base import BaseCommand
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
-from noc.lib.validators import is_int
-from noc.config import config
-from noc.core.fileutils import safe_rewrite
 
 
 class Command(BaseCommand):
@@ -25,6 +20,11 @@ class Command(BaseCommand):
     Manage Jobs
     """
     help = "Manage GridVCS config repo"
+
+    clean_int = {
+        "rpsl_as", "rpsl_asset", "rpsl_peer", "rpsl_person",
+        "rpsl_maintainer", "dnszone", "config", "object_comment"
+    }
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -36,18 +36,17 @@ class Command(BaseCommand):
             default="sa.managedobject.config",
             help="Apply to repo"
         )
-        # mirror command
-        sp_mirr = subparsers.add_parser("mirror", help="Mirror repo")
-        sp_mirr.add_argument("-split", help="Split config by Pool/Adm. Domain", default="")
         # get command
-        sp_get = subparsers.add_parser("get", help="Get current value")
-        sp_get.add_argument(
+        show_parser = subparsers.add_parser("show", help="Show current value")
+        show_parser.add_argument(
             "args",
             nargs=argparse.REMAINDER,
             help="List of extractor names"
         )
         # compress command
         subparsers.add_parser("compress", help="Apply compression")
+        # stats command
+        subparsers.add_parser("stats", help="Show stats")
 
     def out(self, msg):
         if not self.verbose_level:
@@ -55,71 +54,25 @@ class Command(BaseCommand):
         print(msg)
 
     def handle(self, *args, **options):
-        self.repo = options.get("repo")
-        self.split = options.get("split")
-        if not self.repo or self.repo not in ["sa.managedobject.config"]:
-            raise CommandError("Invalid repo")
-        return getattr(self, "handle_%s" % options["cmd"])(args)
+        self.repo = options["repo"]
+        self.vcs = GridVCS(self.repo)
+        if self.repo in self.clean_int:
+            self.clean_id = lambda y: int(y)
+        else:
+            self.clean_id = lambda y: y
+        return getattr(self, "handle_%s" % options["cmd"])(*args, **options)
 
-    def get_object(self, id):
-        def _get(model, fields, o_id):
-            for f in fields:
-                try:
-                    return model.objects.get(**{f: o_id})
-                except model.DoesNotExist:
-                    pass
-            if is_int(id):
-                try:
-                    return model.objects.get(id=id)
-                except model.DoesNotExist:
-                    pass
-            return None
+    def handle_show(self, *args, **options):
+        for o_id in args:
+            data = self.vcs.get(self.clean_id(o_id))
+            if data:
+                self.print("@@@ %s" % o_id)
+                self.print(data)
 
-        if self.repo == "sa.managedobject.config":
-            return _get(ManagedObject, ["name"], id)
-
-    def get_value(self, object):
-        if self.repo == "sa.managedobject.config":
-            return object.config.read()
-
-    def handle_mirror(self, *args):
-        mirror = config.path.config_mirror_path
-        if not mirror:
-            raise CommandError("No mirror path set")
-        mirror = os.path.realpath(mirror)
-        self.out("Mirroring")
-        if self.repo == "sa.managedobject.config":
-            for o in ManagedObject.objects.filter(is_managed=True):
-                v = self.get_value(o)
-                if v:
-                    if self.split == 'pool':
-                        mpath = os.path.realpath(
-                            os.path.join(mirror, unicode(o.pool.name), unicode(o)))
-                    else:
-                        mpath = os.path.realpath(
-                            os.path.join(mirror, unicode(o)))
-                    if mpath.startswith(mirror):
-                        self.out("   mirroring %s" % o)
-                        safe_rewrite(mpath, v)
-                    else:
-                        self.out("    !!! mirror path violation for" % o)
-        self.out("Done")
-
-    def handle_get(self, objects):
-        ol = []
-        for o_id in objects:
-            o = self.get_object(o_id)
-            if not o:
-                raise CommandError("Object not found: %s" % o_id)
-            ol += [o]
-        for o in ol:
-            print(self.get_value(o))
-
-    def handle_compress(self):
-        vcs = GridVCS(self.repo)
-        for obj in [
+    def handle_compress(self, *args, **options):
+        to_compress = [
             d["_id"]
-            for d in vcs.fs._GridFS__files.aggregate([
+            for d in self.vcs.fs._GridFS__files.aggregate([
                 {
                     "$match": {
                         "c": {
@@ -133,16 +86,36 @@ class Command(BaseCommand):
                     }
                 }
             ])
-        ]:
-            self.compress_obj(vcs, obj)
+        ]
+        if not to_compress:
+            self.print("Nothing to compress")
+            return
+        for obj in self.progress(to_compress):
+            self.compress_obj(obj)
 
-    @staticmethod
-    def compress_obj(vcs, obj):
-        revs = list(vcs.iter_revisions(obj))
-        data = [(vcs.get(obj, r), r) for r in revs]
-        vcs.delete(obj)
+    def compress_obj(self, obj):
+        revs = list(self.vcs.iter_revisions(obj))
+        data = [(self.vcs.get(obj, r), r) for r in revs]
+        self.vcs.delete(obj)
         for cfg, rev in data:
-            vcs.put(obj, cfg, rev.ts)
+            if cfg:
+                self.vcs.put(obj, cfg, rev.ts)
+
+    def handle_stats(self, *args, **options):
+        files = self.vcs.fs._GridFS__files
+        chunks = self.vcs.fs._GridFS__chunks
+        db = files.database
+        obj_count = len(files.distinct("object"))
+        rev_count = files.estimated_document_count()
+        chunks_count = chunks.estimated_document_count()
+        fstats = db.command("collstats", files.name)
+        cstats = db.command("collstats", chunks.name)
+        ssize = fstats["storageSize"] + cstats["storageSize"]
+        self.print("%s repo summary:" % self.repo)
+        self.print("Objects  : %d" % obj_count)
+        self.print("Revisions: %d (%.2f rev/object)" % (rev_count, float(rev_count) / obj_count))
+        self.print("Chunks   : %d" % chunks_count)
+        self.print("Size     : %d (%d bytes/object)" % (ssize, int(ssize / obj_count)))
 
 
 if __name__ == "__main__":

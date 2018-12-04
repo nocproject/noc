@@ -102,8 +102,9 @@ class GridVCS(object):
     def put(self, object, data, ts=None):
         """
         Save data
-        :param object:
-        :param data:
+        :param object: Object id
+        :param data: Data to store
+        :param ts: Timestamp
         :return:
         """
         if self.fs.exists(object=object):
