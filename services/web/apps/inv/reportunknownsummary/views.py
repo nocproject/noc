@@ -18,7 +18,11 @@ class ReportUnknownModelsSummary(SimpleReport):
     def get_data(self, **kwargs):
         data = {}  # vendor, part_no -> description, count
         for c in UnknownModel._get_collection().find():
-            k = (c["vendor"], c["part_no"])
+            vendor = c["vendor"]
+            if isinstance(c["vendor"], list):
+                # Fix for bad vendor code in DB
+                vendor = c["vendor"][0]
+            k = (vendor, c["part_no"])
             if k in data:
                 data[k][1] += 1
             else:
