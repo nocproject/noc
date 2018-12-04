@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Full-text search index management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,8 @@ import os
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.gridvcs.base import GridVCS
+from noc.core.gridvcs.utils import REPOS
 from noc.lib.validators import is_int
 from noc.config import config
 from noc.core.fileutils import safe_rewrite
@@ -26,12 +28,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
-        parser.add_argument("--repo", "-r",
-                            dest="repo",
-                            action="store",
-                            default="sa.managedobject.config",
-                            help="Apply to repo"
-                            ),
+        parser.add_argument(
+            "--repo", "-r",
+            dest="repo",
+            action="store",
+            choices=REPOS,
+            default="sa.managedobject.config",
+            help="Apply to repo"
+        )
         # mirror command
         sp_mirr = subparsers.add_parser("mirror", help="Mirror repo")
         sp_mirr.add_argument("-split", help="Split config by Pool/Adm. Domain", default="")
@@ -42,6 +46,8 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="List of extractor names"
         )
+        # compress command
+        subparsers.add_parser("compress", help="Apply compression")
 
     def out(self, msg):
         if not self.verbose_level:
@@ -108,6 +114,35 @@ class Command(BaseCommand):
             ol += [o]
         for o in ol:
             print(self.get_value(o))
+
+    def handle_compress(self):
+        vcs = GridVCS(self.repo)
+        for obj in [
+            d["_id"]
+            for d in vcs.fs._GridFS__files.aggregate([
+                {
+                    "$match": {
+                        "c": {
+                            "$exists": False
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$object"
+                    }
+                }
+            ])
+        ]:
+            self.compress_obj(vcs, obj)
+
+    @staticmethod
+    def compress_obj(vcs, obj):
+        revs = list(vcs.iter_revisions(obj))
+        data = [(vcs.get(obj, r), r) for r in revs]
+        vcs.delete(obj)
+        for cfg, rev in data:
+            vcs.put(obj, cfg, rev.ts)
 
 
 if __name__ == "__main__":
