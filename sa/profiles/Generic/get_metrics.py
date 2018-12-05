@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import time
 import os
 import re
 import itertools
@@ -30,7 +31,6 @@ from noc.core.script.oidrules.match import MatcherRule
 from noc.core.script.oidrules.oids import OIDsRule
 from noc.core.script.oidrules.loader import load_rule, with_resolver
 from noc.config import config
-from noc.core.backport.time import perf_counter
 
 NS = 1000000000.0
 
@@ -486,7 +486,7 @@ class Script(BaseScript):
         Returns current timestamp in nanoseconds
         """
         if not self.ts:
-            self.ts = int(perf_counter() * NS)
+            self.ts = int(time.time() * NS)
         return self.ts
 
     def set_metric(self, id, metric=None, value=0, ts=None,
