@@ -90,7 +90,7 @@ class DataStreamService(Service):
         :return: True if .watch() is working
         """
         # Get one datastream collection
-        dsn = next(loader)
+        dsn = next(loader.iter_classes())
         ds = loader[dsn]
         coll = ds.get_collection()
         # Check pymongo has .watch
