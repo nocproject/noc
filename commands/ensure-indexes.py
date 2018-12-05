@@ -91,10 +91,10 @@ class Command(BaseCommand):
         model.ensure_indexes()
 
     def index_datastreams(self):
-        for name in ds_loader.iter_datastreams():
+        for name in ds_loader:
             if not getattr(config.datastream, "enable_%s" % name, False):
                 continue
-            ds = ds_loader.get_datastream(name)
+            ds = ds_loader[name]
             self.print("[%s] Indexing datastream" % ds.name)
             ds.ensure_collection()
 

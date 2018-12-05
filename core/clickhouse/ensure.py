@@ -8,22 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
-import os
 import logging
 # NOC modules
 from noc.config import config
 from .loader import loader
 
 logger = logging.getLogger(__name__)
-BIMODELS_PREFIX = os.path.join("bi", "models")
 
 
 def ensure_bi_models(connect=None):
     logger.info("Ensuring BI models:")
     # Ensure fields
     changed = False
-    for name in loader.iter_models():
-        model = loader.get_model(name)
+    for name in loader:
+        model = loader[name]
         if not model:
             continue
         logger.info("Ensure table %s" % model._meta.db_table)

@@ -95,7 +95,7 @@ class Command(BaseCommand):
         model = self.MODELS.get(datastream)
         if not model:
             self.die("Unsupported datastream")
-        ds = loader.get_datastream(datastream)
+        ds = loader[datastream]
         if not ds:
             self.die("Cannot initialize datastream")
         total = self.get_total(model)
@@ -112,7 +112,7 @@ class Command(BaseCommand):
     def handle_get(self, datastream, objects, filter, *args, **kwargs):
         if not datastream:
             self.die("--datastream is not set. Set one from list: %s" % self.MODELS.keys())
-        ds = loader.get_datastream(datastream)
+        ds = loader[datastream]
         if not ds:
             self.die("Cannot initialize datastream")
         filter = filter or []

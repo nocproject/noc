@@ -266,31 +266,30 @@ def test_datastream_clean_id_int():
         DS.clean_id("z")
 
 
-@pytest.fixture(params=["managedobject", "administrativedomain"])
+@pytest.fixture(params=list(loader))
 def datastream_name(request):
     return request.param
 
 
 def test_loader(datastream_name):
-    ds = loader.get_datastream(datastream_name)
+    ds = loader[datastream_name]
     assert ds is not None
     assert issubclass(ds, DataStream)
     assert ds.name == datastream_name
 
 
 def test_loader_invalid_name():
-    ds = loader.get_datastream("aaa..bbbb")
+    ds = loader["aaa..bbbb"]
     assert ds is None
 
 
 def test_loader_error():
-    ds = loader.get_datastream("invalid")
+    ds = loader["invalid"]
     assert ds is None
 
 
-def test_loader_iter_datastreams(datastream_name):
-    dses = set(loader.iter_datastreams())
-    assert datastream_name in dses
+def test_loader_contains(datastream_name):
+    assert datastream_name in loader
 
 
 def test_wait():
