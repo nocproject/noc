@@ -65,7 +65,7 @@ class ThresholdConfig(EmbeddedDocument):
         :param value:
         :return:
         """
-        return not (
+        return (
             (self.clear_op == "<" and value < self.clear_value) or
             (self.clear_op == "<=" and value <= self.clear_value) or
             (self.clear_op == ">=" and value >= self.clear_value) or
