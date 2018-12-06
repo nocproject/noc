@@ -193,7 +193,8 @@ class Script(BaseScript):
                     not pid.startswith("WS-CAC-") and
                     not pid.endswith("-MB") and
                     "Clock" not in descr and "VTT FRU" not in descr and
-                    "C2801 Motherboard " not in descr
+                    "C2801 Motherboard " not in descr and
+                    "xx Switch Stack" not in descr
                 ):
                     if pid in ("", "N/A"):
                         if self.rx_7100.search(descr):
