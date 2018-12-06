@@ -19,6 +19,7 @@ from noc.core.debug import error_report
 from noc.lib.dateutils import total_seconds
 from .error import RetryAfter
 from noc.core.span import Span
+from noc.core.backport.time import perf_counter
 
 logger = logging.getLogger(__name__)
 
@@ -122,7 +123,7 @@ class Job(object):
                   service=self.attrs[self.ATTR_CLASS],
                   sample=self.attrs.get(self.ATTR_SAMPLE, 0),
                   in_label=self.attrs.get(self.ATTR_KEY, "")):
-            self.start_time = time.time()
+            self.start_time = perf_counter()
             if self.is_retries_exceeded():
                 self.logger.info("[%s|%s] Retries exceeded. Remove job",
                                  self.name, self.attrs[Job.ATTR_ID])
@@ -173,7 +174,7 @@ class Job(object):
             elif ds is not None:
                 self.logger.info("Cannot dereference")
                 status = self.E_DEREFERENCE
-            self.duration = time.time() - self.start_time
+            self.duration = perf_counter() - self.start_time
             self.logger.info("Completed. Status: %s (%.2fms)",
                              self.STATUS_MAP.get(status, status),
                              self.duration * 1000)
