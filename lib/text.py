@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Various text-processing utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import re
@@ -101,7 +101,7 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                     # print("Too many: %s" % s)
             if allow_wrap:
                 row = [line[f:t] for f, t in columns]
-                if row[0].startswith(" ") and r:
+                if not row[0].strip() and r:  # first column is empty
                     for i, x in enumerate(row):
                         r[-1][i] += x if not x.strip() else "%s%s" % (n_row_delim, x)
                 else:
