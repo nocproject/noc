@@ -12,10 +12,12 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.lib.validators import is_ipv4, is_ipv6, is_mac
-from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, LLDP_CHASSIS_SUBTYPE_LOCAL
-from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME, LLDP_PORT_SUBTYPE_LOCAL
-from noc.core.lldp import LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE, LLDP_CAP_STATION_ONLY
-from noc.core.lldp import lldp_caps_to_bits
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME, LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE, LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits
+)
 
 
 class Script(BaseScript):
