@@ -8,4 +8,4 @@ exclude=.git,var,share
 #    Needs global refactoring, postponed for a while
 # F405 'xxx' may be undefined, or defined from star imports: xxx
 #    Needs global refactoring, postponed for a while
-ignore=E402,E501,F403,F405
+ignore=E402,E501,F403,F405,W504,W605
