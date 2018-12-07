@@ -11,6 +11,7 @@ from __future__ import absolute_import
 # NOC modules
 from .base import BaseLoader
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.capsprofile import CapsProfile
 
 
 class ManagedObjectProfileLoader(BaseLoader):
@@ -24,3 +25,11 @@ class ManagedObjectProfileLoader(BaseLoader):
         "name",
         "level"
     ]
+
+    def clean(self, row):
+        """
+        Fix pool
+        """
+        v = super(ManagedObjectProfileLoader, self).clean(row)
+        v["caps_profile"] = CapsProfile.objects.filter(name="default").first()
+        return v
