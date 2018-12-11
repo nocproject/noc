@@ -2,26 +2,17 @@
 # ---------------------------------------------------------------------
 # Various text-processing utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
 import re
-import six
 from itertools import izip_longest
+# Third-party modules
+import six
 from numpy import array
 
-#
-# Parse string containing table an return a list of table rows.
-# Each row is a list of cells.
-# Columns are determined by a sequences of ---- or ==== which are
-# determines rows bounds.
-# Examples:
-# First Second Third
-# ----- ------ -----
-# a     b       c
-# ddd   eee     fff
-# Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
-#
 rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
@@ -29,6 +20,17 @@ rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None, n_row_delim=""):
     # pylint: disable=line-too-long
     """
+    Parse string containing table an return a list of table rows.
+    Each row is a list of cells.
+    Columns are determined by a sequences of ---- or ==== which are
+    determines rows bounds.
+    Examples:
+    First Second Third
+    ----- ------ -----
+    a     b       c
+    ddd   eee     fff
+    Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
+
     :param s: Table for parsing
     :type s: str
     :param allow_wrap: Union if cell contins multiple line
@@ -41,12 +43,6 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     :type footer: string
     :param n_row_delim: Append delimiter to next cell line
     :type n_row_delim: string
-    >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
-    [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
-    >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
-    [['a', '', 'c'], ['ddd', 'eee', 'fff']]
-    >>> parse_table("VLAN Status  Name                             Ports\\n---- ------- -------------------------------- ---------------------------------\\n4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\\n                                              g0/10\\n", allow_wrap=True, n_row_delim=", ")  # noqa
-    [['4090', 'Static', 'VLAN4090', 'f0/5, f0/6, f0/7, f0/8, g0/9, g0/10']]
     """
     r = []
     columns = []
@@ -101,9 +97,13 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                     # print("Too many: %s" % s)
             if allow_wrap:
                 row = [line[f:t] for f, t in columns]
-                if row[0].startswith(" ") and r:
+                if r and not row[0].strip():
+                    # first column is empty
                     for i, x in enumerate(row):
-                        r[-1][i] += x if not x.strip() else "%s%s" % (n_row_delim, x)
+                        if x.strip() and not r[-1][i].endswith(n_row_delim) and not x.startswith(n_row_delim):
+                            r[-1][i] += "%s%s" % (n_row_delim, x)
+                        else:
+                            r[-1][i] += x
                 else:
                     r += [row]
             else:
