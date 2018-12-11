@@ -21,6 +21,7 @@ from noc.core.service.base import Service
 from noc.core.perf import metrics
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
+from noc.lib.text import ch_escape
 
 SourceConfig = namedtuple("SourceConfig", ["id", "addresses", "bi_id", "process_events", "archive_events"])
 
@@ -118,7 +119,7 @@ class SyslogCollectorService(Service):
             now = datetime.datetime.now()
             date = now.strftime("%Y-%m-%d")
             ts = now.strftime("%Y-%m-%d %H:%M:%S")
-            msg = message.replace("\t", "\\t").replace("\n", "\\n")
+            msg = ch_escape(message)
             self.register_metrics(
                 "syslog.date.ts.managed_object.facility.severity.message",
                 [str("%s\t%s\t%s\t%d\t%d\t%s" % (date, ts, cfg.bi_id, facility, severity, msg))]
