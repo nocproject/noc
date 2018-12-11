@@ -76,7 +76,8 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "ip": mo.address,
                 "is_managed": mo.is_managed,
                 "location": mo.container.get_address_text() if mo.container else "",
-                "uptime": uptime.last_value if uptime else 0.0
+                "uptime": uptime.last_value if uptime else 0.0,
+                "tags": [str(t) for t in mo.tags] if mo.tags else []
                 # subscribers
                 # services
             }
