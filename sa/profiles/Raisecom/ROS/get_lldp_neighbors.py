@@ -12,6 +12,12 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.lib.validators import is_ipv4, is_ipv6, is_mac
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME, LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE, LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits
+)
 
 
 class Script(BaseScript):
@@ -22,17 +28,16 @@ class Script(BaseScript):
         r"^\s*(?:Port\s+)?(port)?(?P<port>gigaethernet1/1/\d+|\d+)\s*has\s+1\s*remotes:\s*\n(?:\n)?"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
-        r"^\s*ChassisIdSubtype:\s+(?P<ch_type>\S+)\s*\n"
-        r"^\s*ChassisId:\s+(?P<ch_id>\S+)\s*\n"
-        r"^\s*PortIdSubtype:\s+(?P<port_id_subtype>\S+)\s*\n"
-        r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
-        r"^\s*PortDesc:\s+(?P<port_descr>(.+\n)+)"
-        r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc:\s+(?P<sys_descr>(.+\n)+)"
-        r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
-        r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
+        r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
+        r"^\s*ChassisId\s*:\s+(?P<ch_id>\S+)\s*\n"
+        r"^\s*PortIdSubtype\s*:\s+(?P<port_id_subtype>\S+)\s*\n"
+        r"^\s*PortId\s*:\s+(?P<port_id>.+)\s*\n"
+        r"^\s*PortDesc\s*:\s+(?P<port_descr>(.+\n)+)"
+        r"^\s*SysName\s*:\s+(?P<sys_name>.+)\s*\n"
+        r"^\s*SysDesc\s*:\s+(?P<sys_descr>(.+\n)+)"
+        r"^\s*SysCapSupported\s*:\s+(?P<sys_caps_supported>\S+)\s*\n"
+        r"^\s*SysCapEnabled\s*:\s+(?P<sys_caps_enabled>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
-
     rx_lldp_womac = re.compile(
         r"^\s*(?:Port\s+)?(port)?(?P<port>gigaethernet1/1/\d+|\d+)\s*has\s+1\s*remotes:\s*\n(?:\n)?"
         r"^\s*Remote\s*1\s*\n"
@@ -57,11 +62,11 @@ class Script(BaseScript):
         for match in self.rx_lldp_rem.finditer(v):
             chassis_id = match.group("ch_id")
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
-                chassis_id_subtype = 5
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(chassis_id):
-                chassis_id_subtype = 4
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
             else:
-                chassis_id_subtype = 7
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
             r_rem += [{
                 "local_interface": match.group("port"),
                 "remote_chassis_id": chassis_id,
@@ -77,29 +82,30 @@ class Script(BaseScript):
             self.logger.debug("Not Find MAC in re")
         for match in lldp_iter:
             i = {"local_interface": match.group("port"), "neighbors": []}
-            cap = 0
-            for c in match.group("sys_caps_enabled").strip().split(","):
-                cap |= {
-                    "N/A": 0,
-                    "Other": 1,
-                    "Repeater/Hub": 2,
-                    "Bridge/Switch": 4,
-                    "Router": 16,
-                    "Telephone": 32,
-                    "Station": 128
-                }[c]
+            cap = lldp_caps_to_bits(
+                match.group("sys_caps_enabled").strip().split(","),
+                {
+                    "n/a": 0,
+                    "other": LLDP_CAP_OTHER,
+                    "repeater/hub": LLDP_CAP_REPEATER,
+                    "bridge/switch": LLDP_CAP_BRIDGE,
+                    "router": LLDP_CAP_ROUTER,
+                    "telephone": LLDP_CAP_TELEPHONE,
+                    "station": LLDP_CAP_STATION_ONLY
+                }
+            )
             n = {
                 "remote_chassis_id_subtype": {
-                    "macAddress": 4,
-                    "networkAddress": 5
+                    "macAddress": LLDP_CHASSIS_SUBTYPE_MAC,
+                    "networkAddress": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
                 }[match.group("ch_type")],
                 "remote_chassis_id": match.group("ch_id") if not ext_ch_id else None,
                 "remote_port_subtype": {
-                    "ifAlias": 1,
-                    "macAddress": 3,
-                    "ifName": 5,
-                    "portComponent": 5,
-                    "local": 7
+                    "ifAlias": LLDP_PORT_SUBTYPE_ALIAS,
+                    "macAddress": LLDP_PORT_SUBTYPE_MAC,
+                    "ifName": LLDP_PORT_SUBTYPE_NAME,
+                    "portComponent": LLDP_PORT_SUBTYPE_NAME,
+                    "local": LLDP_PORT_SUBTYPE_LOCAL
                 }[match.group("port_id_subtype")],
                 "remote_port": match.group("port_id"),
                 "remote_capabilities": cap
