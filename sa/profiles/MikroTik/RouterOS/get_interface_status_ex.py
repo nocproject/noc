@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# MikroTik.RouterOS..get_interface_status_ex
+# MikroTik.RouterOS.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
-from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.mib import mib
 
 
 class Script(BaseScript):

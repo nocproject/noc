@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Pretty command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.core.backport.time import perf_counter
 
 
 class Command(BaseCommand):
@@ -117,7 +118,7 @@ class Command(BaseCommand):
             a = yield self.queue.get()
             if a:
                 for c in community:
-                    t0 = self.ioloop.time()
+                    t0 = perf_counter()
                     try:
                         r = yield snmp_get(
                             address=a,
@@ -127,18 +128,18 @@ class Command(BaseCommand):
                             timeout=timeout
                         )
                         s = "OK"
-                        dt = self.ioloop.time() - t0
+                        dt = perf_counter() - t0
                         mc = c
                         break
                     except SNMPError as e:
                         s = "FAIL"
                         r = str(e)
-                        dt = self.ioloop.time() - t0
+                        dt = perf_counter() - t0
                         mc = ""
                     except Exception as e:
                         s = "EXCEPTION"
                         r = str(e)
-                        dt = self.ioloop.time() - t0
+                        dt = perf_counter() - t0
                         mc = ""
                         break
                 if self.convert:

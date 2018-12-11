@@ -36,47 +36,17 @@
   "steppedLine": false,
   "targets": [
     {
-      "alias": "Radio | RSSI",
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "Radio | RSSI",
-      "policy": "default",
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "interface",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((iface, RSSI)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as iface, \n        avg(rssi) as `RSSI` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
-      "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        }
-      ]
+      "resultFormat": "time_series"
     }
   ],
   "timeFrom": null,

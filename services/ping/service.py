@@ -184,10 +184,10 @@ class PingService(Service):
         """
         Perform ping check and set result
         """
-        address = ps.address
-        t0 = time.time()
         if ps.id not in self.probes:
             return
+        address = ps.address
+        t0 = time.time()
         metrics["ping_check_total"] += 1
         if ps.time_cond:
             dt = datetime.datetime.fromtimestamp(t0)

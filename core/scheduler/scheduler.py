@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Scheduler Job Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ from noc.core.handler import get_handler
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.perf import metrics
 from noc.config import config
+from noc.core.backport.time import perf_counter
 
 
 class Scheduler(object):
@@ -216,14 +217,14 @@ class Scheduler(object):
         Primary scheduler loop
         """
         while not self.to_shutdown:
-            t0 = self.ioloop.time()
+            t0 = perf_counter()
             n = 0
             if self.get_executor().may_submit():
                 try:
                     n = yield self.executor.submit(self.scheduler_tick)
                 except Exception as e:
                     self.logger.error("Failed to execute scheduler tick: %s", e)
-            dt = self.check_time - (self.ioloop.time() - t0) * 1000
+            dt = self.check_time - (perf_counter() - t0) * 1000
             if dt > 0:
                 if n:
                     dt = min(dt, self.check_time / n)
@@ -355,11 +356,11 @@ class Scheduler(object):
     def apply_bulk_ops(self):
         if not self.bulk:
             return  # Nothing to apply
-        t0 = self.ioloop.time()
+        t0 = perf_counter()
         with self.bulk_lock:
             try:
                 r = self.collection.bulk_write(self.bulk)
-                dt = self.ioloop.time() - t0
+                dt = perf_counter() - t0
                 self.logger.info(
                     "%d bulk operations complete in %dms: "
                     "inserted=%d, updated=%d, removed=%d",

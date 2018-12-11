@@ -443,6 +443,7 @@ class Prefix(models.Model):
         :param user:
         :return:
         """
+        from .prefixbookmark import PrefixBookmark
         try:
             PrefixBookmark.objects.get(user=user, prefix=self)
             return True
@@ -455,6 +456,7 @@ class Prefix(models.Model):
         :param user:
         :return:
         """
+        from .prefixbookmark import PrefixBookmark
         b, created = PrefixBookmark.objects.get_or_create(user=user,
                                                           prefix=self)
         if created:
@@ -726,5 +728,4 @@ class Prefix(models.Model):
 from noc.dns.models.dnszone import DNSZone
 from .address import Address
 from .prefixaccess import PrefixAccess
-from .prefixbookmark import PrefixBookmark
 from .addressrange import AddressRange

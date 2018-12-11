@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Various ioloop timers
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Various ioloop timers
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import os
+# Python modules
 import random
-## Third-party modules
+# Third-party modules
 from tornado.ioloop import IOLoop, PeriodicCallback
 from noc.config import config
 
@@ -37,7 +36,7 @@ if config.features.use_uvlib:
                 return
             try:
                 return self.callback()
-            except Exception as e:
+            except Exception:
                 self.io_loop.handle_callback_exception(self.callback)
             finally:
                 self.io_loop._loop.update_time()

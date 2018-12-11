@@ -327,14 +327,20 @@ class Script(BaseScript):
         caps = {}
         if self.is_requested("snmp"):
             snmp_version = None
-            if self.is_requested("snmp_v1") and self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v1):
-                caps["SNMP | v1"] = True
-                snmp_version = SNMP_v1
-            if self.is_requested("snmp_v2c") and self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v2c):
-                caps["SNMP | v2c"] = True
-                snmp_version = SNMP_v2c
-                if self.has_snmp_bulk():
-                    caps["SNMP | Bulk"] = True
+            if self.is_requested("snmp_v1"):
+                if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v1):
+                    caps["SNMP | v1"] = True
+                    snmp_version = SNMP_v1
+                else:
+                    caps["SNMP | v1"] = False
+            if self.is_requested("snmp_v2c"):
+                if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=SNMP_v2c):
+                    caps["SNMP | v2c"] = True
+                    snmp_version = SNMP_v2c
+                    if self.has_snmp_bulk():
+                        caps["SNMP | Bulk"] = True
+                else:
+                    caps["SNMP | v2c"] = False
             if snmp_version is not None:
                 # SNMP is enabled
                 caps["SNMP"] = True

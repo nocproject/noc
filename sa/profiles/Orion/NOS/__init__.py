@@ -23,6 +23,8 @@ class Profile(BaseProfile):
     pattern_more = " --More-- "
     command_more = " "
     command_exit = "exit"
+    config_volatile = [r"radius(-| accounting-server )encrypt-key \S+\n",
+                       r"tacacs(-server | accounting-server )encrypt-key \S+\n"]
 
     rx_ver = re.compile(
         r"^Product name\s*:\s*(?P<platform>.+)\s*\n"

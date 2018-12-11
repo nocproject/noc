@@ -197,8 +197,8 @@ class Script(BaseScript):
                     if switchports[ifname][0]:
                         aggriface["subinterfaces"][0]["untagged_vlan"] = \
                             switchports[ifname][0]
-                    else:
-                        iface["subinterfaces"][0]["untagged_vlan"] = ""
+                    # else:
+                    #    iface["subinterfaces"][0]["untagged_vlan"] = ""
                     aggriface["description"] = switchports[ifname][2]
                     aggrifaces += [aggriface]
 
@@ -232,8 +232,8 @@ class Script(BaseScript):
                 if switchports[ifname][0]:
                     iface["subinterfaces"][0]["untagged_vlan"] = \
                         switchports[ifname][0]
-                else:
-                    iface["subinterfaces"][0]["untagged_vlan"] = ""
+                # else:
+                #    iface["subinterfaces"][0]["untagged_vlan"] = ""
                 iface["description"] = switchports[ifname][2]
 
                 # Portchannel member
