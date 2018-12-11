@@ -29,6 +29,9 @@ id_lock = Lock()
 
 
 class InterfaceProfileMetrics(EmbeddedDocument):
+    meta = {
+        "strict": False
+    }
     metric_type = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
