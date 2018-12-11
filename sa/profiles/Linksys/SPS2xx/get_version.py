@@ -38,7 +38,8 @@ class Script(BaseScript):
         "1.2016.1": "SRW-2016",
         "1.2048.1": "SRW-2048",
         "3955.6.5048": "SRW-248G",
-        "9.208.2": "SPS208"
+        "9.208.2": "SPS208",
+        "9.2024.1": "SPS2024"
     }
 
     def execute_snmp(self, **kwargs):
