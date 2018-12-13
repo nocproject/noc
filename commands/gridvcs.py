@@ -33,7 +33,7 @@ class Command(BaseCommand):
             dest="repo",
             action="store",
             choices=REPOS,
-            default="sa.managedobject.config",
+            default="config",
             help="Apply to repo"
         )
         # get command
