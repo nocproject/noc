@@ -80,3 +80,27 @@ def test_long():
 
 def test_int():
     assert int(MAC("AA:BB:CC:DD:EE:FF")) == 0xAABBCCDDEEFF
+
+
+@pytest.mark.parametrize("value", [
+    # VRRP virtual
+    "00:00:5E:00:01:01",
+    "00:00:5E:00:01:02",
+    # Plain MAC
+    "AC:DE:48:00:01:02",
+    "78:4F:43:01:02:53"
+])
+def test_unicast(value):
+    assert MAC(value).is_multicast is False
+
+
+@pytest.mark.parametrize("value", [
+    # CDP
+    "01:00:0C:CC:CC:CC",
+    # LLDP
+    "01:80:C2:00:00:00",
+    "01:80:C2:00:00:03",
+    "01:80:C2:00:00:0E"
+])
+def test_multicast(value):
+    assert MAC(value).is_multicast is True

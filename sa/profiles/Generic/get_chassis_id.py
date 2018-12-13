@@ -112,10 +112,4 @@ class Script(BaseScript):
         :param mac: Normalized MAC address
         :return: True if MAC should be ignored
         """
-        if mac in self.IGNORED_MACS:
-            return True
-        # Multicast addresses has 0-bit of first octet set to 1
-        if int(mac.split(":", 1)[0]) & 0x1:
-            return True
-        # Address is allowed
-        return False
+        return mac in self.IGNORED_MACS or mac.is_multicast
