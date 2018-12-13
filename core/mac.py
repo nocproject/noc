@@ -171,3 +171,11 @@ class MAC(str):
             v >>= 8
         r.reverse()
         return ":".join(r)
+
+    @property
+    def is_multicast(self):
+        """
+        Check if MAC address is multicast one
+        :return: True if MAC is multicast
+        """
+        return bool(int(self.split(":", 1)[0], 16) & 0x1)
