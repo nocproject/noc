@@ -12,7 +12,7 @@ import logging
 # Third-party modules
 import six
 # NOC modules
-from .gridvcs import GridVCS
+from .base import GridVCS
 
 logger = logging.getLogger(__name__)
 

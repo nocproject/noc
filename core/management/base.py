@@ -69,6 +69,7 @@ class BaseCommand(object):
             self.setup_logging(loglevel)
         enable_profiling = cmd_options.pop("enable_profiling", False)
         show_metrics = cmd_options.pop("show_metrics", False)
+        self.no_progressbar = cmd_options.pop("no_progressbar", False)
         if enable_profiling:
             # Start profiler
             import yappi
@@ -136,7 +137,7 @@ class BaseCommand(object):
             choices=[
                 "critical", "error", "warning", "info", "debug", "none"
             ],
-            default="info"
+            default="none"
         )
         group.add_argument(
             "--quiet",
@@ -161,6 +162,11 @@ class BaseCommand(object):
             "--show-metrics",
             action="store_true",
             help="Dump internal metrics"
+        )
+        group.add_argument(
+            "--no-progressbar",
+            action="store_true",
+            help="Disable progressbar"
         )
 
     def add_arguments(self, parser):
@@ -198,3 +204,17 @@ class BaseCommand(object):
             if hasattr(l, "setLevel"):
                 l.setLevel(level)
         self.is_debug = level <= logging.DEBUG
+
+    def progress(self, iter):
+        """
+        Yield iterable and show progressbar
+        :param iter:
+        :return:
+        """
+        if self.no_progressbar:
+            for i in iter:
+                yield i
+        else:
+            import progressbar
+            for i in progressbar.progressbar(iter):
+                yield i

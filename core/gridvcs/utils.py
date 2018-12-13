@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  GridVCS object revision
+# GridVCS repos
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2018 The NOC Project
-#  See LICENSE for details
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from collections import namedtuple
-
-
-Revision = namedtuple("Revision", ["id", "ts", "ft", "compress", "length"])
+REPOS = [
+    "rpsl_as", "rpsl_asset", "rpsl_peer", "rpsl_person",
+    "rpsl_maintainer", "dnszone", "config", "object_comment"
+]

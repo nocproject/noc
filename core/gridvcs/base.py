@@ -1,34 +1,38 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## GridVCS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# GridVCS
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import datetime
 import difflib
-## Third-party modules
+import zlib
+# Third-party modules
 import pymongo
 import gridfs
 import gridfs.errors
-from mercurial.mdiff import textdiff, patch
-## NOC modules
-from revision import Revision
+from mercurial.mdiff import patch
+import bsdiff4
+# NOC modules
 from noc.lib.nosql import get_db, ObjectId
+from .revision import Revision
 
 
 class GridVCS(object):
     T_FILE = "F"
     T_BDIFF = "b"
+    T_BSDIFF4 = "B"
     ENCODING = "utf-8"
+    DEFAULT_COMPRESS = "z"
 
     def __init__(self, repo):
         self.fs = gridfs.GridFS(
             get_db(), collection="noc.gridvcs.%s" % repo)
         self.files = self.fs._GridFS__files
-        self.files.ensure_index([("object", 1), ("ft", 1)])
 
     def get_delta(self, src, dst):
         """
@@ -37,11 +41,10 @@ class GridVCS(object):
         :param dst: Destination string
         :return: (<type>, delta)
         """
-        delta = textdiff(src, dst)
+        delta = bsdiff4.diff(src, dst)
         if len(delta) >= len(dst):
             return self.T_FILE, dst
-        else:
-            return self.T_BDIFF, delta
+        return self.T_BSDIFF4, delta
 
     def apply_delta(self, type, src, delta):
         """
@@ -71,11 +74,37 @@ class GridVCS(object):
         """
         return patch(src, delta)
 
+    def apply_delta_B(self, src, delta):
+        """
+        BSDIFF4 diff
+        :param src:
+        :param delta:
+        :return:
+        """
+        return bsdiff4.patch(src, delta)
+
+    def compress(self, data, method=None):
+        if method:
+            return getattr(self, "compress_%s" % method)(data)
+        return data
+
+    def decompress(self, data, method=None):
+        if method:
+            return getattr(self, "decompress_%s" % method)(data)
+        return data
+
+    def compress_z(self, data):
+        return zlib.compress(data)
+
+    def decompress_z(self, data):
+        return zlib.decompress(data)
+
     def put(self, object, data, ts=None):
         """
         Save data
-        :param object:
-        :param data:
+        :param object: Object id
+        :param data: Data to store
+        :param ts: Timestamp
         :return:
         """
         if self.fs.exists(object=object):
@@ -83,24 +112,31 @@ class GridVCS(object):
             try:
                 # Get old version
                 with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
-                    old_data = f.read()
+                    old_data = self.decompress(f.read(), f._file.get("c"))
                 # Check data has been changed
                 if data == old_data:
                     return False
                 # Calculate reverse delta
                 dt, delta = self.get_delta(data, old_data)
+                delta = self.compress(delta, self.DEFAULT_COMPRESS)
                 # Save delta
-                self.fs.put(delta, object=object, ts=f.ts, ft=dt,
-                    encoding=self.ENCODING)
+                self.fs.put(
+                    delta, object=object, ts=f.ts, ft=dt,
+                    encoding=self.ENCODING, c=self.DEFAULT_COMPRESS
+                )
                 # Remove old version
                 self.fs.delete(f._id)
             except gridfs.errors.NoFile:
                 pass
         # Save new version
         ts = ts or datetime.datetime.now()
-        self.fs.put(data, object=object,
+        self.fs.put(
+            self.compress(data, self.DEFAULT_COMPRESS),
+            object=object,
             ts=ts, ft=self.T_FILE,
-            encoding=self.ENCODING)
+            encoding=self.ENCODING,
+            c=self.DEFAULT_COMPRESS
+        )
         return True
 
     def get(self, object, revision=None):
@@ -113,14 +149,14 @@ class GridVCS(object):
         if not revision:
             try:
                 with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
-                    return f.read()
+                    return self.decompress(f.read(), f._file.get("c"))
             except gridfs.errors.NoFile:
                 return None
         else:
             data = None
             for r in self.iter_revisions(object, reverse=True):
                 with self.fs.get(r.id) as f:
-                    delta = f.read()
+                    delta = self.decompress(f.read(), f._file.get("c"))
                 data = self.apply_delta(r.ft, data, delta)
                 if r.id == revision.id:
                     break
@@ -143,7 +179,7 @@ class GridVCS(object):
         """
         d = pymongo.DESCENDING if reverse else pymongo.ASCENDING
         for r in self.files.find({"object": object}).sort("ts", d):
-            yield Revision(r["_id"], r["ts"], r["ft"])
+            yield Revision(r["_id"], r["ts"], r["ft"], r.get("c"), r["length"])
 
     def find_revision(self, object, revision):
         """
@@ -156,7 +192,7 @@ class GridVCS(object):
             "_id": ObjectId(revision)
         })
         if r:
-            return Revision(r["_id"], r["ts"], r["ft"])
+            return Revision(r["_id"], r["ts"], r["ft"], r.get("c"), r["length"])
         else:
             return None
 
@@ -171,5 +207,12 @@ class GridVCS(object):
         src = self.get(object, rev1)
         dst = self.get(object, rev2)
         return "\n".join(
-            difflib.unified_diff(src.splitlines(), dst.splitlines(),
-                                 lineterm=""))
+            difflib.unified_diff(
+                src.splitlines(),
+                dst.splitlines(),
+                lineterm=""
+            )
+        )
+
+    def ensure_collection(self):
+        self.files.ensure_index([("object", 1), ("ft", 1)])
