@@ -7,7 +7,7 @@
 console.debug("Defining NOC.core.combotree.ComboTree");
 
 Ext.define("NOC.core.combotree.ComboTree", {
-    extend: "Ext.form.field.Picker",
+    extend: "Ext.form.field.ComboBox",
     requires: [
         "Ext.data.Store",
         "Ext.data.proxy.Rest",
@@ -22,27 +22,46 @@ Ext.define("NOC.core.combotree.ComboTree", {
     ],
     triggerCls: "theme-classic fas fa fa-folder-open-o",
     valueField: "id",
-    editable: false,
-    config: {
-        displayField: "label",
-        displayTpl: false
-    },
+    displayField: "label",
+    displayTpl: false,
+    editable: true,
+    typeAhead: true,
+    queryMode: "remote",
+    queryParam: "__query",
+    queryCaching: false,
+    queryDelay: 200,
+    forceSelection: false,
+    minChars: 2,
+    triggerAction: "all",
+    query: {},
+    stateful: false,
+    autoSelect: false,
+    pageSize: true,
+    currentLeaf: false,
     triggers: {
         clear: {
             cls: "x-form-clear-trigger",
             hidden: true,
             weight: -1,
             handler: function(field) {
-                field.setValue();
+                field.setValue(null);
                 field.fireEvent("select", field);
             }
         }
     },
-    currentLeaf: false,
+    listeners: {
+        change: function(field, value) {
+            if(value == null || value === "") {
+                this.getTrigger("clear").hide();
+                return;
+            }
+            this.getTrigger("clear").show();
+        }
+    },
     initComponent: function() {
-        var me = this, i, path, proxy, store,
+        var me = this, i, path, proxyCfg, treeProxyCfg, storeCfg,
             model = Ext.create("Ext.data.Model", {
-                fields: ["label", "id", "level"]
+                fields: ["label", "id", "has_children"]
             }),
             readerCfg = {
                 rootProperty: "data",
@@ -50,21 +69,20 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 successProperty: "success"
             },
             defaultProxyCfg = {
-                type: "json",
+                type: "rest",
                 pageParam: "__page",
                 startParam: "__start",
                 limitParam: "__limit",
                 sortParam: "__sort",
                 extraParams: {
-                    __format: "ext",
-                    parent: ""
+                    __format: "ext"
                 },
                 reader: readerCfg
             };
 
         // Calculate restUrl
         path = me.$className.split(".");
-        if(!me.restUrl && path[0] === 'NOC' && path[path.length - 1] === 'ComboTree') {
+        if(!me.restUrl && path[0] === "NOC" && path[path.length - 1] === "ComboTree") {
             me.restUrl = "/";
             for(i = 1; i < path.length - 1; i++) {
                 me.restUrl += path[i] + "/";
@@ -75,13 +93,12 @@ Ext.define("NOC.core.combotree.ComboTree", {
             throw "Cannot determine restUrl for " + me.$className;
         }
 
-        proxy = Ext.create("Ext.data.proxy.Rest", Ext.apply({url: me.restUrl + "lookup/"}, defaultProxyCfg));
-        store = {
-            proxy: proxy,
+        proxyCfg = Ext.apply({url: me.restUrl + "lookup/"}, defaultProxyCfg);
+        storeCfg = {
+            proxy: proxyCfg,
             autoLoad: true,
             remoteFilter: false,
             model: model,
-            pageSize: 500,
             remoteSort: true,
             sorters: [
                 {
@@ -89,10 +106,49 @@ Ext.define("NOC.core.combotree.ComboTree", {
                 }
             ]
         };
-        me.bindStore(store);
+        // typeahead store
+        me.bindStore(storeCfg);
+        // tree panel store
+        treeProxyCfg = Ext.apply({
+                url: me.restUrl + "lookup/"
+            },
+            Ext.merge({
+                extraParams: {parent: ""}
+            }, Ext.clone(defaultProxyCfg), true)
+        );
+        var treeStoreCfg = Ext.merge(
+            Ext.clone(storeCfg),
+            {
+                proxy: treeProxyCfg,
+                listeners: {
+                    scope: me,
+                    load: this.onLoad
+                }
+            }, true);
+        me.treeStore = Ext.create("Ext.data.Store", treeStoreCfg);
+        me.treePicker = me.createTreePicker();
+        // Fix combobox when use remote paging
+        me.pickerId = me.getId() + '-picker';
         me.callParent();
     },
-    createPicker: function() {
+    onTriggerClick: function() {
+        var me = this, x, y,
+            heightAbove = me.getPosition()[1] - Ext.getBody().getScroll().top,
+            heightBelow = Ext.Element.getViewportHeight() - heightAbove - me.getHeight();
+        me.treePicker.setWidth(me.getWidth());
+        me.treePicker.height = Math.max(heightAbove, heightBelow) - 5;
+        me.setEditable(false);
+        [x, y] = me.getPosition();
+        if(heightAbove > heightBelow) {
+            y -= me.treePicker.height - me.getHeight();
+        }
+        me.treePicker.showAt([x, y]);
+    },
+    onLeaveFocusTreePicker: function() {
+        this.setEditable(true);
+        this.treePicker.hide();
+    },
+    createTreePicker: function() {
         var me = this,
             searchField = me.searchField = new Ext.create({
                 xtype: "searchfield",
@@ -111,160 +167,76 @@ Ext.define("NOC.core.combotree.ComboTree", {
                     scope: me,
                     keyup: me.onChangeSearchField
                 }
-            }),
-            picker = me.picker = new Ext.tree.Panel({
-                baseCls: Ext.baseCSSPrefix + "boundlist",
-                shrinkWrapDock: 2,
-                rootVisible: false,
-                root: {
-                    expanded: true,
-                    children: []
-                },
-                animCollapse: true,
-                singleExpand: false,
-                useArrows: true,
-                scrollable: true,
-                floating: true,
-                displayField: me.displayField,
-                columns: me.columns,
-                height: 300,
-                manageHeight: false,
-                collapseFirst: false,
-                tbar: [
-                    searchField
-                ],
-                listeners: {
-                    scope: me,
-                    itemclick: me.onItemClick,
-                    itemkeydown: me.onPickerKeyDown,
-                    beforeitemexpand: me.onItemBeforeExpand,
-                    itemexpand: me.onItemExpand
-                }
             });
-        if(!picker.initialConfig.height) {
-            picker.on({
-                beforeshow: me.onBeforePickerShow,
-                scope: me
-            });
-        }
-        // view = picker.getView();
-        // if (Ext.isIE9 && Ext.isStrict) {
-        //     // In IE9 strict mode, the tree view grows by the height of the horizontal scroll bar when the items are highlighted or unhighlighted.
-        //     // Also when items are collapsed or expanded the height of the view is off. Forcing a repaint fixes the problem.
-        //     view.on({
-        //         scope: me,
-        //         highlightitem: me.repaintPickerView,
-        //         unhighlightitem: me.repaintPickerView,
-        //         afteritemexpand: me.repaintPickerView,
-        //         afteritemcollapse: me.repaintPickerView
-        //     });
-        // }
-        return picker;
-    },
-    selectItem: function(record) {
-        var me = this;
-        me.setValue(record.data);
-        me.fireEvent("select", me, record);
-        me.collapse();
-    },
-    getDisplayValue: function(tplData) {
-        tplData = tplData || this.displayTplData;
-        return this.getDisplayTpl().apply(tplData);
-    },
-    applyDisplayTpl: function(displayTpl) {
-        var me = this;
-        if(!displayTpl) {
-            displayTpl = new Ext.XTemplate('<tpl for=".">' + '{[typeof values === "string" ? values : values["' + me.getDisplayField() + '"]]}' + '</tpl>');
-            displayTpl.auto = true;
-        } else if(!displayTpl.isTemplate) {
-            displayTpl = new Ext.XTemplate(displayTpl);
-        }
-        return displayTpl;
-    },
-    setValue: function(value) {
-        var me = this;
-        if(value == null || value === "") {
-            me.callParent(null);
-            me.setRawValue(value);
-            me.getTrigger("clear").hide();
-            return me;
-        }
-        me.getTrigger("clear").show();
-        if(value.hasOwnProperty(me.valueField)) { // Ext.data.NodeInterface
-            me.callParent([value[me.valueField]]);
-            me.setRawValue(me.getDisplayValue(value));
-            return me;
-        }
-        // ToDo use simple 'restUrl/<item_id>', which property use as label?
-        Ext.Ajax.request({
-            url: me.restUrl + value + "/get_path/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                var k, data = Ext.decode(response.responseText).data;
-                for(k = 0; k < data.length; k++) {
-                    if(data[k].id === value) {
-                        var v = {};
-                        v[me.valueField] = value;
-                        v[me.displayField] = data[k][me.displayField];
-                        me.setValue(v);
-                        break;
-                    }
-                }
+        return new Ext.tree.Panel({
+            baseCls: Ext.baseCSSPrefix + "boundlist",
+            shrinkWrap: 2,
+            shrinkWrapDock: true,
+            animCollapse: true,
+            singleExpand: false,
+            useArrows: true,
+            scrollable: true,
+            floating: true,
+            displayField: me.displayField,
+            columns: me.columns,
+            manageHeight: false,
+            collapseFirst: false,
+            rootVisible: false,
+            root: {
+                expanded: true,
+                children: []
             },
-            failure: function() {
-                NOC.error(__("Restore tree state"));
+            // ToDo make variable for theme
+            bodyStyle: {
+                background: "#ecf0f1"
+            },
+            tbar: [
+                searchField
+            ],
+            listeners: {
+                scope: me,
+                itemclick: me.onItemClick,
+                itemkeydown: me.onPickerKeyDown,
+                beforeitemexpand: me.onItemBeforeExpand,
+                itemexpand: me.onItemExpand,
+                focusleave: me.onLeaveFocusTreePicker
             }
         });
     },
-    getValue: function() {
-        return this.value;
+    selectItem: function(record) {
+        var me = this, value = {};
+        value[this.valueField] = record.id;
+        value[this.displayField] = record.get("label");
+        me.setValue(Ext.create("Ext.data.Model", value));
+        me.treePicker.hide();
     },
-    setRawValue: function(rawValue) {
-        this.callParent([rawValue]);
-    },
-    getSubmitValue: function() {
-        var value = this.getValue();
-        if(Ext.isEmpty(value)) {
-            value = "";
-        }
-        return value;
-    },
-    getStoreListeners: function(store) {
-        if(!store.isEmptyStore) {
-            return {
-                load: this.onLoad
-            };
-        }
-    },
+    getStoreListeners: Ext.emptyFn,
     loadChildren: function(id) {
         var me = this;
-        var picker = me.getPicker();
-        if(picker.isExpanded) {
-            picker.mask(__("loading ..."));
+        if(!me.treePicker.hidden) {
+            me.treePicker.mask(__("loading ..."));
         }
-        me.store.load({
+        me.treeStore.load({
             params: {
                 parent: id
             },
             callback: function() {
-                if(picker.isExpanded) {
-                    picker.unmask();
+                if(!me.treePicker.hidden) {
+                    me.treePicker.unmask();
                 }
             }
-        })
+        });
     },
     getParentNode: function() {
-        var me = this, store = this.getPicker().getStore();
+        var me = this, store = me.treePicker.getStore();
         if(!me.currentLeaf) {
             return store.getRootNode();
         } else {
-            return store.getById(me.currentLeaf)
+            return store.getById(me.currentLeaf);
         }
     },
     doFilter: function() {
         var me = this, parentNode = me.getParentNode();
-        console.log(parentNode);
         if(parentNode) {
             parentNode.removeAll();
             if(me.searchField.getValue()) {
@@ -302,7 +274,7 @@ Ext.define("NOC.core.combotree.ComboTree", {
     onItemBeforeExpand: function(self) {
         var me = this, node;
         if(me.currentLeaf && (me.currentLeaf !== self.getId())) {
-            node = me.getPicker().getStore().getNodeById(me.currentLeaf);
+            node = me.treePicker.getStore().getNodeById(me.currentLeaf);
             node.removeAll();
             node.appendChild(me.cache);
         }
@@ -310,7 +282,7 @@ Ext.define("NOC.core.combotree.ComboTree", {
         me.cache = Ext.clone(self.childNodes);
         if(!self.hasChildNodes()) {
             me.loadChildren(me.currentLeaf);
-            return false
+            return false;
         }
     },
     onItemExpand: function() {
@@ -326,12 +298,6 @@ Ext.define("NOC.core.combotree.ComboTree", {
         var me = this;
         me.bindStore(null);
         me.callParent();
-    },
-    onBeforePickerShow: function(picker) {
-        var me = this,
-            heightAbove = me.getPosition()[1] - Ext.getBody().getScroll().top,
-            heightBelow = Ext.Element.getViewportHeight() - heightAbove - me.getHeight();
-        picker.height = Math.max(heightAbove, heightBelow) - 5;
     },
     onClearSearchField: function(self) {
         self.setValue();
