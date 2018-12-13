@@ -26,7 +26,9 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     command_save_config = "write"
     command_exit = "exit"
-    config_volatile = ["^%.*?$"]
+    config_volatile = ["^%.*?$",
+                       r"enable password 7 \S+( level \d+)?\n",
+                       r"username \S+ password 7 \S+( author\-group \S+)?\n"]
 
     def convert_interface_name(self, interface):
         if interface.startswith("f"):

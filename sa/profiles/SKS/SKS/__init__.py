@@ -30,7 +30,9 @@ class Profile(BaseProfile):
     ]
     config_volatile = [
         r"enable password 7 \S+( level \d+)?\n",
-        r"username \S+ password 7 \S+( author\-group \S+)?\n"
+        r"username \S+ password 7 \S+( author\-group \S+)?\n",
+        r"radius(-server | accounting-server )(encrypt-key|key) \d+ \S+\n",
+        r"tacacs(-server | accounting-server )(encrypt-key|key) \d+ \S+\n"
     ]
 
     rx_iface = re.compile("^[fgvn]\d+\S*$")
