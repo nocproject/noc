@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Juniper.JUNOS"
     # Ignore this line: 'Last login: Tue Sep 18 09:17:21 2018 from 10.10.0.1'
-    pattern_username = "((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
+    pattern_username = r"((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
     pattern_prompt = \
         r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?" \
         r"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"

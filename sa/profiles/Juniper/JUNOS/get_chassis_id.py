@@ -20,8 +20,8 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_range = re.compile(
-        "(?P<type>Public|Private) base address\s+(?P<mac>\S+)\s+"
-        "(?P=type) count\s+(?P<count>\d+)",
+        r"(?P<type>Public|Private) base address\s+(?P<mac>\S+)\s+"
+        r"(?P=type) count\s+(?P<count>\d+)",
         re.DOTALL | re.IGNORECASE
     )
     rx_range2 = re.compile(

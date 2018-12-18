@@ -27,7 +27,7 @@ class Script(BaseScript):
     TIMEOUT = 240
     BULK = False
 
-    rx_phys = re.compile(r"\S+\sinterface:\s(?P<ifname>\S+),\s", re.MULTILINE)
+    rx_phys = re.compile(r"\S+\sinterface:\s(?P<ifname>\S+)\s*,\s", re.MULTILINE)
     rx_phy_name = re.compile(
         r"^Physical interface: (?P<ifname>\S+)"
         r"( \(\S+, \S+\))?( \(Extended Port)?\s*, "
@@ -94,6 +94,8 @@ class Script(BaseScript):
             name = match.group("ifname")
             if name.endswith(")"):
                 name = name[:-1]
+            if not self.profile.valid_interface_name(self, name):
+                continue
             # Detect interface type
             if name.startswith("lo"):
                 iftype = "loopback"
