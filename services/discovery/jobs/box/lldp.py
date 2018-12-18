@@ -16,7 +16,8 @@ from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
     LLDP_CHASSIS_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_ALIAS,
     LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME,
-    LLDP_PORT_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_UNSPECIFIED
+    LLDP_PORT_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_UNSPECIFIED,
+    LLDP_PORT_SUBTYPE_COMPONENT
 )
 
 
@@ -88,6 +89,8 @@ class LLDPCheck(TopologyDiscoveryCheck):
         port = port_id["remote_port"]
         if port_subtype == LLDP_PORT_SUBTYPE_ALIAS:
             rp = self.get_interface_by_description(port, remote_object)
+        elif port_subtype == LLDP_PORT_SUBTYPE_COMPONENT:
+            rp = self.get_interface_by_name(port, remote_object)
         elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
             rp = self.get_interface_by_mac(port, remote_object)
         elif port_subtype == LLDP_PORT_SUBTYPE_NAME:
