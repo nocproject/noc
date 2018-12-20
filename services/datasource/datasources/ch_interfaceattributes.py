@@ -24,7 +24,7 @@ class CHInterfaceAttributesDataSource(BaseDataSource):
         iface_prof = {i[0]: (i[1], int(i[2] or 0)) for i in
                       InterfaceProfile.objects.filter().values_list("id", "name", "is_uni")}
         ifs = Interface._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-        for iface in ifs.find({"description": {"$exists": True}},
+        for iface in ifs.find({"type": "physical"},
                               {"_id": 0, "managed_object": 1, "name": 1, "description": 1,
                                "profile": 1, "in_speed": 1}).sort("managed_object"):
             yield (
