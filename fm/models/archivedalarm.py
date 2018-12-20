@@ -11,6 +11,9 @@ from __future__ import absolute_import
 import datetime
 # Third-party modules
 from django.template import Template, Context
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedDocumentField,
+                                IntField, LongField, ObjectIdField, DictField)
 # NOC modules
 from noc.config import config
 import noc.lib.nosql as nosql
@@ -24,7 +27,7 @@ from .alarmseverity import AlarmSeverity
 
 
 @datastream
-class ArchivedAlarm(nosql.Document):
+class ArchivedAlarm(Document):
     meta = {
         "collection": "noc.alarms.archived",
         "strict": False,
@@ -40,50 +43,54 @@ class ArchivedAlarm(nosql.Document):
     }
     status = "C"
 
-    timestamp = nosql.DateTimeField(required=True)
-    clear_timestamp = nosql.DateTimeField(required=True)
+    timestamp = DateTimeField(required=True)
+    clear_timestamp = DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject)
     alarm_class = nosql.PlainReferenceField(AlarmClass)
-    severity = nosql.IntField(required=True)
-    vars = nosql.DictField()
-    log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
+    severity = IntField(required=True)
+    vars = DictField()
+    log = ListField(EmbeddedDocumentField(AlarmLog))
     #
-    opening_event = nosql.ObjectIdField(required=False)
-    closing_event = nosql.ObjectIdField(required=False)
+    opening_event = ObjectIdField(required=False)
+    closing_event = ObjectIdField(required=False)
     # Number of reopens
-    reopens = nosql.IntField(required=False)
+    reopens = IntField(required=False)
     # Copied discriminator
-    discriminator = nosql.StringField(required=False)
+    discriminator = StringField(required=False)
+    # Manual acknowledgement timestamp
+    ack_ts = DateTimeField(required=False)
+    # Manual acknowledgement user name
+    ack_user = StringField(required=False)
     # Control time within alarm will be reopen instead
     # instead of creating the new alarm
-    control_time = nosql.DateTimeField(required=False)
+    control_time = DateTimeField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
-    root = nosql.ObjectIdField(required=False)
+    root = ObjectIdField(required=False)
     # Escalated TT ID in form
     # <external system name>:<external tt id>
-    escalation_ts = nosql.DateTimeField(required=False)
-    escalation_tt = nosql.StringField(required=False)
-    escalation_error = nosql.StringField(required=False)
-    escalation_ctx = nosql.LongField(required=False)
-    escalation_close_ts = nosql.DateTimeField(required=False)
-    escalation_close_error = nosql.StringField(required=False)
-    escalation_close_ctx = nosql.LongField(required=False)
+    escalation_ts = DateTimeField(required=False)
+    escalation_tt = StringField(required=False)
+    escalation_error = StringField(required=False)
+    escalation_ctx = LongField(required=False)
+    escalation_close_ts = DateTimeField(required=False)
+    escalation_close_error = StringField(required=False)
+    escalation_close_ctx = LongField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
-    direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
-    direct_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    direct_services = ListField(EmbeddedDocumentField(SummaryItem))
+    direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
     # (covered by this and all inferred alarms)
-    total_objects = nosql.ListField(nosql.EmbeddedDocumentField(ObjectSummaryItem))
-    total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
-    total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
+    total_services = ListField(EmbeddedDocumentField(SummaryItem))
+    total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Paths
-    adm_path = nosql.ListField(nosql.IntField())
-    segment_path = nosql.ListField(nosql.ObjectIdField())
-    container_path = nosql.ListField(nosql.ObjectIdField())
+    adm_path = ListField(IntField())
+    segment_path = ListField(ObjectIdField())
+    container_path = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
-    uplinks = nosql.ListField(nosql.IntField())
+    uplinks = ListField(IntField())
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -209,7 +216,7 @@ class ArchivedAlarm(nosql.Document):
         """
         Generator yielding all affected managed objects
         """
-        seen = set([self.managed_object])
+        seen = {self.managed_object}
         yield self.managed_object
         for a in self.iter_consequences():
             if a.managed_object not in seen:

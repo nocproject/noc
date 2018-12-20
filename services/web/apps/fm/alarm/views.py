@@ -185,6 +185,8 @@ class AlarmApplication(ExtApplication):
             "escalation_error": o.escalation_error,
             "platform": o.managed_object.platform.name if o.managed_object.platform else "",
             "address": o.managed_object.address,
+            "ack_ts": o.ack_ts,
+            "ack_user": o.ack_user,
             "isInMaintenance": mtc,
             "summary": self.f_glyph_summary({
                 "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
@@ -368,6 +370,28 @@ class AlarmApplication(ExtApplication):
         if not alarm:
             self.response_not_found()
         alarm.log_message("%s: %s" % (request.user.username, msg))
+        return True
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/acknowledge/", method=["POST"],
+          api=True, access="acknowledge")
+    def api_acknowledge(self, request, id):
+        alarm = get_alarm(id)
+        if not alarm:
+            return self.response_not_found()
+        if alarm.status != "A":
+            return self.response_not_found()
+        alarm.acknowledge(request.user)
+        return True
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/unacknowledge/", method=["POST"],
+          api=True, access="acknowledge")
+    def api_unacknowledge(self, request, id):
+        alarm = get_alarm(id)
+        if not alarm:
+            return self.response_not_found()
+        if alarm.status != "A":
+            return self.response_not_found()
+        alarm.unacknowledge(request.user)
         return True
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/subscribe/", method=["POST"],
