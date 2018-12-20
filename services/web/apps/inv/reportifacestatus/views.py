@@ -105,7 +105,7 @@ class ReportIfaceStatus(SimpleReport):
             if zero:
                 match["oper_status"] = True
 
-            if defzero:
+            if selector and defzero:
                 def_prof = [pr.id for pr in InterfaceProfile.objects.filter(name__contains="default")]
                 match["profile"] = {
                     "$nin": def_prof
