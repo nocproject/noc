@@ -12,6 +12,9 @@ import datetime
 # Third-party modules
 from django.template import Template as DjangoTemplate
 from django.template import Context
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedDocumentField,
+                                IntField, LongField, BooleanField, ObjectIdField, DictField)
 from mongoengine.errors import SaveConditionError
 # NOC modules
 import noc.lib.nosql as nosql
@@ -30,11 +33,9 @@ from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 
-ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
-
 
 @datastream
-class ActiveAlarm(nosql.Document):
+class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",
         "strict": False,
@@ -54,62 +55,64 @@ class ActiveAlarm(nosql.Document):
     }
     status = "A"
 
-    timestamp = nosql.DateTimeField(required=True)
-    last_update = nosql.DateTimeField(required=True)
+    timestamp = DateTimeField(required=True)
+    last_update = DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject)
     alarm_class = nosql.PlainReferenceField(AlarmClass)
-    severity = nosql.IntField(required=True)
-    vars = nosql.DictField()
+    severity = IntField(required=True)
+    vars = DictField()
     # Calculated alarm discriminator
     # Has meaning only for alarms with is_unique flag set
     # Calculated as sha1("value1\x00....\x00valueN").hexdigest()
-    discriminator = nosql.StringField(required=False)
-    log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
-    # Responsible person
-    owner = nosql.ForeignKeyField(User, required=False)
+    discriminator = StringField(required=False)
+    log = ListField(EmbeddedDocumentField(AlarmLog))
+    # Manual acknowledgement timestamp
+    ack_ts = DateTimeField(required=False)
+    # Manual acknowledgement user name
+    ack_user = StringField(required=False)
     #
-    opening_event = nosql.ObjectIdField(required=False)
-    closing_event = nosql.ObjectIdField(required=False)
+    opening_event = ObjectIdField(required=False)
+    closing_event = ObjectIdField(required=False)
     # List of subscribers
-    subscribers = nosql.ListField(nosql.ForeignKeyField(User))
+    subscribers = ListField(nosql.ForeignKeyField(User))
     #
-    custom_subject = nosql.StringField(required=False)
+    custom_subject = StringField(required=False)
     custom_style = nosql.ForeignKeyField(Style, required=False)
     #
-    reopens = nosql.IntField(required=False)
+    reopens = IntField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
-    root = nosql.ObjectIdField(required=False)
+    root = ObjectIdField(required=False)
     # Escalated TT ID in form
     # <external system name>:<external tt id>
-    escalation_ts = nosql.DateTimeField(required=False)
-    escalation_tt = nosql.StringField(required=False)
-    escalation_error = nosql.StringField(required=False)
+    escalation_ts = DateTimeField(required=False)
+    escalation_tt = StringField(required=False)
+    escalation_error = StringField(required=False)
     # span context
-    escalation_ctx = nosql.LongField(required=False)
+    escalation_ctx = LongField(required=False)
     # Close tt when alarm cleared
-    close_tt = nosql.BooleanField(default=False)
+    close_tt = BooleanField(default=False)
     # Do not clear alarm until *wait_tt* is closed
-    wait_tt = nosql.StringField()
-    wait_ts = nosql.DateTimeField()
+    wait_tt = StringField()
+    wait_ts = DateTimeField()
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
-    direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
-    direct_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    direct_services = ListField(EmbeddedDocumentField(SummaryItem))
+    direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
     # (covered by this and all inferred alarms)
-    total_objects = nosql.ListField(nosql.EmbeddedDocumentField(ObjectSummaryItem))
-    total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
-    total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
+    total_services = ListField(EmbeddedDocumentField(SummaryItem))
+    total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Template and notification group to send close notification
     clear_template = nosql.ForeignKeyField(Template, required=False)
     clear_notification_group = nosql.ForeignKeyField(NotificationGroup, required=False)
     # Paths
-    adm_path = nosql.ListField(nosql.IntField())
-    segment_path = nosql.ListField(nosql.ObjectIdField())
-    container_path = nosql.ListField(nosql.ObjectIdField())
+    adm_path = ListField(IntField())
+    segment_path = ListField(ObjectIdField())
+    container_path = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
-    uplinks = nosql.ListField(nosql.IntField())
+    uplinks = ListField(IntField())
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -218,6 +221,8 @@ class ActiveAlarm(nosql.Document):
             severity=self.severity,
             vars=self.vars,
             log=log,
+            ack_ts=self.ack_ts,
+            ack_user=self.ack_user,
             root=self.root,
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
@@ -288,7 +293,7 @@ class ActiveAlarm(nosql.Document):
                 "noc.services.escalator.escalation.notify_close",
                 scheduler="escalator",
                 pool=self.managed_object.escalator_shard,
-                max_runs=ALARM_CLOSE_RETRIES,
+                max_runs=config.fm.alarm_close_retries,
                 alarm_id=self.id,
                 tt_id=self.escalation_tt,
                 subject=subject,
@@ -326,13 +331,6 @@ class ActiveAlarm(nosql.Document):
         s = DjangoTemplate(self.alarm_class.body_template).render(ctx)
         return s
 
-    def change_owner(self, user):
-        """
-        Change alarm's owner
-        """
-        self.owner = user
-        self.save()
-
     def subscribe(self, user):
         """
         Change alarm's subscribers
@@ -355,15 +353,28 @@ class ActiveAlarm(nosql.Document):
             ), to_save=False)
             self.save()
 
-    def is_owner(self, user):
-        return self.owner == user
-
     def is_subscribed(self, user):
         return user.id in self.subscribers
 
-    @property
-    def is_unassigned(self):
-        return self.owner is None
+    def acknowledge(self, user):
+        self.ack_ts = datetime.datetime.now()
+        self.ack_user = user.username
+        self.log = self.log + [AlarmLog(
+            timestamp=self.ack_ts,
+            from_status="A", to_status="A",
+            message="Acknowledged by %s(%s)" % (user.get_full_name(), user.username)
+        )]
+        self.save()
+
+    def unacknowledge(self, user):
+        self.ack_ts = None
+        self.ack_user = None
+        self.log = self.log + [AlarmLog(
+            timestamp=datetime.datetime.now(),
+            from_status="A", to_status="A",
+            message="Unacknowledged by %s(%s)" % (user.get_full_name(), user.username)
+        )]
+        self.save()
 
     @property
     def duration(self):
