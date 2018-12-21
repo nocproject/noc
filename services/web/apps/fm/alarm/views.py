@@ -380,8 +380,15 @@ class AlarmApplication(ExtApplication):
             return self.response_not_found()
         if alarm.status != "A":
             return self.response_not_found()
+        if alarm.ack_ts:
+            return {
+                "status": False,
+                "message": "Already acknowledged by %s" % alarm.ack_user
+            }
         alarm.acknowledge(request.user)
-        return True
+        return {
+            "status": True
+        }
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/unacknowledge/", method=["POST"],
           api=True, access="acknowledge")
@@ -391,8 +398,15 @@ class AlarmApplication(ExtApplication):
             return self.response_not_found()
         if alarm.status != "A":
             return self.response_not_found()
+        if not alarm.ack_ts:
+            return {
+                "status": False,
+                "message": "Already unacknowledged"
+            }
         alarm.unacknowledge(request.user)
-        return True
+        return {
+            "status": True
+        }
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/subscribe/", method=["POST"],
           api=True, access="launch")
