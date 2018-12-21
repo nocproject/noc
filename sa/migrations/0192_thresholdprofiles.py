@@ -11,7 +11,7 @@ import itertools
 # Third-party modules
 import bson
 from south.db import db
-from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
+from six.moves.cPickle import loads, dumps
 # NOC modules
 from noc.lib.nosql import get_db
 
@@ -57,7 +57,7 @@ class Migration(object):
                 tp["window_config"] = metric.get("window_config")
                 # Build thresholds
                 tp["thresholds"] = []
-                if metric.get("high_error", False):
+                if metric.get("high_error", False) is False:
                     tp["thresholds"] += [{
                         "op": ">=",
                         "value": metric["high_error"],
@@ -65,7 +65,7 @@ class Migration(object):
                         "clear_value": metric["high_error"],
                         "alarm_class": ac_he
                     }]
-                if metric.get("low_error", False):
+                if metric.get("low_error", False) is False:
                     tp["thresholds"] += [{
                         "op": "<=",
                         "value": metric["low_error"],
@@ -73,7 +73,7 @@ class Migration(object):
                         "clear_value": metric["low_error"],
                         "alarm_class": ac_le
                     }]
-                if metric.get("low_warn", False):
+                if metric.get("low_warn", False) is False:
                     tp["thresholds"] += [{
                         "op": "<=",
                         "value": metric["low_warn"],
@@ -81,7 +81,7 @@ class Migration(object):
                         "clear_value": metric["low_warn"],
                         "alarm_class": ac_lw
                     }]
-                if metric.get("high_warn", False):
+                if metric.get("high_warn", False) is False:
                     tp["thresholds"] += [{
                         "op": ">=",
                         "value": metric["high_warn"],
@@ -92,10 +92,10 @@ class Migration(object):
                 # Save profile
                 tp_coll.insert_one(tp)
                 #
-                metric["threshold_profile"] = tp_id
+                metric["threshold_profile"] = str(tp_id)
             # Store back
-            wb_metrics = dumps(metrics, HIGHEST_PROTOCOL)
-            db.execute("UPDATE sa_managedobjectprofile SET metric=%s WHERE id=%s", [wb_metrics, p_id])
+            wb_metrics = dumps(metrics)
+            db.execute("UPDATE sa_managedobjectprofile SET metrics=%s WHERE id=%s", [wb_metrics, p_id])
 
     def backwards(self):
         pass
