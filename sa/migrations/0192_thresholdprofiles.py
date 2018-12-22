@@ -10,14 +10,18 @@
 import itertools
 # Third-party modules
 import bson
+import psycopg2
 from south.db import db
-from six.moves.cPickle import loads, dumps
+from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 # NOC modules
 from noc.lib.nosql import get_db
 
 
 class Migration(object):
     def forwards(self):
+        # Convert pickled field ty BYTEA
+        db.execute("ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA")
+        #
         current = itertools.count()
         mdb = get_db()
         # Get alarm classes
@@ -94,7 +98,7 @@ class Migration(object):
                 #
                 metric["threshold_profile"] = str(tp_id)
             # Store back
-            wb_metrics = dumps(metrics)
+            wb_metrics = psycopg2.Binary(dumps(metrics, HIGHEST_PROTOCOL))
             db.execute("UPDATE sa_managedobjectprofile SET metrics=%s WHERE id=%s", [wb_metrics, p_id])
 
     def backwards(self):
