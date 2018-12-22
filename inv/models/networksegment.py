@@ -18,7 +18,6 @@ from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 EmbeddedDocumentField, LongField)
 from mongoengine.errors import ValidationError
 from django.db.models.aggregates import Count
-from pymongo import UpdateOne
 from pymongo.errors import OperationFailure
 # NOC modules
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
@@ -335,39 +334,42 @@ class NetworkSegment(Document):
         return services, subscribers, objects
 
     def get_summary(self):
+        def to_list(v):
+            return [{"profile": k, "summary": v[k]} for k in sorted(v)]
+
         def update_dict(d1, d2):
-            for k in d2:
-                if k in d1:
-                    d1[k] += d2[k]
+            for kk in d2:
+                if kk in d1:
+                    d1[kk] += d2[kk]
                 else:
-                    d1[k] = d2[k]
+                    d1[kk] = d2[kk]
 
         services, subscribers, objects = self.get_direct_summary()
-        r = {"direct_services": [{"profile": k, "summary": services[k]} for k in services],
-             "direct_subscribers": [{"profile": k, "summary": subscribers[k]} for k in subscribers],
-             "direct_objects": [{"profile": k, "summary": objects[k]} for k in objects]}
-        # map(lambda x: update_dict(*x), r)
+        r = {"direct_services": to_list(services),
+             "direct_subscribers": to_list(subscribers),
+             "direct_objects": to_list(objects)}
+        # map(lambda x: update_dict(*x), zip([services, subscribers, objects], self.get_total_summary()))
         [update_dict(k, v) for k, v in zip(
             [services, subscribers, objects], self.get_total_summary())]
-        r["total_services"] = [{"profile": k, "summary": services[k]} for k in services]
-        r["total_subscribers"] = [{"profile": k, "summary": subscribers[k]} for k in subscribers]
-        r["total_objects"] = [{"profile": k, "summary": objects[k]} for k in objects]
+        r["total_services"] = to_list(services)
+        r["total_subscribers"] = to_list(subscribers)
+        r["total_objects"] = to_list(objects)
         return r
 
-    def update_summary(self):
+    @classmethod
+    def update_summary(cls, network_segment):
         """
         Update summaries
         :return:
         """
-        r = self.get_summary()
-        NetworkSegment._get_collection().bulk_write([UpdateOne({"_id": self.id}, {"$set": r}, upsert=True)])
-
+        if not hasattr(network_segment, "id"):
+            network_segment = NetworkSegment.get_by_id(network_segment)
+        path = network_segment.get_path()
         # Update upwards
-        path = self.get_path()
         path.reverse()
-        for ns in sorted(NetworkSegment.objects.filter(id__in=path[1:]), key=lambda x: path.index(x.id)):
+        for ns in sorted(NetworkSegment.objects.filter(id__in=path), key=lambda x: path.index(x.id)):
             r = ns.get_summary()
-            NetworkSegment._get_collection().bulk_write([UpdateOne({"_id": ns.id}, {"$set": r}, upsert=True)])
+            NetworkSegment._get_collection().update_one({"_id": ns.id}, {"$set": r}, upsert=True)
 
     def update_access(self):
         from noc.sa.models.administrativedomain import AdministrativeDomain
