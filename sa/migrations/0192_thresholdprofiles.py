@@ -20,7 +20,7 @@ from noc.lib.nosql import get_db
 class Migration(object):
     def forwards(self):
         # Convert pickled field ty BYTEA
-        db.execute("ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA")
+        db.execute("ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA USING metrics::bytea")
         #
         current = itertools.count()
         mdb = get_db()
@@ -50,7 +50,7 @@ class Migration(object):
                 else:
                     tp = {"_id": tp_id}
                 # Fill profile
-                tp["name"] = "op-%05d-%03d" % (next(current), n)
+                tp["name"] = "op14-%05d-%03d" % (next(current), n)
                 tp["description"] = "Migrated for interface profile '%s' metric '%s'" % (
                     name,
                     metric["metric_type"]
@@ -61,7 +61,7 @@ class Migration(object):
                 tp["window_config"] = metric.get("window_config")
                 # Build thresholds
                 tp["thresholds"] = []
-                if metric.get("high_error", False) is False:
+                if metric.get("high_error", False) or metric.get("high_error", False) is 0:
                     tp["thresholds"] += [{
                         "op": ">=",
                         "value": metric["high_error"],
@@ -69,7 +69,7 @@ class Migration(object):
                         "clear_value": metric["high_error"],
                         "alarm_class": ac_he
                     }]
-                if metric.get("low_error", False) is False:
+                if metric.get("low_error", False) or metric.get("low_error", False) is 0:
                     tp["thresholds"] += [{
                         "op": "<=",
                         "value": metric["low_error"],
@@ -77,7 +77,7 @@ class Migration(object):
                         "clear_value": metric["low_error"],
                         "alarm_class": ac_le
                     }]
-                if metric.get("low_warn", False) is False:
+                if metric.get("low_warn", False) or metric.get("low_warn", False) is 0:
                     tp["thresholds"] += [{
                         "op": "<=",
                         "value": metric["low_warn"],
@@ -85,7 +85,7 @@ class Migration(object):
                         "clear_value": metric["low_warn"],
                         "alarm_class": ac_lw
                     }]
-                if metric.get("high_warn", False) is False:
+                if metric.get("high_warn", False) or metric.get("high_warn", False) is 0:
                     tp["thresholds"] += [{
                         "op": ">=",
                         "value": metric["high_warn"],
@@ -108,4 +108,6 @@ class Migration(object):
     def has_thresholds(metric):
         return (metric.get("low_error", False) or metric.get("low_warn", False) or
                 metric.get("high_warn", False) or metric.get("high_error", False) or
+                metric.get("low_error", False) is 0 or metric.get("low_warn", False) is 0 or
+                metric.get("high_warn", False) is 0 or metric.get("high_error", False) is 0 or
                 metric.get("threshold_profile"))
