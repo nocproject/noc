@@ -701,7 +701,7 @@ class ManagedObject(Model):
                     o.save()
         # Rebuild summary
         if "object_profile" in self.changed_fields:
-            self.segment.update_summary()
+            NetworkSegment.update_summary(self.segment)
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
