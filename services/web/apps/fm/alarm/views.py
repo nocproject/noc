@@ -117,10 +117,12 @@ class AlarmApplication(ExtApplication):
             q["managed_object__in"] = Maintenance.currently_affected()
         del q["maintenance"]
         if "administrative_domain" in q:
-            q["adm_path"] = int(q["administrative_domain"])
+            if q["administrative_domain"] != '_root_':
+                q["adm_path"] = int(q["administrative_domain"])
             q.pop("administrative_domain")
         if "segment" in q:
-            q["segment_path"] = bson.ObjectId(q["segment"])
+            if q["segment"] != '_root_':
+                q["segment_path"] = bson.ObjectId(q["segment"])
             q.pop("segment")
         if "managedobjectselector" in q:
             s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
@@ -185,7 +187,7 @@ class AlarmApplication(ExtApplication):
             "escalation_error": o.escalation_error,
             "platform": o.managed_object.platform.name if o.managed_object.platform else "",
             "address": o.managed_object.address,
-            "ack_ts": o.ack_ts,
+            "ack_ts": self.to_json(o.ack_ts),
             "ack_user": o.ack_user,
             "isInMaintenance": mtc,
             "summary": self.f_glyph_summary({
