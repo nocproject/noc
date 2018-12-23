@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AuditTrail model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -116,7 +116,15 @@ class AuditTrail(Document):
         #
         logger.debug("Logging change for %s", instance)
         changes = []
-        if instance.pk:
+        if kwargs.get('created', True):
+            # Create
+            op = "C"
+            changes = [{
+                "field": f.name,
+                "old": None,
+                "new": cls.get_field(instance, f)
+            } for f in sender._meta.fields]
+        else:
             # Update
             op = "U"
             for f in sender._meta.fields:
@@ -130,14 +138,7 @@ class AuditTrail(Document):
                         "old": od,
                         "new": nd
                     }]
-        else:
-            # Create
-            op = "C"
-            changes = [{
-                "field": f.name,
-                "old": None,
-                "new": cls.get_field(instance, f)
-            } for f in sender._meta.fields]
+
         cls.log(sender, instance, op, changes)
 
     @classmethod

@@ -6,11 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+
+# Python modules
+import logging
+from pymongo import ReadPreference
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.main.models.audittrail import AuditTrail
 from noc.core.translation import ugettext as _
-from noc.models import get_object
+from noc.models import get_object, get_model
+
+logger = logging.getLogger(__name__)
 
 
 class AuditTrailApplication(ExtDocApplication):
@@ -21,6 +27,37 @@ class AuditTrailApplication(ExtDocApplication):
     menu = _("Audit Trail")
     model = AuditTrail
     query_fields = ["model_id", "user"]
+
+    def g_model(self, model_id):
+        try:
+            md = get_model(model_id)
+            if md and "name" in md._meta.get_all_field_names():
+                return md
+        except Exception as e:
+            logger.info("No model: Error %s", e)
+            return None
+
+    def queryset(self, request, query=None):
+        """
+        Filter records for lookup
+        """
+        if query and self.query_fields:
+            for model_id in [list(set(a["models"])) for a in self.model._get_collection().with_options(
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
+                    {"$unwind": "$model_id"},
+                    {"$group": {"_id": "null", "models": {"$push": "$model_id"}}},
+                    {"$project": {"models": True, "_id": False}}])][0]:
+                model = self.g_model(model_id)
+                if model is None:
+                    continue
+                for ob in model.objects.filter(name=str(query)):
+                    if ob:
+                        return self.model.objects.filter(model_id=model_id, object=str(ob.id))
+
+            else:
+                return self.model.objects.filter(self.get_Q(request, query))
+        else:
+            return self.model.objects.all()
 
     def field_object_name(self, o):
         try:

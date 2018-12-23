@@ -46,7 +46,6 @@ Ext.define("NOC.main.audittrail.Application", {
                     flex: 1,
                     renderer: NOC.render.Choices({
                         "C": "Create",
-                        "M": "Modify",
                         "U": "Update",
                         "D": "Delete"
                     })
