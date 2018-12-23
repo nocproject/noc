@@ -194,6 +194,7 @@ class ServiceSummary(Document):
     @classmethod
     def _refresh_object(cls, managed_object):
         from noc.sa.models.managedobject import ManagedObject
+        from noc.inv.models.networksegment import NetworkSegment
 
         def to_dict(v):
             return dict(
@@ -268,7 +269,7 @@ class ServiceSummary(Document):
                 logger.error("Bulk write error: '%s'", e.details)
                 logger.error("Stopping check")
         mo = ManagedObject.get_by_id(managed_object)
-        mo.segment.update_summary()
+        NetworkSegment.update_summary(mo.segment)
 
     @classmethod
     def get_object_summary(cls, managed_object):

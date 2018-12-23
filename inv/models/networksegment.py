@@ -18,6 +18,7 @@ from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 EmbeddedDocumentField, LongField)
 from mongoengine.errors import ValidationError
 from django.db.models.aggregates import Count
+from pymongo.errors import OperationFailure
 # NOC modules
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -319,18 +320,7 @@ class NetworkSegment(Document):
             }
         })
 
-    def update_summary(self):
-        """
-        Update summaries
-        :return:
-        """
-        def update_dict(d1, d2):
-            for k in d2:
-                if k in d1:
-                    d1[k] += d2[k]
-                else:
-                    d1[k] = d2[k]
-
+    def get_direct_summary(self):
         objects = dict(
             (d["object_profile"], d["count"])
             for d in self.managed_objects.values(
@@ -341,38 +331,45 @@ class NetworkSegment(Document):
         # Direct services
         mo_ids = self.managed_objects.values_list("id", flat=True)
         services, subscribers = ServiceSummary.get_direct_summary(mo_ids)
-        self.direct_services = SummaryItem.dict_to_items(services)
-        self.direct_subscribers = SummaryItem.dict_to_items(subscribers)
-        self.direct_objects = ObjectSummaryItem.dict_to_items(objects)
-        siblings = set()
-        for ns in NetworkSegment.objects.filter(parent=self.id):
-            if ns.id in siblings:
-                continue
-            update_dict(services, SummaryItem.items_to_dict(ns.total_services))
-            update_dict(subscribers, SummaryItem.items_to_dict(ns.total_subscribers))
-            update_dict(objects, ObjectSummaryItem.items_to_dict(ns.total_objects))
-            siblings.add(ns.id)
-            if ns.sibling:
-                siblings.add(ns.sibling.id)
-        self.total_services = SummaryItem.dict_to_items(services)
-        self.total_subscribers = SummaryItem.dict_to_items(subscribers)
-        self.total_objects = ObjectSummaryItem.dict_to_items(objects)
-        self.save()
+        return services, subscribers, objects
+
+    def get_summary(self):
+        def to_list(v):
+            return [{"profile": k, "summary": v[k]} for k in sorted(v)]
+
+        def update_dict(d1, d2):
+            for kk in d2:
+                if kk in d1:
+                    d1[kk] += d2[kk]
+                else:
+                    d1[kk] = d2[kk]
+
+        services, subscribers, objects = self.get_direct_summary()
+        r = {"direct_services": to_list(services),
+             "direct_subscribers": to_list(subscribers),
+             "direct_objects": to_list(objects)}
+        # map(lambda x: update_dict(*x), zip([services, subscribers, objects], self.get_total_summary()))
+        [update_dict(k, v) for k, v in zip(
+            [services, subscribers, objects], self.get_total_summary())]
+        r["total_services"] = to_list(services)
+        r["total_subscribers"] = to_list(subscribers)
+        r["total_objects"] = to_list(objects)
+        return r
+
+    @classmethod
+    def update_summary(cls, network_segment):
+        """
+        Update summaries
+        :return:
+        """
+        if not hasattr(network_segment, "id"):
+            network_segment = NetworkSegment.get_by_id(network_segment)
+        path = network_segment.get_path()
         # Update upwards
-        ns = self.parent
-        while ns:
-            services = SummaryItem.items_to_dict(ns.direct_services)
-            subscribers = SummaryItem.items_to_dict(ns.direct_subscribers)
-            objects = ObjectSummaryItem.items_to_dict(ns.direct_objects)
-            for nsc in NetworkSegment.objects.filter(parent=ns.id):
-                update_dict(services, SummaryItem.items_to_dict(nsc.total_services))
-                update_dict(subscribers, SummaryItem.items_to_dict(nsc.total_subscribers))
-                update_dict(objects, ObjectSummaryItem.items_to_dict(nsc.total_objects))
-            ns.total_services = SummaryItem.dict_to_items(services)
-            ns.total_subscribers = SummaryItem.dict_to_items(subscribers)
-            ns.total_objects = ObjectSummaryItem.dict_to_items(objects)
-            ns.save()
-            ns = ns.parent
+        path.reverse()
+        for ns in sorted(NetworkSegment.objects.filter(id__in=path), key=lambda x: path.index(x.id)):
+            r = ns.get_summary()
+            NetworkSegment._get_collection().update_one({"_id": ns.id}, {"$set": r}, upsert=True)
 
     def update_access(self):
         from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -574,3 +571,100 @@ class NetworkSegment(Document):
         # @todo intersect link only
         for link in self.iter_links():
             link.save()
+
+    def get_total_summary(self, ids=None, parent_id=None):
+        """
+
+        :param ids: Network segment ID list
+        :param parent_id: Parent ID filter value
+        :return:
+        """
+        services = {}
+        subscribers = {}
+        objects = {}
+        pipeline = []
+        # Exclude segment sibling set (sibling segments as one)
+        match = {"sibling": None}
+        if ids:
+            # Filter by network segment
+            match["_id"] = {"$in": ids}
+        else:
+            match["parent"] = parent_id or self.id
+        if match:
+            pipeline += [{"$match": match}]
+        # Mark service and profile with type field
+        pipeline += [{
+            "$project": {
+                "_id": 0,
+                "service": {
+                    "$map": {
+                        "input": "$total_services",
+                        "as": "svc",
+                        "in": {
+                            "type": "svc",
+                            "profile": "$$svc.profile",
+                            "summary": "$$svc.summary"
+                        }
+                    }
+                },
+                "subscriber": {
+                    "$map": {
+                        "input": "$total_subscribers",
+                        "as": "sub",
+                        "in": {
+                            "type": "sub",
+                            "profile": "$$sub.profile",
+                            "summary": "$$sub.summary"
+                        }
+                    }
+                },
+                "object": {
+                    "$map": {
+                        "input": "$total_objects",
+                        "as": "obj",
+                        "in": {
+                            "type": "obj",
+                            "profile": "$$obj.profile",
+                            "summary": "$$obj.summary"
+                        }
+                    }
+                }
+            }},
+            # Concatenate services and profiles
+            {
+                "$project": {
+                    "summary": {
+                        "$concatArrays": ["$service", "$subscriber", "$object"]
+                    }
+                }
+            },
+            # Unwind *summary* array to independed records
+            {
+                "$unwind": "$summary"
+            },
+            # Group by (type, profile)
+            {
+                "$group": {
+                    "_id": {
+                        "type": "$summary.type",
+                        "profile": "$summary.profile"
+                    },
+                    "summary": {
+                        "$sum": "$summary.summary"
+                    }
+                }
+            }
+        ]  # noqa
+        try:
+            for doc in NetworkSegment._get_collection().aggregate(pipeline):
+                profile = doc["_id"]["profile"]
+                if doc["_id"]["type"] == "svc":
+                    services[profile] = services.get(profile, 0) + doc["summary"]
+                elif doc["_id"]["type"] == "sub":
+                    subscribers[profile] = subscribers.get(profile, 0) + doc["summary"]
+                elif doc["_id"]["type"] == "obj":
+                    objects[profile] = objects.get(profile, 0) + doc["summary"]
+        except OperationFailure:
+            # for Mongo less 3.4
+            pass
+        return services, subscribers, objects
