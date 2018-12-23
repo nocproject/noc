@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import cPickle
 # Third-party modules
+import psycopg2
 from django.db import models
 from south.modelsinspector import add_introspection_rules
+from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 import six
 from bson import ObjectId
 # NOC Modules
@@ -189,18 +189,18 @@ class PickledField(models.Field):
     __metaclass__ = models.SubfieldBase
 
     def db_type(self, connection):
-        return "TEXT"
+        return "BYTEA"
 
     def to_python(self, value):
         # if not value:
         #    return None
         try:
-            return cPickle.loads(str(value))
+            return loads(str(value))
         except Exception:
             return value
 
     def get_db_prep_value(self, value, connection, prepared=False):
-        return cPickle.dumps(value)
+        return psycopg2.Binary(dumps(value, HIGHEST_PROTOCOL))
 
 
 class AutoCompleteTagsField(models.Field):

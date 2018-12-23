@@ -36,6 +36,7 @@ class Handler(Document):
     allow_config_filter = BooleanField()
     allow_config_validation = BooleanField()
     allow_resolver = BooleanField()
+    allow_threshold = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 

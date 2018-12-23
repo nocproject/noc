@@ -67,6 +67,11 @@ Ext.define("NOC.main.handler.Application", {
                     name: "allow_resolver",
                     xtype: "checkbox",
                     boxLabel: __("Allow Resolver")
+                },
+                {
+                    name: "allow_threshold",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Threshold")
                 }
             ]
         });
