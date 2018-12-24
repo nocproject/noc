@@ -506,7 +506,7 @@ class AlarmApplication(ExtApplication):
                 show_in_summary = be_show
             else:
                 show_in_summary = be_true
-            for p, c in d.items():  #sorted(d.items(), key=lambda x: -x[1]):
+            for p, c in d.items():
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if collapse and c < 2:
