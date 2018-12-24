@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Base card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 import datetime
+import operator
 # Third-party modules
 from jinja2 import Template, Environment
 # NOC modules
@@ -189,14 +190,16 @@ class BaseCard(object):
                         badge = ""
                     else:
                         badge = " <span class=\"badge\">%s</span>" % c
-                    v += [
+                    order = getattr(pv, "display_order", 100)
+                    v += [(
+                        (order, -c),
                         "<i class=\"%s\" title=\"%s\"></i>%s" % (
                             pv.glyph,
                             pv.name,
                             badge
                         )
-                    ]
-            return " ".join(v)
+                    )]
+            return " ".join(i[1] for i in sorted(v, key=operator.itemgetter(0)))
 
         if not isinstance(s, dict):
             return ""

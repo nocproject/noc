@@ -91,6 +91,20 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     uiStyle: "large"
                 },
                 {
+                    name: "display_order",
+                    xtype: "numberfield",
+                    fieldLabel: __("Display Order"),
+                    uiStyle: "small",
+                    minValue: 0,
+                    allowBlank: false
+                },
+                {
+                    name: "show_in_summary",
+                    xtype: "checkbox",
+                    boxLabel: __("Show in summary"),
+                    allowBlank: true
+                },
+                {
                     name: "weight",
                     xtype: "numberfield",
                     fieldLabel: __("Alarm weight"),

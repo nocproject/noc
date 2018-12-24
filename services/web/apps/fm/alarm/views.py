@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.alarm application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import os
 import inspect
 import datetime
+import operator
 # Third-party modules
 import bson
 from pymongo import ReadPreference
@@ -505,21 +506,25 @@ class AlarmApplication(ExtApplication):
                 show_in_summary = be_show
             else:
                 show_in_summary = be_true
-            for p, c in sorted(d.items(), key=lambda x: -x[1]):
+            for p, c in d.items():  #sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if collapse and c < 2:
                         badge = ""
                     else:
                         badge = " <span class=\"x-display-tag\">%s</span>" % c
-                    v += [
+                    order = getattr(pv, "display_order", 100)
+                    v += [(
+                        (order, -c),
                         "<i class=\"%s\" title=\"%s\"></i>%s" % (
                             pv.glyph,
                             pv.name,
                             badge
                         )
-                    ]
-            return "<span class='x-summary'>%s</span>" % " ".join(v)
+                    )]
+            return "<span class='x-summary'>%s</span>" % " ".join(
+                i[1] for i in sorted(v, key=operator.itemgetter(0))
+            )
 
         if not isinstance(s, dict):
             return ""

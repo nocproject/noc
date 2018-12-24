@@ -36,6 +36,15 @@ Ext.define("NOC.crm.subscriberprofile.Model", {
             type: "string"
         },
         {
+            name: "display_order",
+            type: "integer",
+            defaultValue: 100
+        },
+        {
+            name: "show_in_summary",
+            type: "boolean"
+        },
+        {
             name: "weight",
             type: "int"
         },

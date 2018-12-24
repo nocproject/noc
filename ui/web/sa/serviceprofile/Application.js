@@ -95,6 +95,14 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     uiStyle: "large"
                 },
                 {
+                    name: "display_order",
+                    xtype: "numberfield",
+                    fieldLabel: __("Display Order"),
+                    uiStyle: "small",
+                    minValue: 0,
+                    allowBlank: false
+                },
+                {
                     name: "show_in_summary",
                     xtype: "checkbox",
                     boxLabel: __("Show in summary"),

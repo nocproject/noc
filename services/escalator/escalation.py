@@ -55,9 +55,10 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 continue
             r += [{
                 "profile": p.name,
-                "summary": k.summary
+                "summary": k.summary,
+                "order": (getattr(p, "display_order", 100), -k.summary)
             }]
-        return sorted(r, key=lambda x: -x["summary"])
+        return sorted(r, key=operator.itemgetter("order"))
 
     logger.info("[%s] Performing escalations", alarm_id)
     alarm = get_alarm(alarm_id)
