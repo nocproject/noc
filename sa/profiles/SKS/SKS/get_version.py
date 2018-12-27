@@ -60,7 +60,8 @@ class Script(BaseScript):
             r["platform"] = platform
             v = self.cli("show system id", cached=True)
             match = self.rx_serial.search(v)
-            r["attributes"]["Serial Number"] = match.group("serial")
+            if match:
+                r["attributes"]["Serial Number"] = match.group("serial")
         else:
             match = self.rx_ver2.search(v)
             if match:
