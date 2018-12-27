@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Service Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -42,7 +42,9 @@ class ServiceProfile(Document):
     code = StringField()
     # FontAwesome glyph
     glyph = StringField()
-    #
+    # Glyph order in summary
+    display_order = IntField(default=100)
+    # Show in total summary
     show_in_summary = BooleanField(default=True)
     # Auto-assign interface profile when service binds to interface
     interface_profile = ReferenceField(InterfaceProfile)

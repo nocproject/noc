@@ -32,6 +32,11 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "string"
         },
         {
+            name: "display_order",
+            type: "integer",
+            defaultValue: 100
+        },
+        {
             name: "code",
             type: "string"
         },

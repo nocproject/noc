@@ -11,7 +11,7 @@ import operator
 from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ListField, IntField, LongField
+from mongoengine.fields import StringField, ListField, IntField, LongField, BooleanField
 import cachetools
 # NOC models
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
@@ -41,6 +41,11 @@ class SubscriberProfile(Document):
     workflow = PlainReferenceField(Workflow)
     # FontAwesome glyph
     glyph = StringField()
+    # Glyph order in summary
+    display_order = IntField(default=100)
+    # Show in total summary
+    show_in_summary = BooleanField(default=True)
+    # Tags
     tags = ListField(StringField())
     # Alarm weight
     weight = IntField(default=0)
