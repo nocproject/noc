@@ -7,12 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.lib.validators import is_mac
 from noc.lib.text import parse_table
 from noc.core.mib import mib
-from noc.sa.interfaces.base import MACAddressParameter
 import re
 
 
@@ -29,19 +28,11 @@ class Script(BaseScript):
         r"[0-9A-F]{2}-[0-9A-F]{2})\s+CPU\s+Self\s*(?:\S*\s*)?$",
         re.MULTILINE)
 
-    # Do not use noc.sa.profiles.Generic.get_chassis_id
-    def execute_snmp(self):
-        macs = []
-        for oid, v in self.snmp.getnext(mib["IF-MIB::ifPhysAddress"]):
-            mac = MACAddressParameter().clean(v)
-            if mac == "00:00:00:00:00:00" or mac in macs:
-                continue
-            macs += [mac]
-        macs.sort()
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+    SNMP_GETNEXT_OIDS = {
+        "SNMP": [
+            mib["IF-MIB::ifPhysAddress"]
+        ]
+    }
 
     def execute_cli(self):
         match = self.rx_mac.search(self.scripts.get_switch())

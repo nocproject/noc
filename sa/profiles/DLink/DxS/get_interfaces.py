@@ -25,7 +25,7 @@ class Script(BaseScript):
     name = "DLink.DxS.get_interfaces"
     interface = IGetInterfaces
 
-    rx_port_no = re.compile("^(?P<unit>\d+)[:/](?P<port>\d+)$")
+    rx_port_no = re.compile(r"^(?P<unit>\d+)[:/](?P<port>\d+)$")
     rx_ipif1 = re.compile(
         r"(?:Interface Name|IP Interface)\s+:\s+(?P<ifname>\S+)\s*\n"
         r"IP Address\s+:\s+(?P<ip_address>\S+)\s+\(\S+\)\s*\n"
@@ -199,12 +199,16 @@ class Script(BaseScript):
     def execute_snmp(self, interface=None, last_ifname=None):
         #
         # TODO: vlans, portchannel
+        # http://xcme.blogspot.com/2014/10/vlan-snmp.html
         #
         index = self.scripts.get_ifindexes()
         ifaces = dict((index[i], {"interface": i}) for i in index)
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         self.apply_table(ifaces, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
-        self.apply_table(ifaces, "IF-MIB::ifPhysAddress", "mac_address")
+        if self.is_bad_ifmib_snmp:
+            self.apply_table(ifaces, "LLDP-MIB::lldpLocPortId", "mac_address")
+        else:
+            self.apply_table(ifaces, "IF-MIB::ifPhysAddress", "mac_address")
         self.apply_table(ifaces, "IF-MIB::ifType", "type")
         self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")
         self.apply_table(ifaces, "IF-MIB::ifAlias", "description")
