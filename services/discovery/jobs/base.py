@@ -136,6 +136,9 @@ class MODiscoveryJob(PeriodicJob):
         if fatal:
             self.has_fatal_error = True
 
+    def set_fatal_error(self):
+        self.has_fatal_error = True
+
     def get_caps(self):
         """
         Return object's capabilities

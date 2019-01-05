@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Version check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.firmwarepolicy import FirmwarePolicy, FS_DENIED
 
 
 class VersionCheck(DiscoveryCheck):
@@ -35,7 +36,23 @@ class VersionCheck(DiscoveryCheck):
             self.object.vendor = vendor
             changed = True
         # Sync platform
-        platform = Platform.ensure_platform(vendor, result["platform"])
+        strict_platform = self.object.object_profile.new_platform_creation_policy != "C"
+        platform = Platform.ensure_platform(
+            vendor,
+            result["platform"],
+            strict=strict_platform
+        )
+        if strict_platform and platform is None:
+            # Denied to create platform, stop
+            if self.object.object_profile.new_platform_creation_policy == "A":
+                self.set_problem(
+                    alarm_class="NOC | Managed Object | New Platform",
+                    message="New platform creation is denied by policy",
+                    fatal=True
+                )
+            else:
+                self.job.set_fatal_error()
+            return
         if not self.object.platform or platform.id != self.object.platform.id:
             if self.object.platform:
                 self.logger.info("Platform changed: %s -> %s",
@@ -81,3 +98,19 @@ class VersionCheck(DiscoveryCheck):
         #
         if changed:
             self.object.save()
+        #
+        dfp = self.object.get_denied_firmware_policy()
+        if dfp != "I":
+            firmware_status = FirmwarePolicy.get_status(platform, version)
+            if firmware_status == FS_DENIED:
+                self.logger.info("Firmware version is denied by policy")
+                if dfp in ("A", "S"):
+                    self.set_problem(
+                        alarm_class="NOC | Managed Object | Denied Firmware",
+                        message="Firmware version is denied to use by policy",
+                        fatal=dfp == "S"
+                    )
+                elif dfp == "s":
+                    self.job.set_fatal_error()
+                if dfp in ("s", "S"):
+                    self.logger.error("Further box discovery is stopped by policy")

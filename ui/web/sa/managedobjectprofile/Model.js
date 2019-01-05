@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Model");
@@ -71,6 +71,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "resolver_handler__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "new_platform_creation_policy",
+            type: "string",
+            defaultValue: "C"
+        },
+        {
+            name: "denied_firmware_policy",
+            type: "string",
+            defaultValue: "I"
         },
         {
             name: "enable_ping",

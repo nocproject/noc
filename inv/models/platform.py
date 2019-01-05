@@ -142,17 +142,18 @@ class Platform(Document):
         operator.attrgetter("_ensure_cache"),
         key=lambda s, v, n: "%s-%s" % (v.id, n),
         lock=lambda _: id_lock)
-    def ensure_platform(cls, vendor, name):
+    def ensure_platform(cls, vendor, name, strict=False):
         """
         Get or create platform by vendor and code
         :param vendor:
         :param name:
+        :param strict: Return None if platform is not found
         :return:
         """
         # Try to find platform
         q = Q(vendor=vendor.id, name=name) | Q(vendor=vendor.id, aliases=name)
         platform = Platform.objects.filter(q).first()
-        if platform:
+        if platform or strict:
             return platform
         # Try to create
         pu = uuid.uuid4()

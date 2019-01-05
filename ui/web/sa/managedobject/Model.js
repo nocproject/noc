@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Model");
@@ -396,6 +396,11 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "address_resolution_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "denied_firmware_policy",
             type: "string",
             defaultValue: "P"
         },

@@ -34,6 +34,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     validationModelId: "sa.ManagedObjectProfile",
     viewModel: {
         data: {
+            enableBoxDiscoveryVersion: false,
             enableBoxDiscoveryConfig: false,
             enableBoxDiscoveryCaps: false,
             enableBoxDiscoveryVPNInterface: false,
@@ -685,7 +686,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_version",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Version")
+                                            boxLabel: __("Version"),
+                                            reference: "enableBoxDiscoveryVersion"
                                         },
                                         {
                                             name: "enable_box_discovery_caps",
@@ -845,6 +847,42 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     value: __("sec")
                                                 }
                                             ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Platform & Version"),
+                                    items: [
+                                        {
+                                            name: "new_platform_creation_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("On New Platform"),
+                                            store: [
+                                                ["C", __("Create")],
+                                                ["A", __("Alarm")]
+                                            ],
+                                            uiStyle: "medium",
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVersion.checked}"
+                                            }
+                                        },
+                                        {
+                                            name: "denied_firmware_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("On Denied Firmware"),
+                                            store: [
+                                                ["I", __("Ignore")],
+                                                ["s", __("Ignore&Stop")],
+                                                ["A", __("Raise Alarm")],
+                                                ["S", __("Raise Alarm&Stop")]
+                                            ],
+                                            uiStyle: "medium",
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVersion.checked}"
+                                            }
                                         }
                                     ]
                                 },
