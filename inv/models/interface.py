@@ -119,6 +119,7 @@ class Interface(Document):
             ServiceSummary.refresh_object(self.managed_object)
 
     def on_delete(self):
+        from .macdb import MACDB
         # Remove all subinterfaces
         for si in self.subinterface_set.all():
             si.delete()
@@ -387,4 +388,3 @@ class Interface(Document):
 # Avoid circular references
 from noc.sa.models.servicesummary import ServiceSummary
 from .link import Link
-from .macdb import MACDB
