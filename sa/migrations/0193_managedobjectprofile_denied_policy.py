@@ -18,7 +18,7 @@ class Migration(object):
             "sa_managedobjectprofile",
             "new_platform_creation_policy",
             models.CharField(
-                _("New Platform Creation Policy"),
+                "New Platform Creation Policy",
                 max_length=1,
                 choices=[
                     ("C", "Create"),
@@ -31,7 +31,7 @@ class Migration(object):
             "sa_managedobjectprofile",
             "denied_firmware_policy",
             models.CharField(
-                _("Firmware Policy"),
+                "Firmware Policy",
                 max_length=1,
                 choices=[
                     ("I", "Ignore"),
@@ -47,7 +47,7 @@ class Migration(object):
             "sa_managedobject",
             "denied_firmware_policy",
             models.CharField(
-                _("Firmware Policy"),
+                "Firmware Policy",
                 max_length=1,
                 choices=[
                     ("P", "Profile"),
