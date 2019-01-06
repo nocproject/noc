@@ -112,7 +112,7 @@ class Platform(Document):
     def to_json(self):
         r = {
             "$collection": self._meta["json_collection"],
-            "vendor__name": self.vendor.name,
+            "vendor__code": self.vendor.code[0],
             "name": self.name,
             "uuid": self.uuid
         }
@@ -134,8 +134,8 @@ class Platform(Document):
             "snmp_sysobjectid"])
 
     def get_json_path(self):
-        return os.path.join(self.vendor.code,
-                            "%s.json" % self.code)
+        return os.path.join(self.vendor.code[0],
+                            "%s.json" % self.name.replace("/", "_"))
 
     @classmethod
     @cachetools.cachedmethod(
