@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Authentication handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,7 +41,10 @@ class AuthRequestHandler(tornado.web.RequestHandler):
         if user:
             return success(user)
         elif self.request.headers.get("Private-Token"):
-            name, access = self.service.get_api_access(self.request.headers.get("Private-Token"))
+            name, access = self.service.get_api_access(
+                self.request.headers.get("Private-Token"),
+                self.request.remote_ip
+            )
             if name and access:
                 return api_success(access, name)
         elif self.request.headers.get("Authorization"):

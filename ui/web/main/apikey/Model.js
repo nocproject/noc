@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.apikey Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.apikey.Model");
@@ -29,6 +29,10 @@ Ext.define("NOC.main.apikey.Model", {
         },
         {
             name: "access",
+            type: "auto"
+        },
+        {
+            name: "acl",
             type: "auto"
         },
         {

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.apikey application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.apikey.Application");
@@ -104,6 +104,32 @@ Ext.define("NOC.main.apikey.Application", {
                             text: __("Role"),
                             dataIndex: "role",
                             width: 150,
+                            editor: "textfield"
+                        }
+                    ]
+                },
+                {
+                    name: "acl",
+                    xtype: "gridfield",
+                    fieldLabel: __("ACL"),
+                    columns: [
+                        {
+                            text: __("Prefix"),
+                            dataIndex: "prefix",
+                            width: 150,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Active"),
+                            dataIndex: "is_active",
+                            width: 50,
+                            renderer: NOC.render.Bool,
+                            editor: "checkbox"
+                        },
+                        {
+                            text: __("Description"),
+                            dataIndex: "description",
+                            flex: 1,
                             editor: "textfield"
                         }
                     ]
