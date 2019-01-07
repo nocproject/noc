@@ -418,9 +418,16 @@ TABLE {
 }
 
 .fas:before {
-    position: absolute;
     left: calc(50% - .5em);
     top: calc(50% - .5em);
+}
+
+.x-fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .fas.fa-icon {

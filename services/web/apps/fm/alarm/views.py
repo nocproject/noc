@@ -42,6 +42,16 @@ from noc.core.translation import ugettext as _
 from noc.fm.models.alarmescalation import AlarmEscalation
 
 
+def get_advanced_field(id):
+    from noc.crm.models.subscriberprofile import SubscriberProfile
+    from noc.sa.models.serviceprofile import ServiceProfile
+
+    for model, field in ((ServiceProfile, "total_services"), (SubscriberProfile, "total_subscribers")):
+        if model.get_by_id(id):
+            return field
+    return "total_services"
+
+
 class AlarmApplication(ExtApplication):
     """
     fm.alarm application
@@ -70,6 +80,10 @@ class AlarmApplication(ExtApplication):
         name="diagnostic",
         config={}
     )
+
+    advanced_filter_params = {"service_profile": "total_services",
+                              "subscribers_profile": "total_subscribers",
+                              "profile": get_advanced_field}
 
     DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
 
@@ -109,6 +123,20 @@ class AlarmApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
+        # Advanced filter
+        for p in self.advanced_filter_params:
+            params = []
+            for x in q.keys():
+                if x.startswith(p):
+                    params += [q[x]]
+                    del q[x]
+            if params:
+                af = self.advanced_filter(self.advanced_filter_params[p], params)
+                if "__raw__" in q and "__raw__" in af:
+                    # Multiple raw query
+                    q["__raw__"].update(af["__raw__"])
+                    del af["__raw__"]
+                q.update(af)
         # Exclude maintenance
         if "maintenance" not in q:
             q["maintenance"] = "hide"
@@ -150,6 +178,74 @@ class AlarmApplication(ExtApplication):
             if ("timestamp__gte" not in q and "timestamp__lte" not in q and
                     "escalation_tt__contains" not in q and "managed_object" not in q):
                 q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
+        return q
+
+    def advanced_filter(self, field, params):
+        """
+        Field: field0=ProfileID,field1=ProfileID:true....
+        cq - caps query
+        mq - main_query
+        field0=ProfileID - Profile is exists
+        field0=!ProfileID - Profile is not exists
+        field0=ProfileID:true - Summary value equal True
+        field0=ProfileID:2~50 - Summary value many then 2 and less then 50
+
+        :param field: Query Field name
+        :param params: Query params
+        :return:
+        """
+        q = {}
+        # print(field, params)
+        c_in = []
+        c_nin = []
+        for c in params:
+            if not c:
+                continue
+            if "!" in c:
+                # @todo Добавить исключение (только этот) !ID
+                c_id = c[1:]
+                c_query = "nexists"
+            elif ":" not in c:
+                c_id = c
+                c_query = "exists"
+            else:
+                c_id, c_query = c.split(":", 1)
+            try:
+                c_id = bson.ObjectId(c_id)
+                if callable(field):
+                    field = field(c_id)
+            except bson.errors.InvalidId as e:
+                self.logger.warning(e)
+                continue
+            if "~" in c_query:
+                l, r = c_query.split("~")
+                if not l:
+                    cond = {"$lt": int(r)}
+                elif not r:
+                    cond = {"$gt": int(l)}
+                else:
+                    cond = {"$lt": int(r), "$gt": int(l)}
+                q["__raw__"] = {field: {"$elemMatch": {"profile": c_id,
+                                                       "summary": cond}}}
+            elif c_query == "exists":
+                c_in += [c_id]
+                continue
+            elif c_query == "nexists":
+                c_nin += [c_id]
+                continue
+            else:
+                try:
+                    c_query = int(c_query)
+                    q["__raw__"] = {field: {"$elemMatch": {"profile": c_id,
+                                                           "summary": int(c_query)}}}
+                except ValueError:
+                    q["__raw__"] = {field: {"$elemMatch": {"profile": c_id,
+                                                           "summary": {"$regex": c_query}}}}
+        if c_in:
+            q["%s__profile__in" % field] = c_in
+        if c_nin:
+            q["%s__profile__nin" % field] = c_nin
+
         return q
 
     def instance_to_dict(self, o, fields=None):
@@ -195,7 +291,9 @@ class AlarmApplication(ExtApplication):
                 "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
                 "service": SummaryItem.items_to_dict(o.total_services)
             }),
-            "total_objects": sum(x.summary for x in o.total_objects)
+            "total_objects": sum(x.summary for x in o.total_objects),
+            "total_subscribers": self.f_summary({"subscriber": SummaryItem.items_to_dict(o.total_subscribers)}),
+            "total_services": self.f_summary({"service": SummaryItem.items_to_dict(o.total_services)})
         }
         if fields:
             d = dict((k, d[k]) for k in fields)
@@ -512,7 +610,7 @@ class AlarmApplication(ExtApplication):
                     if collapse and c < 2:
                         badge = ""
                     else:
-                        badge = " <span class=\"x-display-tag\">%s</span>" % c
+                        badge = "<span class=\"x-display-tag\">%s</span>" % c
                     order = getattr(pv, "display_order", 100)
                     v += [(
                         (order, -c),
@@ -522,7 +620,7 @@ class AlarmApplication(ExtApplication):
                             badge
                         )
                     )]
-            return "<span class='x-summary'>%s</span>" % " ".join(
+            return "<span class='x-summary'>%s</span>" % "".join(
                 i[1] for i in sorted(v, key=operator.itemgetter(0))
             )
 
@@ -536,7 +634,7 @@ class AlarmApplication(ExtApplication):
             from noc.sa.models.serviceprofile import ServiceProfile
             r += [get_summary(s["service"], ServiceProfile)]
         r = [x for x in r if x]
-        return "&nbsp;".join(r)
+        return "".join(r)
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/escalate/", method=["GET"],
           api=True, access="escalate")
@@ -552,6 +650,7 @@ class AlarmApplication(ExtApplication):
         """
         Return geo address for Managed Objects
         """
+
         def chunkIt(seq, num):
             avg = len(seq) / float(num)
             out = []
@@ -561,6 +660,7 @@ class AlarmApplication(ExtApplication):
                 out.append(seq[int(last):int(last + avg)])
                 last += avg
             return out
+
         location = []
         address = Object.get_by_id(id).get_address_text()
         if address:
@@ -578,3 +678,52 @@ class AlarmApplication(ExtApplication):
             return [location_1, location_2]
         else:
             return ["", ""]
+
+    @classmethod
+    def f_summary(cls, s):
+        def be_true(p):
+            return True
+
+        def be_show(p):
+            return p.show_in_summary
+
+        def get_summary(d, profile):
+            v = []
+            if hasattr(profile, "show_in_summary"):
+                show_in_summary = be_show
+            else:
+                show_in_summary = be_true
+            for p, c in sorted(d.items(), key=lambda x: -x[1]):
+                pv = profile.get_by_id(p)
+                if pv and show_in_summary(pv):
+                    v += [{"profile": str(pv.id),
+                           "glyph": pv.glyph,
+                           "display_order": pv.display_order,
+                           "profile__label": pv.name,
+                           "summary": c}
+                          ]
+            return v
+
+        if not isinstance(s, dict):
+            return ""
+        r = []
+        if "subscriber" in s:
+            from noc.crm.models.subscriberprofile import SubscriberProfile
+            r += get_summary(s["subscriber"], SubscriberProfile)
+        if "service" in s:
+            from noc.sa.models.serviceprofile import ServiceProfile
+            r += get_summary(s["service"], ServiceProfile)
+        r = [x for x in r if x]
+        return r
+
+    @view(url=r"profile_lookup/$", access="launch", method=["GET"], api=True)
+    def api_profile_lookup(self, request):
+        from noc.crm.models.subscriberprofile import SubscriberProfile
+        from noc.sa.models.serviceprofile import ServiceProfile
+        r = []
+        for model, short_type in ((ServiceProfile, _("Service")), (SubscriberProfile, _("Subscribers"))):
+            r += [{"id": str(o.id), "type": short_type, "display_order": o.display_order,
+                   "icon": o.glyph, "label": o.name}
+                  for o in model.objects.all()
+                  if getattr(o, "show_in_summary", True)]
+        return r
