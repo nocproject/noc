@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "GS-4024",
+    "$collection": "inv.platforms",
+    "uuid": "f85e4713-5da1-440b-bbce-6de2d111f07f",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.13"
+}

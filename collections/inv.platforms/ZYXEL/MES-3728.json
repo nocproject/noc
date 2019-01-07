@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "MES-3728",
+    "$collection": "inv.platforms",
+    "uuid": "afab3578-1ff6-4968-a6f8-3cbe4ed9ace1",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.45"
+}

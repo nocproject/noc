@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ZYXEL",
+    "name": "ES-2108PWR",
+    "$collection": "inv.platforms",
+    "uuid": "7f474589-d471-4ac2-b2ee-dcff4367cdc5",
+    "snmp_sysobjectid": "1.3.6.1.4.1.890.1.5.8.21"
+}
