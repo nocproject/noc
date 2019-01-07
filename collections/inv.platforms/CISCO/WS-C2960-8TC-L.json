@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C2960-8TC-L",
+    "$collection": "inv.platforms",
+    "uuid": "2ff49a62-f50c-474a-938d-cd71bd334c40",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.798"
+}

@@ -1,0 +1,8 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C3550-48",
+    "$collection": "inv.platforms",
+    "uuid": "45b7a603-5e01-42ad-b1dd-3ef4a9fd0b6a",
+    "aliases": ["WS-C3550-48-SMI"],
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.367"
+}

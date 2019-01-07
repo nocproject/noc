@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "CISCO2801",
+    "$collection": "inv.platforms",
+    "uuid": "6a35b4ad-b309-427c-b2b5-d20de219793e",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.619"
+}
