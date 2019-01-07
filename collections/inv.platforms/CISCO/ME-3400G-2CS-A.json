@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "ME-3400G-2CS-A",
+    "$collection": "inv.platforms",
+    "uuid": "d9fc8693-deb5-4935-af6a-57d6598fdb70",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.825"
+}

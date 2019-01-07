@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C2950T-24",
+    "$collection": "inv.platforms",
+    "uuid": "046d6821-feb2-425e-bdaf-982ad148c6c9",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.359"
+}

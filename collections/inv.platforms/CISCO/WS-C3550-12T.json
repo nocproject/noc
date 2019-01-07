@@ -1,0 +1,7 @@
+{
+    "vendor__code": "CISCO",
+    "name": "WS-C3550-12T",
+    "$collection": "inv.platforms",
+    "uuid": "4377b3ae-ff7d-4af1-8dd7-8e4869786787",
+    "snmp_sysobjectid": "1.3.6.1.4.1.9.1.368"
+}
