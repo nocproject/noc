@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ELTEX",
+    "name": "MXA64",
+    "$collection": "inv.platforms",
+    "uuid": "7b461dd6-65fb-4282-9259-680a2d492acf",
+    "snmp_sysobjectid": "1.3.6.1.4.1.34300.1.6"
+}
