@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DGS-1210-28/ME/A2",
+    "$collection": "inv.platforms",
+    "uuid": "8dced65e-f7a4-4e2e-96fe-632ae3fbb489",
+    "snmp_sysobjectid": "1.3.6.1.4.1.171.10.76.28.1"
+}

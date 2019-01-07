@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DGS-3000-10TC",
+    "$collection": "inv.platforms",
+    "uuid": "09b35832-fbcd-4439-b33c-28d40e77f658",
+    "snmp_sysobjectid": "1.3.6.1.4.1.171.10.133.1.1"
+}
