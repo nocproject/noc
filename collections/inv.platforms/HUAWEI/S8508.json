@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S8508",
+    "$collection": "inv.platforms",
+    "uuid": "2c8fbd62-8c44-4086-a7df-7a7ad1a253fe",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.10.1.22"
+}

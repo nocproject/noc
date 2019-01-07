@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "NE40E-X8A",
+    "$collection": "inv.platforms",
+    "uuid": "11ea76d2-17d4-4a86-b586-1e44abe58e0c",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.62.2.18"
+}
