@@ -1,0 +1,7 @@
+{
+    "vendor__code": "JUNIPER",
+    "name": "mx80-p",
+    "$collection": "inv.platforms",
+    "uuid": "69cea9df-0af5-4f9f-8846-38d1efec1986",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2636.1.1.1.2.57"
+}

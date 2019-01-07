@@ -1,0 +1,7 @@
+{
+    "vendor__code": "JUNIPER",
+    "name": "ex4200-24f",
+    "$collection": "inv.platforms",
+    "uuid": "ba536e9f-28b0-406a-b971-3864829b0f0f",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2636.1.1.1.2.31"
+}
