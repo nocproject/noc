@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DAS-3248DC",
+    "$collection": "inv.platforms",
+    "uuid": "6a0da161-baeb-4332-b38d-43d04df5c321",
+    "snmp_sysobjectid": "1.3.6.1.4.1.3646.1300.201"
+}

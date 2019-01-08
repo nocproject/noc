@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DLINK",
+    "name": "DES-1210-10/ME/B2",
+    "$collection": "inv.platforms",
+    "uuid": "c13ac983-5f06-4438-bfc2-ef575d4bb71d",
+    "snmp_sysobjectid": "1.3.6.1.4.1.171.10.75.14.1"
+}
