@@ -85,7 +85,6 @@ _MODELS = {
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
     "main.CHPolicy": "noc.main.models.chpolicy.CHPolicy",
-    "main.CollectionCache": "noc.main.models.collectioncache.CollectionCache",
     "main.CronTab": "noc.main.models.crontab.CronTab",
     "main.CustomField": "noc.main.models.customfield.CustomField",
     "main.CustomFieldEnumGroup": "noc.main.models.customfieldenumgroup.CustomFieldEnumGroup",

@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # inv.connectiontype application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.connectiontype import ConnectionType
-from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _
 
@@ -24,9 +23,6 @@ class ConnectionTypeApplication(ExtDocApplication):
     parent_model = DocCategory
     parent_field = "parent"
     query_fields = ["name__icontains", "description__icontains"]
-
-    def field_is_builtin(self, o):
-        return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     @view(url="^(?P<id>[0-9a-f]{24})/compatible/$", method=["GET"],
           access="read", api=True)
@@ -48,9 +44,7 @@ class ConnectionTypeApplication(ExtDocApplication):
         o = self.get_object_or_404(ConnectionType, id=id)
         r = []
         if "m" in o.genders:
-            ##
-            ## Type m
-            ##
+            # Type m
             rr = []
             if "f" in o.genders:
                 rr += [fn(o, "f", "Same type")]
@@ -64,9 +58,7 @@ class ConnectionTypeApplication(ExtDocApplication):
                     rr += [fn(ct, "f", "Share common groups: %s" % ", ".join(so & set(ct.c_group)))]
             r += [{"gender": "m", "records": rr}]
         if "f" in o.genders:
-            ##
-            ## Type f
-            ##
+            # Type f
             rr = []
             if "m" in o.genders:
                 rr += [fn(o, "m", "Same type")]
@@ -80,9 +72,7 @@ class ConnectionTypeApplication(ExtDocApplication):
                     rr += [fn(ct, "m", "Share common groups: %s" % ", ".join(so & set(ct.c_group)))]
             r += [{"gender": "f", "records": rr}]
         if "s" in o.genders:
-            ##
-            ## Type s
-            ##
+            # Type s
             rr = [fn(o, "s", "Same type")]
             # Superclassess
             for ct in o.get_superclasses():

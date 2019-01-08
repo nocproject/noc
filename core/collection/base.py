@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Collection utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,15 +15,20 @@ import hashlib
 import uuid
 from collections import namedtuple
 import sys
+import threading
+import operator
 # Third-party modules
 import ujson
 import bson
 from mongoengine.fields import ListField, EmbeddedDocumentField
 from mongoengine.errors import NotUniqueError
 from pymongo import UpdateOne
+import cachetools
 # NOC modules
 from noc.core.fileutils import safe_rewrite
 from noc.config import config
+
+state_lock = threading.Lock()
 
 
 class Collection(object):
@@ -34,6 +39,7 @@ class Collection(object):
     _MODELS = {}
 
     Item = namedtuple("Item", ["uuid", "path", "hash", "data"])
+    _state_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __init__(self, name, stdout=None):
         self.name = name
@@ -84,14 +90,20 @@ class Collection(object):
         else:
             return self._name_field
 
+    def get_state_collection(self):
+        """
+        Return mongo collection for state
+        :return:
+        """
+        from noc.lib.nosql import get_db
+        return get_db()[self.STATE_COLLECTION]
+
     def get_state(self):
         """
         Returns collection state as a dict of UUID -> hash
         :return:
         """
-        from noc.lib.nosql import get_db
-
-        coll = get_db()[self.STATE_COLLECTION]
+        coll = self.get_state_collection()
         # Get state from database
         cs = coll.find_one({"_id": self.name})
         if cs:
@@ -115,9 +127,7 @@ class Collection(object):
         :param state:
         :return:
         """
-        from noc.lib.nosql import get_db
-
-        coll = get_db()[self.STATE_COLLECTION]
+        coll = self.get_state_collection()
         coll.update({
             "_id": self.name,
         }, {
@@ -133,6 +143,16 @@ class Collection(object):
         lpath = self.get_legacy_state_path()
         if os.path.isfile(lpath):
             shutil.move(lpath, lpath + ".bak")
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_state_cache"), lock=lambda _: state_lock)
+    def get_builtins(cls, name):
+        """
+        Returns set of UUIDs for collection
+        :param name:
+        :return:
+        """
+        return set(Collection(name).get_state())
 
     def get_legacy_state_path(self):
         """
@@ -272,10 +292,14 @@ class Collection(object):
                     raise
                 # Try to find conflicting item
                 for k in self.model._meta["json_unique_fields"]:
-                    if isinstance(d[k], list):
-                        qs = {"%s__in" % k: d[k]}
-                    else:
-                        qs = {k: d[k]}
+                    if not isinstance(k, tuple):
+                        k = (k, )
+                    qs = {}
+                    for fk in k:
+                        if isinstance(d[fk], list):
+                            qs["%s__in" % fk] = d[fk]
+                        else:
+                            qs[fk] = d[fk]
                     o = self.model.objects.filter(**qs).first()
                     if o:
                         self.stdout.write(
