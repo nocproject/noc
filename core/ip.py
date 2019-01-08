@@ -2,10 +2,13 @@
 # ----------------------------------------------------------------------
 # IP address manipulation routines
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import socket
+import struct
 # Third-party modules
 import six
 # NOC Modules
@@ -294,11 +297,7 @@ class IPv4(IP):
         check_ipv4_prefix(prefix)
         super(IPv4, self).__init__(prefix)
         # Convert to int
-        self.d = 0
-        m = 24
-        for d in self._get_parts():
-            self.d += d << m
-            m -= 8
+        self.d = struct.unpack("!I", socket.inet_aton(self.address))[0]
 
     @classmethod
     def netmask_to_len(cls, netmask):
