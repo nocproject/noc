@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # inv.vendor application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.vendor import Vendor
-from noc.main.models.collectioncache import CollectionCache
 from noc.core.translation import ugettext as _
 
 
@@ -24,9 +23,6 @@ class VendorApplication(ExtDocApplication):
         "name__icontains", "code__icontains", "site__icontains"
     ]
     default_ordering = ["name"]
-
-    def field_is_builtin(self, o):
-        return bool(CollectionCache.objects.filter(uuid=o.uuid))
 
     @view(url="^(?P<id>[0-9a-f]{24})/json/$", method=["GET"],
           access="read", api=True)

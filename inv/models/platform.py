@@ -43,7 +43,7 @@ class Platform(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.platforms",
-        "json_unique_fields": ["vendor", "name"],
+        "json_unique_fields": [("vendor", "name")],
         "indexes": [
             {
                 "fields": ["vendor", "name"],

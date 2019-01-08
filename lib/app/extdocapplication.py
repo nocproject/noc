@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,9 +30,9 @@ from noc.sa.interfaces.base import (
 from noc.lib.validators import is_int, is_uuid
 from noc.main.models.permission import Permission
 from noc.core.middleware.tls import get_user
-from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
+from noc.core.collection.base import Collection
 
 
 class ExtDocApplication(ExtApplication):
@@ -105,7 +105,7 @@ class ExtDocApplication(ExtApplication):
                     url="^(?P<id>[0-9a-f]{24})/json/$",
                     method=["POST"], access="create", api=True)
         if self.json_collection:
-            self.field_is_builtin = self._field_is_builtin
+            self.bulk_fields += [self._bulk_field_is_builtin]
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -456,11 +456,17 @@ class ExtDocApplication(ExtApplication):
         Collection.install(o.to_json())
         return True
 
-    def _field_is_builtin(self, o):
+    def _bulk_field_is_builtin(self, data):
         """
-        Expose is_builtin field for JSON collections
+        Apply is_builtin field
+        :param data:
+        :return:
         """
-        return bool(CollectionCache.objects.filter(uuid=o.uuid))
+        builtins = Collection.get_builtins(self.json_collection)
+        for x in data:
+            u = x.get("uuid")
+            x["is_builtin"] = u and u in builtins
+        return data
 
     @view(url="^actions/group_edit/$", method=["POST"],
           access="update", api=True)
