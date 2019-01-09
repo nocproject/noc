@@ -1,0 +1,49 @@
+{
+  "$metric": "Interface | DOM | RxPower",
+  "$type": "match",
+  "$matchers": {
+    "is_BS": {
+      "platform": {
+        "$regex": "BS"
+      }
+    },
+    "is_EAU": {
+      "platform": {
+        "$regex": "EAU"
+      }
+    }
+  },
+  "$match": [{
+    "$match": "is_BS",
+    "$type": "oids",
+    "oids": [{
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.14546.3.8.1.1.13.1.0",
+      "path": ["","","", "Input 1"],
+      "type": "gauge",
+      "scale": "scale(0.1)"
+    },{
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.14546.3.8.1.1.13.2.0",
+      "path": ["","","", "Input 2"],
+      "type": "gauge",
+      "scale": "scale(0.1)"
+    }]
+  },{
+    "$match": "is_EAU",
+    "$type": "oids",
+    "oids": [{
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.35702.3.5.2.2.0",
+      "path": ["","","", "Input 1"],
+      "type": "gauge",
+      "scale": "scale(0.1)"
+    },{
+      "$type": "oid",
+      "oid": "1.3.6.1.4.1.35702.3.5.2.3.0",
+      "path": ["","","", "Input 2"],
+      "type": "gauge",
+      "scale": "scale(0.1)"
+    }]
+  }]
+}
