@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ELTEX",
+    "name": "MES-2124P",
+    "$collection": "inv.platforms",
+    "uuid": "71c89a34-1861-4f8a-b2ff-6f5f55f9dd18",
+    "snmp_sysobjectid": "1.3.6.1.4.1.35265.1.59"
+}
