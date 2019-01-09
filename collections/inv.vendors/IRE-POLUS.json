@@ -1,0 +1,8 @@
+{
+    "name": "IRE-Polus",
+    "uuid": "f176e3f4-d0e4-4ca9-af3a-23a7901a0a03",
+    "full_name": "NTO IRE-Polus",
+    "code": ["IRE-POLUS"],
+    "site": "https://www.ipgphotonics.com/",
+    "$collection": "inv.vendors"
+}
