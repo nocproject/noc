@@ -112,7 +112,7 @@ class Platform(Document):
     def to_json(self):
         r = {
             "$collection": self._meta["json_collection"],
-            "vendor__name": self.vendor.name,
+            "vendor__code": self.vendor.code[0],
             "name": self.name,
             "uuid": self.uuid
         }
@@ -134,25 +134,26 @@ class Platform(Document):
             "snmp_sysobjectid"])
 
     def get_json_path(self):
-        return os.path.join(self.vendor.code,
-                            "%s.json" % self.code)
+        return os.path.join(self.vendor.code[0],
+                            "%s.json" % self.name.replace("/", "_"))
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_ensure_cache"),
-        key=lambda s, v, n: "%s-%s" % (v.id, n),
+        key=lambda s, v, n, strict=False: "%s-%s" % (v.id, n),
         lock=lambda _: id_lock)
-    def ensure_platform(cls, vendor, name):
+    def ensure_platform(cls, vendor, name, strict=False):
         """
         Get or create platform by vendor and code
         :param vendor:
         :param name:
+        :param strict: Return None if platform is not found
         :return:
         """
         # Try to find platform
         q = Q(vendor=vendor.id, name=name) | Q(vendor=vendor.id, aliases=name)
         platform = Platform.objects.filter(q).first()
-        if platform:
+        if platform or strict:
             return platform
         # Try to create
         pu = uuid.uuid4()

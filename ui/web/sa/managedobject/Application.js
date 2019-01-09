@@ -1220,7 +1220,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     ],
                                     groupEdit: true
                                 }]
-                        }, {
+                        },
+                        {
                             xtype: "container",
                             items: [
                                 {
@@ -1232,6 +1233,24 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
+                                    ],
+                                    groupEdit: true
+                                }]
+                        },
+                        {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "denied_firmware_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("On Denied Firmware"),
+                                    allowBlank: true,
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["I", __("Ignore")],
+                                        ["s", __("Ignore&Stop")],
+                                        ["A", __("Raise Alarm")],
+                                        ["S", __("Raise Alarm&Stop")]
                                     ],
                                     groupEdit: true
                                 }]

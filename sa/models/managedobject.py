@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 12
+MANAGEDOBJECT_CACHE_VERSION = 13
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -466,6 +466,19 @@ class ManagedObject(Model):
             ("E", "Enable"),
             ("D", "Disable"),
             ("P", "Profile")
+        ],
+        default="P"
+    )
+    # Behavior on denied firmware detection
+    denied_firmware_policy = CharField(
+        "Firmware Policy",
+        max_length=1,
+        choices=[
+            ("P", "Profile"),
+            ("I", "Ignore"),
+            ("s", "Ignore&Stop"),
+            ("A", "Raise Alarm"),
+            ("S", "Raise Alarm&Stop")
         ],
         default="P"
     )
@@ -1495,6 +1508,11 @@ class ManagedObject(Model):
             return self.object_profile.address_resolution_policy
         else:
             return self.address_resolution_policy
+
+    def get_denied_firmware_policy(self):
+        if self.denied_firmware_policy == "P":
+            return self.object_profile.denied_firmware_policy
+        return self.denied_firmware_policy
 
     def get_full_fqdn(self):
         if not self.fqdn:
