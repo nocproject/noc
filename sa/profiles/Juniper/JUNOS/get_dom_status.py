@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,10 +25,10 @@ class Script(BaseScript):
         r"Module voltage\s+:\s+(?P<volt>\S+) V")
     rx_bias = re.compile(r"Laser bias current\s+:\s+(?P<bias>\S+) mA")
     rx_tx_dbm = re.compile(
-        r"Laser output power\s+:\s+\S+ mW / (?P<tx_dbm>\S+) dBm")
+        r"Laser output power\s+:\s+\S+ mW / (?P<tx_dbm>\S+|\- Inf) dBm")
     rx_rx_dbm = re.compile(
         r"(?:Laser rx|Receiver signal average optical) power\s+:\s+\S+ mW "
-        r"/ (?P<rx_dbm>\S+) dBm")
+        r"/ (?P<rx_dbm>\S+|\- Inf) dBm")
 
     def execute(self, interface=None):
         r = []
@@ -47,7 +47,11 @@ class Script(BaseScript):
                 voltage_v = 0
             current_ma = self.rx_bias.search(I).group("bias")
             optical_tx_dbm = self.rx_tx_dbm.search(I).group("tx_dbm")
+            if optical_tx_dbm == "- Inf":
+                optical_tx_dbm = None
             optical_rx_dbm = self.rx_rx_dbm.search(I).group("rx_dbm")
+            if optical_rx_dbm == "- Inf":
+                optical_rx_dbm = None
             r += [{
                 "interface": name,
                 "temp_c": temp_c,

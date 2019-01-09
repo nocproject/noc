@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_mpls_vpn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,20 +21,20 @@ class Script(BaseScript):
         r"(?P<name>\S+?):\n"
         r"(?:  Description: (?P<description>.+?)\n)?"
         r"  Router ID: \S+\n"
-        r"  Type: (?P<type>\S+)\s+\S*\s+State:\s+"
-        r"(?P<status>Active|Inactive)\s*\n"
+        r"  Type: (?P<type>\S+)\s+\S*\s+State:\s+(?P<status>Active|Inactive)\s*\n"
         r"  Interfaces:\n"
         r"(?P<ifaces>(?:    \S+\n)*)"
-        r"  Route-distinguisher: (?P<rd>\S+)\s*\n"
+        r"(  Route-distinguisher: (?P<rd>\S+)\s*\n)?"
         r"(  Vrf-import: \[(?P<vrf_import>.+)\]\s*\n)?"
         r"(  Vrf-export: \[(?P<vrf_export>.+)\]\s*\n)?",
         re.MULTILINE | re.IGNORECASE
     )
-    rx_vrf_target = re.compile("target:(?P<rd>\d+:\d+)")
+    rx_vrf_target = re.compile(r"target:(?P<rd>\d+:\d+)")
     type_map = {
         "vrf": "VRF",
         "vpls": "VPLS",
-        "l2vpn": "VLL"
+        "l2vpn": "VLL",
+        "evpn": "EVPN"
     }
 
     def execute(self, **kwargs):

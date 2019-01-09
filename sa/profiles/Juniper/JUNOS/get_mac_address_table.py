@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+"
-        r"(?P<type>Learn|Static|S|D|L|P)\s+"
+        r"(?P<type>Learn|Static|S|D|L|P)(?:,SE)?\s+"
         r"[^ ]+\s+(?P<interfaces>.*)$"
     )
 
@@ -60,7 +60,7 @@ class Script(BaseScript):
                         "s": "S",  # static
                         "l": "D",  # locally learned
                         "p": "S",  # Persistent static
-                        # "se": "s",  # statistics enabled
+                        # "se": "s",  # statistics enabled - already in regexp
                         # "nm": "s",  # non configured MAC
                         # "r": "s",  # remote PE MAC
                         # "o": "s"  # ovsdb MAC
