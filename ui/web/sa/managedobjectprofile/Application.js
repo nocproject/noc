@@ -510,6 +510,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "event_processing_policy",
                                     xtype: "combobox",
+                                    tooltip: __("Proccessed syslog/snmp trap message to Classifier service <br/>" +
+                                        'E - Send message to Classifier<br/>' +
+                                        'D - Do not send message to Clissifier'),
                                     labelWidth: 150,
                                     fieldLabel: __("Event Policy"),
                                     store: [
@@ -518,7 +521,10 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ],
                                     value: "E",
                                     allowBlank: false,
-                                    uiStyle: "medium"
+                                    uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     name: "weight",
@@ -531,6 +537,10 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "syslog_archive_policy",
                                     xtype: "combobox",
+                                    tooltip: __("Enable send syslog message to ClickHouse </b>syslog</b> table. <br/>" +
+                                        "May be overwritten by ManageObject <b>syslog_archive_policy</b> setting. <br/>" +
+                                        'E - Send syslog message to ClickHouse<br/>' +
+                                        'D - Do not send syslog message to ClickHouse'),
                                     labelWidth: 150,
                                     fieldLabel: __("Syslog Archive Policy"),
                                     store: [
@@ -539,7 +549,10 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ],
                                     value: "D",
                                     allowBlank: false,
-                                    uiStyle: "medium"
+                                    uiStyle: "medium",
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
                             ]
                         },
@@ -698,10 +711,15 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "caps_profile",
                                             xtype: "sa.capsprofile.LookupField",
+                                            tooltip: __("Set which CAPS will be check in Caps discovery. <br/>" +
+                                                'Service Activation -> Setup -> Caps Profiles'),
                                             fieldLabel: __("Caps Profile"),
                                             allowBlank: false,
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryCaps.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
                                             }
                                         },
                                         {
@@ -835,11 +853,17 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "neighbor_cache_ttl",
                                                     xtype: "numberfield",
+                                                    tooltip: __("Cache neighbors (get_X_neighbors script result). <br/>" +
+                                                        'When information cached script not execute on device <br/>' +
+                                                        '0 - do not cache'),
                                                     fieldLabel: __("Cache neighbors for"),
                                                     allowBlank: false,
                                                     labelWidth: 130,
                                                     uiStyle: "small",
-                                                    align: "right"
+                                                    align: "right",
+                                                    listeners: {
+                                                        render: me.addTooltip
+                                                    }
                                                 },
                                                 {
                                                     xtype: "displayfield",
@@ -857,6 +881,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "new_platform_creation_policy",
                                             xtype: "combobox",
+                                            tooltip: __("Action when discovery new platform on version discovery. <br/>" +
+                                                'Create - Create platform and set it on device<br/>' +
+                                                'Alarm - Do not create platform and raise alarm'),
                                             fieldLabel: __("On New Platform"),
                                             store: [
                                                 ["C", __("Create")],
@@ -866,11 +893,20 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: false,
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryVersion.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
                                             }
                                         },
                                         {
                                             name: "denied_firmware_policy",
                                             xtype: "combobox",
+                                            tooltip: __("Action when discovery firmware denied on FirmwarePolice." +
+                                                "Inventory -> Setup -> FirmwarePolicy <br/>" +
+                                                'Ignore - Ignore and do next discovery<br/>' +
+                                                'Ignore&Stop - Ignore and stop discovery<br/>' +
+                                                'Raise Alarm - Raise alarm on ManagedObject and do next discovery<br/>' +
+                                                'Raise Alarm&Stop - Raise alarm on ManagedObject and stop discovery'),
                                             fieldLabel: __("On Denied Firmware"),
                                             store: [
                                                 ["I", __("Ignore")],
@@ -882,6 +918,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: false,
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryVersion.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
                                             }
                                         }
                                     ]
