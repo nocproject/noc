@@ -94,6 +94,8 @@ class Script(BaseScript):
                     iface["type"] = "tunnel"
                 elif ifname.startswith("Loop"):
                     iface["type"] = "loopback"
+                elif ifname.startswith("vpls_dev"):
+                    iface["type"] = "other"
                 # proccess LLDP
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
