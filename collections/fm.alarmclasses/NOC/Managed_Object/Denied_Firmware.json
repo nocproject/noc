@@ -1,0 +1,25 @@
+{
+    "name": "NOC | Managed Object | Denied Firmware",
+    "$collection": "fm.alarmclasses",
+    "uuid": "cf669419-5519-476e-80fd-ba7b53ec5511",
+    "desciption": "Firmware version is denied to use by policy",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarms"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message "
+        }
+    ],
+    "subject_template": "{{ alarm.vars.message }}",
+    "body_template": "Firmware version {{ alarm.managed_object.version }} on managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}) is denied by policy.",
+    "symptoms": "",
+    "probable_causes": "Installed firmware on device is denied by system policy.",
+    "recommended_actions": "Update firmware on device.",
+    "recover_time": 300
+}
