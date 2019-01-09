@@ -1,0 +1,13 @@
+{
+    "name": "IRE-Polus | EAU sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c8511081-89a9-4471-9c90-aa2f6b199eea",
+    "description": null,
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35702.3.5",
+    "action": "match",
+    "profile__name": "IRE-Polus.Taros"
+}
