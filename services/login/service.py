@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Login service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -122,8 +122,8 @@ class LoginService(UIService):
         return r
 
     @cachetools.cachedmethod(operator.attrgetter("_apikey_cache"))
-    def get_api_access(self, key):
-        return APIKey.get_name_and_access_str(key)
+    def get_api_access(self, key, ip):
+        return APIKey.get_name_and_access_str(key, ip)
 
 
 if __name__ == "__main__":

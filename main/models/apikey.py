@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # APIKey model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,8 @@ import datetime
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, DateTimeField, ListField,
                                 EmbeddedDocumentField)
+# NOC modules
+from noc.core.acl import match
 
 
 class APIAccess(EmbeddedDocument):
@@ -22,6 +24,17 @@ class APIAccess(EmbeddedDocument):
 
     def __unicode__(self):
         return "%s:%s" % (self.api, self.role)
+
+
+class APIAccessACL(EmbeddedDocument):
+    prefix = StringField()
+    is_active = BooleanField(default=True)
+    description = StringField()
+
+    def __unicode__(self):
+        if self.is_active:
+            return self.prefix
+        return "%s (inactive)" % self.prefix
 
 
 class APIKey(Document):
@@ -39,15 +52,18 @@ class APIKey(Document):
     key = StringField(unique=True)
     # Access settings
     access = ListField(EmbeddedDocumentField(APIAccess))
+    # Address restrictions
+    acl = ListField(EmbeddedDocumentField(APIAccessACL))
 
     def __unicode__(self):
         return self.name
 
     @classmethod
-    def get_name_and_access(cls, key):
+    def get_name_and_access(cls, key, ip=None):
         """
         Return access settings for key and key name
         :param key: API key
+        :param ip: IP address to check against ACL
         :return: (Name, [(api, role), ...]. Name is None for denied permissions
         """
         # Find key
@@ -64,6 +80,12 @@ class APIKey(Document):
         if expires and expires < datetime.datetime.now():
             # Expired
             return None, []
+        # Check ACL
+        if ip:
+            acl = doc.get("acl")
+            if acl and not match((a["prefix"] for a in acl if a.get("is_active")), ip):
+                # Forbidden
+                return None, []
         # Process key access
         access = doc.get("access", [])
         r = []
@@ -72,33 +94,34 @@ class APIKey(Document):
         return doc["name"], r
 
     @classmethod
-    def get_access(cls, key):
+    def get_access(cls, key, ip=None):
         """
         Return access settings for key
         :param key: API key
+        :param ip: IP address to check against ACL
         :return: List of (api, role). Empty list for denied permissions
         """
-        return cls.get_name_and_access(key)[1]
+        return cls.get_name_and_access(key, ip)[1]
 
     @classmethod
-    def get_access_str(cls, key):
+    def get_access_str(cls, key, ip=None):
         """
         Return access settings as string
         :param key: API key
+        :param ip: IP address to check against ACL
         :return: String of '<api>:<role>,<api>:<role>,...'
         """
-        r = ["%s:%s" % a for a in cls.get_access(key)]
-        return str(",".join(r))
+        return str(",".join("%s:%s" % a for a in cls.get_name_and_access(key, ip)[1]))
 
     @classmethod
-    def get_name_and_access_str(cls, key):
+    def get_name_and_access_str(cls, key, ip=None):
         """
         Return key name and access settings as string
-        :param key:
+        :param key: API key
+        :param ip: IP address to check against ACL
         :return:
         """
-        name, permissions = cls.get_name_and_access(key)
+        name, permissions = cls.get_name_and_access(key, ip)
         if not name:
             return None, ""
-        r = ["%s:%s" % a for a in permissions]
-        return name, str(",".join(r))
+        return name, str(",".join("%s:%s" % a for a in permissions))
