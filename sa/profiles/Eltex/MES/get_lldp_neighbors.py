@@ -8,12 +8,16 @@
 
 # Python modules
 import re
+import six
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
+# from noc.core.mib import mib
+from noc.core.mac import MAC
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -37,52 +41,74 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
+    def get_local_iface(self):
+        r = {}
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
+        # Get LocalPort Table
+        for port_num, port_subtype, port_id, port_descr in self.snmp.get_tables(
+                [mib["LLDP-MIB::lldpLocPortIdSubtype"],
+                 mib["LLDP-MIB::lldpLocPortId"],
+                 mib["LLDP-MIB::lldpLocPortDesc"]]):
+            if port_subtype == 1:
+                # Iface alias
+                iface_name = port_descr
+            elif port_subtype == 3:
+                # Iface MAC address
+                raise NotImplementedError()
+            elif port_subtype == 7 and port_id.isdigit():
+                # Iface local (ifindex)
+                iface_name = names[int(port_id)]
+            else:
+                # Iface local
+                iface_name = port_id
+            r[port_num] = {"local_interface": iface_name,
+                           "local_interface_subtype": port_subtype}
+        if not r:
+            self.logger.warning("Not getting local LLDP port mappings. Check 1.0.8802.1.1.2.1.3.7 table")
+            raise NotImplementedError()
+        return r
+
+    def execute_snmp(self):
+        neighb = (
+            "remote_chassis_id_subtype", "remote_chassis_id",
+            "remote_port_subtype", "remote_port",
+            "remote_port_description", "remote_system_name"
+        )
+        r = []
+        local_ports = self.get_local_iface()
+        if self.has_snmp():
+            for v in self.snmp.get_tables([mib["LLDP-MIB::lldpRemLocalPortNum"],
+                                           mib["LLDP-MIB::lldpRemChassisIdSubtype"],
+                                           mib["LLDP-MIB::lldpRemChassisId"],
+                                           mib["LLDP-MIB::lldpRemPortIdSubtype"],
+                                           mib["LLDP-MIB::lldpRemPortId"],
+                                           mib["LLDP-MIB::lldpRemPortDesc"],
+                                           mib["LLDP-MIB::lldpRemSysName"]
+                                           ], bulk=True):
+                if v:
+                    neigh = dict(zip(neighb, v[2:]))
+                    # cleaning
+                    if neigh["remote_port_subtype"] == 2:
+                        neigh["remote_port_subtype"] = 1
+                    neigh["remote_port"] = neigh["remote_port"].strip(" \x00")  # \x00 Found on some devices
+                    if neigh["remote_chassis_id_subtype"] == 4:
+                        neigh["remote_chassis_id"] = \
+                            MAC(neigh["remote_chassis_id"])
+                    if neigh["remote_port_subtype"] == 3:
+                        try:
+                            neigh["remote_port"] = MAC(neigh["remote_port"])
+                        except ValueError:
+                            self.logger.warning("Bad MAC address on Remote Neighbor: %s", neigh["remote_port"])
+                    r += [{
+                        "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
+                        # @todo if local interface subtype != 5
+                        # "local_interface_id": 5,
+                        "neighbors": [neigh]
+                    }]
+        return r
+
     def execute_cli(self):
         r = []
-        """
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                # lldpRemLocalPortNum
-                # lldpRemChassisIdSubtype lldpRemChassisId
-                # lldpRemPortIdSubtype lldpRemPortId
-                # lldpRemSysName lldpRemSysCapEnabled
-                for v in self.snmp.get_tables(["1.0.8802.1.1.2.1.4.1.1.2",
-                                               "1.0.8802.1.1.2.1.4.1.1.4",
-                                               "1.0.8802.1.1.2.1.4.1.1.5",
-                                               "1.0.8802.1.1.2.1.4.1.1.6",
-                                               "1.0.8802.1.1.2.1.4.1.1.7",
-                                               "1.0.8802.1.1.2.1.4.1.1.9",
-                                               "1.0.8802.1.1.2.1.4.1.1.12"
-                                               ], bulk=True):
-                    local_interface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." +
-                                                    v[1], cached=True)
-                    remote_chassis_id_subtype = v[2]
-                    remotechassisid = ":".join(["%02x" % ord(c) for c in v[3]])
-                    remote_port_subtype = v[4]
-                    if remote_port_subtype == 7:
-                        remote_port_subtype = 5
-                    remote_port = v[5]
-                    remote_system_name = v[6]
-                    remote_capabilities = v[7]
-
-                    i = {"local_interface": local_interface, "neighbors": []}
-                    n = {
-                        "remote_chassis_id_subtype": remote_chassis_id_subtype,
-                        "remote_chassis_id": remotechassisid,
-                        "remote_port_subtype": remote_port_subtype,
-                        "remote_port": remote_port,
-                        "remote_capabilities": remote_capabilities,
-                        }
-                    if remote_system_name:
-                        n["remote_system_name"] = remote_system_name
-                    i["neighbors"].append(n)
-                    r.append(i)
-                return r
-
-            except self.snmp.TimeOutError:
-                pass
-        """
         # Fallback to CLI
         lldp = self.cli("show lldp neighbors")
         for link in parse_table(lldp, allow_wrap=True):
@@ -146,10 +172,7 @@ class Script(BaseScript):
                 match = self.rx_detail.search(c)
                 if match:
                     remote_chassis_id = match.group("dev_id")
-                    if (
-                        is_ipv4(remote_chassis_id) or
-                        is_ipv6(remote_chassis_id)
-                    ):
+                    if is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id):
                         remote_chassis_id_subtype = 5
                     elif is_mac(remote_chassis_id):
                         remote_chassis_id = MACAddressParameter().clean(
