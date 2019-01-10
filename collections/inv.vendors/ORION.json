@@ -1,0 +1,8 @@
+{
+    "name": "Orion",
+    "uuid": "5a7b6fe1-9a3e-4223-b7d4-14221fe1558d",
+    "full_name": "Orion Networks",
+    "code": ["ORION"],
+    "site": "http://www.orionnetworksit.com/",
+    "$collection": "inv.vendors"
+}
