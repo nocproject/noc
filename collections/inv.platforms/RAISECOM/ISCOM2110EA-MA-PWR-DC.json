@@ -1,0 +1,7 @@
+{
+    "vendor__code": "RAISECOM",
+    "name": "ISCOM2110EA-MA-PWR-DC",
+    "$collection": "inv.platforms",
+    "uuid": "7bc016f3-93a4-4830-a5c0-c39408c03f77",
+    "snmp_sysobjectid": "1.3.6.1.4.1.8886.6.83"
+}

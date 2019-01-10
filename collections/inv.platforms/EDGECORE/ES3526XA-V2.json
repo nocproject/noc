@@ -1,0 +1,7 @@
+{
+    "vendor__code": "EDGECORE",
+    "name": "ES3526XA-V2",
+    "$collection": "inv.platforms",
+    "uuid": "71fe63a2-0c4e-4eb0-95c3-e81f1dfe65bd",
+    "snmp_sysobjectid": "1.3.6.1.4.1.259.8.1.5"
+}

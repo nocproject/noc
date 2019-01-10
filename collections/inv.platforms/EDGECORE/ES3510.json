@@ -1,0 +1,7 @@
+{
+    "vendor__code": "EDGECORE",
+    "name": "ES3510",
+    "$collection": "inv.platforms",
+    "uuid": "3b866654-a2ba-4246-8b6e-ab0af20ed6ea",
+    "snmp_sysobjectid": "1.3.6.1.4.1.259.10.1.27.102"
+}

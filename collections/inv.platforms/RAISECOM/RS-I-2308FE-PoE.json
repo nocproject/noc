@@ -1,0 +1,7 @@
+{
+    "vendor__code": "RAISECOM",
+    "name": "RS-I-2308FE-PoE",
+    "$collection": "inv.platforms",
+    "uuid": "97b9273b-bb01-4243-b45b-6218a751858a",
+    "snmp_sysobjectid": "1.3.6.1.4.1.8886.26.502"
+}

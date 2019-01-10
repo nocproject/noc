@@ -1,0 +1,7 @@
+{
+    "vendor__code": "RAISECOM",
+    "name": "ISCOM2608G-2GE-PWR-AC",
+    "$collection": "inv.platforms",
+    "uuid": "5a002ebc-227d-42c0-9ab6-35edb76d086a",
+    "snmp_sysobjectid": "1.3.6.1.4.1.8886.6.214"
+}
