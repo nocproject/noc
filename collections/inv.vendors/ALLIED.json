@@ -1,0 +1,8 @@
+{
+    "name": "ALLIED",
+    "uuid": "0c0a06ef-9e10-46fd-b767-214d0bbd6f8a",
+    "full_name": "Allied Telesis",
+    "code": ["ALLIED TELESIS", "ALLIED"],
+    "site": "http://www.alliedtelesis.com/",
+    "$collection": "inv.vendors"
+}
