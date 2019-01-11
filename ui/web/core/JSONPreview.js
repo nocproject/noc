@@ -14,12 +14,11 @@ Ext.define("NOC.core.JSONPreview", {
     restUrl: null,
     previewName: null,
     apiPrefix: null,
-    getnocAPIPrefix: "http://127.0.0.1:9990",
+    getnocAPIPrefix: "https://api.getnoc.com",
     apiTokenURL: null,
     gitlabAPIToken: null,
     gitlabUsername: null,
-    gitlabProjectName: "collections",
-    gitlabProjectId: null,
+    gitlabProjectId: NOC.settings.collections.project_id,
     sharedFilePath: null,
     sharedFileExists: false,
     sharedContent: false,
@@ -275,8 +274,9 @@ Ext.define("NOC.core.JSONPreview", {
         }).then(function(result) {
             return me.createMergeRequest()
         }).then(function(result) {
-            NOC.info(result);
-            me.shareProgress.hide()
+            NOC.info("Shared");
+            me.shareProgress.hide();
+            window.open(result, "_blank")
         }).catch(function(err) {
             NOC.error(err);
             me.shareProgress.hide()
@@ -393,29 +393,6 @@ Ext.define("NOC.core.JSONPreview", {
             })
         })
     },
-    // @todo: Remove
-    checkProject: function() {
-        var me = this;
-        me.setSharingState(me.SS_CHECK_PROJECT);
-        return new Ext.Promise(function(resolve, reject) {
-            Ext.Ajax.request({
-                url: me.apiPrefix + "projects/" + me.gitlabProjectId,
-                method: "GET",
-                headers: {
-                    "Private-Token": me.gitlabAPIToken
-                },
-                scope: me,
-                success: function (response) {
-                    var data = Ext.decode(response.responseText);
-                    resolve("OK")
-                },
-                failure: function (response) {
-                    // @todo: Check 404, fork
-                    reject("Cannot access GitLab project")
-                }
-            })
-        })
-    },
     //
     checkGroupAccess: function() {
         var me = this;
@@ -504,7 +481,6 @@ Ext.define("NOC.core.JSONPreview", {
                 },
                 scope: me,
                 success: function (response) {
-                    var data = Ext.decode(response.responseText);
                     resolve()
                 },
                 failure: function (response) {
@@ -561,7 +537,8 @@ Ext.define("NOC.core.JSONPreview", {
                 },
                 scope: me,
                 success: function (response) {
-                    resolve("Shared")
+                    var data = Ext.decode(response.responseText);
+                    resolve(data.web_url)
                 },
                 failure: function (response) {
                     reject("Cannot create merge request")
