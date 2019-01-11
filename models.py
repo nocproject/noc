@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NOC models lazy loading and utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -82,6 +82,7 @@ _MCACHE = {}
 _MODELS = {
     # main models
     "main.APIKey": "noc.main.models.apikey.APIKey",
+    "main.APIToken": "noc.main.models.apitoken.APIToken",
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
     "main.CHPolicy": "noc.main.models.chpolicy.CHPolicy",
