@@ -16,20 +16,21 @@ Ext.define("NOC.fm.alarm.view.grids.DisplayFilter", {
         "NOC.fm.alarm.view.grids.DurationFilter"
     ],
     border: false,
+    defaults: {
+        margin: "5 0"
+    },
     items: [
+        {
+            xtype: "fm.alarm.multipanel",
+            title: __("Service Profile"),
+            searchStore: "fm.profile",
+            bind: {value: "{displayFilter.hasProfiles}"}
+        },
         {
             xtype: "fm.alarm.filter.duration",
             fieldLabel: __("Recent Alarms (time/opacity)"),
             labelAlign: "top",
-            margin: "5 0",
             bind: {value: "{displayFilter.duration}"}
-        },
-        {
-            xtype: "fm.alarm.multipanel",
-            title: __("Profiles"),
-            margin: "5 0",
-            searchStore: "fm.profile",
-            bind: {value: "{displayFilter.hasProfiles}"}
         }
     ]
 });
