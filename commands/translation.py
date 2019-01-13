@@ -25,7 +25,7 @@ class Command(BaseCommand):
             "messages": [
                 "services/bi/**.py",
                 "services/bi/**.html.j2",
-                "core/bi/models/**.py"
+                "bi/models/**.py"
             ],
             "messages_js": ["ui/bi/bi.js"]
         },
