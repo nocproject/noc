@@ -60,6 +60,7 @@ class ManagedObjectDataStream(DataStream):
         cls._apply_chassis_id(mo, r)
         cls._apply_interfaces(mo, r)
         cls._apply_resource_groups(mo, r)
+        cls._apply_asset(mo, r)
         return r
 
     @staticmethod
@@ -303,6 +304,51 @@ class ManagedObjectDataStream(DataStream):
                 "technology": qs(rg.technology.name),
                 "static": g in static_groups
             }]
+        return r
+
+    @staticmethod
+    def _apply_asset(mo, r):
+        asset = [ManagedObjectDataStream._get_asset(o) for o in mo.get_inventory()]
+        if not asset:
+            return
+        r["asset"] = asset
+
+    @staticmethod
+    def _get_asset(o):
+        rev = o.get_data("asset", "revision")
+        if rev == "None":
+            rev = ""
+        r = {
+            "id": str(o.id),
+            "model": {
+                "id": str(o.model.id),
+                "name": str(o.model.name),
+                "vendor": {
+                    "id": str(o.model.vendor.id),
+                    "name": str(o.model.vendor.name)
+                }
+            },
+            "serial": o.get_data("asset", "serial") or "",
+            "revision": rev,
+            "data": o.data or {},
+            "slots": []
+        }
+        for n in o.model.connections:
+            if n.direction == "i":
+                c, r_object, _ = o.get_p2p_connection(n.name)
+                r["slots"] += [{
+                    "name": n.name,
+                    "direction": n.direction,
+                    "protocols": [str(p) for p in n.protocols]
+                }]
+                if c:
+                    r["slots"][-1]["asset"] = ManagedObjectDataStream._get_asset(r_object)
+            elif n.direction == "s":
+                r["slots"] += [{
+                    "name": n.name,
+                    "direction": n.direction,
+                    "protocols": [str(p) for p in n.protocols]
+                }]
         return r
 
     @classmethod
