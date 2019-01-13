@@ -228,6 +228,8 @@ class Script(BaseScript):
             my_dict = {}
             if iftypeGroup in iface:
                 match_obj = self.re_int_desc_group.search(iface)
+                if "mac" in my_dict and not my_dict["mac"]:
+                    my_dict.pop("mac")
                 if match_obj:
                     my_dict = match_obj.groupdict()
                     my_dict['type'] = 'other'
@@ -235,6 +237,8 @@ class Script(BaseScript):
 
             elif iftypeSubsc in iface:
                 match_obj = self.re_int_desc_subs.search(iface)
+                if "mac" in my_dict and not my_dict["mac"]:
+                    my_dict.pop("mac")
                 my_dict = match_obj.groupdict()
                 my_dict['subinterfaces'] = [{}]
                 my_dict['type'] = 'loopback'
@@ -275,6 +279,8 @@ class Script(BaseScript):
                 match_obj = self.re_int_desc_vprn.search(iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
+                    if "mac" in my_dict and not my_dict["mac"]:
+                        my_dict.pop("mac")
                     if 'subinterfaces' in my_dict:
                         if my_dict['subinterfaces'].startswith('sdp'):
                             my_dict['type'] = 'tunnel'
@@ -291,7 +297,7 @@ class Script(BaseScript):
                                     my_dict['vlan_ids'] = [int(up_tag), int(down_tag)]
                                 elif "*" in vlans:
                                     my_dict['vlan_ids'] = []
-                                else:
+                                elif vlans != '0':
                                     my_dict['vlan_ids'] = [int(vlans)]
 
                         my_dict['subinterfaces'] = [
@@ -341,7 +347,7 @@ class Script(BaseScript):
                             my_sub['enabled_afi'] += ['MPLS']
                         else:
                             my_sub['enabled_afi'] = ['MPLS']
-                    if 'mac' in my_dict:
+                    if 'mac' in my_dict and my_dict['mac']:
                             my_sub['mac'] = my_dict['mac']
                     if 'mtu' in my_dict:
                             my_sub['mtu'] = my_dict['mtu']
@@ -535,7 +541,7 @@ class Script(BaseScript):
                                 s['vlan_ids'] = [int(up_tag), int(down_tag)]
                             elif "*" in vlans:
                                 s['vlan_ids'] = []
-                            else:
+                            elif vlans != '0':
                                 s['vlan_ids'] = [int(vlans)]
                             my_dict['subinterfaces'].append(s)
                 my_dict['oper_status'] = self.fix_status(my_dict['oper_status'])
