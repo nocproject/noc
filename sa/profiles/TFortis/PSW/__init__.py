@@ -14,6 +14,9 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "TFortis.PSW"
     pattern_username = "User Name>"
+    username_submit = "\r\n"
+    password_submit = "\r\n"
+    command_submit = "\r\n"
     pattern_password = "User Password>"
     pattern_prompt = r"^TFortis .+#"
     command_exit = "exit"
