@@ -137,7 +137,7 @@ class BaseCommand(object):
             choices=[
                 "critical", "error", "warning", "info", "debug", "none"
             ],
-            default="none"
+            default="info"
         )
         group.add_argument(
             "--quiet",
