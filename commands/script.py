@@ -265,7 +265,8 @@ class Command(BaseCommand):
             row = sd.split("\t")
             if row[6] not in cli_svc:
                 continue
-            commands.add(row[12].decode("string_escape").strip())
+            # Delete last \\n symbol and add command
+            commands.add(row[12][:-3].decode("string_escape").strip())
         # Update specs
         s_name = "cli_%s" % script.name.rsplit(".", 1)[-1]
         names = set()
@@ -347,7 +348,7 @@ class JSONObject(object):
         self.port = data.get("port")
         self.creds = data.get("credentials", {})
         self.caps = data.get("caps")
-        self.remote_path = None
+        self.remote_path = self.creds.get("path")
         self.to_raise_privileges = data.get("raise_privileges", True)
         self.access_preference = data.get("access_preference", "CS")
         self.pool = PoolStub("default")
