@@ -39,6 +39,6 @@ class ReportVPNStatusApplication(SimpleReport):
         #
         return self.from_dataset(
             title=self.title,
-            columns=[_("Managed. Object"), _("Interfaces")],
+            columns=[_("Managed Object"), _("Interfaces")],
             data=data
         )
