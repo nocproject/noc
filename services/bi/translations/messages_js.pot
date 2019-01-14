@@ -1,15 +1,15 @@
 # Translations template for The NOC Project.
-# Copyright (C) 2017 The NOC Project
+# Copyright (C) 2019 The NOC Project
 # This file is distributed under the same license as the The NOC Project
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-02-28 22:51+0300\n"
+"POT-Creation-Date: 2019-01-13 11:20+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,235 +18,443 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: ui/bi/bi.js:9
+#: ui/bi/bi.js:1
 msgid "Previous Month"
 msgstr ""
 
-#: ui/bi/bi.js:10
+#: ui/bi/bi.js:1
 msgid "Next Month"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "January"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "February"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "March"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "April"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "May"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "June"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "July"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "August"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "September"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "October"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "November"
 msgstr ""
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:1
 msgid "December"
 msgstr ""
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:1
 msgid "Sunday"
 msgstr ""
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:1
 msgid "Monday"
 msgstr ""
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:1
 msgid "Tuesday"
 msgstr ""
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:1
 msgid "Wednesday"
 msgstr ""
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:1
 msgid "Thursday"
 msgstr ""
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:1
 msgid "Friday"
 msgstr ""
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:1
 msgid "Saturday"
 msgstr ""
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:1
 msgid "Sun"
 msgstr ""
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:1
 msgid "Mon"
 msgstr ""
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:1
 msgid "Tue"
 msgstr ""
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:1
 msgid "Wed"
 msgstr ""
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:1
 msgid "Thu"
 msgstr ""
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:1
 msgid "Fri"
 msgstr ""
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:1
 msgid "Sat"
 msgstr ""
 
-#: ui/bi/bi.js:14
+#: ui/bi/bi.js:1
 msgid "Midnight"
 msgstr ""
 
-#: ui/bi/bi.js:15
+#: ui/bi/bi.js:1
 msgid "Noon"
 msgstr ""
 
-#: ui/bi/bi.js:74
+#: ui/bi/bi.js:1
 msgid "Filter by Field"
 msgstr ""
 
-#: ui/bi/bi.js:74
+#: ui/bi/bi.js:1
 msgid "List of fields (AND) "
 msgstr ""
 
-#: ui/bi/bi.js:74
+#: ui/bi/bi.js:1
 msgid "Filter"
 msgstr ""
 
-#: ui/bi/bi.js:81
+#: ui/bi/bi.js:1
 msgid "Field Aggregate"
 msgstr ""
 
-#: ui/bi/bi.js:81
+#: ui/bi/bi.js:1
 msgid "List of fields"
 msgstr ""
 
-#: ui/bi/bi.js:81
+#: ui/bi/bi.js:1
 msgid "Aggregate"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "Today"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "This week"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "This month"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "This year"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "Yesterday"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "Previous week"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "Previous month"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "Previous year"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "Select"
 msgstr ""
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:1
 msgid "Time Selector"
 msgstr ""
 
-#: ui/bi/bi.js:315
+#: ui/bi/bi.js:1
 msgid "Duration Intervals"
 msgstr ""
 
-#: ui/bi/bi.js:1537
-msgid "Select a field"
+#: ui/bi/bi.js:1
+msgid "Last Update"
 msgstr ""
 
-#: ui/bi/bi.js:1665
+#: ui/bi/bi.js:1
+msgid "Report not found!"
+msgstr ""
+
+#: ui/bi/bi.js:2
 msgid "Clear"
 msgstr ""
 
-#: ui/bi/bi.js:1665
+#: ui/bi/bi.js:2
 msgid "Apply"
 msgstr ""
 
-#: ui/bi/bi.js:1666
+#: ui/bi/bi.js:2
 msgid "type"
 msgstr ""
 
-#: ui/bi/bi.js:1670
+#: ui/bi/bi.js:2
 msgid "dictionary"
 msgstr ""
 
-#: ui/bi/bi.js:1768
+#: ui/bi/bi.js:2
+msgid "interval"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "periodic interval"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "not in interval"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "not in periodic"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "empty"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "not empty"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "like"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "search elements"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "pattern"
+msgstr ""
+
+#: ui/bi/bi.js:2
 msgid "Select from"
 msgstr ""
 
-#: ui/bi/bi.js:1911
-msgid "List of fields (OR)"
+#: ui/bi/bi.js:2
+msgid "not found"
 msgstr ""
 
-#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
+#: ui/bi/bi.js:2
 msgid "Condition"
 msgstr ""
 
-#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
+#: ui/bi/bi.js:2
 msgid "Value"
 msgstr ""
 
-#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
-msgid "To Value"
+#: ui/bi/bi.js:2
+msgid "End Value"
 msgstr ""
 
-#: ui/bi/bi.js:1964
+#: ui/bi/bi.js:2
+msgid "List of fields (OR)"
+msgstr ""
+
+#: ui/bi/bi.js:2
 msgid "Select a condition"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Start Value"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "empty value"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "hour is not number"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "minute is not number"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "hour is not in range 0-23"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "minute is not in range 0-59"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "bad interval"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "value is not number"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Duration by Report"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "EI Duration"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Name"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Description"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Owner"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Created"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Changed"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Loading, please wait..."
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "rows per page"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Showing"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "to"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "of"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "rows"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Search"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "No matching records found"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Hide/Show pagination"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Refresh"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Toggle"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Columns"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "All"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Export data"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Clear filters"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Select Report"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Cancel"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Open"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Save As Report"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Save"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Error"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "You must choose report!"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Ok"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Application NOC BI"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "version"
+msgstr ""
+
+#: ui/bi/bi.js:2
+msgid "Close"
 msgstr ""
 

@@ -1,15 +1,15 @@
 # Translations template for The NOC Project.
-# Copyright (C) 2016 The NOC Project
+# Copyright (C) 2019 The NOC Project
 # This file is distributed under the same license as the The NOC Project
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-08-09 09:19+0300\n"
+"POT-Creation-Date: 2019-01-13 11:20+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: ui/login/app/logic.js:19
-msgid "Failed to log in"
-msgstr ""
-
-#: ui/login/app/logic.js:23
-msgid "Failed to login"
-msgstr ""
-
-#: ui/login/app/ui.js:14
+#: ui/login/app/LoginView.js:15
 msgid "NOC Login"
 msgstr ""
 
-#: ui/login/app/ui.js:29
-msgid "Username"
+#: ui/login/app/LoginView.js:48
+msgid "Type username and password:"
 msgstr ""
 
-#: ui/login/app/ui.js:30
+#: ui/login/app/LoginView.js:55
 msgid "User"
 msgstr ""
 
-#: ui/login/app/ui.js:32
+#: ui/login/app/LoginView.js:56
 msgid "User name cannot be empty"
 msgstr ""
 
-#: ui/login/app/ui.js:38 ui/login/app/ui.js:39
+#: ui/login/app/LoginView.js:65
 msgid "Password"
 msgstr ""
 
-#: ui/login/app/ui.js:41
+#: ui/login/app/LoginView.js:66
 msgid "Password cannot be empty"
 msgstr ""
 
-#: ui/login/app/ui.js:48
+#: ui/login/app/LoginView.js:76
 msgid "Login"
 msgstr ""
 
-#: ui/login/app/ui.js:55
-msgid "Reset"
+#: ui/login/app/LoginView.js:109
+msgid "Failed to log in"
 msgstr ""
 

@@ -8,59 +8,46 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-10-29 14:43+0500\n"
+"POT-Creation-Date: 2019-01-13 11:20+0300\n"
 "PO-Revision-Date: 2016-10-29 14:50+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
-"X-Generator: Poedit 1.8.9\n"
 
-#: ui/login/app/LoginView.js:15 ui/login/app/ui.js:14
+#: ui/login/app/LoginView.js:15
 msgid "NOC Login"
 msgstr "Вход"
 
-#: ui/login/app/LoginView.js:42
+#: ui/login/app/LoginView.js:48
 msgid "Type username and password:"
 msgstr "Введите пользователя и пароль:"
 
-#: ui/login/app/LoginView.js:49 ui/login/app/ui.js:30
+#: ui/login/app/LoginView.js:55
 msgid "User"
 msgstr "Пользователь"
 
-#: ui/login/app/LoginView.js:50 ui/login/app/ui.js:32
+#: ui/login/app/LoginView.js:56
 msgid "User name cannot be empty"
 msgstr "Имя пользователя должно быть заполнено"
 
-#: ui/login/app/LoginView.js:59 ui/login/app/ui.js:38 ui/login/app/ui.js:39
+#: ui/login/app/LoginView.js:65
 msgid "Password"
 msgstr "Пароль"
 
-#: ui/login/app/LoginView.js:60 ui/login/app/ui.js:41
+#: ui/login/app/LoginView.js:66
 msgid "Password cannot be empty"
 msgstr "Пароль не может быть пустым"
 
-#: ui/login/app/LoginView.js:71 ui/login/app/ui.js:48
+#: ui/login/app/LoginView.js:76
 msgid "Login"
 msgstr "Войти"
 
-#: ui/login/app/LoginView.js:104 ui/login/app/LoginView.js:127
-#: ui/login/app/logic.js:19
+#: ui/login/app/LoginView.js:109
 msgid "Failed to log in"
 msgstr "Доступ запрещен"
-
-#: ui/login/app/logic.js:23
-msgid "Failed to login"
-msgstr "Доступ запрещен"
-
-#: ui/login/app/ui.js:29
-msgid "Username"
-msgstr "Пользователь"
-
-#: ui/login/app/ui.js:55
-msgid "Reset"
-msgstr "Сброс"
