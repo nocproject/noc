@@ -24,13 +24,13 @@ Ext.define("NOC.fm.alarm.view.grids.DurationFilterRow", {
             durationStore: {
                 fields: ["value", "text"],
                 data: [
-                    {"value": 1, "text": __("1 min")},
-                    {"value": 5, "text": __("5 min")},
-                    {"value": 10, "text": __("10 min")},
-                    {"value": 15, "text": __("15 min")},
-                    {"value": 30, "text": __("30 min")},
-                    {"value": 60, "text": __("60 min")},
-                    {"value": 1440, "text": __("1440 min")}
+                    {"value": 1, "text": "1 " + __("min")},
+                    {"value": 5, "text": "5 " + __("min")},
+                    {"value": 10, "text": "10 " + __("min")},
+                    {"value": 15, "text": "15 " + __("min")},
+                    {"value": 30, "text": "30 " + __("min")},
+                    {"value": 60, "text": "60 " + __("min")},
+                    {"value": 1440, "text": "1440 " + __("min")}
                 ]
             },
             opacityStore: {
@@ -98,7 +98,7 @@ Ext.define("NOC.fm.alarm.view.grids.DurationFilterRow", {
                     },
                     editable: false,
                     validator: function(value) {
-                        var num = Number(value.replace("min", "").trim());
+                        var num = Number(value.replace(__("min"), "").trim());
                         return !isNaN(num) && num > 0;
                     },
                     listeners: {
