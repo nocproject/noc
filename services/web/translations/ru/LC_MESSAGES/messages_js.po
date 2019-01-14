@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-01-14 20:04+0300\n"
-"PO-Revision-Date: 2019-01-14 22:09+0500\n"
+"POT-Creation-Date: 2019-01-14 21:55+0300\n"
+"PO-Revision-Date: 2019-01-14 23:58+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -442,27 +442,6 @@ msgstr "Контакт"
 msgid "Glyph"
 msgstr "Картинка"
 
-#: ui/web/crm/subscriberprofile/Application.js:89
-#: ui/web/sa/serviceprofile/Application.js:27
-#: ui/web/sa/serviceprofile/Application.js:93
-msgid "Icon"
-msgstr "Иконка"
-
-#: ui/web/crm/subscriberprofile/Application.js:96
-#: ui/web/sa/serviceprofile/Application.js:100
-msgid "Display Order"
-msgstr "Приоритет отображения"
-
-#: ui/web/crm/subscriberprofile/Application.js:104
-#: ui/web/sa/serviceprofile/Application.js:108
-msgid "Show in summary"
-msgstr "Показывать в итоге"
-
-#: ui/web/crm/subscriberprofile/Application.js:110
-#: ui/web/sa/serviceprofile/Application.js:120
-msgid "Alarm weight"
-msgstr "Вес аварии"
-
 #: ui/web/dev/quiz/Application.js:74 ui/web/dev/spec/Application.js:106
 #: ui/web/inv/inv/plugins/file/FilePanel.js:51
 #: ui/web/main/timepattern/Application.js:67
@@ -794,16 +773,15 @@ msgid "Switch Off"
 msgstr "Отключить"
 
 #: ui/web/fm/alarm/view/grids/DurationFilterRow.js:27
-msgid "1 min"
-msgstr "1 мин"
-
+#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:28
 #: ui/web/fm/alarm/view/grids/DurationFilterRow.js:29
-msgid "10 min"
-msgstr "10 мин"
-
+#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:30
+#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:31
+#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:32
 #: ui/web/fm/alarm/view/grids/DurationFilterRow.js:33
-msgid "1440 min"
-msgstr "1440 мин"
+#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:101
+msgid "min"
+msgstr "мин"
 
 #: ui/web/fm/alarm/view/grids/Grid.js:30
 msgid "Show map"
@@ -971,17 +949,6 @@ msgstr "Скрыть"
 msgid "Filters"
 msgstr "Фильтры"
 
-#: ui/web/fm/alarm/AlarmPanel.js:149 ui/web/fm/alarm/AlarmPanel.js:196
-#: ui/web/fm/alarm/view/form/Alarm.js:146 ui/web/fm/alarm/view/form/Alarm.js:187
-#: ui/web/fm/alarm/view/grids/GridViewTable.js:92
-#: ui/web/fm/alarm/view/grids/Sidebar.js:247 ui/web/fm/event/Application.js:95
-#: ui/web/fm/event/Application.js:192 ui/web/fm/event/EventPanel.js:167
-#: ui/web/sa/managedobject/AlarmPanel.js:78
-#: ui/web/sa/managedobject/FactsPanel.js:46
-#: ui/web/sa/managedobject/scripts/ShowLocalUsers.js:18
-msgid "Class"
-msgstr "Класс"
-
 #: ui/web/fm/alarm/view/grids/Sidebar.js:280
 msgid "By Date"
 msgstr "По дате"
@@ -998,22 +965,18 @@ msgstr "Отобразить последние закрытые"
 msgid "don't show"
 msgstr "Не показывать"
 
-#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:28
 #: ui/web/fm/alarm/view/grids/Sidebar.js:336
 msgid "5 min"
 msgstr "5 мин"
 
-#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:30
 #: ui/web/fm/alarm/view/grids/Sidebar.js:337
 msgid "15 min"
 msgstr "15 мин"
 
-#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:31
 #: ui/web/fm/alarm/view/grids/Sidebar.js:338
 msgid "30 min"
 msgstr "30 мин"
 
-#: ui/web/fm/alarm/view/grids/DurationFilterRow.js:32
 #: ui/web/fm/alarm/view/grids/Sidebar.js:339
 msgid "60 min"
 msgstr "60 мин"
@@ -1460,11 +1423,13 @@ msgstr ""
 msgid "Text"
 msgstr "Текст"
 
-#: ui/web/fm/alarmclass/Application.js:94 ui/web/fm/eventclass/Application.js:93
+#: ui/web/cm/errortype/Application.js:61 ui/web/fm/alarmclass/Application.js:94
+#: ui/web/fm/eventclass/Application.js:93
 msgid "Subject Template"
 msgstr "Шаблон темы"
 
-#: ui/web/fm/alarmclass/Application.js:101 ui/web/fm/eventclass/Application.js:100
+#: ui/web/cm/errortype/Application.js:67 ui/web/fm/alarmclass/Application.js:101
+#: ui/web/fm/eventclass/Application.js:100
 msgid "Body Template"
 msgstr "Шаблон содерж."
 
@@ -2115,56 +2080,6 @@ msgstr "имя_разрешения"
 msgid "Short"
 msgstr "Кртк."
 
-#: ui/web/cm/validationpolicy/Application.js:28
-#: ui/web/cm/validationpolicy/Application.js:51
-#: ui/web/cm/validationpolicy/Application.js:64
-#: ui/web/cm/validationpolicysettings/ValidationSettingsPanel.js:41
-#: ui/web/cm/validationrule/Application.js:63
-#: ui/web/cm/validationrule/Application.js:91
-#: ui/web/fm/alarm/view/grids/Sidebar.js:116
-#: ui/web/fm/alarmdiagnosticconfig/Application.js:66
-#: ui/web/fm/ignoreeventrule/Application.js:19
-#: ui/web/fm/ignorepattern/Application.js:27
-#: ui/web/fm/ignorepattern/Application.js:52
-#: ui/web/fm/reportalarmdetail/Application.js:69
-#: ui/web/fm/ttsystem/Application.js:25 ui/web/fm/ttsystem/Application.js:47
-#: ui/web/gis/area/Application.js:23 ui/web/gis/area/Application.js:64
-#: ui/web/gis/division/Application.js:42 ui/web/gis/division/Application.js:90
-#: ui/web/gis/overlay/Application.js:23 ui/web/gis/street/Application.js:35
-#: ui/web/gis/street/Application.js:73
-#: ui/web/inv/interfaceclassificationrule/Application.js:31
-#: ui/web/inv/interfaceclassificationrule/Application.js:75
-#: ui/web/inv/modelmapping/Application.js:44
-#: ui/web/inv/modelmapping/Application.js:89
-#: ui/web/inv/networksegmentprofile/Application.js:153
-#: ui/web/inv/reportifacestatus/Application.js:44
-#: ui/web/inv/reportlinkdetail/Application.js:64
-#: ui/web/main/apikey/Application.js:40 ui/web/main/apikey/Application.js:63
-#: ui/web/main/apikey/Application.js:123
-#: ui/web/main/authldapdomain/Application.js:26
-#: ui/web/main/authldapdomain/Application.js:50
-#: ui/web/main/authldapdomain/Application.js:140
-#: ui/web/main/authldapdomain/Application.js:204
-#: ui/web/main/chpolicy/Application.js:25 ui/web/main/chpolicy/Application.js:60
-#: ui/web/main/crontab/Application.js:27 ui/web/main/crontab/Application.js:55
-#: ui/web/main/customfield/Application.js:28
-#: ui/web/main/language/Application.js:26
-#: ui/web/main/reportsubscription/Application.js:28
-#: ui/web/main/resourcestate/Application.js:23
-#: ui/web/main/resourcestate/Application.js:74 ui/web/main/style/Application.js:23
-#: ui/web/main/sync/Application.js:28 ui/web/main/sync/Application.js:62
-#: ui/web/main/sync/Application.js:84
-#: ui/web/phone/numbercategory/Application.js:27
-#: ui/web/sa/managedobject/AlarmPanel.js:32
-#: ui/web/sa/managedobject/scripts/ShowLocalUsers.js:23
-#: ui/web/sa/reportobjectdetail/Application.js:59
-#: ui/web/wf/transition/Application.js:42 ui/web/wf/transition/Application.js:101
-#: ui/web/wf/wfmigration/Application.js:51 ui/web/wf/workflow/Application.js:30
-#: ui/web/wf/workflow/Application.js:48 ui/web/wf/workflow/WFEditor.js:366
-#: ui/web/wf/workflow/WFEditor.js:521
-msgid "Active"
-msgstr "Активный"
-
 #: ui/web/gis/division/Application.js:58 ui/web/gis/street/Application.js:51
 msgid "Full Path"
 msgstr "Полный путь"
@@ -2195,7 +2110,8 @@ msgstr "Шаблон карточки"
 msgid "Get JSON"
 msgstr "Получить JSON"
 
-#: ui/web/bi/dashboardlayout/Application.js:43 ui/web/dev/quiz/Application.js:49
+#: ui/web/bi/dashboardlayout/Application.js:43
+#: ui/web/cm/errortype/Application.js:51 ui/web/dev/quiz/Application.js:49
 #: ui/web/dev/spec/Application.js:63 ui/web/fm/alarmclass/Application.js:68
 #: ui/web/fm/alarmseverity/Application.js:58
 #: ui/web/fm/classificationrule/Application.js:84
@@ -2261,7 +2177,8 @@ msgstr ""
 msgid "Target Connection"
 msgstr ""
 
-#: ui/web/bi/dashboardlayout/Application.js:102 ui/web/dev/quiz/Application.js:139
+#: ui/web/bi/dashboardlayout/Application.js:102
+#: ui/web/cm/errortype/Application.js:73 ui/web/dev/quiz/Application.js:139
 #: ui/web/dev/spec/Application.js:159 ui/web/fm/alarmclass/Application.js:430
 #: ui/web/fm/alarmseverity/Application.js:113
 #: ui/web/fm/classificationrule/Application.js:160
@@ -2281,7 +2198,8 @@ msgstr ""
 msgid "JSON"
 msgstr ""
 
-#: ui/web/bi/dashboardlayout/Application.js:104 ui/web/dev/quiz/Application.js:141
+#: ui/web/bi/dashboardlayout/Application.js:104
+#: ui/web/cm/errortype/Application.js:75 ui/web/dev/quiz/Application.js:141
 #: ui/web/dev/spec/Application.js:161 ui/web/fm/alarmseverity/Application.js:115
 #: ui/web/fm/classificationrule/Application.js:162
 #: ui/web/fm/mibpreference/Application.js:69 ui/web/fm/oidalias/Application.js:81
@@ -3018,6 +2936,7 @@ msgstr "Серийный №"
 #: ui/web/bi/dashboardlayout/Application.js:28
 #: ui/web/bi/dashboardlayout/Application.js:38
 #: ui/web/bi/dashboardlayout/Application.js:56
+#: ui/web/cm/errortype/Application.js:30 ui/web/cm/errortype/Application.js:45
 #: ui/web/cm/validationpolicy/Application.js:23
 #: ui/web/cm/validationpolicy/Application.js:44
 #: ui/web/cm/validationrule/Application.js:58
@@ -4931,23 +4850,23 @@ msgstr "Пароль изменен"
 msgid "Failed to change credentials: "
 msgstr "Не удалось сменить пароль: "
 
-#: ui/web/main/desktop/HeaderPanel.js:51
+#: ui/web/main/desktop/HeaderPanel.js:32
 msgid "Anonymous"
 msgstr "Анонимный"
 
-#: ui/web/main/desktop/HeaderPanel.js:57
+#: ui/web/main/desktop/HeaderPanel.js:38
 msgid "About system ..."
 msgstr "О программе ..."
 
-#: ui/web/main/desktop/HeaderPanel.js:64
+#: ui/web/main/desktop/HeaderPanel.js:45
 msgid "User profile ..."
 msgstr "Профиль пользователя ..."
 
-#: ui/web/main/desktop/HeaderPanel.js:71
+#: ui/web/main/desktop/HeaderPanel.js:52
 msgid "Change password ..."
 msgstr "Смена пароля ..."
 
-#: ui/web/main/desktop/HeaderPanel.js:79
+#: ui/web/main/desktop/HeaderPanel.js:60
 msgid "Logout"
 msgstr "Выход"
 
@@ -5438,6 +5357,11 @@ msgstr "Тип орг."
 msgid "Mnt. Ref"
 msgstr ""
 
+#: ui/web/peer/peer/Application.js:23 ui/web/peer/peer/Application.js:117
+#: ui/web/peer/prefixlistbuilder/Application.js:60
+msgid "Peering Point"
+msgstr ""
+
 #: ui/web/peer/peer/Application.js:29 ui/web/peer/peer/Application.js:124
 msgid "Peer Group"
 msgstr ""
@@ -5466,6 +5390,13 @@ msgstr "Локальный адрес"
 
 #: ui/web/peer/peer/Application.js:75
 msgid "Remote Address"
+msgstr ""
+
+#: ui/web/peer/peer/Application.js:90 ui/web/peer/peer/Application.js:284
+#: ui/web/peer/peergroup/Application.js:29 ui/web/peer/peergroup/Application.js:52
+#: ui/web/peer/peeringpoint/Application.js:48
+#: ui/web/peer/peeringpoint/Application.js:86
+msgid "Import Communities"
 msgstr ""
 
 #: ui/web/peer/peer/Application.js:182
@@ -5498,13 +5429,6 @@ msgstr ""
 
 #: ui/web/peer/peer/Application.js:271
 msgid "Export Filter Name"
-msgstr ""
-
-#: ui/web/peer/peer/Application.js:90 ui/web/peer/peer/Application.js:284
-#: ui/web/peer/peergroup/Application.js:29 ui/web/peer/peergroup/Application.js:52
-#: ui/web/peer/peeringpoint/Application.js:48
-#: ui/web/peer/peeringpoint/Application.js:86
-msgid "Import Communities"
 msgstr ""
 
 #: ui/web/peer/peer/Application.js:278 ui/web/peer/peergroup/Application.js:60
@@ -5588,11 +5512,6 @@ msgstr ""
 
 #: ui/web/peer/prefixlistbuilder/Application.js:56
 msgid "Prefix list name must contains only 0-9,a-z,A-Z,-,_"
-msgstr ""
-
-#: ui/web/peer/peer/Application.js:23 ui/web/peer/peer/Application.js:117
-#: ui/web/peer/prefixlistbuilder/Application.js:60
-msgid "Peering Point"
 msgstr ""
 
 #: ui/web/peer/prefixlistbuilder/Application.js:65
@@ -5810,6 +5729,7 @@ msgid "Workflow"
 msgstr ""
 
 #: ui/web/bi/dashboardlayout/Application.js:48
+#: ui/web/cm/errortype/Application.js:35 ui/web/cm/errortype/Application.js:56
 #: ui/web/cm/validationpolicy/Application.js:34
 #: ui/web/cm/validationpolicy/Application.js:56
 #: ui/web/cm/validationrule/Application.js:74
@@ -7162,6 +7082,67 @@ msgstr "Серийный №"
 msgid "User name"
 msgstr "Имя пользователя"
 
+#: ui/web/fm/alarm/AlarmPanel.js:149 ui/web/fm/alarm/AlarmPanel.js:196
+#: ui/web/fm/alarm/view/form/Alarm.js:146 ui/web/fm/alarm/view/form/Alarm.js:187
+#: ui/web/fm/alarm/view/grids/GridViewTable.js:92
+#: ui/web/fm/alarm/view/grids/Sidebar.js:247 ui/web/fm/event/Application.js:95
+#: ui/web/fm/event/Application.js:192 ui/web/fm/event/EventPanel.js:167
+#: ui/web/sa/managedobject/AlarmPanel.js:78
+#: ui/web/sa/managedobject/FactsPanel.js:46
+#: ui/web/sa/managedobject/scripts/ShowLocalUsers.js:18
+msgid "Class"
+msgstr "Класс"
+
+#: ui/web/cm/validationpolicy/Application.js:28
+#: ui/web/cm/validationpolicy/Application.js:51
+#: ui/web/cm/validationpolicy/Application.js:64
+#: ui/web/cm/validationpolicysettings/ValidationSettingsPanel.js:41
+#: ui/web/cm/validationrule/Application.js:63
+#: ui/web/cm/validationrule/Application.js:91
+#: ui/web/fm/alarm/view/grids/Sidebar.js:116
+#: ui/web/fm/alarmdiagnosticconfig/Application.js:66
+#: ui/web/fm/ignoreeventrule/Application.js:19
+#: ui/web/fm/ignorepattern/Application.js:27
+#: ui/web/fm/ignorepattern/Application.js:52
+#: ui/web/fm/reportalarmdetail/Application.js:69
+#: ui/web/fm/ttsystem/Application.js:25 ui/web/fm/ttsystem/Application.js:47
+#: ui/web/gis/area/Application.js:23 ui/web/gis/area/Application.js:64
+#: ui/web/gis/division/Application.js:42 ui/web/gis/division/Application.js:90
+#: ui/web/gis/overlay/Application.js:23 ui/web/gis/street/Application.js:35
+#: ui/web/gis/street/Application.js:73
+#: ui/web/inv/interfaceclassificationrule/Application.js:31
+#: ui/web/inv/interfaceclassificationrule/Application.js:75
+#: ui/web/inv/modelmapping/Application.js:44
+#: ui/web/inv/modelmapping/Application.js:89
+#: ui/web/inv/networksegmentprofile/Application.js:153
+#: ui/web/inv/reportifacestatus/Application.js:44
+#: ui/web/inv/reportlinkdetail/Application.js:64
+#: ui/web/main/apikey/Application.js:40 ui/web/main/apikey/Application.js:63
+#: ui/web/main/apikey/Application.js:123
+#: ui/web/main/authldapdomain/Application.js:26
+#: ui/web/main/authldapdomain/Application.js:50
+#: ui/web/main/authldapdomain/Application.js:140
+#: ui/web/main/authldapdomain/Application.js:204
+#: ui/web/main/chpolicy/Application.js:25 ui/web/main/chpolicy/Application.js:60
+#: ui/web/main/crontab/Application.js:27 ui/web/main/crontab/Application.js:55
+#: ui/web/main/customfield/Application.js:28
+#: ui/web/main/language/Application.js:26
+#: ui/web/main/reportsubscription/Application.js:28
+#: ui/web/main/resourcestate/Application.js:23
+#: ui/web/main/resourcestate/Application.js:74 ui/web/main/style/Application.js:23
+#: ui/web/main/sync/Application.js:28 ui/web/main/sync/Application.js:62
+#: ui/web/main/sync/Application.js:84
+#: ui/web/phone/numbercategory/Application.js:27
+#: ui/web/sa/managedobject/AlarmPanel.js:32
+#: ui/web/sa/managedobject/scripts/ShowLocalUsers.js:23
+#: ui/web/sa/reportobjectdetail/Application.js:59
+#: ui/web/wf/transition/Application.js:42 ui/web/wf/transition/Application.js:101
+#: ui/web/wf/wfmigration/Application.js:51 ui/web/wf/workflow/Application.js:30
+#: ui/web/wf/workflow/Application.js:48 ui/web/wf/workflow/WFEditor.js:366
+#: ui/web/wf/workflow/WFEditor.js:521
+msgid "Active"
+msgstr "Активный"
+
 #: ui/web/inv/interface/L3Panel.js:55 ui/web/inv/interface/MACForm.js:45
 #: ui/web/sa/managedobject/L3Panel.js:55
 #: ui/web/sa/managedobject/scripts/ShowMAC.js:28
@@ -8351,6 +8332,12 @@ msgstr "По абоненту"
 msgid "Parent Filter"
 msgstr "Фильтр по родителю"
 
+#: ui/web/crm/subscriberprofile/Application.js:89
+#: ui/web/sa/serviceprofile/Application.js:27
+#: ui/web/sa/serviceprofile/Application.js:93
+msgid "Icon"
+msgstr "Иконка"
+
 #: ui/web/sa/serviceprofile/Application.js:50
 msgid "Summary"
 msgstr "Итог"
@@ -8359,10 +8346,25 @@ msgstr "Итог"
 msgid "Title Template"
 msgstr "Шаблон заголовка"
 
+#: ui/web/crm/subscriberprofile/Application.js:96
+#: ui/web/sa/serviceprofile/Application.js:100
+msgid "Display Order"
+msgstr "Приоритет отображения"
+
+#: ui/web/crm/subscriberprofile/Application.js:104
+#: ui/web/sa/serviceprofile/Application.js:108
+msgid "Show in summary"
+msgstr "Показывать в итоге"
+
 #: ui/web/inv/interfaceclassificationrule/Application.js:99
 #: ui/web/sa/serviceprofile/Application.js:114
 msgid "Interface Profile"
 msgstr "Профиль интерфейса"
+
+#: ui/web/crm/subscriberprofile/Application.js:110
+#: ui/web/sa/serviceprofile/Application.js:120
+msgid "Alarm weight"
+msgstr "Вес аварии"
 
 #: ui/web/ip/prefixaccess/Application.js:101
 #: ui/web/sa/useraccess/Application.js:57
@@ -8910,3 +8912,12 @@ msgstr "Сброс"
 #: ui/web/wf/workflow/WFInspector.js:45
 msgid "Reset changes"
 msgstr "Сбросить изменения"
+
+#~ msgid "1 min"
+#~ msgstr "1 мин"
+
+#~ msgid "10 min"
+#~ msgstr "10 мин"
+
+#~ msgid "1440 min"
+#~ msgstr "1440 мин"
