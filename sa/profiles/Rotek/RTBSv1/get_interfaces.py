@@ -23,13 +23,14 @@ class Script(BaseScript):
     keep_cli_session = False
 
     rx_sh_int = re.compile(
-        r"^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g|a)\S+):\s"
+        r"^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g|a|w)\S+):\s"
         r"<(?P<flags>.*?)>\s+mtu\s+(?P<mtu>\d+).+?\n"
         r"^\s+link/\S+(?:\s+(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}))?\s+.+?\n"
         r"(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?",
         re.MULTILINE | re.DOTALL)
     rx_vlan = re.compile(r"\S+vlan-to-ssid: on; id:\s+(?P<vlan>\S+)")
     rx_status = re.compile(r"^(?P<status>UP|DOWN\S+)", re.MULTILINE)
+    re_ath = re.compile(r"(?P<ath>ath\d)", re.MULTILINE)
 
     def execute_snmp(self):
         interfaces = []
@@ -87,12 +88,15 @@ class Script(BaseScript):
                 for i in ss.items():
                     if int(i[0]) == ifindex:
                         a = self.cli("show interface %s ssid-broadcast" % name)
-                        sb = a.split(":")[1].strip()
-                        if sb == "on":
-                            ssid_broadcast = "enable"
+                        if len(a.strip()) != 0:
+                            sb = a.split(":")[1].strip()
+                            if sb == "on":
+                                ssid_broadcast = "enable"
+                            else:
+                                ssid_broadcast = "disable"
+                                oper_status = False  # Do not touch !!!
                         else:
-                            ssid_broadcast = "disable"
-                            oper_status = False  # Do not touch !!!
+                            ssid_broadcast = "None"
                         vname = "%s.%s" % (name, i[1]["ssid"])
                         iface = {
                             "type": iftype,
@@ -121,24 +125,29 @@ class Script(BaseScript):
     def execute_cli(self):
         interfaces = []
         ssid = {}
-        i = ["ath0", "ath2"]
-        for ri in i:
-            s = self.cli("show interface %s ssid" % ri)
-            v = self.cli("show interface %s vlan-to-ssid" % ri)
-            a = self.cli("show interface %s ssid-broadcast" % ri)
-            i = self.cli("show interface wifi0 ieee-mode")
-            c = self.cli("show interface wifi0 channel")
-            f = self.cli("show interface wifi0 freq")
-            res = s.split(":")[1].strip().replace("\"", "")
-            resv = v.split(":")[2].strip()
-            ssid_broadcast = a.split(":")[1].strip()
-            ieee_mode = "IEEE 802.11%s" % i.split(":")[1].strip()
-            channel = c.splitlines()[0].split(":")[1].strip()
-            freq = f.splitlines()[0].split(":")[1].strip()
-            ssid[ri] = {
-                "ssid": res, "vlan": resv, "ssid_broadcast": ssid_broadcast, "ieee_mode": ieee_mode,
-                "channel": channel, "freq": freq
-            }
+        c = self.cli("show interface list")
+        ifaces = dict(item.strip().split(":") for item in c.split(";"))
+        for ra_iface in ifaces["VAP(radio)"].split(","):
+            match = self.re_ath.match(ra_iface.strip())
+            if match:
+                ath = match.group("ath")
+                s = self.cli("show interface %s ssid" % ath)
+                v = self.cli("show interface %s vlan-to-ssid" % ath)
+                a = self.cli("show interface %s ssid-broadcast" % ath)
+                i = self.cli("show interface wifi0 ieee-mode")
+                c = self.cli("show interface wifi0 channel")
+                f = self.cli("show interface wifi0 freq")
+                res = s.split(":")[1].strip().replace("\"", "")
+                resv = v.split(":")[2].strip()
+                ssid_broadcast = a.split(":")[1].strip()
+                ieee_mode = "IEEE 802.11%s" % i.split(":")[1].strip()
+                channel = c.strip().splitlines()[0].split(":")[1].strip()
+                freq = f.strip().splitlines()[0].split(":")[1].strip()
+                ssid[ath] = {
+                    "ssid": res, "vlan": resv, "ssid_broadcast": ssid_broadcast, "ieee_mode": ieee_mode,
+                    "channel": channel, "freq": freq
+                }
+
         with self.profile.shell(self):
             v = self.cli("ip a", cached=True)
             for match in self.rx_sh_int.finditer(v):
@@ -179,25 +188,31 @@ class Script(BaseScript):
                 else:
                     iface["subinterfaces"][0]["enabled_afi"] = ["BRIDGE"]
                 interfaces += [iface]
-            for ri in ssid.items():
-                if ifname in ri[0]:
+                ri = ssid.get(ifname)
+                if ri:
+                    if ri["ssid_broadcast"] == "on":
+                        ssid_broadcast = "enable"
+                    else:
+                        ssid_broadcast = "disable"
+                        o_status = False  # Do not touch !!!
                     iface = {
                         "type": "physical",
-                        "name": "%s.%s" % (ifname, ri[1]["ssid"]),
+                        "name": "%s.%s" % (ifname, ri["ssid"]),
                         "admin_status": a_status,
                         "oper_status": o_status,
                         "mac": MAC(mac),
                         "snmp_ifindex": match.group("ifindex"),
-                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s" % (ri[1]["ssid_broadcast"], ri[1]["ieee_mode"], ri[1]["channel"], ri[1]["freq"]),
+                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz" % (
+                            ssid_broadcast, ri["ieee_mode"], ri["channel"], ri["freq"]),
                         "subinterfaces": [{
-                            "name": "%s.%s" % (ifname, ri[1]["ssid"]),
+                            "name": "%s.%s" % (ifname, ri["ssid"]),
                             "enabled_afi": ["BRIDGE"],
                             "admin_status": a_status,
                             "oper_status": o_status,
                             "mtu": mtu,
                             "mac": MAC(mac),
                             "snmp_ifindex": match.group("ifindex"),
-                            "untagged_vlan": int(ri[1]["vlan"]),
+                            "untagged_vlan": int(ri["vlan"]),
                         }]
                     }
                     interfaces += [iface]
