@@ -1,15 +1,15 @@
 # Translations template for The NOC Project.
-# Copyright (C) 2017 The NOC Project
+# Copyright (C) 2019 The NOC Project
 # This file is distributed under the same license as the The NOC Project
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-02-28 22:51+0300\n"
+"POT-Creation-Date: 2019-01-13 11:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,4 +17,332 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+
+#: bi/models/alarms.py:50
+msgid "Close Time"
+msgstr ""
+
+#: bi/models/alarms.py:51
+msgid "Duration"
+msgstr ""
+
+#: bi/models/alarms.py:52
+msgid "Id"
+msgstr ""
+
+#: bi/models/alarms.py:53
+msgid "Alarm Root"
+msgstr ""
+
+#: bi/models/alarms.py:54
+msgid "Alarm Class"
+msgstr ""
+
+#: bi/models/alarms.py:56
+msgid "Reopens"
+msgstr ""
+
+#: bi/models/alarms.py:57
+msgid "Direct Services"
+msgstr ""
+
+#: bi/models/alarms.py:58
+msgid "Direct Subscribers"
+msgstr ""
+
+#: bi/models/alarms.py:59
+msgid "Total Objects"
+msgstr ""
+
+#: bi/models/alarms.py:60
+msgid "Total Services"
+msgstr ""
+
+#: bi/models/alarms.py:61
+msgid "Total Subscribers"
+msgstr ""
+
+#: bi/models/alarms.py:63
+msgid "Escalation Time"
+msgstr ""
+
+#: bi/models/alarms.py:64
+msgid "Number of Escalation"
+msgstr ""
+
+#: bi/models/alarms.py:66
+msgid "Qty of Reboots"
+msgstr ""
+
+#: bi/models/alarms.py:81
+msgid "Affected Services"
+msgstr ""
+
+#: bi/models/alarms.py:82
+msgid "Affected Subscribers"
+msgstr ""
+
+#: bi/models/mac.py:62
+msgid "MAC"
+msgstr ""
+
+#: bi/models/mac.py:63
+msgid "Interface"
+msgstr ""
+
+#: bi/models/mac.py:66
+msgid "Interface Profile"
+msgstr ""
+
+#: bi/models/mac.py:72
+msgid "VLAN"
+msgstr ""
+
+#: bi/models/mac.py:73
+msgid "Is UNI"
+msgstr ""
+
+#: bi/models/managedobjects.py:45
+msgid "Level"
+msgstr ""
+
+#: bi/models/managedobjects.py:51
+msgid "Name"
+msgstr ""
+
+#: bi/models/managedobjects.py:52
+msgid "Hostaname"
+msgstr ""
+
+#: bi/models/managedobjects.py:54
+msgid "Is Managed"
+msgstr ""
+
+#: bi/models/managedobjects.py:57
+msgid "Vendor"
+msgstr ""
+
+#: bi/models/managedobjects.py:60
+msgid "Interface count"
+msgstr ""
+
+#: bi/models/managedobjects.py:61
+msgid "Subscribers count"
+msgstr ""
+
+#: bi/models/managedobjects.py:62
+msgid "Services count"
+msgstr ""
+
+#: bi/models/managedobjects.py:64
+msgid "Neighbors"
+msgstr ""
+
+#: bi/models/managedobjects.py:65
+msgid "Links count"
+msgstr ""
+
+#: bi/models/managedobjects.py:66
+msgid "Links (NRI)"
+msgstr ""
+
+#: bi/models/managedobjects.py:67
+msgid "Links (MAC)"
+msgstr ""
+
+#: bi/models/managedobjects.py:68
+msgid "Links (STP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:69
+msgid "Links (LLDP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:70
+msgid "Links (CDP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:72
+msgid "Has STP"
+msgstr ""
+
+#: bi/models/managedobjects.py:73
+msgid "Has LLDP"
+msgstr ""
+
+#: bi/models/managedobjects.py:74
+msgid "Has CDP"
+msgstr ""
+
+#: bi/models/managedobjects.py:75
+msgid "Has SNMP"
+msgstr ""
+
+#: bi/models/managedobjects.py:76
+msgid "Has SNMP v1"
+msgstr ""
+
+#: bi/models/managedobjects.py:77
+msgid "Has SNMP v2c"
+msgstr ""
+
+#: bi/models/managedobjects.py:79
+msgid "Uptime"
+msgstr ""
+
+#: bi/models/alarms.py:69 bi/models/managedobjects.py:50
+#: bi/models/reboots.py:37
+msgid "Pool Name"
+msgstr ""
+
+#: bi/models/alarms.py:70 bi/models/managedobjects.py:53
+#: bi/models/reboots.py:38
+msgid "IP Address"
+msgstr ""
+
+#: bi/models/alarms.py:71 bi/models/managedobjects.py:56
+#: bi/models/reboots.py:39
+msgid "Profile"
+msgstr ""
+
+#: bi/models/alarms.py:72 bi/models/reboots.py:40
+msgid "Vendor Name"
+msgstr ""
+
+#: bi/models/alarms.py:73 bi/models/managedobjects.py:58
+#: bi/models/reboots.py:41
+msgid "Platform"
+msgstr ""
+
+#: bi/models/alarms.py:74 bi/models/managedobjects.py:59
+#: bi/models/reboots.py:42
+msgid "Version"
+msgstr ""
+
+#: bi/models/alarms.py:75 bi/models/managedobjects.py:41
+#: bi/models/reboots.py:43
+msgid "Admin. Domain"
+msgstr ""
+
+#: bi/models/alarms.py:76 bi/models/mac.py:70 bi/models/managedobjects.py:42
+#: bi/models/reboots.py:44
+msgid "Network Segment"
+msgstr ""
+
+#: bi/models/alarms.py:77 bi/models/managedobjects.py:43
+#: bi/models/reboots.py:45
+msgid "Container"
+msgstr ""
+
+#: bi/models/alarms.py:79 bi/models/managedobjects.py:47
+#: bi/models/reboots.py:47
+msgid "Longitude"
+msgstr ""
+
+#: bi/models/alarms.py:80 bi/models/managedobjects.py:48
+#: bi/models/reboots.py:48
+msgid "Latitude"
+msgstr ""
+
+#: bi/models/routingneighbors.py:30
+msgid "Physical Interface"
+msgstr ""
+
+#: bi/models/routingneighbors.py:33
+msgid "Logical Interface"
+msgstr ""
+
+#: bi/models/routingneighbors.py:36
+msgid "Neighbor Address"
+msgstr ""
+
+#: bi/models/routingneighbors.py:40
+msgid "Neighbor Object"
+msgstr ""
+
+#: bi/models/routingneighbors.py:43
+msgid "Protocol"
+msgstr ""
+
+#: bi/models/routingneighbors.py:46
+msgid "BGP Local AS"
+msgstr ""
+
+#: bi/models/routingneighbors.py:49
+msgid "BGP Remogte AS"
+msgstr ""
+
+#: bi/models/span.py:24
+msgid "Span context"
+msgstr ""
+
+#: bi/models/span.py:25
+msgid "Span id"
+msgstr ""
+
+#: bi/models/span.py:26
+msgid "Span parent"
+msgstr ""
+
+#: bi/models/span.py:27
+msgid "Called service"
+msgstr ""
+
+#: bi/models/span.py:28
+msgid "Called function"
+msgstr ""
+
+#: bi/models/span.py:29
+msgid "Caller service"
+msgstr ""
+
+#: bi/models/span.py:30
+msgid "Duration (us)"
+msgstr ""
+
+#: bi/models/span.py:31
+msgid "Sampling rate"
+msgstr ""
+
+#: bi/models/span.py:32
+msgid "Error code"
+msgstr ""
+
+#: bi/models/span.py:33
+msgid "Error text"
+msgstr ""
+
+#: bi/models/span.py:34
+msgid "Input arguments"
+msgstr ""
+
+#: bi/models/span.py:35
+msgid "Output results"
+msgstr ""
+
+#: bi/models/alarms.py:48 bi/models/mac.py:56 bi/models/managedobjects.py:34
+#: bi/models/reboots.py:34 bi/models/routingneighbors.py:23
+#: bi/models/span.py:22 bi/models/syslog.py:24
+msgid "Date"
+msgstr ""
+
+#: bi/models/alarms.py:49 bi/models/mac.py:57 bi/models/managedobjects.py:35
+#: bi/models/reboots.py:35 bi/models/routingneighbors.py:24
+#: bi/models/span.py:23 bi/models/syslog.py:25
+msgid "Created"
+msgstr ""
+
+#: bi/models/alarms.py:68 bi/models/mac.py:60 bi/models/managedobjects.py:38
+#: bi/models/reboots.py:36 bi/models/routingneighbors.py:27
+#: bi/models/syslog.py:26
+msgid "Object Name"
+msgstr ""
+
+#: bi/models/syslog.py:27
+msgid "Facility"
+msgstr ""
+
+#: bi/models/alarms.py:55 bi/models/syslog.py:28
+msgid "Severity"
+msgstr ""
 

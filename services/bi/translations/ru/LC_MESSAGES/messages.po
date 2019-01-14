@@ -8,134 +8,344 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-03-06 18:21+0300\n"
-"PO-Revision-Date: 2017-03-06 21:52+0500\n"
+"POT-Creation-Date: 2019-01-13 11:53+0300\n"
+"PO-Revision-Date: 2019-01-13 15:09+0500\n"
 "Last-Translator: \n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
-"X-Generator: Poedit 1.8.12\n"
+"X-Generator: Poedit 2.2\n"
+"X-Poedit-Basepath: ../../../../..\n"
+"X-Poedit-SearchPath-0: .\n"
 
-#: core/bi/models/alarms.py:39
+#: bi/models/alarms.py:50
 msgid "Close Time"
 msgstr "Время закрытия"
 
-#: core/bi/models/alarms.py:40
+#: bi/models/alarms.py:51
 msgid "Duration"
 msgstr "Продолжительность"
 
-#: core/bi/models/alarms.py:41
+#: bi/models/alarms.py:52
 msgid "Id"
 msgstr "Идентификатор"
 
-#: core/bi/models/alarms.py:42
+#: bi/models/alarms.py:53
 msgid "Alarm Root"
 msgstr "Корень аварии"
 
-#: core/bi/models/alarms.py:43
+#: bi/models/alarms.py:54
 msgid "Alarm Class"
 msgstr "Класс аварии"
 
-#: core/bi/models/alarms.py:44
-msgid "Severity"
-msgstr "Важность"
-
-#: core/bi/models/alarms.py:45
+#: bi/models/alarms.py:56
 msgid "Reopens"
 msgstr "Переоткрытия"
 
-#: core/bi/models/alarms.py:46
+#: bi/models/alarms.py:57
 msgid "Direct Services"
 msgstr "Повлияло на сервисы"
 
-#: core/bi/models/alarms.py:47
+#: bi/models/alarms.py:58
 msgid "Direct Subscribers"
 msgstr "Повлияло на абонентов"
 
-#: core/bi/models/alarms.py:48
+#: bi/models/alarms.py:59
 msgid "Total Objects"
 msgstr "Общее кол-во объектов"
 
-#: core/bi/models/alarms.py:49
+#: bi/models/alarms.py:60
 msgid "Total Services"
 msgstr "Общее кол-во сервисов"
 
-#: core/bi/models/alarms.py:50
+#: bi/models/alarms.py:61
 msgid "Total Subscribers"
 msgstr "Общее кол-во абонентов"
 
-#: core/bi/models/alarms.py:52
+#: bi/models/alarms.py:63
 msgid "Escalation Time"
 msgstr "Время когда эскалировано"
 
-#: core/bi/models/alarms.py:53
+#: bi/models/alarms.py:64
 msgid "Number of Escalation"
 msgstr "Номер ТТ"
 
-#: core/bi/models/alarms.py:55
+#: bi/models/alarms.py:66
 msgid "Qty of Reboots"
 msgstr "Число перезагрузок"
 
-#: core/bi/models/alarms.py:37 core/bi/models/reboots.py:32
-msgid "Date"
-msgstr "Дата"
+#: bi/models/alarms.py:81
+msgid "Affected Services"
+msgstr ""
 
-#: core/bi/models/alarms.py:38 core/bi/models/reboots.py:33
-msgid "Created"
-msgstr "Создано"
+#: bi/models/alarms.py:82
+msgid "Affected Subscribers"
+msgstr ""
 
-#: core/bi/models/alarms.py:57 core/bi/models/reboots.py:34
-msgid "Object Name"
-msgstr "Имя объекта"
+#: bi/models/mac.py:62
+msgid "MAC"
+msgstr ""
 
-#: core/bi/models/alarms.py:58 core/bi/models/reboots.py:35
+#: bi/models/mac.py:63
+msgid "Interface"
+msgstr "Интерфейс"
+
+#: bi/models/mac.py:66
+msgid "Interface Profile"
+msgstr "Профиль интерфейса"
+
+#: bi/models/mac.py:72
+msgid "VLAN"
+msgstr ""
+
+#: bi/models/mac.py:73
+msgid "Is UNI"
+msgstr ""
+
+#: bi/models/managedobjects.py:45
+msgid "Level"
+msgstr "Уровень"
+
+#: bi/models/managedobjects.py:51
+msgid "Name"
+msgstr "Имя устройства"
+
+#: bi/models/managedobjects.py:52
+msgid "Hostaname"
+msgstr ""
+
+#: bi/models/managedobjects.py:54
+msgid "Is Managed"
+msgstr "Управляемый"
+
+#: bi/models/managedobjects.py:57
+msgid "Vendor"
+msgstr "Производитель"
+
+#: bi/models/managedobjects.py:60
+msgid "Interface count"
+msgstr "Число интерфейсов"
+
+#: bi/models/managedobjects.py:61
+msgid "Subscribers count"
+msgstr "Число абонентов"
+
+#: bi/models/managedobjects.py:62
+msgid "Services count"
+msgstr "Число севрвисов"
+
+#: bi/models/managedobjects.py:64
+msgid "Neighbors"
+msgstr "Число соседей"
+
+#: bi/models/managedobjects.py:65
+msgid "Links count"
+msgstr "Число линков"
+
+#: bi/models/managedobjects.py:66
+msgid "Links (NRI)"
+msgstr "Линки (NRI)"
+
+#: bi/models/managedobjects.py:67
+msgid "Links (MAC)"
+msgstr "Линки (по MAC адресам)"
+
+#: bi/models/managedobjects.py:68
+msgid "Links (STP)"
+msgstr "Линки (по STP)"
+
+#: bi/models/managedobjects.py:69
+msgid "Links (LLDP)"
+msgstr "Линки (по LLDP)"
+
+#: bi/models/managedobjects.py:70
+msgid "Links (CDP)"
+msgstr "Линки (по CDP)"
+
+#: bi/models/managedobjects.py:72
+msgid "Has STP"
+msgstr ""
+
+#: bi/models/managedobjects.py:73
+msgid "Has LLDP"
+msgstr ""
+
+#: bi/models/managedobjects.py:74
+msgid "Has CDP"
+msgstr ""
+
+#: bi/models/managedobjects.py:75
+msgid "Has SNMP"
+msgstr ""
+
+#: bi/models/managedobjects.py:76
+msgid "Has SNMP v1"
+msgstr ""
+
+#: bi/models/managedobjects.py:77
+msgid "Has SNMP v2c"
+msgstr ""
+
+#: bi/models/managedobjects.py:79
+msgid "Uptime"
+msgstr "Аптайм"
+
+#: bi/models/alarms.py:69 bi/models/managedobjects.py:50
+#: bi/models/reboots.py:37
 msgid "Pool Name"
 msgstr "Имя пула"
 
-#: core/bi/models/alarms.py:59 core/bi/models/reboots.py:36
+#: bi/models/alarms.py:70 bi/models/managedobjects.py:53
+#: bi/models/reboots.py:38
 msgid "IP Address"
 msgstr "IP адрес"
 
-#: core/bi/models/alarms.py:60 core/bi/models/reboots.py:37
+#: bi/models/alarms.py:71 bi/models/managedobjects.py:56
+#: bi/models/reboots.py:39
 msgid "Profile"
 msgstr "Профиль объекта"
 
-#: core/bi/models/alarms.py:61 core/bi/models/reboots.py:38
+#: bi/models/alarms.py:72 bi/models/reboots.py:40
 msgid "Vendor Name"
 msgstr "Производитель"
 
-#: core/bi/models/alarms.py:62 core/bi/models/reboots.py:39
+#: bi/models/alarms.py:73 bi/models/managedobjects.py:58
+#: bi/models/reboots.py:41
 msgid "Platform"
 msgstr "Платформа"
 
-#: core/bi/models/alarms.py:63 core/bi/models/reboots.py:40
+#: bi/models/alarms.py:74 bi/models/managedobjects.py:59
+#: bi/models/reboots.py:42
 msgid "Version"
-msgstr "Версия"
+msgstr "Версия ПО"
 
-#: core/bi/models/alarms.py:64 core/bi/models/reboots.py:41
+#: bi/models/alarms.py:75 bi/models/managedobjects.py:41
+#: bi/models/reboots.py:43
 msgid "Admin. Domain"
-msgstr "З.О."
+msgstr "Зона Ответственности"
 
-#: core/bi/models/alarms.py:65 core/bi/models/reboots.py:42
+#: bi/models/alarms.py:76 bi/models/mac.py:70 bi/models/managedobjects.py:42
+#: bi/models/reboots.py:44
 msgid "Network Segment"
 msgstr "Сегмент сети"
 
-#: core/bi/models/alarms.py:66 core/bi/models/reboots.py:43
+#: bi/models/alarms.py:77 bi/models/managedobjects.py:43
+#: bi/models/reboots.py:45
 msgid "Container"
 msgstr "Адрес"
 
-#: core/bi/models/alarms.py:68 core/bi/models/reboots.py:45
+#: bi/models/alarms.py:79 bi/models/managedobjects.py:47
+#: bi/models/reboots.py:47
 msgid "Longitude"
 msgstr "Долгота"
 
-#: core/bi/models/alarms.py:69 core/bi/models/reboots.py:46
+#: bi/models/alarms.py:80 bi/models/managedobjects.py:48
+#: bi/models/reboots.py:48
 msgid "Latitude"
 msgstr "Широта"
 
-#~ msgid "Qty Of Reboots"
-#~ msgstr "Количество перезагрузок"
+#: bi/models/routingneighbors.py:30
+msgid "Physical Interface"
+msgstr ""
+
+#: bi/models/routingneighbors.py:33
+msgid "Logical Interface"
+msgstr ""
+
+#: bi/models/routingneighbors.py:36
+msgid "Neighbor Address"
+msgstr ""
+
+#: bi/models/routingneighbors.py:40
+msgid "Neighbor Object"
+msgstr ""
+
+#: bi/models/routingneighbors.py:43
+msgid "Protocol"
+msgstr ""
+
+#: bi/models/routingneighbors.py:46
+msgid "BGP Local AS"
+msgstr ""
+
+#: bi/models/routingneighbors.py:49
+msgid "BGP Remogte AS"
+msgstr ""
+
+#: bi/models/span.py:24
+msgid "Span context"
+msgstr "Контекст"
+
+#: bi/models/span.py:25
+msgid "Span id"
+msgstr ""
+
+#: bi/models/span.py:26
+msgid "Span parent"
+msgstr ""
+
+#: bi/models/span.py:27
+msgid "Called service"
+msgstr ""
+
+#: bi/models/span.py:28
+msgid "Called function"
+msgstr "Вызванная функция"
+
+#: bi/models/span.py:29
+msgid "Caller service"
+msgstr "Вызванный сервис"
+
+#: bi/models/span.py:30
+msgid "Duration (us)"
+msgstr "Продолжительность (миллисекуд)"
+
+#: bi/models/span.py:31
+msgid "Sampling rate"
+msgstr ""
+
+#: bi/models/span.py:32
+msgid "Error code"
+msgstr "Код ошибки"
+
+#: bi/models/span.py:33
+msgid "Error text"
+msgstr "Текст ошибки"
+
+#: bi/models/span.py:34
+msgid "Input arguments"
+msgstr ""
+
+#: bi/models/span.py:35
+msgid "Output results"
+msgstr ""
+
+#: bi/models/alarms.py:48 bi/models/mac.py:56 bi/models/managedobjects.py:34
+#: bi/models/reboots.py:34 bi/models/routingneighbors.py:23
+#: bi/models/span.py:22 bi/models/syslog.py:24
+msgid "Date"
+msgstr "Дата"
+
+#: bi/models/alarms.py:49 bi/models/mac.py:57 bi/models/managedobjects.py:35
+#: bi/models/reboots.py:35 bi/models/routingneighbors.py:24
+#: bi/models/span.py:23 bi/models/syslog.py:25
+msgid "Created"
+msgstr "Создано"
+
+#: bi/models/alarms.py:68 bi/models/mac.py:60 bi/models/managedobjects.py:38
+#: bi/models/reboots.py:36 bi/models/routingneighbors.py:27
+#: bi/models/syslog.py:26
+msgid "Object Name"
+msgstr "Имя объекта"
+
+#: bi/models/syslog.py:27
+msgid "Facility"
+msgstr ""
+
+#: bi/models/alarms.py:55 bi/models/syslog.py:28
+msgid "Severity"
+msgstr "Важность"
