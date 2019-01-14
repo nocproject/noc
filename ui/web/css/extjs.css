@@ -436,3 +436,7 @@ TABLE {
     color: #f8f8f8;
     background-color: black;
 }
+
+.x-panel.x-layer {
+    position: fixed !important;
+}

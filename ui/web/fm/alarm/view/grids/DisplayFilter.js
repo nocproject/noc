@@ -22,7 +22,7 @@ Ext.define("NOC.fm.alarm.view.grids.DisplayFilter", {
     items: [
         {
             xtype: "fm.alarm.multipanel",
-            title: __("Service Profile"),
+            title: __("Service Profiles"),
             searchStore: "fm.profile",
             bind: {value: "{displayFilter.hasProfiles}"}
         },
