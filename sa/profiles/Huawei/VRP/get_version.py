@@ -28,6 +28,13 @@ class Script(BaseScript):
         r"[^ \t\n\r\f\v\-]+)[^\n]+",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
+    rx_ver_snmp1 = re.compile(
+        r"Huawei Versatile Routing Platform Software\s*"
+        r"VRP \(R\) software, Version (?P<version>\d+.\d+) \((?:CX\S+|ATN\S+|ATN(?: \S+){0,2}) (?P<image>\S+)\)\s*"
+        r"Copyright \(C\) \d+-\d+ Huawei Technologies Co., Ltd.\s*"
+        r"(?:HUAWEI\s*)?(?P<platform>(?:CX\S+|ATN\S+|ATN(?: \S+){0,2}))\s*",
+        re.MULTILINE | re.IGNORECASE
+    )
     rx_ver_snmp2 = re.compile(
         r"(?P<platform>(?:\S+\s+)?(?:S\d+|AR\d+\S*)(?:[A-Z]+-[A-Z]+)?(?:\d+\S+)?)"
         r"\s+Huawei\sVersatile\sRouting\sPlatform"
@@ -99,6 +106,7 @@ class Script(BaseScript):
         match_re_list = [
             self.rx_ver,
             self.rx_ver_snmp,
+            self.rx_ver_snmp1,
             self.rx_ver_snmp2,
             self.rx_ver_snmp3,
             self.rx_ver_snmp5
