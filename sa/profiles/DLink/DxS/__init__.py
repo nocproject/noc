@@ -31,7 +31,11 @@ class Profile(BaseProfile):
     config_volatile = ["^%.*?$", "^config time \d\d.*?\n"]
     telnet_naws = "\x00\x7f\x00\x7f"
     # to one SNMP GET request
-    snmp_metrics_get_chunk = 10
+    snmp_metrics_get_chunk = 30
+    snmp_metrics_get_timeout = 3
+    snmp_ifstatus_get_chunk = 30
+    snmp_ifstatus_get_timeout = 3
+
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
 
     matchers = {
