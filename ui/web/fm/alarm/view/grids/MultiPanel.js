@@ -100,7 +100,7 @@ Ext.define("NOC.fm.alarm.view.grids.MultiPanel", {
                         items: [
                             {
                                 xtype: "button",
-                                text: "Select All",
+                                text: __("Select All"),
                                 handler: function(btn) {
                                     var selector = btn.up("multiselector-search"),
                                         store = selector.getSearchStore();
@@ -110,7 +110,7 @@ Ext.define("NOC.fm.alarm.view.grids.MultiPanel", {
                             "->",
                             {
                                 xtype: "button",
-                                text: "Deselect All",
+                                text: __("Unselect All"),
                                 handler: function(btn) {
                                     var selector = btn.up("multiselector-search"),
                                         store = selector.getSearchStore();
