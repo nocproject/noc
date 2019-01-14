@@ -26,32 +26,20 @@ class Script(BaseScript):
         r"(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?", re.MULTILINE | re.DOTALL
     )
 
-    rx_status = re.compile(r"^(?P<status>UP|DOWN\S+)", re.MULTILINE)
+    rx_status = re.compile(r"(?P<status>UP|DOWN)", re.MULTILINE)
+    rx_ra = re.compile(r"(?P<ra>ra\d)", re.MULTILINE)
 
     def execute_snmp(self):
         interfaces = []
         ss = {}
         # SNMP
-        for soid, sname in self.snmp.getnext("1.3.6.1.4.1.32761.3.5.1.2.1.1.4"):
+        m = self.snmp.get("1.3.6.1.2.1.1.2.0")
+        for soid, sname in self.snmp.getnext("%s.3.5.1.2.1.1.4" % m):
             sifindex = int(soid.split(".")[-1])
-            ieee_mode = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.2.%s" % sifindex)
-            freq = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.7.%s" % sifindex)
-            channel = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.8.%s" % sifindex)
-            channelbandwidth = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.9.%s" % sifindex)
-            ss[sifindex] = {
-                "ssid": sname,
-                "ieee_mode": ieee_mode,
-                "channel": channel,
-                "freq": freq,
-                "channelbandwidth": channelbandwidth
-            }
-
-        for soid, sname in self.snmp.getnext("1.3.6.1.4.1.41752.3.5.1.2.1.1.4"):
-            sifindex = int(soid.split(".")[-1])
-            ieee_mode = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.2.%s" % sifindex)
-            freq = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.7.%s" % sifindex)
-            channel = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.8.%s" % sifindex)
-            channelbandwidth = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.9.%s" % sifindex)
+            ieee_mode = self.snmp.get("%s.3.5.1.2.1.1.2.%s" % (m, sifindex))
+            freq = self.snmp.get("%s.3.5.1.2.1.1.7.%s" % (m, sifindex))
+            channel = self.snmp.get("%s.3.5.1.2.1.1.8.%s" % (m, sifindex))
+            channelbandwidth = self.snmp.get("%s.3.5.1.2.1.1.9.%s" % (m, sifindex))
             ss[sifindex] = {
                 "ssid": sname,
                 "ieee_mode": ieee_mode,
@@ -143,34 +131,36 @@ class Script(BaseScript):
         interfaces = []
         ssid = {}
         # GO CLI
-        i = ["ra0", "ra1"]
-        for ri in i:
-            s = self.cli("show interface %s ssid" % ri)
-            v = self.cli("show interface %s vlan-to-ssid" % ri)
-            if "vlan-to-ssid not configured" in v:
-                continue
-            a = self.cli("show interface %s ssid-broadcast" % ri)
-            i = self.cli("show interface %s ieee-mode" % ri)
-            c = self.cli("show interface %s channel" % ri)
-            f = self.cli("show interface %s freq" % ri)
-            res = s.split(":")[1].strip().replace("\"", "")
-            resv = v.split(":")[1].strip().replace("\"", "")
-            ssid_broadcast = a.split(":")[1].strip()
-            ieee_mode = "IEEE 802.%s" % i.split(":")[1].strip()
-            channel = c.split(":")[1].strip()
-            freq = f.split(":")[1].strip()
-            ssid[ri] = {
-                "ssid": res,
-                "vlan": resv,
-                "ssid_broadcast": ssid_broadcast,
-                "ieee_mode": ieee_mode,
-                "channel": channel,
-                "freq": freq
-            }
+        c = self.cli("show interface list")
+        for ifaces in c.split(":")[1].strip().split(","):
+            match = self.rx_ra.match(ifaces.strip())
+            if match:
+                ra = match.group("ra")
+                s = self.cli("show interface %s ssid" % ra)
+                v = self.cli("show interface %s vlan-to-ssid" % ra)
+                a = self.cli("show interface %s ssid-broadcast" % ra)
+                i = self.cli("show interface %s ieee-mode" % ra)
+                c = self.cli("show interface %s channel" % ra)
+                f = self.cli("show interface %s freq" % ra)
+                res = s.split(":")[1].strip().replace("\"", "")
+                resv = v.split(":")[1].strip().replace("\"", "")
+                ssid_broadcast = a.split(":")[1].strip()
+                ieee_mode = "IEEE 802.%s" % i.split(":")[1].strip()
+                channel = c.split(":")[1].strip()
+                freq = f.split(":")[1].strip()
+                ssid[ra] = {
+                    "ssid": res,
+                    "vlan": resv,
+                    "ssid_broadcast": ssid_broadcast,
+                    "ieee_mode": ieee_mode,
+                    "channel": channel,
+                    "freq": freq
+                }
+
         with self.profile.shell(self):
             v = self.cli("ip a", cached=True)
             for match in self.rx_sh_int.finditer(v):
-                a_stat = True
+                a_status = True
                 ifname = match.group("ifname")
                 if "@" in ifname:
                     ifname = ifname.split("@")[0]
@@ -179,20 +169,21 @@ class Script(BaseScript):
                 if smatch:
                     o_status = smatch.group("status").lower() == "up"
                 else:
-                    o_status = True
+                    o_status = False
                 ip = match.group("ip")
                 mac = match.group("mac")
+                mtu = match.group("mtu")
                 iface = {
                     "type": self.profile.get_interface_type(ifname),
                     "name": ifname,
-                    "admin_status": a_stat,
+                    "admin_status": a_status,
                     "oper_status": o_status,
                     "snmp_ifindex": match.group("ifindex"),
                     "subinterfaces": [
                         {
                             "name": ifname,
-                            "mtu": match.group("mtu"),
-                            "admin_status": a_stat,
+                            "mtu": mtu,
+                            "admin_status": a_status,
                             "oper_status": o_status,
                             "snmp_ifindex": match.group("ifindex"),
                         }
@@ -207,32 +198,33 @@ class Script(BaseScript):
                 else:
                     iface["subinterfaces"][0]["enabled_afi"] = ["BRIDGE"]
                 interfaces += [iface]
-                for ri in ssid.items():
-                    if ifname in ri[0]:
-                        iface = {
-                            "type": "physical",
-                            "name": "%s.%s" % (ifname, ri[1]["ssid"]),
-                            "admin_status": a_stat,
+                ri = ssid.get(ifname)
+                if ri:
+                    if ri["ssid_broadcast"] == "enabled":
+                        ssid_broadcast = "enable"
+                    else:
+                        ssid_broadcast = "disable"
+                        o_status = False  # Do not touch !!!
+                    iface = {
+                        "type": "physical",
+                        "name": "%s.%s" % (ifname, ri["ssid"]),
+                        "admin_status": a_status,
+                        "oper_status": o_status,
+                        "mac": MAC(mac),
+                        "snmp_ifindex": match.group("ifindex"),
+                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz" % (
+                            ssid_broadcast, ri["ieee_mode"], ri["channel"], ri["freq"]),
+                        "subinterfaces": [{
+                            "name": "%s.%s" % (ifname, ri["ssid"]),
+                            "enabled_afi": ["BRIDGE"],
+                            "admin_status": a_status,
                             "oper_status": o_status,
+                            "mtu": mtu,
+                            "mac": MAC(mac),
                             "snmp_ifindex": match.group("ifindex"),
-                            "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s" %
-                            (
-                                ri[1]["ssid_broadcast"], ri[1]["ieee_mode"], ri[1]["channel"],
-                                ri[1]["freq"]
-                            ),
-                            "subinterfaces": [
-                                {
-                                    "name": "%s.%s" % (ifname, ri[1]["ssid"]),
-                                    "enabled_afi": ["BRIDGE"],
-                                    "admin_status": a_stat,
-                                    "oper_status": o_status,
-                                    "snmp_ifindex": match.group("ifindex"),
-                                    "untagged_vlan": int(ri[1]["vlan"]),
-                                }
-                            ]
-                        }
-                        if mac:
-                            iface["mac"] = MAC(mac)
-                            iface["subinterfaces"][0]["mac"] = MAC(mac)
-                        interfaces += [iface]
+                            "untagged_vlan": int(ri["vlan"]),
+                        }]
+                    }
+                    interfaces += [iface]
+
         return [{"interfaces": interfaces}]
