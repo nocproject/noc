@@ -339,8 +339,9 @@ COLLECTIONS = [
     "inv.ConnectionRule",
     "inv.ConnectionType",
     "inv.Vendor",
-    "inv.Platform",
-    "inv.Firmware",
+    # Disabled due to incompatible future changes
+    # "inv.Platform",
+    # "inv.Firmware",
     "fm.MIBAlias",
     "gis.Layer",
     "cm.ErrorType",
