@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportalarmdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -191,12 +191,13 @@ class ReportAlarmDetailApplication(ExtApplication):
             cmap = list(range(len(cols)))
 
         r = [translate_row(header_row, cmap)]
+        fd = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
         match = {"timestamp": {"$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"),
-                               "$lt": datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)}}
+                               "$lte": fd}}
+
         match_duration = {"duration": {"$gte": min_duration}}
         if max_duration is not 0:
-            match_duration = {"duration": {"$gte": min_duration, "$lt": max_duration}}
-
+            match_duration = {"duration": {"$gte": min_duration, "$lte": max_duration}}
         mos = ManagedObject.objects.filter(is_managed=True)
 
         if segment:
@@ -265,7 +266,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 if int(a["managed_object"]) not in moss:
                     continue
                 dt = a["clear_timestamp"] - a["timestamp"]
-                duration = dt.days * 86400 + dt.seconds
+                duration = int(dt.total_seconds())
                 total_objects = sum(
                     ss["summary"] for ss in a["total_objects"])
                 if min_objects and total_objects < min_objects:
@@ -314,10 +315,15 @@ class ReportAlarmDetailApplication(ExtApplication):
         # Active Alarms
         if source in ["active", "both"]:
             for a in ActiveAlarm._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(match).sort([("timestamp", 1)]):
-
-                dt = datetime.datetime.now() - a["timestamp"]
-                duration = dt.days * 86400 + dt.seconds
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
+                    {"$match": match},
+                    {"$addFields": {"duration": {"$divide": [{"$subtract": [fd, "$timestamp"]},
+                                                             1000]}}},
+                    {"$match": match_duration},
+                    # {"$sort": {"timestamp": 1}}
+                    ]):
+                dt = fd - a["timestamp"]
+                duration = int(dt.total_seconds())
                 total_objects = sum(
                     ss["summary"] for ss in a["total_objects"])
                 if min_objects and total_objects < min_objects:
