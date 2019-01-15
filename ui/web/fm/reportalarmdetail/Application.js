@@ -288,6 +288,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             "/fm/reportalarmdetail/download/?from_date="
             + v.from_date + "&to_date=" + v.to_date
             + "&format=" + format + "&min_duration=" + v.min_duration
+            + "&max_duration=" + v.max_duration
             + "&min_objects=" + v.min_objects
             + "&min_subscribers=" + v.min_subscribers
             + "&source=" + v.rb
