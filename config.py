@@ -155,7 +155,7 @@ class Config(BaseConfig):
 
     class collections(ConfigSection):
         allow_sharing = BooleanParameter(default=True)
-        project_id = IntParameter(default=372)
+        project_id = IntParameter(default=59)
 
     class consul(ConfigSection):
         token = SecretParameter()
