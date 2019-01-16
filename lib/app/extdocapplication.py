@@ -26,7 +26,8 @@ from noc.sa.interfaces.base import (
     BooleanParameter, GeoPointParameter,
     ModelParameter, ListOfParameter,
     EmbeddedDocumentParameter, DictParameter,
-    InterfaceTypeError, DocumentParameter, ObjectIdParameter)
+    InterfaceTypeError, DocumentParameter,
+    ObjectIdParameter)
 from noc.lib.validators import is_int, is_uuid
 from noc.main.models.permission import Permission
 from noc.core.middleware.tls import get_user
@@ -240,6 +241,9 @@ class ExtDocApplication(ExtApplication):
                 if self.secret_fields and n in self.secret_fields and not self.has_secret():
                     # Sensitive fields (limit view only to *secret* permission)
                     v = self.SECRET_MASK
+                elif f.name == "bi_id":
+                    # Long integer send as string
+                    v = str(v)
                 elif isinstance(f, GeoPointField):
                     pass
                 elif isinstance(f, ForeignKeyField):
@@ -381,7 +385,8 @@ class ExtDocApplication(ExtApplication):
         return self.response(self.instance_to_dict(o, fields=only),
                              status=self.OK)
 
-    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+    @view(method=["PUT"],
+          url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="update", api=True)
     def api_update(self, request, id):
         try:
@@ -423,7 +428,8 @@ class ExtDocApplication(ExtApplication):
             r = self.instance_to_dict(o)
         return self.response(r, status=self.OK)
 
-    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+    @view(method=["DELETE"],
+          url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="delete", api=True)
     def api_delete(self, request, id):
         try:
