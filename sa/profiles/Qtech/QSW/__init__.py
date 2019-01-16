@@ -42,7 +42,7 @@ class Profile(BaseProfile):
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
     rogue_chars = [re.compile(r"\s*\x1b\[74D\s+\x1b\[74D"), "\r"]
-    rx_ifname = re.compile(r"^(?P<number>[\d/]+)$")
+    rx_ifname = re.compile(r"(?P<number>[\d\/]+)$")
 
     def convert_interface_name(self, s):
         """
@@ -53,7 +53,7 @@ class Profile(BaseProfile):
         """
         match = self.rx_ifname.search(s)
         if match:
-            return "e%s" % s
+            return "e%s" % match.group("number")
         else:
             return s
 
