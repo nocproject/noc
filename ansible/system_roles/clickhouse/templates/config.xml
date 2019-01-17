@@ -49,7 +49,7 @@
     <path>{{ ch_data_dir }}/</path>
 
     <!-- Path to temporary data for processing hard queries. -->
-    <tmp_path>{{ch_big_query_dir}}/</tmp_path>
+    <tmp_path>{{ ch_big_query_dir }}/</tmp_path>
 
     <!-- Path to configuration file with users, access rights, profiles of settings, quotas. -->
     <users_config>users.xml</users_config>

@@ -1,44 +1,44 @@
 ---
-- name: create "{{consul_service_name}}" service file and render script for it
+- name: create "{{ consul_service_name }}" service file and render script for it
   block:
-  - name: create "{{consul_service_name}}" service file
+  - name: create "{{ consul_service_name }}" service file
     template:
       src: "service.json.j2"
-      dest: "{{consul_configd_path}}/{{consul_service_name}}.json"
+      dest: "{{ consul_configd_path }}/{{ consul_service_name }}.json"
     vars:
-      name: "{{consul_service_name}}"
-      tags: "{{consul_service_tags}}"
-      port: "{{consul_service_port}}"
-      check_type: "{{consul_service_check_type}}"
-      check_value: "{{consul_scripts_path}}/{{consul_service_check_value}}"
-      check_timeout: "{{consul_service_timeout | default('2s')}}"
-      check_interval: "{{consul_service_check_interval}}"
-      check_http_skip_verify: "{{consul_service_check_http_skip_verify}}"
+      name: "{{ consul_service_name }}"
+      tags: "{{ consul_service_tags }}"
+      port: "{{ consul_service_port }}"
+      check_type: "{{ consul_service_check_type }}"
+      check_value: "{{ consul_scripts_path }}/{{ consul_service_check_value }}"
+      check_timeout: "{{ consul_service_timeout | default('2s') }}"
+      check_interval: "{{ consul_service_check_interval }}"
+      check_http_skip_verify: "{{ consul_service_check_http_skip_verify }}"
     notify:
       - reload consul
   - name: copy script to consul localtion
     template:
-      src: "{{consul_service_check_script}}"
-      dest: "{{consul_scripts_path}}/{{consul_service_check_value}}"
+      src: "{{ consul_service_check_script }}"
+      dest: "{{ consul_scripts_path }}/{{ consul_service_check_value }}"
       mode: 0755
-    no_log: "{{tower_show_secrets}}"
+    no_log: "{{ tower_show_secrets }}"
     notify:
       - reload consul
   when: consul_service_check_type == "script"
 
-- name: create "{{consul_service_name}}" service file
+- name: create "{{ consul_service_name }}" service file
   template:
     src: "service.json.j2"
-    dest: "{{consul_configd_path}}/{{consul_service_name}}.json"
+    dest: "{{ consul_configd_path }}/{{ consul_service_name }}.json"
   vars:
-    name: "{{consul_service_name}}"
-    consul_tags: "{{consul_service_tags}}"
-    port: "{{consul_service_port}}"
-    check_type: "{{consul_service_check_type}}"
-    check_value: "{{consul_service_check_value}}"
-    check_timeout: "{{consul_service_timeout | default('2s')}}"
-    check_interval: "{{consul_service_check_interval}}"
-    check_http_skip_verify: "{{consul_service_check_http_skip_verify}}"
+    name: "{{ consul_service_name }}"
+    consul_tags: "{{ consul_service_tags }}"
+    port: "{{ consul_service_port }}"
+    check_type: "{{ consul_service_check_type }}"
+    check_value: "{{ consul_service_check_value }}"
+    check_timeout: "{{ consul_service_timeout | default('2s') }}"
+    check_interval: "{{ consul_service_check_interval }}"
+    check_http_skip_verify: "{{ consul_service_check_http_skip_verify }}"
   notify:
     - reload consul
   when: consul_service_check_type != "script"

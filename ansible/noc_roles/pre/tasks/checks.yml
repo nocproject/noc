@@ -58,14 +58,14 @@
 - block:
     - name: tower version is too old
       fail:
-        msg: "tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'. \n\n\n See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md  \n\n\n "
+        msg: "tower version is '{{ tower_version }}' the minimum version is '{{ tower_minimum_version }}'. \n\n\n See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md  \n\n\n "
       when: "'old' in tower_version"
 
     - name: tower version is old
       fail:
         msg: |
 
-          tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'.
+          tower version is '{{ tower_version }}' the minimum version is '{{ tower_minimum_version }}'.
 
           See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md
 

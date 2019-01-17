@@ -42,10 +42,10 @@
   become: "True"
   file:
     state: directory
-    path: "{{item}}"
+    path: "{{ item }}"
     owner: root
     group: wheel
     mode: 0755
   with_items:
-    - "{{etc_prefix}}/newsyslog.conf.d"
-    - "{{etc_prefix}}/rc.d"
+    - "{{ etc_prefix }}/newsyslog.conf.d"
+    - "{{ etc_prefix }}/rc.d"

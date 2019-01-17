@@ -1,12 +1,12 @@
 command:
-  {{noc_root}}/noc ctl status |grep bi:
+  {{ noc_root }}/noc ctl status |grep bi:
     exit-status: 0
     stdout:
     - /bi:.+RUNNING/
     stderr: []
     timeout: 10000
 file:
-  {{noc_root}}/ui/bi2/index.html:
+  {{ noc_root }}/ui/bi2/index.html:
     exists: true
     mode: "0644"
     owner: root

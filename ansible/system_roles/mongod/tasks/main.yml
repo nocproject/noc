@@ -3,8 +3,8 @@
   changed_when: "False"
   add_host:
     group: svc-mongo-primary
-    host: "{{item}}"
-  with_items: "{{groups['svc-mongod-exec']}}"
+    host: "{{ item }}"
+  with_items: "{{ groups['svc-mongod-exec'] }}"
   when: "'bootstrap' in hostvars[item]['mongod_power']"
 
 - name: Create mongod user
@@ -49,7 +49,7 @@
     dest: "{{ mongo_dir }}/mongo.key"
     owner: "{{ mongo_user }}"
     mode: "0400"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
@@ -96,7 +96,7 @@
     src: shell.js.j2
     dest: "{{ mongo_dir }}/shell.js"
     owner: "{{ mongo_user }}"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
   tags:
     - config
 
@@ -119,7 +119,7 @@
   when:
     - "mongod_power != 'bootstrap'"
     - mongo_master_init_done is defined
-  delegate_to: "{{groups['svc-mongo-primary'][0]}}"
+  delegate_to: "{{ groups['svc-mongo-primary'][0] }}"
   tags:
     - rs_init
 

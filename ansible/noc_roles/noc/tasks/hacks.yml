@@ -1,8 +1,8 @@
 ---
 - name: Tune sysctl.conf for node
   sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     state: present
     reload: "True"
   with_items:
@@ -13,7 +13,7 @@
 
 - name: patch supervisord for oomkiller
   patch:
-    basedir: "{{noc_root}}"
+    basedir: "{{ noc_root }}"
     src: oom_score_adj.patch
     strip: 1
   tags:

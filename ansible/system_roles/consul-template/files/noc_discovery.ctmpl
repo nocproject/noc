@@ -4,13 +4,13 @@
 [[inputs.httpjson]]
   name = "noc-discovery"
   servers = [
-  {{ with node -}}
-    {{range .Services -}}
-        {{ if .Service | contains "discovery" -}}
-            "http://{{.Address}}:{{.Port}}/mon/",
-        {{- end}}
-     {{- end}}
-  {{- end}}
+  {{ with node - }}
+    {{ range .Services - }}
+        {{ if .Service | contains "discovery" - }}
+            "http://{{ .Address }}:{{ .Port }}/mon/",
+        {{ - end }}
+     {{ - end }}
+  {{ - end }}
   ]
   method = "GET"
   tag_keys = ["service", "instance", "pool"]

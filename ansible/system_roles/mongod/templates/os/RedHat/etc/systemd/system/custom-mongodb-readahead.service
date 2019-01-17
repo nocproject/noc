@@ -4,4 +4,4 @@ Description=Set custom read-ahead on storage device
 
 [Service]
 Type=oneshot
-ExecStart=/sbin/blockdev --setra 32 {{mongodb_blockdev.stdout}}
+ExecStart=/sbin/blockdev --setra 32 {{ mongodb_blockdev.stdout }}

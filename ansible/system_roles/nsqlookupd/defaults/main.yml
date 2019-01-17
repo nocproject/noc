@@ -1,6 +1,6 @@
 ---
-nsq_dist: "{{ansible_system.lower()}}"
-nsq_url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.{{nsq_dist}}-amd64.go1.6.2.tar.gz
-nsq_temp_file: "{{tower_dist_dir}}/nsq-{{nsq_version}}.{{nsq_dist}}-amd64.go1.6.2.tar.gz"
+nsq_dist: "{{ ansible_system.lower() }}"
+nsq_url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{ nsq_version }}.{{ nsq_dist }}-amd64.go1.6.2.tar.gz
+nsq_temp_file: "{{ tower_dist_dir }}/nsq-{{ nsq_version }}.{{ nsq_dist }}-amd64.go1.6.2.tar.gz"
 nsq_root: /opt/nsq
-nsqd_config_dir: "{{etc_prefix}}/nsq"
+nsqd_config_dir: "{{ etc_prefix }}/nsq"

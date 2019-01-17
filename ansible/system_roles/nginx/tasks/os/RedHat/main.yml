@@ -4,7 +4,7 @@
     name: http://nginx.org/packages/rhel/{{ ansible_distribution_major_version }}/noarch/RPMS/nginx-release-rhel-{{ ansible_distribution_major_version }}-0.el{{ ansible_distribution_major_version }}.ngx.noarch.rpm
     state: present
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -15,7 +15,7 @@
     disable_gpg_check: "True"
     update_cache: "False"
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 

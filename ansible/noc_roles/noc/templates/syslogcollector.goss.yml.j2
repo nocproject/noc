@@ -1,5 +1,5 @@
 command:
-  {{noc_root}}/noc ctl status |grep syslogcollector:
+  {{ noc_root }}/noc ctl status |grep syslogcollector:
     exit-status: 0
     stdout:
     - /syslogcollector-.+RUNNING/

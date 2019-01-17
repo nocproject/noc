@@ -20,9 +20,9 @@ rcvar=nsqd_enable
 load_rc_config $name
 
 : ${nsqd_enable="NO"}
-: ${nsqd_config="{{nsqd_config_dir}}/${name}.conf"}
+: ${nsqd_config="{{ nsqd_config_dir }}/${name}.conf"}
 
-command="{{nsq_root}}/${name}"
+command="{{ nsq_root }}/${name}"
 start_precmd=nsqd_prestart
 extra_commands="reload"
 

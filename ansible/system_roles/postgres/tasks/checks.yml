@@ -7,8 +7,8 @@
 
 - name: count postgres masters set
   set_fact:
-    postgres_masters_count: "{{postgres_masters_count | int+ 1}}"
-  with_items: "{{groups['svc-postgres-exec']}}"
+    postgres_masters_count: "{{ postgres_masters_count | int+ 1 }}"
+  with_items: "{{ groups['svc-postgres-exec'] }}"
   when: "'master' in hostvars[srv]['postgres_power']"
   loop_control:
     loop_var: srv
@@ -54,8 +54,8 @@
         msg: |
           Database upgrade is too complicated job to be done on unknown system with perfectly unknown environment.
           To make continue deploy make sure that only one version of Postgres database is installed and it same as used in tower.
-          Currently requested is "{{postgres_version}}"
-          Currently used is "{{postgres_version_used}}"
+          Currently requested is "{{ postgres_version }}"
+          Currently used is "{{ postgres_version_used }}"
       when:
         - postgres_version_used is defined
         - postgres_version | string != postgres_version_used | string
@@ -63,9 +63,9 @@
     - name: fail if too many postgres servers installed
       fail:
         msg: |
-          There are too many postgres servers installed on {{ansible_hostname}}. Remove some.
-          Currently requested in tower: "{{postgres_version}}"
-          Currently installed are: "{{too_many_postgres_installed}}"
+          There are too many postgres servers installed on {{ ansible_hostname }}. Remove some.
+          Currently requested in tower: "{{ postgres_version }}"
+          Currently installed are: "{{ too_many_postgres_installed }}"
       when:
         - too_many_postgres_installed is defined
   when:

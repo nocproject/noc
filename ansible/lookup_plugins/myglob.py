@@ -36,7 +36,7 @@ DOCUMENTATION:
           the files/ directory in the role will be chosen over files/ directory in play.
 EXAMPLES:
     - name: "copy configs"
-      copy: src={{item}} dest=/etc/conf.d/
+      copy: src={{ item }} dest=/etc/conf.d/
       with_fileglob:
         - 'files/conf.d/*.conf'
 

@@ -147,18 +147,18 @@ ldap_bind_password =
 # Users search base
 ldap_users_base = ou=Users,ou=nocproject,ou=org
 # Filter to search users by username
-ldap_users_filter = (&(objectClass=inetOrgPerson)(uid={{user}}))
+ldap_users_filter = (&(objectClass=inetOrgPerson)(uid={{ user }}))
 # Groups search base
 ldap_groups_base = ou=Groups,ou=nocproject,ou=org
 # Additionaly check user in group, before permitting to log in
 # Set user.is_active flag to false when user is not in a group
 ldap_required_group =
 # Filter to search user in required group
-ldap_required_filter = (|(uniqueMember={{dn}})(member={{user}}))
+ldap_required_filter = (|(uniqueMember={{ dn }})(member={{ user }}))
 # Grant superuser permissions if user in group
 ldap_superuser_group =
 # Filter to search user in superusers group
-ldap_superuser_filter = (|(uniqueMember={{dn}})(member={{user}}))
+ldap_superuser_filter = (|(uniqueMember={{ dn }})(member={{ user }}))
 # Use TLS
 ldap_start_tls = false
 
@@ -175,7 +175,7 @@ ad_bind_password =
 # Users search base
 ad_users_base = ou=nocproject,ou=org
 # Filter to search users by username
-ad_users_filter = (&(objectClass=organizationalPerson)(sAMAccountName={{user}}))
+ad_users_filter = (&(objectClass=organizationalPerson)(sAMAccountName={{ user }}))
 # Groups search base
 ad_groups_base = ou=Groups,ou=nocproject,ou=org
 # Additionaly check user in group, before permitting to log in

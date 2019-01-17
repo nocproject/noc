@@ -1,28 +1,28 @@
 ---
 - name: check if noc_root exists
   stat:
-    path: "{{noc_root}}"
+    path: "{{ noc_root }}"
   register: noc_root_state
 
 - block:
     - name: Clone NOC
-      command: git clone "{{noc_repo}}" "{{noc_root}}"
+      command: git clone "{{ noc_repo }}" "{{ noc_root }}"
       environment:
-        https_proxy: "{{http_proxy}}"
+        https_proxy: "{{ http_proxy }}"
 
     - name: set up dummy git user email
       git_config:
         name: user.email
-        repo: "{{noc_root}}"
+        repo: "{{ noc_root }}"
         scope: local
         value: 'noc_user@{{ ansible_fqdn }}'
 
     - name: set up dummy git user name
       git_config:
         name: user.name
-        repo: "{{noc_root}}"
+        repo: "{{ noc_root }}"
         scope: local
-        value: 'Noc User {{ansible_fqdn}}'
+        value: 'Noc User {{ ansible_fqdn }}'
 
   when:
     - noc_root_state.stat.exists is defined
@@ -31,32 +31,32 @@
 - name: Fetch changes from upstream
   command: git fetch origin
   args:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
   register: git_pill_status
   changed_when: "'Already up-to-date.' not in git_pill_status.stdout"
   when: noc_env_type == 'dev'
 
 - name: Pull NOC
   git:
-    repo: "{{noc_repo}}"
-    dest: "{{noc_root}}"
-    version: "{{noc_version}}"
-    force: "{{noc_env_type == 'prod'}}"
+    repo: "{{ noc_repo }}"
+    dest: "{{ noc_root }}"
+    version: "{{ noc_version }}"
+    force: "{{ noc_env_type == 'prod' }}"
     clone: "True"
   register: pull_state
   diff: "False"
-  ignore_errors: "{{noc_env_type != 'prod'}}"
+  ignore_errors: "{{ noc_env_type != 'prod' }}"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - get_source
 
 - name: fail if local modifications found
   fail:
     msg: |
-      There are local modifications to {{noc_root}} directory. Local modification have to be placed to {{noc_root | dirname}}/noc_custom/ directory.
+      There are local modifications to {{ noc_root }} directory. Local modification have to be placed to {{ noc_root | dirname }}/noc_custom/ directory.
       To continue update please do one of the following:
       * revert them `git checkout microservices`
       * stash them https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning

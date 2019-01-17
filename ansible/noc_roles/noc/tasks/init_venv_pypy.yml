@@ -8,7 +8,7 @@
   become: "False"
   run_once: "True"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
 
 - name: create pypy dir
   file:
@@ -17,35 +17,35 @@
 
 - name: Unarchive pypy
   unarchive:
-    src: "{{pypy_tmp_path}}"
+    src: "{{ pypy_tmp_path }}"
     dest: "{{ pypy_path }}"
     creates: "{{ pypy_path }}/bin/virtualenv-pypy"
     extra_opts: ['--strip-components=1']
 
 - name: check if venv is already init
   stat:
-    path: "{{noc_root}}/bin/pip"
+    path: "{{ noc_root }}/bin/pip"
   register: venv_init
 
 - block:
     - name: remove lib dir
       file:
-        path: "{{noc_root}}/lib"
+        path: "{{ noc_root }}/lib"
         state: absent
 
     - name: init venv
-      command: "{{ pypy_path }}/bin/virtualenv-pypy {{noc_root}}"
+      command: "{{ pypy_path }}/bin/virtualenv-pypy {{ noc_root }}"
       environment:
-        https_proxy: "{{http_proxy}}"
+        https_proxy: "{{ http_proxy }}"
       args:
-        chdir: "{{noc_root | dirname }}"
+        chdir: "{{ noc_root | dirname }}"
 
     - name: refetch actual source
-      command: "git checkout {{noc_root}}/lib"
+      command: "git checkout {{ noc_root }}/lib"
       environment:
-        https_proxy: "{{http_proxy}}"
+        https_proxy: "{{ http_proxy }}"
       args:
-        chdir: "{{noc_root }}"
+        chdir: "{{ noc_root }}"
 
   when:
     - venv_init.stat.exists is defined
@@ -53,12 +53,12 @@
 
 - name: Install node pypy numpy(should take a while for a first time)
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     name: "https://bitbucket.org/pypy/numpy/get/master.tar.bz2#numpy==1.10.0"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
@@ -67,13 +67,13 @@
 
 - name: Install node python packages(should take a while for a first time)
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/pypynode.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
@@ -83,18 +83,18 @@
 - name: Install noc.pth
   template:
     src: "lib/python/site-packages/noc.pth.j2"
-    dest: "{{noc_root}}/site-packages/noc.pth"
+    dest: "{{ noc_root }}/site-packages/noc.pth"
 
 - name: Install sitecustomize.py
   template:
     src: "lib/python/site-packages/sitecustomize.py.j2"
-    dest: "{{noc_root}}/site-packages/sitecustomize.py"
+    dest: "{{ noc_root }}/site-packages/sitecustomize.py"
   tags:
     - config
 
 - name: Update site.py
   replace:
-    dest: "{{noc_root}}/lib-python/2.7/site.py"
+    dest: "{{ noc_root }}/lib-python/2.7/site.py"
     regexp: "encoding = ['\"]ascii['\"]"
     replace: 'encoding = "utf-8"'
   tags:

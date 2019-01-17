@@ -25,7 +25,7 @@
     debug:
       msg: |
         It seems there are trouble with mongo disk size.
-        Script result is {{mongod_dir_size.stdout | int}}
+        Script result is {{ mongod_dir_size.stdout | int }}
         Check with `df /var/lib/mongo/`
     when:
       - mongod_dir_size.stdout | int >= 99
@@ -42,7 +42,7 @@
     debug:
       msg: |
         There are toubles with mongo on
-        {{consul_req.json | json_query("[].Checks[?ServiceName=='mongo'].{node:Node, status:Status}[]") | to_nice_yaml}}
+        {{ consul_req.json | json_query("[].Checks[?ServiceName=='mongo'].{node:Node, status:Status}[]") | to_nice_yaml }}
     when:
       - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='mongo'].Status[]\")"
 

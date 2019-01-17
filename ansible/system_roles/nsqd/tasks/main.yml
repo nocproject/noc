@@ -6,7 +6,7 @@
 - name: add nsqd user
   user:
     name: nsq
-    shell: "{{fake_shell}}"
+    shell: "{{ fake_shell }}"
 
 - name: create path for on-disk queue files
   file:
@@ -16,11 +16,11 @@
     group: nsq
     owner: nsq
   with_items:
-    - dir: "{{nsqd_db_dir}}"
+    - dir: "{{ nsqd_db_dir }}"
       mode: "0770"
-    - dir: "{{nsqd_config_dir}}"
+    - dir: "{{ nsqd_config_dir }}"
       mode: "u=rwx,g=rx,o=rx"
-    - dir: "{{nsq_root}}"
+    - dir: "{{ nsq_root }}"
       mode: "u=rwx,g=rx,o=rx"
 
 - name: include nsqd os specific tasks
@@ -35,8 +35,8 @@
   vars:
     ct_service_name: nsqd
     ct_service_source: "nsqd.conf.ctmpl"
-    ct_service_dest: "{{nsqd_config_dir}}/nsqd.conf"
-    ct_service_command: "{{reload_command}}"
+    ct_service_dest: "{{ nsqd_config_dir }}/nsqd.conf"
+    ct_service_command: "{{ reload_command }}"
     ct_service_command_timeout: "60s"
     ct_service_source_template: "True"
 
@@ -87,9 +87,9 @@
     monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pattern
     monitoring_service_procstat_value: nsqd
-    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"]
+    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"] # noqa 204
     monitoring_config:
-      endpoints: ["http://{{ansible_nodename}}:4151"]
+      endpoints: ["http://{{ ansible_nodename }}:4151"]
   when: has_svc_monitoring is defined
   tags:
     - monitoring

@@ -1,14 +1,14 @@
 ---
 ch_log_dir: /var/log/clickhouse-server
 ch_data_dir: /var/lib/clickhouse
-ch_big_query_dir: "{{ch_data_dir}}/tmp"
+ch_big_query_dir: "{{ ch_data_dir }}/tmp"
 clickhouse_http_port: 8123
 clickhouse_max_ast_elements: 10000
 
 clickhouse_service_name: clickhouse-server
 
-ch_etc_path: "{{etc_prefix}}/clickhouse-server"
-ch_dictionaries_path: "{{ch_etc_path}}/dictionaries"
+ch_etc_path: "{{ etc_prefix }}/clickhouse-server"
+ch_dictionaries_path: "{{ ch_etc_path }}/dictionaries"
 
-ch_host: "{{ hostvars[groups['svc-clickhouse-exec'][0]].ansible_host}}"
+ch_host: "{{ hostvars[groups['svc-clickhouse-exec'][0]].ansible_host }}"
 ch_port: 8123

@@ -16,7 +16,7 @@
 # yamllint disable rule:indentation
 - name: install dummy upstream.conf
   copy:
-    dest: "{{nginx_conf_upstream_path}}"
+    dest: "{{ nginx_conf_upstream_path }}"
     content: |
       upstream noc-web {
          server 127.0.0.1:65535; # check consul for web service

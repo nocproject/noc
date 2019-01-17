@@ -5,7 +5,7 @@
     state: present
   vars:
     packages:
-      - postgresql{{postgres_version|replace(".","")}}-client
+      - postgresql{{ postgres_version|replace(".","") }}-client
       - python2
       - py27-virtualenv
       - curl

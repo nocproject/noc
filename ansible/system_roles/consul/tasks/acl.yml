@@ -6,6 +6,6 @@
     path: configd_50acl_policy.hcl.j2
     state: absent
     owner: "{{ consul_user }}"
-    group: "{{ consul_group}}"
+    group: "{{ consul_group }}"
   notify:
     - restart consul

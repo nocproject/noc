@@ -25,7 +25,7 @@
       template:
         src: admininit.js.j2
         dest: "{{ mongo_dir }}/admininit.js"
-      no_log: "{{tower_show_secrets}}"
+      no_log: "{{ tower_show_secrets }}"
       tags:
         - config
 
@@ -41,14 +41,16 @@
   template:
     src: userinit.js.j2
     dest: "{{ mongo_dir }}/userinit.js"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
   register: user_status
   tags:
     - config
 
 - name: Create database user
-  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js" # noqa 204
   when: user_status is changed
+  tags:
+    - skip_ansible_lint
 
 - name: Update replica set configuration
   command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' admin {{ mongo_dir }}/rsinit.js"

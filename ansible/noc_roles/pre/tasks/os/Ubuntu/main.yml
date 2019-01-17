@@ -4,7 +4,7 @@
   apt:
     name: "{{ packages }}"
     update_cache: "True"
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   vars:
     packages:
       - ca-certificates
@@ -14,7 +14,7 @@
       - apt-transport-https
       - dbus  # to setup hostname
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements

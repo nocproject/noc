@@ -6,18 +6,18 @@ noc_var_lib: /var/lib/noc
 noc_repo: https://github.com/nocproject/noc.git
 noc_version: microservices
 noc_root: /opt/noc
-noc_etc: "{{noc_root}}/etc"
-noc_reports_dir: "{{noc_var_lib}}/reports"
-noc_crashinfo_dir: "{{noc_var_lib}}/var/cp/crashinfo/new"
-noc_services_file: "{{noc_etc}}/noc_services.conf"
+noc_etc: "{{ noc_root }}/etc"
+noc_reports_dir: "{{ noc_var_lib }}/reports"
+noc_crashinfo_dir: "{{ noc_var_lib }}/var/cp/crashinfo/new"
+noc_services_file: "{{ noc_etc }}/noc_services.conf"
 pypy_version: 5.9
 pypy_hash_sha256: 8d39eb98df3adf7882a7f3551f47b8c7cff47a0e20d6aabc57bb592f155c2616
 pypy_download_url_base: https://bitbucket.org/squeaky/portable-pypy/downloads
 pypy_download_url: "{{ pypy_download_url_base }}/pypy-{{ pypy_version }}-linux_x86_64-portable.tar.bz2"
-pypy_tmp_path: "{{tower_dist_dir}}/pypy-{{ pypy_version }}-linux_x86_64-portable.tar.bz2"
-pypy_path: "{{noc_root}}/../pypy"
+pypy_tmp_path: "{{ tower_dist_dir }}/pypy-{{ pypy_version }}-linux_x86_64-portable.tar.bz2"
+pypy_path: "{{ noc_root }}/../pypy"
 python_interpreter: python
-bi_export_dir: "{{noc_var_lib}}/bi"
+bi_export_dir: "{{ noc_var_lib }}/bi"
 supervisorctl_key: "{{ lookup('supervisorctl_key', tower_data + '/noc/supervisorctl.key') }}"
 django_key: "{{ lookup('django_key', tower_data + '/noc/secret.key') }}"
 supervisor_sock_path: /var/run/supervisor_noc.sock

@@ -5,7 +5,7 @@ addr:
     timeout: 500
 {% endfor %}
 command:
-  {{noc_root}}/noc ctl status |grep ch_datasource:
+  {{ noc_root }}/noc ctl status |grep ch_datasource:
     exit-status: 0
     stdout:
     - /ch_datasource:.+RUNNING/

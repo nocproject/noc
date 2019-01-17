@@ -5,13 +5,13 @@
 [[inputs.httpjson]]
   name = "noc-bi"
   servers = [
-  {{ with node -}}
-    {{range .Services -}}
-        {{ if eq .Service "bi" -}}
-            "http://{{.Address}}:{{.Port}}/mon/",
-        {{- end}}
-     {{- end}}
-  {{- end}}
+  {{ with node - }}
+    {{ range .Services - }}
+        {{ if eq .Service "bi" - }}
+            "http://{{ .Address }}:{{ .Port }}/mon/",
+        {{ - end }}
+     {{ - end }}
+  {{ - end }}
   ]
   method = "GET"
   tag_keys = ["service", "instance"]

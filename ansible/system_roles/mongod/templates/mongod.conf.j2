@@ -26,7 +26,7 @@ net:
   bindIp: 127.0.0.1,{{ mongo_listen_addr }}
 
 processManagement:
-  fork: {{ mongo_fork | lower}}
+  fork: {{ mongo_fork | lower }}
   pidFilePath: {{ mongo_pid }}
 
 security:

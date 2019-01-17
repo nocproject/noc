@@ -8,7 +8,7 @@
   become: "False"
   run_once: "True"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
 
 - name: create goss dirs
   file:

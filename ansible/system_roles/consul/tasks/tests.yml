@@ -24,13 +24,13 @@
 
     - name: check if consul http iface is reachable
       uri:
-        url: "http://127.0.0.1:8500/v1/health/node/{{host}}/"
+        url: "http://127.0.0.1:8500/v1/health/node/{{ host }}/"
       register: consul_ping
       changed_when: "False"
       check_mode: "False"
       loop_control:
         loop_var: host
-      with_items: "{{groups['svc-consul-exec']}}"
+      with_items: "{{ groups['svc-consul-exec'] }}"
 
   when:
     - has_svc_consul is defined

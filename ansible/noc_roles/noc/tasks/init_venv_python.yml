@@ -1,24 +1,24 @@
 ---
 - name: Initialize virtualenv
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     name: "pip"
     virtualenv: "{{ noc_root }}"
     state: "latest"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
     LC_ALL: C
 
 - name: Install wheel
   pip:
     name: wheel
-    chdir: "{{noc_root}}"
-    virtualenv: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
+    virtualenv: "{{ noc_root }}"
     state: present
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
@@ -29,17 +29,17 @@
   register: result
   changed_when: "'CHANGED' in result.stdout"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
 
 - name: Upgrade setuptools
   pip:
     name: setuptools
-    chdir: "{{noc_root}}"
-    virtualenv: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
+    virtualenv: "{{ noc_root }}"
     state: latest
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
@@ -52,12 +52,12 @@
 
 - name: Install mercurial for freebsd
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     name: "mercurial"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
   tags:
     - requirements
@@ -65,13 +65,13 @@
 
 - name: Install node python packages(should take a while for a first time)
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/node.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
@@ -81,18 +81,18 @@
 - name: Install noc.pth
   template:
     src: "lib/python/site-packages/noc.pth.j2"
-    dest: "{{noc_root}}/lib/python/site-packages/noc.pth"
+    dest: "{{ noc_root }}/lib/python/site-packages/noc.pth"
 
 - name: Install sitecustomize.py
   template:
     src: "lib/python/site-packages/sitecustomize.py.j2"
-    dest: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
+    dest: "{{ noc_root }}/lib/python/site-packages/sitecustomize.py"
   tags:
     - config
 
 - name: Update site.py
   replace:
-    dest: "{{noc_root}}/lib/python/site.py"
+    dest: "{{ noc_root }}/lib/python/site.py"
     regexp: "encoding = ['\"]ascii['\"]"
     replace: "encoding = 'utf-8'"
   tags:

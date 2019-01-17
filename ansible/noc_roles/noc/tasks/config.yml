@@ -5,12 +5,12 @@
     dest: "{{ noc_etc }}/supervisord.conf"
     owner: "root"
     mode: "0640"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
 
 - name: Build services config
   template:
     src: "etc/noc_services.conf.j2"
-    dest: "{{noc_root}}/etc/noc_services.conf"
+    dest: "{{ noc_root }}/etc/noc_services.conf"
     owner: "root"
     mode: "0640"
   when:
@@ -22,9 +22,9 @@
     src: "etc/tower.yml.j2"
     dest: "{{ noc_etc }}/tower.yml"
     mode: "0640"
-    group: "{{noc_group}}"
-    owner: "{{noc_user}}"
-  no_log: "{{tower_show_secrets}}"
+    group: "{{ noc_group }}"
+    owner: "{{ noc_user }}"
+  no_log: "{{ tower_show_secrets }}"
   when:
     - noc_services is defined
     - noc_services
@@ -32,32 +32,32 @@
 - name: Generate NOC config for pooled services
   template:
     src: "etc/pooled.yml.j2"
-    dest: "{{ noc_etc }}/pool-{{item.name}}.yml"
+    dest: "{{ noc_etc }}/pool-{{ item.name }}.yml"
     mode: "0640"
-    owner: "{{noc_user}}"
-    group: "{{noc_group}}"
-  no_log: "{{tower_show_secrets}}"
+    owner: "{{ noc_user }}"
+    group: "{{ noc_group }}"
+  no_log: "{{ tower_show_secrets }}"
   when:
     - noc_services is defined
     - noc_services
   vars:
-    pool_name: "{{item.name}}"
+    pool_name: "{{ item.name }}"
   with_items:
-    - "{{noc_all_pools}}"
+    - "{{ noc_all_pools }}"
 
 - name: Build pools config
   template:
     src: "etc/pools.yml.j2"
-    dest: "{{noc_root}}/etc/noc.yml"
-    owner: "{{noc_user}}"
-    group: "{{noc_group}}"
+    dest: "{{ noc_root }}/etc/noc.yml"
+    owner: "{{ noc_user }}"
+    group: "{{ noc_group }}"
     mode: "0640"
 
 - name: install .env file
   template:
     src: "env.j2"
-    dest: "{{noc_root}}/.env"
-    owner: "{{noc_user}}"
-    group: "{{noc_group}}"
+    dest: "{{ noc_root }}/.env"
+    owner: "{{ noc_user }}"
+    group: "{{ noc_group }}"
     mode: "0644"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"

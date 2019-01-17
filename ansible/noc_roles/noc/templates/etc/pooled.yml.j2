@@ -3,7 +3,7 @@
         {%- if service.config %}
 
 {{ service.name }}:
-{{ service.config |  to_nice_yaml | indent(2, true)}}
+{{ service.config |  to_nice_yaml | indent(2, true) }}
         {%- endif %}
     {%- endif %}
 {% endfor %}

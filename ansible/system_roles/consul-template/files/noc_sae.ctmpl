@@ -4,13 +4,13 @@
 [[inputs.httpjson]]
   name = "noc-sae"
   servers = [
-  {{ with node -}}
-    {{range .Services -}}
-        {{ if eq .Service "sae" -}}
-            "http://{{.Address}}:{{.Port}}/mon/",
-        {{- end}}
-     {{- end}}
-  {{- end}}
+  {{ with node - }}
+    {{ range .Services - }}
+        {{ if eq .Service "sae" - }}
+            "http://{{ .Address }}:{{ .Port }}/mon/",
+        {{ - end }}
+     {{ - end }}
+  {{ - end }}
   ]
   method = "GET"
   tag_keys = ["service", "instance"]

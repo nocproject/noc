@@ -18,7 +18,7 @@ return function(callback) {
     // Get dashboard configuration
     $.ajax({
         method: "GET",
-        url: "https://{{noc_web_host}}/pm/ddash/?" + $.param(args)
+        url: "https://{{ noc_web_host }}/pm/ddash/?" + $.param(args)
     }).done(function(result) {
         callback(result);
     });

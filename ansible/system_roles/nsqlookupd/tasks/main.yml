@@ -6,7 +6,7 @@
 - name: add nsqd user
   user:
     name: nsq
-    shell: "{{fake_shell}}"
+    shell: "{{ fake_shell }}"
 
 - name: create path for on-disk queue files
   file:
@@ -16,9 +16,9 @@
     group: nsq
     owner: nsq
   with_items:
-    - dir: "{{nsqd_config_dir}}"
+    - dir: "{{ nsqd_config_dir }}"
       mode: "u=rwx,g=rx,o=rx"
-    - dir: "{{nsq_root}}"
+    - dir: "{{ nsq_root }}"
       mode: "u=rwx,g=rx,o=rx"
 
 - name: include nsqlookupd os specific tasks
@@ -29,7 +29,7 @@
 - name: install nsqlookupd config
   template:
     src: config/nsqlookupd.conf.j2
-    dest: "{{nsqd_config_dir}}/nsqlookupd.conf"
+    dest: "{{ nsqd_config_dir }}/nsqlookupd.conf"
   notify: restart nsqlookupd
   tags:
     - config
@@ -43,7 +43,7 @@
     owner: nsq
   when: "'FreeBSD' in ansible_system"
   with_items:
-    - "{{nsd_log_dir}}"
+    - "{{ nsd_log_dir }}"
 
 - name: Enable nsqlookupd system service
   service:

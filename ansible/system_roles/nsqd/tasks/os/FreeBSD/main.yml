@@ -1,8 +1,8 @@
 ---
 - name: download nsq daemon
   get_url:
-    url: "{{nsq_url}}"
-    dest: "{{nsq_temp_file}}"
+    url: "{{ nsq_url }}"
+    dest: "{{ nsq_temp_file }}"
     validate_certs: "True"
   delegate_to: 127.0.0.1
   become: "False"
@@ -12,13 +12,13 @@
   delay: 2
   until: nsq_download is succeeded
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
 - name: unanchive nsqd
   unarchive:
-    src: "{{nsq_temp_file}}"
+    src: "{{ nsq_temp_file }}"
     dest: "{{ nsq_root }}"
     extra_opts: ['--strip-components=2']
     creates: "{{ nsq_root }}/nsqd"
@@ -39,4 +39,4 @@
     group: nsq
     owner: nsq
   with_items:
-    - "{{nsd_log_dir}}"
+    - "{{ nsd_log_dir }}"

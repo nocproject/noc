@@ -9,11 +9,11 @@ consul_template_architecture_map:
 consul_template_architecture: "{{ consul_template_architecture_map[ansible_architecture] }}"
 consul_template_os: "{{ ansible_system|lower }}"
 consul_template_pkg: "consul-template_{{ consul_template_version }}_{{ consul_template_os }}_{{ consul_template_architecture }}.zip"
-consul_template_zip_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/{{consul_template_pkg}}"
-consul_template_checksum_file_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version}}_SHA256SUMS"
-consul_template_temp_file: "{{tower_dist_dir}}/{{consul_template_pkg}}"
+consul_template_zip_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/{{ consul_template_pkg }}"
+consul_template_checksum_file_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_SHA256SUMS"
+consul_template_temp_file: "{{ tower_dist_dir }}/{{ consul_template_pkg }}"
 consul_template_temp_unarchive: "/tmp/consul-template/{{ consul_template_version }}"
-consul_template_temp_file_checksum: "{{tower_dist_dir}}/{{ consul_template_version }}_SHA256SUMS"
+consul_template_temp_file_checksum: "{{ tower_dist_dir }}/{{ consul_template_version }}_SHA256SUMS"
 
 
 consul_template_binary: consul-template
@@ -31,6 +31,6 @@ consul_template_user: root
 consul_template_group: bin
 consultemplate_use_dedup: "False"
 
-consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
-consul_template_templates_dir: "{{etc_prefix}}/consul-template/templates"
-consul_template_ch_dictionaries_dir: "{{etc_prefix}}/consul-template/templates/ch_dictionaries"
+consul_template_config_dir: "{{ etc_prefix }}/consul-template/config"
+consul_template_templates_dir: "{{ etc_prefix }}/consul-template/templates"
+consul_template_ch_dictionaries_dir: "{{ etc_prefix }}/consul-template/templates/ch_dictionaries"

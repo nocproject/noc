@@ -15,10 +15,10 @@
     - name: fail if too many clickhouses selected
       fail:
         msg: |
-          Too many clickhouse servers selected: {{groups['svc-clickhouse-exec'] | length}}
+          Too many clickhouse servers selected: {{ groups['svc-clickhouse-exec'] | length }}
           HA setup is not selected.
           Remove some servers or setup HA.
-          Will install clickhouse to: {{groups['svc-clickhouse-exec'] | join (', ')}}
+          Will install clickhouse to: {{ groups['svc-clickhouse-exec'] | join (', ') }}
       when:
         - groups['svc-clickhouse-exec'] | length > 1
         - "'svc-ha-clickhouse-exec' not in groups"

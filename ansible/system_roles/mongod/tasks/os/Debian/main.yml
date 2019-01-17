@@ -10,20 +10,20 @@
     - 0C49F3730359A14518585931BC711F9BA15703C6
     - 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
 - name: "Add MongoDB repository"
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/debian {{ansible_distribution_release}}/mongodb-org/{{mongod_version}} main"
+    repo: "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} main"
     state: present
     update_cache: "True"
   register: mongo_repo_stat
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -87,10 +87,10 @@
     name: "mongodb-org"
     state: present
     update_cache: "True"
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 

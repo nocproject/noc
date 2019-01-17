@@ -9,28 +9,28 @@
   delay: 2
   until: epel_task_result is succeeded
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-2.noarch.rpm
+    name: http://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{ postgres_version|replace(".","") }}-{{ postgres_version }}-2.noarch.rpm
     state: present
   when: postgres_version=='9.4'
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-3.noarch.rpm
+    name: http://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{ postgres_version|replace(".","") }}-{{ postgres_version }}-3.noarch.rpm
     state: present
   when: postgres_version=='9.6'
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -44,8 +44,8 @@
       - git
       - python-virtualenv
       - gcc
-      - postgresql{{postgres_version|replace(".","")}}
-      - postgresql{{postgres_version|replace(".","")}}-devel
+      - postgresql{{ postgres_version|replace(".","") }}
+      - postgresql{{ postgres_version|replace(".","") }}-devel
       - patch
       - libffi
       - libffi-devel
@@ -53,8 +53,8 @@
       - zlib-devel
       - bzip2
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
@@ -67,7 +67,7 @@
       - jemalloc
       - libmemcached-devel
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: Install supervisord init script
   template:

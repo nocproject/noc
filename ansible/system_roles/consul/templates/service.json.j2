@@ -1,7 +1,7 @@
 {
   "service": {
     "name": "{{ name }}",
-    "tags": [ "{{ consul_tags | default('')}}" ],
+    "tags": [ "{{ consul_tags | default('') }}" ],
     "port": {{ port }},
     "enable_tag_override": false,
     "check": {

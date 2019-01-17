@@ -4,7 +4,7 @@
     minio_url: "{{ lookup('env','MINIO_URL') }}"
     minio_key: "{{ lookup('env','MINIO_KEY') }}"
     minio_secret: "{{ lookup('env','MINIO_SECRET') }}"
-    minio_bucket: "myminio/{{inventory_hostname | replace('_','-')}}"
+    minio_bucket: "myminio/{{ inventory_hostname | replace('_','-') }}"
     pip_cache_dir: "{{ lookup('env','PIP_CACHE') }}"
     pkg_cache_dir: "{{ lookup('env','PKG_CACHE') }}"
 
@@ -29,7 +29,7 @@
     mode: 0755
 
 - name: config cache url
-  command: "/tmp/mc config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}"
+  command: "/tmp/mc config host add myminio {{ minio_url }} {{ minio_key }} {{ minio_secret }}"
 
 - name: create minio bucket
   command: "/tmp/mc mb {{ minio_bucket }}"
@@ -47,7 +47,7 @@
   command: "/tmp/mc mirror {{ minio_bucket }}/pip {{ pip_cache_dir }}"
 
 - name: download pkg cache
-  command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}}"
+  command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{ pkg_cache_dir }}"
 
 - name: Enable pkg cache
   lineinfile:

@@ -2,17 +2,17 @@
 - name: reload systemd
   become: "True"
   systemd:
-    name: "{{postgres_system_service}}"
+    name: "{{ postgres_system_service }}"
     daemon_reload: "True"
 
 - name: reload postgres
   become: "True"
   service:
-    name: "{{postgres_system_service}}"
+    name: "{{ postgres_system_service }}"
     state: reloaded
 
 - name: restart postgres
   become: "True"
   service:
-    name: "{{postgres_system_service}}"
+    name: "{{ postgres_system_service }}"
     state: restarted

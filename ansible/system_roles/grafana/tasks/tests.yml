@@ -42,7 +42,7 @@
     debug:
       msg: |
         There are toubles with grafana on
-        {{consul_req.json | json_query("[].Checks[?ServiceName=='grafana'].{node:Node, status:Status}[]") | to_nice_yaml}}
+        {{ consul_req.json | json_query("[].Checks[?ServiceName=='grafana'].{node:Node, status:Status}[]") | to_nice_yaml }}
     when:
       - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='grafana'].Status[]\")"
 

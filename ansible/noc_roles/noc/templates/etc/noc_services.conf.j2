@@ -1,25 +1,25 @@
 {% for service in noc_services %}
 {% if service.pool %}
-[program:{{service.name}}-{{service.pool}}]
+[program:{{ service.name }}-{{ service.pool }}]
 {% else %}
-[program:{{service.name}}]
+[program:{{ service.name }}]
 {% endif %}
 command = {{ service.environment.supervisord.command  | mandatory }}
 process_name = {{ service.environment.supervisord.process_name | default("%(program_name)s-%(process_num)02d", True) }}
 {% if 'backup_power' in service.config %}
-numprocs = {{ service.config.power + service.config.backup_power | default(0, True)}}
+numprocs = {{ service.config.power + service.config.backup_power | default(0, True) }}
 {% else %}
-numprocs = {{ service.config.power | default(0, True)}}
+numprocs = {{ service.config.power | default(0, True) }}
 {% endif %}
 umask = 022
 priority = {{ service.environment.supervisord.priority | default(999, True) }}
 autostart = true
 autorestart = unexpected
-startsecs = {{ service.environment.supervisord.startsecs  | default(2, True)}}
+startsecs = {{ service.environment.supervisord.startsecs  | default(2, True) }}
 startretries = 999
 exitcodes = 0
 stopsignal = TERM
-stopwaitsecs = {{ service.environment.supervisord.stopwaitsecs  | default(50, True)}}
+stopwaitsecs = {{ service.environment.supervisord.stopwaitsecs  | default(50, True) }}
 stopasgroup = false
 killasgroup = true
 {% if 'user' in service.environment.supervisord %}
@@ -31,15 +31,15 @@ user = {{ noc_user }}
 oom_score_adj = {{ service.environment.supervisord.oom_score_adj  | default(50, True) }}
 {% endif -%}
 redirect_stderr = true
-stdout_logfile = {{noc_logs}}/{{ service.environment.supervisord.process_name | default("%(program_name)s-%(process_num)02d", True) }}.log
-stdout_logfile_maxbytes = {{ service.environment.supervisord.stdout_logfile_maxbytes  | default('10MB', True)}}
-stdout_logfile_backups = {{ service.environment.supervisord.stdout_logfile_backups  | default(3, True)}}
+stdout_logfile = {{ noc_logs }}/{{ service.environment.supervisord.process_name | default("%(program_name)s-%(process_num)02d", True) }}.log
+stdout_logfile_maxbytes = {{ service.environment.supervisord.stdout_logfile_maxbytes  | default('10MB', True) }}
+stdout_logfile_backups = {{ service.environment.supervisord.stdout_logfile_backups  | default(3, True) }}
 stdout_events_enabled = false
-stderr_logfile = {{noc_logs}}/{{ service.environment.supervisord.process_name | default("%(program_name)s-%(process_num)02d", True) }}.err
-stderr_logfile_maxbytes = {{ service.environment.supervisord.stderr_logfile_maxbytes  | default('10MB', True)}}
-stderr_logfile_backups = {{ service.environment.supervisord.stderr_logfile_backups  | default(3, True)}}
+stderr_logfile = {{ noc_logs }}/{{ service.environment.supervisord.process_name | default("%(program_name)s-%(process_num)02d", True) }}.err
+stderr_logfile_maxbytes = {{ service.environment.supervisord.stderr_logfile_maxbytes  | default('10MB', True) }}
+stderr_logfile_backups = {{ service.environment.supervisord.stderr_logfile_backups  | default(3, True) }}
 stderr_events_enabled = false
-environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodename }}",NOC_DC="{{ noc_dc }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{service.config.loglevel | default("info")}}"
+environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodename }}",NOC_DC="{{ noc_dc }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{ service.config.loglevel | default("info") }}"
 
 {%- if not 'FreeBSD' in ansible_system and jemalloc_path -%}
     ,LD_PRELOAD="{{ jemalloc_path }}"
