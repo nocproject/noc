@@ -16,6 +16,13 @@ Ext.define("NOC.fm.alarm.store.Alarm", {
     numFromEdge: Math.ceil(70 / 2),
     trailingBufferZone: 70,
     purgePageCount: 10,
+    remoteSort: true,
+    sorters: [
+        {
+            property: 'timestamp',
+            direction: 'DESC'
+        }
+    ],
     proxy: {
         type: "rest",
         url: "/fm/alarm/",
