@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+"
         r"(?P<type>Learn|Static|S|D|L|P)(?:,SE)?\s+"
-        r"[^ ]+\s+(?P<interfaces>.*)$"
+        r"[^ ]+\s+(?P<interfaces>.*?)(?:\s+\d+\s+\d+)?$"
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
