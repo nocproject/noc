@@ -4,7 +4,7 @@
     minio_url: "{{ lookup('env','MINIO_URL') }}"
     minio_key: "{{ lookup('env','MINIO_KEY') }}"
     minio_secret: "{{ lookup('env','MINIO_SECRET') }}"
-    minio_bucket: "myminio/{{inventory_hostname | replace('_','-')}}"
+    minio_bucket: "myminio/{{ inventory_hostname | replace('_','-') }}"
     pip_cache_dir: "{{ lookup('env','PIP_CACHE') }}"
     pkg_cache_dir: "{{ lookup('env','PKG_CACHE') }}"
 
@@ -31,7 +31,7 @@
     IGNORE_OSVERSION: "yes"
 
 - name: config cache url
-  command: "minio-client config host add myminio {{ minio_url }} {{minio_key}} {{minio_secret}}"
+  command: "minio-client config host add myminio {{ minio_url }} {{ minio_key }} {{ minio_secret }}"
 
 - name: create minio bucket
   command: "minio-client mb {{ minio_bucket }}"
@@ -48,4 +48,4 @@
   command: "minio-client mirror {{ minio_bucket }}/pip {{ pip_cache_dir }} --overwrite"
 
 - name: download pkg cache
-  command: "minio-client mirror {{ minio_bucket }}/pkgs {{pkg_cache_dir}} --overwrite"
+  command: "minio-client mirror {{ minio_bucket }}/pkgs {{ pkg_cache_dir }} --overwrite"

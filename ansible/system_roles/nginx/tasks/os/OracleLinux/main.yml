@@ -8,8 +8,8 @@
     gpgkey: http://nginx.org/packages/keys/nginx_signing.key
     enabled: "True"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -19,8 +19,8 @@
     state: present
     update_cache: "False"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 

@@ -7,12 +7,12 @@
     grafana_datasource:
       name: nocchdb
       type: vertamedia-clickhouse-datasource
-      url: "http://{{ ch_host }}:{{ch_port}}"
+      url: "http://{{ ch_host }}:{{ ch_port }}"
       access: proxy
       isDefault: True  # yamllint disable-line rule:truthy
       database: "{{ clickhouse_db }}"
       basicAuth: True  # yamllint disable-line rule:truthy
       basicAuthUser: "readonly"
       basicAuthPassword: "{{ clickhouse_ro_password }}"
-  delegate_to: "{{item}}"
-  with_items: '{{groups["svc-grafana-exec"]}}'
+  delegate_to: "{{ item }}"
+  with_items: '{{ groups["svc-grafana-exec"] }}'

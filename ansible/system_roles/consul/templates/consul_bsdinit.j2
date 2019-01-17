@@ -29,7 +29,7 @@ load_rc_config $name
 : ${consul_enable:="NO"}
 : ${consul_user:="{{ consul_user }}"}
 : ${consul_group:="{{ consul_group }}"}
-: ${consul_dir:="{{consul_data_path}}"}
+: ${consul_dir:="{{ consul_data_path }}"}
 
 pidfile=/var/run/consul.pid
 procname="/usr/local/bin/consul"

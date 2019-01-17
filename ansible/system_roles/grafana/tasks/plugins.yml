@@ -4,19 +4,19 @@
     name: "{{ item.name }}"
     version: "{{ item.version }}"
     state: present
-    grafana_plugins_dir: "{{grafana_plugins_dir}}"
+    grafana_plugins_dir: "{{ grafana_plugins_dir }}"
   with_items:
     - name: grafana-simple-json-datasource
-      version: "{{grafana_plugin_simple_datasource_version}}"
+      version: "{{ grafana_plugin_simple_datasource_version }}"
     - name: vertamedia-clickhouse-datasource
-      version: "{{grafana_plugin_clickhouse_datasource_version}}"
+      version: "{{ grafana_plugin_clickhouse_datasource_version }}"
   notify: restart grafana
   register: grafana_plugin_install
   retries: 4
   delay: 2
   until: grafana_plugin_install is succeeded
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements

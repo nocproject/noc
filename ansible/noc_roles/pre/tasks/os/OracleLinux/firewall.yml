@@ -11,7 +11,7 @@
 
 - name: Add firewall permissions for nodes
   firewalld:
-    rich_rule: "rule family='ipv4' source address={{ hostvars[item].ansible_host}} accept"
+    rich_rule: "rule family='ipv4' source address={{ hostvars[item].ansible_host }} accept"
     permanent: "True"
     state: enabled
     immediate: "True"

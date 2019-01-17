@@ -1,48 +1,48 @@
 file:
-  {{noc_root}}:
+  {{ noc_root }}:
     exists: true
     mode: "0755"
     owner: root
     group: root
     filetype: directory
     contains: []
-  {{noc_root}}/.env:
+  {{ noc_root }}/.env:
     exists: true
     mode: "0644"
-    owner: {{noc_user}}
-    group: {{noc_group}}
+    owner: {{ noc_user }}
+    group: {{ noc_group }}
     filetype: file
     contains:
     - NOC_CONFIG="{{ config_order }}"
-  {{noc_root}}/etc/noc_services.conf:
+  {{ noc_root }}/etc/noc_services.conf:
     exists: true
     mode: "0640"
     owner: root
     group: root
     filetype: file
     contains: []
-  {{noc_root}}/etc/supervisord.conf:
+  {{ noc_root }}/etc/supervisord.conf:
     exists: true
     mode: "0640"
     owner: root
     group: root
     filetype: file
     contains: []
-  {{noc_root}}/etc/tower.yml:
+  {{ noc_root }}/etc/tower.yml:
     exists: true
     mode: "0640"
-    owner: {{noc_user}}
-    group: {{noc_group}}
+    owner: {{ noc_user }}
+    group: {{ noc_group }}
     filetype: file
     contains: []
-  {{noc_root}}/lib/python:
+  {{ noc_root }}/lib/python:
     exists: true
     mode: "0755"
     owner: root
     group: root
     filetype: directory
     contains: []
-  {{noc_root}}/lib/python/site-packages/noc.pth:
+  {{ noc_root }}/lib/python/site-packages/noc.pth:
     exists: true
     mode: "0644"
     owner: root
@@ -50,18 +50,18 @@ file:
     filetype: file
     contains:
     - import os; os.environ['DJANGO_SETTINGS_MODULE'] = 'noc.settings'
-    - {{noc_root}}
+    - {{ noc_root }}
 {% if noc_custom_path is defined %}
     - {{ noc_custom_path }}
 {% endif %}
-  {{noc_root}}/lib/python/site-packages/sitecustomize.py:
+  {{ noc_root }}/lib/python/site-packages/sitecustomize.py:
     exists: true
     mode: "0644"
     owner: root
     group: root
     filetype: file
     contains: []
-  {{noc_root}}/lib/python2.7:
+  {{ noc_root }}/lib/python2.7:
     exists: true
     mode: "0777"
     owner: root
@@ -69,49 +69,49 @@ file:
     linked-to: python
     filetype: symlink
     contains: []
-  {{noc_etc}}/activator.conf:
+  {{ noc_etc }}/activator.conf:
     exists: false
-  {{noc_etc}}/bi.conf:
+  {{ noc_etc }}/bi.conf:
     exists: false
-  {{noc_etc}}/card.conf:
+  {{ noc_etc }}/card.conf:
     exists: false
-  {{noc_etc}}/chwriter.conf:
+  {{ noc_etc }}/chwriter.conf:
     exists: false
-  {{noc_etc}}/classifier.conf:
+  {{ noc_etc }}/classifier.conf:
     exists: false
-  {{noc_etc}}/correlator.conf:
+  {{ noc_etc }}/correlator.conf:
     exists: false
-  {{noc_etc}}/discovery.conf:
+  {{ noc_etc }}/discovery.conf:
     exists: false
-  {{noc_etc}}/escalator.conf:
+  {{ noc_etc }}/escalator.conf:
     exists: false
-  {{noc_etc}}/grafanads.conf:
+  {{ noc_etc }}/grafanads.conf:
     exists: false
-  {{noc_etc}}/login.conf:
+  {{ noc_etc }}/login.conf:
     exists: false
-  {{noc_etc}}/mailsender.conf:
+  {{ noc_etc }}/mailsender.conf:
     exists: false
-  {{noc_etc}}/mrt.conf:
+  {{ noc_etc }}/mrt.conf:
     exists: false
-  {{noc_etc}}/notebook.conf:
+  {{ noc_etc }}/notebook.conf:
     exists: false
-  {{noc_etc}}/notifier.conf:
+  {{ noc_etc }}/notifier.conf:
     exists: false
-  {{noc_etc}}/ping.conf:
+  {{ noc_etc }}/ping.conf:
     exists: false
-  {{noc_etc}}/sae.conf:
+  {{ noc_etc }}/sae.conf:
     exists: false
-  {{noc_etc}}/scheduler.conf:
+  {{ noc_etc }}/scheduler.conf:
     exists: false
-  {{noc_etc}}/sync.conf:
+  {{ noc_etc }}/sync.conf:
     exists: false
-  {{noc_etc}}/syslogcollector.conf:
+  {{ noc_etc }}/syslogcollector.conf:
     exists: false
-  {{noc_etc}}/tgsender.conf:
+  {{ noc_etc }}/tgsender.conf:
     exists: false
-  {{noc_etc}}/trapcollector.conf:
+  {{ noc_etc }}/trapcollector.conf:
     exists: false
-  {{noc_etc}}/web.conf:
+  {{ noc_etc }}/web.conf:
     exists: false
 service:
   noc:
@@ -119,14 +119,14 @@ service:
     running: true
 command:
 {% if noc_env_type == 'prod' %}
-  {{noc_root}}/bin/pip freeze | grep raven:
+  {{ noc_root }}/bin/pip freeze | grep raven:
     exit-status: 0
     stdout:
     - raven==6.1.0
     stderr: []
     timeout: 10000
 {% endif %}
-  {{noc_root}}/bin/pip freeze | grep supervisor:
+  {{ noc_root }}/bin/pip freeze | grep supervisor:
     exit-status: 0
     stdout:
     - supervisor==3.3.1
@@ -136,19 +136,19 @@ command:
 {% endif %}
     stderr: []
     timeout: 10000
-  {{noc_root}}/bin/pip freeze | grep tornado:
+  {{ noc_root }}/bin/pip freeze | grep tornado:
     exit-status: 0
     stdout:
     - tornado==4.5
     stderr: []
     timeout: 10000
-  {{noc_root}}/bin/python -c 'import sys;print sys.getdefaultencoding()':
+  {{ noc_root }}/bin/python -c 'import sys;print sys.getdefaultencoding()':
     exit-status: 0
     stdout:
     - utf-8
     stderr: []
     timeout: 10000
-  cd {{noc_root}}/; git status -sb:
+  cd {{ noc_root }}/; git status -sb:
     exit-status: 0
     stdout:
     - '!/\?\?\\s/'

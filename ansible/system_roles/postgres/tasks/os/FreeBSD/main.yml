@@ -1,7 +1,7 @@
 ---
 - name: "Install PostgreSQL 1/2"
   pkgng:
-    name: 'postgresql{{postgres_version|replace(".","")}}-server'
+    name: 'postgresql{{ postgres_version|replace(".","") }}-server'
     state: present
   tags:
     - requirements
@@ -13,13 +13,13 @@
   vars:
     packages:
       - 'py27-psycopg2'
-      - 'postgresql{{postgres_version|replace(".","")}}-contrib'
+      - 'postgresql{{ postgres_version|replace(".","") }}-contrib'
   tags:
     - requirements
 
 - name: Enable postgres system service
   service:
-    name: "{{postgres_system_service}}"
+    name: "{{ postgres_system_service }}"
     enabled: "True"
 
 - name: PostgreSQL init db

@@ -1,7 +1,7 @@
 ---
 - name: Set tower_ip
   set_fact:
-    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0] | default('127.0.0.1')}}"
+    tower_ip: "{{ hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0] | default('127.0.0.1') }}"
   when:
     - "'SSH_CLIENT' in hostvars[inventory_hostname]['ansible_env']"
     - "'smart' in ansible_connection or 'ssh' in ansible_connection"
@@ -10,7 +10,7 @@
 
 - name: Set tower_ip on local connection
   set_fact:
-    tower_ip: "{{ansible_default_ipv4.address}}"
+    tower_ip: "{{ ansible_default_ipv4.address }}"
   when:
     - "'smart' not in ansible_connection"
     - "'ssh' not in ansible_connection"

@@ -15,7 +15,7 @@
         ---
         gossfile:
           {{ goss_conf_dir }}/*.yml: {}
-      dest: "{{goss_conf}}/goss.yaml"
+      dest: "{{ goss_conf }}/goss.yaml"
   # yamllint enable rule:indentation
 
   when:

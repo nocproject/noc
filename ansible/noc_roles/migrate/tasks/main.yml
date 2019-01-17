@@ -5,10 +5,10 @@
     name: postgres
     tasks_from: users
   vars:
-    db_name: "{{postgres_noc_db}}"
-    db_password: "{{postgres_noc_password}}"
-    db_user: "{{postgres_noc_user}}"
-  delegate_to: "{{postgres_master_node}}"
+    db_name: "{{ postgres_noc_db }}"
+    db_password: "{{ postgres_noc_password }}"
+    db_user: "{{ postgres_noc_user }}"
+  delegate_to: "{{ postgres_master_node }}"
   when: postgres_master_node is defined
   tags:
     - postgres
@@ -22,9 +22,9 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-    NOC_CONFIG: "{{config_order}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+    NOC_CONFIG: "{{ config_order }}"
   tags:
     - requirements
     - coll_sync
@@ -99,12 +99,12 @@
   changed_when: mibs_out.stdout | length > 7
 
 - name: migrate ch db
-  command: ./noc migrate-ch --host "{{item}}"
+  command: ./noc migrate-ch --host "{{ item }}"
   args:
     chdir: "{{ noc_root }}"
   register: migrate_ch
-  with_items: "{{groups['svc-clickhouse-exec']}}"
-  delegate_to: "{{groups['svc-chwriter-exec'][0]}}"
+  with_items: "{{ groups['svc-clickhouse-exec'] }}"
+  delegate_to: "{{ groups['svc-chwriter-exec'][0] }}"
   changed_when: "'CHANGED' in migrate_ch.stdout"
   when:
     - "'svc-chwriter-exec' in groups"

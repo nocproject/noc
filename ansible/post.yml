@@ -21,7 +21,7 @@
         - tests
 
     - name: Run post installation tests
-      include_tasks: "{{item}}"
+      include_tasks: "{{ item }}"
       with_myglob: ["./*_roles/*/tasks/tests.yml"]
       when: tower_run_tests
       tags:

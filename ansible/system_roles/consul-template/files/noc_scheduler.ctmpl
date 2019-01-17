@@ -4,13 +4,13 @@
 [[inputs.httpjson]]
   name = "noc-scheduler"
   servers = [
-  {{ with node -}}
-    {{range .Services -}}
-        {{ if eq .Service "scheduler" -}}
-            "http://{{.Address}}:{{.Port}}/mon/",
-        {{- end}}
-     {{- end}}
-  {{- end}}
+  {{ with node - }}
+    {{ range .Services - }}
+        {{ if eq .Service "scheduler" - }}
+            "http://{{ .Address }}:{{ .Port }}/mon/",
+        {{ - end }}
+     {{ - end }}
+  {{ - end }}
   ]
   method = "GET"
   tag_keys = ["service", "instance"]

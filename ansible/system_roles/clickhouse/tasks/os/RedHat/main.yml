@@ -8,8 +8,8 @@
     enabled: "True"
     state: absent
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -21,8 +21,8 @@
     gpgcheck: "False"
     enabled: "True"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - repo
 

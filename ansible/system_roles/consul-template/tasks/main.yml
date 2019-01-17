@@ -5,7 +5,7 @@
     path: "{{ item }}"
   with_items:
     - "{{ consul_template_config_dir }}"
-    - "{{consul_template_templates_dir}}"
+    - "{{ consul_template_templates_dir }}"
 
 - name: include install
   import_tasks: "install.yml"
@@ -23,7 +23,7 @@
 - name: consul-template config file
   template:
     src: "{{ consul_template_config_file_template }}"
-    dest: "{{consul_template_config_dir}}/{{ consul_template_config_file }}"
+    dest: "{{ consul_template_config_dir }}/{{ consul_template_config_file }}"
     mode: 0755
   notify:
     - reload consul-template

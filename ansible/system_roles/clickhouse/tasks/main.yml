@@ -6,22 +6,22 @@
 - name: add clickhouse user
   user:
     name: clickhouse
-    shell: "{{fake_shell}}"
+    shell: "{{ fake_shell }}"
 
 - name: Create ch directories
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: "directory"
     mode: 0775
     group: clickhouse
     owner: clickhouse
     recurse: "True"
   with_items:
-    - "{{ch_etc_path}}"
-    - "{{ch_log_dir}}"
-    - "{{ch_data_dir}}"
-    - "{{ch_big_query_dir}}"
-    - "{{ch_dictionaries_path}}"
+    - "{{ ch_etc_path }}"
+    - "{{ ch_log_dir }}"
+    - "{{ ch_data_dir }}"
+    - "{{ ch_big_query_dir }}"
+    - "{{ ch_dictionaries_path }}"
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
@@ -32,11 +32,11 @@
 - name: install users.xml
   template:
     src: "users.xml"
-    dest: "{{ch_etc_path}}/"
+    dest: "{{ ch_etc_path }}/"
     owner: clickhouse
     group: clickhouse
     mode: "0640"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
   notify: reload clickhouse-server
   tags:
     - config
@@ -44,11 +44,11 @@
 - name: install config.xml
   template:
     src: "config.xml"
-    dest: "{{ch_etc_path}}/"
+    dest: "{{ ch_etc_path }}/"
     owner: clickhouse
     group: clickhouse
     mode: "0644"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
   notify: restart clickhouse-server
   tags:
     - config
@@ -58,9 +58,9 @@
     name: consul-template
     tasks_from: service
   vars:
-    ct_service_name: "{{item[:-10]| basename}}"
-    ct_service_source: "{{item | basename}}"
-    ct_service_dest: "{{ch_dictionaries_path}}/{{item[:-6] |basename}}"
+    ct_service_name: "{{ item[:-10]| basename }}"
+    ct_service_source: "{{ item | basename }}"
+    ct_service_dest: "{{ ch_dictionaries_path }}/{{ item[:-6] |basename }}"
     ct_service_source_template: "False"
   with_fileglob:
     - "*.ctmpl"
@@ -75,7 +75,7 @@
     owner: clickhouse
     group: clickhouse
     mode: "0644"
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
   notify: reload clickhouse-server
   tags:
     - config
@@ -91,7 +91,7 @@
 
 - name: Start clickhouse service
   service:
-    name: "{{clickhouse_service_name}}"
+    name: "{{ clickhouse_service_name }}"
     enabled: "True"
     state: started
 
@@ -109,9 +109,9 @@
   vars:
     consul_service_name: clickhouse
     consul_service_tags: ""
-    consul_service_port: "{{clickhouse_http_port}}"
+    consul_service_port: "{{ clickhouse_http_port }}"
     consul_service_check_type: "http"
-    consul_service_check_value: "http://localhost:{{clickhouse_http_port}}/"
+    consul_service_check_value: "http://localhost:{{ clickhouse_http_port }}/"
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: "False"
 

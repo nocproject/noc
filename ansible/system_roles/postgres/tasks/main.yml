@@ -12,11 +12,11 @@
   changed_when: "False"
   set_fact:
     postgres_master: "{{ postgres_listen_address }}"
-    postgres_master_node: "{{groups['svc-postgres-master'][0]}}"
-    postgres_listen_port: "{{postgres_listen_port}}"
-  delegate_to: "{{item}}"
+    postgres_master_node: "{{ groups['svc-postgres-master'][0] }}"
+    postgres_listen_port: "{{ postgres_listen_port }}"
+  delegate_to: "{{ item }}"
   delegate_facts: "True"
-  with_items: "{{groups['all']}}"
+  with_items: "{{ groups['all'] }}"
 
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
   tags:
@@ -24,7 +24,7 @@
 
 - name: Setting pg_hba.conf
   lineinfile:
-    dest: "{{postgresql_hba_path}}"
+    dest: "{{ postgresql_hba_path }}"
     line: "host    all             all             0.0.0.0/0            md5"
     mode: "0600"
     owner: "{{ postgres_user }}"
@@ -34,7 +34,7 @@
 
 - name: Including postgres.conf
   lineinfile:
-    dest: "{{postgresql_conf_path}}"
+    dest: "{{ postgresql_conf_path }}"
     line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
     owner: "{{ postgres_user }}"
     mode: "0600"
@@ -52,7 +52,7 @@
 
 - name: Enable postgres system service
   service:
-    name: "{{postgres_system_service}}"
+    name: "{{ postgres_system_service }}"
     enabled: "True"
     state: started
 

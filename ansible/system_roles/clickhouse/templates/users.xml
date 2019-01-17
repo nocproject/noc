@@ -30,7 +30,7 @@
             <networks incl="networks" replace="replace">
                 <ip>127.0.0.1</ip>
             {% for n in groups['svc-clickhouse-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
             </networks>
 
@@ -42,15 +42,15 @@
         </default>
 
         <{{ clickhouse_user }}>
-            <password_sha256_hex>{{ clickhouse_password | hash('sha256')}}</password_sha256_hex>
+            <password_sha256_hex>{{ clickhouse_password | hash('sha256') }}</password_sha256_hex>
             <!-- <password></password> -->
             <networks incl="networks" replace="replace">
                 <ip>127.0.0.1</ip>
             {% for n in groups['svc-clickhouse-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
             {% for n in groups['svc-scheduler-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
             </networks>
 
@@ -63,37 +63,37 @@
 
         <!-- Example of user with readonly access. -->
         <readonly>
-            <password_sha256_hex>{{ clickhouse_ro_password | hash('sha256')}}</password_sha256_hex>
+            <password_sha256_hex>{{ clickhouse_ro_password | hash('sha256') }}</password_sha256_hex>
             <!-- <password></password> -->
             <networks incl="networks" replace="replace">
                 <ip>127.0.0.1</ip>
             {% for n in groups['svc-grafana-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
                 {% if 'svc-bi-exec' in groups %}
             {% for n in groups['svc-bi-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
                 {% endif %}
                 {% if 'svc-web-exec' in groups %}
             {% for n in groups['svc-web-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
                 {% endif %}
                 {% if 'svc-haproxy-exec' in groups %}
             {% for n in groups['svc-haproxy-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
                 {% endif %}
-                <ip>{{tower_ip}}</ip>
+                <ip>{{ tower_ip }}</ip>
                 {% if 'svc-scheduler-exec' in groups %}
             {% for n in groups['svc-scheduler-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
                 {% endif %}
                 {% if 'svc-discovery-exec' in groups %}
             {% for n in groups['svc-discovery-exec'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
+                <ip>{{ hostvars[n].ansible_host }}</ip>
             {% endfor %}
                 {% endif %}
             </networks>

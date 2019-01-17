@@ -3,13 +3,13 @@
   apt:
     name: "{{ packages }}"
     update_cache: "True"
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   vars:
     packages:
       - libssh2-1
       - libssh2-1-dev
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements

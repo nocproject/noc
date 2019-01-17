@@ -16,8 +16,8 @@
 
     - name: check if nginx http iface is reachable
       uri:
-        url: "https://{{noc_web_host}}/ng_stats"
-        validate_certs: "{{not nginx_self_signed_cerificate }}"
+        url: "https://{{ noc_web_host }}/ng_stats"
+        validate_certs: "{{ not nginx_self_signed_cerificate }}"
       register: nginx_ping
       changed_when: "False"
       failed_when: "False"
@@ -27,7 +27,7 @@
       debug:
         msg: |
           nginx is not answering stats request.
-          Check with `curl https://{{noc_web_host}}/ng_stats`
+          Check with `curl https://{{ noc_web_host }}/ng_stats`
       when:
         - nginx_ping.status is not defined
 
@@ -35,15 +35,15 @@
       debug:
         msg: |
           nginx is not answering stats request.
-          Check with `curl https://{{noc_web_host}}/ng_stats`
+          Check with `curl https://{{ noc_web_host }}/ng_stats`
       when:
         - nginx_ping.status is defined
         - nginx_ping.status != 200
 
     - name: check if nginx http iface is reachable
       uri:
-        url: "https://{{noc_web_host}}/api/login/index.html"
-        validate_certs: "{{not nginx_self_signed_cerificate }}"
+        url: "https://{{ noc_web_host }}/api/login/index.html"
+        validate_certs: "{{ not nginx_self_signed_cerificate }}"
       register: nginx_ping
       changed_when: "False"
       failed_when: "False"
@@ -53,7 +53,7 @@
       debug:
         msg: |
           nginx is not answering ping request.
-          Check with `curl https://{{noc_web_host}}/api/login/index.html`
+          Check with `curl https://{{ noc_web_host }}/api/login/index.html`
       when:
         - nginx_ping.status is not defined
 
@@ -61,7 +61,7 @@
       debug:
         msg: |
           nginx is not answering ping request.
-          Check with `curl https://{{noc_web_host}}/api/login/index.html`
+          Check with `curl https://{{ noc_web_host }}/api/login/index.html`
       when:
         - nginx_ping.status is defined
         - nginx_ping.status != 200

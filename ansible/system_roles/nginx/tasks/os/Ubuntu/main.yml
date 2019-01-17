@@ -4,7 +4,7 @@
     url: http://nginx.org/keys/nginx_signing.key
     state: present
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -14,7 +14,7 @@
     state: present
     update_cache: "True"
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -25,8 +25,8 @@
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
     state: present
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 

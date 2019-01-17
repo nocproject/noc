@@ -5,7 +5,7 @@
       msg: |
         To use bi you have to setup at least 3.4 mongo.
         Check https://kb.nocproject.org/x/TIHJAQ for more details.
-        Current version selected:  {{mongod_version}}
+        Current version selected:  {{ mongod_version }}
         Otherwise you can disable bi service on services tab
     when:
       - mongod_version is version_compare('3.4', operator='lt', strict=True)

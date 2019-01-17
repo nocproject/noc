@@ -8,8 +8,8 @@ postgres_bin_dir: /usr/pgsql-{{ postgres_version }}/bin
 postgres_home: /var/lib/pgsql
 postgres_data_dir: "{{ postgres_home }}/{{ postgres_version }}/data"
 postgresql_conf_prefix: "{{ postgres_home }}/{{ postgres_version }}/data"
-postgresql_conf_path: "{{postgresql_conf_prefix}}/postgresql.conf"
-postgresql_hba_path: "{{postgresql_conf_prefix}}/pg_hba.conf"
+postgresql_conf_path: "{{ postgresql_conf_prefix }}/postgresql.conf"
+postgresql_hba_path: "{{ postgresql_conf_prefix }}/pg_hba.conf"
 postgres_proccess: postmaster
 
 memcahed_user: memcached

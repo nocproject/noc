@@ -3,9 +3,9 @@
 etc_prefix: /usr/local/etc
 
 noc_var_lib: /var/db/noc
-noc_reports_dir: "{{noc_var_lib}}/reports"
-noc_crashinfo_dir: "{{noc_var_lib}}/var/cp/crashinfo/new"
-bi_export_dir: "{{noc_var_lib}}/bi"
+noc_reports_dir: "{{ noc_var_lib }}/reports"
+noc_crashinfo_dir: "{{ noc_var_lib }}/var/cp/crashinfo/new"
+bi_export_dir: "{{ noc_var_lib }}/bi"
 
 clickhouse_service_name: clickhouse
 ch_log_dir: /var/log/clickhouse-server
@@ -47,8 +47,8 @@ postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql
 postgres_home: /usr/local/pgsql
-postgres_data_dir: "{{postgres_home}}/data"
-postgresql_conf_prefix: "{{postgres_home}}/data"
+postgres_data_dir: "{{ postgres_home }}/data"
+postgresql_conf_prefix: "{{ postgres_home }}/data"
 postgres_superuser: pgsql
 postgres_version: 9.5
 postgres_proccess: postgres

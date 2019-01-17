@@ -36,7 +36,7 @@
 
 - name: Add firewall permissions for nodes
   firewalld:
-    port: "{{item}}"
+    port: "{{ item }}"
     permanent: "True"
     state: enabled
     immediate: "True"
@@ -54,7 +54,7 @@
 
 - name: Expose consul_bind_address as fact
   set_fact:
-    consul_bind_address: "{{consul_address}}"
+    consul_bind_address: "{{ consul_address }}"
   when:
     - consul_address is defined
     - consul_address!='node_ip'

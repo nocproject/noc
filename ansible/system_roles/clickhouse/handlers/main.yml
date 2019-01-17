@@ -7,5 +7,5 @@
 - name: restart clickhouse-server
   become: "True"
   service:
-    name: "{{clickhouse_service_name}}"
+    name: "{{ clickhouse_service_name }}"
     state: restarted

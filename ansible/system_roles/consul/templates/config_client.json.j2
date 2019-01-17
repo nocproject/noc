@@ -27,6 +27,6 @@
   "retry_interval": "3s",
   "retry_join": [ {% set comma_nodes = joiner(", ") -%}
   {% for n in groups['svc-consul-server'] %}
-     {{ comma_nodes() }}"{{hostvars[n].ansible_host}}"
+     {{ comma_nodes() }}"{{ hostvars[n].ansible_host }}"
   {% endfor %}]
 }

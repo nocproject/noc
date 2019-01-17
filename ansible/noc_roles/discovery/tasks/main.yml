@@ -4,8 +4,8 @@
 
 - name: Tune sysctl.conf for keepalive
   sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     state: present
     reload: "True"
   with_items:

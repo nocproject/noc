@@ -4,12 +4,12 @@
 
 - name: Install classifier python packages
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/classifier.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   tags:

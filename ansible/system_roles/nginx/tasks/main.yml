@@ -11,9 +11,9 @@
 
 - name: Setup nginx
   template:
-    src: "{{item.name}}"
-    dest: "{{item.path}}"
-    owner: "{{nginx_user}}"
+    src: "{{ item.name }}"
+    dest: "{{ item.path }}"
+    owner: "{{ nginx_user }}"
   notify: reload nginx
   with_items:
     - name: noc.conf.j2
@@ -24,8 +24,8 @@
 - name: Setup datastream_whitelist_access
   template:
     src: allow_ip_datastream.conf.j2
-    dest: "{{etc_prefix}}/nginx/allow_ip_datastream.conf"
-    owner: "{{nginx_user}}"
+    dest: "{{ etc_prefix }}/nginx/allow_ip_datastream.conf"
+    owner: "{{ nginx_user }}"
   notify: reload nginx
   when:
     - datastream_whitelist_access is defined
@@ -35,8 +35,8 @@
 - name: Setup nbi_whitelist_access
   template:
     src: allow_ip_nbi.conf.j2
-    dest: "{{etc_prefix}}/nginx/allow_ip_nbi.conf"
-    owner: "{{nginx_user}}"
+    dest: "{{ etc_prefix }}/nginx/allow_ip_nbi.conf"
+    owner: "{{ nginx_user }}"
   notify: reload nginx
   when:
     - nbi_whitelist_access is defined
@@ -50,8 +50,8 @@
   vars:
     ct_service_name: nginx
     ct_service_source: "upstream.conf.ctmpl"
-    ct_service_dest: "{{nginx_conf_upstream_path}}"
-    ct_service_command: "{{reload_command}}"
+    ct_service_dest: "{{ nginx_conf_upstream_path }}"
+    ct_service_command: "{{ reload_command }}"
     ct_service_command_timeout: "60s"
     ct_service_source_template: "False"
 
@@ -66,7 +66,7 @@
     consul_service_check_type: "http"
     consul_service_check_value: "https://{{ noc_web_host }}/ng_stats"
     consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: "{{nginx_self_signed_cerificate}}"
+    consul_service_check_http_skip_verify: "{{ nginx_self_signed_cerificate }}"
 
 - name: Install nginx monitoring
   include_role:
@@ -108,8 +108,8 @@
 #
 #- name: Install service monitoring
 #  template:
-#    src: "{{item}}"
-#    dest: "{{ telegraf_confd_path }}/{{item[25:]}}"
+#    src: "{{ item }}"
+#    dest: "{{ telegraf_confd_path }}/{{ item[25:] }}"
 #    force: no
 #  with_items:
 #    - "etc/telegraf/telegraf.d/discovery.conf.j2"

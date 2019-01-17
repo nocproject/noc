@@ -10,23 +10,23 @@
 
 - name: Create NOC group
   group:
-    name: "{{noc_group}}"
+    name: "{{ noc_group }}"
     state: present
 
 - name: Create NOC user
   user:
-    name: "{{noc_user}}"
-    group: "{{noc_group}}"
+    name: "{{ noc_user }}"
+    group: "{{ noc_group }}"
     comment: "NOC user"
     state: present
 
-- name: Include {{install_method}} install method
-  include_tasks: "{{install_method}}.yml"
+- name: Include {{ install_method }} install method
+  include_tasks: "{{ install_method }}.yml"
   tags:
     - get_source
 
-- name: Include venv init for {{noc_python_interpreter}}
-  include_tasks: "init_venv_{{noc_python_interpreter}}.yml"
+- name: Include venv init for {{ noc_python_interpreter }}
+  include_tasks: "init_venv_{{ noc_python_interpreter }}.yml"
   tags:
     - requirements
     - config

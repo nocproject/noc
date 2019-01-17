@@ -26,7 +26,7 @@
       debug:
         msg: |
           There are toubles with postgres on
-          {{consul_req.json | json_query("[].Checks[?ServiceName=='postgres'].{node:Node, status:Status}[]") | to_nice_yaml}}
+          {{ consul_req.json | json_query("[].Checks[?ServiceName=='postgres'].{node:Node, status:Status}[]") | to_nice_yaml }}
       when:
         - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='postgres'].Status[]\")"
 

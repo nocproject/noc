@@ -9,11 +9,11 @@ consul_architecture_map:
 consul_architecture: "{{ consul_architecture_map[ansible_architecture] }}"
 consul_os: "{{ ansible_system|lower }}"
 consul_pkg: "consul_{{ consul_version }}_{{ consul_os }}_{{ consul_architecture }}.zip"
-consul_zip_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{consul_pkg}}"
-consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version}}_SHA256SUMS"
-consul_temp_file: "{{tower_dist_dir}}/{{consul_pkg}}"
+consul_zip_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{ consul_pkg }}"
+consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_SHA256SUMS"
+consul_temp_file: "{{ tower_dist_dir }}/{{ consul_pkg }}"
 consul_temp_unarchive: "/tmp/consul/{{ consul_version }}"
-consul_temp_file_checksum: "{{tower_dist_dir}}/{{ consul_version }}_SHA256SUMS"
+consul_temp_file_checksum: "{{ tower_dist_dir }}/{{ consul_version }}_SHA256SUMS"
 
 python_consul_version: 0.7.2
 
@@ -22,21 +22,21 @@ consul_bin_path: "/bin"
 consul_data_path: "/var/consul"
 consul_log_path: "/var/log/consul"
 consul_pid_path: "/var/run/consul/consul.pid"
-consul_configd_path: "{{etc_prefix}}/consul.d"
-consul_scripts_path: "{{consul_configd_path}}/scripts"
+consul_configd_path: "{{ etc_prefix }}/consul.d"
+consul_scripts_path: "{{ consul_configd_path }}/scripts"
 
 ### System user and group
 consul_user: "consul"
 consul_group: "bin"
 
 ### Consul settings
-consul_datacenter: "{{noc_env | lower}}"
+consul_datacenter: "{{ noc_env | lower }}"
 consul_domain: "consul"
 consul_log_level: "INFO"
 consul_syslog_enable: "True"
-consul_iface: "{{ ansible_default_ipv4.interface}}"
+consul_iface: "{{ ansible_default_ipv4.interface }}"
 consul_node_name: "{{ inventory_hostname_short }}"
-consul_recursors: ["{{tower_ip}}"]
+consul_recursors: ["{{ tower_ip }}"]
 consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
 
 ### Addresses
@@ -44,7 +44,7 @@ consul_dns_bind_address: "0.0.0.0"
 consul_http_bind_address: "0.0.0.0"
 consul_https_bind_address: "0.0.0.0"
 consul_vault_address: "{{ vault_address | default('0.0.0.0', true) }}"
-consul_bind_address: "{{ansible_host}}"
+consul_bind_address: "{{ ansible_host }}"
 
 ### Ports
 consul_ports:
@@ -54,7 +54,7 @@ consul_ports:
 
 ## ACL
 consul_acl_enable: "True"
-consul_acl_datacenter: "{{noc_env}}"
+consul_acl_datacenter: "{{ noc_env }}"
 consul_acl_default_policy: "allow"
 consul_acl_down_policy: "allow"
 consul_acl_master_token_display: "False"
@@ -63,5 +63,5 @@ consul_acl_replication_token_display: "False"
 consul_replication_token: ""
 consul_token: ""
 
-consul_home: "/home/{{consul_user}}"
-consul_config_path: "{{etc_prefix}}/consul"
+consul_home: "/home/{{ consul_user }}"
+consul_config_path: "{{ etc_prefix }}/consul"

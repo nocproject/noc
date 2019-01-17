@@ -8,8 +8,8 @@
     gpgkey: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
     enabled: "True"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -20,10 +20,10 @@
     update_cache: "True"
   vars:
     packages:
-      - "grafana-{{grafana_version}}"
+      - "grafana-{{ grafana_version }}"
       - open-sans-fonts
   tags:
     - requirements
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"

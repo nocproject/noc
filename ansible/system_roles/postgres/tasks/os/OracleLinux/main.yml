@@ -2,8 +2,8 @@
 # http://www.ibm.com/support/knowledgecenter/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/t0008238.html?lang=ru
 - name: tune systcl for PostgesSQL
   sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     state: present
     reload: "True"
   with_items:
@@ -18,7 +18,7 @@
     - requirements
 
 - name: PostgreSQL init db
-  command: '{{postgres_bin_dir}}/postgresql{{postgres_version|replace(".","")}}-setup initdb'
+  command: '{{ postgres_bin_dir }}/postgresql{{ postgres_version|replace(".","") }}-setup initdb'
   args:
     creates: /var/lib/pgsql/{{ postgres_version }}/initdb.log
 

@@ -8,7 +8,7 @@
       - libssh2
       - libssh2-devel
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements

@@ -11,7 +11,7 @@
         </layout>
         <source>
             <http>
-                <url>http://{{ range $index, $element := service "datasource~_agent"}}{{if eq $index 0}}{{.Address}}:{{.Port}}{{end}}{{else}}127.0.0.1:65535{{ end }}/api/datasource/ch_pool.tsv</url>
+                <url>http://{{ range $index, $element := service "datasource~_agent" }}{{ if eq $index 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ else }}127.0.0.1:65535{{ end }}/api/datasource/ch_pool.tsv</url>
                 <format>TabSeparated</format>
             </http>
         </source>

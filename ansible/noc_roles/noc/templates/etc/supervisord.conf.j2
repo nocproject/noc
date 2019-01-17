@@ -31,9 +31,9 @@ identifier = {{ noc_env }}-{{ noc_dc }}-{{ ansible_nodename }}
 environment = NOC_DC="{{ noc_dc }}",NOC_NODE="{{ ansible_nodename }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}"
 
 [unix_http_server]
-file = {{ supervisor_sock_path}}
+file = {{ supervisor_sock_path }}
 username = {{ noc_user }}
-password = {{supervisorctl_key}}
+password = {{ supervisorctl_key }}
 chown = {{ noc_user }}
 
 {% if noc_env_type == "prod" %}

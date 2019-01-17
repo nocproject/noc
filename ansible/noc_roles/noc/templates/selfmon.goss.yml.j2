@@ -1,5 +1,5 @@
 command:
-  {{noc_root}}/noc ctl status |grep selfmon:
+  {{ noc_root }}/noc ctl status |grep selfmon:
     exit-status: 0
     stdout:
     - /selfmon:.+RUNNING/

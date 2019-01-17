@@ -23,7 +23,7 @@ http_address = "0.0.0.0:4151"
 
 ## cluster of nsqlookupd TCP addresses
 nsqlookupd_tcp_addresses = [
-   {{range service "nsqlookupd"}}"{{.Address}}:{{.Port}}", {{end}}
+   {{ range service "nsqlookupd" }}"{{ .Address }}:{{ .Port }}", {{ end }}
 ]
 
 

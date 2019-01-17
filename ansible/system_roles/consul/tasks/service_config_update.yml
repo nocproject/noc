@@ -3,13 +3,13 @@
   include_vars: "vars/{{ ansible_distribution }}.yml"
 
 # Read default value.
-- name: Read key/value pair for key {{consul_service_key}}
+- name: Read key/value pair for key {{ consul_service_key }}
   consul_kv:
-    key: "{{consul_service_key}}"
+    key: "{{ consul_service_key }}"
     state: present
     cas: 0
   vars:
-    ansible_python_interpreter: "{{consul_control_python}}"
+    ansible_python_interpreter: "{{ consul_control_python }}"
   register: consul_key_response
   changed_when: "False"
   check_mode: "False"
@@ -18,31 +18,31 @@
 # waiting for https://github.com/ansible/ansible/pull/32738
 - name: init default if unset
   consul_kv:
-    key: "{{consul_service_key}}"
+    key: "{{ consul_service_key }}"
     value: "{{ service_tmpl | to_nice_json }}"
-    cas: "{{consul_key_response.index}}"
+    cas: "{{ consul_key_response.index }}"
   vars:
     service_tmpl:
       Holders: []
-      Limit: "{{consul_service_value | int}}"
-    ansible_python_interpreter: "{{consul_control_python}}"
+      Limit: "{{ consul_service_value | int }}"
+    ansible_python_interpreter: "{{ consul_control_python }}"
   when:
     - consul_key_response.data is defined
     - not consul_key_response.data or not consul_key_response.data.Value
 
 # if json is already valid just update needed value
-- name: Update a key/value pair for key {{consul_service_key}}
+- name: Update a key/value pair for key {{ consul_service_key }}
   consul_kv:
-    key: "{{consul_service_key}}"
+    key: "{{ consul_service_key }}"
     value: "{{ consul_key_response.data.Value
             | from_json
             | combine({ consul_service_internal_key: consul_service_value })
             | to_nice_json
             }}"
-    cas: "{{consul_key_response.index}}"
-    #token: "{{consul_service_token}}"
+    cas: "{{ consul_key_response.index }}"
+    #token: "{{ consul_service_token }}"
   vars:
-    ansible_python_interpreter: "{{consul_control_python}}"
+    ansible_python_interpreter: "{{ consul_control_python }}"
   when:
     - consul_key_response.data is defined
     - consul_key_response.data.Value is defined

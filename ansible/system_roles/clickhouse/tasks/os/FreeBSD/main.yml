@@ -21,7 +21,7 @@
 
 - name: Create ch directories
   file:
-    path: "{{item}}"
+    path: "{{ item }}"
     state: "directory"
     mode: 0775
     group: clickhouse

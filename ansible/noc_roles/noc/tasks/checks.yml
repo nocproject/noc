@@ -20,13 +20,13 @@
 
     - name: check if noc_root exists
       stat:
-        path: "{{noc_root}}"
+        path: "{{ noc_root }}"
       register: noc_root_state
 
     - block:
         - name: check if noc under mercurial control
           stat:
-            path: "{{noc_root}}/.hg"
+            path: "{{ noc_root }}/.hg"
           register: noc_hg_state
 
         - name: fail install if we are under mercurial

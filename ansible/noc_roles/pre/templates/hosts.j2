@@ -2,5 +2,5 @@
 
 127.0.0.1 consul
 {% for host in groups['all'] | sort %}
-{{ hostvars[host].ansible_host }} {{host}} {{host.split('.')[0]}}
+{{ hostvars[host].ansible_host }} {{ host }} {{ host.split('.')[0] }}
 {% endfor %}

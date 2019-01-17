@@ -8,8 +8,8 @@
     gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
     enabled: "True"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - repo
 

@@ -20,9 +20,9 @@ rcvar=nsqlookupd_enable
 load_rc_config $name
 
 : ${nsqlookupd_enable="NO"}
-: ${nsqlookupd_config="{{nsqd_config_dir}}/${name}.conf"}
+: ${nsqlookupd_config="{{ nsqd_config_dir }}/${name}.conf"}
 
-command="{{nsq_root}}/${name}"
+command="{{ nsq_root }}/${name}"
 required_files="${nsqlookupd_config}"
 start_precmd=nsqlookupd_prestart
 

@@ -3,51 +3,51 @@
 # Please do not edit.
 
 upstream noc-web {
-   {{range service "web"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/web/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for web service{{end}}
+   {{ range service "web" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/web/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for web service{{ end }}
 }
 
 upstream login {
-   {{range service "login"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/login/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for login service{{end}}
+   {{ range service "login" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/login/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for login service{{ end }}
 }
 
 upstream card {
-   {{range service "card"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/card/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for card service{{end}}
+   {{ range service "card" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/card/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for card service{{ end }}
 }
 
 upstream datastream {
-   {{range service "datastream"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/datastream/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for datastream service{{end}}
+   {{ range service "datastream" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/datastream/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for datastream service{{ end }}
 }
 
 upstream nbi {
-   {{range service "nbi"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/nbi/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for nbi service{{end}}
+   {{ range service "nbi" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/nbi/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for nbi service{{ end }}
 }
 
 upstream mrt {
-   {{range service "mrt"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/mrt/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for mrt service{{end}}
+   {{ range service "mrt" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/mrt/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for mrt service{{ end }}
 }
 
 upstream bi {
-   {{range service "bi"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/bi/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for bi service{{end}}
+   {{ range service "bi" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/bi/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for bi service{{ end }}
 }
 
 upstream grafana {
-   {{range service "grafana"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/grafana/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for grafana service{{end}}
+   {{ range service "grafana" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/grafana/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for grafana service{{ end }}
 }
 
 upstream grafanads {
-   {{range service "grafanads"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/grafanads/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for grafanads service{{end}}
+   {{ range service "grafanads" }}server {{ .Address }}:{{ .Port }} weight={{ keyOrDefault (printf "noc/nginx/%s/grafanads/weight" .Node) "1" }} max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for grafanads service{{ end }}
 }
 
 upstream notebook {
-   {{range service "notebook"}}server {{.Address}}:{{.Port}}  max_fails=3 fail_timeout=10;
-   {{else}}server 127.0.0.1:65535; # check consul for notebook service{{end}}
+   {{ range service "notebook" }}server {{ .Address }}:{{ .Port }}  max_fails=3 fail_timeout=10;
+   {{ else }}server 127.0.0.1:65535; # check consul for notebook service{{ end }}
 }

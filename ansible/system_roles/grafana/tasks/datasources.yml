@@ -1,7 +1,7 @@
 ---
 - name: Make datasources file
   copy:
-    dest: "{{ grafana_provisioning_dir }}/datasources/{{grafana_datasource.name}}.yml"
+    dest: "{{ grafana_provisioning_dir }}/datasources/{{ grafana_datasource.name }}.yml"
     content: |
       apiVersion: 1
       datasources:

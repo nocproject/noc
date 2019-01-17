@@ -1,16 +1,16 @@
 ---
 - name: Install RADIUS python packages
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/login-radius.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   when:
     - login_methods is defined
     - "'radius' in login_methods"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   tags:
@@ -18,16 +18,16 @@
 
 - name: Install LDAP python packages
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/login-ldap.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   when:
     - login_methods is defined
     - "'ldap' in login_methods"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   tags:

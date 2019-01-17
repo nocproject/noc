@@ -3,10 +3,10 @@
   apt:
     name: python-virtualenv
     update_cache: "True"
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
@@ -25,7 +25,7 @@
 
 - name: Expose consul_bind_address as fact
   set_fact:
-    consul_bind_address: "{{consul_address}}"
+    consul_bind_address: "{{ consul_address }}"
   when:
     - consul_address is defined
     - consul_address!='node_ip'

@@ -8,8 +8,8 @@
     gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
     enabled: "True"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
@@ -20,12 +20,12 @@
     update_cache: "True"
   vars:
     packages:
-      - postgresql{{postgres_version|replace(".","")}}-server
-      - postgresql{{postgres_version|replace(".","")}}-contrib
-      - postgresql{{postgres_version|replace(".","")}}-plpython
+      - postgresql{{ postgres_version|replace(".","") }}-server
+      - postgresql{{ postgres_version|replace(".","") }}-contrib
+      - postgresql{{ postgres_version|replace(".","") }}-plpython
       - python-psycopg2
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements

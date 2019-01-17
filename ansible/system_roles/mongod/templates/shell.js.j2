@@ -1,6 +1,6 @@
-db = connect("{{groups['svc-mongod-exec'] | join(',')}}/{{mongod_db}}?replicaSet={{mongod_rs}}")
+db = connect("{{ groups['svc-mongod-exec'] | join(',') }}/{{ mongod_db }}?replicaSet={{ mongod_rs }}")
 var master = db.isMaster()
 if(!master.ismaster) {
-    db = connect(master.primary + "/{{mongod_db}}")
+    db = connect(master.primary + "/{{ mongod_db }}")
 }
-db.auth("{{mongod_user}}", "{{mongod_password}}")
+db.auth("{{ mongod_user }}", "{{ mongod_password }}")

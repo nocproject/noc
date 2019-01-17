@@ -5,8 +5,8 @@
   changed_when: "False"
   add_host:
     group: svc-consul-server
-    host: "{{item}}"
-  with_items: "{{groups['svc-consul-exec']}}"
+    host: "{{ item }}"
+  with_items: "{{ groups['svc-consul-exec'] }}"
   when: "'bootstrap' in hostvars[item]['consul_power'] or 'server' in hostvars[item]['consul_power']"
 
 # Add user
@@ -27,7 +27,7 @@
 
 - name: Check bootstrapped state
   stat:
-    path: "{{consul_config_path}}/.consul_bootstrapped"
+    path: "{{ consul_config_path }}/.consul_bootstrapped"
   register: bootstrap_marker
   when: consul_power == 'bootstrap'
   ignore_errors: "True"
@@ -72,7 +72,7 @@
 
     - name: Create bootstrapped marker
       file:
-        dest: "{{consul_config_path}}/.consul_bootstrapped"
+        dest: "{{ consul_config_path }}/.consul_bootstrapped"
         state: touch
   when:
     - consul_power == 'bootstrap'

@@ -42,7 +42,7 @@
       debug:
         msg: |
           There are toubles with nsqd on
-          {{consul_req.json | json_query("[].Checks[?ServiceName=='nsqd'].{node:Node, status:Status}[]") | to_nice_yaml}}
+          {{ consul_req.json | json_query("[].Checks[?ServiceName=='nsqd'].{node:Node, status:Status}[]") | to_nice_yaml }}
       when:
         - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='nsqd'].Status[]\")"
 
@@ -58,7 +58,7 @@
       debug:
         msg: |
           There are toubles with nsqdhttp on
-          {{consul_req.json | json_query("[].Checks[?ServiceName=='nsqdhttp'].{node:Node, status:Status}[]") | to_nice_yaml}}
+          {{ consul_req.json | json_query("[].Checks[?ServiceName=='nsqdhttp'].{node:Node, status:Status}[]") | to_nice_yaml }}
       when:
         - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='nsqdhttp'].Status[]\")"
   when:

@@ -7,22 +7,22 @@
 
 - name: Install pymongo
   pip:
-    name: "pymongo{{pymongo_version}}"
-    virtualenv: "{{mongo_control_venv}}"
+    name: "pymongo{{ pymongo_version }}"
+    virtualenv: "{{ mongo_control_venv }}"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
 # https://github.com/ansible/ansible/issues/18665#issuecomment-350144774
 - name: Ansible full of bugs
   set_fact:
-    ansibe_correct_python: "{{ansible_python_interpreter}}"
-    ansible_python_interpreter: "{{mongo_control_venv}}/bin/python"
+    ansibe_correct_python: "{{ ansible_python_interpreter }}"
+    ansible_python_interpreter: "{{ mongo_control_venv }}/bin/python"
 
 - name: create rs
   mongodb_replica_set:
-    member: "{{ansible_hostname}}"
+    member: "{{ ansible_hostname }}"
     replset: "{{ mongod_rs }}"
     state: present
     login_user: "{{ noc_mongo_admin_user }}"
@@ -34,7 +34,7 @@
       template:
         src: admininit.js.j2
         dest: "{{ mongo_dir }}/admininit.js"
-      no_log: "{{tower_show_secrets}}"
+      no_log: "{{ tower_show_secrets }}"
       tags:
         - config
 
@@ -62,4 +62,4 @@
 
 - name: Ansible full of bugs 2
   set_fact:
-    ansible_python_interpreter: "{{ansibe_correct_python}}"
+    ansible_python_interpreter: "{{ ansibe_correct_python }}"

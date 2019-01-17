@@ -5,12 +5,12 @@
 
 - name: Install activator python packages
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/activator.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   tags:
@@ -41,8 +41,8 @@
 
 - name: Tune sysctl.conf for activator
   sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     state: present
     reload: "True"
   with_items:

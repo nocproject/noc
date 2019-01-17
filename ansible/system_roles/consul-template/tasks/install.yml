@@ -8,7 +8,7 @@
   become: "False"
   run_once: "True"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
 
 - name: Get Consul-template package checksum
   command: "grep {{ consul_template_pkg }} {{ consul_template_temp_file_checksum }}"
@@ -22,7 +22,7 @@
 - name: Download Consul-template
   get_url:
     url: "{{ consul_template_zip_url }}"
-    dest: "{{consul_template_temp_file}}"
+    dest: "{{ consul_template_temp_file }}"
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
     validate_certs: "True"
@@ -30,7 +30,7 @@
   become: "False"
   run_once: "True"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
 
 - name: create consul-template tmp dir
   file:
@@ -40,19 +40,19 @@
 
 - name: Unarchive Consul-template and install binary
   unarchive:
-    src: "{{consul_template_temp_file}}"
+    src: "{{ consul_template_temp_file }}"
     dest: "{{ consul_template_temp_unarchive }}"
     owner: "{{ consul_template_user }}"
     group: "{{ consul_template_group }}"
     mode: 0755
-    creates: "{{ consul_template_temp_unarchive }}/{{consul_template_binary}}"
+    creates: "{{ consul_template_temp_unarchive }}/{{ consul_template_binary }}"
   when: not ansible_check_mode
   register: ct_archive_extracted
 
 - name: Overwrite Consul-template binary if needed
   copy:
-    src: "{{ consul_template_temp_unarchive }}/{{consul_template_binary}}"
-    dest: "{{ consul_template_bin_path }}/{{consul_template_binary}}"
+    src: "{{ consul_template_temp_unarchive }}/{{ consul_template_binary }}"
+    dest: "{{ consul_template_bin_path }}/{{ consul_template_binary }}"
     remote_src: "True"
     mode: 0755
   when:

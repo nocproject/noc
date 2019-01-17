@@ -1,13 +1,16 @@
 ---
 - name: Install additional prod requirements
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/prod.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
+  retries: 2
+  register: install_status
+  until: install_status is success
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   when:
@@ -22,9 +25,12 @@
     requirements: "requirements/python-2.6.txt"
     virtualenv: "{{ noc_root }}"
     extra_args: "--upgrade"
+  retries: 2
+  register: install_status
+  until: install_status is success
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   when: "ansible_python_version.startswith('2.6')"

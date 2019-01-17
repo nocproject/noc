@@ -9,7 +9,7 @@
 - name: copy consul-template bsdinit service configuration
   template:
     src: consul-template.bsdinit.j2
-    dest: "{{etc_prefix}}/rc.d/consul-template"
+    dest: "{{ etc_prefix }}/rc.d/consul-template"
     mode: 0755
   tags:
     - config

@@ -1,13 +1,13 @@
 ---
 - name: Install packages for web
   pip:
-    chdir: "{{noc_root}}"
+    chdir: "{{ noc_root }}"
     requirements: "requirements/web.txt"
-    virtualenv: "{{noc_root}}"
+    virtualenv: "{{ noc_root }}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   tags:
@@ -24,8 +24,8 @@
   changed_when: "'CHANGED' in s.stdout"
   with_items: "{{ required_assets }}"
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-    NOC_CONFIG: "{{config_order}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+    NOC_CONFIG: "{{ config_order }}"
   tags:
     - requirements

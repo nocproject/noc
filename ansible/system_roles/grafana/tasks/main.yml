@@ -9,7 +9,7 @@
     group: "grafana"
     mode: "0640"
   notify: restart grafana
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
   tags:
     - config
     - requirements
@@ -19,10 +19,10 @@
     name: postgres
     tasks_from: users
   vars:
-    db_name: "{{grafana_pg_db}}"
-    db_password: "{{grafana_pg_password}}"
-    db_user: "{{grafana_pg_user}}"
-  delegate_to: "{{postgres_master_node}}"
+    db_name: "{{ grafana_pg_db }}"
+    db_password: "{{ grafana_pg_password }}"
+    db_user: "{{ grafana_pg_user }}"
+  delegate_to: "{{ postgres_master_node }}"
   tags:
     - postgres
 
@@ -34,10 +34,10 @@
     group: grafana
     owner: grafana
   with_items:
-    - "{{grafana_dashboard_dir}}"
-    - "{{grafana_plugins_dir}}"
-    - "{{grafana_provisioning_dir}}"
-    - "{{grafana_provisioning_dir}}/datasources"
+    - "{{ grafana_dashboard_dir }}"
+    - "{{ grafana_plugins_dir }}"
+    - "{{ grafana_provisioning_dir }}"
+    - "{{ grafana_provisioning_dir }}/datasources"
 
 - name: add plugins
   import_tasks: plugins.yml
@@ -58,9 +58,9 @@
   vars:
     consul_service_name: grafana
     consul_service_tags: ""
-    consul_service_port: "{{grafana_http_port}}"
+    consul_service_port: "{{ grafana_http_port }}"
     consul_service_check_type: "http"
-    consul_service_check_value: "http://localhost:{{grafana_http_port}}/api/health"
+    consul_service_check_value: "http://localhost:{{ grafana_http_port }}/api/health"
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: "False"
 
@@ -71,7 +71,7 @@
   vars:
     monitoring_service_name: grafana
     monitoring_service_tags: ""
-    monitoring_service_port: "{{grafana_http_port}}"
+    monitoring_service_port: "{{ grafana_http_port }}"
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
     monitoring_service_procstat_check: "True"

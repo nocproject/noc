@@ -64,11 +64,11 @@
     } else {
         // New config
         rs.initiate({
-            _id: "{{mongod_rs}}",
+            _id: "{{ mongod_rs }}",
             version: 1,
             members: [{
-                _id: {{ hostvars[groups['svc-mongo-primary'][0]]["node_id"]}},
-                host: "{{groups['svc-mongo-primary'][0]}}:27017",
+                _id: {{ hostvars[groups['svc-mongo-primary'][0]]["node_id"] }},
+                host: "{{ groups['svc-mongo-primary'][0] }}:27017",
                 priority: 2
             }]
         });

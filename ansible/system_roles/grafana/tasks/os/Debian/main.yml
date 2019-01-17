@@ -4,31 +4,31 @@
     url: https://packagecloud.io/gpg.key
     validate_certs: "True"
   environment:
-    https_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
 - name: Add Grafana repo
   apt_repository:
-    repo: "deb https://packagecloud.io/grafana/stable/debian/ {{ansible_distribution_release}} main"
+    repo: "deb https://packagecloud.io/grafana/stable/debian/ {{ ansible_distribution_release }} main"
     state: present
     update_cache: "True"
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - repo
 
 - name: Install Debian packages
   apt:
-    name: grafana={{grafana_version}}
+    name: grafana={{ grafana_version }}
     state: present
     update_cache: "True"
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
     force: "True"
   notify: restart grafana
   tags:
     - requirements
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"

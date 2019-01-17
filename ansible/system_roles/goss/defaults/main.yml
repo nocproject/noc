@@ -1,9 +1,9 @@
 ---
 goss_version: 0.3.5
-goss_download_url: "https://github.com/aelsabbahy/goss/releases/download/v{{goss_version}}/goss-linux-amd64"
-goss_temp_file: "{{tower_dist_dir}}/goss-linux-amd64"
-goss_path: "/opt/goss_v{{goss_version}}"
-goss_bin_path: "{{goss_path}}/goss"
-goss_conf: "{{etc_prefix}}/goss"
-goss_conf_dir: "{{goss_conf}}/goss.d"
+goss_download_url: "https://github.com/aelsabbahy/goss/releases/download/v{{ goss_version }}/goss-linux-amd64"
+goss_temp_file: "{{ tower_dist_dir }}/goss-linux-amd64"
+goss_path: "/opt/goss_v{{ goss_version }}"
+goss_bin_path: "{{ goss_path }}/goss"
+goss_conf: "{{ etc_prefix }}/goss"
+goss_conf_dir: "{{ goss_conf }}/goss.d"
 goss_validate_fw: "True"

@@ -12,16 +12,16 @@
     dest: "{{ nginx_ssl_key_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
-    force: "{{not nginx_external_cert_management }}"
+    force: "{{ not nginx_external_cert_management }}"
   notify: reload nginx
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
 
 - name: Set up SSL certificate
   copy:
-    content: "{{ nginx_cert}}"
+    content: "{{ nginx_cert }}"
     dest: "{{ nginx_ssl_cert_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
     force: "{{ not nginx_external_cert_management }}"
   notify: reload nginx
-  no_log: "{{tower_show_secrets}}"
+  no_log: "{{ tower_show_secrets }}"
