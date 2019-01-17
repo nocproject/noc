@@ -2,34 +2,32 @@
 # ----------------------------------------------------------------------
 # Migrate InterfaceProfile threshold profiles
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import itertools
+import operator
 # Third-party modules
 import bson
 import psycopg2
 from south.db import db
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
+import cachetools
 # NOC modules
 from noc.lib.nosql import get_db
 
 
 class Migration(object):
+    _ac_cache = cachetools.TTLCache(maxsize=5, ttl=60)
+
     def forwards(self):
         # Convert pickled field ty BYTEA
         db.execute("ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA USING metrics::bytea")
         #
         current = itertools.count()
         mdb = get_db()
-        # Get alarm classes
-        ac_coll = mdb["noc.alarmclasses"]
-        ac_he = ac_coll.find_one({"name": "NOC | PM | High Error"}, {"_id": 1})["_id"]
-        ac_le = ac_coll.find_one({"name": "NOC | PM | Low Error"}, {"_id": 1})["_id"]
-        ac_hw = ac_coll.find_one({"name": "NOC | PM | High Warning"}, {"_id": 1})["_id"]
-        ac_lw = ac_coll.find_one({"name": "NOC | PM | Low Warning"}, {"_id": 1})["_id"]
         # Migrate profiles
         tp_coll = mdb["thresholdprofiles"]
         settings = db.execute("SELECT id, name, metrics FROM sa_managedobjectprofile")
@@ -67,7 +65,7 @@ class Migration(object):
                         "value": metric["high_error"],
                         "clear_op": "<",
                         "clear_value": metric["high_error"],
-                        "alarm_class": ac_he
+                        "alarm_class": self.get_alarm_class_id("NOC | PM | High Error")
                     }]
                 if metric.get("low_error", False) or metric.get("low_error", False) is 0:
                     tp["thresholds"] += [{
@@ -75,7 +73,7 @@ class Migration(object):
                         "value": metric["low_error"],
                         "clear_op": ">",
                         "clear_value": metric["low_error"],
-                        "alarm_class": ac_le
+                        "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error")
                     }]
                 if metric.get("low_warn", False) or metric.get("low_warn", False) is 0:
                     tp["thresholds"] += [{
@@ -83,7 +81,7 @@ class Migration(object):
                         "value": metric["low_warn"],
                         "clear_op": ">",
                         "clear_value": metric["low_warn"],
-                        "alarm_class": ac_lw
+                        "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning")
                     }]
                 if metric.get("high_warn", False) or metric.get("high_warn", False) is 0:
                     tp["thresholds"] += [{
@@ -91,7 +89,7 @@ class Migration(object):
                         "value": metric["high_warn"],
                         "clear_op": "<",
                         "clear_value": metric["high_warn"],
-                        "alarm_class": ac_hw
+                        "alarm_class": self.get_alarm_class_id("NOC | PM | High Warning")
                     }]
                 # Save profile
                 tp_coll.insert_one(tp)
@@ -111,3 +109,10 @@ class Migration(object):
                 metric.get("low_error", False) is 0 or metric.get("low_warn", False) is 0 or
                 metric.get("high_warn", False) is 0 or metric.get("high_error", False) is 0 or
                 metric.get("threshold_profile"))
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_ac_cache"))
+    def get_alarm_class_id(cls, name):
+        db = get_db()
+        ac_coll = db["noc.alarmclasses"]
+        return ac_coll.find_one({"name": name}, {"_id": 1})["_id"]
