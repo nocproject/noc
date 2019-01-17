@@ -13,6 +13,7 @@ import six
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.base import IntParameter
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.lib.validators import is_int
 from noc.core.mib import mib
 
 
@@ -65,7 +66,12 @@ class Script(BaseScript):
                                        mib["LLDP-MIB::lldpLocPortIdSubtype"],
                                        mib["LLDP-MIB::lldpLocPortId"],
                                        mib["LLDP-MIB::lldpLocPortDesc"]]):
-            iface_name = names[int(v[3])]
+            if is_int(v[3]):
+                if int(v[3]) not in names:
+                    continue
+                iface_name = names[int(v[3])]
+            else:
+                iface_name = v[3]
             if iface_name.endswith(".0"):
                 iface_name = iface_name[:-2]
             r[v[0]] = {"local_interface": iface_name,
