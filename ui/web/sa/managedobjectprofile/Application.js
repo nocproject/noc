@@ -172,6 +172,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     width: 60,
                     align: "right",
                     sortable: false
+                },
+                {
+                    text: __("Description"),
+                    dataIndex: "description",
+                    width: 300,
+                    sortable: false,
+                    renderer: function(value, meta) {
+                        meta.tdAttr = 'data-qtip="' + value + '"';
+                        return value
+                    }
                 }
             ],
             fields: [
