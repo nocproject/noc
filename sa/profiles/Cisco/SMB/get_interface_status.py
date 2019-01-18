@@ -53,5 +53,5 @@ class Script(BaseScript):
             # ifOperStatus up(1)
             if self.rx_digit.match(n):
                 n = "Vlan" + n
-            r += [{"interface": n, "status": int(s) == 1}]
+            r += [{"interface": n, "status": bool(int(s) == 1)}]
         return r

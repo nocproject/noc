@@ -9,6 +9,7 @@
 # Python modules
 import re
 # NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
@@ -24,8 +25,8 @@ class Script(BaseScript):
         fqdn = [match.group("hostname")]
         return fqdn
 
-    def execute_snmpt(self):
+    def execute_snmp(self):
         # sysName.0
-        v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
+        v = self.snmp.get("SNMPv2-MIB::sysName.0", cached=True)
         if v:
             return v
