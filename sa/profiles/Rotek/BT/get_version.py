@@ -17,31 +17,36 @@ class Script(BaseScript):
     reuse_cli_session = False
     keep_cli_session = False
 
-    def execute(self):
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                oid = self.snmp.get("1.3.6.1.2.1.1.1.0")
-                sn = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.10.0")
-                o = oid.split(",", 1)[0].strip()
-                if "REV2" in o:
-                    ro = o.split(" ")
-                    platform = "%s.%s" % (ro[0].strip(), ro[1].strip())
-                    if len(ro) == 4:
-                        version = ro[3].strip()
-                    else:
-                        version = ro[2].strip()
+    def execute_snmp(self):
+        oid = self.snmp.get("1.3.6.1.2.1.1.1.0")
+        sn = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.10.0")
+        if oid.startswith("BT"):
+            o = oid.split(",", 1)[0].strip()
+            if "REV2" in o:
+                ro = o.split(" ")
+                platform = "%s.%s" % (ro[0].strip(), ro[1].strip())
+                if len(ro) == 4:
+                    version = ro[3].strip()
                 else:
-                    platform = o.split(" ")[0].strip()
-                    version = o.split(" ")[1].strip()
-                result = {
-                    "vendor": "Rotek",
-                    "version": version,
-                    "platform": platform,
-                    "attributes": {
-                        "Serial Number": sn}
-                }
-                return result
-            except self.snmp.TimeOutError:
-                pass
+                    version = ro[2].strip()
+            else:
+                platform = o.split(" ")[0].strip()
+                version = o.split(" ")[1].strip()
+            result = {
+                "vendor": "Rotek",
+                "version": version,
+                "platform": platform,
+                "attributes": {
+                    "Serial Number": sn}
+            }
+        else:
+            platform = oid.split()[0].strip()
+            version = oid.split()[1].strip()
+            result = {
+                "vendor": "Rotek",
+                "version": version,
+                "platform": platform,
+                "attributes": {
+                    "Serial Number": sn}
+            }
         return result
