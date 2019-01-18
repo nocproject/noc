@@ -24,7 +24,6 @@ id_lock = Lock()
     # ("fm.EscalationItem", "administrative_domain")
     ("fm.AlarmTrigger", "time_pattern"),
     ("fm.EventTrigger", "time_pattern"),
-    ("main.Schedule", "time_pattern"),
     ("main.TimePatternTerm", "time_pattern"),
     ("maintenance.Maintenance", "time_pattern"),
     ("sa.ManagedObject", "time_pattern"),
