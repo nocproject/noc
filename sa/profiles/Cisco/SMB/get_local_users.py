@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_local_users
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetLocalUsers
     rx_line = re.compile(r"^\s*(?P<username>\S+)\s+(?P<privilege>\d+).*$")
 
-    def execute(self):
+    def execute_cli(self):
         data = self.cli("show user accounts")
         r = []
         for ll in data.split("\n"):

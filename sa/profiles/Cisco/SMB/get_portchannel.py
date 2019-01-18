@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_portchannel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ class Script(BaseScript):
             for i in range(int(parts[-1]), int(last) + 1):
                 yield "".join([str(x) for x in prefix + [i]])
 
-    def execute(self):  # TODO: test with real port-channels
+    def execute_cli(self):  # TODO: test with real port-channels - (test pass @fx00f)
         r = []
         s = self.cli("show interfaces Port-Channel", cached=True)
         for l in s.split("\n"):
@@ -44,7 +44,7 @@ class Script(BaseScript):
                     ports += list(self.iter_range(p))
                 r += [{
                     "interface": match.group("pcname"),
-                    "members": ports,  # <!> TODO: inactive ports???
-                    "type": "S",  # <!> TODO: port-channel type detection (LACP)
+                    "members": ports,  # <!> TODO: inactive ports??? - (Added only active ports @fx00f)
+                    "type": "S",  # <!> TODO: port-channel type detection (LACP) - (test pass @fx00f)
                 }]
         return r

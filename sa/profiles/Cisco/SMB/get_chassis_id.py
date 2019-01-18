@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_chassis_id
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Script(BaseScript):
         r"^System MAC Address:\s+(?P<mac>[0-9a-f:]+)\s*$",
         re.IGNORECASE | re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show system", cached=True)
         match = self.rx_mac.search(v)
         mac = match.group("mac")

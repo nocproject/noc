@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_arp
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+"
         r"(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
 
-    def execute(self, vrf=None):
+    def execute_cli(self, vrf=None):
         if vrf:
             # only one vrf supported
             raise self.NotSupportedError()

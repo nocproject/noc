@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class Script(BaseScript):
         r"^PID:\s*(?P<pid>\S+)\s+VID:\s*\S+\s+SN:\s*(?P<sn>\S+)\s*$",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         s = self.cli("show system", cached=True)
         pmatch = self.rx_platform.search(s)
         v = self.cli("show version", cached=True)

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_spanning_tree
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -205,7 +205,7 @@ class Script(BaseScript):
             INST["interfaces"] = interfaces[INST["id"]]
         return reply
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show spanning-tree")
         if "Spanning tree enabled mode STP" in v:
             return self.process_pvst(v, proto="STP")

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.add_vlan
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Cisco.SMB.add_vlan"
     interface = IAddVlan
 
-    def execute(self, vlan_id, name, tagged_ports):
+    def execute_cli(self, vlan_id, name, tagged_ports):
         with self.configure():
             self.cli("interface vlan %d" % vlan_id)
             self.cli("name %s" % name)
