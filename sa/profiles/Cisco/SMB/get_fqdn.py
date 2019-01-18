@@ -26,7 +26,6 @@ class Script(BaseScript):
         return fqdn
 
     def execute_snmp(self):
-        # sysName.0
-        v = self.snmp.get("SNMPv2-MIB::sysName.0", cached=True)
+        v = self.snmp.get(mib["SNMPv2-MIB::sysName.0"], cached=True)
         if v:
             return v
