@@ -42,9 +42,9 @@ class Script(BaseScript):
                 # Not supported at all
                 raise self.NotSupportedError()
         r = []
-        for l in macs.splitlines():
-            l = l.strip()
-            match = self.rx_line.match(l)
+        for raw in macs.splitlines():
+            raw = raw.strip()
+            match = self.rx_line.match(raw)
             if match:
                 mac = match.group("mac")
                 interfaces = [
