@@ -365,7 +365,11 @@ class ManagedObjectProfile(models.Model):
     # Object id in BI
     bi_id = models.BigIntegerField(unique=True)
     # Caps discovery settings
-    caps_profile = DocumentReferenceField(CapsProfile, null=False, blank=False)
+    caps_profile = DocumentReferenceField(
+        CapsProfile,
+        null=False, blank=False,
+        default=CapsProfile.get_default_profile
+    )
     # Object alarms can be escalated
     escalation_policy = models.CharField(
         "Escalation Policy",
