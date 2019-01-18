@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ExtModelApplication implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -59,6 +59,7 @@ class ExtModelApplication(ExtApplication):
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
         self.fk_fields = {}
+        self.field_defaults = {}
         for f in self.model._meta.fields:
             if f.name in self.clean_fields:
                 continue  # Overriden behavior
@@ -67,6 +68,8 @@ class ExtModelApplication(ExtApplication):
                 if f.null:
                     vf = NoneParameter() | vf
                 self.clean_fields[f.name] = vf
+            if f.default is not None and not f.blank:
+                self.field_defaults[f.name] = f.default
         # m2m fields
         self.m2m_fields = {}  # Name -> Model
         for f in self.model._meta.many_to_many:
@@ -192,6 +195,13 @@ class ExtModelApplication(ExtApplication):
             for f in self.secret_fields:
                 if f in data:
                     del data[f]
+        # Set defaults
+        for f in data:
+            if data[f] is None and f in self.field_defaults:
+                v = self.field_defaults[f]
+                if callable(v):
+                    v = v()
+                data[f] = v
         # Clean up fields
         for f in self.clean_fields:
             if f in data:

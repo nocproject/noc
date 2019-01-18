@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CapsProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -140,6 +140,9 @@ class CapsProfile(Document):
     L3_SECTIONS = ["hsrp", "vrrp", "vrrpv3", "bgp", "ospf", "ospfv3", "isis", "ldp", "rsvp"]
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DEFAULT_PROFILE_NAME = "default"
 
     def __unicode__(self):
         return self.name
@@ -148,6 +151,11 @@ class CapsProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return CapsProfile.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
+    def get_default_profile(cls):
+        return CapsProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
 
     def get_sections(self, mop, nsp):
         """
