@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_mac_address_table
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ class Script(BaseScript):
             return True
         return False
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"
         if mac is not None:
             cmd += " address %s" % self.profile.convert_mac(mac)

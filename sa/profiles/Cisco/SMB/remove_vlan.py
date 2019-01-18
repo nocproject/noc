@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.remove_vlan
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Cisco.SMB.remove_vlan"
     interface = IRemoveVlan
 
-    def execute(self, vlan_id):
+    def execute_cli(self, vlan_id):
         if not self.scripts.has_vlan(vlan_id=vlan_id):
             return False
         with self.configure():

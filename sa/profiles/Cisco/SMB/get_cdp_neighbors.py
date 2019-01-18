@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_cdp_neighbors
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"IP (?P<remote_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
         re.MULTILINE | re.DOTALL)
 
-    def execute(self):
+    def execute_cli(self):
         device_id = self.scripts.get_fqdn()
         # Get neighbors
         neighbors = []

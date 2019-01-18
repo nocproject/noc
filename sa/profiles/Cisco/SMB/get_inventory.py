@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_inventory
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Script(BaseScript):
         r"PID:\s+(?P<pid>\S+)?\s*,?\s+VID:\s+(?P<vid>[\S ]+)?\s*,?\s+"
         r"SN: (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
 
-    def execute(self):
+    def execute_cli(self):
         match = self.rx_item.search(self.cli("show inventory"))
         return [{
             "type": "CHASSIS",

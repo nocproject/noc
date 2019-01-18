@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.ping
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,9 +16,13 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "Cisco.SMB.ping"
     interface = IPing
-    rx_result = re.compile(r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received.*round-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE | re.DOTALL)
+    rx_result = re.compile(
+        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
+        r"packets received.*round-trip \(ms\) "
+        r"min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
+        re.MULTILINE | re.DOTALL)
 
-    def execute(self, address, count=None, source_address=None, size=None, df=None):
+    def execute_cli(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping ip %s" % address
         if count:
             cmd += " count %d" % int(count)

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ class Script(BaseScript):
         "oo": "management",  # oob
     }
 
-    def execute(self):
+    def execute_cli(self):
 
         reply = [{
             "forwarding_instance": "default",

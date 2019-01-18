@@ -2,12 +2,13 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_switchport
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
+from time import sleep
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -39,7 +40,7 @@ class Script(BaseScript):
         r"Trunking VLANs: (?P<vlans>.+?)( \(Inactive\))?\s*\n"
         r"General PVID:", re.MULTILINE | re.DOTALL)
 
-    rx_descr_if = re.compile(r"^(?P<interface>\S+)\s*(?P<description>\S+)?")
+    rx_descr_if = re.compile(r"^(?P<interface>\S+)\s+(?P<description>.+)$")
 
     def get_description(self):
         r = []
@@ -58,7 +59,7 @@ class Script(BaseScript):
             }]
         return r
 
-    def execute(self):
+    def execute_cli(self):
         # Get portchannel members
         portchannels = {}  # portchannel name -> [members]
         for p in self.scripts.get_portchannel():
@@ -89,6 +90,7 @@ class Script(BaseScript):
         for interface in interfaces.keys():
             try:
                 v = self.cli("show interfaces switchport %s" % interface)
+                sleep(0.7)
             except self.CLISyntaxError:
                 continue
             is_trunk = None
