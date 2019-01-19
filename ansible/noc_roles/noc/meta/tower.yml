@@ -20,7 +20,7 @@ forms:
       description: Perhaps you do not want to change it
       type: str
     version:
-      default: microservices
+      default: stable
       label: Noc version
       description: What version of the repository to check out.
       type: str
