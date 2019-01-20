@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S6320-30C-EI-24S-DC",
+    "$collection": "inv.platforms",
+    "uuid": "588a9dc8-805a-4216-8527-2746fc79b866",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.342"
+}

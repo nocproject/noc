@@ -1,0 +1,7 @@
+{
+    "vendor__code": "HUAWEI",
+    "name": "S5324TP-SI-AC",
+    "$collection": "inv.platforms",
+    "uuid": "05651303-8354-48cd-9ad6-09f86b6ca728",
+    "snmp_sysobjectid": "1.3.6.1.4.1.2011.2.23.98"
+}
