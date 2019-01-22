@@ -16,6 +16,7 @@ class Script(BaseScript):
     name = "DCN.DCWL.get_interfaces"
     cache = True
     interface = IGetInterfaces
+    BLOCK_SPLITTER = "-" * 15
 
     INTERFACE_TYPES = {
 
@@ -78,9 +79,11 @@ class Script(BaseScript):
                 wres[wname] = {"ieee_mode": ieee_mode,
                                "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
         c = self.cli("get interface all detail")
-        for line in c.splitlines():
+        ip_address = None
+        for line in c.splitlines(self.BLOCK_SPLITTER):
+            if line.startswith():
+                ip_address = None
             r = line.split(' ', 1)
-            ip_address = None
             if r[0] == "name":
                 name = r[1].strip()
                 iftype = self.get_interface_type(name)
@@ -103,12 +106,12 @@ class Script(BaseScript):
                         }]
                     }
                     interfaces += [iface]
-            if r[0] == "ip":
+            if r[0] == "ip" or r[0] == "static-ip":
                 ip_address = r[1].strip()
             if r[0] == "mask":
                 ip_subnet = r[1].strip()
                 # ip address + ip subnet
-                if ip_subnet or ip_address:
+                if ip_subnet and ip_address:
                     ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                     iface = {
                         "type": iftype,
@@ -122,6 +125,7 @@ class Script(BaseScript):
                         }]
                     }
                     interfaces += [iface]
+                    ip_address = None
 
         descr_template = "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz"
         for line in c.splitlines():
