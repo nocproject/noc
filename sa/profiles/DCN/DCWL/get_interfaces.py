@@ -80,8 +80,8 @@ class Script(BaseScript):
                                "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
         c = self.cli("get interface all detail")
         ip_address = None
-        for line in c.splitlines(self.BLOCK_SPLITTER):
-            if line.startswith():
+        for line in c.splitlines():
+            if line.startswith(self.BLOCK_SPLITTER):
                 ip_address = None
             r = line.split(' ', 1)
             if r[0] == "name":
