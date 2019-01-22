@@ -172,7 +172,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     ]
                 },
                 {
-                    fieldLabel: "Maintenance",
+                    fieldLabel: __("Maintenance"),
                     name: "maintenance",
                     bind: {value: "{maintenance}"},
                     labelAlign: "top",
@@ -302,7 +302,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                 {
                     xtype: "fm.alarm.filter.profile",
                     name: "profile",
-                    fieldLabel: __("Profile"),
+                    fieldLabel: __("Service Profiles"),
                     bind: {value: "{activeFilter.profiles}"}
                 }
             ]
