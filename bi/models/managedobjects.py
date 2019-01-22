@@ -10,7 +10,7 @@
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
     DateField, DateTimeField, UInt16Field, Int32Field, BooleanField,
-    StringField, Float64Field, ReferenceField, IPv4Field)
+    StringField, Float64Field, ReferenceField, IPv4Field, ArrayField)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject as ManagedObjectDict
 from noc.core.bi.dictionaries.pool import Pool
@@ -77,6 +77,8 @@ class ManagedObject(Model):
     has_snmp_v2c = BooleanField(description=_("Has SNMP v2c"))
     # Counter
     uptime = Float64Field(description=_("Uptime"))
+    # Tags
+    tags = ArrayField(StringField(), description=_("Tags"))
 
     @classmethod
     def transform_query(cls, query, user):
