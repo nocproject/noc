@@ -16,6 +16,7 @@ class Script(BaseScript):
     name = "DCN.DCWL.get_interfaces"
     cache = True
     interface = IGetInterfaces
+    BLOCK_SPLITTER = "-" * 15
 
     INTERFACE_TYPES = {
 
@@ -79,8 +80,8 @@ class Script(BaseScript):
                                "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
         c = self.cli("get interface all detail")
         ip_address = None
-        for line in c.splitlines():
-            if line.startswith("-" * 15):
+        for line in c.splitlines(self.BLOCK_SPLITTER):
+            if line.startswith():
                 ip_address = None
             r = line.split(' ', 1)
             if r[0] == "name":
