@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -69,17 +69,17 @@ class Script(BaseScript):
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
     rx_lldp = re.compile(
-        "^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
+        "^(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
     rx_gvtp = re.compile("VTP Operating Mode\s+: Off", re.MULTILINE)
     rx_vtp = re.compile(
-        "^\s*(?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+enabled",
+        "^\s*(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+enabled",
         re.MULTILINE)
     rx_vtp1 = re.compile(
-        "^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+",
+        "^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+",
         re.MULTILINE)
     rx_oam = re.compile(
-        r"^\s*(?P<iface>(?:Fa|Gi|Te)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
+        r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
 
     def get_lldp_interfaces(self):
         """
