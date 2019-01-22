@@ -3,7 +3,7 @@
 # Vendor: Cisco
 # OS:     IOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -238,6 +238,7 @@ class Profile(BaseProfile):
         "Et": "physical",  # Ethernet
         "Fa": "physical",  # FastEthernet
         "Fd": "physical",  # Fddi
+        "Fo": "physical",  # FortyGigabitEthernet
         "Gi": "physical",  # GigabitEthernet
         "Gm": "physical",  # GMPLS
         "Gr": "physical",  # Group-Async
