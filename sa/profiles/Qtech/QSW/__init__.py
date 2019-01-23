@@ -3,7 +3,7 @@
 # Vendor: Qtech
 # OS:     QSW
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.lldp import LLDP_PORT_SUBTYPE_COMPONENT, LLDP_PORT_SUBTYPE_NAME
 
 
 class Profile(BaseProfile):
@@ -64,3 +65,15 @@ class Profile(BaseProfile):
         else:
             r += [name]
         return r
+
+    def clean_lldp_neighbor(self, obj, neighbor):
+        neighbor = super(Profile, self).clean_lldp_neighbor(obj, neighbor)
+        if neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
+            if neighbor.get("remote_port") is None:
+                # self.script.logger.warning("Can't get remote_port_description")
+                return neighbor
+            # Platform reports single MAC address for every port
+            # But leaks interface name to remote_port_description
+            neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
+            neighbor["remote_port"] = self.convert_interface_name(neighbor["remote_port"])
+        return neighbor
