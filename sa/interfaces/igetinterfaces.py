@@ -391,6 +391,14 @@ class IGetInterfaces(BaseInterface):
                         "vlan": VLANIDParameter(required=False)
                     }, required=False)
                 }, required=False),
+                # Dynamic vlans, enabled_afi = [ES or BRIDGE]
+                "dynamic_vlans": DictListParameter(attrs={
+                    "vlan": VLANIDParameter(),
+                    "service": StringParameter(choices=[
+                        "voice",
+                        "mvr"
+                    ])
+                }, required=False),
                 "ip_unnumbered_subinterface": InterfaceNameParameter(required=False),
                 "snmp_ifindex": IntParameter(required=False),
                 # Tunnel services
