@@ -341,9 +341,15 @@ class IGetInterfaces(BaseInterface):
                 "enabled_afi": StringListParameter(choices=[
                     "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE", "ES", "ATM", "iSCSI"
                 ], required=False),  # @todo: make required
-                "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),  # enabled_afi = [... IPv4 ...]
-                "ipv6_addresses": ListOfParameter(element=IPv6PrefixParameter(), required=False),  # enabled_afi = [... IPv6 ...]
-                "iso_addresses": ListOfParameter(element=StringParameter(), required=False),  # enabled_afi = [... ISO ...]
+                "ipv4_addresses": ListOfParameter(
+                    element=IPv4PrefixParameter(),
+                    required=False
+                ),  # enabled_afi = [... IPv4 ...]
+                "ipv6_addresses": ListOfParameter(
+                    element=IPv6PrefixParameter(),
+                    required=False
+                ),  # enabled_afi = [... IPv6 ...]
+                "iso_addresses": StringListParameter(required=False),  # enabled_afi = [... ISO ...]
                 "vpi": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 "vci": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 # Enabled L3 protocols
@@ -365,10 +371,8 @@ class IGetInterfaces(BaseInterface):
                     "inner_vlans": ListOfParameter(element=VLANIDParameter(), required=False),
                     # Tag rewrite operations list
                     "rewrite": DictListParameter(attrs={
-                        # pop - pop upper vlan tag from stack
-                        # push - push *vlan* atop of vlan stack
-                        # swap - swap top vlan tag to *vlan* (pop, push *vlan*)
-                        "op": StringParameter(choices=["pop", "push", "swap"]),
+                        # refer to noc.core.vlanmap documentation
+                        "op": StringParameter(choices=["pop", "push", "swap", "drop"]),
                         "vlan": VLANIDParameter(required=False)
                     }, required=False)
                 }, required=False),
@@ -382,10 +386,8 @@ class IGetInterfaces(BaseInterface):
                     "inner_vlans": ListOfParameter(element=VLANIDParameter(), required=False),
                     # Tag rewrite operations list
                     "rewrite": DictListParameter(attrs={
-                        # pop - pop upper vlan tag from stack
-                        # push - push *vlan* atop of vlan stack
-                        # swap - swap top vlan tag to *vlan* (pop, push *vlan*)
-                        "op": StringParameter(choices=["pop", "push", "swap"]),
+                        # refer to noc.core.vlanmap documentation
+                        "op": StringParameter(choices=["pop", "push", "swap", "drop"]),
                         "vlan": VLANIDParameter(required=False)
                     }, required=False)
                 }, required=False),
