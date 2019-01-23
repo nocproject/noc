@@ -34,7 +34,7 @@ class HTTP(object):
         proto = self.script.credentials.get("http_protocol", "http")
         return "%s://%s%s" % (proto, address, path)
 
-    def get(self, path, headers=None, cached=False, json=False, eof_mark=None):
+    def get(self, path, headers=None, cached=False, json=False, eof_mark=None, use_basic=False):
         """
         Perform HTTP GET request
         :param path: URI
@@ -42,6 +42,7 @@ class HTTP(object):
         :param cached: Cache result
         :param json: Decode json if set to True
         :param eof_mark: Waiting eof_mark in stream for end session (perhaps device return length 0)
+        :param use_basic: Use basic authentication
         """
         self.logger.debug("GET %s", path)
         if cached:
@@ -50,6 +51,10 @@ class HTTP(object):
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
+        user, password = None, None
+        if use_basic:
+            user = self.script.credentials.get("user")
+            password = self.script.credentials.get("password")
         code, headers, result = fetch_sync(
             self.get_url(path),
             headers=headers,
@@ -57,7 +62,9 @@ class HTTP(object):
             follow_redirects=True,
             allow_proxy=False,
             validate_cert=False,
-            eof_mark=eof_mark
+            eof_mark=eof_mark,
+            user=user,
+            password=password
         )
         # pylint: disable=superfluous-parens
         if not (200 <= code <= 299):  # noqa
@@ -72,7 +79,7 @@ class HTTP(object):
             self.script.root.http_cache[cache_key] = result
         return result
 
-    def post(self, path, data, headers=None, cached=False, json=False, eof_mark=None):
+    def post(self, path, data, headers=None, cached=False, json=False, eof_mark=None, use_basic=False):
         """
         Perform HTTP GET request
         :param path: URI
@@ -80,6 +87,7 @@ class HTTP(object):
         :param cached: Cache result
         :param json: Decode json if set to True
         :param eof_mark: Waiting eof_mark in stream for end session (perhaps device return length 0)
+        :param use_basic: Use basic authentication
         """
         self.logger.debug("POST %s %s", path, data)
         if cached:
@@ -88,6 +96,10 @@ class HTTP(object):
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
+        user, password = None, None
+        if use_basic:
+            user = self.script.credentials.get("user")
+            password = self.script.credentials.get("password")
         code, headers, result = fetch_sync(
             self.get_url(path),
             method="POST",
@@ -96,7 +108,9 @@ class HTTP(object):
             follow_redirects=True,
             allow_proxy=False,
             validate_cert=False,
-            eof_mark=eof_mark
+            eof_mark=eof_mark,
+            user=user,
+            password=password
         )
         # pylint: disable=superfluous-parens
         if not (200 <= code <= 299):  # noqa
