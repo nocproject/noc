@@ -19,7 +19,7 @@ from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
 from noc.core.span import get_spans, Span
 from noc.core.script.loader import loader
-from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF, TELNET, SSH
+from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF, TELNET, SSH, HTTP, HTTPS
 
 
 class Command(BaseCommand):
@@ -341,7 +341,9 @@ class JSONObject(object):
             data = ujson.load(f)
         self.scheme = {
             "telnet": TELNET,
-            "ssh": SSH
+            "ssh": SSH,
+            "http": HTTP,
+            "https": HTTPS,
         }.get(data.get("scheme", "telnet"), TELNET)
         self.profile = ProfileStub(data.get("profile"))
         self.address = data["address"]
