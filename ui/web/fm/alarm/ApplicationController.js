@@ -37,12 +37,23 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             viewModel = view.getViewModel(),
             prefix = url[0], queryStr = url.length ? url[1] : undefined;
         this.initFilter(viewModel);
-        if(this.urlHasId(prefix)) {
+        if(this.getView().getCmd() === "history" && this.getView().noc.hasOwnProperty("cmd")) {
+            var alarmId = this.getView().noc.cmd.args[0];
+            if(this.urlHasId("fm.alarm/" + alarmId)) {
+                view.setHistoryHash(alarmId);
+                this.openForm();
+            }
+        } else if(this.urlHasId(prefix)) {
             view.setHistoryHash(prefix.split("/")[1]);
             this.openForm();
         } else {
-            if(queryStr) {
+            if(queryStr && queryStr !== "__format=ext&status=A&maintenance=hide&collapse=1&cleared_after=0") {
                 this.deserialize(queryStr, viewModel);
+            } else {  // restore from local store
+                var filter = window.localStorage.getItem("fm-alarm-filter");
+                if(filter) {
+                    this.deserialize(filter, viewModel);
+                }
             }
         }
         this.activeBinding = viewModel.bind({
@@ -109,7 +120,6 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         this.updateHash(false);
     },
     onChangeDisplayFilters: function(data) {
-        // console.log("Display Filters changed :", data);
         if(data.hasOwnProperty("hasProfiles") && !Ext.Object.isEmpty(data.hasProfiles)) {
             window.localStorage.setItem("fm-alarm-has-profiles", JSON.stringify(data.hasProfiles));
         } else {
@@ -274,12 +284,13 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     },
     updateHash: function(force) {
         if(force || !this.urlHasId(Ext.History.getHash())) {
-            this.setHash(Ext.merge(
+            var queryStr = Ext.merge(
                 this.serialize(this.getViewModel().get("activeFilter")),
                 {
                     cleared_after: this.getViewModel().get("recentFilter.cleared_after")
-                })
-            );
+                });
+            this.setHash(queryStr);
+            window.localStorage.setItem("fm-alarm-filter", Ext.Object.toQueryString(queryStr, true));
         }
     },
     setUrl: function(id) {
@@ -296,6 +307,9 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
                 return /^[0-9a-f]{24}$/i.test(str);
             };
         if(tokens.length === 1) {
+            return false;
+        }
+        if(tokens[0] !== "fm.alarm") {
             return false;
         }
         return !!(tokens.length > 1 && isId(tokens[1]));
