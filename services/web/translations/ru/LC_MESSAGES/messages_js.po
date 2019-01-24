@@ -898,7 +898,7 @@ msgstr "Не показывать последние закрытые"
 
 #: ui/web/fm/alarm/view/grids/Sidebar.js:53
 msgid "Control"
-msgstr "Кнопки"
+msgstr "Управление"
 
 #: ui/web/core/QuickRepoPreview.js:95 ui/web/core/QuickRepoPreview.js:96
 #: ui/web/fm/alarm/view/grids/Sidebar.js:69 ui/web/inv/inv/Application.js:37
