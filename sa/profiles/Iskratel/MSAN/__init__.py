@@ -18,9 +18,10 @@ class Profile(BaseProfile):
     name = "Iskratel.MSAN"
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin)|User: ?"
     # Iskratel do not have "enable_super" command
-    # pattern_unprivileged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = \
+        r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*>"
     pattern_prompt = \
-        r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*[#>]"
+        r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*#"
     pattern_more = [
         (r"Press any key to continue or ESC to stop scrolling.", " "),
         (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t"),
@@ -31,6 +32,9 @@ class Profile(BaseProfile):
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     command_submit = "\r"
+    command_super = "enable"
+    password_submit = "\r"
+    username_submit = "\r"
     # Iskratel SGR Not clearing command line when SyntaxError
     send_on_syntax_error = "\x1b[B"
     rogue_chars = ["\r", "\x00"]
