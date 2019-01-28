@@ -74,7 +74,6 @@ class Profile(BaseProfile):
         r = defaultdict(dict)
         current_iface = ""
         for line in e.splitlines():
-            print line
             if not line or "===" in line:
                 continue
             line = line.strip()
