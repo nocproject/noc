@@ -65,6 +65,7 @@ from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.matcher import match
 from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
+from noc.core.tokenizer.loader import loader as tokenizer_loader
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 13
@@ -1568,6 +1569,21 @@ class ManagedObject(Model):
     def metrics(self):
         metric, last = get_objects_metrics([self])
         return metric.get(self), last.get(self)
+
+    def iter_config_tokens(self, config=None):
+        if config is None:
+            config = self.config.read()
+        if not config:
+            raise StopIteration  # no config
+        t_name, t_config = self.profile.get_profile().get_config_tokenizer(self)
+        if not t_name:
+            raise StopIteration  # no tokenizer
+        t_cls = tokenizer_loader.get_class(t_name)
+        if not t_cls:
+            raise ValueError("Invalid tokenizer")
+        tokenizer = t_cls(config, **t_config)
+        for tokens in tokenizer:
+            yield tokens
 
 
 @on_save
