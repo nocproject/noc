@@ -545,11 +545,11 @@ class Config(BaseConfig):
         default_ttl = SecondsParameter(default="1h")
 
     class datastream(ConfigSection):
-        enable_administrativedomain = BooleanParameter(default=True)
+        enable_administrativedomain = BooleanParameter(default=False)
         enable_administrativedomain_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for Adm. Domain datastream (Mongo greater 3.6 needed)")
-        enable_alarm = BooleanParameter(default=True)
+        enable_alarm = BooleanParameter(default=False)
         enable_alarm_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for Alarm datastream (Mongo greater 3.6 needed)")
@@ -569,11 +569,11 @@ class Config(BaseConfig):
         enable_dnszone_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for DNS Zone datastream (Mongo greater 3.6 needed)")
-        enable_managedobject = BooleanParameter(default=True)
+        enable_managedobject = BooleanParameter(default=False)
         enable_managedobject_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for ManagedObject datastream (Mongo greater 3.6 needed)")
-        enable_resourcegroup = BooleanParameter(default=True)
+        enable_resourcegroup = BooleanParameter(default=False)
         enable_resourcegroup_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for ResourceGroup datastream (Mongo greater 3.6 needed)")
