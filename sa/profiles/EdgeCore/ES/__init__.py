@@ -3,7 +3,7 @@
 # Vendor: EdgeCore
 # OS:     ES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,10 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     convert_mac = BaseProfile.convert_mac_to_dashed
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "!"
+    }
 
     rx_if_snmp_eth = re.compile(
         r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$",

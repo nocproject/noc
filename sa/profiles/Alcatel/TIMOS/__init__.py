@@ -3,7 +3,7 @@
 # Vendor: Alcatel
 # OS:     TIMOS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 import re
@@ -23,6 +23,12 @@ class Profile(BaseProfile):
     config_volatile = [r"^# Finished.*$", r"^# Generated.*$"]
     command_more = " "
     rogue_chars = [re.compile(r"\r\s+\r"), "\r"]
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "#",
+        "end_of_context": "exit",
+        "string_quote": "\""
+    }
 
     def convert_interface_name(self, s):
         if "," in s:
