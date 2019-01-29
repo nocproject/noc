@@ -36,6 +36,10 @@ class Profile(BaseProfile):
     snmp_ifstatus_get_chunk = 30
     snmp_ifstatus_get_timeout = 3
 
+    config_tokenizer = "line"
+    config_tokenizer_settings = {
+        "line_comment": "#"
+    }
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
 
     matchers = {
