@@ -6,4 +6,4 @@ Releases
     :titlesonly:
     :glob:
 
-    /releases/release-*
+    /releases/gen-19
