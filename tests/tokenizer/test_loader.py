@@ -16,6 +16,7 @@ from noc.core.tokenizer.base import BaseTokenizer
 @pytest.mark.parametrize("name", [
     "ini",
     "line",
+    "context",
     "indent",
     "curly",
     "routeros"
