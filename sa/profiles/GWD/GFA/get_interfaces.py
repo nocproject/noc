@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -143,5 +144,13 @@ class Script(BaseScript):
                 sub["ipv4_addresses"] = [match.group("ip")]
             iface["subinterfaces"] = [sub]
             interfaces += [iface]
+
+        # On GFA6900S IF-MIB::ifDescr show port description, not port name
+        if self.has_snmp():
+            for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
+                for i in interfaces:
+                    if (i["type"] == "physical" and "description" in i and i["description"] == name):
+                        i["snmp_ifindex"] = int(oid.split(".")[-1])
+                        break
 
         return [{"interfaces": interfaces}]
