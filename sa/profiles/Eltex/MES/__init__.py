@@ -40,6 +40,10 @@ class Profile(BaseProfile):
         r"(?:\(config[^\)]*\))?#"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "!"
+    }
 
     INTERFACE_TYPES = {
         "as": "physical",    # Async

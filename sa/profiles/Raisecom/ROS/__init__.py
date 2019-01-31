@@ -12,6 +12,7 @@
 import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.tokenizer.context import ANY
 
 
 class Profile(BaseProfile):
@@ -26,8 +27,16 @@ class Profile(BaseProfile):
         r"% \".+\"  (?:Unknown command.)|Error input in the position marked by"
     pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
-    config_volatile = [r"radius(-| accounting-server )encrypt-key \S+\n",
+    config_volatile = [r"radius(-server | accounting-server )encrypt-key \S+\n",
                        r"tacacs(-server | accounting-server )encrypt-key \S+\n"]
+    config_tokenizer = "context"
+    config_tokenizer_settings = {
+        "line_comment": "!",
+        "contexts": [
+            ["interface", ANY, ANY]
+        ],
+        "end_of_context": "!"
+    }
 
     matchers = {
         "is_iscom2624g": {

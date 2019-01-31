@@ -42,6 +42,10 @@ class Profile(BaseProfile):
         r"(?:\(config[^\)]*\))?#"
 
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "!"
+    }
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
     @classmethod

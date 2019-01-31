@@ -201,6 +201,10 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # Always enclose MML command arguments with quotes
     # False - pass integers as unquoted
     mml_always_quote = False
+    # Config tokenizer name, from noc.core.tokenizer.*
+    config_tokenizer = None
+    # Configuration for config tokenizer
+    config_tokenizer_settings = {}
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
@@ -523,6 +527,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :return: error code, error message
         """
         raise NotImplementedError()
+
+    @classmethod
+    def get_config_tokenizer(cls, object):
+        """
+        Returns config tokenizer name and settings.
+        object.matchers.XXXX can be used
+        :param object: ManagedObject instance
+        :return: config tokenizer name, config tokenizer settings
+        """
+        return cls.config_tokenizer, cls.config_tokenizer_settings
 
     @classmethod
     def _get_patterns(cls):

@@ -9,6 +9,7 @@
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.tokenizer.context import ANY
 
 
 class Profile(BaseProfile):
@@ -30,6 +31,17 @@ class Profile(BaseProfile):
     config_volatile = [
         r"^!System Up Time.+?\n!Current SNTP Synchronized Time.+?\n"
     ]
+    config_tokenizer = "context"
+    config_tokenizer_settings = {
+        "line_comment": "!",
+        "contexts": [
+            ["vlan", "database"],
+            ["policy-map", ANY, ANY],
+            ["policy-map", ANY, ANY, "class", ANY],
+            ["interface", ANY]
+        ],
+        "end_of_context": "exit"
+    }
 
     @staticmethod
     def parse_kv_out(out):

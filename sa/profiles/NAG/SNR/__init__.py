@@ -21,3 +21,7 @@ class Profile(BaseProfile):
     command_submit = "\r"
     command_disable_pager = "terminal length 0"
     command_exit = "exit"
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "!"
+    }

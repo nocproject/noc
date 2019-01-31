@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: MikroTik
-# OS:     RouterOS
-# Compatible: 3.14 and above
+# Mikrotik.RouterOS profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,6 +27,7 @@ class Profile(BaseProfile):
     config_volatile = [r"^#.*?$", r"^\s?"]
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
     rogue_chars = ["\r", "\x00"]
+    config_tokenizer = "routeros"
 
     # telnet_naws = "\x00\xfa\x00\xfa"
 

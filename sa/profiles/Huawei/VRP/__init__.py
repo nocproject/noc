@@ -48,6 +48,10 @@ class Profile(BaseProfile):
     command_save_config = "save"
     command_exit = "quit"
     rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "#"
+    }
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
     matchers = {
