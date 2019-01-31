@@ -2,29 +2,29 @@
 # ----------------------------------------------------------------------
 # HTTP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 import ujson
+from six.moves.http_cookies import SimpleCookie
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.http.client import fetch_sync
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
-from noc.config import config
 
 
 class HTTP(object):
-    CONNECT_TIMEOUT = config.http_client.connect_timeout
-    REQUEST_TIMEOUT = config.http_client.request_timeout
-
     class HTTPError(NOCError):
         default_code = ERR_HTTP_UNKNOWN
 
     def __init__(self, script):
         self.script = script
         self.logger = PrefixLoggerAdapter(script.logger, "http")
+        self.headers = {}
+        self.cookies = None
+        self.session_started = False
 
     def get_url(self, path):
         address = self.script.credentials["address"]
@@ -44,6 +44,7 @@ class HTTP(object):
         :param eof_mark: Waiting eof_mark in stream for end session (perhaps device return length 0)
         :param use_basic: Use basic authentication
         """
+        self.ensure_session()
         self.logger.debug("GET %s", path)
         if cached:
             cache_key = "get_%s" % path
@@ -57,7 +58,7 @@ class HTTP(object):
             password = self.script.credentials.get("password")
         code, headers, result = fetch_sync(
             self.get_url(path),
-            headers=headers,
+            headers=self._get_effective_headers(headers),
             request_timeout=60,
             follow_redirects=True,
             allow_proxy=False,
@@ -66,9 +67,9 @@ class HTTP(object):
             user=user,
             password=password
         )
-        # pylint: disable=superfluous-parens
-        if not (200 <= code <= 299):  # noqa
+        if not 200 <= code <= 299:
             raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
+        self._process_cookies(headers)
         if json:
             try:
                 result = ujson.loads(result)
@@ -89,6 +90,7 @@ class HTTP(object):
         :param eof_mark: Waiting eof_mark in stream for end session (perhaps device return length 0)
         :param use_basic: Use basic authentication
         """
+        self.ensure_session()
         self.logger.debug("POST %s %s", path, data)
         if cached:
             cache_key = "post_%s" % path
@@ -103,7 +105,7 @@ class HTTP(object):
         code, headers, result = fetch_sync(
             self.get_url(path),
             method="POST",
-            headers=headers,
+            headers=self._get_effective_headers(headers),
             request_timeout=60,
             follow_redirects=True,
             allow_proxy=False,
@@ -112,9 +114,9 @@ class HTTP(object):
             user=user,
             password=password
         )
-        # pylint: disable=superfluous-parens
-        if not (200 <= code <= 299):  # noqa
+        if not 200 <= code <= 299:
             raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
+        self._process_cookies(headers)
         if json:
             try:
                 return ujson.loads(result)
@@ -126,4 +128,71 @@ class HTTP(object):
         return result
 
     def close(self):
-        pass
+        if self.session_started:
+            self.shutdown_session()
+
+    def _process_cookies(self, headers):
+        """
+        Process and store cookies from response headers
+        :param headers:
+        :return:
+        """
+        cdata = headers.get("Set-Cookie")
+        if not cdata:
+            return
+        if not self.cookies:
+            self.cookies = SimpleCookie()
+        self.cookies.load(cdata)
+
+    def get_cookie(self, name):
+        """
+        Get cookie name by value
+        :param name:
+        :return: Morsel object or None
+        """
+        if not self.cookies:
+            return None
+        return self.cookies.get(name)
+
+    def _get_effective_headers(self, headers):
+        """
+        Append session headers when necessary. Apply effective cookies
+        :param headers:
+        :return:
+        """
+        if self.headers:
+            if headers:
+                headers = headers.copy()
+            else:
+                headers = {}
+            headers.update(self.headers)
+        elif not headers and self.cookies:
+            headers = {}
+        if self.cookies:
+            headers["Cookie"] = self.cookies.output(header="").lstrip()
+        return headers
+
+    def set_header(self, name, value):
+        """
+        Set HTTP header to be set with all following requests
+        :param name:
+        :param value:
+        :return:
+        """
+        self.logger.debug("Set header: %s = %s", name, value)
+        self.headers[name] = str(value)
+
+    def ensure_session(self):
+        if not self.session_started:
+            self.setup_session()
+            self.session_started = True
+
+    def setup_session(self):
+        if self.script.profile.setup_http_session:
+            self.logger.debug("Setup http session")
+            self.script.profile.setup_http_session(self.script)
+
+    def shutdown_session(self):
+        if self.script.profile.shutdown_http_session:
+            self.logger.debug("Shutdown http session")
+            self.script.profile.shutdown_http_session(self.script)

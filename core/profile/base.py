@@ -114,6 +114,10 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # Callable accepting script instance
     # to finaly close session
     shutdown_session = None
+    # Callable accepting script instance to set up http session
+    setup_http_session = None
+    # Callable acceptings script instance to finaly close http session
+    shutdown_http_session = None
     # Sequence to disable pager
     #
     command_disable_pager = None
