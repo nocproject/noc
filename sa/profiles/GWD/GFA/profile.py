@@ -20,3 +20,8 @@ class Profile(BaseProfile):
     command_super = "enable"
     command_disable_pager = "screen lines 0"
     command_more = " "
+
+    def convert_interface_name(self, interface):
+        if interface.startswith("eth") or interface.startswith("pon"):
+            interface = interface[3:]
+        return interface
