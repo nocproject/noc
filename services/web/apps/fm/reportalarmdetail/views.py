@@ -98,9 +98,9 @@ class ReportAlarmDetailApplication(ExtApplication):
               "selector": StringParameter(required=False),
               "ex_selector": StringParameter(required=False),
               "columns": StringParameter(required=False),
-              "format": StringParameter(choices=["csv", "xlsx"])}
+              "o_format": StringParameter(choices=["csv", "xlsx"])}
           )
-    def api_report(self, request, from_date, to_date, format,
+    def api_report(self, request, from_date, to_date, o_format,
                    min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
                    segment=None, administrative_domain=None, selector=None,
                    ex_selector=None, columns=None, source="both"):
@@ -371,14 +371,14 @@ class ReportAlarmDetailApplication(ExtApplication):
                     container_lookup[a["managed_object"]].get("text", "") if container_lookup else ""
                 ], container_path, segment_path), cmap)]
 
-        if format == "csv":
+        if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
             response[
                 "Content-Disposition"] = "attachment; filename=\"alarms.csv\""
             writer = csv.writer(response)
             writer.writerows(r)
             return response
-        elif format == "xlsx":
+        elif o_format == "xlsx":
             response = StringIO.StringIO()
             wb = xlsxwriter.Workbook(response)
             ws = wb.add_worksheet("Alarms")
