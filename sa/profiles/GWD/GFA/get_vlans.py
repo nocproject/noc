@@ -6,7 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
 # Python modules
 import re
 # NOC Modules
