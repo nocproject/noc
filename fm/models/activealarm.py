@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedD
                                 IntField, LongField, BooleanField, ObjectIdField, DictField)
 from mongoengine.errors import SaveConditionError
 # NOC modules
-import noc.lib.nosql as nosql
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.main.models import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
@@ -57,8 +57,8 @@ class ActiveAlarm(Document):
 
     timestamp = DateTimeField(required=True)
     last_update = DateTimeField(required=True)
-    managed_object = nosql.ForeignKeyField(ManagedObject)
-    alarm_class = nosql.PlainReferenceField(AlarmClass)
+    managed_object = ForeignKeyField(ManagedObject)
+    alarm_class = PlainReferenceField(AlarmClass)
     severity = IntField(required=True)
     vars = DictField()
     # Calculated alarm discriminator
@@ -74,10 +74,10 @@ class ActiveAlarm(Document):
     opening_event = ObjectIdField(required=False)
     closing_event = ObjectIdField(required=False)
     # List of subscribers
-    subscribers = ListField(nosql.ForeignKeyField(User))
+    subscribers = ListField(ForeignKeyField(User))
     #
     custom_subject = StringField(required=False)
-    custom_style = nosql.ForeignKeyField(Style, required=False)
+    custom_style = ForeignKeyField(Style, required=False)
     #
     reopens = IntField(required=False)
     # RCA
@@ -105,8 +105,8 @@ class ActiveAlarm(Document):
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Template and notification group to send close notification
-    clear_template = nosql.ForeignKeyField(Template, required=False)
-    clear_notification_group = nosql.ForeignKeyField(NotificationGroup, required=False)
+    clear_template = ForeignKeyField(Template, required=False)
+    clear_notification_group = ForeignKeyField(NotificationGroup, required=False)
     # Paths
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())

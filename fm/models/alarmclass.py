@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,10 +13,12 @@ import os
 from threading import Lock
 import operator
 # Third-party modules
-from mongoengine import fields
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, UUIDField, EmbeddedDocumentField, BooleanField,
+                                ListField, IntField, FloatField, LongField, ObjectIdField)
 import cachetools
 # NOC modules
-import noc.lib.nosql as nosql
+from noc.lib.nosql import PlainReferenceField
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler
@@ -39,7 +41,7 @@ handlers_lock = Lock()
     ("fm.AlarmClassConfig", "alarm_class"),
     ("fm.ArchivedAlarm", "alarm_class")
 ])
-class AlarmClass(nosql.Document):
+class AlarmClass(Document):
     """
     Alarm class
     """
@@ -53,62 +55,62 @@ class AlarmClass(nosql.Document):
         ],
     }
 
-    name = fields.StringField(required=True, unique=True)
-    uuid = fields.UUIDField(binary=True)
-    description = fields.StringField(required=False)
+    name = StringField(required=True, unique=True)
+    uuid = UUIDField(binary=True)
+    description = StringField(required=False)
     # Create or not create separate Alarm
     # if is_unique is True and there is active alarm
     # Do not create separate alarm if is_unique set
-    is_unique = fields.BooleanField(default=False)
+    is_unique = BooleanField(default=False)
     # List of var names to be used as discriminator key
-    discriminator = fields.ListField(nosql.StringField())
+    discriminator = ListField(StringField())
     # Can alarm status be cleared by user
-    user_clearable = fields.BooleanField(default=True)
+    user_clearable = BooleanField(default=True)
     # Default alarm severity
-    default_severity = nosql.PlainReferenceField(AlarmSeverity)
+    default_severity = PlainReferenceField(AlarmSeverity)
     #
-    datasources = fields.ListField(fields.EmbeddedDocumentField(DataSource))
-    vars = fields.ListField(fields.EmbeddedDocumentField(AlarmClassVar))
+    datasources = ListField(EmbeddedDocumentField(DataSource))
+    vars = ListField(EmbeddedDocumentField(AlarmClassVar))
     # Text messages
-    subject_template = fields.StringField()
-    body_template = fields.StringField()
-    symptoms = fields.StringField()
-    probable_causes = fields.StringField()
-    recommended_actions = fields.StringField()
+    subject_template = StringField()
+    body_template = StringField()
+    symptoms = StringField()
+    probable_causes = StringField()
+    recommended_actions = StringField()
 
     # Flap detection
-    flap_condition = fields.StringField(
+    flap_condition = StringField(
         required=False,
         choices=[("none", "none"), ("count", "count")],
         default="none")
-    flap_window = fields.IntField(required=False, default=0)
-    flap_threshold = fields.FloatField(required=False, default=0)
+    flap_window = IntField(required=False, default=0)
+    flap_threshold = FloatField(required=False, default=0)
     # RCA
-    root_cause = fields.ListField(
-        fields.EmbeddedDocumentField(AlarmRootCauseCondition))
-    topology_rca = fields.BooleanField(default=False)
+    root_cause = ListField(
+        EmbeddedDocumentField(AlarmRootCauseCondition))
+    topology_rca = BooleanField(default=False)
     # List of handlers to be called on alarm raising
-    handlers = fields.ListField(fields.StringField())
+    handlers = ListField(StringField())
     # List of handlers to be called on alarm clear
-    clear_handlers = fields.ListField(fields.StringField())
+    clear_handlers = ListField(StringField())
     # Plugin settings
-    plugins = fields.ListField(fields.EmbeddedDocumentField(AlarmPlugin))
+    plugins = ListField(EmbeddedDocumentField(AlarmPlugin))
     # Time in seconds to delay alarm risen notification
-    notification_delay = fields.IntField(required=False)
+    notification_delay = IntField(required=False)
     # Control time to reopen alarm instead of creating new
-    control_time0 = fields.IntField(required=False)
+    control_time0 = IntField(required=False)
     # Control time to reopen alarm after 1 reopen
-    control_time1 = fields.IntField(required=False)
+    control_time1 = IntField(required=False)
     # Control time to reopen alarm after >1 reopen
-    control_timeN = fields.IntField(required=False)
+    control_timeN = IntField(required=False)
     # Consequence recover time
     # Root cause will be detached if consequence alarm
     # will not clear itself in *recover_time*
-    recover_time = fields.IntField(required=False, default=300)
+    recover_time = IntField(required=False, default=300)
     #
-    bi_id = fields.LongField(unique=True)
+    bi_id = LongField(unique=True)
     #
-    category = nosql.ObjectIdField()
+    category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
