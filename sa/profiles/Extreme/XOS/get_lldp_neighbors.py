@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,12 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NETWORK_ADDRESS, LLDP_PORT_SUBTYPE_NAME, LLDP_PORT_SUBTYPE_LOCAL
+)
+
+
 #
 # @todo: SNMP Support
 #
@@ -44,12 +50,13 @@ class Script(BaseScript):
         r"^\s+- IEEE802.3 MAC/PHY Configuration/Status\s*\n",
         re.MULTILINE | re.DOTALL)
     chassis_types = {
-        "MAC address (4)": 4,
-        "Network address (5); Address type: IPv4 (1)": 5
+        "MAC address (4)": LLDP_CHASSIS_SUBTYPE_MAC,
+        "Network address (5); Address type: IPv4 (1)": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
     }
     port_types = {
-        "MAC address (3)": 3,
-        "ifName (5)": 5
+        "MAC address (3)": LLDP_PORT_SUBTYPE_MAC,
+        "ifName (5)": LLDP_PORT_SUBTYPE_NAME,
+        "Locally assigned (7)": LLDP_PORT_SUBTYPE_LOCAL
     }
 
     def execute(self):
@@ -71,18 +78,18 @@ class Script(BaseScript):
             # Get capability
             cap = 4
             # Get remote port subtype
-            remote_port_subtype = 5
+            remote_port_subtype = LLDP_PORT_SUBTYPE_NAME
             if is_ipv4(remote_port):
                 # Actually networkAddress(4)
-                remote_port_subtype = 4
+                remote_port_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
-                remote_port_subtype = 3
+                remote_port_subtype = LLDP_PORT_SUBTYPE_MAC
             elif is_int(remote_port):
                 # Actually local(7)
-                remote_port_subtype = 7
+                remote_port_subtype = LLDP_PORT_SUBTYPE_LOCAL
 
             i = {"local_interface": local_interface, "neighbors": []}
             n = {
@@ -93,9 +100,9 @@ class Script(BaseScript):
             }
             if is_ipv4(n["remote_chassis_id"]) \
                     or is_ipv6(n["remote_chassis_id"]):
-                n["remote_chassis_id_subtype"] = 5
+                n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             else:
-                n["remote_chassis_id_subtype"] = 4
+                n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_MAC
             try:
                 c = self.cli(
                     "show lldp ports %s neighbors detailed" % local_interface
@@ -148,18 +155,18 @@ class Script(BaseScript):
             # Get capability
             cap = 4
             # Get remote port subtype
-            remote_port_subtype = 5
+            remote_port_subtype = LLDP_PORT_SUBTYPE_NAME
             if is_ipv4(remote_port):
                 # Actually networkAddress(4)
-                remote_port_subtype = 4
+                remote_port_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
-                remote_port_subtype = 3
+                remote_port_subtype = LLDP_PORT_SUBTYPE_MAC
             elif is_int(remote_port):
                 # Actually local(7)
-                remote_port_subtype = 7
+                remote_port_subtype = LLDP_PORT_SUBTYPE_LOCAL
 
             i = {"local_interface": local_interface, "neighbors": []}
             n = {
@@ -172,9 +179,9 @@ class Script(BaseScript):
                 n["remote_system_name"] = remote_system_name
             if is_ipv4(n["remote_chassis_id"]) \
                     or is_ipv6(n["remote_chassis_id"]):
-                n["remote_chassis_id_subtype"] = 5
+                n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             else:
-                n["remote_chassis_id_subtype"] = 4
+                n["remote_chassis_id_subtype"] = LLDP_CHASSIS_SUBTYPE_MAC
 
             i["neighbors"].append(n)
             r.append(i)
