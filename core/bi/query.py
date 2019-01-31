@@ -166,6 +166,18 @@ def resolve_format(seq, model=None):
     return "%s" % seq[0]
 
 
+def f_any(seq, model=None):
+    if not isinstance(seq[1], list):
+        seq[1] = [seq[1]]
+    return "hasAny(%s, %s)" % (seq[0]["$field"], [str(x) for x in seq[1]])
+
+
+def f_all(seq, model=None):
+    if not isinstance(seq[1], list):
+        seq[1] = [seq[1]]
+    return "hasAll(%s, %s)" % (seq[0]["$field"], [str(x) for x in seq[1]])
+
+
 OP_MAP = {
     # Comparison
     "$eq": OP(min=2, max=2, join=" = "),
@@ -220,6 +232,9 @@ OP_MAP = {
     "$quantile": OP(min=2, max=2, function=f_quantile),
     # Dictionary lookup
     "$lookup": OP(min=2, max=3, convert=f_lookup),
+    # Array
+    "$hasAll": OP(min=2, max=2, convert=f_all),
+    "$hasAny": OP(min=2, max=2, convert=f_any),
     # List
     "$in": OP(min=2, max=3, convert=in_lookup),
     "$hierarchy": OP(min=2, max=2, function="dictGetHierarchy"),
