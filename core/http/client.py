@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # HTTP Client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ import tornado.ioloop
 import tornado.iostream
 import cachetools
 import six
+import ujson
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
@@ -230,7 +231,7 @@ def fetch(url, method="GET",
                     raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "Parse error"))
             code = parser.get_status_code()
             logger.debug("Proxy response: %s", code)
-            if not (200 <= code <= 299):
+            if not 200 <= code <= 299:
                 raise tornado.gen.Return((code, parser.get_headers(), "Proxy error: %s" % code))
             # Switch to TLS when necessary
             if use_tls:
@@ -254,8 +255,12 @@ def fetch(url, method="GET",
                     raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
         # Process request
         body = body or ""
+        content_type = "application/binary"
         if isinstance(body, unicode):
             body = body.encode("utf-8")
+        elif not isinstance(body, six.string_types):
+            body = ujson.dumps(body)
+            content_type = "text/json"
         h = {
             "Host": str(u.netloc),
             "Connection": "close",
@@ -293,7 +298,7 @@ def fetch(url, method="GET",
                 )
         if method in REQUIRE_LENGTH_METHODS:
             h["Content-Length"] = str(len(body))
-            h["Content-Type"] = "application/binary"
+            h["Content-Type"] = content_type
         if user and password:
             # Include basic auth header
             h["Authorization"] = "Basic %s" % (
