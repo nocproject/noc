@@ -213,14 +213,14 @@ class HTTP(object):
         :return: None
         """
         if session_id is not None:
-            self.session_id = str(session_id)
+            self.session_id = session_id
         else:
             self.session_id = None
 
     def ensure_session(self):
         if not self.session_started:
-            self.setup_session()
             self.session_started = True
+            self.setup_session()
 
     def setup_session(self):
         if self.script.profile.setup_http_session:
