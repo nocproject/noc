@@ -114,6 +114,19 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # Callable accepting script instance
     # to finaly close session
     shutdown_session = None
+    # Callable accepting script instance to set up http session
+    setup_http_session = None
+    # List of middleware names to be applied to each HTTP request
+    # Refer to core.script.http.middleware for details
+    # Middleware may be set as
+    # * name
+    # * handler, leading to BaseMiddleware instance
+    # * (name, config)
+    # * (handler, config)
+    # Where config is dict of middleware's constructor parameters
+    http_request_middleware = None
+    # Callable acceptings script instance to finaly close http session
+    shutdown_http_session = None
     # Sequence to disable pager
     #
     command_disable_pager = None
@@ -537,6 +550,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :return: config tokenizer name, config tokenizer settings
         """
         return cls.config_tokenizer, cls.config_tokenizer_settings
+
+    @classmethod
+    def get_http_request_middleware(cls, script):
+        """
+        Returns list of http_request_middleware.
+        matchers.XXXX can be used?
+        :param script: Script instance
+        :return:
+        """
+        return cls.http_request_middleware
 
     @classmethod
     def _get_patterns(cls):

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SA Script base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,22 +17,22 @@ from functools import reduce
 # Third-party modules
 import six
 # NOC modules
-from .snmp.base import SNMP
-from .snmp.beef import BeefSNMP
-from .http.base import HTTP
 from noc.core.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
-from .context import (ConfigurationContextManager, CacheContextManager,
-                      IgnoredExceptionsContextManager)
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.handler import get_handler
 from noc.core.mac import MAC
-from .error import (ScriptError, CLISyntaxError, CLIOperationError,
-                    NotSupportedError, UnexpectedResultError)
 from noc.config import config
 from noc.core.span import Span
 from noc.core.matcher import match
 from noc.core.backport.time import perf_counter
+from .context import (ConfigurationContextManager, CacheContextManager,
+                      IgnoredExceptionsContextManager)
+from .error import (ScriptError, CLISyntaxError, CLIOperationError,
+                    NotSupportedError, UnexpectedResultError)
+from .snmp.base import SNMP
+from .snmp.beef import BeefSNMP
+from .http.base import HTTP
 
 
 class BaseScriptMetaclass(type):
@@ -156,7 +156,10 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             self.snmp = BeefSNMP(self)
         else:
             self.snmp = SNMP(self)
-        self.http = HTTP(self)
+        if self.parent:
+            self.http = self.root.http
+        else:
+            self.http = HTTP(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
         # Store session id
