@@ -13,6 +13,9 @@ from six.moves.http_cookies import SimpleCookie
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.http.client import fetch_sync
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
+from noc.core.handler import get_handler
+from .middleware.base import BaseMiddleware
+from .middleware.loader import loader
 
 
 class HTTP(object):
@@ -21,10 +24,16 @@ class HTTP(object):
 
     def __init__(self, script):
         self.script = script
-        self.logger = PrefixLoggerAdapter(script.logger, "http")
+        if script:  # For testing purposes
+            self.logger = PrefixLoggerAdapter(script.logger, "http")
         self.headers = {}
         self.cookies = None
         self.session_started = False
+        self.request_id = 1
+        self.session_id = None
+        self.request_middleware = None
+        if self.script:  # For testing purposes
+            self.setup_middleware()
 
     def get_url(self, path):
         address = self.script.credentials["address"]
@@ -45,6 +54,7 @@ class HTTP(object):
         :param use_basic: Use basic authentication
         """
         self.ensure_session()
+        self.request_id += 1
         self.logger.debug("GET %s", path)
         if cached:
             cache_key = "get_%s" % path
@@ -56,9 +66,15 @@ class HTTP(object):
         if use_basic:
             user = self.script.credentials.get("user")
             password = self.script.credentials.get("password")
+        # Apply GET middleware
+        url = self.get_url(path)
+        hdr = self._get_effective_headers(headers)
+        if self.request_middleware:
+            for mw in self.request_middleware:
+                url, _, hdr = mw.process_get(url, "", hdr)
         code, headers, result = fetch_sync(
-            self.get_url(path),
-            headers=self._get_effective_headers(headers),
+            url,
+            headers=hdr,
             request_timeout=60,
             follow_redirects=True,
             allow_proxy=False,
@@ -91,6 +107,7 @@ class HTTP(object):
         :param use_basic: Use basic authentication
         """
         self.ensure_session()
+        self.request_id += 1
         self.logger.debug("POST %s %s", path, data)
         if cached:
             cache_key = "post_%s" % path
@@ -102,10 +119,17 @@ class HTTP(object):
         if use_basic:
             user = self.script.credentials.get("user")
             password = self.script.credentials.get("password")
+        # Apply POST middleware
+        url = self.get_url(path)
+        hdr = self._get_effective_headers(headers)
+        if self.request_middleware:
+            for mw in self.request_middleware:
+                url, data, hdr = mw.process_post(url, data, hdr)
         code, headers, result = fetch_sync(
-            self.get_url(path),
+            url,
             method="POST",
-            headers=self._get_effective_headers(headers),
+            body=data,
+            headers=hdr,
             request_timeout=60,
             follow_redirects=True,
             allow_proxy=False,
@@ -182,6 +206,17 @@ class HTTP(object):
         self.logger.debug("Set header: %s = %s", name, value)
         self.headers[name] = str(value)
 
+    def set_session_id(self, session_id):
+        """
+        Set session_id to be reused by middleware
+        :param session_id:
+        :return: None
+        """
+        if session_id is not None:
+            self.session_id = str(session_id)
+        else:
+            self.session_id = None
+
     def ensure_session(self):
         if not self.session_started:
             self.setup_session()
@@ -196,3 +231,23 @@ class HTTP(object):
         if self.script.profile.shutdown_http_session:
             self.logger.debug("Shutdown http session")
             self.script.profile.shutdown_http_session(self.script)
+
+    def setup_middleware(self):
+        mw_list = self.script.profile.get_http_request_middleware(self.script)
+        if not mw_list:
+            return
+        self.request_middleware = []
+        for mw_cfg in mw_list:
+            if isinstance(mw_cfg, tuple):
+                name, cfg = mw_cfg
+            else:
+                name, cfg = mw_cfg, {}
+            if "." in name:
+                # Handler
+                mw_cls = get_handler(name)
+                assert mw_cls
+                assert isinstance(mw_cls, BaseMiddleware)
+            else:
+                # Middleware name
+                mw_cls = loader.get_class(name)
+            self.request_middleware += [mw_cls(self, **cfg)]
