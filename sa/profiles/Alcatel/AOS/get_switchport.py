@@ -16,7 +16,7 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "Alcatel.AOS.get_switchport"
     interface = IGetSwitchport
-    rx_line = re.compile(r"\n\s+(?P<interface>\S+)\s+(?P<status>\S+)\s+(10000|1000|-)\s+",
+    rx_line = re.compile(r"\n\s+(?P<interface>\S+)\s+(?P<status>\S+)\s+(?:10000|1000|100|-)\s+",
                          re.MULTILINE)
     rx_line_vlan = re.compile(r"^\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+(?P<vlan_type>\S+)\s+(?P<status>\S+)$",
                               re.MULTILINE)
