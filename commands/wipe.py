@@ -164,11 +164,6 @@ class Command(BaseCommand):
         # Clean user access
         with self.log("Cleaning management object access"):
             UserAccess.objects.filter(user=o).delete()
-        # Reset owned alarms
-        with self.log("Revoking assigned alarms"):
-            for a in ActiveAlarm.objects.filter(owner=o.id):
-                a.owner = None
-                a.save()
         # Unsubscribe from alarms
         with self.log("Unsubscribing from alarms"):
             for a in ActiveAlarm.objects.filter(subscribers=o.id):
