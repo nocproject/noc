@@ -166,7 +166,7 @@ class ProfileCheck(DiscoveryCheck):
             if not self.snmp_version_def:
                 self.snmp_version_def = "snmp_v2c_get"
                 caps = self.object.get_caps()
-                if caps.get("SNMP | v2c") is False:
+                if caps.get("SNMP | v2c") is False or caps.get("SNMP | v2c") is None:
                     self.snmp_version_def = "snmp_v1_get"
         if not snmp_ro:
             self.logger.error("No SNMP credentials. Ignoring")
