@@ -41,7 +41,7 @@ class ESNormalizer(BaseNormalizer):
     def normalize_vlan_ip(self, tokens):
         yield self.vr(
             "interface", self.interface_name(tokens[1], tokens[2]),
-            "unit", "0", "inet", "address", [self.to_prefix(tokens[5], tokens[6])]
+            "unit", "0", "inet", "address", self.to_prefix(tokens[5], tokens[6])
         )
 
     @match("ip", "default-gateway", ANY)
