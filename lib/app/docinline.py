@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# ModelInline
+# DocInline
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from functools import reduce
+# Third-party modules
+from mongoengine.fields import StringField, IntField, BooleanField, GeoPointField
+from mongoengine.queryset import Q
+from mongoengine.errors import NotUniqueError
+from bson import ObjectId
 # NOC modules
-from noc.sa.interfaces.base import (
-    BooleanParameter, IntParameter, FloatParameter, ModelParameter, TagsParameter,
-    InterfaceTypeError, DocumentParameter
-)
+from noc.sa.interfaces.base import BooleanParameter, IntParameter, InterfaceTypeError, DocumentParameter
 from noc.lib.validators import is_int
-from noc.lib.nosql import *
+from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 
 
 class DocInline(object):
@@ -137,29 +139,6 @@ class DocInline(object):
     def get_custom_fields(self):
         from noc.main.models import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
-
-    def get_validator(self, field):
-        """
-        Returns Parameter instance or None to clean up field
-        :param field:
-        :type field: Field
-        :return:
-        """
-        from noc.core.model.fields import AutoCompleteTagsField
-
-        if isinstance(field, BooleanField):
-            return BooleanParameter()
-        elif isinstance(field, IntegerField):
-            return IntParameter()
-        elif isinstance(field, FloatField):
-            return FloatParameter()
-        elif isinstance(field, AutoCompleteTagsField):
-            return TagsParameter(required=not field.null)
-        elif isinstance(field, related.ForeignKey):
-            self.fk_fields[field.name] = field.rel.to
-            return ModelParameter(field.rel.to, required=not field.null)
-        else:
-            return None
 
     def get_Q(self, request, query):
         """
@@ -385,7 +364,7 @@ class DocInline(object):
             o = self.model(**attrs)
             try:
                 o.save()
-            except IntegrityError:
+            except NotUniqueError:
                 return self.app.render_json(
                     {
                         "status": False,
@@ -443,7 +422,7 @@ class DocInline(object):
             setattr(o, k, v)
         try:
             o.save()
-        except IntegrityError:
+        except NotUniqueError:
             return self.app.render_json(
                 {
                     "status": False,
