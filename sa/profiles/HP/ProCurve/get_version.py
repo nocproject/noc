@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -13,6 +13,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -21,33 +22,44 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"ProCurve\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
-        r"\s*revision\s+(?P<version>\S+),", re.IGNORECASE)
+        r"^(?:HP|ProCurve)\s+(?P<platform>\S+)\s+Switch\s+\d\S+,"
+        r"\s+revision\s+(?P<version>\S+),\s+ROM\s+(?P<bootprom>\S+)", re.MULTILINE)
+    rx_ver1 = re.compile(
+        r"^ProCurve\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
+        r"\s*revision\s+(?P<version>\S+),", re.MULTILINE)
     rx_ver_new = re.compile(
-        r"HP\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
-        r"\s+revision\s+(?P<version>\S+),", re.IGNORECASE)
-    #Added for 3500yl
+        r"^HP\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
+        r"\s+revision\s+(?P<version>\S+),", re.MULTILINE)
+    # Added for 3500yl
     rx_ver_3500yl = re.compile(
-        r"HP\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
-        r"\s*revision\s+(?P<version>\S+),", re.IGNORECASE)
+        r"^HP\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
+        r"\s*revision\s+(?P<version>\S+),", re.MULTILINE)
 
-    def execute(self):
-        v = None
-        if self.has_snmp():
-            try:
-                v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
-            except self.snmp.TimeOutError:
-                pass  # Fallback to CLI
-        if not v:
-            v = self.cli("walkMIB sysDescr", cached=True)
-        try:
-            match = self.re_search(self.rx_ver, v.strip())
-        except self.UnexpectedResultError:
-        #Added for 3500yl
-            try:
-                match = self.re_search(self.rx_ver_new, v.strip())
-            except self.UnexpectedResultError:
-                match = self.re_search(self.rx_ver_3500yl, v.strip())
+    def execute_snmp(self):
+        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
+        match = self.rx_ver.search(v)
+        if not match:
+            match = self.rx_ver1.search(v)
+            if not match:
+                match = self.rx_ver_new.search(v)
+                if not match:
+                    match = self.rx_ver_3500yl.search(v)
+        platform = match.group("platform").split('-')[0]
+        return {
+            "vendor": "HP",
+            "platform": platform,
+            "version": match.group("version")
+        }
+
+    def execute_cli(self):
+        v = self.cli("walkMIB sysDescr", cached=True).replace("sysDescr.0 = ", "")
+        match = self.rx_ver.search(v)
+        if not match:
+            match = self.rx_ver1.search(v)
+            if not match:
+                match = self.rx_ver_new.search(v)
+                if not match:
+                    match = self.rx_ver_3500yl.search(v)
         platform = match.group("platform").split('-')[0]
         return {
             "vendor": "HP",
