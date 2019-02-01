@@ -2,15 +2,15 @@
 # ---------------------------------------------------------------------
 # Multicast IP to MAC converter
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django import forms
 # NOC modules
 from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
-from noc.sa.interfaces.base import *
+from noc.sa.interfaces.base import IPv4Parameter, MACAddressParameter
 
 
 class CalculatorForm(forms.Form):
@@ -39,7 +39,9 @@ class Calculator(CalculatorBase):
             def g(mac):
                 m = [int(x, 16) for x in mac.split(":")]
                 for i in range(32):
-                    yield ".".join([str(x) for x in [224+(i>>1), m[3]|((i&0x1)<<7), m[4], m[5]]])
+                    yield ".".join(
+                        [str(x) for x in [224 + (i >> 1), m[3] | ((i & 0x1) << 7), m[4], m[5]]])
+
             r = []
             for m in g(mac):
                 if r:
@@ -51,14 +53,14 @@ class Calculator(CalculatorBase):
         r = []
         if ip:
             p = [int(x) for x in ip.split(".")]
-            mac = [0x1, 0x0, 0x5E, p[1]&0x7F, p[2], p[3]]
-            mac = ":".join(["%02X"%x for x in mac])
+            mac = [0x1, 0x0, 0x5E, p[1] & 0x7F, p[2], p[3]]
+            mac = ":".join(["%02X" % x for x in mac])
             r = [
-                ("IP",  ip),
+                ("IP", ip),
                 ("MAC", mac)
-            ]+mac_ips(mac)
+            ] + mac_ips(mac)
         elif mac:
             r = [
                 ("MAC", mac)
-            ]+mac_ips(mac)
+            ] + mac_ips(mac)
         return r

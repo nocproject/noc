@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,13 +11,14 @@ import csv
 import subprocess
 # Third-party modules
 import six
+from django import forms
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
 from noc.core.ip import IP, IPv4
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
-from noc.lib.forms import *
+from noc.lib.forms import NOCForm
 from noc.config import config
 from noc.core.translation import ugettext as _
 
@@ -163,9 +164,10 @@ class ToolsAppplication(Application):
                 data = pipe.read()
                 pipe.close()
                 count = upload_axfr(data.split("\n"))
-                self.message_user(request, _(
-                    "%(count)s IP addresses uploaded via zone transfer") % {
-                                      "count": count})
+                self.message_user(
+                    request,
+                    _("%(count)s IP addresses uploaded via zone transfer") % {"count": count}
+                )
                 return self.response_redirect("ip:ipam:vrf_index",
                                               vrf.id, afi,
                                               prefix.prefix)

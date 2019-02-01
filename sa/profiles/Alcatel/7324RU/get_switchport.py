@@ -2,17 +2,17 @@
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_switchport
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
+from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-from noc.lib.text import *
-from collections import defaultdict
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
