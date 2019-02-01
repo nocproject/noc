@@ -37,6 +37,7 @@ class Profile(BaseProfile):
     config_tokenizer_settings = {
         "line_comment": "!"
     }
+    config_normalizer = "ESNormalizer"
 
     rx_if_snmp_eth = re.compile(
         r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$",
