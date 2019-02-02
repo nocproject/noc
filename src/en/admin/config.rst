@@ -45,8 +45,8 @@ brand
 ~~~~~
 
 ==================  =========
-**YAML_Path**       brand
-**Key_Value_Path**  brand
+**YAML Path**       brand
+**Key-Value Path**  brand
 **Environment**     NOC_BRAND
 **Default_Value**   NOC
 ==================  =========
@@ -58,8 +58,8 @@ global_n_instances
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       global_n_instances
-**Key_Value_Path**  global_n_instances
+**YAML Path**       global_n_instances
+**Key-Value Path**  global_n_instances
 **Environment**     NOC_GLOBAL_N_INSTANCES
 **Default_Value**   1
 ==================  ======================
@@ -71,8 +71,8 @@ installation_name
 ~~~~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       installation_name
-**Key_Value_Path**  installation_name
+**YAML Path**       installation_name
+**Key-Value Path**  installation_name
 **Environment**     NOC_INSTALLATION_NAME
 **Default_Value**   Unconfigured installation
 ==================  =========================
@@ -84,8 +84,8 @@ instance
 ~~~~~~~~
 
 ==================  ============
-**YAML_Path**       instance
-**Key_Value_Path**  instance
+**YAML Path**       instance
+**Key-Value Path**  instance
 **Environment**     NOC_INSTANCE
 **Default_Value**   0
 ==================  ============
@@ -97,8 +97,8 @@ language
 ~~~~~~~~
 
 ==================  ============
-**YAML_Path**       language
-**Key_Value_Path**  language
+**YAML Path**       language
+**Key-Value Path**  language
 **Environment**     NOC_LANGUAGE
 **Default_Value**   en
 ==================  ============
@@ -110,8 +110,8 @@ language_code
 ~~~~~~~~~~~~~
 
 ==================  =================
-**YAML_Path**       language_code
-**Key_Value_Path**  language_code
+**YAML Path**       language_code
+**Key-Value Path**  language_code
 **Environment**     NOC_LANGUAGE_CODE
 **Default_Value**   en-us
 ==================  =================
@@ -123,8 +123,8 @@ listen
 ~~~~~~
 
 ==================  ==========
-**YAML_Path**       listen
-**Key_Value_Path**  listen
+**YAML Path**       listen
+**Key-Value Path**  listen
 **Environment**     NOC_LISTEN
 **Default_Value**   auto:0
 ==================  ==========
@@ -136,8 +136,8 @@ log_format
 ~~~~~~~~~~
 
 ==================  ==================================
-**YAML_Path**       log_format
-**Key_Value_Path**  log_format
+**YAML Path**       log_format
+**Key-Value Path**  log_format
 **Environment**     NOC_LOG_FORMAT
 **Default_Value**   %(asctime)s [%(name)s] %(message)s
 ==================  ==================================
@@ -149,8 +149,8 @@ thread_stack_size
 ~~~~~~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       thread_stack_size
-**Key_Value_Path**  thread_stack_size
+**YAML Path**       thread_stack_size
+**Key-Value Path**  thread_stack_size
 **Environment**     NOC_THREAD_STACK_SIZE
 **Default_Value**   0
 ==================  =====================
@@ -162,8 +162,8 @@ gitlab_url
 ~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       gitlab_url
-**Key_Value_Path**  gitlab_url
+**YAML Path**       gitlab_url
+**Key-Value Path**  gitlab_url
 **Environment**     NOC_GITLAB_URL
 **Default_Value**   https://code.getnoc.com/
 ==================  ========================
@@ -175,8 +175,8 @@ node
 ~~~~
 
 ==================  ====================
-**YAML_Path**       node
-**Key_Value_Path**  node
+**YAML Path**       node
+**Key-Value Path**  node
 **Environment**     NOC_NODE
 **Default_Value**   socket.gethostname()
 ==================  ====================
@@ -188,8 +188,8 @@ pool
 ~~~~
 
 ==================  ==============================
-**YAML_Path**       pool
-**Key_Value_Path**  pool
+**YAML Path**       pool
+**Key-Value Path**  pool
 **Environment**     NOC_POOL
 **Default_Value**   os.environ.get("NOC_POOL", "")
 ==================  ==============================
@@ -201,8 +201,8 @@ secret_key
 ~~~~~~~~~~
 
 ==================  ==============
-**YAML_Path**       secret_key
-**Key_Value_Path**  secret_key
+**YAML Path**       secret_key
+**Key-Value Path**  secret_key
 **Environment**     NOC_SECRET_KEY
 **Default_Value**   12345
 ==================  ==============
@@ -214,8 +214,8 @@ timezone
 ~~~~~~~~
 
 ==================  =============
-**YAML_Path**       timezone
-**Key_Value_Path**  timezone
+**YAML Path**       timezone
+**Key-Value Path**  timezone
 **Environment**     NOC_TIMEZONE
 **Default_Value**   Europe/Moscow
 ==================  =============
@@ -2301,8 +2301,8 @@ ring_ring_edge
 ~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       layout.ring_ring_edge
-**Key_Value_Path**  layout/ring_ring_edge
+**YAML Path**       layout.ring_ring_edge
+**Key-Value Path**  layout/ring_ring_edge
 **Environment**     NOC_LAYOUT_RING_RING_EDGE
 **Default_Value**   150
 ==================  =========================
@@ -2314,8 +2314,8 @@ ring_chain_edge
 ~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       layout.ring_chain_edge
-**Key_Value_Path**  layout/ring_chain_edge
+**YAML Path**       layout.ring_chain_edge
+**Key-Value Path**  layout/ring_chain_edge
 **Environment**     NOC_LAYOUT_RING_CHAIN_EDGE
 **Default_Value**   150
 ==================  ==========================
@@ -2327,8 +2327,8 @@ ring_chain_spacing
 ~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       layout.ring_chain_spacing
-**Key_Value_Path**  layout/ring_chain_spacing
+**YAML Path**       layout.ring_chain_spacing
+**Key-Value Path**  layout/ring_chain_spacing
 **Environment**     NOC_LAYOUT_RING_CHAIN_SPACING
 **Default_Value**   100
 ==================  =============================
@@ -2340,8 +2340,8 @@ tree_horizontal_step
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       layout.tree_horizontal_step
-**Key_Value_Path**  layout/tree_horizontal_step
+**YAML Path**       layout.tree_horizontal_step
+**Key-Value Path**  layout/tree_horizontal_step
 **Environment**     NOC_LAYOUT_TREE_HORIZONTAL_STEP
 **Default_Value**   100
 ==================  ===============================
@@ -2353,8 +2353,8 @@ tree_vertical_step
 ~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       layout.tree_vertical_step
-**Key_Value_Path**  layout/tree_vertical_step
+**YAML Path**       layout.tree_vertical_step
+**Key-Value Path**  layout/tree_vertical_step
 **Environment**     NOC_LAYOUT_TREE_VERTICAL_STEP
 **Default_Value**   100
 ==================  =============================
@@ -2366,8 +2366,8 @@ tree_max_levels
 ~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       layout.tree_max_levels
-**Key_Value_Path**  layout/tree_max_levels
+**YAML Path**       layout.tree_max_levels
+**Key-Value Path**  layout/tree_max_levels
 **Environment**     NOC_LAYOUT_TREE_MAX_LEVELS
 **Default_Value**   4
 ==================  ==========================
@@ -2799,8 +2799,8 @@ retry_writes
 ~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       mongo.retry_writes
-**Key_Value_Path**  mongo/retry_writes
+**YAML Path**       mongo.retry_writes
+**Key-Value Path**  mongo/retry_writes
 **Environment**     NOC_MONGO_RETRY_WRITES
 **Default_Value**   False
 ==================  ======================
@@ -2812,8 +2812,8 @@ app_name
 ~~~~~~~~
 
 ==================  ==================
-**YAML_Path**       mongo.app_name
-**Key_Value_Path**  mongo/app_name
+**YAML Path**       mongo.app_name
+**Key-Value Path**  mongo/app_name
 **Environment**     NOC_MONGO_APP_NAME
 **Default_Value**   StringParameter()
 ==================  ==================
@@ -2825,8 +2825,8 @@ max_idle_time
 ~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       mongo.max_idle_time
-**Key_Value_Path**  mongo/max_idle_time
+**YAML Path**       mongo.max_idle_time
+**Key-Value Path**  mongo/max_idle_time
 **Environment**     NOC_MONGO_MAX_IDLE_TIME
 **Default_Value**   60s
 ==================  =======================
@@ -3360,8 +3360,8 @@ custom_path
 ~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       path.custom_path
-**Key_Value_Path**  path/custom_path
+**YAML Path**       path.custom_path
+**Key-Value Path**  path/custom_path
 **Environment**     NOC_PATH_CUSTOM_PATH
 **Default_Value**   StringParameter()
 ==================  ====================
@@ -3373,8 +3373,8 @@ mib_path
 ~~~~~~~~
 
 ==================  =================
-**YAML_Path**       path.mib_path
-**Key_Value_Path**  path/mib_path
+**YAML Path**       path.mib_path
+**Key-Value Path**  path/mib_path
 **Environment**     NOC_PATH_MIB_PATH
 **Default_Value**   /var/mib
 ==================  =================
@@ -3687,8 +3687,8 @@ addresses
 ~~~~~~~~~
 
 ==================  ==============================================================
-**YAML_Path**       redis.addresses
-**Key_Value_Path**  redis/addresses
+**YAML Path**       redis.addresses
+**Key-Value Path**  redis/addresses
 **Environment**     NOC_REDIS_ADDRESSES
 **Default_Value**   ServiceParameter(service="redis", wait=True, full_result=True)
 ==================  ==============================================================
@@ -3700,8 +3700,8 @@ db
 ~~
 
 ==================  ============
-**YAML_Path**       redis.db
-**Key_Value_Path**  redis/db
+**YAML Path**       redis.db
+**Key-Value Path**  redis/db
 **Environment**     NOC_REDIS_DB
 **Default_Value**   0
 ==================  ============
@@ -3713,8 +3713,8 @@ default_ttl
 ~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       redis.default_ttl
-**Key_Value_Path**  redis/default_ttl
+**YAML Path**       redis.default_ttl
+**Key-Value Path**  redis/default_ttl
 **Environment**     NOC_REDIS_DEFAULT_TTL
 **Default_Value**   1d
 ==================  =====================
@@ -4046,8 +4046,8 @@ enable_managedobject
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ================================
-**YAML_Path**       selfmon.enable_managedobject
-**Key_Value_Path**  selfmon/enable_managedobject
+**YAML Path**       selfmon.enable_managedobject
+**Key-Value Path**  selfmon/enable_managedobject
 **Environment**     NOC_SELFMON_ENABLE_MANAGEDOBJECT
 **Default_Value**   True
 ==================  ================================
@@ -4059,8 +4059,8 @@ managedobject_ttl
 ~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       selfmon.managedobject_ttl
-**Key_Value_Path**  selfmon/managedobject_ttl
+**YAML Path**       selfmon.managedobject_ttl
+**Key-Value Path**  selfmon/managedobject_ttl
 **Environment**     NOC_SELFMON_MANAGEDOBJECT_TTL
 **Default_Value**   30
 ==================  =============================
@@ -4072,8 +4072,8 @@ enable_task
 ~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       selfmon.enable_task
-**Key_Value_Path**  selfmon/enable_task
+**YAML Path**       selfmon.enable_task
+**Key-Value Path**  selfmon/enable_task
 **Environment**     NOC_SELFMON_ENABLE_TASK
 **Default_Value**   False
 ==================  =======================
@@ -4085,8 +4085,8 @@ task_ttl
 ~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       selfmon.task_ttl
-**Key_Value_Path**  selfmon/task_ttl
+**YAML Path**       selfmon.task_ttl
+**Key-Value Path**  selfmon/task_ttl
 **Environment**     NOC_SELFMON_TASK_TTL
 **Default_Value**   30
 ==================  ====================
@@ -4098,8 +4098,8 @@ enable_inventory
 ~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       selfmon.enable_inventory
-**Key_Value_Path**  selfmon/enable_inventory
+**YAML Path**       selfmon.enable_inventory
+**Key-Value Path**  selfmon/enable_inventory
 **Environment**     NOC_SELFMON_ENABLE_INVENTORY
 **Default_Value**   False
 ==================  ============================
@@ -4111,8 +4111,8 @@ inventory_ttl
 ~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       selfmon.inventory_ttl
-**Key_Value_Path**  selfmon/inventory_ttl
+**YAML Path**       selfmon.inventory_ttl
+**Key-Value Path**  selfmon/inventory_ttl
 **Environment**     NOC_SELFMON_INVENTORY_TTL
 **Default_Value**   30
 ==================  =========================
@@ -4124,8 +4124,8 @@ enable_fm
 ~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       selfmon.enable_fm
-**Key_Value_Path**  selfmon/enable_fm
+**YAML Path**       selfmon.enable_fm
+**Key-Value Path**  selfmon/enable_fm
 **Environment**     NOC_SELFMON_ENABLE_FM
 **Default_Value**   False
 ==================  =====================
@@ -4137,8 +4137,8 @@ fm_ttl
 ~~~~~~
 
 ==================  ==================
-**YAML_Path**       selfmon.fm_ttl
-**Key_Value_Path**  selfmon/fm_ttl
+**YAML Path**       selfmon.fm_ttl
+**Key-Value Path**  selfmon/fm_ttl
 **Environment**     NOC_SELFMON_FM_TTL
 **Default_Value**   30
 ==================  ==================
@@ -4175,8 +4175,8 @@ listen
 ~~~~~~
 
 ==================  ==========================
-**YAML_Path**       syslogcollector.listen
-**Key_Value_Path**  syslogcollector/listen
+**YAML Path**       syslogcollector.listen
+**Key-Value Path**  syslogcollector/listen
 **Environment**     NOC_SYSLOGCOLLECTOR_LISTEN
 **Default_Value**   0.0.0.0:514
 ==================  ==========================
@@ -4188,8 +4188,8 @@ enable_reuseport
 ~~~~~~~~~~~~~~~~
 
 ==================  ====================================
-**YAML_Path**       syslogcollector.enable_reuseport
-**Key_Value_Path**  syslogcollector/enable_reuseport
+**YAML Path**       syslogcollector.enable_reuseport
+**Key-Value Path**  syslogcollector/enable_reuseport
 **Environment**     NOC_SYSLOGCOLLECTOR_ENABLE_REUSEPORT
 **Default_Value**   True
 ==================  ====================================
@@ -4201,8 +4201,8 @@ enable_freebind
 ~~~~~~~~~~~~~~~
 
 ==================  ===================================
-**YAML_Path**       syslogcollector.enable_freebind
-**Key_Value_Path**  syslogcollector/enable_freebind
+**YAML Path**       syslogcollector.enable_freebind
+**Key-Value Path**  syslogcollector/enable_freebind
 **Environment**     NOC_SYSLOGCOLLECTOR_ENABLE_FREEBIND
 **Default_Value**   False
 ==================  ===================================
@@ -4216,8 +4216,8 @@ ds_limit
 DataStream request limit
 
 ==================  ============================
-**YAML_Path**       syslogcollector.ds_limit
-**Key_Value_Path**  syslogcollector/ds_limit
+**YAML Path**       syslogcollector.ds_limit
+**Key-Value Path**  syslogcollector/ds_limit
 **Environment**     NOC_SYSLOGCOLLECTOR_DS_LIMIT
 **Default_Value**   1000
 ==================  ============================
@@ -4342,8 +4342,8 @@ enable_reuseport
 ~~~~~~~~~~~~~~~~
 
 ==================  ==================================
-**YAML_Path**       trapcollector.enable_reuseport
-**Key_Value_Path**  trapcollector/enable_reuseport
+**YAML Path**       trapcollector.enable_reuseport
+**Key-Value Path**  trapcollector/enable_reuseport
 **Environment**     NOC_TRAPCOLLECTOR_ENABLE_REUSEPORT
 **Default_Value**   True
 ==================  ==================================
@@ -4355,8 +4355,8 @@ enable_freebind
 ~~~~~~~~~~~~~~~
 
 ==================  =================================
-**YAML_Path**       trapcollector.enable_freebind
-**Key_Value_Path**  trapcollector/enable_freebind
+**YAML Path**       trapcollector.enable_freebind
+**Key-Value Path**  trapcollector/enable_freebind
 **Environment**     NOC_TRAPCOLLECTOR_ENABLE_FREEBIND
 **Default_Value**   False
 ==================  =================================
@@ -4370,8 +4370,8 @@ ds_limit
 DataStream request limit
 
 ==================  ==========================
-**YAML_Path**       trapcollector.ds_limit
-**Key_Value_Path**  trapcollector/ds_limit
+**YAML Path**       trapcollector.ds_limit
+**Key-Value Path**  trapcollector/ds_limit
 **Environment**     NOC_TRAPCOLLECTOR_DS_LIMIT
 **Default_Value**   1000
 ==================  ==========================
@@ -4531,8 +4531,8 @@ enable_administrativedomain
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ==========================================
-**YAML_Path**       datastream.enable_administrativedomain
-**Key_Value_Path**  datastream/enable_administrativedomain
+**YAML Path**       datastream.enable_administrativedomain
+**Key-Value Path**  datastream/enable_administrativedomain
 **Environment**     NOC_DATASTREAM_ENABLE_ADMINISTRATIVEDOMAIN
 **Default_Value**   False
 ==================  ==========================================
@@ -4546,8 +4546,8 @@ enable_administrativedomain_wait
 Activate Wait Mode for Adm. Domain datastream (Mongo greater 3.6 needed)
 
 ==================  ===============================================
-**YAML_Path**       datastream.enable_administrativedomain_wait
-**Key_Value_Path**  datastream/enable_administrativedomain_wait
+**YAML Path**       datastream.enable_administrativedomain_wait
+**Key-Value Path**  datastream/enable_administrativedomain_wait
 **Environment**     NOC_DATASTREAM_ENABLE_ADMINISTRATIVEDOMAIN_WAIT
 **Default_Value**   True
 ==================  ===============================================
@@ -4559,8 +4559,8 @@ enable_alarm
 ~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       datastream.enable_alarm
-**Key_Value_Path**  datastream/enable_alarm
+**YAML Path**       datastream.enable_alarm
+**Key-Value Path**  datastream/enable_alarm
 **Environment**     NOC_DATASTREAM_ENABLE_ALARM
 **Default_Value**   False
 ==================  ===========================
@@ -4574,8 +4574,8 @@ enable_alarm_wait
 Activate Wait Mode for Alarm datastream (Mongo greater 3.6 needed)
 
 ==================  ================================
-**YAML_Path**       datastream.enable_alarm_wait
-**Key_Value_Path**  datastream/enable_alarm_wait
+**YAML Path**       datastream.enable_alarm_wait
+**Key-Value Path**  datastream/enable_alarm_wait
 **Environment**     NOC_DATASTREAM_ENABLE_ALARM_WAIT
 **Default_Value**   True
 ==================  ================================
@@ -4587,8 +4587,8 @@ enable_cfgping
 ~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       datastream.enable_cfgping
-**Key_Value_Path**  datastream/enable_cfgping
+**YAML Path**       datastream.enable_cfgping
+**Key-Value Path**  datastream/enable_cfgping
 **Environment**     NOC_DATASTREAM_ENABLE_CFGPING
 **Default_Value**   True
 ==================  =============================
@@ -4602,8 +4602,8 @@ enable_cfgping_wait
 Activate Wait Mode for CfgPing datastream (Mongo greater 3.6 needed)
 
 ==================  ==================================
-**YAML_Path**       datastream.enable_cfgping_wait
-**Key_Value_Path**  datastream/enable_cfgping_wait
+**YAML Path**       datastream.enable_cfgping_wait
+**Key-Value Path**  datastream/enable_cfgping_wait
 **Environment**     NOC_DATASTREAM_ENABLE_CFGPING_WAIT
 **Default_Value**   True
 ==================  ==================================
@@ -4615,8 +4615,8 @@ enable_cfgsyslog
 ~~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       datastream.enable_cfgsyslog
-**Key_Value_Path**  datastream/enable_cfgsyslog
+**YAML Path**       datastream.enable_cfgsyslog
+**Key-Value Path**  datastream/enable_cfgsyslog
 **Environment**     NOC_DATASTREAM_ENABLE_CFGSYSLOG
 **Default_Value**   True
 ==================  ===============================
@@ -4630,8 +4630,8 @@ enable_cfgsyslog_wait
 Activate Wait Mode for CfgSyslog datastream (Mongo greater 3.6 needed)
 
 ==================  ====================================
-**YAML_Path**       datastream.enable_cfgsyslog_wait
-**Key_Value_Path**  datastream/enable_cfgsyslog_wait
+**YAML Path**       datastream.enable_cfgsyslog_wait
+**Key-Value Path**  datastream/enable_cfgsyslog_wait
 **Environment**     NOC_DATASTREAM_ENABLE_CFGSYSLOG_WAIT
 **Default_Value**   True
 ==================  ====================================
@@ -4643,8 +4643,8 @@ enable_cfgtrap
 ~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       datastream.enable_cfgtrap
-**Key_Value_Path**  datastream/enable_cfgtrap
+**YAML Path**       datastream.enable_cfgtrap
+**Key-Value Path**  datastream/enable_cfgtrap
 **Environment**     NOC_DATASTREAM_ENABLE_CFGTRAP
 **Default_Value**   True
 ==================  =============================
@@ -4658,8 +4658,8 @@ enable_cfgtrap_wait
 Activate Wait Mode for CfgTrap datastream (Mongo greater 3.6 needed)
 
 ==================  ==================================
-**YAML_Path**       datastream.enable_cfgtrap_wait
-**Key_Value_Path**  datastream/enable_cfgtrap_wait
+**YAML Path**       datastream.enable_cfgtrap_wait
+**Key-Value Path**  datastream/enable_cfgtrap_wait
 **Environment**     NOC_DATASTREAM_ENABLE_CFGTRAP_WAIT
 **Default_Value**   True
 ==================  ==================================
@@ -4671,8 +4671,8 @@ enable_dnszone
 ~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       datastream.enable_dnszone
-**Key_Value_Path**  datastream/enable_dnszone
+**YAML Path**       datastream.enable_dnszone
+**Key-Value Path**  datastream/enable_dnszone
 **Environment**     NOC_DATASTREAM_ENABLE_DNSZONE
 **Default_Value**   False
 ==================  =============================
@@ -4686,8 +4686,8 @@ enable_dnszone_wait
 Activate Wait Mode for DNS Zone datastream (Mongo greater 3.6 needed)
 
 ==================  ==================================
-**YAML_Path**       datastream.enable_dnszone_wait
-**Key_Value_Path**  datastream/enable_dnszone_wait
+**YAML Path**       datastream.enable_dnszone_wait
+**Key-Value Path**  datastream/enable_dnszone_wait
 **Environment**     NOC_DATASTREAM_ENABLE_DNSZONE_WAIT
 **Default_Value**   True
 ==================  ==================================
@@ -4699,8 +4699,8 @@ enable_managedobject
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===================================
-**YAML_Path**       datastream.enable_managedobject
-**Key_Value_Path**  datastream/enable_managedobject
+**YAML Path**       datastream.enable_managedobject
+**Key-Value Path**  datastream/enable_managedobject
 **Environment**     NOC_DATASTREAM_ENABLE_MANAGEDOBJECT
 **Default_Value**   False
 ==================  ===================================
@@ -4714,8 +4714,8 @@ enable_managedobject_wait
 Activate Wait Mode for ManagedObject datastream (Mongo greater 3.6 needed)
 
 ==================  ========================================
-**YAML_Path**       datastream.enable_managedobject_wait
-**Key_Value_Path**  datastream/enable_managedobject_wait
+**YAML Path**       datastream.enable_managedobject_wait
+**Key-Value Path**  datastream/enable_managedobject_wait
 **Environment**     NOC_DATASTREAM_ENABLE_MANAGEDOBJECT_WAIT
 **Default_Value**   True
 ==================  ========================================
@@ -4727,8 +4727,8 @@ enable_resourcegroup
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===================================
-**YAML_Path**       datastream.enable_resourcegroup
-**Key_Value_Path**  datastream/enable_resourcegroup
+**YAML Path**       datastream.enable_resourcegroup
+**Key-Value Path**  datastream/enable_resourcegroup
 **Environment**     NOC_DATASTREAM_ENABLE_RESOURCEGROUP
 **Default_Value**   False
 ==================  ===================================
@@ -4742,8 +4742,8 @@ enable_resourcegroup_wait
 Activate Wait Mode for ResourceGroup datastream (Mongo greater 3.6 needed)
 
 ==================  ========================================
-**YAML_Path**       datastream.enable_resourcegroup_wait
-**Key_Value_Path**  datastream/enable_resourcegroup_wait
+**YAML Path**       datastream.enable_resourcegroup_wait
+**Key-Value Path**  datastream/enable_resourcegroup_wait
 **Environment**     NOC_DATASTREAM_ENABLE_RESOURCEGROUP_WAIT
 **Default_Value**   True
 ==================  ========================================
@@ -4761,8 +4761,8 @@ base_url
 ~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       help.base_url
-**Key_Value_Path**  help/base_url
+**YAML Path**       help.base_url
+**Key-Value Path**  help/base_url
 **Environment**     NOC_HELP_BASE_URL
 **Default_Value**   https://docs.getnoc.com
 ==================  =======================
@@ -4774,8 +4774,8 @@ branch
 ~~~~~~
 
 ==================  ===============
-**YAML_Path**       help.branch
-**Key_Value_Path**  help/branch
+**YAML Path**       help.branch
+**Key-Value Path**  help/branch
 **Environment**     NOC_HELP_BRANCH
 **Default_Value**   microservices
 ==================  ===============
@@ -4787,8 +4787,8 @@ language
 ~~~~~~~~
 
 ==================  =================
-**YAML_Path**       help.language
-**Key_Value_Path**  help/language
+**YAML Path**       help.language
+**Key-Value Path**  help/language
 **Environment**     NOC_HELP_LANGUAGE
 **Default_Value**   en
 ==================  =================
@@ -4851,8 +4851,8 @@ enable_ripe
 ~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       peer.enable_ripe
-**Key_Value_Path**  peer/enable_ripe
+**YAML Path**       peer.enable_ripe
+**Key-Value Path**  peer/enable_ripe
 **Environment**     NOC_PEER_ENABLE_RIPE
 **Default_Value**   True
 ==================  ====================
@@ -4864,8 +4864,8 @@ enable_arin
 ~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       peer.enable_arin
-**Key_Value_Path**  peer/enable_arin
+**YAML Path**       peer.enable_arin
+**Key-Value Path**  peer/enable_arin
 **Environment**     NOC_PEER_ENABLE_ARIN
 **Default_Value**   True
 ==================  ====================
@@ -4877,8 +4877,8 @@ enable_radb
 ~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       peer.enable_radb
-**Key_Value_Path**  peer/enable_radb
+**YAML Path**       peer.enable_radb
+**Key-Value Path**  peer/enable_radb
 **Environment**     NOC_PEER_ENABLE_RADB
 **Default_Value**   True
 ==================  ====================
@@ -4890,8 +4890,8 @@ prefix_list_optimization
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =================================
-**YAML_Path**       peer.prefix_list_optimization
-**Key_Value_Path**  peer/prefix_list_optimization
+**YAML Path**       peer.prefix_list_optimization
+**Key-Value Path**  peer/prefix_list_optimization
 **Environment**     NOC_PEER_PREFIX_LIST_OPTIMIZATION
 **Default_Value**   True
 ==================  =================================
@@ -4903,8 +4903,8 @@ prefix_list_optimization_threshold
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================================
-**YAML_Path**       peer.prefix_list_optimization_threshold
-**Key_Value_Path**  peer/prefix_list_optimization_threshold
+**YAML Path**       peer.prefix_list_optimization_threshold
+**Key-Value Path**  peer/prefix_list_optimization_threshold
 **Environment**     NOC_PEER_PREFIX_LIST_OPTIMIZATION_THRESHOLD
 **Default_Value**   1000
 ==================  ===========================================
@@ -4916,8 +4916,8 @@ max_prefix_length
 ~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       peer.max_prefix_length
-**Key_Value_Path**  peer/max_prefix_length
+**YAML Path**       peer.max_prefix_length
+**Key-Value Path**  peer/max_prefix_length
 **Environment**     NOC_PEER_MAX_PREFIX_LENGTH
 **Default_Value**   24
 ==================  ==========================
@@ -4929,8 +4929,8 @@ rpsl_inverse_pref_style
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ================================
-**YAML_Path**       peer.rpsl_inverse_pref_style
-**Key_Value_Path**  peer/rpsl_inverse_pref_style
+**YAML Path**       peer.rpsl_inverse_pref_style
+**Key-Value Path**  peer/rpsl_inverse_pref_style
 **Environment**     NOC_PEER_RPSL_INVERSE_PREF_STYLE
 **Default_Value**   False
 ==================  ================================
