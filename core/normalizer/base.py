@@ -8,6 +8,7 @@
 
 # Python modules
 import itertools
+from collections import namedtuple
 # Third-party modules
 import six
 # NOC modules
@@ -111,3 +112,10 @@ def match(*args, **kwargs):
         return f
 
     return wrap
+
+
+SyntaxDef = namedtuple("SyntaxDef", ["token", "children", "required", "multi"])
+
+
+def DEF(token, children=None, required=False, multi=False):
+    return SyntaxDef(token, children, required, multi)
