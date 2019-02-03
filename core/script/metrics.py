@@ -94,7 +94,7 @@ def scale(n):
     return inner
 
 
-def interval(l_left, l_right, over_value=0):
+def fix_range(l_left, l_right, over_value=0):
     """
     Check value in interval (l_left, l_right), if over - return over_value
     :param l_left: left endpoint
@@ -102,9 +102,9 @@ def interval(l_left, l_right, over_value=0):
     :param over_value: return if value over interval
     :return: Callable, performing scaling
     """
-    def innner_interval(v):
+    def innner_fix_range(v):
         try:
             return v if l_right > float(v) > l_left else over_value
         except ValueError:
             return over_value
-    return innner_interval
+    return innner_fix_range
