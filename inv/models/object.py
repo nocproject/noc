@@ -369,7 +369,7 @@ class Object(Document):
         """
         Put object into container
         """
-        if not container.get_data("container", "container"):
+        if container and not container.get_data("container", "container"):
             raise ValueError("Must be put into container")
         # Disconnect all o-connections
         for c in self.model.connections:
@@ -378,7 +378,7 @@ class Object(Document):
                 if c:
                     self.disconnect_p2p(c.name)
         # Connect to parent
-        self.container = container.id
+        self.container = container.id if container else None
         # Reset previous rack position
         if self.data.get("rackmount"):
             for k in ("position", "side", "shift"):
@@ -386,7 +386,7 @@ class Object(Document):
                     del self.data["rackmount"][k]
         self.save()
         self.log(
-            "Insert into %s" % container,
+            "Insert into %s" % (container or "Root"),
             system="CORE", op="INSERT")
 
     def get_content(self):
