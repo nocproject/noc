@@ -83,8 +83,8 @@ TOKENS5 = [
 
 @pytest.mark.parametrize("input,config,expected", [
     (CFG1, {}, TOKENS1),
-    (CFG2, {"line_comment": "#"}, TOKENS2),
-    (CFG3, {"line_comment": "//"}, TOKENS3),
+    (CFG2, {"inline_comment": "#"}, TOKENS2),
+    (CFG3, {"inline_comment": "//"}, TOKENS3),
     (CFG4, {"line_comment": "!", "tab_width": 4, "keep_indent": True}, TOKENS4),
     (CFG5, {"line_comment": "!", "tab_width": 4, "keep_indent": True, "string_quote": "\""}, TOKENS5)
 ])
