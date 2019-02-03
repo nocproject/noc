@@ -151,6 +151,8 @@ class InvApplication(ExtApplication):
             c = c.id
         elif container:
             return self.response_bad_request()
+        else:
+            c = None
         m = ObjectModel.get_by_id(type)
         if not m:
             return self.response_not_found()
@@ -183,6 +185,13 @@ class InvApplication(ExtApplication):
         }
     )
     def api_insert(self, request, container, objects, position):
+        """
+        :param request:
+        :param container: ObjectID after/in that insert
+        :param objects: List ObjectID for insert
+        :param position: 'append', 'before', 'after'
+        :return:
+        """
         c = self.get_object_or_404(Object, id=container)
         o = []
         for r in objects:
@@ -191,7 +200,7 @@ class InvApplication(ExtApplication):
             for x in o:
                 x.put_into(c)
         elif position in ("before", "after"):
-            cc = self.get_object_or_404(Object, id=c.container)
+            cc = self.get_object_or_404(Object, id=c.container.id) if c.container else None
             for x in o:
                 x.put_into(cc)
         return True
