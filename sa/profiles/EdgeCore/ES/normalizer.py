@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.normalizer.base import BaseNormalizer, match, ANY
+from noc.core.normalizer.base import BaseNormalizer, match, ANY, REST
 
 
 class ESNormalizer(BaseNormalizer):
@@ -15,11 +15,11 @@ class ESNormalizer(BaseNormalizer):
     def normalize_hostname(self, tokens):
         yield "system", "hostname", tokens[1]
 
-    @match("interface", "ethernet", ANY, "description", ANY)
+    @match("interface", "ethernet", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
         yield self.vr(
             "interface", self.interface_name(tokens[1], tokens[2]),
-            "description", tokens[4]
+            "description", " ".join(tokens[4:])
         )
 
     @match("interface", "ethernet", ANY, "port", "security", "max-mac-count", ANY)

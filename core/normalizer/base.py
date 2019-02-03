@@ -16,6 +16,7 @@ from noc.core.ip import IPv4
 
 _match_seq = itertools.count()
 ANY = None
+REST = True
 
 
 class Node(object):
@@ -28,15 +29,21 @@ class Node(object):
         self.matcher = None
 
     def __repr__(self):
+        if self.token is None:
+            token = "ANY"
+        elif self.token is True:
+            token = "REST"
+        else:
+            token = "'%s'" % self.token
         if self.handler:
-            return "<Node '%s' (%s)>" % (self.token, self.handler)
-        return "<Node '%s'>" % self.token
+            return "<Node %s (%s)>" % (token, self.handler.__name__)
+        return "<Node %s>" % token
 
     def match(self, token):
-        return not self.token or token == self.token
+        return self.token is None or self.token is True or token == self.token
 
     def iter_matched(self, tokens):
-        if not tokens and self.handler:
+        if (not tokens and self.handler) or self.token is True:
             yield self
         elif tokens:
             for c in self.children:
