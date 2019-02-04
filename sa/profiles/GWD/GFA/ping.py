@@ -28,8 +28,8 @@ class Script(BaseScript):
         r"received, \d+% packet loss\n",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None, *args, **kwargs):
+    def execute_cli(self, address, count=None, source_address=None,
+                    size=None, df=None, *args, **kwargs):
         cmd = "ping"
         if count is not None:
             cmd += " -n %d" % int(count)
