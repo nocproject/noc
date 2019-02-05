@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import os
+import bisect
 import inspect
 import datetime
+import dateutil.parser
 import operator
 # Third-party modules
 import bson
@@ -35,7 +37,8 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
 from noc.maintenance.models.maintenance import Maintenance
-from noc.maintenance.models.maintenance import MaintenanceObject
+from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
@@ -43,12 +46,11 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 
 
 def get_advanced_field(id):
-    from noc.crm.models.subscriberprofile import SubscriberProfile
-    from noc.sa.models.serviceprofile import ServiceProfile
-
+    if "|" in id:
+        return id.split("|")
     for model, field in ((ServiceProfile, "total_services"), (SubscriberProfile, "total_subscribers")):
         if model.get_by_id(id):
-            return field
+            return field, id
     return "total_services"
 
 
@@ -140,9 +142,9 @@ class AlarmApplication(ExtApplication):
         # Exclude maintenance
         if "maintenance" not in q:
             q["maintenance"] = "hide"
-        if q["maintenance"] == "hide":
+        if q["maintenance"] == "hide" and status == "A":
             q["managed_object__nin"] = Maintenance.currently_affected()
-        elif q["maintenance"] == "only":
+        elif q["maintenance"] == "only" and status == "A":
             q["managed_object__in"] = Maintenance.currently_affected()
         del q["maintenance"]
         if "administrative_domain" in q:
@@ -195,7 +197,6 @@ class AlarmApplication(ExtApplication):
         :return:
         """
         q = {}
-        # print(field, params)
         c_in = []
         c_nin = []
         for c in params:
@@ -211,20 +212,20 @@ class AlarmApplication(ExtApplication):
             else:
                 c_id, c_query = c.split(":", 1)
             try:
-                c_id = bson.ObjectId(c_id)
                 if callable(field):
-                    field = field(c_id)
+                    field, c_id = field(c_id)
+                c_id = bson.ObjectId(c_id)
             except bson.errors.InvalidId as e:
                 self.logger.warning(e)
                 continue
             if "~" in c_query:
                 l, r = c_query.split("~")
                 if not l:
-                    cond = {"$lt": int(r)}
+                    cond = {"$lte": int(r)}
                 elif not r:
-                    cond = {"$gt": int(l)}
+                    cond = {"$gte": int(l)}
                 else:
-                    cond = {"$lt": int(r), "$gt": int(l)}
+                    cond = {"$lte": int(r), "$gte": int(l)}
                 q["__raw__"] = {field: {"$elemMatch": {"profile": c_id,
                                                        "summary": cond}}}
             elif c_query == "exists":
@@ -252,12 +253,6 @@ class AlarmApplication(ExtApplication):
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())
-        mtc = o.managed_object.id in Maintenance.currently_affected()
-        if o.status == "C":
-            # For archived alarms
-            mtc = Maintenance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
-                                             affected_objects__in=[
-                                                 MaintenanceObject(object=o.managed_object)]).count() > 0
 
         d = {
             "id": str(o.id),
@@ -286,7 +281,6 @@ class AlarmApplication(ExtApplication):
             "address": o.managed_object.address,
             "ack_ts": self.to_json(o.ack_ts),
             "ack_user": o.ack_user,
-            "isInMaintenance": mtc,
             "summary": self.f_glyph_summary({
                 "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
                 "service": SummaryItem.items_to_dict(o.total_services)
@@ -716,12 +710,41 @@ class AlarmApplication(ExtApplication):
         r = [x for x in r if x]
         return r
 
+    def bulk_field_isinmaintenance(self, data):
+        if not data:
+            return data
+        if data[0]["status"] == "A":
+            mtc = set(Maintenance.currently_affected())
+            for x in data:
+                x["isInMaintenance"] = x["managed_object"] in mtc
+        else:
+            mos = [x["managed_object"] for x in data]
+            pipeline = [
+                {"$match": {"affected_objects.object": {"$in": mos}}},
+                {"$unwind": "$affected_objects"},
+                {"$project": {"_id": 0,
+                              "managed_object": "$affected_objects.object",
+                              "interval": ["$start", "$stop"]}},
+                {"$group": {"_id": "$managed_object",
+                            "intervals": {"$push": "$interval"}}}]
+            mtc = {x["_id"]: x["intervals"] for x in Maintenance._get_collection().aggregate(pipeline)}
+            for x in data:
+                if x["managed_object"] in mtc:
+                    left, right = zip(*mtc[x["managed_object"]])
+                    x["isInMaintenance"] = (
+                        bisect.bisect(right, dateutil.parser.parse(x["timestamp"]).replace(tzinfo=None)) !=
+                        bisect.bisect(left, dateutil.parser.parse(x["clear_timestamp"]).replace(tzinfo=None))
+                    )
+                else:
+                    x["isInMaintenance"] = False
+        return data
+
     @view(url=r"profile_lookup/$", access="launch", method=["GET"], api=True)
     def api_profile_lookup(self, request):
-        from noc.crm.models.subscriberprofile import SubscriberProfile
-        from noc.sa.models.serviceprofile import ServiceProfile
         r = []
-        for model, short_type in ((ServiceProfile, _("Service")), (SubscriberProfile, _("Subscribers"))):
+        for model, short_type, field_id in ((ServiceProfile, _("Service"), "total_services"),
+                                            (SubscriberProfile, _("Subscribers"), "total_subscribers")):
+            # "%s|%s" % (field_id,
             r += [{"id": str(o.id), "type": short_type, "display_order": o.display_order,
                    "icon": o.glyph, "label": o.name}
                   for o in model.objects.all()
