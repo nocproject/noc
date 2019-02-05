@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import os
+import re
 import bisect
 import inspect
 import datetime
@@ -89,6 +90,8 @@ class AlarmApplication(ExtApplication):
 
     DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
 
+    rx_oper_splitter = re.compile("^(?P<field>\S+)(?P<f_num>\d+)__in")
+
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         from .plugins.base import AlarmPlugin
@@ -119,6 +122,16 @@ class AlarmApplication(ExtApplication):
                 self.limit_param, self.page_param, self.start_param,
                 self.format_param, self.sort_param, self.query_param, self.only_param):
             if p in q:
+                del q[p]
+        # Extract IN
+        # extjs not working with same parameter name in query
+        for p in q.keys():
+            if p.endswith("__in") and self.rx_oper_splitter.match(p):
+                field = self.rx_oper_splitter.match(p).group("field") + "__in"
+                if field not in q:
+                    q[field] = [q[p]]
+                else:
+                    q[field] += [q[p]]
                 del q[p]
         # Normalize parameters
         for p in q:

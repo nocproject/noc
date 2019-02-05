@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import uuid
 from functools import reduce
 import os
+import re
 import hashlib
 # Third-party modules
 from django.http import HttpResponse
@@ -49,6 +50,8 @@ class ExtDocApplication(ExtApplication):
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
+
+    rx_oper_splitter = re.compile("^(?P<field>\S+)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -207,6 +210,16 @@ class ExtDocApplication(ExtApplication):
             self.only_param
         ):
             if p in q:
+                del q[p]
+        # Extract IN
+        # extjs not working with same parameter name in query
+        for p in q.keys():
+            if p.endswith("__in") and self.rx_oper_splitter.match(p):
+                field = self.rx_oper_splitter.match(p).group("field") + "__in"
+                if field not in q:
+                    q[field] = [q[p]]
+                else:
+                    q[field] += [q[p]]
                 del q[p]
         # Normalize parameters
         for p in q:
