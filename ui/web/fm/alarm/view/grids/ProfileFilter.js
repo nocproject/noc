@@ -28,7 +28,6 @@ Ext.define("NOC.fm.alarm.view.grids.ProfileFilter", {
             profileId: "",
             condition: "",
             value: 0
-            // include: true
         }
     ],
     viewModel: {
@@ -38,7 +37,6 @@ Ext.define("NOC.fm.alarm.view.grids.ProfileFilter", {
                     {name: "profileId", type: "string"},
                     {name: "condition", type: "string"},
                     {name: "value", type: "int"}
-                    // {name: "include", type: "boolean", defaultValue: true}
                 ],
                 listeners: {
                     update: "onDataUpdated"
@@ -111,17 +109,6 @@ Ext.define("NOC.fm.alarm.view.grids.ProfileFilter", {
                     }
                 }
             },
-            // {
-            //     xtype: "widgetcolumn",
-            //     dataIndex: "include",
-            //     width: 25,
-            //     widget: {
-            //         xtype: "checkbox",
-            //         listeners: {
-            //             change: "onChangeWidget"
-            //         }
-            //     }
-            // },
             {
                 xtype: "actioncolumn",
                 width: 20,

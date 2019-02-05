@@ -163,12 +163,41 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
                     var store = me.getView().down("[name=" + name + "]").getStore();
                     store.load({
                         params: {id: params[name]}, callback: function(records) {
-                            if(records.length > 0) {
+                            if(records && records.length > 0) {
                                 viewModel.set("activeFilter." + name, records[0]);
                             }
                         }
                     });
                     delete params[name];
+                }
+            },
+            restoreTagField = function(name) {
+                var me = this, acc = [], filter = {},
+                    // resultMock = [],
+                    keys = Object.keys(params);
+                length = keys.length;
+                for(var i = 0; i < length; i++) {
+                    var key = keys[i];
+                    if(Ext.String.startsWith(key, name)) {
+                        acc.push(params[key]);
+                        filter["id" + i + "__in"] = params[key];
+                        // resultMock.push(Ext.create("Ext.data.Model", {
+                        //     id: params[key],
+                        //     label: key
+                        // }));
+                        delete params[key];
+                    }
+                }
+                if(acc.length) {
+                    // viewModel.set("activeFilter." + name, resultMock);
+                    var store = me.getView().down("[name=" + name + "]").getStore();
+                    store.load({
+                        params: filter, callback: function(records) {
+                            if(records && records.length > 0) {
+                                viewModel.set("activeFilter." + name, records);
+                            }
+                        }
+                    });
                 }
             },
             makeProfile = function() {
@@ -208,10 +237,13 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         Ext.each([
             "managed_object",
             "managedobjectselector",
-            "alarm_class",
             "segment",
             "administrative_domain"
         ], restoreCombo, this);
+        // restore tag fields
+        Ext.each([
+            "alarm_class"
+        ], restoreTagField, this);
         // don't change, http params is string compare with int, 0 == "0"
         if(params.hasOwnProperty("cleared_after") && params.cleared_after != 0) {
             listsView = this.getView().lookupReference("fm-alarm-list");
@@ -242,8 +274,19 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
                     if(value[param.key] == param.defaultValue) {
                         filter[param.key] = param.defaultValue;
                     }
-                } else if(param.valueField) { // if use selection in binding
-                    filter[param.key] = value[param.key][param.valueField];
+                } else if(param.valueField) {
+                    if(Ext.isArray(value[param.key])) {
+                        if(value[param.key].length === 1) {
+                            filter[param.key] = value[param.key][0][param.valueField];
+                        } else {
+                            // filter[param.key + "__in"] = value[param.key].join(",");
+                            Ext.Array.map(value[param.key], function(element, index) {
+                                filter[param.key + index + "__in"] = element[param.valueField];
+                            })
+                        }
+                    } else {  // if use selection in binding
+                        filter[param.key] = value[param.key][param.valueField];
+                    }
                 } else {
                     filter[param.key] = value[param.key];
                 }
@@ -262,9 +305,10 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             {key: "segment", valueField: "id"},
             {key: "administrative_domain", valueField: "id"},
             // combo
-            {key: "alarm_class", valueField: "id"},
             {key: "managed_object", valueField: "id"},
-            {key: "managedobjectselector", valueField: "id"}
+            {key: "managedobjectselector", valueField: "id"},
+            // tag field
+            {key: "alarm_class", valueField: "id"}
         ], setParam);
         if(value.hasOwnProperty("profiles")) {
             var i, len = value.profiles.length;

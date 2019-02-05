@@ -13,6 +13,7 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
         "NOC.fm.alarm.view.grids.GridController",
         "NOC.fm.alarm.view.grids.GridViewTable"
     ],
+    stateful: true,
     columns: [
         {
             text: __("ID"),

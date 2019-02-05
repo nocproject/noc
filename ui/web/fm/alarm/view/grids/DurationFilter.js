@@ -88,14 +88,12 @@ Ext.define("NOC.fm.alarm.view.grids.DurationFilter", {
     },
     //
     setValue: function(value, skip) {
-        // console.log("DurationFilter setValue : ", value, skip);
         this.callParent([value]);
         if(!skip) {
             this.setWidgetValues(value);
         }
     },
     setWidgetValues: function(data) {
-        // console.log("DurationFilter setWidgetValues : ", data);
         var me = this, setIf = function(key) {
             if(data.hasOwnProperty(key)) {
                 me.getViewModel().set(key, data[key]);
