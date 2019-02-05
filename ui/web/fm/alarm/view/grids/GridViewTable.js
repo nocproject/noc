@@ -19,17 +19,20 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
         this.callParent();
     },
     getRowClass: function(record) {
-        var c = record.get("row_class"),
+        var filter, freshCI,
+            cls = record.get("row_class"),
             status = record.get("status"),
-            duration = record.get("duration"),
-            filter = this.up().getViewModel().get("displayFilter.duration"),
-            freshCI = "fm-blur-" + filter.row4.opacity;
+            duration = record.get("duration");
 
         if(status === "C") {
             return "noc-recent-alarms";
         }
-        if(c) {
-            if(filter.on) {
+        if(this.up().getViewModel()) {
+            filter = this.up().getViewModel().get("displayFilter.duration");
+        }
+        if(cls) {
+            if(filter && filter.on) {
+                freshCI = "fm-blur-" + filter.row4.opacity;
                 if(duration < filter.row1.duration * 60) {
                     freshCI = "fm-blur-" + filter.row1.opacity;
                 } else if(duration < filter.row2.duration * 60) {
@@ -37,9 +40,9 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
                 } else if(duration < filter.row3.duration * 60) {
                     freshCI = "fm-blur-" + filter.row3.opacity;
                 }
-                return c + " " + freshCI;
+                return cls + " " + freshCI;
             } else {
-                return c;
+                return cls;
             }
         } else {
             return "";
