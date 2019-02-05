@@ -15,8 +15,13 @@ class Profile(BaseProfile):
     name = "GWD.GFA"
     pattern_more = r"Press any key to continue"
     pattern_syntax_error = r"% Unknown command.|% Command incomplete."
-    pattern_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
+    pattern_prompt = r"^\S+\(config\)?#"
+    command_super = "enable"
     command_disable_pager = "screen lines 0"
     command_more = " "
-    command_enter_config = "enable"
-    command_leave_config = "end"
+
+    def convert_interface_name(self, interface):
+        if interface.startswith("eth") or interface.startswith("pon"):
+            interface = interface[3:]
+        return interface
