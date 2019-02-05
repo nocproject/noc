@@ -114,6 +114,14 @@ class FMObjectCollector(BaseCollector):
         for shard in set(TTSystem.objects.filter(is_active=True).values_list("shard_name")):
             yield ("fm_escalation_pool_count",
                    ("shard", shard)), db["noc.schedules.escalator.%s" % shard].estimated_document_count()
+            yield ("fm_escalation_queue_open_pool_count",
+                   ("shard", shard)), db["noc.schedules.escalator.%s" % shard].count_documents(
+                {"key": "noc.services.escalator.escalation.escalate"}
+            )
+            yield ("fm_escalation_queue_close_pool_count",
+                   ("shard", shard)), db["noc.schedules.escalator.%s" % shard].count_documents(
+                {"key": "noc.services.escalator.escalation.notify_close"}
+            )
             first_escalation = db["noc.schedules.escalator.%s" % shard].find_one(sort=[("ts", -1)])
             if first_escalation:
                 # yield ("escalation_last_ts", ("shard", shard)), time.mktime(last_escalation["ts"].timetuple())
