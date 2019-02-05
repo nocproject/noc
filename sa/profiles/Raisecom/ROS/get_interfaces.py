@@ -22,7 +22,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_vlans = re.compile(
-        r"^\s*(?:Interface: |: )?(?P<name>\d+|gigaethernet1/1/\d+)\s*\n"
+        r"^\s*(?:Interface: |: |Port: )?(?P<name>\d+|gigaethernet1/1/\d+)\s*\n"
         r"(^\s*Switch Mode: switch\n)?"
         r"(^\s*Reject frame type: \S+\n)?"
         r"^\s*Administrative\sMode:\s*(?P<adm_mode>.*)\n"
@@ -31,7 +31,7 @@ class Script(BaseScript):
         r"^\s*Administrative\sAccess\sEgress\sVLANs:\s*(?P<mvr_vlan>.*)\n"
         r"^\s*Operational\sAccess\sEgress\sVLANs:\s*(?P<op_eg_vlan>.*)\n"
         r"^\s*Trunk(?:\sNative)?\sMode(?:\sNative)?\sVLAN:\s*(?P<trunk_native_vlan>.*)\n"
-        r"^\s*Trunk\sNative\sVLAN(?:\sStatus)?:\s*(?P<trunk_native_vlan_mode>.*)\n"
+        r"(^\s*Trunk\sNative\sVLAN(?:\sStatus)?:\s*(?P<trunk_native_vlan_mode>.*)\n)?"
         r"^\s*Administrative\sTrunk\sAllowed\sVLANs:\s*(?P<adm_trunk_allowed_vlan>.*)\n"
         r"^\s*Operational\sTrunk\sAllowed\sVLANs:\s*(?P<op_trunk_allowed_vlan>.*)\n"
         r"^\s*Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n"
