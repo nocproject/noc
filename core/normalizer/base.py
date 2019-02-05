@@ -7,16 +7,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import itertools
-from collections import namedtuple
 # Third-party modules
 import six
 # NOC modules
 from noc.core.ip import IPv4
+from .syntax import SYNTAX, ANY, REST
 
 _match_seq = itertools.count()
-ANY = None
-REST = True
+
+# Prepare for export
+ANY = ANY
+REST = REST
 
 
 class Node(object):
@@ -64,6 +67,7 @@ class Node(object):
 class BaseNormalizerMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
+        # Process matchers
         n.mtree = Node(None)
         for k in attrs:
             f = attrs[k]
@@ -73,26 +77,56 @@ class BaseNormalizerMetaclass(type):
             del f._seq
             del f._pattern
             del f._matcher
+        # Process syntax
+        if bases[0] == object:
+            mcs.parse_syntax(n)
         return n
+
+    @classmethod
+    def parse_syntax(mcs, ncls):
+        for t in SYNTAX:
+            mcs.process_token(ncls, t, tuple())
+
+    @classmethod
+    def process_token(mcs, ncls, sdef, path):
+        path = path + (sdef,)
+        if sdef.children:
+            for c in sdef.children:
+                mcs.process_token(ncls, c, path)
+        if sdef.gen:
+            mcs.contribute_gen(ncls, path)
+
+    @classmethod
+    def contribute_gen(cls, ncls, path):
+        sdef = path[-1]
+        # Check function name is not duplicated
+        assert not hasattr(ncls, sdef.gen)
+        # Generate function
+        args = []
+        r = []
+        for p in path:
+            if p.name:
+                if p.default:
+                    args += ["%s='%s'" % (p.name, p.default.replace("'", "\\'"))]
+                else:
+                    args += ["%s=None" % p.name]
+                r += [p.name]
+            else:
+                r += ["'%s'" % p.token]
+        body = "def %s(self, %s):\n    return %s" % (sdef.gen, ", ".join(args), ", ".join(r))
+        ctx = {}
+        exec(body, {}, ctx)
+        f = ctx[sdef.gen]
+        setattr(ncls, sdef.gen, f)
 
 
 class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
-    _VR = ("virtual-router", "default", "forwarding-instance", "default")
-
     def __init__(self, object, tokenizer):
         self.object = object
         self.tokenizer = tokenizer
 
     def interface_name(self, *args):
         return self.object.profile.get_profile().convert_interface_name(" ".join(args))
-
-    def vr(self, *args):
-        """
-        Append default virtual router
-        :param args:
-        :return:
-        """
-        return self._VR + args
 
     def to_prefix(self, address, netmask):
         """
@@ -119,10 +153,3 @@ def match(*args, **kwargs):
         return f
 
     return wrap
-
-
-SyntaxDef = namedtuple("SyntaxDef", ["token", "children", "required", "multi"])
-
-
-def DEF(token, children=None, required=False, multi=False):
-    return SyntaxDef(token, children, required, multi)
