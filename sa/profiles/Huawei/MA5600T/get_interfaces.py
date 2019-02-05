@@ -37,7 +37,7 @@ class Script(BaseScript):
         r"^\s*\-+\s*\n"
         r"(?P<tagged>.+)"
         r"^\s*\-+\s*\n"
-        r"^\s*Total:\s+\d+\s+Native VLAN:\s+(?P<untagged>\d+)\s*\n",
+        r"^\s*Total:\s+\d+\s+Native VLAN:\s+(?P<untagged>(\d+|-))\s*\n",
         re.MULTILINE | re.DOTALL)
     rx_vlan2 = re.compile(
         r"^\s+\d+\s+eth\s+(?:down|up)\s+(?P<ifname>\d+/\s*\d+/\s*\d+)\s+"
@@ -177,7 +177,10 @@ class Script(BaseScript):
                     if m:
                         vlans_found = True
                         tagged = []
-                        untagged = int(m.group("untagged"))
+                        try:
+                            untagged = int(m.group("untagged"))
+                        except ValueError:
+                            untagged = None
                         for t in self.rx_tagged.finditer(m.group("tagged")):
                             if int(t.group("tagged")) != untagged:
                                 tagged += [int(t.group("tagged"))]

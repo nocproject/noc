@@ -19,9 +19,12 @@ class Script(BaseScript):
 
     splitter = re.compile("\s*-+\n")
 
-    def execute_cli(self, **kwargs):
+    def execute_cli(self, interface=None, **kwargs):
+        if not interface:
+            interface = '0/0/0'
         self.cli("config")
-        self.cli("interface gpon 0/0")  # Fix from cpes
+        frame, slot, port = interface.split("/")
+        self.cli("interface gpon %s/%s" % (frame, slot))  # Fix from cpes
         r = []
         v = self.cli("display port state all")
         for port in self.splitter.split(v):
@@ -33,7 +36,8 @@ class Script(BaseScript):
                    "temp_c": float(port["Temperature(C)"]),
                    "voltage_v": float(port["Supply Voltage(V)"]),
                    "current_ma": float(port["TX Bias current(mA)"]),
-                   "optical_tx_dbm": float(port["TX power(dBm)"])}]
+                   "optical_tx_dbm": float(port["TX power(dBm)"]),
+                   "optical_laser_state": str(port["Laser state"])}]
         self.cli("quit")
         self.cli("quit")
         return r
