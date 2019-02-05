@@ -3,7 +3,7 @@
 # Vendor: Raisecom
 # OS:     ROS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -41,7 +41,7 @@ class Profile(BaseProfile):
     matchers = {
         "is_iscom2624g": {
             "platform": {
-                "$regex": "ISCOM2624G"
+                "$regex": "ISCOM26(?:24|08)G"
             }
         }
     }
