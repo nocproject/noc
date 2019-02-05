@@ -19,6 +19,20 @@ class ESNormalizer(BaseNormalizer):
     def normalize_prompt(self, tokens):
         yield self.make_prompt(tokens[1])
 
+    @match("username", ANY, "access-level", ANY)
+    def normalize_username_access_level(self, tokens):
+        yield self.make_user_class(
+            username=tokens[1],
+            class_name="level-%s" % tokens[3]
+        )
+
+    @match("username", ANY, "password", REST)
+    def normalize_username_password(self, tokens):
+        yield self.make_user_encrypted_password(
+            username=tokens[1],
+            password=" ".join(tokens[3:])
+        )
+
     @match("interface", "ethernet", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
         yield self.make_interface_description(
