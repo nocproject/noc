@@ -13,6 +13,7 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
         "NOC.fm.alarm.view.grids.GridController",
         "NOC.fm.alarm.view.grids.GridViewTable"
     ],
+    stateful: true,
     columns: [
         {
             text: __("ID"),
@@ -204,10 +205,12 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
             width: 150,
             sortable: false,
             renderer: function(v, _, record) {
-                var r = [], summary = record.get("summary"),
+                var filter, r = [], summary = record.get("summary"),
                     tt = record.get("escalation_tt") || false,
-                    ee = record.get("escalation_error") || false,
+                    ee = record.get("escalation_error") || false;
+                if(this.getViewModel()) {
                     filter = this.getViewModel().get("displayFilter.hasProfiles");
+                }
                 if(!Ext.Object.isEmpty(filter)
                     && filter.array && filter.array.length > 0
                     && (record.get("total_services") || record.get("total_subscribers"))) {
