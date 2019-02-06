@@ -85,7 +85,8 @@
     - { name: 'net.ipv4.tcp_rfc1337', value: 1}
   tags:
     - config
-  when: "'Linux' in ansible_system"
+  when:
+    - "'Linux' in ansible_system"
 
 # fight against thousands of time-wait connections.
 # good enough reading https://vincent.bernat.im/en/blog/2014-tcp-time-wait-state-linux
@@ -103,3 +104,4 @@
   when:
     - "'Linux' in ansible_system"
     - "'prod' in noc_env_type"
+    - " ansible_kernel.split('-') is version('4.1.0', '<')"
