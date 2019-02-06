@@ -69,7 +69,7 @@ class ESNormalizer(BaseNormalizer):
         )
 
     @match("interface", "ethernet", ANY, "switchport", "native", "vlan", ANY)
-    def normalize_switchport_tagged(self, tokens):
+    def normalize_switchport_native(self, tokens):
         yield self.make_switchport_native(
             interface=self.interface_name(tokens[1], tokens[2]),
             vlan_id=tokens[6]
