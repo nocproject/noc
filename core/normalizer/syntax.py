@@ -186,6 +186,16 @@ SYNTAX = [
         DEF(VR_NAME, [
             DEF("forwarding-instance", [
                 DEF(FI_NAME, [
+                    DEF("vlans", [
+                        DEF(INTEGER, [
+                            DEF("name", [
+                                DEF(ANY, required=True, name="name", gen="make_vlan_name")
+                            ]),
+                            DEF("description", [
+                                DEF(ANY, required=True, name="description", gen="make_vlan_description")
+                            ])
+                        ], multi=True, name="vlan_id", gen="make_vlan_id")
+                    ]),
                     DEF("interface", [
                         DEF(IF_NAME, [
                             DEF("unit", [
@@ -206,6 +216,20 @@ SYNTAX = [
                                     DEF("iso", gen="make_unit_iso"),
                                     DEF("mpls", gen="make_unit_mpls"),
                                     DEF("bridge", [
+                                        DEF("switchport", [
+                                            DEF("untagged", [
+                                                DEF(ANY, required=True, multi=True,
+                                                    name="vlan_filter", gen="make_switchport_untagged")
+                                            ]),
+                                            DEF("native", [
+                                                DEF(ANY, required=True,
+                                                    name="vlan_id", gen="make_switchport_native")
+                                            ]),
+                                            DEF("tagged", [
+                                                DEF(ANY, required=True, multi=True,
+                                                    name="vlan_filter", gen="make_switchport_tagged")
+                                            ])
+                                        ]),
                                         DEF("port-security", [
                                             DEF("max-mac-count", [
                                                 DEF(INTEGER, required=True,
@@ -222,7 +246,8 @@ SYNTAX = [
                             DEF("static", [
                                 DEF(IPv4_PREFIX, [
                                     DEF("next-hop", [
-                                        DEF(IPv4_ADDRESS, multi=True, name="next_hop", gen="make_inet_static_route_next_hop")
+                                        DEF(IPv4_ADDRESS, multi=True,
+                                            name="next_hop", gen="make_inet_static_route_next_hop")
                                     ])
                                 ], name="route")
                             ])
@@ -231,7 +256,8 @@ SYNTAX = [
                             DEF("static", [
                                 DEF(IPv4_PREFIX, [
                                     DEF("next-hop", [
-                                        DEF(IPv6_ADDRESS, multi=True, name="next_hop", gen="make_inet6_static_route_next_hop")
+                                        DEF(IPv6_ADDRESS, multi=True,
+                                            name="next_hop", gen="make_inet6_static_route_next_hop")
                                     ])
                                 ])
                             ])

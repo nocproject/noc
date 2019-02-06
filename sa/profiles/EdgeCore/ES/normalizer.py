@@ -54,6 +54,38 @@ class ESNormalizer(BaseNormalizer):
             cost=tokens[5]
         )
 
+    @match("interface", "ethernet", ANY, "switchport", "allowed", "vlan", "add", ANY, "untagged")
+    def normalize_switchport_untagged(self, tokens):
+        yield self.make_switchport_untagged(
+            interface=self.interface_name(tokens[1], tokens[2]),
+            vlan_filter=tokens[7]
+        )
+
+    @match("interface", "ethernet", ANY, "switchport", "allowed", "vlan", "add", ANY, "tagged")
+    def normalize_switchport_tagged(self, tokens):
+        yield self.make_switchport_tagged(
+            interface=self.interface_name(tokens[1], tokens[2]),
+            vlan_filter=tokens[7]
+        )
+
+    @match("interface", "ethernet", ANY, "switchport", "native", "vlan", ANY)
+    def normalize_switchport_tagged(self, tokens):
+        yield self.make_switchport_native(
+            interface=self.interface_name(tokens[1], tokens[2]),
+            vlan_id=tokens[6]
+        )
+
+    @match("vlan", "database", "vlan", ANY, "name", ANY, "media", "ethernet", "state", "active")
+    def normalize_vlan_name(self, tokens):
+        yield self.make_vlan_name(
+            vlan_id=tokens[3],
+            name=tokens[5]
+        )
+
+    @match("vlan", "database", "vlan", ANY, "media", "ethernet", "state", "active")
+    def normalize_vlan_id(self, tokens):
+        yield self.make_vlan_id(vlan_id=tokens[3])
+
     @match("interface", "vlan", ANY, "ip", "address", ANY, ANY)
     def normalize_vlan_ip(self, tokens):
         yield self.make_unit_inet_address(
