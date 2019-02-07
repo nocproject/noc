@@ -96,6 +96,7 @@ Ext.define("NOC.core.combotree.ComboTree", {
 
         proxyCfg = Ext.apply({url: me.restUrl + "lookup/"}, defaultProxyCfg);
         storeCfg = {
+            pageSize: 0,
             proxy: proxyCfg,
             autoLoad: true,
             remoteFilter: false,
