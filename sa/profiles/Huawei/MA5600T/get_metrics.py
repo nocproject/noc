@@ -58,25 +58,25 @@ class Script(GetMetricsScript):
             m = parse_kv(self.kv_map, v)
 
             self.logger.debug("Collect %s, %s, %s", m, ipath, mpath)
-            if m.get("temp_c") is not None:
+            if m.get("temp_c", "-") != "-":
                 self.set_metric(id=("Interface | DOM | Temperature", mpath),
                                 metric="Interface | DOM | Temperature",
                                 path=ipath,
                                 value=float(m["temp_c"]),
                                 multi=True)
-            if m.get("voltage_v") is not None:
+            if m.get("voltage_v", "-") != "-":
                 self.set_metric(id=("Interface | DOM | Voltage", mpath),
                                 metric="Interface | DOM | Voltage",
                                 path=ipath,
                                 value=float(m["voltage_v"]),
                                 multi=True)
-            if m.get("optical_rx_dbm") is not None:
+            if m.get("optical_rx_dbm", "-") != "-":
                 self.set_metric(id=("Interface | DOM | RxPower", mpath),
                                 metric="Interface | DOM | RxPower",
                                 path=ipath,
                                 value=float(m["optical_rx_dbm"]),
                                 multi=True)
-            if m.get("optical_rx_dbm_cpe") is not None:
+            if m.get("optical_rx_dbm_cpe", "-") != "-":
                 self.set_metric(id=("Interface | DOM | RxPower", mpath),
                                 metric="Interface | DOM | RxPower",
                                 path=["", "", "", cc["interface"], cc["id"]],
@@ -84,13 +84,13 @@ class Script(GetMetricsScript):
                                             if "," not in m["optical_rx_dbm_cpe"] else
                                             m["optical_rx_dbm_cpe"].split(",")[0]),
                                 multi=True)
-            if m.get("current_ma") is not None:
+            if m.get("current_ma", "-") != "-":
                 self.set_metric(id=("Interface | DOM | Bias Current", mpath),
                                 metric="Interface | DOM | Bias Current",
                                 path=ipath,
                                 value=float(m["current_ma"]),
                                 multi=True)
-            if m.get("optical_tx_dbm") is not None:
+            if m.get("optical_tx_dbm", "-") != "-":
                 self.set_metric(id=("Interface | DOM | TxPower", mpath),
                                 metric="Interface | DOM | TxPower",
                                 path=ipath,
@@ -98,13 +98,13 @@ class Script(GetMetricsScript):
                                 multi=True)
             v = self.cli("display statistics ont-line-quality %s %s" % (port, cpe_id))
             m = parse_kv(self.kv_map, v)
-            if m.get("optical_errors_bip_out") is not None:
+            if m.get("optical_errors_bip_out", "-") != "-":
                 self.set_metric(id=("Interface | Errors | BIP | Out", mpath),
                                 metric="Interface | Errors | BIP | Out",
                                 path=ipath,
                                 value=int(m["optical_errors_bip_out"]),
                                 multi=True)
-            if m.get("optical_errors_bip_in") is not None:
+            if m.get("optical_errors_bip_in", "-") != "-":
                 self.set_metric(id=("Interface | Errors | BIP | In", mpath),
                                 metric="Interface | Errors | BIP | In",
                                 path=ipath,

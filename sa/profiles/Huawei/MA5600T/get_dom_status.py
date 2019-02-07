@@ -32,6 +32,9 @@ class Script(BaseScript):
                     for line in port.splitlines() if len(line.rsplit(None, 1)) == 2}
             if not port:
                 continue
+            if port["Port state"] == "Offline":
+                self.logger.info("Port %s is offline mode" % port["Port state"])
+                continue
             r += [{"interface": port["F/S/P"],
                    "temp_c": float(port["Temperature(C)"]),
                    "voltage_v": float(port["Supply Voltage(V)"]),
