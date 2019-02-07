@@ -54,7 +54,7 @@ class VRPNormalizer(BaseNormalizer):
             description=" ".join(tokens[3:])
         )
 
-    @match("Interface", ANY)
+    @match("interface", ANY)
     def normalize_interface(self, tokens):
         yield "interface", self.interface_name(tokens[1])
 

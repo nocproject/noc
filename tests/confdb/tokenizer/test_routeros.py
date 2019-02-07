@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.tokenizer.routeros import RouterOSTokenizer
+from noc.core.confdb.tokenizer.routeros import RouterOSTokenizer
 
 CFG1 = """/some single-line context
 /interface ethernet

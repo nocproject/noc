@@ -11,8 +11,6 @@ from __future__ import absolute_import
 # NOC modules
 from .line import LineTokenizer
 
-ANY = None
-
 
 class ContextTokenizer(LineTokenizer):
     name = "context"

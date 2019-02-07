@@ -9,6 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 from collections import namedtuple
+# NOC modules
+from .patterns import (ANY, HHMM, INTEGER, IF_NAME, BOOL, ETHER_MODE, FLOAT, CHOICES, VR_NAME,
+                       FI_NAME, IPv4_PREFIX, IPv6_PREFIX, UNIT_NAME, IPv4_ADDRESS, IPv6_ADDRESS,
+                       IP_ADDRESS, ISO_ADDRESS)
 
 
 SyntaxDef = namedtuple("SyntaxDef", ["token", "children", "required", "name", "multi", "default", "gen"])
@@ -16,31 +20,6 @@ SyntaxDef = namedtuple("SyntaxDef", ["token", "children", "required", "name", "m
 
 def DEF(token, children=None, required=False, multi=False, name=None, default=None, gen=None):
     return SyntaxDef(token, children, required, name, multi, default, gen)
-
-
-ANY = None
-REST = True
-VR_NAME = ANY
-FI_NAME = ANY
-IF_NAME = ANY
-UNIT_NAME = ANY
-IF_UNIT_NAME = ANY
-IPv4_ADDRESS = ANY
-IPv4_PREFIX = ANY
-IPv6_ADDRESS = ANY
-IPv6_PREFIX = ANY
-IP_ADDRESS = ANY
-ISO_ADDRESS = ANY
-INTEGER = ANY
-FLOAT = ANY
-BOOL = ANY
-ETHER_MODE = ANY
-STP_MODE = ANY
-HHMM = ANY
-
-
-def CHOICES(*args):
-    return ANY
 
 
 SYNTAX = [

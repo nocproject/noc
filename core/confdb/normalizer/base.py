@@ -13,7 +13,8 @@ import itertools
 import six
 # NOC modules
 from noc.core.ip import IPv4
-from .syntax import SYNTAX, ANY, REST
+from ..patterns import ANY, REST
+from ..syntax import SYNTAX
 
 _match_seq = itertools.count()
 

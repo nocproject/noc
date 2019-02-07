@@ -9,7 +9,9 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.tokenizer.context import ContextTokenizer, ANY
+from noc.core.confdb.tokenizer.context import ContextTokenizer
+from noc.core.confdb.patterns import ANY
+
 
 # Raisecom-like
 CFG1 = """clock timezone + 3 0
