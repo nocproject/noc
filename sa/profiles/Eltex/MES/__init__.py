@@ -3,7 +3,7 @@
 # Vendor: Eltex
 # OS:     MES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,10 +40,6 @@ class Profile(BaseProfile):
         r"(?:\(config[^\)]*\))?#"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
-    config_tokenizer = "indent"
-    config_tokenizer_settings = {
-        "line_comment": "!"
-    }
 
     INTERFACE_TYPES = {
         "as": "physical",    # Async
@@ -59,13 +55,14 @@ class Profile(BaseProfile):
         "gi": "physical",    # GigabitEthernet
         "gr": "physical",    # Group-Async
         "lo": "loopback",    # Loopback
-        # "M": "management",   # @todo: fix
+        "oo": "management",  # oob
         "mf": "aggregated",  # Multilink Frame Relay
         "mu": "aggregated",  # Multilink-group interface
         "po": "aggregated",  # Port-channel/Portgroup
         # "R": "aggregated",   # @todo: fix
         "sr": "physical",    # Spatial Reuse Protocol
         "se": "physical",    # Serial
+        "st": "management",  # Stack-port
         "te": "physical",    # TenGigabitEthernet
         "fo": "physical",    # FortyGigabitEthernet
         "tu": "tunnel",      # Tunnel
@@ -94,6 +91,8 @@ class Profile(BaseProfile):
         match = self.rx_eltex_interface_name.match(s)
         if is_int(s):
             return "Vl %s" % s
+        elif s in ["oob", "stack-port"]:
+            return s
         elif match:
             return "%s %s" % (match.group("type").capitalize(),
                               match.group("number"))
