@@ -79,10 +79,54 @@ TOKENS2 = [
     ("interface", "Gi", "0/2", "qos", "output", "output-map")
 ]
 
+CFG3 = """#
+vlan 333
+ description MGMT
+ name MGMT
+#
+aaa
+ authentication-scheme default
+ authentication-scheme remote
+  authentication-mode local radius
+ authorization-scheme default
+ accounting-scheme default
+ domain default
+ domain default_admin
+  authentication-scheme remote
+  radius-server aaa_server
+ local-user root password irreversible-cipher %^%#XXXXXXX%#
+ local-user root privilege level 15
+ local-user root ftp-directory flash:
+ local-user root service-type telnet terminal ssh ftp
+#
+ntp-service server disable"""
+
+TOKENS3 = [
+    ('vlan', '333'),
+    ('vlan', '333', 'description', 'MGMT'),
+    ('vlan', '333', 'name', 'MGMT'),
+    ('aaa',),
+    ('aaa', 'authentication-scheme', 'default'),
+    ('aaa', 'authentication-scheme', 'remote'),
+    ('aaa', 'authentication-scheme', 'remote', 'authentication-mode', 'local', 'radius'),
+    ('aaa', 'authorization-scheme', 'default'),
+    ('aaa', 'accounting-scheme', 'default'),
+    ('aaa', 'domain', 'default'),
+    ('aaa', 'domain', 'default_admin'),
+    ('aaa', 'domain', 'default_admin', 'authentication-scheme', 'remote'),
+    ('aaa', 'domain', 'default_admin', 'radius-server', 'aaa_server'),
+    ('aaa', 'local-user', 'root', 'password', 'irreversible-cipher', '%^%#XXXXXXX%#'),
+    ('aaa', 'local-user', 'root', 'privilege', 'level', '15'),
+    ('aaa', 'local-user', 'root', 'ftp-directory', 'flash:'),
+    ('aaa', 'local-user', 'root', 'service-type', 'telnet', 'terminal', 'ssh', 'ftp'),
+    ('ntp-service', 'server', 'disable'),
+]
+
 
 @pytest.mark.parametrize("input,config,expected", [
     (CFG1, {"line_comment": "#"}, TOKENS1),
     (CFG2, {"line_comment": "#", "end_of_context": "end"}, TOKENS2),
+    (CFG3, {"line_comment": "#"}, TOKENS3),
 ])
 def test_tokenizer(input, config, expected):
     tokenizer = IndentTokenizer(input, **config)
