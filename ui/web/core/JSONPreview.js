@@ -95,7 +95,7 @@ Ext.define("NOC.core.JSONPreview", {
             collection = me.app.noc.collection;
 
         // Calculate api prefix
-        if(NOC.settings.gitlab_url.endsWith("/")) {
+        if(Ext.String.endsWith(NOC.settings.gitlab_url, "/")) {
             me.apiPrefix = NOC.settings.gitlab_url + "api/v4/";
             me.apiTokenURL = NOC.settings.gitlab_url + "profile/personal_access_token"
         } else {
