@@ -218,6 +218,10 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     config_tokenizer = None
     # Configuration for config tokenizer
     config_tokenizer_settings = {}
+    # Config normalizer handler
+    config_normalizer = None
+    # Config normalizer settings
+    config_normalizer_settings = {}
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
@@ -550,6 +554,15 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :return: config tokenizer name, config tokenizer settings
         """
         return cls.config_tokenizer, cls.config_tokenizer_settings
+
+    @classmethod
+    def get_config_normalizer(cls, object):
+        """
+        Returns config normalizer name and settings
+        :param object: ManagedObject instance
+        :return:
+        """
+        return cls.config_normalizer, cls.config_normalizer_settings
 
     @classmethod
     def get_http_request_middleware(cls, script):

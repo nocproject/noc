@@ -1585,6 +1585,20 @@ class ManagedObject(Model):
         for tokens in tokenizer:
             yield tokens
 
+    def iter_normalized_tokens(self, config=None):
+        profile = self.profile.get_profile()
+        n_handler, n_config = profile.get_config_normalizer(self)
+        if not n_handler:
+            raise StopIteration
+        if not n_handler.startswith("noc."):
+            n_handler = "noc.sa.profiles.%s.normalizer.%s" % (profile.name, n_handler)
+        n_cls = get_handler(n_handler)
+        if not n_cls:
+            raise StopIteration
+        normalizer = n_cls(self, self.iter_config_tokens(config), **n_config)
+        for tokens in normalizer:
+            yield tokens
+
 
 @on_save
 class ManagedObjectAttribute(Model):

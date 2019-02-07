@@ -46,6 +46,7 @@ class Profile(BaseProfile):
     config_tokenizer_settings = {
         "line_comment": "!"
     }
+    config_normalizer = "Qtech2800Normalizer"
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
     @classmethod
