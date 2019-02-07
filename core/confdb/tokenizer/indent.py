@@ -34,16 +34,11 @@ class IndentTokenizer(LineTokenizer):
                 contexts += [last]
             elif depths and c_depth < depths[-1]:
                 # Pop context
-                while depths and c_depth <= depths[-1]:
+                while c_depth < depths[-1]:
                     depths.pop(-1)
                     contexts.pop(-1)
-                if not depths:
-                    last = tuple()
-                depths += [c_depth]
-                contexts += [last]
-            if contexts:
-                # Apply current context
-                tokens = contexts[-1] + tokens
+            # Apply current context
+            tokens = contexts[-1] + tokens
             yield tokens
             last = tokens
 
@@ -65,9 +60,8 @@ class IndentTokenizer(LineTokenizer):
                 depts.pop(-1)
                 contexts.pop(-1)
                 continue
-            if contexts:
-                # Apply current context
-                tokens = contexts[-1] + tokens
+            # Apply current context
+            tokens = contexts[-1] + tokens
             yield tokens
             last = tokens
 
