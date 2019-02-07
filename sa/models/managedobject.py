@@ -65,7 +65,7 @@ from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.matcher import match
 from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
-from noc.core.tokenizer.loader import loader as tokenizer_loader
+from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 13

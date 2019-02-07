@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SA Profile Base
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -214,7 +214,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # Always enclose MML command arguments with quotes
     # False - pass integers as unquoted
     mml_always_quote = False
-    # Config tokenizer name, from noc.core.tokenizer.*
+    # Config tokenizer name, from noc.core.confdb.tokenizer.*
     config_tokenizer = None
     # Configuration for config tokenizer
     config_tokenizer_settings = {}

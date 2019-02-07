@@ -3,13 +3,13 @@
 # Vendor: Alstec
 # OS:     24xx
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
-from noc.core.tokenizer.context import ANY
+from noc.core.confdb.patterns import ANY
 
 
 class Profile(BaseProfile):
@@ -38,7 +38,7 @@ class Profile(BaseProfile):
             ["vlan", "database"],
             ["policy-map", ANY, ANY],
             ["policy-map", ANY, ANY, "class", ANY],
-            ["interface", ANY]
+            ["interface"]
         ],
         "end_of_context": "exit"
     }

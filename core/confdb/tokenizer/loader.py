@@ -16,7 +16,7 @@ from .base import BaseTokenizer
 class TokenizerLoader(BaseLoader):
     name = "tokenizer"
     base_cls = BaseTokenizer
-    base_path = ("core", "tokenizer")
+    base_path = ("core", "confdb", "tokenizer")
 
 
 # Create singleton object

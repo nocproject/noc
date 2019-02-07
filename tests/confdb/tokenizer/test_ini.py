@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.tokenizer.ini import INITokenizer
+from noc.core.confdb.tokenizer.ini import INITokenizer
 
 CFG1 = """[section #1]
 key1 = 12

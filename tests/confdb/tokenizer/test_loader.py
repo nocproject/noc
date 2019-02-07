@@ -9,8 +9,8 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.tokenizer.loader import loader
-from noc.core.tokenizer.base import BaseTokenizer
+from noc.core.confdb.tokenizer.loader import loader
+from noc.core.confdb.tokenizer.base import BaseTokenizer
 
 
 @pytest.mark.parametrize("name", [

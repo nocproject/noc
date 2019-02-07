@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.tokenizer.curly import CurlyTokenizer
+from noc.core.confdb.tokenizer.curly import CurlyTokenizer
 
 
 CFG1 = """# comment

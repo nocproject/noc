@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.tokenizer.indent import IndentTokenizer
+from noc.core.confdb.tokenizer.indent import IndentTokenizer
 
 
 CFG1 = """# comment
@@ -102,24 +102,24 @@ aaa
 ntp-service server disable"""
 
 TOKENS3 = [
-    ('vlan', '333'),
-    ('vlan', '333', 'description', 'MGMT'),
-    ('vlan', '333', 'name', 'MGMT'),
-    ('aaa',),
-    ('aaa', 'authentication-scheme', 'default'),
-    ('aaa', 'authentication-scheme', 'remote'),
-    ('aaa', 'authentication-scheme', 'remote', 'authentication-mode', 'local', 'radius'),
-    ('aaa', 'authorization-scheme', 'default'),
-    ('aaa', 'accounting-scheme', 'default'),
-    ('aaa', 'domain', 'default'),
-    ('aaa', 'domain', 'default_admin'),
-    ('aaa', 'domain', 'default_admin', 'authentication-scheme', 'remote'),
-    ('aaa', 'domain', 'default_admin', 'radius-server', 'aaa_server'),
-    ('aaa', 'local-user', 'root', 'password', 'irreversible-cipher', '%^%#XXXXXXX%#'),
-    ('aaa', 'local-user', 'root', 'privilege', 'level', '15'),
-    ('aaa', 'local-user', 'root', 'ftp-directory', 'flash:'),
-    ('aaa', 'local-user', 'root', 'service-type', 'telnet', 'terminal', 'ssh', 'ftp'),
-    ('ntp-service', 'server', 'disable'),
+    ("vlan", "333"),
+    ("vlan", "333", "description", "MGMT"),
+    ("vlan", "333", "name", "MGMT"),
+    ("aaa",),
+    ("aaa", "authentication-scheme", "default"),
+    ("aaa", "authentication-scheme", "remote"),
+    ("aaa", "authentication-scheme", "remote", "authentication-mode", "local", "radius"),
+    ("aaa", "authorization-scheme", "default"),
+    ("aaa", "accounting-scheme", "default"),
+    ("aaa", "domain", "default"),
+    ("aaa", "domain", "default_admin"),
+    ("aaa", "domain", "default_admin", "authentication-scheme", "remote"),
+    ("aaa", "domain", "default_admin", "radius-server", "aaa_server"),
+    ("aaa", "local-user", "root", "password", "irreversible-cipher", "%^%#XXXXXXX%#"),
+    ("aaa", "local-user", "root", "privilege", "level", "15"),
+    ("aaa", "local-user", "root", "ftp-directory", "flash:"),
+    ("aaa", "local-user", "root", "service-type", "telnet", "terminal", "ssh", "ftp"),
+    ("ntp-service", "server", "disable"),
 ]
 
 

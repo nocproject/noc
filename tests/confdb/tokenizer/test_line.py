@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.tokenizer.line import LineTokenizer
+from noc.core.confdb.tokenizer.line import LineTokenizer
 
 CFG1 = """first line
 second long line
