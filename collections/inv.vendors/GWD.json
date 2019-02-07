@@ -1,0 +1,8 @@
+{
+    "name": "GWD",
+    "uuid": "b891cc19-0c91-400b-9d13-78cc39817460",
+    "full_name": "GW Delight Technology Co., Ltd",
+    "code": ["GWD"],
+    "site": "http://www.gwdelight.com",
+    "$collection": "inv.vendors"
+}
