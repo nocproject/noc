@@ -19,6 +19,12 @@ console.debug("Patching ExtJS " + Ext.getVersion().version);
 // Override grid column state ids
 //
 Ext.override(Ext.grid.column.Column, {
+    initConfig: function(config) {
+        if (config.formatter === undefined && !config.renderer) {
+            config.formatter = "htmlEncode";
+        }
+        return this.callParent(arguments);
+    },
     getStateId: function() {
         return this.stateId || this.dataIndex || this.headerId;
     }
