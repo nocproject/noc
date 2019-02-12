@@ -22,6 +22,8 @@ from noc.lib.text import split_alnum
 from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobject import ManagedObject
 
+TITLE_BAD_CHARS = u'"\\\n\r'
+
 
 class MODashboard(BaseDashboard):
     name = "mo"
@@ -66,15 +68,18 @@ class MODashboard(BaseDashboard):
                     lags += [{
                         "name": iface.name,
                         "ports": [i.name for i in iface.lag_members],
-                        "descr": self.str_cleanup(iface.description) or "No description",
+                        "descr": self.str_cleanup(iface.description,
+                                                  remove_letters=TITLE_BAD_CHARS) or "No description",
                         "status": ["status : ".join([i.name, i.status]) for i in iface.lag_members]
                     }]
                     continue
-                ports += [{"name": iface.name, "descr": self.str_cleanup(iface.description), "status": iface.status}]
+                ports += [{"name": iface.name,
+                           "descr": self.str_cleanup(iface.description, remove_letters=TITLE_BAD_CHARS),
+                           "status": iface.status}]
                 if iface.profile.allow_subinterface_metrics:
                     subif += [{
                         "name": si.name,
-                        "descr": self.str_cleanup(si.description)
+                        "descr": self.str_cleanup(si.description, remove_letters=TITLE_BAD_CHARS)
                     } for si in SubInterface.objects.filter(interface=iface)]
             if not ports:
                 continue
