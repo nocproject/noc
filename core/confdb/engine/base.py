@@ -11,6 +11,7 @@ from __future__ import absolute_import, print_function
 import ast
 import itertools
 import types
+import re
 # NOC modules
 from .transformer import PredicateTransformer
 from .var import Var
@@ -171,3 +172,34 @@ class Engine(object):
         for ctx in _input:
             for nctx in match(self.db.db, ctx, args):
                 yield nctx
+
+    def fn_Re(self, _input, pattern, name, ignore_case=None):
+        """
+        Match variable *name* against regular expression pattern.
+        Pass context further if matched. If regular expression contains
+        named groups, i.e. (?P<group_name>....), apply them as context variables
+        :param _input:
+        :param pattern:
+        :param name:
+        :return:
+        """
+        flags = 0
+        if ignore_case:
+            flags |= re.IGNORECASE
+        rx = re.compile(pattern, flags)
+        for ctx in _input:
+            if isinstance(name, Var):
+                value = name.get(ctx)
+            else:
+                value = name
+            if not value:
+                continue
+            match = rx.search(value)
+            if match:
+                groups = match.groupdict()
+                if groups:
+                    nctx = ctx.copy()
+                    nctx.update(groups)
+                    yield nctx
+                else:
+                    yield ctx
