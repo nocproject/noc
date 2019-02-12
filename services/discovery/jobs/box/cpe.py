@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CPE check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ class CPECheck(DiscoveryCheck):
                 mo = ManagedObject(
                     name=name,
                     pool=self.object.pool,
-                    profile=Profile.get_generic_profile_id(),
+                    profile=Profile.get_by_id(Profile.get_generic_profile_id()),
                     object_profile=self.object.object_profile.cpe_profile or self.object.object_profile,
                     administrative_domain=self.object.administrative_domain,
                     scheme=self.object.scheme,
