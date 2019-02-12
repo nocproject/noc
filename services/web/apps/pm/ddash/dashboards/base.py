@@ -84,9 +84,9 @@ class BaseDashboard(object):
                         continue
         return t
 
-    def str_cleanup(self, data, translate_to=None):
+    def str_cleanup(self, data, remove_letters=None, translate_to=None):
         if data:
-            remove_letters = BAD_CHARS
+            remove_letters = remove_letters or BAD_CHARS
             translate_table = dict((ord(char), translate_to) for char in remove_letters)
             return data.translate(translate_table)
         else:
