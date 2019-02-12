@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import ast
 import itertools
 import types
@@ -83,9 +83,9 @@ class Engine(object):
         """
         for ctx in _input:
             if message:
-                print "%s: %r" % (message, ctx)
+                print("%s: %r" % (message, ctx))
             else:
-                print ctx
+                print(ctx)
             yield ctx
 
     def fn_True(self, _input):

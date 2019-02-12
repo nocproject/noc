@@ -9,7 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 # NOC modules
-from ..syntax import SYNTAX
+# from ..syntax import SYNTAX
 from .node import Node
 from .marshall.loader import loader
 
