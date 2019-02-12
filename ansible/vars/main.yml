@@ -13,8 +13,6 @@ nsq_version: "0.3.8"
 consul_version: "1.2.2"
 consul_template_version: "0.19.5"
 
-http_proxy: ""
-
 tower_ip: 127.0.0.1
 tower_path: /opt/tower
 tower_dist_dir: "{{ tower_path }}/var/tower/data/src_dist"
