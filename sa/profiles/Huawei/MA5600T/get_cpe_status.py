@@ -28,6 +28,22 @@ class Script(BaseScript):
         "offline": "inactive",  # disassociating
     }
 
+    @staticmethod
+    def fix_cpe_header(header):
+        """
+        Sometimes start line shift more than 15 spaces. Fix it
+                                             F/S/P   ONT-ID   Description
+        :param header:
+        :return:
+        """
+        if len(header) > 0:
+            # First line on header - 2
+            header[0] = "  " + header[0].lstrip()
+        if len(header) == 2:
+            # Second line on header 10
+            header[1] = " " * 10 + header[1].lstrip()
+        return header
+
     def execute_cli(self, **kwargs):
         r = {}
         # v = self.cli("display ont info 0 all")
@@ -40,7 +56,13 @@ class Script(BaseScript):
                 while len(parts) > 2:
                     header, body = parts[:2]
                     parts = parts[2:]
-                    head = parse_table_header(header.splitlines())
+                    if not body:
+                        # summary parts
+                        continue
+                    header = header.splitlines()
+                    if any([h.startswith(" " * 15) for h in header]):
+                        self.fix_cpe_header(header)
+                    head = parse_table_header(header)
                     del head[2]  # remove empty header
                     tables_data += self.profile.parse_table1(body, head)
                 else:
@@ -62,7 +84,7 @@ class Script(BaseScript):
                         #                       ID                     flag        state    state    state    side
                         #  -----------------------------------------------------------------------------
                         #
-                        self.logger.warning("Shift header row. %s" % header)
+                        self.logger.warning("Shift header row. %s" % "\n".join(header))
                         ont_id, serial = t["ONT"][0].split()
                         status = self.status_map[t["Run ID"][0]]
                     # else:
