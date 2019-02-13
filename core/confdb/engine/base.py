@@ -186,7 +186,10 @@ class Engine(object):
         flags = 0
         if ignore_case:
             flags |= re.IGNORECASE
-        rx = re.compile(pattern, flags)
+        if isinstance(pattern, Var):
+            rx = None
+        else:
+            rx = re.compile(pattern, flags)
         for ctx in _input:
             if isinstance(name, Var):
                 value = name.get(ctx)
@@ -194,7 +197,10 @@ class Engine(object):
                 value = name
             if not value:
                 continue
-            match = rx.search(value)
+            if rx:
+                match = rx.search(value)
+            else:
+                match = re.search(pattern.get(ctx), value, flags)
             if match:
                 groups = match.groupdict()
                 if groups:

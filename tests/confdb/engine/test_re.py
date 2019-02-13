@@ -31,6 +31,11 @@ from noc.core.confdb.engine.base import Engine
         {"x": "a"},
         {"x": "A"}
     ]),
+    # Variable pattern
+    ({"x": ["ge-0/0/0", "xe-1/0/0", "ge-0/0/1"], "pattern": "ge-.+"}, "Re(pattern, x)", [
+        {"pattern": "ge-.+", "x": "ge-0/0/0"},
+        {"pattern": "ge-.+", "x": "ge-0/0/1"}
+    ])
 ])
 def test_re(input, query, output):
     e = Engine()
