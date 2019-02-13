@@ -58,6 +58,24 @@ class Engine(object):
         for ctx in self.iter_product(**kwargs):
             yield ctx
 
+    @staticmethod
+    def context_hash(ctx):
+        return repr(ctx)
+
+    @staticmethod
+    def iter_unique(g):
+        """
+        Deduplicate generator
+        :param g:
+        :return:
+        """
+        seen = set()
+        for ctx in g:
+            h = Engine.context_hash(ctx)
+            if h not in seen:
+                yield ctx
+                seen.add(h)
+
     def fn_Set(self, _input, **kwargs):
         """
         Set(k1=v1, ..., kN=vN)
@@ -221,3 +239,25 @@ class Engine(object):
             next(g)
         except StopIteration:
             yield {}
+
+    def fn_Del(self, _input, *args):
+        """
+        Delete variables from context. Deduplicate contexts when necessary
+        :param _input:
+        :param args: String or variable
+        :return:
+        """
+        def g():
+            for ctx in _input:
+                nctx = ctx.copy()
+                for a in args:
+                    if isinstance(a, Var):
+                        name = a.name
+                    else:
+                        name = a
+                    if name in nctx:
+                        del nctx[name]
+                yield nctx
+
+        # Deduplicate
+        return self.iter_unique(g())
