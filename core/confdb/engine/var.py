@@ -15,7 +15,12 @@ class Var(object):
         return ctx.get(self.name)
 
     def set(self, ctx, value):
-        ctx[self.name] = value
+        if not self.is_placeholder:
+            ctx[self.name] = value
 
     def is_bound(self, ctx):
         return self.name in ctx
+
+    @property
+    def is_placeholder(self):
+        return self.name.startswith("_")

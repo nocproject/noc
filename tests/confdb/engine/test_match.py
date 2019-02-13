@@ -47,7 +47,12 @@ CONF1 = [
     (CONF1, "Set(x=['Fa 0/1', 'Fa 0/2']) and Match('interface', x, 'description', y)", [
         {"x": "Fa 0/1", "y": "First interface"},
         {"x": "Fa 0/2", "y": "Second interface"}
-    ])
+    ]),
+    # Match placeholder
+    (CONF1, "Set(x=['Fa 0/1', 'Fa 0/2']) and Match('interface', x, 'description', _y)", [
+        {"x": "Fa 0/1"},
+        {"x": "Fa 0/2"}
+    ]),
 ])
 def test_match(conf, query, output):
     db = ConfDB()

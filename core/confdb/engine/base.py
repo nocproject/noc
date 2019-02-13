@@ -165,7 +165,7 @@ class Engine(object):
         def match_unbound(node, c, current, rest):
             for f in node.iter_nodes():
                 nctx = c.copy()
-                nctx[current.name] = f.token
+                current.set(nctx, f.token)
                 if rest:
                     for wctx in match(f, nctx, rest):
                         yield wctx
