@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -52,7 +52,8 @@ class Script(BaseScript):
                 continue
             if int(v[2]) < 3:
                 continue
-            if v[1] == 0:  # 0 port - is a commutator's MAC
+            # 0 port - is a commutator's MAC
+            if v[1] == 0 or int(v[2]) == 4:
                 iface = "CPU"
             else:
                 iface = iface_name[v[1]]
