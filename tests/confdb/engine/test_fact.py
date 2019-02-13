@@ -62,6 +62,7 @@ OUT3 = """interfaces
         admin-status
             false"""
 
+
 @pytest.mark.parametrize("conf,input,query,out_conf,output", [
     # Fixed
     (CONF1, {}, "Fact('interfaces', 'Fa 0/4', 'admin-status', 'true')", OUT1, [{}]),
@@ -82,4 +83,3 @@ def test_bound(conf, input, query, out_conf, output):
     e = Engine().with_db(db)
     assert list(e.query(query, **input)) == output
     assert db.marshall("indent") == out_conf
-
