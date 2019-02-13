@@ -15,9 +15,9 @@ class PredicateTransformer(ast.NodeTransformer):
         self.engine = engine
         super(PredicateTransformer, self).__init__()
 
-    # def visit(self, node):
-    #     print node, node.__class__.__name__
-    #     return super(PredicateTransformer, self).visit(node)
+    def visit(self, node):
+        # print node, node.__class__.__name__
+        return super(PredicateTransformer, self).visit(node)
 
     def visit_Call(self, node):
         return ast.Call(
@@ -66,3 +66,19 @@ class PredicateTransformer(ast.NodeTransformer):
             starargs=None,
             kwargs=None
         )
+
+    def visit_UnaryOp(self, node):
+        if isinstance(node.op, ast.Not):
+            return ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id="self", ctx=ast.Load()),
+                    attr="op_Not",
+                    ctx=ast.Load()
+                ),
+                args=[self.visit(node.operand)],
+                keywords=[],
+                starargs=None,
+                kwargs=None
+            )
+
+        return node

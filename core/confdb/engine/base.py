@@ -104,7 +104,7 @@ class Engine(object):
         :param _input:
         :return:
         """
-        raise StopIteration
+        return iter(())
 
     def fn_Var(self, name):
         """
@@ -203,3 +203,15 @@ class Engine(object):
                     yield nctx
                 else:
                     yield ctx
+
+    def op_Not(self, g):
+        """
+        Context negation. Yields empty context if input is empty, Drops input otherwise
+        :param g:
+        :return:
+        """
+
+        try:
+            next(g)
+        except StopIteration:
+            yield {}
