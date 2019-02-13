@@ -261,3 +261,20 @@ class Engine(object):
 
         # Deduplicate
         return self.iter_unique(g())
+
+    def fn_Fact(self, _input, *args):
+        """
+        Set Fact to database
+        :param _input:
+        :param args: Path of fact, eigther constants or bound variables
+        :return:
+        """
+        def resolve(c, n):
+            if isinstance(n, Var):
+                return n.get(c)
+            return n
+
+        assert self.db, "Current database is not set"
+        for ctx in _input:
+            self.db.insert([resolve(ctx, a) for a in args])
+            yield ctx
