@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,56 +20,56 @@ class Script(BaseScript):
 
     rx_mode1 = re.compile(
         r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
-    rx_mode2 = re.compile("^\s*(?P<mode>\S+STP)\s+\(running\)")
+    rx_mode2 = re.compile(r"^\s*(?P<mode>\S+STP)\s+\(running\)")
     rx_mstp = re.compile(
         r"^\s*Name: (?P<region>\S+)\s*\n"
         r"^\s*Revision: (?P<revision>\d+)", re.MULTILINE)
     rx_inst = re.compile(
-        "MST (?P<id>\d+) Vlans Mapped: (?P<vlans>.+?)\n"
-        "^\s*CST Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<root_id>\S+)\s*\n"
-        "^\s*Path Cost\s+\d+\s*\n"
-        "^\s*Root Port\s+\S+\s*\n"
-        "^\s*.+\n"
-        "(^\s*.+\n)?"
-        "^\s*Bridge ID\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+        r"MST (?P<id>\d+) Vlans Mapped: (?P<vlans>.+?)\n"
+        r"^\s*CST Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
+        r"^\s*Address\s+(?P<root_id>\S+)\s*\n"
+        r"^\s*Path Cost\s+\d+\s*\n"
+        r"^\s*Root Port\s+\S+\s*\n"
+        r"^\s*.+\n"
+        r"(^\s*.+\n)?"
+        r"^\s*Bridge ID\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
+        r"^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
     rx_inst1 = re.compile(
-        "^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<root_id>\S+)\s*\n"
-        "^\s*Cost\s+\d+\s*\n"
-        "^\s*Port\s+\S+\s*\n"
-        "^\s*.+\n"
-        "^\s*Bridge ID\s+ Priority\s+(?P<bridge_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+        r"^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
+        r"^\s*Address\s+(?P<root_id>\S+)\s*\n"
+        r"^\s*Cost\s+\d+\s*\n"
+        r"^\s*Port\s+\S+\s*\n"
+        r"^\s*.+\n"
+        r"^\s*Bridge ID\s+ Priority\s+(?P<bridge_priority>\d+)\s*\n"
+        r"^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
     rx_inst2 = re.compile(
-        "^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<root_id>\S+)\s*\n"
-        "^\s*This switch is the root\s*\n", re.MULTILINE)
+        r"^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
+        r"^\s*Address\s+(?P<root_id>\S+)\s*\n"
+        r"^\s*This switch is the root\s*\n", re.MULTILINE)
     rx_inst3 = re.compile(
-        "^\s*The bridge has priority (?P<bridge_priority>\d+), "
+        r"^\s*The bridge has priority (?P<bridge_priority>\d+), "
         r"address (?P<bridge_id>\S+)\s*\n"
         r"^\s*Configured hello time \d+, max age \d+, forward time \d+\s*\n"
         r"^\s*We are the root of the spanning tree\s*\n",
         re.MULTILINE)
     rx_inst4 = re.compile(
-        "^\s*The bridge has priority (?P<bridge_priority>\d+), "
+        r"^\s*The bridge has priority (?P<bridge_priority>\d+), "
         r"address (?P<bridge_id>\S+)\s*\n"
         r"^\s*Configured hello time \d+, max age \d+, forward time \d+\s*\n"
-        "^\s*The root bridge has priority (?P<root_priority>\d+), "
+        r"^\s*The root bridge has priority (?P<root_priority>\d+), "
         r"address (?P<root_id>\S+)\s*\n",
         re.MULTILINE)
-    rx_vlans = re.compile("^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
+    rx_vlans = re.compile(r"^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port1 = re.compile(
-        "^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
-        "^\s*State: (?P<state>\S+)\s+Role: (?P<role>\S+)\s*\n"
-        "^\s*Port id:\s+(?P<port_id>\S+)\s+Port cost: (?P<priority>\d+)\s*\n"
-        "^\s*.+\n"
-        "^\s*Designated bridge Priority\s*: "
-        "(?P<designated_bridge_priority>\S+)\s+Address: "
-        "(?P<designated_bridge_id>\S+)\s*\n"
-        "^\s*Designated port id:\s+(?P<designated_port_id>\S+)\s+"
-        "Designated path cost: \d+\s*\n",
+        r"^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
+        r"^\s*State: (?P<state>\S+)\s+Role: (?P<role>\S+)\s*\n"
+        r"^\s*Port id:\s+(?P<port_id>\S+)\s+Port cost: (?P<priority>\d+)\s*\n"
+        r"^\s*.+\n"
+        r"^\s*Designated bridge Priority\s*: "
+        r"(?P<designated_bridge_priority>\S+)\s+Address: "
+        r"(?P<designated_bridge_id>\S+)\s*\n"
+        r"^\s*Designated port id:\s+(?P<designated_port_id>\S+)\s+"
+        r"Designated path cost: \d+\s*\n",
         re.MULTILINE)
     rx_port2 = re.compile(
         r"^\s*Port \d+ \((?P<interface>\S+)\) of RSTP is (?P<state>\S+)\s*\n"

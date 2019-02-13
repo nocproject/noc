@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -62,6 +62,7 @@ class Script(BaseScript):
         "Giga-FX-SFP": "physical",
         "Giga-Combo-TX": "physical",
         "Giga-Combo-FX": "physical",
+        "10Giga-FX": "physical",
         "EtherSVI": "SVI",
         "Null": "null"
     }
@@ -247,7 +248,7 @@ class Script(BaseScript):
             interfaces += [iface]
         return interfaces
 
-    def execute(self):
+    def execute_cli(self):
         try:
             c = self.cli("show interfaces description")
         except self.CLISyntaxError:
