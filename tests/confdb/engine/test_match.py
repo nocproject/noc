@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Test engine's match function
+# Test engine's Match function
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -52,7 +52,7 @@ CONF1 = [
     (CONF1, "Set(x=['Fa 0/1', 'Fa 0/2']) and Match('interface', x, 'description', _y)", [
         {"x": "Fa 0/1"},
         {"x": "Fa 0/2"}
-    ]),
+    ])
 ])
 def test_match(conf, query, output):
     db = ConfDB()

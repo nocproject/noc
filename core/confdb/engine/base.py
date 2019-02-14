@@ -153,6 +153,12 @@ class Engine(object):
             yield nctx
 
     def fn_Match(self, _input, *args):
+        """
+        Match *args against database. Bind unbound variables on match
+        :param _input:
+        :param args:
+        :return:
+        """
         def match_token(node, c, current, rest):
             f = node.find(current)
             if f is not None:
@@ -189,6 +195,50 @@ class Engine(object):
         assert self.db, "Current database is not set"
         for ctx in _input:
             for nctx in match(self.db.db, ctx, args):
+                yield nctx
+
+    def fn_NotMatch(self, _input, *args):
+        """
+        Check *args is not in database. Bind unbound variables
+        :param _input:
+        :param args:
+        :return:
+        """
+        def not_match_token(node, c, current, rest):
+            f = node.find(current)
+            if f and rest:
+                for wctx in not_match(f, c, rest):
+                    yield wctx
+            elif not f and not rest:
+                yield c  # Not found
+
+        def not_match_unbound(node, c, current, rest):
+            for f in node.iter_nodes():
+                nctx = c.copy()
+                current.set(nctx, f.token)
+                if rest:
+                    for wctx in not_match(f, nctx, rest):
+                        yield wctx
+                else:
+                    yield nctx
+
+        def not_match(node, c, where):
+            current = where[0]
+            rest = where[1:]
+            if isinstance(current, Var):
+                if current.is_bound(c):
+                    for wctx in not_match_token(node, c, current.get(c), rest):
+                        yield wctx
+                else:
+                    for wctx in not_match_unbound(node, c, current, rest):
+                        yield wctx
+            else:
+                for wctx in not_match_token(node, c, current, rest):
+                    yield wctx
+
+        assert self.db, "Current database is not set"
+        for ctx in _input:
+            for nctx in not_match(self.db.db, ctx, args):
                 yield nctx
 
     def fn_Re(self, _input, pattern, name, ignore_case=None):
