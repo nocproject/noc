@@ -13,6 +13,7 @@ import itertools
 import types
 import re
 # NOC modules
+from noc.core.vlan import has_vlan
 from .transformer import PredicateTransformer
 from .var import Var
 
@@ -75,6 +76,18 @@ class Engine(object):
             if h not in seen:
                 yield ctx
                 seen.add(h)
+
+    @staticmethod
+    def resolve_var(ctx, v):
+        """
+        Resolve bound variable if necessary
+        :param ctx:
+        :param v:
+        :return:
+        """
+        if isinstance(v, Var):
+            return v.get(ctx)
+        return v
 
     def fn_Set(self, _input, **kwargs):
         """
@@ -140,15 +153,10 @@ class Engine(object):
         :param args:
         :return:
         """
-        def resolve(c, v):
-            if isinstance(v, Var):
-                return v.get(c)
-            return v
-
         assert isinstance(name, Var)
         for ctx in _input:
             nctx = ctx.copy()
-            fmt_args = tuple(resolve(nctx, a) for a in args)
+            fmt_args = tuple(self.resolve_var(nctx, a) for a in args)
             name.set(nctx, fmt % fmt_args)
             yield nctx
 
@@ -319,12 +327,25 @@ class Engine(object):
         :param args: Path of fact, eigther constants or bound variables
         :return:
         """
-        def resolve(c, n):
-            if isinstance(n, Var):
-                return n.get(c)
-            return n
-
         assert self.db, "Current database is not set"
         for ctx in _input:
-            self.db.insert([resolve(ctx, a) for a in args])
+            self.db.insert([self.resolve_var(ctx, a) for a in args])
             yield ctx
+
+    def fn_HasVLAN(self, _input, vlan_filter, vlan_id):
+        """
+        Check `vlan_id` is within `vlan_filter` expression
+        :param _input:
+        :param vlan_filter:
+        :param vlan_id:
+        :return:
+        """
+        for ctx in _input:
+            vf = self.resolve_var(ctx, vlan_filter)
+            if not vf:
+                continue
+            vlan = self.resolve_var(ctx, vlan_id)
+            if not vlan:
+                continue
+            if has_vlan(vf, vlan):
+                yield ctx
