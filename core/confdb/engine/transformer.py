@@ -43,7 +43,6 @@ class PredicateTransformer(ast.NodeTransformer):
     def visit_Name(self, node):
         """
         Convert Name(id=name) to self.fn_Var(name)
-        
         :param node:
         :return:
         """
