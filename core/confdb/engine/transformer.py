@@ -15,46 +15,38 @@ class PredicateTransformer(ast.NodeTransformer):
         self.engine = engine
         super(PredicateTransformer, self).__init__()
 
-    def visit(self, node):
-        # print node, node.__class__.__name__
-        return super(PredicateTransformer, self).visit(node)
-
-    def visit_Call(self, node):
+    def visit_Call(self, node, _input=None):
+        if not _input:
+            _input = ast.Name(id="_input", ctx=ast.Load())
         return ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id="self", ctx=ast.Load()),
                 attr="fn_%s" % node.func.id,
                 ctx=ast.Load()
             ),
-            args=[ast.Name(id="_input", ctx=ast.Load())] + [self.visit(x) for x in node.args],
-            keywords=node.keywords,
+            args=[_input] + [self.visit(x) for x in node.args],
+            keywords=[ast.keyword(arg=k.arg, value=self.visit(k.value)) for k in node.keywords],
             starargs=node.starargs,
             kwargs=node.kwargs
         )
 
     def visit_BoolOp(self, node):
-        def get_call_chain(chain):
+        def get_and_call_chain(chain):
             if len(chain) == 1:
-                i = ast.Name(id="_input", ctx=ast.Load())
-            else:
-                i = get_call_chain(chain[1:])
-            return ast.Call(
-                func=ast.Attribute(
-                    value=ast.Name(id="self", ctx=ast.Load()),
-                    attr="fn_%s" % chain[0].func.id,
-                    ctx=ast.Load()
-                ),
-                args=[i] + [self.visit(x) for x in chain[0].args],
-                keywords=chain[0].keywords,
-                starargs=chain[0].starargs,
-                kwargs=chain[0].kwargs
-            )
+                return self.visit_Call(chain[0])
+            return self.visit_Call(chain[0], get_and_call_chain(chain[1:]))
 
         if isinstance(node.op, ast.And):
-            return get_call_chain(list(reversed(node.values)))
+            return get_and_call_chain(list(reversed(node.values)))
         return node
 
     def visit_Name(self, node):
+        """
+        Convert Name(id=name) to self.fn_Var(name)
+        
+        :param node:
+        :return:
+        """
         return ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id="self", ctx=ast.Load()),
