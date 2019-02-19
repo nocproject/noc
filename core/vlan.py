@@ -10,6 +10,9 @@
 import re
 # Third-party modules
 import six
+# NOC modules
+from noc.lib.validators import is_vlan
+
 
 rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 
@@ -23,6 +26,8 @@ def has_vlan(vlan_filter, vlan):
     """
     if not isinstance(vlan, six.integer_types):
         vlan = int(vlan)
+    if not is_vlan(vlan):
+        return False
     for p in vlan_filter.split(","):
         p = p.strip()
         if not p:
