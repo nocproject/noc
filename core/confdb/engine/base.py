@@ -18,6 +18,14 @@ from .transformer import PredicateTransformer
 from .var import Var
 
 
+def visitor(args):
+    def wrap(f):
+        f.visitor = args
+        return f
+
+    return wrap
+
+
 class Engine(object):
     def __init__(self):
         self.db = None
@@ -153,6 +161,7 @@ class Engine(object):
         """
         return Var(name)
 
+    @visitor("vx")
     def fn_Sprintf(self, _input, name, fmt, *args):
         """
         :param _input:
@@ -164,8 +173,9 @@ class Engine(object):
         assert isinstance(name, Var)
         for ctx in _input:
             nctx = ctx.copy()
+            f = self.resolve_var(nctx, fmt)
             fmt_args = tuple(self.resolve_var(nctx, a) for a in args)
-            name.set(nctx, fmt % fmt_args)
+            name.set(nctx, f % fmt_args)
             yield nctx
 
     def fn_Match(self, _input, *args):
@@ -340,6 +350,7 @@ class Engine(object):
             self.db.insert([self.resolve_var(ctx, a) for a in args])
             yield ctx
 
+    @visitor("xx")
     def fn_HasVLAN(self, _input, vlan_filter, vlan_id):
         """
         Check `vlan_id` is within `vlan_filter` expression
@@ -357,3 +368,19 @@ class Engine(object):
                 continue
             if has_vlan(vf, vlan):
                 yield ctx
+
+    @visitor("x")
+    def fn_Filter(self, _input, expr):
+        """
+        Pass context only if `expr` is evaluated as true
+        :param _input:
+        :param expr:
+        :return:
+        """
+        for ctx in _input:
+            if callable(expr):
+                if not expr(ctx):
+                    continue
+            elif not expr:
+                continue
+            yield ctx

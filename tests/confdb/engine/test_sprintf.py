@@ -34,7 +34,9 @@ from noc.core.confdb.engine.base import Engine
     ({}, "Set(x=1) and Sprintf(y, 'x = %s', x) and Set(x=2) and Sprintf(y, 'x = %s', x)", [{"x": 2, "y": "x = 2"}]),
     ({}, "Set(x=1) and Sprintf(y, 'x = %s', x) and Set(x=2) and Sprintf(z, 'x = %s', x)", [{"x": 2, "y": "x = 1", "z": "x = 2"}]),
     # Output to placeholder
-    ({"x": [1, 2]}, "Sprintf(_y, 'x = %s', x)", [{"x": 1}, {"x": 2}])
+    ({"x": [1, 2]}, "Sprintf(_y, 'x = %s', x)", [{"x": 1}, {"x": 2}]),
+    # Expression
+    ({"x": 1}, "Sprintf(y, 'y = %s', x + 1)", [{"x": 1, "y": "y = 2"}])
 ])
 def test_sprintf(input, query, output):
     e = Engine()

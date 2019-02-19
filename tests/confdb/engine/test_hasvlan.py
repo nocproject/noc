@@ -12,8 +12,6 @@ from noc.core.confdb.engine.base import Engine
 
 
 @pytest.mark.parametrize("input,query,output", [
-    # Unbound variables
-    ({}, "HasVLAN(x, y)", []),
     # Constants
     ({}, "HasVLAN('5', 1)", []),
     ({}, "HasVLAN('5', 5)", [{}]),

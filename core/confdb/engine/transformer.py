@@ -8,6 +8,7 @@
 
 # Python modules
 import ast
+import itertools
 
 CVAR_NAME = "_ctx"
 
@@ -28,18 +29,36 @@ class PredicateTransformer(ast.NodeTransformer):
             body=node
         )
 
+    def wrap_visitor(self, node):
+        return self.visit(node)
+
+    def wrap_expr(self, node):
+        return self.wrap_callable(ExpressionTransformer().visit(node))
+
+    def visit_args(self, fn, args):
+        if not args:
+            return args
+        vx = getattr(fn, "visitor", None)
+        if not vx:
+            return [self.wrap_visitor(x) for x in args]
+        wrap = {
+            "x": self.wrap_expr,
+            "v": self.wrap_visitor
+        }
+        return [wrap[v](a) for v, a in itertools.izip_longest(vx, args, fillvalue=vx[-1])]
+
     def visit_Call(self, node, _input=None):
         if not _input:
             _input = ast.Name(id="_input", ctx=ast.Load())
-        expr_transformer = ExpressionTransformer()
+        fn = getattr(self.engine, "fn_%s" % node.func.id)
         return ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id="self", ctx=ast.Load()),
                 attr="fn_%s" % node.func.id,
                 ctx=ast.Load()
             ),
-            args=[_input] + [self.visit(x) for x in node.args],
-            keywords=[ast.keyword(arg=k.arg, value=self.wrap_callable(expr_transformer.visit(k.value))) for k in node.keywords],
+            args=[_input] + self.visit_args(fn, node.args),
+            keywords=[ast.keyword(arg=k.arg, value=self.wrap_expr(k.value)) for k in node.keywords],
             starargs=node.starargs,
             kwargs=node.kwargs
         )
@@ -90,7 +109,11 @@ class PredicateTransformer(ast.NodeTransformer):
 
 
 class ExpressionTransformer(ast.NodeTransformer):
+    RESERVED_NAMES = {"True", "False", "None"}
+
     def visit_Name(self, node):
+        if node.id in self.RESERVED_NAMES:
+            return node
         return ast.Subscript(
             value=ast.Name(id=CVAR_NAME, ctx=ast.Load()),
             slice=ast.Index(value=ast.Str(s=node.id)),
