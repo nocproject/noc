@@ -9,15 +9,29 @@
 # Python modules
 import ast
 
+CVAR_NAME = "_ctx"
+
 
 class PredicateTransformer(ast.NodeTransformer):
     def __init__(self, engine):
         self.engine = engine
         super(PredicateTransformer, self).__init__()
 
+    def wrap_callable(self, node):
+        return ast.Lambda(
+            args=ast.arguments(
+                args=[ast.Name(id=CVAR_NAME, ctx=ast.Param())],
+                vararg=None,
+                kwarg=None,
+                defaults=[]
+            ),
+            body=node
+        )
+
     def visit_Call(self, node, _input=None):
         if not _input:
             _input = ast.Name(id="_input", ctx=ast.Load())
+        expr_transformer = ExpressionTransformer()
         return ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id="self", ctx=ast.Load()),
@@ -25,7 +39,7 @@ class PredicateTransformer(ast.NodeTransformer):
                 ctx=ast.Load()
             ),
             args=[_input] + [self.visit(x) for x in node.args],
-            keywords=[ast.keyword(arg=k.arg, value=self.visit(k.value)) for k in node.keywords],
+            keywords=[ast.keyword(arg=k.arg, value=self.wrap_callable(expr_transformer.visit(k.value))) for k in node.keywords],
             starargs=node.starargs,
             kwargs=node.kwargs
         )
@@ -73,3 +87,12 @@ class PredicateTransformer(ast.NodeTransformer):
             )
 
         return node
+
+
+class ExpressionTransformer(ast.NodeTransformer):
+    def visit_Name(self, node):
+        return ast.Subscript(
+            value=ast.Name(id=CVAR_NAME, ctx=ast.Load()),
+            slice=ast.Index(value=ast.Str(s=node.id)),
+            ctx=ast.Load()
+        )

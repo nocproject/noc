@@ -40,13 +40,15 @@ class Engine(object):
         self.db = db
         return self
 
-    def iter_product(self, **kwargs):
+    def iter_product(self, _ctx, **kwargs):
         if kwargs:
             names = []
             params = []
             for k in kwargs:
                 names += [k]
                 v = kwargs[k]
+                if callable(v):
+                    v = v(_ctx)
                 if not isinstance(v, list):
                     v = [v]
                 params += [v]
@@ -56,7 +58,7 @@ class Engine(object):
             yield {}
 
     def iter_initial(self, **kwargs):
-        for ctx in self.iter_product(**kwargs):
+        for ctx in self.iter_product({}, **kwargs):
             yield ctx
 
     @staticmethod
@@ -87,6 +89,8 @@ class Engine(object):
         """
         if isinstance(v, Var):
             return v.get(ctx)
+        if callable(v):
+            return v(ctx)
         return v
 
     def fn_Set(self, _input, **kwargs):
@@ -98,11 +102,15 @@ class Engine(object):
         :param kwargs:
         :return:
         """
-        for ctx in _input:
-            for pctx in self.iter_product(**kwargs):
-                nctx = ctx.copy()
-                nctx.update(pctx)
-                yield nctx
+        def g():
+            for ctx in _input:
+                for pctx in self.iter_product(ctx, **kwargs):
+                    nctx = ctx.copy()
+                    nctx.update(pctx)
+                    yield nctx
+
+        # Deduplicate
+        return self.iter_unique(g())
 
     def fn_Dump(self, _input, message=None):
         """
