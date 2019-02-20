@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# Test engine's NotMatch function
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Third-party modules
+import pytest
+# NOC modules
+from noc.core.confdb.engine.base import Engine
+from noc.core.confdb.db.base import ConfDB
+
+CONF1 = [
+    ["interfaces", "Fa 0/1", "description", "First interface"],
+    ["interfaces", "Fa 0/2", "description", "Second interface"],
+    ["interfaces", "Fa 0/3", "description", "Third interface"]
+]
+
+
+@pytest.mark.parametrize("conf,query,output", [
+    # Match incomplete
+    (CONF1, "NotMatch('interfaces', x, 'description')", []),
+    (CONF1, "NotMatch('interfaces', x, 'admin-status')", [
+        {"x": "Fa 0/1"},
+        {"x": "Fa 0/2"},
+        {"x": "Fa 0/3"}
+    ]),
+    # # Complete match (empty context)
+    (CONF1, "NotMatch('interfaces', 'Fa 0/1', 'description', 'First interface')", []),
+    (CONF1, "NotMatch('interfaces', 'Fa 0/1', 'description', 'First interface!')", [{}]),
+    # Match last unbound variable
+    (CONF1, "NotMatch('interface', 'Fa 0/1', 'description', x)", []),
+    # Match two unbound variables
+    (CONF1, "Match('interface', x, 'description', y)", []),
+    #
+    # Match placeholder
+    (CONF1, "NotMatch('interfaces', _x, 'admin-status')", [{}, {}, {}])
+])
+def test_match(conf, query, output):
+    db = ConfDB()
+    db.insert_bulk(CONF1)
+    e = Engine().with_db(db)
+    assert list(e.query(query)) == output

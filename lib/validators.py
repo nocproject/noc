@@ -392,7 +392,7 @@ def is_vlan(v):
     try:
         v = int(v)
         return 1 <= v <= 4095
-    except Exception:
+    except ValueError:
         return False
 
 

@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 
 
 class ESNormalizer(BaseNormalizer):
