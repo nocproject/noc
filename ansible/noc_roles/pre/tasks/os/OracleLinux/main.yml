@@ -7,7 +7,7 @@
   become: "True"
   when:
     - http_proxy is defined
-    - "http_proxy"
+    - http_proxy | length
   tags:
     - config
 
