@@ -57,7 +57,7 @@ class Script(BaseScript):
             caps = 0
             for c in i[4].split(","):
                 c = c.strip()
-                if c:
+                if c and c != "not":
                     caps |= {
                         "O": 1, "P": 2, "B": 4,
                         "W": 8, "R": 16, "r": 16, "T": 32,
@@ -94,7 +94,7 @@ class Script(BaseScript):
                 "local_interface": i[0],
                 "neighbors": [neighbor]
             }]
-        if t == []:
+        if not t:
             for iface in self.scripts.get_interface_status():
                 c = self.cli(
                     "show lldp neighbors interface %s" % iface["interface"],
@@ -121,6 +121,9 @@ class Script(BaseScript):
                     if match.group("caps").strip():
                         for c in match.group("caps").split():
                             c = c.strip()
+                            if c in {"not", "advertised"}:
+                                # not caps
+                                break
                             if c and (c != "--"):
                                 caps |= {
                                     "O": 1, "P": 2, "B": 4,

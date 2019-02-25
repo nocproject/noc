@@ -223,7 +223,7 @@ class Script(BaseScript):
             if iface["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
                 c = self.cli("show vlan interface %s" % iface["name"])
-                t = parse_table(c, allow_wrap=True)
+                t = parse_table(c, allow_wrap=True, n_row_delim=",")
                 for i in t:
                     if i[1] == "Access":
                         sub["untagged_vlan"] = int(i[4])
