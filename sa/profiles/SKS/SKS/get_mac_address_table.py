@@ -24,7 +24,7 @@ class Script(BaseScript):
     rx_line2 = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+"
         r"(?P<type>\S+)", re.MULTILINE)
-    rx_status = re.compile("Vlan\s+Mac Address\s+Type\s+Ports", re.MULTILINE)
+    rx_status = re.compile(r"Vlan\s+Mac Address\s+Type\s+Ports", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []

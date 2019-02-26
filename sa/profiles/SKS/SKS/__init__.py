@@ -3,7 +3,7 @@
 # Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - http://skss.ru/)
 # OS:     SKS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ class Profile(BaseProfile):
         r"tacacs(-server | accounting-server )(encrypt-key|key) \d+ \S+\n"
     ]
 
-    rx_iface = re.compile("^[fgvn]\d+\S*$")
+    rx_iface = re.compile(r"^[fgvn]\d+\S*$")
 
     def convert_interface_name(self, interface):
         if bool(self.rx_iface.search(interface)):
@@ -48,3 +48,7 @@ class Profile(BaseProfile):
             if interface.startswith("n"):
                 return "Null" + interface[1:]
         return interface
+
+    def setup_session(self, script):
+        # additional command to `terminal datadump`
+        script.cli("terminal length 0", ignore_errors=True)

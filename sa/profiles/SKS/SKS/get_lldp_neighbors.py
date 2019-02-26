@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,14 +25,14 @@ class Script(BaseScript):
         r"^port id: (?P<port_id>\S+)\s*\n"
         r"^port description:(?P<port_descr>.*)\n"
         r"^system name:(?P<system_name>.*)\n"
-        r"^system description:(?P<system_descr>.*)\n"
+        r"^system description:(?P<system_descr>(.*\n)*?)"
         r"^Time remaining: \d+\s*\n"
         r"^system capabilities:.*\n"
         r"^enabled capabilities:(?P<caps>.*?)\n",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             v = self.cli("show lldp neighbors")
@@ -57,7 +57,7 @@ class Script(BaseScript):
             caps = 0
             for c in i[4].split(","):
                 c = c.strip()
-                if c:
+                if c and c != "not":
                     caps |= {
                         "O": 1, "P": 2, "B": 4,
                         "W": 8, "R": 16, "r": 16, "T": 32,
@@ -94,15 +94,15 @@ class Script(BaseScript):
                 "local_interface": i[0],
                 "neighbors": [neighbor]
             }]
-        if t == []:
+        if not t:
             for iface in self.scripts.get_interface_status():
                 c = self.cli(
                     "show lldp neighbors interface %s" % iface["interface"],
                     ignore_errors=True
                 )
                 c = c.replace("\n\n", "\n")
-                match = self.rx_neighbor.search(c)
-                if match:
+                neighbors = []
+                for match in self.rx_neighbor.finditer(c):
                     chassis_id = match.group("chassis_id")
                     if is_ipv4(chassis_id) or is_ipv6(chassis_id):
                         chassis_id_subtype = 5
@@ -121,6 +121,9 @@ class Script(BaseScript):
                     if match.group("caps").strip():
                         for c in match.group("caps").split():
                             c = c.strip()
+                            if c in {"not", "advertised"}:
+                                # not caps
+                                break
                             if c and (c != "--"):
                                 caps |= {
                                     "O": 1, "P": 2, "B": 4,
@@ -143,8 +146,10 @@ class Script(BaseScript):
                         neighbor["remote_system_name"] = system_name
                     if bool(system_descr):
                         neighbor["remote_system_description"] = system_descr
+                    neighbors += [neighbor]
+                if neighbors:
                     r += [{
                         "local_interface": iface["interface"],
-                        "neighbors": [neighbor]
+                        "neighbors": neighbors
                     }]
         return r
