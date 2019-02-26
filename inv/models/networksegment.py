@@ -442,37 +442,18 @@ class NetworkSegment(Document):
         Return id of this and all nested segments
         :return:
         """
-        r = [self.id]
-        r += [
-            d["_id"] for d in
-            NetworkSegment._get_collection().aggregate([
-                {
-                    "$match": {
-                        "_id": self.id
-                    }
-                },
-                {
-                    "$graphLookup": {
-                        "from": "noc.networksegments",
-                        "startWith": "$_id",
-                        "connectFromField": "_id",
-                        "connectToField": "parent",
-                        "as": "nested",
-                        "maxDepth": 10
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$nested"
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": "$nested._id"
-                    }
-                }
-            ])]
-        return r
+        # $graphLookup hits 100Mb memory limit. Do not use it
+        seen = {self.id}
+        wave = {self.id}
+        max_level = 10
+        coll = NetworkSegment._get_collection()
+        for _ in range(max_level):
+            # Get next wave
+            wave = set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
+            if not wave:
+                break
+            seen |= wave
+        return list(seen)
 
     def ensure_discovery_jobs(self):
         if self.profile and self.profile.discovery_interval > 0:
