@@ -6,7 +6,7 @@
     line: "proxy={{ http_proxy }}"
   when:
     - http_proxy is defined
-    - http_proxy
+    - http_proxy | length
   become: "True"
   tags:
     - config
