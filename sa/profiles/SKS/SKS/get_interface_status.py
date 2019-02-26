@@ -26,7 +26,7 @@ class Script(BaseScript):
         r"^(?P<port>[fgt]\d\S*).*?(?P<oper_status>up|down).*\n",
         re.MULTILINE)
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         r = []
         try:
             c = self.cli("show interfaces status")
