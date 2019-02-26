@@ -44,10 +44,10 @@
     group: root
 
 - name: download pip cache
-  command: "/tmp/mc mirror {{ minio_bucket }}/pip {{ pip_cache_dir }}"
+  command: "/tmp/mc mirror {{ minio_bucket }}/pip {{ pip_cache_dir }} --overwrite"
 
 - name: download pkg cache
-  command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{ pkg_cache_dir }}"
+  command: "/tmp/mc mirror {{ minio_bucket }}/pkgs {{ pkg_cache_dir }} --overwrite"
 
 - name: Enable pkg cache
   lineinfile:
