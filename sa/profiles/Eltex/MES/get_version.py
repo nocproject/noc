@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -53,14 +54,18 @@ class Script(BaseScript):
         "54": "MES-5248",
         "59": "MES-2124P",
         "74": "MES-5324",
+        "75": "MES-2124F",
+        "76": "MES-2324",
+        "78": "MES-2324FB",
         "81": "MES-3324F",
         "88": "MES-2308",
-        "89": "MES-2308P"
+        "89": "MES-2308P",
+        "92": "MES-2324P"
     }
 
     def execute_snmp(self, **kwargs):
         try:
-            platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
+            platform = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
             platform = platform.split('.')[8]
             platform = self.platforms.get(platform.split(')')[0])
             version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
