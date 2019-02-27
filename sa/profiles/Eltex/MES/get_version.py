@@ -56,9 +56,11 @@ class Script(BaseScript):
         "74": "MES-5324",
         "75": "MES-2124F",
         "76": "MES-2324",
+        "78": "MES-2324FB",
         "81": "MES-3324F",
         "88": "MES-2308",
-        "89": "MES-2308P"
+        "89": "MES-2308P",
+        "92": "MES-2324P"
     }
 
     def execute_snmp(self, **kwargs):
