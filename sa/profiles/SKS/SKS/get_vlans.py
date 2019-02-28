@@ -18,8 +18,8 @@ class Script(BaseScript):
     interface = IGetVlans
 
     rx_vlan = re.compile(
-        "^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
-    rx_status = re.compile("VLAN\s+Status\s+Name\s+Ports", re.MULTILINE)
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)", re.MULTILINE)
+    rx_status = re.compile(r"VLAN\s+Status\s+Name\s+Ports", re.MULTILINE)
 
     def execute(self):
         r = []
