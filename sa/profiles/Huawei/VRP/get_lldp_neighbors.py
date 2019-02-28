@@ -94,6 +94,7 @@ class Script(BaseScript):
                     "chassisid": "remote_chassis_id",
                     "port id type": "remote_port_subtype",
                     "portidsubtype": "remote_port_subtype",
+                    "port id subtype": "remote_port_subtype",
                     "port id": "remote_port",
                     "portid": "remote_port",
                     "port description": "remote_port_description",
