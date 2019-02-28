@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # BDCOM_xPON.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -10,27 +10,26 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.text import parse_table
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
     name = "BDCOM.xPON.get_interfaces"
-    cache = True
     interface = IGetInterfaces
     TIMEOUT = 300
 
-    rx_int1 = re.compile(
-        r"(?P<ifname>^g\S+|epon\S+)(?:\s\s\s|\s)(?P<desc>(?:\S+|\s))\s+(?P<status>\S+)"
-        r"(?:\s*\d+|\s*T\S+|\s)(?:\s*(?P<duplex>full|auto)|\s)(?:\s*auto|\s*\d+\S+|\s)"
-        r"\s+(?P<type>\S+)",
-        re.MULTILINE)
-
-    rx_svi = re.compile(
-        r"(?P<ifname>^VLAN\d+).+Address (?P<ip>\S+) mask (?P<mask>\S+)",
-        re.MULTILINE | re.DOTALL)
-
+    rx_int = re.compile(
+        r"^(?P<ifname>\S+\d+) is (?P<admin_status>up|down|administratively down), line protocol is (?P<oper_status>up|down)\s*\n"
+        r"^\s+Ifindex is (?P<snmp_ifindex>\d+)(, unique port number is \d+)?\s*\n"
+        r"(^\s+Description: (?P<descr>.+)\n)?"
+        r"^\s+Hardware is (?P<type>\S+), [Aa]ddress is (?P<mac>\S+)\s*\(.+\)\s*\n"
+        r"(^\s+Interface address is (?P<ip>\S+)\s*\n)?"
+        r"^\s+MTU (?P<mtu>\d+) bytes",
+        re.MULTILINE
+    )
     rx_lldp = re.compile(
         r"(?P<ifname>^\S+):\nRx: (?P<lldp_rx>\S+)\nTx: (?P<lldp_tx>\S+)",
     )
@@ -38,47 +37,60 @@ class Script(BaseScript):
     types = {
         "GigaEthernet-TX": "physical",  # GigabitEthernet
         "GigaEthernet-FX": "physical",  # GigabitEthernet
+        "Giga-Combo-TX": "physical",  # GigabitEthernet Combo port
         "Giga-Combo-FX": "physical",  # GigabitEthernet Combo port
         "GigaEthernet-PON": "physical",  # EPON port
         "GigaEthernet-LLID": "other",  # EPON port
         "Giga-TX": "physical",  # GigabitEthernet
         "Giga-FX": "physical",  # GigabitEthernet
         "Giga-PON": "physical",  # EPON port
-        "Giga-LLID": "other"  # EPON port
+        "Giga-LLID": "other",  # EPON port
+        "EtherSVI": "SVI"
     }
 
     # @todo: snmp
-    # @todo: fix admin\open status
-    # @todo: vlans
     # @todo: cdp
     # @todo: gvrp
-    # @todo: mac
 
-    def execute(self):
+    def execute_cli(self):
         ifaces = []
-        tagged = []
-        untag = ""
-        v = self.cli("show interface brief")
-        for match in self.rx_int1.finditer(v):
+        v = self.cli("show interface")
+        for match in self.rx_int.finditer(v):
             ifname = self.profile.convert_interface_name(match.group("ifname"))
             typ = match.group('type')
             iftype = self.types[typ]
             i = {
                 "name": ifname,
                 "type": iftype,
-                "admin_status": "up" in match.group('status'),
-                "oper_status": "up" in match.group('status'),
-                "description": match.group('desc'),
-                "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": "up" in match.group('status'),
-                    "oper_status": "up" in match.group('status'),
-                    "description": match.group('desc'),
-                    "tagged_vlans": tagged,
-                    "untagged_vlan": untag,
-                }]
+                "admin_status": "up" in match.group('admin_status'),
+                "oper_status": "up" in match.group('oper_status'),
+                "snmp_ifindex": match.group('snmp_ifindex'),
+                "mac": match.group('mac')
             }
+            sub = {
+                "name": ifname,
+                "admin_status": "up" in match.group('admin_status'),
+                "oper_status": "up" in match.group('oper_status'),
+                "mac": match.group('mac'),
+                "mtu": match.group('mtu')
+            }
+            if match.group("descr") and match.group("descr").strip():
+                i["description"] = match.group("descr").strip()
+                sub["description"] = match.group("descr").strip()
+            if match.group("ip"):
+                sub["enabled_afi"] = ['IPv4']
+                sub["ipv4_addresses"] = [match.group('ip')]
+            if i["type"] == "physical":
+                sub["enabled_afi"] = ["BRIDGE"]
+                c = self.cli("show vlan interface %s" % match.group("ifname"))
+                for r in parse_table(c, allow_wrap=True):
+                    if is_int(r[2]):
+                        untagged = int(r[2])
+                        sub["untagged_vlan"] = untagged
+                        tagged = self.expand_rangelist(r[3])
+                        tagged = [item for item in tagged if int(item) != untagged]
+                        if tagged:
+                            sub["tagged_vlans"] = tagged
             if ifname.startswith('GigaEthernet'):
                 cmd1 = "show lldp interface %s" % ifname
                 cmd2 = self.cli(cmd1)
@@ -86,28 +98,6 @@ class Script(BaseScript):
                     if match1.group('lldp_rx') == "enabled" \
                             or match1.groups('lldp_tx') == "enabled":
                         i["enabled_protocols"] = ["LLDP"]
-            ifaces += [i]
-        match = self.rx_svi.search(self.cli("sh ip interface"))
-        if match:
-            vlan = match.group('ifname')
-            vlan = vlan[4:]
-            i = {
-                "name": match.group('ifname'),
-                "type": "SVI",
-                "oper_status": True,
-                "admin_status": True,
-                "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": match.group('ifname'),
-                    "oper_status": True,
-                    "admin_status": True,
-                    "vlan_ids": [int(vlan)],
-                    "enabled_afi": ['IPv4']
-                }]
-            }
-            addr = match.group("ip")
-            mask = match.group("mask")
-            ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
-            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            i["subinterfaces"] = [sub]
             ifaces += [i]
         return [{"interfaces": ifaces}]
