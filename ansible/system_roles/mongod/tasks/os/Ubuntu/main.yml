@@ -23,6 +23,24 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version != "18.04"
+  tags:
+    - repo
+
+- name: Add MongoDB repository on Ubuntu-18
+  apt_repository:
+    repo: "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/{{ mongod_version }} multiverse"
+    state: present
+    update_cache: "True"
+  register: mongo_repo_stat
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "18.04"
   tags:
     - repo
 

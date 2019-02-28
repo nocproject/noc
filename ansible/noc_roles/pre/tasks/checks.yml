@@ -42,7 +42,7 @@
         msg: |
           {{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role
       when:
-        - ansible_distribution_version is version_compare("16.10", '>')
+        - ansible_distribution_version is version_compare("18.04", '>')
 
     - name: Fail for a old release of Ubuntu
       fail:
