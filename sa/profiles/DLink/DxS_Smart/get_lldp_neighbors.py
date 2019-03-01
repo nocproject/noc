@@ -21,7 +21,7 @@ class Script(BaseScript):
         r = []
         n = {}
         per_port = {}
-        if self.snmp and self.access_profile.snmp_ro:
+        if self.has_snmp():
             try:
                 for oid, v in self.snmp.get_tables(["1.0.8802.1.1.2.1.4.1.1"]):
                     (seq, timemark, local_port, rem_index) = oid.split(".")
