@@ -63,7 +63,7 @@ class Script(BaseScript):
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?", re.MULTILINE | re.DOTALL
     )
     rx_sh_int_des = rx_in = re.compile(
-        r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+"
+        r"^(?P<ifname>\S+)\s+(?:(?:General|Trunk|Access \(\d+\))\s+)?(?P<oper_status>Up|Down)\s+"
         r"(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?", re.MULTILINE
     )
     rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
@@ -300,8 +300,13 @@ class Script(BaseScript):
             mac = None
             ifindex = 0
             name = res[0].strip()
-            if (self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
-                    self.match_version(version__regex="4\.0\.[4-7]$")):
+            if (
+                self.match_version(
+                    version__regex=r"[12]\.[15]\.4[4-9]"
+                ) or self.match_version(
+                    version__regex=r"4\.0\.[4-7]$"
+                )
+            ):
                 v = self.cli("show interface %s" % name)
                 time.sleep(0.5)
                 for match in self.rx_sh_int.finditer(v):
@@ -316,7 +321,7 @@ class Script(BaseScript):
                     else:
                         a_stat = True
                         o_stat = match.group("oper_status").lower() == "up"
-                        description = match.group("descr")
+                        description = match.group("descr").strip()
                         if not description:
                             description = ''
 
@@ -337,9 +342,10 @@ class Script(BaseScript):
                 "name": self.profile.convert_interface_name(name),
                 "admin_status": a_stat,
                 "oper_status": o_stat,
-                "description": description.strip(),
                 "enabled_afi": []
             }
+            if description:
+                sub["description"] = description
             if mtu:
                 sub["mtu"] = mtu
             if ifindex:
@@ -351,10 +357,11 @@ class Script(BaseScript):
                 "name": self.profile.convert_interface_name(name),
                 "admin_status": a_stat,
                 "oper_status": o_stat,
-                "description": description.strip(),
                 "enabled_protocols": [],
                 "subinterfaces": [sub]
             }
+            if description:
+                sub["description"] = description
             if ifindex:
                 iface["snmp_ifindex"] = ifindex
             if mac:
