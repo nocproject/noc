@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -33,45 +33,42 @@ class Script(BaseScript):
         gpon_port = "gpon"
         ethernet_port = "ethernet"
         for i in range(len(ports)):
-            p = 0
-            while p <= int(ports[i]["n"]):
+            for p in ports[i]["s"]:
                 if not ports[i]["s"][p]:
                     # Skip not running interface
-                    p += 1
                     continue
                 if (ports[i]["t"] == "ADSL"):
                     try:
-                        v = self.cli("display mac-address %s 0/%d/%d" % (adsl_port, i, p))
+                        v = self.cli("display mac-address %s 0/%d/%s" % (adsl_port, i, p))
                     except self.CLISyntaxError:
-                        v = self.cli("display mac-address port 0/%d/%d" % (i, p))
+                        v = self.cli("display mac-address port 0/%d/%s" % (i, p))
                         adsl_port = "port"
                 if (ports[i]["t"] == "VDSL"):
                     try:
-                        v = self.cli("display mac-address %s 0/%d/%d" % (vdsl_port, i, p))
+                        v = self.cli("display mac-address %s 0/%d/%s" % (vdsl_port, i, p))
                     except self.CLISyntaxError:
-                        v = self.cli("display mac-address port 0/%d/%d" % (i, p))
+                        v = self.cli("display mac-address port 0/%d/%s" % (i, p))
                         vdsl_port = "port"
                 if (ports[i]["t"] == "GPON"):
                     try:
-                        v = self.cli("display mac-address %s 0/%d/%d" % (gpon_port, i, p))
+                        v = self.cli("display mac-address %s 0/%d/%s" % (gpon_port, i, p))
                     except self.CLISyntaxError:
-                        v = self.cli("display mac-address port 0/%d/%d" % (i, p))
+                        v = self.cli("display mac-address port 0/%d/%s" % (i, p))
                         gpon_port = "port"
                 if (ports[i]["t"] in ["10GE", "GE", "FE", "GE-Optic", "GE-Elec", "FE-Elec"]):
                     try:
-                        v = self.cli("display mac-address %s 0/%d/%d" % (ethernet_port, i, p))
+                        v = self.cli("display mac-address %s 0/%d/%s" % (ethernet_port, i, p))
                     except self.CLISyntaxError:
-                        v = self.cli("display mac-address port 0/%d/%d" % (i, p))
+                        v = self.cli("display mac-address port 0/%d/%s" % (i, p))
                         ethernet_port = "port"
                 for match in self.rx_line.finditer(v):
                     r += [{
                         "vlan_id": match.group("vlan_id"),
                         "mac": match.group("mac"),
-                        "interfaces": [("0/%d/%d" % (i, p))],
+                        "interfaces": [("0/%d/%s" % (i, p))],
                         "type": {
                             "dynamic": "D",
                             "static": "S"
                         }[match.group("type")]
                     }]
-                p += 1
         return r
