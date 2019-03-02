@@ -3,7 +3,7 @@
 # Vendor: Huawei
 # OS:     MA5600T
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -52,10 +52,18 @@ class Profile(BaseProfile):
     command_exit = "quit\ny\n"
     rogue_chars = ["\xff", "\r"]
 
-    rx_slots = re.compile("^\s*\d+", re.MULTILINE)
+    matchers = {
+        "is_gpon_uplink": {
+            "platform": {
+                "$in": ["MA5626G"]
+            }
+        }
+    }
+
+    rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
     rx_ports = re.compile(
-        "^\s*\d+\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
-        "(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated)",
+        r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
+        r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)",
         re.MULTILINE)
 
     def get_slots_n(self, script):
@@ -73,12 +81,12 @@ class Profile(BaseProfile):
     def get_ports_n(self, script, slot_no):
         i = -1
         t = ""
-        s = []
+        s = {}
         v = script.cli(("display board 0/%d" % slot_no), cached=True)
         for match in self.rx_ports.finditer(v):
             i += 1
             t = match.group("type")
-            s += [match.group("state").lower() in ["online", "activated"]]
+            s[match.group("port")] = match.group("state").lower() in ["online", "activated", "registered"]
         return {"n": i, "t": t, "s": s}
 
     def fill_ports(self, script):
@@ -90,7 +98,7 @@ class Profile(BaseProfile):
             i += 1
         return r
 
-    rx_port_name = re.compile("(\S+)(\d+\/\d+\/\d+)")
+    rx_port_name = re.compile(r"(\S+)(\d+\/\d+\/\d+)")
 
     def convert_interface_name(self, interface):
         if " " in interface:
