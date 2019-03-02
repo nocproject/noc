@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -10,6 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 import re
+import six
 
 
 class Script(BaseScript):
@@ -37,13 +38,14 @@ class Script(BaseScript):
         r"^\s*\-+\s*\n"
         r"(?P<tagged>.+)"
         r"^\s*\-+\s*\n"
-        r"^\s*Total:\s+\d+\s+(Native VLAN:\s+(?P<untagged>(\d+|-))\s*)?\n",
+        r"^\s*Total:\s+\d+\s+(Native VLAN:\s+(?P<untagged>\d+|-)\s*)?\n",
         re.MULTILINE | re.DOTALL)
     rx_vlan2 = re.compile(
         r"^\s+\d+\s+eth\s+(?:down|up)\s+(?P<ifname>\d+/\s*\d+/\s*\d+)\s+"
+        r"(?:(?P<vpi>\d+|-)\s+(?P<vci>\d+|-)\s+)?"
         r"vlan\s+(?P<type>\S+)\s*\n",
         re.MULTILINE)
-    rx_tagged = re.compile("(?P<tagged>\d+)", re.MULTILINE)
+    rx_tagged = re.compile(r"(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
         r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E(?:-Optic|-Elec)?\s+"
         r"(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
@@ -82,6 +84,9 @@ class Script(BaseScript):
         "xDSLchan": 123,
         "GPON": 125,
         "EPON": 126,
+        # Dummy rule, needed in MA5626
+        # IF-MIB::ifName.4261413120 = STRING: GPONNNI
+        "XG-PON": 127
     }
 
     def snmp_index(self, int_type, shelfID, slotID, intNum):
@@ -97,6 +102,9 @@ class Script(BaseScript):
             index += intNum
         elif int_type in ["xDSLchan", "DOCSISup", "DOCSISdown"]:
             index += intNum << 5
+        # https://gpon.kou.li/huawei/olt/snmp
+        elif int_type in ["GPON", "XG-PON"]:
+            index += intNum << 8
         else:
             index += intNum << 6
 
@@ -177,22 +185,19 @@ class Script(BaseScript):
                     if m:
                         vlans_found = True
                         tagged = []
-                        try:
-                            untagged = int(m.group("untagged")) if m.group("untagged") else None
-                        except ValueError:
-                            untagged = None
+                        if m.group("untagged") and m.group("untagged") != "-":
+                            untagged = int(m.group("untagged"))
+                            iface["subinterfaces"][0]["untagged_vlan"] = untagged
+                        else:
+                            untagged = 0
                         for t in self.rx_tagged.finditer(m.group("tagged")):
                             if int(t.group("tagged")) != untagged:
                                 tagged += [int(t.group("tagged"))]
-                        iface["subinterfaces"][0]["untagged_vlan"] = untagged
                         iface["subinterfaces"][0]["tagged_vlans"] = tagged
                     interfaces += [iface]
             if ports[i]["t"] in ["ADSL", "VDSL", "GPON"]:
                 oper_states = []
-                if ports[i]["t"] == "VDSL":
-                    p_type = "vdsl"
-                else:
-                    p_type = "adsl"
+                p_type = ports[i]["t"].lower()
                 try:
                     v = self.cli("display %s port state 0/%d" % (p_type, i))
                     for match in self.rx_adsl_state.finditer(v):
@@ -214,7 +219,11 @@ class Script(BaseScript):
                 elif display_service_port:
                     try:
                         v = self.cli("display service-port board 0/%d" % i)
-                        rx_adsl = self.rx_sp
+                        if "No service virtual port can be operated" not in v:
+                            rx_adsl = self.rx_sp
+                        else:
+                            v = ""
+                            rx_adsl = self.rx_pvc
                     except self.CLISyntaxError:
                         display_service_port = False
                         v = ""
@@ -243,7 +252,7 @@ class Script(BaseScript):
                             found = True
                             break
                     if not found:
-                        if ports[i]["t"] == "VDSL":
+                        if p_type == "VDSL":
                             ifindex = self.snmp_index("VDSL2", 0, i, port)
                         else:
                             ifindex = self.snmp_index(ports[i]["t"], 0, i, port)
@@ -260,6 +269,42 @@ class Script(BaseScript):
                                 iface["oper_status"] = o["oper_state"]
                                 break
                         interfaces += [iface]
+                if not v:
+                    if p_type in ["gpon"]:  # For feature use
+                        for port, state in six.iteritems(ports[i]["s"]):
+                            if self.is_gpon_uplink:
+                                ifindex = self.snmp_index("XG-PON", 0, i, int(port))
+                            else:
+                                ifindex = self.snmp_index("GPON", 0, i, int(port))
+                            ifname = "0/%d/%d" % (i, int(port))
+                            iface = {
+                                "name": ifname,
+                                "type": "physical",
+                                "snmp_ifindex": ifindex,
+                                "admin_status": True,
+                                "oper_status": state,
+                                "subinterfaces": [{
+                                    "name": ifname,
+                                    "type": "physical",
+                                    "admin_status": True,
+                                    "oper_status": state,
+                                    "enabled_afi": ["BRIDGE"]
+                                }]
+                            }
+                            c = self.cli("display port vlan %s" % ifname)
+                            m = self.rx_vlan.search(c)
+                            if m:
+                                tagged = []
+                                if m.group("untagged") and m.group("untagged") != "-":
+                                    untagged = int(m.group("untagged"))
+                                    iface["subinterfaces"][0]["untagged_vlan"] = untagged
+                                else:
+                                    untagged = 0
+                                for t in self.rx_tagged.finditer(m.group("tagged")):
+                                    if int(t.group("tagged")) != untagged:
+                                        tagged += [int(t.group("tagged"))]
+                                iface["subinterfaces"][0]["tagged_vlans"] = tagged
+                            interfaces += [iface]
         v = self.cli("display interface")
         rx = self.find_re([self.rx_if1, self.rx_if2], v)
         for match in rx.finditer(v):
