@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SNMP GET PDU generator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import random
 from collections import namedtuple
 # NOC modules
-from .ber import BEREncoder, BERDecoder, parse_p_oid
+from .ber import parse_p_oid, decoder, encoder
 from .consts import (PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
                      PDU_RESPONSE, PDU_GETBULK_REQUEST)
 from .version import SNMP_v1, SNMP_v2c
@@ -27,27 +27,26 @@ def _build_pdu(community, pdu_type, oids, request_id, version=SNMP_v2c):
     """
     if version != SNMP_v1 and version != SNMP_v2c:
         raise NotImplementedError("Unsupported SNMP version")
-    e = BEREncoder()
     if not request_id:
         request_id = random.randint(0, 0x7FFFFFFF)
     # Encode variable bindings
-    varbinds = e.encode_sequence([
-        e.encode_sequence([
-            e.encode_oid(str(oid)),
-            e.encode_null()
+    varbinds = encoder.encode_sequence([
+        encoder.encode_sequence([
+            encoder.encode_oid(str(oid)),
+            encoder.encode_null()
         ]) for oid in oids
     ])
     # Encode RFC-1905 SNMP GET PDU
-    pdu = e.encode_choice(pdu_type, [
-        e.encode_int(request_id),
-        e.encode_int(0),  # Error status
-        e.encode_int(0),  # Error index
+    pdu = encoder.encode_choice(pdu_type, [
+        encoder.encode_int(request_id),
+        encoder.encode_int(0),  # Error status
+        encoder.encode_int(0),  # Error index
         varbinds
     ])
     # SNMP v2c PDU
-    return e.encode_sequence([
-        e.encode_int(version),
-        e.encode_octet_string(str(community)),
+    return encoder.encode_sequence([
+        encoder.encode_int(version),
+        encoder.encode_octet_string(str(community)),
         pdu
     ])
 
@@ -81,28 +80,27 @@ def getbulk_pdu(community, oid, request_id=None,
     """
     if version == SNMP_v1:
         raise ValueError("SNMPv1 does not define GETBULK")
-    e = BEREncoder()
     if not request_id:
         request_id = random.randint(0, 0x7FFFFFFF)
     oids = [oid]
     # Encode variable bindings
-    varbinds = e.encode_sequence([
-        e.encode_sequence([
-            e.encode_oid(o),
-            e.encode_null()
+    varbinds = encoder.encode_sequence([
+        encoder.encode_sequence([
+            encoder.encode_oid(o),
+            encoder.encode_null()
         ]) for o in oids
     ])
     # Encode RFC-1905 SNMP GET PDU
-    pdu = e.encode_choice(PDU_GETBULK_REQUEST, [
-        e.encode_int(request_id),
-        e.encode_int(non_repeaters),
-        e.encode_int(max_repetitions),
+    pdu = encoder.encode_choice(PDU_GETBULK_REQUEST, [
+        encoder.encode_int(request_id),
+        encoder.encode_int(non_repeaters),
+        encoder.encode_int(max_repetitions),
         varbinds
     ])
     # SNMP v2c PDU
-    return e.encode_sequence([
-        e.encode_int(SNMP_v2c),
-        e.encode_octet_string(community),
+    return encoder.encode_sequence([
+        encoder.encode_int(SNMP_v2c),
+        encoder.encode_octet_string(community),
         pdu
     ])
 
@@ -113,8 +111,7 @@ GetResponse = namedtuple("GetResponse", ["community", "request_id",
 
 
 def parse_get_response(pdu):
-    d = BERDecoder()
-    data = d.parse_sequence(pdu)[0]
+    data = decoder.parse_sequence(pdu)[0]
     pdu = data[2]
     if pdu[0] != PDU_RESPONSE:
         raise ValueError("Invalid response PDU type: %s" % pdu[0])
@@ -128,30 +125,29 @@ def parse_get_response(pdu):
 
 
 def parse_get_response_raw(pdu):
-    d = BERDecoder()
-    # Strip outher sequence
-    msg, _ = d.split_tlv(pdu)
+    # Strip outer sequence
+    msg, _ = decoder.split_tlv(pdu)
     # Strip proto version
-    _, msg = d.split_tlv(msg)
+    _, msg = decoder.split_tlv(msg)
     # Strip community
-    _, msg = d.split_tlv(msg)
+    _, msg = decoder.split_tlv(msg)
     # Strip inner sequence
-    msg, _ = d.split_tlv(msg)
+    msg, _ = decoder.split_tlv(msg)
     # Strip pdu type
-    _, msg = d.split_tlv(msg)
+    _, msg = decoder.split_tlv(msg)
     # strip request id
-    _, msg = d.split_tlv(msg)
+    _, msg = decoder.split_tlv(msg)
     # strip error_code
-    _, msg = d.split_tlv(msg)
+    _, msg = decoder.split_tlv(msg)
     # strip error_index
-    msg, _ = d.split_tlv(msg)
+    msg, _ = decoder.split_tlv(msg)
     # Varbinds
     varbinds = []
     while msg:
-        vb, msg = d.split_tlv(msg)
-        oid, value = d.split_tlv(vb)
+        vb, msg = decoder.split_tlv(msg)
+        oid, value = decoder.split_tlv(vb)
         varbinds += [[parse_p_oid(oid), value]]
-    data = d.parse_sequence(pdu)[0]
+    data = decoder.parse_sequence(pdu)[0]
     pdu = data[2]
     if pdu[0] != PDU_RESPONSE:
         raise ValueError("Invalid response PDU type: %s" % pdu[0])

@@ -463,8 +463,11 @@ class BEREncoder(object):
         return self.encode_tlv(6, True, "".join(r))
 
 
+decoder = BERDecoder()
+encoder = BEREncoder()
+
+
 def decode(msg):
-    decoder = BERDecoder()
     data, _ = decoder.parse_tlv(msg)
     return data
 
