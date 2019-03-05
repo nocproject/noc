@@ -166,7 +166,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         this.lastUpdateButton.getStore().load({
             scope: me,
             callback: function(records, operation, success) {
-                if(success) {
+                if(success && records.length) {
                     var values = records.filter(function(item) {return item.id === window.localStorage.getItem(me.localStoreName)});
                     if(values.length > 0) {
                         me.lastUpdateButton.setValue(values[0]);
