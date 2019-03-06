@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,11 +29,11 @@ class Script(BaseScript):
         r"(?P<body>.*?)"
         r"(?P<bom>BOM=.*?)", re.DOTALL | re.MULTILINE | re.VERBOSE)
     rx_port = re.compile(
-        r"\[Port_(?P<port_num>\d+)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        r"\[Port_(?P<port_num>\d+)\].+?\n\n\[Board\s?Properties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard = re.compile(
-        r"\[(?:Main_Board|BackPlane_\d)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        r"\[(?:Main_Board|BackPlane_\d)\].+?\n\n\[Board\s?Properties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard_ne = re.compile(
@@ -45,7 +45,7 @@ class Script(BaseScript):
         r"(?P<body>.*?)"
         r"(?P<bom>BOM=.*?)", re.DOTALL | re.MULTILINE | re.VERBOSE)
     rx_item_content = re.compile(
-        r"\[Board.Properties\]\n"
+        r"\[Board.?Properties\]\n"
         r"Board Type=(?P<board_type>.*?)\n"
         r"BarCode=(?P<bar_code>.*?)\n"
         r"Item=(?P<item>.*?)\n"
@@ -70,10 +70,10 @@ class Script(BaseScript):
         r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\s*\n"
         r"MAC_ADDRESS\s+:\s+(?P<mac>\S+)\s*\n"
         r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n", re.MULTILINE)
-    rx_date_check = re.compile("\d+-\d+-\d+")
+    rx_date_check = re.compile(r"\d+-\d+-\d+")
     rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+", re.MULTILINE)
     rx_header_repl = re.compile(r"((Slot|Brd|Subslot|Sft|Unit|SubCard)\s)")
-    rx_d = re.compile("\d+")
+    rx_d = re.compile(r"\d+")
 
     unit = False
 
