@@ -143,7 +143,7 @@ class Script(BaseScript):
             try:
                 v = self.cli(v_cli % (slot_num, subcard_num))
             except self.CLISyntaxError:
-                if slot_num == 0:
+                if slot_num == 0 and not self.is_ne_platform:
                     try:
                         # found on AR0B0024BA model
                         v = self.cli("display elabel backplane")
@@ -370,7 +370,7 @@ class Script(BaseScript):
         :return: type, number, part_no
         :rtype: list
         """
-        cx_600_t = ["IPU", "LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
+        cx_600_t = ["IPU", "LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER", "PIC", "NPU"]
         self.logger.info("Getting type %s, %s, %s", slot, sub, part_no)
 
         try:
