@@ -3,7 +3,7 @@
 # Vendor: Huawei
 # OS:     VRP
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -77,12 +77,12 @@ class Profile(BaseProfile):
         },
         "is_ne_platform": {
             "platform": {
-                "$regex": "^NE"
+                "$regex": r"^(NE|CX600)"
             }
         },
         "is_ar": {
             "platform": {
-                "$regex": "^AR\d+.+"
+                "$regex": r"^AR\d+.+"
             }
         }
     }
@@ -227,7 +227,7 @@ class Profile(BaseProfile):
         v = mac.replace(":", "").lower()
         return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
 
-    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+    spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)
@@ -310,10 +310,10 @@ class Profile(BaseProfile):
         for line in e.splitlines():
             if not line:
                 continue
-            if (line.startswith("LoopBack") or line.startswith("MEth") or
-                    line.startswith("Ethernet") or
-                    line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or
-                    line.startswith("Vlanif") or line.startswith("NULL")):
+            if line.startswith("LoopBack") or line.startswith("MEth") or \
+               line.startswith("Ethernet") or \
+               line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or \
+               line.startswith("Vlanif") or line.startswith("NULL"):
                 current_iface = line.split()[0]
                 continue
             # k, v count
