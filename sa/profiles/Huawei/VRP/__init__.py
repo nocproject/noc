@@ -312,8 +312,7 @@ class Profile(BaseProfile):
                 continue
             if (line.startswith("LoopBack") or line.startswith("MEth") or
                     line.startswith("Ethernet") or
-                    line.startswith("GigabitEthernet") or
-                    line.startswith("XGigabitEthernet") or
+                    line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or
                     line.startswith("Vlanif") or line.startswith("NULL")):
                 current_iface = line.split()[0]
                 continue
