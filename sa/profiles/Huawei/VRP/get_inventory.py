@@ -161,11 +161,11 @@ class Script(BaseScript):
                     # parse each slot_num separately to avoid duplicates
                     for f in self.rx_power_ne.finditer(v):
                         if f.group("slot_no") == slot_num:
-                            r.append(self.parse_item_content(f.group("body"), slot_num, "PWR"))
+                            r.append(self.parse_item_content2(f.group("body"), slot_num, "PWR"))
                             break
                     for f in self.rx_fan_ne.finditer(v):
                         if f.group("slot_no") == slot_num:
-                            r.append(self.parse_item_content(f.group("body"), slot_num, "FAN"))
+                            r.append(self.parse_item_content2(f.group("body"), slot_num, "FAN"))
                             break
         else:
             v = ""
