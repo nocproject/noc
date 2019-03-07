@@ -310,10 +310,11 @@ class Profile(BaseProfile):
         for line in e.splitlines():
             if not line:
                 continue
-            if line.startswith("LoopBack") or line.startswith("MEth") or \
-               line.startswith("Ethernet") or \
-               line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or \
-               line.startswith("Vlanif") or line.startswith("NULL"):
+            if (line.startswith("LoopBack") or line.startswith("MEth") or
+                line.startswith("Ethernet") or
+                line.startswith("GigabitEthernet") or
+                line.startswith("XGigabitEthernet") or
+                line.startswith("Vlanif") or line.startswith("NULL")):
                 current_iface = line.split()[0]
                 continue
             # k, v count
