@@ -12,6 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_kv
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -29,7 +30,7 @@ class Script(BaseScript):
         r"(?P<body>.*?)"
         r"(?P<bom>BOM=.*?)", re.DOTALL | re.MULTILINE | re.VERBOSE)
     rx_port = re.compile(
-        r"\[Port_(?P<port_num>\d+)\].+?\n\n\[Board\s?Properties\](?P<body>.*?)\n\n",
+        r"\[Port_(?P<port_num>(?:X?GigabitEthernet0/0/)?\d+)\].+?\n\n\[Board\s?Properties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard = re.compile(
@@ -185,7 +186,16 @@ class Script(BaseScript):
             if f.group("body") == '':
                 self.logger.info("Slot %s, Port %s not having asset" % (slot_num, num))
                 continue
-            sfp = self.parse_item_content(f.group("body"), num, "XCVR")
+            if is_int(num):
+                m_type = "XCVR"
+            elif num.startswith("GigabitEthernet"):
+                m_type = "GigabitEthernet"
+            elif num.startswith("XGigabitEthernet"):
+                m_type = "XGigabitEthernet"
+            else:
+                m_type = "XCVR"
+                self.logger.debug("Unknown type of SFP slot %s, skipping" % num)
+            sfp = self.parse_item_content(f.group("body"), num, m_type)
             if not sfp.get("part_no", [])[0] and not sfp.get("serial"):
                 # Skipping SFP
                 self.logger.debug("Not p_no in SFP slot, %s skipping" % num)
