@@ -130,6 +130,7 @@ class Script(BaseScript):
         :param slot_num: Number slot, installed card
         :param subcard_num: Number subcard on slot, empty if device not support subcard
         """
+        v = ""
         v_cli = "display elabel slot %s %s"
         if self.unit:
             v_cli = "display elabel unit %s %s"
