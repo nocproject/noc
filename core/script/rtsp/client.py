@@ -66,7 +66,7 @@ class RTSPParser(object):
         return self.is_complete
 
     def execute(self, data, received):
-        print "'%s'" % data
+        # print "'%s'" % data
         for line in data.splitlines():
             if line.startswith("RTSP/1.0"):
                 _, self.status_code, _ = line.split()
