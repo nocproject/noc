@@ -156,6 +156,10 @@ class Script(BaseScript):
                     if v.strip():
                         r.append(self.parse_item_content(v, slot_num, i_type))
                 except self.CLISyntaxError:
+                    return []
+                    """
+                    Need direct access to the device
+
                     # found on `CX600-M2F` 8.100
                     v = self.cli("display elabel", cached=True)
                     # parse each slot_num separately to avoid duplicates
@@ -167,6 +171,7 @@ class Script(BaseScript):
                         if f.group("slot_no") == slot_num:
                             r.append(self.parse_item_content2(f.group("body"), slot_num, "FAN"))
                             break
+                    """
         else:
             v = ""
             v_cli = "display elabel slot %s %s"
