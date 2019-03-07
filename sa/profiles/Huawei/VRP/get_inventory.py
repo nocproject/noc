@@ -141,22 +141,23 @@ class Script(BaseScript):
             except self.CLISyntaxError:
                 return []
         else:
-            try:
-                v = self.cli(v_cli % (slot_num, subcard_num))
-            except self.CLISyntaxError:
-                if slot_num == 0 and not self.is_ne_platform:
-                    try:
-                        # found on AR0B0024BA model
-                        v = self.cli("display elabel backplane")
-                        i_type = "CHASSIS"
-                    except self.CLISyntaxError:
-                        return []
-                else:
-                    try:
-                        # found on `Quidway S9312` 5.130 (V200R003C00SPC500)
-                        v = self.cli("display elabel %s" % slot_num)
-                    except self.CLISyntaxError:
-                        return []
+            if not self.is_ne_platform:
+                try:
+                    v = self.cli(v_cli % (slot_num, subcard_num))
+                except self.CLISyntaxError:
+                    if slot_num == 0:
+                        try:
+                            # found on AR0B0024BA model
+                            v = self.cli("display elabel backplane")
+                            i_type = "CHASSIS"
+                        except self.CLISyntaxError:
+                            return []
+                    else:
+                        try:
+                            # found on `Quidway S9312` 5.130 (V200R003C00SPC500)
+                            v = self.cli("display elabel %s" % slot_num)
+                        except self.CLISyntaxError:
+                            return []
 
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
