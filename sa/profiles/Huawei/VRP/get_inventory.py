@@ -41,6 +41,14 @@ class Script(BaseScript):
         r"\[Board\sProperties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
+    rx_power_ne = re.compile(
+        r"\[PowerSlot_(?P<slot_no>\d)\].+?\n\n\[Board\s?Properties\](?P<body>.*?)\n\n",
+        re.DOTALL | re.MULTILINE | re.VERBOSE
+    )
+    rx_fan_ne = re.compile(
+        r"\[FanSlot_(?P<slot_no>\d)\].+?\n\n\[Board\s?Properties\](?P<body>.*?)\n\n",
+        re.DOTALL | re.MULTILINE | re.VERBOSE
+    )
     rx_subitem = re.compile(
         r"\[(?P<type>Port|Daughter_Board)_(?P<number>.*?)\]"
         r"(?P<body>.*?)"
@@ -138,17 +146,27 @@ class Script(BaseScript):
                     v = self.cli("display elabel backplane")
                 except self.CLISyntaxError:
                     # found on `CX600-M2F` 8.100
-                    v = self.cli("display elabel")
+                    v = self.cli("display elabel", cached=True)
                 f = self.rx_mainboard_ne.search(v)
                 r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
             else:
                 try:
                     v = self.cli("display elabel %s" % slot_num)
+                    # Do not parse empty lines
+                    if v.strip():
+                        r.append(self.parse_item_content(v, slot_num, i_type))
                 except self.CLISyntaxError:
-                    return []
-                # Do not parse empty lines
-                if v.strip():
-                    r.append(self.parse_item_content(v, slot_num, i_type))
+                    # found on `CX600-M2F` 8.100
+                    v = self.cli("display elabel", cached=True)
+                    # parse each slot_num separately to avoid duplicates
+                    for f in self.rx_power_ne.finditer(v):
+                        if f.group("slot_no") == slot_num:
+                            r.append(self.parse_item_content(f.group("body"), slot_num, "PWR"))
+                            break
+                    for f in self.rx_fan_ne.finditer(v):
+                        if f.group("slot_no") == slot_num:
+                            r.append(self.parse_item_content(f.group("body"), slot_num, "FAN"))
+                            break
         else:
             v = ""
             v_cli = "display elabel slot %s %s"
