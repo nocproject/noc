@@ -130,50 +130,52 @@ class Script(BaseScript):
         :param slot_num: Number slot, installed card
         :param subcard_num: Number subcard on slot, empty if device not support subcard
         """
-        v = ""
-        v_cli = "display elabel slot %s %s"
-        if self.unit:
-            v_cli = "display elabel unit %s %s"
-        elif self.match_version(platform__regex="^(S93..|AR[12].+)$"):
-            v_cli = "display elabel %s %s"
-        if self.is_ne_platform and i_type != "CHASSIS":
-            try:
-                v = self.cli("display elabel %s" % slot_num)
-            except self.CLISyntaxError:
-                return []
-        else:
-            if not self.is_ne_platform:
-                try:
-                    v = self.cli(v_cli % (slot_num, subcard_num))
-                except self.CLISyntaxError:
-                    if slot_num == 0:
-                        try:
-                            # found on AR0B0024BA model
-                            v = self.cli("display elabel backplane")
-                            i_type = "CHASSIS"
-                        except self.CLISyntaxError:
-                            return []
-                    else:
-                        try:
-                            # found on `Quidway S9312` 5.130 (V200R003C00SPC500)
-                            v = self.cli("display elabel %s" % slot_num)
-                        except self.CLISyntaxError:
-                            return []
-
-        # Avoid of rotten devices, where part_on contains 0xFF characters
-        v = v.decode("ascii", "ignore")
         r = []
 
         if self.is_ne_platform:
             if i_type == "CHASSIS":
-                v = self.cli("display elabel backplane")
+                try:
+                    v = self.cli("display elabel backplane")
+                except self.CLISyntaxError:
+                    # found on `CX600-M2F` 8.100
+                    v = self.cli("display elabel")
                 f = self.rx_mainboard_ne.search(v)
                 r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
             else:
+                try:
+                    v = self.cli("display elabel %s" % slot_num)
+                except self.CLISyntaxError:
+                    return []
                 # Do not parse empty lines
                 if v.strip():
                     r.append(self.parse_item_content(v, slot_num, i_type))
         else:
+            v = ""
+            v_cli = "display elabel slot %s %s"
+            if self.unit:
+                v_cli = "display elabel unit %s %s"
+            elif self.match_version(platform__regex="^(S93..|AR[12].+)$"):
+                v_cli = "display elabel %s %s"
+            try:
+                v = self.cli(v_cli % (slot_num, subcard_num))
+            except self.CLISyntaxError:
+                if slot_num == 0:
+                    try:
+                        # found on AR0B0024BA model
+                        v = self.cli("display elabel backplane")
+                        i_type = "CHASSIS"
+                    except self.CLISyntaxError:
+                        return []
+                else:
+                    try:
+                        # found on `Quidway S9312` 5.130 (V200R003C00SPC500)
+                        v = self.cli("display elabel %s" % slot_num)
+                    except self.CLISyntaxError:
+                        return []
+
+            # Avoid of rotten devices, where part_on contains 0xFF characters
+            v = v.decode("ascii", "ignore")
+
             if i_type == "CHASSIS":
                 f = self.rx_mainboard.search(v)
                 r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
