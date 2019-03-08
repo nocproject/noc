@@ -19,7 +19,6 @@ import tornado.ioloop
 import tornado.iostream
 import cachetools
 import six
-import ujson
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
@@ -69,7 +68,7 @@ class RTSPParser(object):
         # print "'%s'" % data
         for line in data.splitlines():
             if line.startswith("RTSP/1.0"):
-                _, self.status_code, _ = line.split()
+                _, self.status_code, _ = line.split(None, 2)
             elif ":" in line:
                 self.headers[line.split(":", 1)[0]] = line.split(":", 1)[1].strip()
             else:
@@ -193,9 +192,6 @@ def fetch(url, method="OPTIONS",
         content_type = "application/binary"
         if isinstance(body, unicode):
             body = body.encode("utf-8")
-        elif not isinstance(body, six.string_types):
-            body = ujson.dumps(body)
-            content_type = "text/json"
         h = {
             "Host": str(u.netloc),
             "Connection": "close",

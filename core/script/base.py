@@ -33,6 +33,7 @@ from .error import (ScriptError, CLISyntaxError, CLIOperationError,
 from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
 from .http.base import HTTP
+from .rtsp.base import RTSP
 
 
 class BaseScriptMetaclass(type):
@@ -160,6 +161,10 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             self.http = self.root.http
         else:
             self.http = HTTP(self)
+        if self.parent:
+            self.rtsp = self.root.rtsp
+        else:
+            self.rtsp = RTSP(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.scripts = ScriptsHub(self)
         # Store session id
@@ -500,6 +505,9 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                     x = right
                     right = left
                     left = x
+                if right > 4096:
+                    self.logger.error("Overflow vlan number")
+                    right = 4096
                 for i in range(left, right + 1):
                     result[i] = None
             else:

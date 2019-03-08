@@ -6,12 +6,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
 from __future__ import absolute_import
-# Third-party modules
-from six.moves.http_cookies import SimpleCookie
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from .client import fetch_sync
+from noc.core.rtsp.client import fetch_sync
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
 from noc.core.handler import get_handler
 from noc.core.script.http.middleware.base import BaseMiddleware
@@ -27,7 +26,6 @@ class RTSP(object):
         if script:  # For testing purposes
             self.logger = PrefixLoggerAdapter(script.logger, "rtsp")
         self.headers = {}
-        self.cookies = None
         self.session_started = False
         self.request_id = 1
         self.session_id = None
@@ -60,9 +58,42 @@ class RTSP(object):
         :param stream_path:
         :return:
         """
-        # url = self.get_url(stream_path)
-        # self.command = "DESCRIBE %s %s" % (url, RTSP_VERSION)
         return self.rtsp(stream_path, "DESCRIBE")
+
+    def play(self):
+        """
+        The PLAY method tells the server to start sending data via the
+        mechanism specified in SETUP.
+        :return:
+        """
+        raise NotImplementedError()
+
+    def pause(self):
+        """
+        The PAUSE request causes the stream delivery to be interrupted
+        (halted) temporarily. If the request URL names a stream, only
+        playback and recording of that stream is halted.
+        :return:
+        """
+        raise NotImplementedError()
+
+    def setup(self):
+        """
+        The SETUP request for a URI specifies the transport mechanism to be
+        used for the streamed media. A client can issue a SETUP request for a
+        stream that is already playing to change transport parameters, which
+        a server MAY allow.
+        :return:
+        """
+        raise NotImplementedError()
+
+    def teardown(self):
+        """
+        The TEARDOWN request stops the stream delivery for the given URI,
+        freeing the resources associated with it.
+        :return:
+        """
+        raise NotImplementedError()
 
     def rtsp(self, path, method=None, headers=None):
         if not method:
@@ -73,8 +104,6 @@ class RTSP(object):
         if self.request_middleware:
             for mw in self.request_middleware:
                 url, _, hdr = mw.process_get(url, "", hdr)
-        # headers = {"CSeq": 1, "User-Agent": "python"}
-        hdr = {"CSeq": self.request_id}
         code, headers, result = fetch_sync(
             url,
             headers=hdr,
@@ -85,35 +114,11 @@ class RTSP(object):
         )
         if not 200 <= code <= 299:
             raise self.RTSPError(msg="RTSP Error (%s)" % result[:256], code=code)
-        self._process_cookies(headers)
         return result
 
     def close(self):
         if self.session_started:
             self.shutdown_session()
-
-    def _process_cookies(self, headers):
-        """
-        Process and store cookies from response headers
-        :param headers:
-        :return:
-        """
-        cdata = headers.get("Set-Cookie")
-        if not cdata:
-            return
-        if not self.cookies:
-            self.cookies = SimpleCookie()
-        self.cookies.load(cdata)
-
-    def get_cookie(self, name):
-        """
-        Get cookie name by value
-        :param name:
-        :return: Morsel object or None
-        """
-        if not self.cookies:
-            return None
-        return self.cookies.get(name)
 
     def _get_effective_headers(self, headers):
         """
@@ -127,10 +132,10 @@ class RTSP(object):
             else:
                 headers = {}
             headers.update(self.headers)
-        elif not headers and self.cookies:
+        elif not headers:
             headers = {}
-        if self.cookies:
-            headers["Cookie"] = self.cookies.output(header="").lstrip()
+        headers["CSeq"] = self.request_id
+        self.request_id += 1
         return headers
 
     def set_header(self, name, value):
@@ -161,12 +166,12 @@ class RTSP(object):
 
     def setup_session(self):
         if self.script.profile.setup_http_session:
-            self.logger.debug("Setup http session")
+            self.logger.debug("Setup rtsp session")
             self.script.profile.setup_http_session(self.script)
 
     def shutdown_session(self):
         if self.script.profile.shutdown_http_session:
-            self.logger.debug("Shutdown http session")
+            self.logger.debug("Shutdown rtsp session")
             self.script.profile.shutdown_http_session(self.script)
 
     def setup_middleware(self):
