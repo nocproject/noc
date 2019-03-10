@@ -17,6 +17,7 @@ from noc.lib.validators import is_ipv4
 
 class Script(GetMetricsScript):
     name = "DCN.DCWL.get_metrics"
+    scale_x8 = {"Interface | Load | In", "Interface | Load | Out"}  # Scale 8 metric type
 
     @metrics(
         ["CPU | Usage"],
@@ -98,6 +99,8 @@ class Script(GetMetricsScript):
             for block in v.split("\n\n"):
                 data = dict(line.split(None, 1) for line in block.splitlines()
                             if len(line.split(None, 1)) == 2)
+                if "status" not in data:
+                    continue
                 s["status"] = data["status"]
                 s["radio"] = data["radio"]
 
@@ -137,7 +140,10 @@ class Script(GetMetricsScript):
                 iface = data["name"]
             for field, metric in six.iteritems(iface_metric_map):
                 if data.get(field) is not None:
-                        self.set_metric(id=(metric, ["", "", "", iface]), value=data[field])
+                        self.set_metric(id=(metric, ["", "", "", iface]),
+                                        value=data[field],
+                                        type="counter",
+                                        scale=8 if metric in self.scale_x8 else 1)
             # LifeHack. Set Radio interface metrics to SSID
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(id=("Radio | TxPower", ["", "", "", iface]),
@@ -161,6 +167,8 @@ class Script(GetMetricsScript):
         for block in w.split("\n\n"):
             data = dict(line.split(None, 1) for line in block.splitlines()
                         if len(line.split(None, 1)) == 2)
+            if not data:
+                continue
             iface = data["name"].strip()
             if data.get("tx-power") is not None:
                 self.set_metric(id=("Radio | TxPower", ["", "", "", iface]),
