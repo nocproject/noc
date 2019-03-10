@@ -138,6 +138,19 @@ class LegacyProtocol(BaseProtocol):
         # TgSender
         ("tgsender.token", "tgsender.token"),
         ("tgsender-global-%(node)s.token", "tgsender.token"),
+        # WebHook
+        ("webhook.url", "webhook.url"),
+        ("webhook-global-%(node)s.url", "webhook.url"),
+        ("webhook.message", "webhook.message"),
+        ("webhook-global-%(node)s.message", "webhook.message"),
+        ("webhook.sender", "webhook.sender"),
+        ("webhook-global-%(node)s.sender", "webhook.sender"),
+        ("webhook.received", "webhook.received"),
+        ("webhook-global-%(node)s.received", "webhook.received"),
+        ("webhook.options", "webhook.options"),
+        ("webhook-global-%(node)s.options", "webhook.options"),
+        ("webhook.method", "webhook.method"),
+        ("webhook-global-%(node)s.method", "webhook.method"),
         # TrapCollector
         ("trapcollector.listen_traps", "trapcollector.listen"),
         ("trapcollector-%(pool)s-%(node)s.listen_traps", "trapcollector.listen"),

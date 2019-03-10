@@ -512,6 +512,17 @@ class Config(BaseConfig):
         retry_timeout = IntParameter(default=2)
         use_proxy = BooleanParameter(default=False)
 
+    class webhook(ConfigSection):
+        url = SecretParameter()
+        message = StringParameter()
+        sender = StringParameter()
+        received = StringParameter()
+        options = StringParameter()
+        # Method default False, use GET method
+        method = BooleanParameter(default=False)
+        retry_timeout = IntParameter(default=2)
+        use_proxy = BooleanParameter(default=False)
+
     class threadpool(ConfigSection):
         idle_timeout = SecondsParameter(default="30s")
         shutdown_timeout = SecondsParameter(default="1M")

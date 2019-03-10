@@ -29,7 +29,8 @@ logger = logging.getLogger(__name__)
 
 NOTIFICATION_TOPICS = {
     "mail": "mailsender",
-    "tg": "tgsender"
+    "tg": "tgsender",
+    "wh": "webhook"
 }
 
 NOTIFICATION_METHOD_CHOICES = [
