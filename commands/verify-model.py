@@ -222,7 +222,7 @@ class Command(BaseCommand):
     def check_ct_cfp(self, c):
         self.check_direction(c, ["i", "o"])
         self.check_protocols(c, [
-            "TransEth100G"
+            "TransEth40G", "TransEth100G"
         ])
 
 
