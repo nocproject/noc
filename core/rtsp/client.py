@@ -13,6 +13,7 @@ import urlparse
 import threading
 import logging
 import struct
+from collections import defaultdict
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -57,7 +58,7 @@ class RTSPParser(object):
         self.is_complete = False
         self.is_partial = True
         self.status_code = 200
-        self.headers = {}
+        self.headers = defaultdict(list)
         self.body = []
         self.last_data = None
 
@@ -70,7 +71,7 @@ class RTSPParser(object):
             if line.startswith("RTSP/1.0"):
                 _, self.status_code, _ = line.split(None, 2)
             elif ":" in line:
-                self.headers[line.split(":", 1)[0]] = line.split(":", 1)[1].strip()
+                self.headers[line.split(":", 1)[0]] += [line.split(":", 1)[1].strip()]
             else:
                 self.is_partial = True
                 self.body += [line]
@@ -145,7 +146,7 @@ def fetch(url, method="OPTIONS",
       eof_mark received (string or list)
     :return: code, headers, body
     """
-    logger.debug("RTSP %s %s", method, url)
+    logger.debug("RTSP %s %s", method, "")
     metrics["rtspclient_requests", ("method", method.lower())] += 1
     # Detect proxy when necessary
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
@@ -193,8 +194,8 @@ def fetch(url, method="OPTIONS",
         if isinstance(body, unicode):
             body = body.encode("utf-8")
         h = {
-            "Host": str(u.netloc),
-            "Connection": "close",
+            # "Host": str(u.netloc),
+            # "Connection": "close",
             "User-Agent": DEFAULT_USER_AGENT
         }
         if method in REQUIRE_LENGTH_METHODS:
@@ -212,7 +213,7 @@ def fetch(url, method="OPTIONS",
             path += "?%s" % u.query
         req = b"%s %s %s\r\n%s\r\n\r\n%s" % (
             method,
-            path,
+            url.encode("utf-8"),
             DEFAULT_PROTOCOL,
             "\r\n".join(b"%s: %s" % (k, h[k]) for k in h),
             body
