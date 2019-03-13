@@ -223,6 +223,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         # Match context
         # @todo: Add capabilities
         ctx = self.version or {}
+        if self.capabilities:
+            ctx["caps"] = self.capabilities
         # Calculate matches
         v = get_matchers(ctx, self.profile.matchers)
         v.update(get_matchers(ctx, self.matchers))
