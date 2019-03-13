@@ -78,6 +78,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
     session_lock = Lock()
     session_cli = {}
     session_mml = {}
+    session_rtsp = {}
     # In session mode when active CLI session exists
     # * True -- reuse session
     # * False -- close session and run new without session context
@@ -113,6 +114,10 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
 
     mml_protocols = {
         "telnet": "noc.core.script.mml.telnet.TelnetMML"
+    }
+
+    rtsp_protocols = {
+        "tcp": "noc.core.script.rtsp.base.RTSPBase"
     }
     # Override access preferences for script
     # S - always try SNMP first
@@ -150,6 +155,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         self.args = self.clean_input(args) if args else {}
         self.cli_stream = None
         self.mml_stream = None
+        self.rtsp_stream = None
         if self.parent:
             self.snmp = self.root.snmp
         elif self.is_beefed:
@@ -270,6 +276,8 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                         self.close_cli_stream()
                         # Close MML socket when necessary
                         self.close_mml_stream()
+                        # Close RTSP socket when necessary
+                        self.close_rtsp_stream()
                         # Close HTTP Client
                         self.http.close()
             # Clean result
@@ -929,6 +937,59 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
                 self.mml_stream.close()
             self.cli_stream = None
 
+    def rtsp(self, method, path, **kwargs):
+        """
+        Execute RTSP command and return result. Initiate RTSP session when necessary
+        :param method:
+        :param path:
+        :param kwargs:
+        :return:
+        """
+        stream = self.get_rtsp_stream()
+        r = stream.execute(path, method, **kwargs)
+        return r
+
+    def get_rtsp_stream(self):
+        if self.parent:
+            return self.root.get_rtsp_stream()
+        if not self.rtsp_stream and self.session:
+            # Try to get cached session's CLI
+            with self.session_lock:
+                self.rtsp_stream = self.session_rtsp.get(self.session)
+                if self.rtsp_stream and self.rtsp_stream.is_closed:
+                    self.rtsp_stream = None
+                    del self.session_rtsp[self.session]
+            if self.rtsp_stream:
+                if self.to_reuse_cli_session():
+                    self.logger.debug("Using cached session's RTSP")
+                    self.rtsp_stream.set_script(self)
+                else:
+                    self.logger.debug(
+                        "Script cannot reuse existing RTSP session, starting new one"
+                    )
+                    self.close_rtsp_stream()
+        if not self.rtsp_stream:
+            protocol = "tcp"
+            self.logger.debug("Open %s RTSP", protocol)
+            self.rtsp_stream = get_handler(
+                self.rtsp_protocols[protocol]
+            )(self, tos=self.tos)
+            # Store to the sessions
+            if self.session:
+                with self.session_lock:
+                    self.session_rtsp[self.session] = self.rtsp_stream
+        return self.rtsp_stream
+
+    def close_rtsp_stream(self):
+        if self.parent:
+            return
+        if self.rtsp_stream:
+            if self.session and self.to_keep_cli_session():
+                self.rtsp_stream.deferred_close(self.session_idle_timeout)
+            else:
+                self.rtsp_stream.close()
+            self.cli_stream = None
+
     def close_current_session(self):
         if self.session:
             self.close_session(self.session)
@@ -946,12 +1007,18 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
             mml_stream = cls.session_mml.get(session_id)
             if mml_stream:
                 del cls.session_mml[session_id]
+            rtsp_stream = cls.session_rtsp.get(session_id)
+            if rtsp_stream:
+                del cls.session_rtsp[session_id]
         if cli_stream and not cli_stream.is_closed:
             cli_stream.shutdown_session()
             cli_stream.close()
         if mml_stream and not mml_stream.is_closed:
             mml_stream.shutdown_session()
             mml_stream.close()
+        if rtsp_stream and not rtsp_stream.is_closed:
+            rtsp_stream.shutdown_session()
+            rtsp_stream.close()
 
     def get_access_preference(self):
         preferred = self.get_always_preferred()
