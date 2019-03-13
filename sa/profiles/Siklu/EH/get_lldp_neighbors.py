@@ -63,7 +63,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for section in v.split("\n\n"):
-            if not section:
+            if not section.strip():
                 continue
             name, cfg = self.parse_section(section)
             # Hack. We use port_id for chassis_id
