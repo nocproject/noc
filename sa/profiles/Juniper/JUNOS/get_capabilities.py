@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 from noc.core.mib import mib
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -74,4 +75,23 @@ class Script(BaseScript):
 
     def execute_platform_cli(self, caps):
         np = self.get_rpm_probes()
-        caps["Juniper | RPM | Probes"] = np
+        if np > 0:
+            caps["Juniper | RPM | Probes"] = np
+
+    def execute_platform_snmp(self, caps):
+        np = 0
+        # jnxRpmResSumSent
+        for v, r in self.snmp.getnext("1.3.6.1.4.1.2636.3.50.1.2.1.2", bulk=False):
+            tests = v.split('.')
+            if tests[-1] == "1":  # currentTest(1)
+                np += 1
+        if np > 0:
+            caps["Juniper | RPM | Probes"] = np
+        # jnxPPPoEMajorInterfaceCount
+        pppoe = self.snmp.get("1.3.6.1.4.1.2636.3.67.1.1.3.1.0")
+        if is_int(pppoe) and int(pppoe) > 0:
+            caps["BRAS | PPPoE"] = True
+        # jnxL2tpStatsTotalTunnels
+        l2tp = self.snmp.get("1.3.6.1.4.1.2636.3.49.1.1.1.1.1.0")
+        if is_int(l2tp) and int(l2tp) > 0:
+            caps["BRAS | L2TP"] = True
