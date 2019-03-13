@@ -17,7 +17,7 @@
       "dateColDataType": "date",
       "table": "routing",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(stp_topology_changes) as `Network | STP | Topology Changes` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, argMax(stp_topology_changes, ts) as `Network | STP | Topology Changes` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series"
     }

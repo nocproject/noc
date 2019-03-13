@@ -44,7 +44,7 @@
       "dateColDataType": "date",
       "table": "cpu",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(usage) as `Cpu | Usage`FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, argMax(usage, ts) as `Cpu | Usage`FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series"
     }

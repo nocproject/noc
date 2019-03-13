@@ -12,7 +12,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(usage_5s) FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, argMax(usage_5s, ts) FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "database": "noc",
       "tableLoading": false,
       "table": "memory",
