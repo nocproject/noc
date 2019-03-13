@@ -824,6 +824,37 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
+                    title: __("Discovery"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    items: [
+                        {
+                            name: "config_policy",
+                            xtype: "combobox",
+                            reference: "configPolicy",
+                            fieldLabel: __("Config Policy"),
+                            allowBlank: false,
+                            tooltip: __('Select method of config gathering'),
+                            displayField: "label",
+                            valueField: "id",
+                            store: {
+                                fields: ["id", "label"],
+                                data: [
+                                    {"id": "P", "label": __("Profile")},
+                                    {"id": "s", "label": __("Script")},
+                                    {"id": "S", "label": __("Script, Download")},
+                                    {"id": "D", "label": __("Download, Script")},
+                                    {"id": "d", "label": __("Download")}
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
                     title: __("Event Sources"),
                     layout: "column",
                     minWidth: me.formMinWidth,

@@ -406,7 +406,12 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "fqdn",
+            type: "string"
+        },
+        {
+            name: "config_policy",
             type: "string",
+            defaultValue: "P"
         },
         {
             name: "static_service_groups",

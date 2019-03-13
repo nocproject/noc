@@ -38,6 +38,7 @@ class ExtStorage(Document):
     type = StringField(
         choices=[
             ("config_mirror", "Config Mirror"),
+            ("config_upload", "Config Upload"),
             ("beef", "Beef"),
             ("beef_test", "Beef Test"),
             ("beef_test_config", "Beef Test Config")

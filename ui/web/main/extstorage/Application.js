@@ -71,6 +71,7 @@ Ext.define("NOC.main.extstorage.Application", {
                     allowBlank: false,
                     store: [
                         ["config_mirror", __("Config Mirror")],
+                        ["config_upload", __("Config Upload")],
                         ["beef", __("Beef")],
                         ["beef_test", __("Beef Test")],
                         ["beef_test_config", __("Beef Test Config")]
