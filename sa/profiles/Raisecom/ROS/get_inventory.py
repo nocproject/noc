@@ -86,13 +86,25 @@ class Script(BaseScript):
                 # Wait message after commands
                 continue
             num = int(port.splitlines()[0].strip(":"))
-            d = dict([e.split(":") for e in port.splitlines() if e])
+            d = dict([e.split(":") for e in port.splitlines() if e and len(e.split(":")) == 2])
             # 1300Mb/sec-1310nm-LC-20.0km(0.009mm)
             description = "-".join([d["Transceiver Type"].strip(),
                                     d["Wavelength(nm)"].strip() + "nm",
                                     d["Connector Type"].strip(),
                                     d["Transfer Distance(meter)"].strip() + "m"
                                     ])
+            if d["Vendor Part Number"].strip() == "Unknown":
+                # Port 28:
+                # Transceiver Type:
+                # Connector Type:
+                # Wavelength(nm): 2
+                # Vendor Name: Unknown
+                # Vendor Part Number: Unknown
+                # Vendor Serial Number: Unknown
+                # Fiber Type: Multi-Mode
+                # Transfer Distance(meter): 2
+                # SFP register information CRC recalculate ERROR!
+                continue
             r += [{
                 "type": "XCVR",
                 "number": num,
