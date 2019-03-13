@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+from collections import Iterable
 # NOC modules
 from noc.lib.text import split_alnum
 
@@ -29,13 +30,18 @@ def match(ctx, expr):
         return False
     else:
         for x in expr:
+            # iter matchers expression - caps, version, platform, vendor
             if x not in ctx:
                 return False
             if isinstance(expr[x], dict):
                 for m in expr[x]:
                     mf = matchers.get(m)
-                    if mf:
+                    if mf and not isinstance(expr[x][m], tuple):
                         if not mf(ctx[x], expr[x][m]):
+                            return False
+                    elif mf and isinstance(expr[x][m], tuple) and expr[x][m][0] in ctx[x]:
+                        # if caps matchers: "caps": {"$gte": ("DB | Interfaces", 40)}
+                        if not mf(str(ctx[x][expr[x][m][0]]), str(expr[x][m][1])):
                             return False
                     else:
                         return False
@@ -49,6 +55,9 @@ def match_regex(v, rx):
 
 
 def match_in(v, iter):
+    if isinstance(v, Iterable):
+        # if v list - check intersection
+        return set(v).intersection(set(iter))
     return v in iter
 
 
