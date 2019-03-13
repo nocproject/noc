@@ -642,6 +642,29 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             persist: false
         },
         {
+            name: "config_download_storage",
+            type: "string"
+        },
+        {
+            name: "config_download_storage__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "config_download_template",
+            type: "string"
+        },
+        {
+            name: "config_download_template__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "config_policy",
+            type: "string",
+            defaultValue: "s"
+        },
+        {
             name: "config_mirror_storage",
             type: "string"
         },

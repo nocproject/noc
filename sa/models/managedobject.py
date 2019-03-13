@@ -421,7 +421,20 @@ class ManagedObject(Model):
         ],
         default="P"
     )
-    #
+    # Config policy
+    config_policy = CharField(
+        "Config Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Script"),
+            ("S", "Script, Download"),
+            ("D", "Download, Script"),
+            ("d", "Download")
+        ],
+        default="P"
+    )
+    # Autosegmentation
     autosegmentation_policy = CharField(
         max_length=1,
         choices=[
@@ -1514,6 +1527,11 @@ class ManagedObject(Model):
         if self.denied_firmware_policy == "P":
             return self.object_profile.denied_firmware_policy
         return self.denied_firmware_policy
+
+    def get_config_policy(self):
+        if self.config_policy == "P":
+            return self.object_profile.config_policy
+        return self.config_policy
 
     def get_full_fqdn(self):
         if not self.fqdn:

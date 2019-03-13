@@ -506,6 +506,27 @@ class ManagedObjectProfile(models.Model):
         AddressProfile,
         null=True, blank=True
     )
+    # Config policy
+    config_policy = models.CharField(
+        _("Config Policy"),
+        max_length=1,
+        choices=[
+            ("s", "Script"),
+            ("S", "Script, Download"),
+            ("D", "Download, Script"),
+            ("d", "Download")
+        ],
+        default="s"
+    )
+    config_download_storage = DocumentReferenceField(
+        ExtStorage,
+        null=True, blank=True
+    )
+    config_download_template = models.ForeignKey(
+        Template, verbose_name=_("Config Mirror Template"),
+        blank=True, null=True,
+        related_name="config_download_objects_set"
+    )
     # Config mirror settings
     config_mirror_storage = DocumentReferenceField(
         ExtStorage,

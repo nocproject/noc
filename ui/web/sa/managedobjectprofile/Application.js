@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Application");
@@ -50,7 +50,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryCPEStatus: false
         },
         formulas: {
-            disableConfigPolicy: {
+            disableConfigMirrorPolicy: {
                 bind: {
                     bindTo: '{mirrorPolicy.selection}',
                     deep: true
@@ -58,6 +58,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 get: function(record) {
                     return record ? this.data.enableBoxDiscoveryConfig.checked
                         && record.get('id') === 'D' : true;
+                }
+            },
+            disableConfigPolicy: {
+                bind: {
+                    bindTo: '{configPolicy.selection}',
+                    deep: true
+                },
+                get: function(record) {
+                    return record ? this.data.enableBoxDiscoveryConfig.checked
+                        && (record.get('id') === 's') : true;
                 }
             },
             disableBeefPolicy: {
@@ -130,22 +140,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     },
                     align: "center"
                 },
-
-//                {
-//                    text: __("SLA"),
-//                    dataIndex: "enable_box_discovery_sla",
-//                    width: 60,
-//                    renderer: NOC.render.Bool,
-//                    align: "center"
-//                },
-//                {
-//                    text: __("CPE"),
-//                    dataIndex: "enable_box_discovery_cpe",
-//                    width: 60,
-//                    renderer: NOC.render.Bool,
-//                    align: "center"
-//                },
-
                 {
                     text: __("Failed interval"),
                     dataIndex: "box_discovery_failed_interval",
@@ -1586,6 +1580,76 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             items: [
                                 {
                                     xtype: "fieldset",
+                                    title: __("Config Policy"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "config_policy",
+                                            xtype: "combobox",
+                                            reference: "configPolicy",
+                                            fieldLabel: __("Config Policy"),
+                                            allowBlank: false,
+                                            tooltip: __('Select method of config gathering'),
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    {"id": "s", "label": __("Script")},
+                                                    {"id": "S", "label": __("Script, Download")},
+                                                    {"id": "D", "label": __("Download, Script")},
+                                                    {"id": "d", "label": __("Download")}
+                                                ]
+                                            },
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryConfig.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+
+                                        },
+                                        {
+                                            name: "config_download_storage",
+                                            xtype: "main.extstorage.LookupField",
+                                            fieldLabel: __("Storage"),
+                                            query: {
+                                                type: "config_upload"
+                                            },
+                                            allowBlank: true,
+                                            tooltip: __('External storage for config downloading. ' +
+                                                'Setup in Main -> Setup -> Ext. storage'),
+                                            bind: {
+                                                disabled: "{disableConfigPolicy}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        },
+                                        {
+                                            name: "config_download_template",
+                                            xtype: "main.template.LookupField",
+                                            fieldLabel: __("Path Template"),
+                                            allowBlank: true,
+                                            tooltip: __('Save config path template. ' +
+                                                'Setup on Main -> Setup -> Templates, subject form.' +
+                                                'Simple is: {{ object.name }}.txt on subject or <br/>' +
+                                                '{{datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}} for time'),
+                                            bind: {
+                                                disabled: "{disableConfigPolicy}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
                                     title: __("Config Mirror"),
                                     layout: "hbox",
                                     defaults: {
@@ -1631,7 +1695,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             tooltip: __('External storage for config save. ' +
                                                 'Setup in Main -> Setup -> Ext. storage'),
                                             bind: {
-                                                disabled: "{disableConfigPolicy}"
+                                                disabled: "{disableConfigMirrorPolicy}"
                                             },
                                             listeners: {
                                                 render: me.addTooltip
@@ -1647,7 +1711,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 'Simple is: {{ object.name }}.txt on subject or <br/>' +
                                                 '{{datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}} for time'),
                                             bind: {
-                                                disabled: "{disableConfigPolicy}"
+                                                disabled: "{disableConfigMirrorPolicy}"
                                             },
                                             listeners: {
                                                 render: me.addTooltip
