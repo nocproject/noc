@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -55,8 +55,8 @@ class Script(BaseScript):
         r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
         r"assigned\s+primary\s*\n", re.MULTILINE)
     rx_lldp = re.compile(
-        "LLDP enable status:\s+enable.+\n"
-        "LLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE)
+        r"LLDP enable status:\s+enable.+\n"
+        r"LLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE)
     rx_lldp_iscom2624g = re.compile(
         r"^(?P<ifname>\S+)\s+enable\s+\S+\s*\n", re.MULTILINE)
     rx_descr = re.compile(
@@ -72,7 +72,7 @@ class Script(BaseScript):
         r"(^\s*Internet Address is (?P<ip>\S+)\s+primary\s*\n)?"
         r"(^\s*Internet v6 Address is (?P<ipv6>\S+)\s+Link\s*\n)?"
         r"(^\s*MTU (?P<mtu>\d+) bytes\s*\n)?", re.MULTILINE)
-    rx_ifunit = re.compile("\D+(?P<ifunit>\d+\S*)")
+    rx_ifunit = re.compile(r"\D+(?P<ifunit>\d+\S*)")
 
     IFTYPES = {
         "gigaethernet": "physical",
@@ -80,6 +80,7 @@ class Script(BaseScript):
         "vlan-interface": "SVI",
         "null": "null",
         "loopback": "loopback",
+        "trunk": "aggregated",
         "unknown": "unknown"
     }
 
@@ -280,7 +281,10 @@ class Script(BaseScript):
         mac = v["mac"]
         # XXX: This is a dirty hack !!!
         # I do not know, how get ip interface MAC address
-        v = self.cli("show interface ip 0")
+        try:
+            v = self.cli("show interface ip")
+        except self.CLISyntaxError:
+            v = self.cli("show interface ip 0")
         for match in self.rx_iface.finditer(v):
             ifname = match.group("iface")
             i = {
@@ -308,8 +312,6 @@ class Script(BaseScript):
                     i['description'] = q['description']
                     i['subinterfaces'][0]["description"] = q['description']
             l3 += [i]
-            # parse only "0" interface
-            break
 
         try:
             v = self.cli("show ip interface brief")
