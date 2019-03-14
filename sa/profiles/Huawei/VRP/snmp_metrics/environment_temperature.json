@@ -1,0 +1,14 @@
+{
+  "$metric": "Environment | Temperature",
+  "$type": "match",
+  "$match": [{
+    "$match": "is_extended_entity_mib_supported",
+    "$type": "caplist",
+    "capability": "Huawei | SNMP | ModuleIndex",
+    "separator": " | ",
+    "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11.{{ item }}",
+    "path": ["0", "0", "item", "Temperature Sensor"],
+    "type": "gauge",
+    "scale": 1
+   }]
+}
