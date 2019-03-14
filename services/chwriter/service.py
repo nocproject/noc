@@ -114,7 +114,7 @@ class CHWriterService(Service):
             self.logger.info(
                 "Feeding speed: %.2frecords/sec, active channels: %s, buffered records: %d",
                 speed,
-                metrics["channels_active"],
+                metrics["channels_active"].value,
                 metrics["records_buffered"].value
             )
         self.last_metrics = nm
@@ -155,7 +155,7 @@ class CHWriterService(Service):
                 method="POST",
                 body=data,
                 user=config.clickhouse.rw_user,
-                password=config.clickhouse.rw_password,
+                password=config.clickhouse.rw_password or "",
                 content_encoding=config.clickhouse.encoding
             )
             if code == 200:

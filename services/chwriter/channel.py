@@ -42,7 +42,7 @@ class Channel(object):
         self.url = "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
             address,
             config.clickhouse.rw_user,
-            config.clickhouse.rw_password,
+            config.clickhouse.rw_password or "",
             db,
             self.encoded_sql
         )
