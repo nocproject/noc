@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | MIB | ENTITY-EXTENT-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "8b446911-498f-472f-9c33-30a4fb408f3c",
+    "description": "Huawei supported OIDs from HUAWEI-ENTITY-EXTENT-MIB.",
+    "type": "bool",
+    "card_template": null
+}
