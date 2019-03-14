@@ -53,6 +53,11 @@ class Profile(BaseProfile):
             "platform": {
                 "$regex": "vrr|csrx"
             }
+        },
+        "is_gte_16": {
+            "version": {
+                "$gte": "16"
+            }
         }
     }
 
