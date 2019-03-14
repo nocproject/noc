@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Rotek.RTBSv1.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,8 +10,9 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -19,15 +20,14 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_iface = re.compile("^\s*WAN:\s+(?P<ifname>br\d+)", re.MULTILINE)
-    rx_mac = re.compile("^\s*br\d+ mac:\s+(?P<mac>\S+)", re.MULTILINE)
+    rx_iface = re.compile(r"^\s*WAN:\s+(?P<ifname>br\d+)", re.MULTILINE)
+    rx_mac = re.compile(r"^\s*br\d+ mac:\s+(?P<mac>\S+)", re.MULTILINE)
 
-    def execute_snmp(self):
-        base = self.snmp.get("1.3.6.1.2.1.2.2.1.6.2")
-        return [{
-            "first_chassis_mac": base,
-            "last_chassis_mac": base
-        }]
+    SNMP_GETNEXT_OIDS = {
+        "SNMP": [
+            mib["IF-MIB::ifPhysAddress"]
+        ]
+    }
 
     def execute_cli(self):
         try:
