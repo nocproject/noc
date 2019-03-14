@@ -1,0 +1,7 @@
+{
+    "vendor__code": "SKS",
+    "name": "SKS-16E1-IP-1U",
+    "$collection": "inv.platforms",
+    "uuid": "cd509d78-275c-465e-98bd-7e3b183795ed",
+    "snmp_sysobjectid": "1.3.6.1.4.1.40535.1.14"
+}
