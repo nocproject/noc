@@ -10,6 +10,7 @@
 from collections import defaultdict
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
+from noc.core.error import NOCError
 
 
 class STPCheck(TopologyDiscoveryCheck):
@@ -81,7 +82,20 @@ class STPCheck(TopologyDiscoveryCheck):
                 ro.name, self.required_script
             )
             return dmap
-        result = ro.scripts.get_spanning_tree()
+        try:
+            result = ro.scripts.get_spanning_tree()
+        except NOCError as e:
+            self.logger.error(
+                "Cannot get neighbors from candidate %s: %s",
+                ro.name,
+                e
+            )
+            self.set_problem(
+                # path=list(candidates[remote_object])[0][0],
+                message="Cannot get neighbors from candidate %s: %s" % (
+                    ro.name, e)
+            )
+            return dmap
         for i in result["instances"]:
             for iface in i["interfaces"]:
                 if iface["role"] == "designated":
@@ -94,6 +108,6 @@ class STPCheck(TopologyDiscoveryCheck):
 
     @staticmethod
     def convert_port_id(port_id):
-        l, r = [int(x) for x in port_id.split(".")]
-        l //= 16
-        return "%x" % ((l << 12) + r)
+        left, right = [int(x) for x in port_id.split(".")]
+        left //= 16
+        return "%x" % ((left << 12) + right)
