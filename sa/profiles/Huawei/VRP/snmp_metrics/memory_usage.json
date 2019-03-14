@@ -1,25 +1,8 @@
 {
   "$metric": "Memory | Usage",
   "$type": "match",
-  "$matchers": {
-    "is_5328": {
-      "platform": {
-        "$regex": "5328"
-      }
-    },
-    "is_AR2240": {
-        "platform": {
-          "$regex": "AR2240"
-        }
-      },
-    "is_AR1220": {
-        "platform": {
-          "$regex": "AR1220"
-        }
-      }
-    },
   "$match": [{
-    "$match": "is_5328",
+    "$match": "is_stack",
     "$type": "slot",
     "oid": [
       "1.3.6.1.4.1.2011.6.3.5.1.1.3.{{ hwSlotIndex }}",
@@ -27,18 +10,15 @@
       ],
     "scale": "percent"
    },{
-    "$match": "is_AR2240",
-    "$type": "oid",
-    "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.2883593",
+    "$match": "is_extended_entity_mib_supported",
+    "$type": "caplist",
+    "capability": "Huawei | SNMP | ModuleIndex",
+    "separator": " | ",
+    "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.{{ item }}",
+    "path": ["0", "item", "0"],
     "type": "gauge",
     "scale": 1
    },{
-    "$match": "is_AR1220",
-    "$type": "oid",
-    "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.9",
-    "type": "gauge",
-    "scale": 1
-  },{
     "$type": "oid",
     "oid": [
       "1.3.6.1.4.1.2011.6.1.2.1.1.2.65536",
