@@ -8,6 +8,7 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.mib import mib
 from noc.sa.interfaces.igetversion import IGetVersion
 
 
@@ -15,15 +16,18 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_version"
     cache = True
     interface = IGetVersion
+    always_prefer = "S"
+
+    rx_simple_version = re.compile("\d+\.\d+")
 
     rx_ver = re.compile(
-        r"^VRP.+Software, Version (?P<version>[^ ,]+),? .*?\n"
+        r"^VRP.+Software, Version (?P<version>[^ ,]+),?\s*(\(\S+\s+(?P<image>\S+)\))?.*?\n"
         r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]+uptime",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
     rx_ver_snmp = re.compile(
         r"Versatile Routing Platform Software.*?"
-        r"Version (?P<version>[^ ,]+),? .*?\n"
+        r"Version (?P<version>[^ ,]+),?\s*(\(\S+\s+(?P<image>\S+)\))?.*?\n"
         r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+)?"
         r"[^ \t\n\r\f\v\-]+)[^\n]+",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
@@ -74,6 +78,8 @@ class Script(BaseScript):
                           r"\[(?P<part_name>Board\sProperties)\]\n"
                           r"(?P<part_body>(.+\n)+)\n", re.IGNORECASE | re.MULTILINE)
 
+    rx_patch = re.compile(r"Patch Package Name\s*:(?P<patch_name>.+)\n"
+                          r"Patch Package Version\s*:(?P<patch_version>\S+)")
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
 
     def parse_serial(self):
@@ -82,7 +88,7 @@ class Script(BaseScript):
             # Trying SNMP
             try:
                 # SNMPv2-MIB::sysDescr.0
-                for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
+                for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
                     if not x:
                         continue
                     r += [x.strip(" \x00")]
@@ -100,6 +106,29 @@ class Script(BaseScript):
             v = dict(x.split("=", 1) for x in v["part_body"].splitlines())
             if "BarCode" in v:
                 r += [v["BarCode"].strip()]
+        return r
+
+    def parse_patch(self):
+        r = []
+        if self.has_snmp():
+            # Trying SNMP
+            try:
+                # SNMPv2-MIB::sysDescr.0
+                for oid, x in self.snmp.getnext(mib["HUAWEI-SYS-MAN-MIB::hwPatchVersion", 0]):
+                    if not x:
+                        continue
+                    r += [x.strip(" \x00")]
+                if r:
+                    return r
+            except self.snmp.TimeOutError:
+                pass
+        try:
+            v = self.cli("display patch-information")
+        except self.CLISyntaxError:
+            return []
+        v = self.rx_patch.search(v)
+        if v and v.group("patch_version"):
+            r += [v.group("patch_version")]
         return r
 
     def parse_version(self, v):
@@ -138,10 +167,10 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
 
-        v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
+        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         platform, version, image = self.parse_version(v)
         serial = []
-        for oid, x in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.11", cached=False):
+        for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
             if not x:
                 continue
             serial += [x.strip(" \x00")]
@@ -151,22 +180,21 @@ class Script(BaseScript):
             "platform": platform,
             "version": version
         }
+        attributes = {}
         if image:
             r["version"] = "%s (%s)" % (version, image)
             r["image"] = image
         if serial:
-            r["attributes"] = {"Serial Number": serial[0]}
+            attributes["Serial Number"] = serial[0]
+        patch = self.parse_patch()
+        if patch:
+            attributes["Patch Version"] = patch[0]
+        if attributes:
+            r["attributes"] = attributes.copy()
         return r
 
     def execute_cli(self):
         v = ""
-        if self.has_snmp():
-            # Trying SNMP
-            try:
-                # SNMPv2-MIB::sysDescr.0
-                v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-            except self.snmp.TimeOutError:
-                pass
         if v in self.BAD_PLATFORM:
             # Trying CLI
             try:
@@ -180,10 +208,16 @@ class Script(BaseScript):
             "platform": platform,
             "version": version
         }
+        attributes = {}
         if image:
             r["version"] = "%s (%s)" % (version, image)
             r["image"] = image
         serial = self.parse_serial()
         if serial:
-            r["attributes"] = {"Serial Number": serial[0]}
+            attributes["Serial Number"] = serial[0]
+        patch = self.parse_patch()
+        if patch:
+            attributes["Patch Version"] = patch[0]
+        if attributes:
+            r["attributes"] = attributes.copy()
         return r
