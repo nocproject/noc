@@ -22,7 +22,9 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         r = self.cli("show spanning-tree bridge | match Enabled")
-        return "?STP" in r
+        if "?STP" in r or "MSTP" in r:
+            return True
+        return False
 
     @false_on_cli_error
     def has_lldp_cli(self):
@@ -49,13 +51,35 @@ class Script(BaseScript):
         r = self.scripts.get_oam_status()
         return bool(r)
 
+    # def has_oam_snmp(self):
+    #    # on qfx3500 14.1X53-D46.7 return nothing
+    #
+    #    """
+    #    Check box has oam enabled
+    #    """
+    #    # dot3OamAdminState
+    #    for v, r in self.snmp.getnext("1.3.6.1.2.1.158.1.1.1.1", bulk=False):
+    #        if is_int(r) and int(r) == 1:  # enabled(1)
+    #            return True
+    #    return False
+
     @false_on_cli_error
     def has_bfd_cli(self):
         """
-        Check box has oam enabled
+        Check box has bfd enabled
         """
         r = self.cli("show bfd session")
         return "0 sessions, 0 clients" not in r
+
+    def has_bfd_snmp(self):
+        """
+        Check box has bfd enabled
+        """
+        # bfdAdminStatus
+        bfd = self.snmp.get("1.3.6.1.4.1.2636.5.3.1.1.1.1.0")
+        if is_int(bfd) and int(bfd) == 1:  # enabled(1)
+            return True
+        return False
 
     @false_on_cli_error
     def has_lacp_cli(self):
