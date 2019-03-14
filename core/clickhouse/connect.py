@@ -23,10 +23,10 @@ class ClickhouseClient(object):
         self.read_only = read_only
         if read_only:
             self.user = config.clickhouse.ro_user
-            self.password = config.clickhouse.ro_password
+            self.password = config.clickhouse.ro_password or ""
         else:
             self.user = config.clickhouse.rw_user
-            self.password = config.clickhouse.rw_password
+            self.password = config.clickhouse.rw_password or ""
         if host:
             self.addresses = ["%s:%s" % (host, port or 8123)]
         elif read_only:
