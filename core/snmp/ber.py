@@ -214,8 +214,27 @@ class BERDecoder(object):
             r += [v]
         return r
 
+    def parse_opaque(self, msg):
+        return self.parse_tlv(msg)[0]
+
     def parse_utctime(self, msg):
         return msg  # @todo: Convert to datetime
+
+    def parse_float(self, msg):
+        """
+        ANSI/IEEE Std 754-1985 binary floating point
+        :param msg:
+        :return:
+        """
+        return struct.unpack("!f", msg)[0]
+
+    def parse_double(self, msg):
+        """
+        ANSI/IEEE Std 754-1985 binary floating point
+        :param msg:
+        :return:
+        """
+        return struct.unpack("!d", msg)[0]
 
     DECODERS = {
         # > Universal types
@@ -282,12 +301,15 @@ class BERDecoder(object):
         did(64, False, 1): parse_int,  # Counter32
         did(64, False, 2): parse_int,  # Gauge32
         did(64, False, 3): parse_int,  # TimeTicks
-        did(64, False, 4): parse_p_octetstring,  # Opaque
+        did(64, False, 4): parse_opaque,  # Opaque
         # 5: NsapAddress
         did(64, False, 6): parse_int,   # 6, Counter64
         # 7: UInteger32
         did(64, False, 14): parse_p_oid,  # 14: Uncompressed delta identifier
-        did(64, False, 15): parse_compressed_oid  # 15: Compressed delta identifier
+        did(64, False, 15): parse_compressed_oid,  # 15: Compressed delta identifier
+        # SNMP Float types
+        did(128, False, 120): parse_float,
+        did(128, False, 121): parse_double
     }
 
 
