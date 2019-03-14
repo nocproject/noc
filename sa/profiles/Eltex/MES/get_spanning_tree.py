@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -64,6 +64,10 @@ class Script(BaseScript):
                 instance_id = int(match.group("instance"))
             ports[instance_id] = {}
             for I in parse_table(instance):
+                # On  MES-3124F version 2.5.48.5[aa39f5d3] found strange line:
+                # \r\n                            0                                               \r\n
+                if not I[0]:
+                    continue
                 interface = I[0]
                 priority = I[2].split('.')[0]
                 ports[instance_id][interface] = {
