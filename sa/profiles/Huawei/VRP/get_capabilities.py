@@ -9,6 +9,7 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -92,19 +93,20 @@ class Script(BaseScript):
         For devices contains more one slots get count
         :return:
         """
-        slots = set([])
+        slots = set()
         if "ME60" in self.version.get("platform", ""):
             # ME60-X16A, ME60-X8A, ME60-X16, ME60-X8, ME60-X3 filter LPU
             n = self.version.get("platform", "").strip("A")
             n = int(n[6:])
 
             if self.has_snmp():
-                oids = ["1.3.6.1.2.1.47.1.1.1.1.5", "1.3.6.1.2.1.47.1.1.1.1.6"]
                 s_pos = 0
-                for index, type, pos in list(self.snmp.get_tables(oids, bulk=True)):
-                    if type == 5:
-                        s_pos = pos
-                    elif type == 9:
+                for index, entity_type, entity_pos in list(self.snmp.get_tables(
+                        [mib["ENTITY-MIB::entPhysicalClass"], mib["ENTITY-MIB::entPhysicalParentRelPos"]],
+                        bulk=True, cached=True)):
+                    if entity_type == 5:
+                        s_pos = entity_pos
+                    elif entity_type == 9:
                         slots.add(s_pos)
 
             return [str(x) for x in slots if x <= n]
@@ -120,6 +122,26 @@ class Script(BaseScript):
         r = self.cli("display lacp statistics eth-trunk")
         return r
 
+    def has_mibs(self):
+        r = []
+        try:
+            self.snmp.getnext("1.3.6.1.4.1.2011.5.25.31.1.1.1.1", bulk=False, only_first=True)
+            r += ["Huawei | MIB | ENTITY-EXTENT-MIB"]
+        except self.snmp.TimeOutError:
+            pass
+        return r
+
+    def get_modules(self):
+        modules = set()
+        if self.has_snmp():
+            for index, entity_descr, entity_class, entity_fru in list(self.snmp.get_tables(
+                    [mib["ENTITY-MIB::entPhysicalDescr"], mib["ENTITY-MIB::entPhysicalClass"],
+                     mib["ENTITY-MIB::entPhysicalIsFRU"]],
+                    bulk=True, cached=True)):
+                if entity_class == 9 and entity_fru == 2:
+                    modules.add(str(index.split(".")[-1]))
+        return list(modules)
+
     def execute_platform_cli(self, caps):
         if self.has_ndp_cli():
             caps["Huawei | NDP"] = True
@@ -131,9 +153,19 @@ class Script(BaseScript):
         if sl:
             caps["Slot | Members"] = len(sl) if len(sl) != 1 else 0
             caps["Slot | Member Ids"] = " | ".join(sl)
+        mod = self.get_modules()
+        if mod:
+            caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
+        for m in self.has_mibs():
+            caps[m] = True
 
     def execute_platform_snmp(self, caps):
         sl = self.has_slot()
         if sl:
             caps["Slot | Members"] = len(sl) if len(sl) != 1 else 0
             caps["Slot | Member Ids"] = " | ".join(sl)
+        mod = self.get_modules()
+        if mod:
+            caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
+        for m in self.has_mibs():
+            caps[m] = True

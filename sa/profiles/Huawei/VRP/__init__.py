@@ -84,6 +84,16 @@ class Profile(BaseProfile):
             "platform": {
                 "$regex": "^AR\d+.+"
             }
+        },
+        "is_extended_entity_mib_supported": {
+            "caps": {
+                "$in": ["Huawei | MIB | ENTITY-EXTENT-MIB"]
+            }
+        },
+        "is_stack": {
+            "caps": {
+                "$in": ["Stack | Members"]
+            }
         }
     }
 
