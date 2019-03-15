@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-3400-10T-AC",
+    "$collection": "inv.platforms",
+    "uuid": "95ec8ef2-b319-437a-b82c-d2eae7bdb689",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.1.220"
+}

@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-2500E-10",
+    "$collection": "inv.platforms",
+    "uuid": "6a1fdae0-842b-4501-8dae-f58a2d593c3e",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.6.55"
+}
