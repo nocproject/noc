@@ -4,7 +4,7 @@
     "uuid": "f0eec8df-0cec-44d6-b40a-9cdf8892272e",
     "scope__name": "Interface",
     "field_name": "cinr",
-    "field_type": "UInt16",
+    "field_type": "Int16",
     "description": "Carrier to Interference + Noise Ratio",
     "measure": "dB"
 }
