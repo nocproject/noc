@@ -16,7 +16,6 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    @property
     def execute(self):
         res = self.http.get("/cgi-bin/admin/param.cgi?action=list", json=False, cached=True, use_basic=True)
         r = {}
@@ -30,8 +29,13 @@ class Script(BaseScript):
             "vendor": "Beward",
             "platform": r["root.Brand.ProdNbr"],
             "version": r["root.Properties.Firmware.Version"],
-            "attributes":
-                {"build": r["root.Properties.Firmware.BuildDate"]}
+            "attributes": {
+                # "Boot PROM": match.group("bootprom"),
+                "Build Date": r["root.Properties.Firmware.BuildDate"],
+                # "HW version": system_info["hardwareVersion"],
+                # "Serial Number": system_info["serialNumber"]
+                # "Firmware Type":
+            }
         }
 
         return ver
