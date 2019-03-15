@@ -22,27 +22,19 @@ class Script(BaseScript):
     rx_date = re.compile(r"(?P<yy>\d\d)(?P<mm>\d\d)(?P<dd>\d\d)")
 
     def execute(self):
-        v = self.http.get("/ISAPI/System/deviceInfo/capabilities", json=False, cached=True, use_basic=True)
+        ns = {'isapi': 'http://www.isapi.org/ver20/XMLSchema'}
+        v = self.http.get("/ISAPI/System/deviceInfo", use_basic=True)
         root = ElementTree.fromstring(v)
-        for child in root:
-            key = child.tag.split("}")[1][0:]
-            if key == "model":
-                platform = child.text
-            elif key == "serialNumber":
-                serial = child.text
-            elif key == "firmwareVersion":
-                version = child.text
-            elif key == "firmwareReleasedDate":
-                build = child.text
-                match = self.rx_date.search(build)
-                build = "20%s-%s-%s" % (match.group("yy"), match.group("mm"), match.group("dd"))
 
         return {
             "vendor": 'Hikvision',
-            "platform": platform,
-            "version": version,
+            "platform": root.find("isapi:model", ns).text,
+            "version": root.find("isapi:firmwareVersion", ns).text,
             "attributes": {
-                "Serial Number": serial,
-                "build": build
+                # "Boot PROM": match.group("bootprom"),
+                "Build Date": root.find("isapi:firmwareReleasedDate", ns).text,
+                "HW version": root.find("isapi:firmwareVersion", ns).text,
+                "Serial Number": root.find("isapi:serialNumber", ns).text
+                # "Firmware Type":
             }
         }

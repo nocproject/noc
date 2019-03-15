@@ -30,17 +30,18 @@ class Script(BaseScript):
         software_version = self.profile.parse_equal_output(software_version)
         version, build = software_version["version"].split(",")
         build = build.split(":")[1]
-        # print(software_version)
+
+        attributes = {
+            # "Boot PROM": match.group("bootprom"),
+            "Build Date": build,
+            "HW version": system_info["hardwareVersion"],
+            "Serial Number": system_info["serialNumber"]
+            # "Firmware Type":
+        }
 
         return {
             "vendor": "Dahua",
             "platform": system_info["deviceType"],
             "version": version,
-            "attributes": {
-                # "Boot PROM": match.group("bootprom"),
-                "Build Date": build,
-                "HW version": system_info["hardwareVersion"],
-                "Serial Number": system_info["serialNumber"]
-                # "Firmware Type":
-            }
+            "attributes": attributes
         }
