@@ -1,0 +1,7 @@
+{
+    "vendor__code": "QTECH",
+    "name": "QSW-8200-28F-AC-DC",
+    "$collection": "inv.platforms",
+    "uuid": "421301a0-1890-4321-be7e-66957597d53d",
+    "snmp_sysobjectid": "1.3.6.1.4.1.27514.1.1.2.59"
+}
