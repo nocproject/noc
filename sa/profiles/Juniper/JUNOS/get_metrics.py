@@ -21,7 +21,7 @@ class Script(GetMetricsScript):
 
     @metrics(
         ["Subscribers | Summary"],
-        has_capability="BRAS | PPPoE",
+        #        has_capability="BRAS | PPPoE",
         volatile=False,
         access="S"  # not CLI version
     )
