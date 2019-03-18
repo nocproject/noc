@@ -106,8 +106,8 @@ class Script(BaseScript):
                         "location": ""
                     }
         for ont_id in r:
-            if r[ont_id]["status"] != "active":
-                continue
+            # if r[ont_id]["status"] != "active":
+            #     continue
             v = self.cli("display ont info %s %s %s %s" % tuple(ont_id.split("/")))
             parts = self.splitter.split(v)
             parse_result = parse_kv(self.detail_map, parts[1])
@@ -125,7 +125,7 @@ class Script(BaseScript):
         names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))}
         for ont_index, ont_serial, ont_descr in self.snmp.get_tables(
                 [mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntDespt"]]
+                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntDespt"]], bulk=False
         ):
             ifindex, ont_id = ont_index.split(".")
             ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
@@ -144,11 +144,18 @@ class Script(BaseScript):
         for ont_index, ont_version, ont_vendor, ont_model in self.snmp.get_tables(
                 [mib["HUAWEI-XPON-MIB::hwGponDeviceOntVersion"],
                  mib["HUAWEI-XPON-MIB::hwGponDeviceOntVendorId"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntProductId"]]
+                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntProductId"]], bulk=False
         ):
-            r[ont_index].update({
-                "version": ont_version,
-                "vendor": ont_vendor,
-                "model": ont_model
-            })
+            if ont_version != -1:
+                r[ont_index]["version"] = ont_version
+            if ont_model != -1:
+                r[ont_index]["model"] = ont_model
+            if ont_vendor != -1:
+                r[ont_index]["vendor"] = ont_vendor
+        for ont_index, ont_distance in self.snmp.get_tables(
+                [mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRanging"]], bulk=False
+        ):
+            if ont_distance != -1:
+                r[ont_index]["distance"] = ont_distance
+
         return six.itervalues(r)
