@@ -9,6 +9,7 @@
 # Python modules
 import re
 from collections import Iterable
+import six
 # NOC modules
 from noc.lib.text import split_alnum
 
@@ -55,10 +56,12 @@ def match_regex(v, rx):
 
 
 def match_in(v, iter):
+    if isinstance(v, six.string_types):
+        return str(v) in iter
     if isinstance(v, Iterable):
         # if v list - check intersection
-        return set(v).intersection(set(iter))
-    return v in iter
+        return bool(set(v).intersection(set(iter)))
+    return False
 
 
 def match_gt(v, cv):
