@@ -43,6 +43,14 @@ class Profile(BaseProfile):
         "end_of_context": "exit"
     }
 
+    matchers = {
+        "is_builtin_controller": {
+            "platform": {
+                "$in": ["ALS24110P"]
+            }
+        }
+    }
+
     @staticmethod
     def parse_kv_out(out):
         r = {}

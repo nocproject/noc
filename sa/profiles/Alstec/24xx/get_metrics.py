@@ -59,6 +59,7 @@ class Script(GetMetricsScript):
         ["Interface | Errors | CRC", "Interface | Errors | Frame"],
         has_capability="DB | Interfaces",
         volatile=False,
+        matcher="is_builtin_controller",
         access="C"  # CLI version
     )
     def get_interface_metrics(self, metrics):
@@ -77,6 +78,7 @@ class Script(GetMetricsScript):
         ["Environment | Electric current", "Environment | Sensor Status",
          "Environment | Temperature", "Environment | Voltage"],
         volatile=False,
+        matcher="is_builtin_controller",
         access="C"  # CLI version
     )
     def get_boxshso_metrics(self, metrics):
