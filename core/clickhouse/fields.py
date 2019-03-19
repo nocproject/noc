@@ -254,7 +254,7 @@ class ReferenceField(BaseField):
 
 
 class IPv4Field(BaseField):
-    db_type = "UInt32"
+    db_type = "IPv4"
 
     def to_tsv(self, value):
         """
@@ -271,7 +271,10 @@ class IPv4Field(BaseField):
         if value is None:
             return "0"
         else:
-            return str(struct.unpack("!I", socket.inet_aton(value))[0])
+            return socket.inet_ntoa(struct.pack("!I", int(value)))
+
+    def get_db_type(self):
+        return "UInt32"
 
 
 class AggregatedField(BaseField):
@@ -357,7 +360,8 @@ class NestedField(ArrayField):
 
     def get_select_sql(self):
         splitter = ",':',"
-        last_field = "%s.%s" % (self.name, self.field_type._fields_order[-1])
-        m = ["toString(%s.%s[indexOf(%s, x)])" % (self.name, x, last_field) for x in self.field_type._fields_order[:-1]]
-        r = ["arrayStringConcat(arrayMap(x -> concat(", splitter.join(m), ", ':', toString(x)), %s),',')" % last_field]
+        # last_field = "%s.%s" % (self.name, self.field_type._fields_order[-1])
+        index_field = "%s.%s" % (self.name, self.field_type._fields_order[-1])
+        m = ["toString(%s.%s[indexOf(%s, x)])" % (self.name, x, index_field) for x in self.field_type._fields_order[:-1]]
+        r = ["arrayStringConcat(arrayMap(x -> concat(", splitter.join(m), ", ':', toString(x)), %s),',')" % index_field]
         return "".join(r)
