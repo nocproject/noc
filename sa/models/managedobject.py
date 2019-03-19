@@ -971,7 +971,13 @@ class ManagedObject(Model):
         ):
             TextIndex.update_index(ManagedObject, self)
 
-    def save_config(self, data):
+    def save_config(self, data, validate=True):
+        """
+        Save new configuration to GridVCS
+        :param data: config
+        :param validate: Run config validation
+        :return: True if config has been changed, False otherwise
+        """
         if isinstance(data, list):
             # Convert list to plain text
             r = []
@@ -1058,7 +1064,9 @@ class ManagedObject(Model):
         # Apply mirroring settings
         self.mirror_config(data, changed)
         # Run config validation
-        self.validate_config(changed)
+        if validate:
+            self.validate_config(changed)
+        return changed
 
     def notify_config_changes(self, is_new, data, diff):
         """

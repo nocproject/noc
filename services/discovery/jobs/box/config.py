@@ -22,7 +22,9 @@ class ConfigCheck(DiscoveryCheck):
         self.logger.info("Checking config")
         config = self.get_config()
         if config:
-            self.object.save_config(config)
+            changed = self.object.save_config(config, validate=False)
+            self.set_artefact("config_changed", changed)
+            self.set_artefact("config_acquired", True)
         else:
             self.logger.error("Cannot get config")
 
