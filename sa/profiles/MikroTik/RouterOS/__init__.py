@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     name = "MikroTik.RouterOS"
     command_submit = "\r"
     command_exit = "quit"
-    pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "
+    pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] [^>]*> "
     pattern_more = [
         ("Please press \"Enter\" to continue!", "\n"),
         ("q to abort", "q"),
