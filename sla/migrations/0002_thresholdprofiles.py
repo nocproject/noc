@@ -15,6 +15,8 @@ import cachetools
 # NOC modules
 from noc.lib.nosql import get_db
 
+SAVE_FIELDS = {"_id", "metric_type", "enable_periodic", "enable_box", "is_stored"}
+
 
 class Migration(object):
     _ac_cache = cachetools.TTLCache(maxsize=5, ttl=60)
@@ -28,7 +30,11 @@ class Migration(object):
         for doc in p_coll.find():
             metrics = doc.get("metrics") or []
             changed = [m for m in metrics if self.has_thresholds(m)]
-            if not changed:
+            if not changed and metrics:
+                for metric in metrics:
+                    for f in set(metric) - SAVE_FIELDS:
+                        del metric[f]
+            elif not changed:
                 continue
             for n, metric in enumerate(changed):
                 tp_id = bson.ObjectId()
@@ -41,7 +47,7 @@ class Migration(object):
                     tp = {"_id": tp_id}
                 # Fill profile
                 tp["name"] = "sp-%05d-%03d" % (next(current), n)
-                tp["description"] = "Migrated for interface profile '%s' metric '%s'" % (
+                tp["description"] = "Migrated for SLA profile '%s' metric '%s'" % (
                     doc["name"],
                     metric["metric_type"]
                 )
