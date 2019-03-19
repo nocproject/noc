@@ -21,6 +21,7 @@ from .caps import CapsCheck
 from .interface import InterfaceCheck
 from .id import IDCheck
 from .config import ConfigCheck
+from .configvalidation import ConfigValidationCheck
 from .asset import AssetCheck
 from .vlan import VLANCheck
 from .cdp import CDPCheck
@@ -101,16 +102,18 @@ class BoxDiscoveryJob(MODiscoveryJob):
     def run_checks(self):
         if self.object.object_profile.enable_box_discovery_version:
             VersionCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_config:
+            ConfigCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:
             CapsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_interface:
             InterfaceCheck(self).run()
         if self.object.object_profile.enable_box_discovery_id:
             IDCheck(self).run()
-        if self.object.object_profile.enable_box_discovery_config:
-            ConfigCheck(self).run()
         if self.object.object_profile.enable_box_discovery_asset:
             AssetCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_config:
+            ConfigValidationCheck(self).run()
         if self.object.object_profile.enable_box_discovery_vlan:
             VLANCheck(self).run()
         if self.object.object_profile.enable_box_discovery_nri_portmap:
