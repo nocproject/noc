@@ -84,7 +84,10 @@ class Script(GetMetricsScript):
                    "battery_pack": "show box-shso bp",
                    "main_power_supply": "show box-shso pum"}
         for module, command in six.iteritems(modules):
-            v = self.cli(command)
+            try:
+                v = self.cli(command)
+            except self.CLISyntaxError:
+                continue
             v = self.profile.parse_kv_out(v)
             for m, v in six.iteritems(v):
                 m = m.lower()
