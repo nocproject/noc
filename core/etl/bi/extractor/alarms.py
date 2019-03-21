@@ -129,6 +129,8 @@ class AlarmsExtractor(ArchivingExtractor):
                 subscribers=[{"profile": SubscriberProfile.get_by_id(ss["profile"]).bi_id,
                               "summary": ss["summary"]} for ss in d.get("direct_subscribers", [])],
                 # location=mo.container.get_address_text()
+                ack_user=d.get("ack_user", ""),
+                ack_ts=d.get("ack_ts")
             )
             nr += 1
             self.last_ts = d["clear_timestamp"]
