@@ -65,10 +65,13 @@ class Script(BaseScript):
         r"^\s*\d+\s+(?P<port>0/\s*\d+/\s*\d+)\s+\d+\s+\d+\s+Enabled\s+",
         re.MULTILINE)
 
+    # SmartAX MA5600T&MA5603T Multi-Service Access Module
+    # ifIndex MIB Encoding Rules
     type = {
         "other": 1,
         "ATM": 4,
         "ADSL": 6,
+        "VDSL": 6,
         "Eth": 7,
         "IMA": 39,
         "SHDSL": 44,
