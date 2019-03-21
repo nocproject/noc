@@ -81,6 +81,9 @@ class Alarms(Model):
     services = NestedField(Services, description=_("Affected Services"))
     subscribers = NestedField(Subscribers, description=_("Affected Subscribers"))
     # location = StringField(description="Location")
+    # Ack info
+    ack_user = StringField(description=_("Manual acknowledgement user name"))
+    ack_ts = DateTimeField(description=_("Manual acknowledgement timestamp"))
 
     @classmethod
     def transform_query(cls, query, user):
