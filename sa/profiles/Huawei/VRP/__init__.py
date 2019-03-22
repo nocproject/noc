@@ -28,7 +28,7 @@ class Profile(BaseProfile):
         (r"^The password needs to be changed\. Change now\? \[Y\/N\]\:", "n\n\r")
     ]
     pattern_prompt = \
-        r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)" \
+        r"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)" \
         r"(?:-[a-zA-Z0-9/\_]+)*[>#\]\)]"
     pattern_syntax_error = \
         r"(ERROR: |% Wrong parameter found at|" \
