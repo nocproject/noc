@@ -23,6 +23,8 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.models import is_document
 
+BATCH_SIZE = 20000
+
 
 class Command(BaseCommand):
     MODELS = {
@@ -75,8 +77,16 @@ class Command(BaseCommand):
             model = (model,)
         for m in model:
             if is_document(m):
-                for d in m._get_collection().find({}, {"_id": 1}, no_cursor_timeout=True).sort("_id"):
-                    yield d["_id"]
+                match = {}
+                while True:
+                    print(match)
+                    cursor = m._get_collection().find(
+                        match, {"_id": 1}, no_cursor_timeout=True).sort("_id").limit(BATCH_SIZE)
+                    for d in cursor:
+                        yield d["_id"]
+                    if match and match["_id"]["$gt"] == d["_id"]:
+                        break
+                    match = {"_id": {"$gt": d["_id"]}}
             else:
                 for id in m.objects.values_list("id", flat=True):
                     yield id
@@ -100,13 +110,15 @@ class Command(BaseCommand):
             self.die("Cannot initialize datastream")
         total = self.get_total(model)
         STEP = 100
+        n = 1
         report_interval = max(total // STEP, 1)
         next_report = report_interval
-        for n, obj_id in enumerate(self.iter_id(model)):
+        for obj_id in self.progress(self.iter_id(model), max_value=total):
             ds.update_object(obj_id)
-            if n == next_report:
+            if self.no_progressbar and n == next_report:
                 self.print("[%02d%%]" % ((n * 100) // total))
                 next_report += report_interval
+            n += 1
         self.print("Done")
 
     def handle_get(self, datastream, objects, filter, *args, **kwargs):
