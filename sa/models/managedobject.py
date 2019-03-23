@@ -51,6 +51,7 @@ from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
 from noc.core.scheduler.job import Job
+from noc.main.models.handler import Handler
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
 from noc.core.script.loader import loader as script_loader
@@ -986,9 +987,12 @@ class ManagedObject(Model):
             data = "\n".join(r)
         # Wipe out unnecessary parts
         if self.config_filter_handler:
-            handler = get_handler(self.config_filter_handler)
-            if handler:
+            handler = Handler.get_by_id(self.config_filter_handler)
+            if handler and handler.allow_config_filter:
+                handler = handler.get_handler()
                 data = handler(self, data)
+            elif handler and not handler.allow_config_filter:
+                self.logger.warning("Handler is not allowed for config filter")
             else:
                 self.logger.info(
                     "[%s] Invalid config_filter_handler \"%s\", ignoring",
@@ -996,9 +1000,12 @@ class ManagedObject(Model):
                 )
         # Pass data through config filter, if given
         if self.config_diff_filter_handler:
-            handler = get_handler(self.config_diff_filter_handler)
-            if handler:
+            handler = Handler.get_by_id(self.config_diff_filter_handler)
+            if handler and handler.allow_config_diff_filter:
+                handler = handler.get_handler()
                 data = handler(self, data)
+            elif handler and not handler.allow_config_diff_filter:
+                self.logger.warning("Handler is not allowed for config diff filter")
             else:
                 self.logger.info(
                     "[%s] Invalid config_diff_filter_handler \"%s\", ignoring",
@@ -1007,8 +1014,9 @@ class ManagedObject(Model):
         # Pass data through the validation filter, if given
         # @todo: Replace with config validation policy
         if self.config_validation_handler:
-            handler = get_handler(self.config_validation_handler)
-            if handler:
+            handler = Handler.get_by_id(self.config_validation_handler)
+            if handler and handler.allow_config_validation:
+                handler = handler.get_handler()
                 warnings = handler(self, data)
                 if warnings:
                     # There are some warnings. Notify responsible persons
@@ -1019,6 +1027,8 @@ class ManagedObject(Model):
                             "warnings": warnings
                         }
                     )
+            elif handler and not handler.allow_config_validation:
+                self.logger.warning("Handler is not allowed for config validation")
             else:
                 self.logger.info(
                     "[%s] Invalid config_validation_handler \"%s\", ignoring",
@@ -1033,13 +1043,16 @@ class ManagedObject(Model):
         else:
             # Calculate diff
             if self.config_diff_filter_handler:
-                handler = get_handler(self.config_diff_filter_handler)
-                if handler:
+                handler = Handler.get_by_id(self.config_diff_filter_handler)
+                if handler and handler.allow_config_diff_filter:
+                    handler = handler.get_handler()
                     # Pass through filters
                     old_data = handler(self, old_data)
                     new_data = handler(self, data)
                     if not old_data and not new_data:
                         logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
+                elif handler and not handler.allow_config_diff_filter:
+                    self.logger.warning("Handler is not allowed for config diff filter")
                 else:
                     new_data = data
             else:
@@ -1558,7 +1571,12 @@ class ManagedObject(Model):
         if not fqdn:
             return None
         if self.object_profile.resolver_handler:
-            return self.object_profile.resolver_handler.get_handler()(fqdn)
+            handler = Handler.get_by_id(self.config_diff_filter_handler)
+            if handler and handler.allow_resolver:
+                return handler.get_handler()(fqdn)
+            elif handler and not handler.allow_resolver:
+                self.logger.warning("Handler is not allowed for resolver")
+                return None
         import socket
         try:
             return socket.gethostbyname(fqdn)
