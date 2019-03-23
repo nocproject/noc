@@ -205,10 +205,11 @@ class BaseCommand(object):
                 l.setLevel(level)
         self.is_debug = level <= logging.DEBUG
 
-    def progress(self, iter):
+    def progress(self, iter, max_value=None):
         """
         Yield iterable and show progressbar
         :param iter:
+        :param max_value:
         :return:
         """
         if self.no_progressbar:
@@ -216,5 +217,5 @@ class BaseCommand(object):
                 yield i
         else:
             import progressbar
-            for i in progressbar.progressbar(iter):
+            for i in progressbar.progressbar(iter, max_value=max_value):
                 yield i
