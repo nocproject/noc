@@ -348,13 +348,9 @@ def fetch(url, method="GET",
                         if eof_mark in response_body[0]:
                             break
                     else:
-                        found = False
                         for m in eof_mark:
                             if m in response_body[0]:
-                                found = True
                                 break
-                        if found:
-                            break
                 metrics["httpclient_timeouts"] += 1
                 raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Connection reset"))
             except tornado.gen.TimeoutError:
