@@ -29,11 +29,15 @@ class PathCard(BaseCard):
     ]
 
     def get_data(self):
-        mo1, mo2 = [ManagedObject.get_by_id(int(x)) for x in self.id.split("-")]
-        try:
-            s_path = get_shortest_path(mo1, mo2)
-        except ValueError:
-            s_path = [mo1, mo2]
+        mo1, mo2 = self.id.split("-")
+        mo1 = ManagedObject.get_by_id(int(mo1)) if mo1 else None
+        mo2 = ManagedObject.get_by_id(int(mo2)) if mo2 else None
+        s_path = [mo1]
+        if mo1 and mo2:
+            try:
+                s_path = get_shortest_path(mo1, mo2)
+            except ValueError:
+                s_path = [mo1, mo2]
 
         path = []
         for mo in s_path:
