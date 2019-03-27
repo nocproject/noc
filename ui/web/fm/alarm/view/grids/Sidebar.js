@@ -16,21 +16,12 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     requires: [
         "NOC.core.combotree.ComboTree",
         "NOC.fm.alarm.view.grids.Lookup",
+        "NOC.fm.alarm.view.grids.Tagfield",
         "NOC.fm.alarm.view.grids.SidebarModel",
         "NOC.fm.alarm.view.grids.SidebarController",
         "NOC.fm.alarm.view.grids.ProfileFilter",
         "NOC.fm.alarm.view.grids.DisplayFilter"
     ],
-    // ************* Перевод *************
-    // Control - Контроль
-    // Alarm type - Фильтры по признакам
-    // Активны=е=
-    // Закрыт=ые=
-    // Корень - Первопричина
-    // TT Wait - Ожидающие
-    // Maintence - РНР
-    // Hide - Скрыть
-    // ***********************************
     reference: "fm-alarm-filter",
     bind: {
         title: "{totalCount}"
@@ -242,12 +233,12 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
-                    xtype: "fm.alarm.lookup",
+                    xtype: "fm.alarm.tagfield",
                     url: "/fm/alarmclass/lookup/",
                     fieldLabel: __("Class"),
                     name: "alarm_class",
                     bind: {
-                        selection: "{activeFilter.alarm_class}"
+                        selected: "{activeFilter.alarm_class}"
                     }
                 },
                 {
