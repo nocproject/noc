@@ -30,24 +30,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     initComponent: function() {
         var me = this;
         // Last update menu
-        me.lastUpdateButton = Ext.create("NOC.core.LookupField", {
-            restUrl: "main/remotesystem/brief_lookup/",
-            pageSize: false,
-            typeAhead: false,
-            editable: false,
+        me.lastUpdateButton = Ext.create("Ext.button.Button", {
             hidden: true,
-            emptyText: __("Remote sync time"),
-            margin: "0 5",
-            hideTrigger: true,
-            displayTpl: '<tpl for=".">{label}: {last_successful_load}</tpl>',
-            tpl: "<ul class='x-list-plain'><tpl for='.'>" +
-                "<li role='option' class='x-boundlist-item'>" +
-                "<span>{label}:</span></span><span style='padding-left: 3px'>{last_successful_load}</span></li>" +
-                "</tpl></ul>",
-            listeners: {
-                scope: me,
-                select: me.onSelectLastUpdate
-            }
+            text: __("Show remote sync time"),
+            margin: "0 5"
         });
         // User menu
         me.userMenuButton = Ext.create("Ext.button.Button", {
@@ -133,11 +119,14 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             ]
         });
         me.userProfileItem = me.userMenuButton.menu.getComponent("header_menu_change_password");
-        Ext.TaskManager.start({
-            run: me.pollingTask,
-            interval: me.pollingInterval,
-            scope: me
-        });
+        if(NOC.settings.enable_remote_system_last_extract_info) {
+            me.lastUpdateButton.show();
+            Ext.TaskManager.start({
+                run: me.pollingTask,
+                interval: me.pollingInterval,
+                scope: me
+            });
+        }
         me.callParent();
     },
     // Change displayed username
@@ -157,22 +146,25 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         me.userMenuButton.show();
     },
     //
-    onSelectLastUpdate: function(self) {
-        window.localStorage.setItem(this.localStoreName, self.getValue());
-    },
-    //
     pollingTask: function() {
         var me = this;
-        this.lastUpdateButton.getStore().load({
+        Ext.Ajax.request({
+            url: "/main/remotesystem/brief_lookup/",
+            method: "GET",
             scope: me,
-            callback: function(records, operation, success) {
-                if(success && records.length) {
-                    var values = records.filter(function(item) {return item.id === window.localStorage.getItem(me.localStoreName)});
-                    if(values.length > 0) {
-                        me.lastUpdateButton.setValue(values[0]);
-                    }
-                    me.lastUpdateButton.show();
-                }
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                this.lastUpdateButton.setMenu({
+                    onMouseOver: Ext.emptyFn,
+                    items: Ext.Array.map(data, function(e) {
+                        return {
+                            text: __(e.label + " " + e.last_successful_load)
+                        }
+                    })
+                }, true);
+            },
+            failure: function() {
+                NOC.error(__("Failed to get remote sync time"));
             }
         });
     }
