@@ -244,7 +244,8 @@ class ManagedObjectCard(BaseCard):
                     "profile": i.profile,
                     "service": i.service,
                     "service_summary":
-                        service_summary.get("interface").get(i.id, {})
+                        service_summary.get("interface").get(i.id, {}),
+                    "description": i.description
                 }]
 
                 si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
