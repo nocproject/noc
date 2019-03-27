@@ -113,7 +113,8 @@ class DesktopApplication(ExtApplication):
             "enable_search": enable_search,
             "help_base_url": config.help.base_url,
             "help_branch": config.help.branch,
-            "help_language": config.help.language
+            "help_language": config.help.language,
+            "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info
         }
         return self.render(
             request, "desktop.html",

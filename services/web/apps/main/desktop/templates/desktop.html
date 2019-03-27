@@ -85,7 +85,8 @@
                 traceExtJSEvents: {% if setup.trace_extjs_events %}true{% else %}false{% endif %},
                 helpUrl: "{{ setup.help_base_url }}",
                 helpBranch: "{{ setup.help_branch }}",
-                helpLanguage: "{{ setup.help_language }}"
+                helpLanguage: "{{ setup.help_language }}",
+                enable_remote_system_last_extract_info: {% if setup.enable_remote_system_last_extract_info %}true{% else %}false{% endif %}
             };
             NOC.settings.enableHelp = NOC.settings.helpUrl && NOC.settings.helpUrl !== "";
             NOC.templates = {};

@@ -538,6 +538,7 @@ class Config(BaseConfig):
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
         macdb_window = IntParameter(default=4 * 86400)
+        enable_remote_system_last_extract_info = BooleanParameter(default=False)
 
     class datasource(ConfigSection):
         chunk_size = IntParameter(default=1000)
