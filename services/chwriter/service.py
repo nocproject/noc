@@ -126,7 +126,7 @@ class CHWriterService(Service):
         for x in expired:
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
-            metrics["channels_active"] = len(self.channels)
+            metrics["channels_active"].value = len(self.channels)
         self.logger.debug("Active channels: %s", ", ".join(self.channels[c].name for c in self.channels))
         for c in list(self.channels):
             if self.restore_timeout:
