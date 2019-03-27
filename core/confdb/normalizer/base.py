@@ -80,12 +80,15 @@ class BaseNormalizerMetaclass(type):
             del f._matcher
         # Process syntax
         if bases[0] == object:
-            mcs.parse_syntax(n)
+            mcs.parse_syntax(n, SYNTAX)
+        elif n.SYNTAX:
+            # Apply custom syntax
+            mcs.parse_syntax(n, n.SYNTAX)
         return n
 
     @classmethod
-    def parse_syntax(mcs, ncls):
-        for t in SYNTAX:
+    def parse_syntax(mcs, ncls, syntax):
+        for t in syntax:
             mcs.process_token(ncls, t, tuple())
 
     @classmethod
@@ -122,6 +125,9 @@ class BaseNormalizerMetaclass(type):
 
 
 class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
+    # Custom syntax to enrich ConfDB
+    SYNTAX = []
+
     def __init__(self, object, tokenizer):
         self.object = object
         self.tokenizer = tokenizer
