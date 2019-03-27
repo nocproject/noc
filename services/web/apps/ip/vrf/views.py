@@ -15,8 +15,10 @@ from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
                                     ListOfParameter, DictParameter)
 from noc.core.translation import ugettext as _
 from noc.core.vpn import get_vpn_id
+from noc.lib.app.decorators.state import state_handler
 
 
+@state_handler
 class VRFApplication(ExtModelApplication):
     """
     VRF application
