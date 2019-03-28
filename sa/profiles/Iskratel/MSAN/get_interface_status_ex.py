@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,8 +28,7 @@ class Script(BaseScript):
         return r
 
     def apply_table(self, r, mib, name, f=None):
-        if not f:
-            f = lambda x: x
+        f = f or (lambda x: x)
         d = self.get_iftable(mib)
         for ifindex in d:
             if ifindex in r:
@@ -49,23 +48,27 @@ class Script(BaseScript):
             return {}
         return self.snmp.get(oids)
 
-    def get_data(self):
+    def get_data(self, interfaces=None):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
         unknown_interfaces = []
-        for ifindex, name in self.get_iftable("IF-MIB::ifName").iteritems():
-            try:
-                v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError, why:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, why
-                )
-                unknown_interfaces += [name]
-                continue
-            r[ifindex] = {
-                "interface": v
-            }
+        if interfaces:
+            for i in interfaces:
+                r[i["ifindex"]] = {"interface": i["interface"]}
+        else:
+            for ifindex, name in self.get_iftable("IF-MIB::ifName").iteritems():
+                try:
+                    v = self.profile.convert_interface_name(name)
+                except InterfaceTypeError as why:
+                    self.logger.debug(
+                        "Ignoring unknown interface %s: %s",
+                        name, why
+                    )
+                    unknown_interfaces += [name]
+                    continue
+                r[ifindex] = {
+                    "interface": v
+                }
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -107,11 +110,6 @@ class Script(BaseScript):
                              len(unknown_interfaces))
         return r.values()
 
-    def execute(self):
-        r = []
-        if self.has_snmp():
-            try:
-                r = self.get_data()
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self, interfaces=None, **kwargs):
+        r = self.get_data(interfaces=interfaces)
         return r

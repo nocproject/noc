@@ -10,6 +10,7 @@
 import threading
 import operator
 # Third-party modules
+import six
 import cachetools
 from pymongo import ReadPreference
 from pymongo.errors import BulkWriteError
@@ -68,7 +69,9 @@ class InterfaceStatusCheck(DiscoveryCheck):
         if not interfaces:
             self.logger.info("No interfaces with status discovery enabled. Skipping")
             return
-        result = self.object.scripts.get_interface_status_ex()
+        hints = [{"interface": key, "ifindex": v.ifindex}
+                 for key, v in six.iteritems(interfaces) if getattr(v, "ifindex", None) is not None] or None
+        result = self.object.scripts.get_interface_status_ex(interfaces=hints)
         collection = Interface._get_collection()
         bulk = []
         for i in result:

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IGetInterfaceStatusEx
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
@@ -26,9 +26,9 @@ class IGetInterfaceStatusEx(BaseInterface):
     returns = DictListParameter(
         attrs={
             "interface": InterfaceNameParameter(),
-            "admin_status": BooleanParameter(default=False),
-            "oper_status": BooleanParameter(default=False),
-            "full_duplex": BooleanParameter(default=True),
+            "admin_status": BooleanParameter(required=False),
+            "oper_status": BooleanParameter(required=False),
+            "full_duplex": BooleanParameter(required=False),
             "last_change": IntParameter(required=False),
             # Input speed, kbit/s
             "in_speed": IntParameter(required=False),
