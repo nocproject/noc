@@ -63,6 +63,13 @@ class BaseField(object):
         """
         return self.db_type
 
+    def get_displayed_type(self):
+        """
+        Return Field type for external application
+        :return:
+        """
+        return self.db_type
+
     def to_tsv(self, value):
         """
         Use method when field convert to tsv format (ex. export)
@@ -254,7 +261,7 @@ class ReferenceField(BaseField):
 
 
 class IPv4Field(BaseField):
-    db_type = "IPv4"
+    db_type = "UInt32"
 
     def to_tsv(self, value):
         """
@@ -273,8 +280,8 @@ class IPv4Field(BaseField):
         else:
             return socket.inet_ntoa(struct.pack("!I", int(value)))
 
-    def get_db_type(self):
-        return "UInt32"
+    def get_displayed_type(self):
+        return "IPv4"
 
 
 class AggregatedField(BaseField):

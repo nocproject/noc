@@ -147,7 +147,7 @@ class BIAPI(API):
                 r["fields"] += [{
                     "name": f.name,
                     "description": _(f.description),
-                    "type": f.db_type,
+                    "type": f.get_displayed_type(),
                     "is_agg": f.is_agg,
                     "dict": d
                 }]
