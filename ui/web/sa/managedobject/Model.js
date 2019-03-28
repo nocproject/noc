@@ -414,6 +414,21 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: "P"
         },
         {
+            name: "interface_discovery_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "caps_discovery_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "vlan_discovery_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
             name: "static_service_groups",
             type: "auto"
         },

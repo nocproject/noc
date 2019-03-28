@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Application");
@@ -850,7 +850,49 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     {"id": "d", "label": __("Download")}
                                 ]
                             }
-                        }
+                        },
+                        {
+                            name: "caps_discovery_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Caps Policy"),
+                            store: [
+                                ["P", __("Profile")],
+                                ["s", __("Script")],
+                                ["S", __("Script, ConfDB")],
+                                ["C", __("ConfDB, Script")],
+                                ["c", __("ConfDB")]
+                            ],
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "interface_discovery_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Interface Policy"),
+                            store: [
+                                ["P", __("Profile")],
+                                ["s", __("Script")],
+                                ["S", __("Script, ConfDB")],
+                                ["C", __("ConfDB, Script")],
+                                ["c", __("ConfDB")]
+                            ],
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "vlan_discovery_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("VLAN Policy"),
+                            store: [
+                                ["P", __("Profile")],
+                                ["s", __("Script")],
+                                ["S", __("Script, ConfDB")],
+                                ["C", __("ConfDB, Script")],
+                                ["c", __("ConfDB")]
+                            ],
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
                     ]
                 },
                 {

@@ -37,14 +37,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             enableBoxDiscoveryVersion: false,
             enableBoxDiscoveryConfig: false,
             enableBoxDiscoveryCaps: false,
+            enableBoxDiscoveryInterface: false,
+            enableBoxDiscoveryVLAN: false,
             enableBoxDiscoveryVPNInterface: false,
             enableBoxDiscoveryVPNMPLS: false,
+            enableBoxDiscoveryVPNConfDB: false,
             enableBoxDiscoveryPrefixInterface: false,
             enableBoxDiscoveryPrefixNeighbor: false,
+            enableBoxDiscoveryPrefixConfDB: false,
             enableBoxDiscoveryAddressInterface: false,
             enableBoxDiscoveryAddressManagement: false,
             enableBoxDiscoveryAddressDHCP: false,
             enableBoxDiscoveryAddressNeighbor: false,
+            enableBoxDiscoveryAddressConfDB: false,
             enableBoxDiscoveryHK: false,
             enableBoxDiscoveryNRIPortmap: false,
             enableBoxDiscoveryCPEStatus: false
@@ -690,7 +695,10 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     xtype: "fieldset",
                                     title: __("Box"),
-                                    layout: "hbox",
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
                                     defaults: {
                                         padding: "0 8 0 0"
                                     },
@@ -698,19 +706,37 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_profile",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Profile")
+                                            boxLabel: __("Profile"),
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_version",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Version"),
-                                            reference: "enableBoxDiscoveryVersion"
+                                            reference: "enableBoxDiscoveryVersion",
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_caps",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Caps"),
                                             reference: "enableBoxDiscoveryCaps"
+                                        },
+                                        {
+                                            name: "caps_discovery_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Policy"),
+                                            store: [
+                                                ["s", __("Script")],
+                                                ["S", __("Script, ConfDB")],
+                                                ["C", __("ConfDB, Script")],
+                                                ["c", __("ConfDB")]
+                                            ],
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryCaps.checked}"
+                                            },
+                                            uiStyle: "medium"
                                         },
                                         {
                                             name: "caps_profile",
@@ -729,44 +755,86 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_interface",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Interface")
+                                            boxLabel: __("Interface"),
+                                            reference: "enableBoxDiscoveryInterface"
+                                        },
+                                        {
+                                            name: "interface_discovery_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Policy"),
+                                            store: [
+                                                ["s", __("Script")],
+                                                ["S", __("Script, ConfDB")],
+                                                ["C", __("ConfDB, Script")],
+                                                ["c", __("ConfDB")]
+                                            ],
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryInterface.checked}"
+                                            },
+                                            uiStyle: "medium",
+                                            colspan: 2
                                         },
                                         {
                                             name: "enable_box_discovery_id",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("ID")
+                                            boxLabel: __("ID"),
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_config",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Config"),
-                                            reference: "enableBoxDiscoveryConfig"
+                                            reference: "enableBoxDiscoveryConfig",
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_asset",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Asset")
+                                            boxLabel: __("Asset"),
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_vlan",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("VLAN")
+                                            boxLabel: __("VLAN"),
+                                            reference: "enableBoxDiscoveryVlan"
+                                        },
+                                        {
+                                            name: "vlan_discovery_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Policy"),
+                                            store: [
+                                                ["s", __("Script")],
+                                                ["S", __("Script, ConfDB")],
+                                                ["C", __("ConfDB, Script")],
+                                                ["c", __("ConfDB")]
+                                            ],
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVlan.checked}"
+                                            },
+                                            uiStyle: "medium",
+                                            colspan: 2
                                         },
                                         {
                                             name: "enable_box_discovery_mac",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("MAC")
+                                            boxLabel: __("MAC"),
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_cpestatus",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE status"),
-                                            reference: "enableBoxDiscoveryCPEStatus"
+                                            reference: "enableBoxDiscoveryCPEStatus",
+                                            colspan: 2
                                         },
                                         {
                                             name: "enable_box_discovery_metrics",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Metrics")
+                                            boxLabel: __("Metrics"),
+                                            colspan: 2
                                         }
                                     ]
                                 },
@@ -985,6 +1053,23 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryVPNMPLS.checked}"
                                             }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("ConfDB")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_vpn_confdb",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryVPNConfDB"
+                                        },
+                                        {
+                                            name: "vpn_profile_confdb",
+                                            xtype: "vc.vpnprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVPNConfDB.checked}"
+                                            }
                                         }
                                     ]
                                 },
@@ -1045,6 +1130,23 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 disabled: "{!enableBoxDiscoveryPrefixNeighbor.checked}"
                                             }
 
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("ConfDB")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_prefix_confdb",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryPrefixConfDB"
+                                        },
+                                        {
+                                            name: "prefix_profile_confdb",
+                                            xtype: "ip.prefixprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryPrefixConfDB.checked}"
+                                            }
                                         }
                                     ]
                                 },
@@ -1137,6 +1239,23 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: true,
                                             bind: {
                                                 disabled: "{!enableBoxDiscoveryAddressNeighbor.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("ConfDB")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_confdb",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressConfDB"
+                                        },
+                                        {
+                                            name: "address_profile_confdb",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressConfDB.checked}"
                                             }
                                         }
                                     ]

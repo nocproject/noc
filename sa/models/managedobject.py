@@ -435,6 +435,45 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Interface discovery settings
+    interface_discovery_policy = CharField(
+        "Interface Discovery Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="P"
+    )
+    # Caps discovery settings
+    caps_discovery_policy = CharField(
+        "Caps Discovery Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="P"
+    )
+    # VLAN discovery settings
+    vlan_discovery_policy = CharField(
+        "VLAN Discovery Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="P"
+    )
     # Autosegmentation
     autosegmentation_policy = CharField(
         max_length=1,
@@ -1541,6 +1580,21 @@ class ManagedObject(Model):
         if self.config_policy == "P":
             return self.object_profile.config_policy
         return self.config_policy
+
+    def get_interface_discovery_policy(self):
+        if self.interface_discovery_policy == "P":
+            return self.object_profile.interface_discovery_policy
+        return self.interface_discovery_policy
+    
+    def get_caps_discovery_policy(self):
+        if self.caps_discovery_policy == "P":
+            return self.object_profile.caps_discovery_policy
+        return self.caps_discovery_policy
+
+    def get_vlan_discovery_policy(self):
+        if self.vlan_discovery_policy == "P":
+            return self.object_profile.vlan_discovery_policy
+        return self.vlan_discovery_policy
 
     def get_full_fqdn(self):
         if not self.fqdn:
