@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # Create required pools
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ def update_if_changed(pool, values):
 
 def main():
     with open(CONFIG) as f:
-        data = yaml.load(f)
+        data = yaml.safe_load(f)
     changed = False
     for p in data["pools"]:
         try:

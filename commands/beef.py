@@ -321,7 +321,7 @@ class Command(BaseCommand):
         for import_path in paths:
             self.print("Importing %s ..." % import_path)
             with open(import_path, "r") as f:
-                data = yaml.load(f)
+                data = yaml.safe_load(f)
             for c in data["cli_fsm"]:
                 c["reply"] = [reply.encode(self.CLI_ENCODING) for reply in c["reply"]]
             for c in data["cli"]:
@@ -448,7 +448,7 @@ class Command(BaseCommand):
             # Get config
             with test_st.open_fs() as fs:
                 data = fs.getbytes(unicode(os.path.join(test_path, "test-config.yml")))
-                cfg = yaml.load(data)
+                cfg = yaml.safe_load(data)
         # Get beef
         beef_path = os.path.join(test_path, "beef.json.bz2")
         beef = self.get_beef(test_st, beef_path)
@@ -543,7 +543,7 @@ class Command(BaseCommand):
             with config_st.open_fs() as fs:
                 for config_path in fs.walk.files(filter=path):
                     cfg = fs.getbytes(unicode(config_path))
-                    data = yaml.load(cfg)
+                    data = yaml.safe_load(cfg)
                     r[data.get("beef", "")] += [data]
         return r
 
