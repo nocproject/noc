@@ -33,7 +33,7 @@ class Script(BaseScript):
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+"
         r"protocol\s+is\s+(?P<oper_status>up|down)\s"
-        r"(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*)?\n"
+        r"(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*|, Autostate \S+)?\n"
         r"\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?"
         r"(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?"
         r"[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
@@ -69,14 +69,14 @@ class Script(BaseScript):
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
     rx_lldp = re.compile(
-        "^(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?):.+Rx: (?P<rx_state>\S+)",
+        r"^(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
-    rx_gvtp = re.compile("VTP Operating Mode\s+: Off", re.MULTILINE)
+    rx_gvtp = re.compile(r"VTP Operating Mode\s+: Off", re.MULTILINE)
     rx_vtp = re.compile(
-        "^\s*(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+enabled",
+        r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+enabled",
         re.MULTILINE)
     rx_vtp1 = re.compile(
-        "^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+",
+        r"^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+",
         re.MULTILINE)
     rx_oam = re.compile(
         r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
