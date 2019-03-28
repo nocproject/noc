@@ -587,6 +587,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         return cls.http_request_middleware
 
     @classmethod
+    def has_confdb_support(cls, object):
+        tcls, _ = cls.get_config_tokenizer(object)
+        if not tcls:
+            return False
+        ncls, _ = cls.get_config_normalizer(object)
+        if not ncls:
+            return False
+        return True
+
+    @classmethod
     def _get_patterns(cls):
         """
         Return dict of compiled regular expressions

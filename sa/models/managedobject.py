@@ -1585,7 +1585,7 @@ class ManagedObject(Model):
         if self.interface_discovery_policy == "P":
             return self.object_profile.interface_discovery_policy
         return self.interface_discovery_policy
-    
+
     def get_caps_discovery_policy(self):
         if self.caps_discovery_policy == "P":
             return self.object_profile.caps_discovery_policy
@@ -1706,6 +1706,10 @@ class ManagedObject(Model):
                 applicator = a_cls(e, **cfg)
                 applicator.apply(self)
         return e
+
+    @property
+    def has_confdb_support(self):
+        return self.profile.get_profile().has_confdb_support(self)
 
 
 @on_save
