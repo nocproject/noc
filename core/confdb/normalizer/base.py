@@ -101,7 +101,7 @@ class BaseNormalizerMetaclass(type):
             mcs.contribute_gen(ncls, path)
 
     @classmethod
-    def contribute_gen(cls, ncls, path):
+    def contribute_gen(mcs, ncls, path):
         sdef = path[-1]
         # Check function name is not duplicated
         assert not hasattr(ncls, sdef.gen)
