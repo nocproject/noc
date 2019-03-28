@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Extract/Transfer/Load commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import yaml
 import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.handler import get_handler
 from noc.main.models.remotesystem import RemoteSystem
 
 
@@ -90,7 +89,7 @@ class Command(BaseCommand):
 
     def get_config(self):
         with open(self.CONF) as f:
-            return yaml.load(f)
+            return yaml.safe_load(f)
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -107,7 +106,7 @@ class Command(BaseCommand):
             self.die("Invalid remote system: %s" % options["system"])
         remote_system.extract(options.get("extractors", []))
 
-    def handle_check(self,  *args, **options):
+    def handle_check(self, *args, **options):
         remote_system = RemoteSystem.get_by_name(options["system"])
         if not remote_system:
             self.die("Invalid remote system: %s" % options["system"])
@@ -151,6 +150,7 @@ class Command(BaseCommand):
         else:
             n_errors = 0
         return 1 if n_errors else 0
+
 
 if __name__ == "__main__":
     Command().run()

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Load config from YAML
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ class YAMLProtocol(BaseProtocol):
         if not os.path.exists(self.path):
             return
         with open(self.path) as f:
-            data = yaml.load(f)
+            data = yaml.safe_load(f)
         if data:
             self.config.update(data)
 
@@ -70,4 +70,4 @@ class YAMLProtocol(BaseProtocol):
             with open(self.path, "w") as f:
                 f.write(r)
         else:
-            print(yaml.dump(yaml.load(r), default_flow_style=False))
+            print(yaml.dump(yaml.safe_load(r), default_flow_style=False))
