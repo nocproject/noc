@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatusEx
     requires = []
 
-    def execute_snmp(self):
+    def execute_snmp(self, interfaces=None):
         i = [1, 2, 3, 4, 5]
         result = []
         for ii in i:

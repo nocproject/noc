@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ class Script(BaseScript):
     HIGH_SPEED = 4294967295
     MAX_REPETITIONS = 40
     MAX_GETNEXT_RETIRES = 0
+    IFNAME_OID = "IF-MIB::ifName"
 
     def get_max_repetitions(self):
         return self.MAX_REPETITIONS
@@ -43,6 +44,13 @@ class Script(BaseScript):
         :return:
         """
         return self.profile.snmp_ifstatus_get_chunk
+
+    def get_ifname_oid(self):
+        """
+        OID return interface name
+        :return:
+        """
+        return self.IFNAME_OID
 
     def get_iftable(self, oid, ifindex=None):
         """
@@ -80,7 +88,7 @@ class Script(BaseScript):
             for i in interfaces:
                 r[i["ifindex"]] = {"interface": i["interface"]}
         else:
-            for ifindex, name in self.get_iftable("IF-MIB::ifName"):
+            for ifindex, name in self.get_iftable(self.get_ifname_oid()):
                 try:
                     v = self.profile.convert_interface_name(name)
                 except InterfaceTypeError as e:
@@ -90,11 +98,12 @@ class Script(BaseScript):
                 r[ifindex] = {"interface": v}
         if_index = list(r)
         # Apply ifAdminStatus
-        self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
+        self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1 if x is not None else None)
         # Apply ifOperStatus
-        self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
+        self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1 if x is not None else None)
         # Apply dot3StatsDuplexStatus
-        self.apply_table(r, "EtherLike-MIB::dot3StatsDuplexStatus", "full_duplex", lambda x: x != 2)
+        self.apply_table(r, "EtherLike-MIB::dot3StatsDuplexStatus", "full_duplex",
+                         lambda x: x != 2 if x is not None else None)
         # Apply ifSpeed
         highspeed = set()
         for ifindex, s in self.get_iftable("IF-MIB::ifSpeed", if_index):
@@ -104,8 +113,8 @@ class Script(BaseScript):
                 if self.is_high_speed(ri, s):
                     highspeed.add(ifindex)
                 elif s:
-                    ri["in_speed"] = s // 1000
-                    ri["out_speed"] = s // 1000
+                    r[ifindex]["in_speed"] = s // 1000
+                    r[ifindex]["out_speed"] = s // 1000
         # Refer to ifHighSpeed if necessary
         if highspeed:
             for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed", if_index):

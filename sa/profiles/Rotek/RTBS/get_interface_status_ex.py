@@ -28,8 +28,7 @@ class Script(BaseScript):
         return r
 
     def apply_table(self, r, mib, name, f=None):
-        if not f:
-            f = lambda x: x
+        f = f or (lambda x: x)
         d = self.get_iftable(mib)
         for ifindex in d:
             if ifindex in r:
@@ -42,14 +41,14 @@ class Script(BaseScript):
         for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"], max_repetitions=5):
             try:
                 v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError, why:
+            except InterfaceTypeError as why:
                 self.logger.debug(
                     "Ignoring unknown interface %s: %s",
                     name, why
                 )
                 unknown_interfaces += [name]
                 continue
-            ifindex =  int(oid.split(".")[-1])
+            ifindex = int(oid.split(".")[-1])
             r[ifindex] = {
                 "interface": v
             }
@@ -89,9 +88,8 @@ class Script(BaseScript):
     def get_data2(self):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
-        unknown_interfaces = []
         ver = self.snmp.get("1.3.6.1.2.1.1.2.0")
-        #check sysObjectID
+        # check sysObjectID
         obj = ver.split(".")[-1]
         for soid, sname in self.snmp.getnext("1.3.6.1.4.1.%s.3.5.1.2.1.1.4" % obj):
             sifindex = int(soid.split(".")[-1])
@@ -110,13 +108,8 @@ class Script(BaseScript):
             }
         return r.values()
 
-    def execute(self):
-        r = []
-        if self.has_snmp():
-            try:
-                r = self.get_data()
-                r2 = self.get_data2()
-                r += r2
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self, interfaces=None, **kwargs):
+        r = self.get_data()
+        r2 = self.get_data2()
+        r += r2
         return r
