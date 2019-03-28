@@ -1617,7 +1617,7 @@ class ManagedObject(Model):
         if not n_handler:
             raise StopIteration
         if not n_handler.startswith("noc."):
-            n_handler = "noc.sa.profiles.%s.normalizer.%s" % (profile.name, n_handler)
+            n_handler = "noc.sa.profiles.%s.confdb.normalizer.%s" % (profile.name, n_handler)
         n_cls = get_handler(n_handler)
         if not n_cls:
             raise StopIteration
