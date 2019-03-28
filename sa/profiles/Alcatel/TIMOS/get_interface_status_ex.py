@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Generic.get_interface_status_ex
+# Alcatel.TIMOS.get_interface_status_ex
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -57,6 +57,7 @@ class Script(BaseScript):
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
+        # @todo Return index on format tmnxChassisIndex, tmnxPortPortID, needed fix get_iftable
         self.apply_table(r, "1.3.6.1.4.1.6527.3.1.2.2.4.2.1.39", "oper_status", lambda x: x in [4, 5])
         # Apply ifSpeed
         s_table = self.get_iftable("IF-MIB::ifSpeed")
@@ -85,11 +86,6 @@ class Script(BaseScript):
                              len(unknown_interfaces))
         return r.values()
 
-    def execute(self):
-        r = []
-        if self.has_snmp():
-            try:
-                r = self.get_data()
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self, interfaces=None, **kwargs):
+        r = self.get_data()
         return r

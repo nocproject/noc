@@ -3,7 +3,7 @@
 # Vendor: Zyxel
 # OS:     MSAN
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -28,6 +28,11 @@ class Profile(BaseProfile):
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     command_more = "n"
 
+    snmp_metrics_get_chunk = 30
+    snmp_metrics_get_timeout = 3
+    snmp_ifstatus_get_chunk = 30
+    snmp_ifstatus_get_timeout = 3
+
     enable_cli_session = False
     command_exit = "exit"
 
@@ -43,8 +48,8 @@ class Profile(BaseProfile):
         # Useful only on IES-1000
         script.cli("home", ignore_errors=True)
 
-    rx_slots = re.compile("slot number should between 1 to (?P<slot>\d+)")
-    rx_slots2 = re.compile("slot id:\s*1 to (?P<slot>\d+)")
+    rx_slots = re.compile(r"slot number should between 1 to (?P<slot>\d+)")
+    rx_slots2 = re.compile(r"slot id:\s*1 to (?P<slot>\d+)")
 
     def get_slots_n(self, script):
         try:

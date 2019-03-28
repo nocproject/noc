@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.DSLAM.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -125,7 +125,7 @@ class Script(BaseScript):
                 ri["out_speed"] = s
         return r.values()
 
-    def execute_snmp(self):
+    def execute_snmp(self, interfaces=None):
         if self.is_platform_MXA24:
             o = "1.3.6.1.4.1.34300.1.6"
         elif self.is_platform_MXA32:

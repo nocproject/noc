@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.BFC_PBIC_S.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatusEx
     requires = []
 
-    def execute_snmp(self):
+    def execute_snmp(self, interfaces=None):
         result = []
         for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_repetitions=3, cached=True):
             name = v[1]

@@ -33,7 +33,7 @@ class Script(BaseScript):
         c = cls.SPEED.get(name)
         return c
 
-    def execute(self):
+    def execute(self, interfaces=None):
         result = []
         res = {}
         wres = {}

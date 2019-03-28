@@ -28,8 +28,7 @@ class Script(BaseScript):
         return r
 
     def apply_table(self, r, mib, name, f=None):
-        if not f:
-            f = lambda x: x
+        f = f or (lambda x: x)
         d = self.get_iftable(mib)
         for ifindex in d:
             if ifindex in r:
@@ -42,14 +41,14 @@ class Script(BaseScript):
         for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
             try:
                 v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError, why:
+            except InterfaceTypeError as why:
                 self.logger.debug(
                     "Ignoring unknown interface %s: %s",
                     name, why
                 )
                 unknown_interfaces += [name]
                 continue
-            ifindex =  int(oid.split(".")[-1])
+            ifindex = int(oid.split(".")[-1])
             r[ifindex] = {
                 "interface": v
             }
@@ -96,17 +95,17 @@ class Script(BaseScript):
         for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
             try:
                 v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError, why:
+            except InterfaceTypeError as why:
                 self.logger.debug(
                     "Ignoring unknown interface %s: %s",
                     name, why
                 )
                 unknown_interfaces += [name]
                 continue
-            ifindex =  int(oid.split(".")[-1])
+            ifindex = int(oid.split(".")[-1])
             for i in ss.items():
                 if int(i[0]) == ifindex:
-                    v= "%s.%s" % (v, i[1])
+                    v = "%s.%s" % (v, i[1])
                     r[ifindex] = {
                         "interface": v
                     }
@@ -142,13 +141,9 @@ class Script(BaseScript):
                              len(unknown_interfaces))
         return r.values()
 
-    def execute(self):
-        r = []
-        if self.has_snmp():
-            try:
-                r = self.get_data()
-                r2 = self.get_data2()
-                r += r2
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self, interfaces=None, **kwargs):
+        r = self.get_data()
+        if not self.is_platform_BS5:
+            r2 = self.get_data2()
+            r += r2
         return r
