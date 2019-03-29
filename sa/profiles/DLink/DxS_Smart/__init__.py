@@ -4,7 +4,7 @@
 # OS:     DxS_Smart
 # Compatible:
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,8 +16,8 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DxS_Smart"
     pattern_more = [
-        ("--More--", " "),
-        ("CTRL\+C.+?(a All)|(r Refresh)", "a")
+        (r"--More--", " "),
+        (r"CTRL\+C.+?(a All)|(r Refresh)", "a")
     ]
     pattern_unprivileged_prompt = r"^\S+:(3|6|user|operator)#"
     pattern_syntax_error = r"(?:% Invalid Command|" \
@@ -38,10 +38,38 @@ class Profile(BaseProfile):
     #
     rx_ver = re.compile(r"\d+")
 
+    platforms = {
+        "DGS-1210-10P": "1.3.6.1.4.1.171.10.76.12",
+        "DGS-1210-20": "1.3.6.1.4.1.171.10.76.14",
+        "DGS-1210-28": "1.3.6.1.4.1.171.10.76.15",
+        "DGS-1210-28P": "1.3.6.1.4.1.171.10.76.16",
+        "DGS-1210-16": "1.3.6.1.4.1.171.10.76.9",
+        "DGS-1210-24": "1.3.6.1.4.1.171.10.76.10",
+        "DGS-1210-48": "1.3.6.1.4.1.171.10.76.11",
+        "DGS-1210-52": "1.3.6.1.4.1.171.10.76.17",
+        "DGS-1210-10/C1": "1.3.6.1.4.1.171.10.76.32.1",
+        "DGS-1210-10P/C1": "1.3.6.1.4.1.171.10.76.18.1",
+        "DGS-1210-20/C1": "1.3.6.1.4.1.171.10.76.19.1",
+        "DGS-1210-28/C1": "1.3.6.1.4.1.171.10.76.20.1",
+        "DGS-1210-28P/C1": "1.3.6.1.4.1.171.10.76.21.1",
+        "DGS-1210-52/C1": "1.3.6.1.4.1.171.10.76.22.1",
+        "DGS-1210-52P/C1": "1.3.6.1.4.1.171.10.76.33.1",
+        "DGS-1500-20": "1.3.6.1.4.1.171.10.126.1.1",
+        "DGS-1500-28": "1.3.6.1.4.1.171.10.126.2.1",
+        "DGS-1500-28P": "1.3.6.1.4.1.171.10.126.3.1",
+        "DGS-1500-52": "1.3.6.1.4.1.171.10.126.4.1"
+    }
+
     def cmp_version(self, x, y):
         return cmp(
             [int(z) for z in self.rx_ver.findall(x)],
             [int(z) for z in self.rx_ver.findall(y)])
+
+    def convert_interface_name(self, s):
+        if s.startswith("Slot0/"):
+            return s[6:]
+        else:
+            return s
 
     def get_pmib(self, v):
         if v["platform"].startswith("DES-1210-52"):
@@ -68,23 +96,7 @@ class Profile(BaseProfile):
                 return "1.3.6.1.4.1.171.10.75.15"
         if v["platform"].startswith("DES-1210"):
             return "1.3.6.1.4.1.171.10.75.7"
-        if v["platform"] == "DGS-1210-10P":
-            return "1.3.6.1.4.1.171.10.76.12"
-        if v["platform"] == "DGS-1210-20":
-            return "1.3.6.1.4.1.171.10.76.14"
-        if v["platform"] == "DGS-1210-28":
-            return "1.3.6.1.4.1.171.10.76.15"
-        if v["platform"] == "DGS-1210-28P":
-            return "1.3.6.1.4.1.171.10.76.16"
-        if v["platform"] == "DGS-1210-16":
-            return "1.3.6.1.4.1.171.10.76.9"
-        if v["platform"] == "DGS-1210-24":
-            return "1.3.6.1.4.1.171.10.76.10"
-        if v["platform"] == "DGS-1210-48":
-            return "1.3.6.1.4.1.171.10.76.11"
-        if v["platform"] == "DGS-1210-52":
-            return "1.3.6.1.4.1.171.10.76.17"
-        return None
+        return self.platforms[v["platform"]]
 
     rx_port = re.compile(
         r"^(?P<port>\d+)\s+"
@@ -111,7 +123,7 @@ class Profile(BaseProfile):
                     "port": match.group("port"),
                     "descr": match.group("descr").strip()
                 }]
-        except:
+        except script.CLISyntaxError:
             pass
         objects = []
         try:
@@ -119,7 +131,7 @@ class Profile(BaseProfile):
                 c = script.cli(("show ports %s" % interface), cached=True)
             else:
                 c = script.cli("show ports", cached=True)
-        except:
+        except script.CLISyntaxError:
             raise script.NotSupportedError()
         for match in self.rx_port.finditer(c):
             objects += [{
@@ -217,3 +229,8 @@ def DES1210(v):
 # DGS-1210-series
 def DGS1210(v):
     return v["platform"].startswith("DGS-1210")
+
+
+# DGS-1500-series
+def DGS1500(v):
+    return v["platform"].startswith("DGS-1500")
