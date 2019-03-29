@@ -9,6 +9,7 @@
 # NOC modules
 from noc.core.error import NOCError
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.confdb.db.base import ConfDB
 
 
 class ConfigCheck(DiscoveryCheck):
@@ -19,14 +20,27 @@ class ConfigCheck(DiscoveryCheck):
     required_script = "get_config"
 
     def handler(self):
+        # Get config
         self.logger.info("Checking config")
         config = self.get_config()
-        if config:
-            changed = self.object.save_config(config, validate=False)
-            self.set_artefact("config_changed", changed)
-            self.set_artefact("config_acquired", True)
-        else:
+        if not config:
             self.logger.error("Cannot get config")
+            return
+        # Save config
+        changed = self.object.save_config(config, validate=False)
+        self.set_artefact("config_changed", changed)
+        self.set_artefact("config_acquired", True)
+        # Create ConfDB artefact
+        if not self.object.has_confdb_support:
+            self.logger.error("ConfDB is not supported. Skipping all following ConfDB checks")
+            return
+        if not self.job.is_confdb_required():
+            self.logger.info("ConfDB is not required. Skipping")
+            return
+        self.logger.info("Building ConfDB")
+        db = ConfDB()
+        db.insert_bulk(self.object.iter_normalized_tokens(config))
+        self.set_artefact("confdb", db)
 
     def get_config(self):
         p = self.object.get_config_policy()
