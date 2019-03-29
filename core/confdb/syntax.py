@@ -227,7 +227,8 @@ SYNTAX = [
                                     DEF("next-hop", [
                                         DEF(IPv4_ADDRESS, multi=True,
                                             name="next_hop", gen="make_inet_static_route_next_hop")
-                                    ])
+                                    ]),
+                                    DEF("discard", gen="make_inet_static_route_discard")
                                 ], name="route")
                             ])
                         ]),

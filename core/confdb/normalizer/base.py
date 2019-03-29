@@ -9,6 +9,8 @@
 # Python modules
 from __future__ import absolute_import
 import itertools
+from collections import defaultdict
+from functools import partial
 # Third-party modules
 import six
 # NOC modules
@@ -125,6 +127,7 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
     def __init__(self, object, tokenizer):
         self.object = object
         self.tokenizer = tokenizer
+        self.deferable_contexts = defaultdict(dict)  # Name -> Context
 
     def interface_name(self, *args):
         return self.object.profile.get_profile().convert_interface_name(" ".join(args))
@@ -143,7 +146,76 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
             for node in self.mtree.iter_matched(tokens):
                 # Feed normalized
                 for rt in node.handler(self, tokens):
-                    yield rt
+                    if rt is None:
+                        continue  # Unresolved defer
+                    if callable(rt):  # Resolved defers
+                        for d in rt():
+                            yield d
+                    else:
+                        yield rt
+
+    def defer(self, context, gen=None, **kwargs):
+        def yield_resolved():
+            for rp in resolved:
+                yield rp()
+
+        ctx = self.deferable_contexts[context]
+        # Split resolved and deferred variables
+        deferables = {}
+        nkwargs = {}
+        for k in kwargs:
+            v = kwargs[k]
+            if isinstance(v, tuple):
+                dname = v[0]
+                if dname in ctx:
+                    nkwargs[k] = ctx[dname]
+                else:
+                    deferables[k] = v[0]
+            else:
+                nkwargs[k] = v
+        # Update context
+        if nkwargs:
+            ctx.update(nkwargs)
+        # Resolve deferables
+        resolved = []
+        deferred = ctx.get(".", [])
+        n_deferred = []
+        if nkwargs and deferred:
+            # Try to resolve previously deferred functions
+            for dg, dk, dv in deferred:
+                rv = self._resolve_vars(ctx, dv)
+                if rv is not None:
+                    dk.update(rv)
+                    resolved += [partial(dg, **dk)]
+                else:
+                    n_deferred += [(dg, dk, dv)]
+        if gen and not deferables:
+            # Already resolved shortcut
+            resolved += [partial(gen, **nkwargs)]
+        elif gen and deferables:
+            # Add to deferred list
+            n_deferred += [(gen, nkwargs, deferables)]
+        ctx["."] = n_deferred
+        if resolved:
+            return yield_resolved
+        else:
+            return None
+
+    def _resolve_vars(self, ctx, d_map):
+        """
+        Resolve deferable variables mapping
+        :param ctx: Context
+        :param d_map: name -> context name mapping
+        :return: Dict if fully resolved, None otherwise
+        """
+        r = {}
+        for k in d_map:
+            vn = d_map[k]
+            if vn in ctx:
+                r[k] = ctx[vn]
+            else:
+                return None
+        return r
 
 
 def match(*args, **kwargs):
@@ -154,3 +226,12 @@ def match(*args, **kwargs):
         return f
 
     return wrap
+
+
+def deferable(name):
+    """
+    Denote deferable (i.e. restorable from context, may be later) variable
+    :param name: Variable name
+    :return:
+    """
+    return (name,)

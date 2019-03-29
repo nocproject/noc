@@ -28,6 +28,7 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
     rogue_chars = ["\r", "\x00"]
     config_tokenizer = "routeros"
+    config_normalizer = "RouterOSNormalizer"
 
     # telnet_naws = "\x00\xfa\x00\xfa"
 
