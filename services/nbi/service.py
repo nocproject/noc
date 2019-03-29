@@ -23,8 +23,8 @@ class NBIService(Service):
 
     def get_api(self):
         r = []
-        for api in loader.iter_apis():
-            handler = loader.get_api(api)
+        for api in loader.iter_classes():
+            handler = loader[api]
             if handler:
                 self.logger.info("[%s] Initializing API", api)
                 r += [handler]
