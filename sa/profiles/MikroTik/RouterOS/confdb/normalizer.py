@@ -16,6 +16,10 @@ class RouterOSNormalizer(BaseNormalizer):
     def normalize_hostname(self, tokens):
         yield self.make_hostname(tokens[3])
 
+    @match("/system", "clock", "time-zone-name", ANY)
+    def normalize_time_zone_name(self, tokens):
+        yield self.make_tz(tz_name=tokens[3])
+
     @match("/ip", "route", INTEGER, "dst-address", IPv4_PREFIX)
     def normalize_route_dst_address(self, tokens):
         yield self.defer(
