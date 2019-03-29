@@ -13,14 +13,15 @@ import math
 import networkx as nx
 import numpy as np
 # NOC modules
+from noc.config import config
 from .base import LayoutBase
 
 
 class SpringLayout(LayoutBase):
     # Optimal distance between nodes
-    L = 200
+    L = config.layout.spring_edge_spacing
     # F-R iterations
-    FR_ITERATIONS = 100
+    FR_ITERATIONS = config.layout.spring_iterations
     #
     NODE_SIZE = 48
 
@@ -38,7 +39,6 @@ class SpringLayout(LayoutBase):
         # Normalized distance between nodes
         k = float(self.L) / scale
         min_dist = 2.0 * self.NODE_SIZE / scale
-
         return fruchterman_reingold_layout(
             G,
             scale=scale,
@@ -123,8 +123,8 @@ def fruchterman_reingold_layout(G,
     if lg == 1:
         return {nx.utils.arbitrary_element(G.nodes()): center}
 
+    nfixed = dict(zip(G, range(len(G))))
     if fixed is not None:
-        nfixed = dict(zip(G, range(len(G))))
         fixed = np.asarray([nfixed[v] for v in fixed])
 
     if pos is not None:
@@ -145,8 +145,14 @@ def fruchterman_reingold_layout(G,
         # We must adjust k by domain size for layouts not near 1x1
         nnodes, _ = A.shape
         k = dom_size / np.sqrt(nnodes)
+    # Cycles
+    cycles = [
+        [nfixed[x] for x in c]
+        for c in nx.cycle_basis(G)
+    ]
+    #
     pos = _fruchterman_reingold(A, k, pos_arr, fixed, iterations,
-                                threshold, dim, seed, min_dist)
+                                threshold, dim, seed, min_dist, cycles)
     if fixed is None:
         pos = nx.rescale_layout(pos, scale=scale) + center
     pos = dict(zip(G, pos))
@@ -154,7 +160,7 @@ def fruchterman_reingold_layout(G,
 
 
 def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
-                          threshold=1e-4, dim=2, seed=None, min_dist=0.01):
+                          threshold=1e-4, dim=2, seed=None, min_dist=0.01, cycles=None):
     """
     Position nodes in adjacency matrix A using Fruchterman-Reingold
     """
@@ -182,23 +188,54 @@ def _fruchterman_reingold(A, k=None, pos=None, fixed=None, iterations=50,
     # simple cooling scheme.
     # linearly step down by dt on each iteration so last iteration is size dt.
     dt = t / float(iterations + 1)
+    # Force weights
+    WPF = config.layout.spring_propulsion_force
+    WEF = config.layout.spring_edge_force
+    WBF = config.layout.spring_bubble_force
+    # Weighted coefficients
+    WA = WEF * A
+    k3 = WPF * (k ** 3)
+    # Prepare cycles calculations
+    cp = []
+    for c in cycles:
+        # Optimal bubble radius
+        R = k / (math.sin(2.0 * math.pi / len(c)))
+        # Indicator array
+        iset = set(int(x) for x in c)
+        cp += [(R, list(iset), np.array([1.0 if i in iset else 0.0 for i in range(nnodes)]))]
     # the inscrutable (but fast) version
     # this is still O(V^2)
     # could use multilevel methods to speed this up significantly
-    k3 = k ** 3
     for iteration in range(iterations):
+        # Apply bubbling force
+        if cycles:
+            # Resulting bubble displacement force
+            bubble_disp = np.zeros((nnodes, dim))
+            for R, cind, indicator in cp:
+                # Get Center of mass
+                com = np.average(pos[cind], axis=0)
+                # Get vectors to center of mass
+                delta = np.einsum("ij,i->ij", com - pos, indicator)
+                # Calculate distances to center of mass
+                dist = np.linalg.norm(delta, axis=1)
+                # Collect bubble displacement "forces" together
+                bubble_disp += np.einsum("ij,i->ij", delta, (dist / R - 1) ** 3)
         # matrix of difference between points
         delta = pos[:, np.newaxis, :] - pos[np.newaxis, :, :]
         # distance between points
         distance = np.linalg.norm(delta, axis=-1)
         # enforce minimum distance of min_dist
         np.clip(distance, min_dist, None, out=distance)
+        #
         # displacement "force"
         # Propulsion - reverse cubic
         # Attraction - square against optimal length difference
         displacement = np.einsum('ijk,ij->ik',
                                  delta,
-                                 k3 / distance ** 3 - A * (distance - k) ** 2)
+                                 k3 / distance ** 3 - WA * (distance - k) ** 2)
+        # Apply bubbling force
+        if cycles:
+            displacement += WBF * bubble_disp
         # update positions
         length = np.linalg.norm(displacement, axis=-1)
         length = np.where(length < min_dist, min_dist, length)
