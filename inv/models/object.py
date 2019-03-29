@@ -625,6 +625,18 @@ class Object(Document):
                 break
         return None
 
+    def get_object_serials(self, chassis_only=True):
+        """
+        Gettint object serialNumber
+        :param chassis_only: With serial numbers inner objects
+        :return:
+        """
+        serials = [self.get_data("asset", "serial")]
+        if not chassis_only:
+            for sn, oo, name in self.iter_inner_connections():
+                serials += oo.get_object_serials(chassis_only=False)
+        return serials
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)

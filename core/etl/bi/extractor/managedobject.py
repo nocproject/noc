@@ -13,7 +13,7 @@ from noc.lib.text import ch_escape
 from collections import defaultdict
 # NOC modules
 from .base import BaseExtractor
-from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.core.etl.bi.stream import Stream
 from noc.inv.models.interface import Interface
@@ -39,8 +39,7 @@ class ManagedObjectsExtractor(BaseExtractor):
     }
 
     def __init__(self, prefix, start, stop):
-        super(ManagedObjectsExtractor, self).__init__(prefix, start,
-                                                      stop)
+        super(ManagedObjectsExtractor, self).__init__(prefix, start, stop)
         self.mo_stream = Stream(ManagedObjectBI, prefix)
 
     def extract(self):
@@ -52,10 +51,15 @@ class ManagedObjectsExtractor(BaseExtractor):
             self.get_links(),
             self.get_caps()
         ]
+        sn = self.get_mo_sn()
         # Extract managed objects
         for mo in ManagedObject.objects.all():
             did = DiscoveryID.objects.filter(object=mo).first()
             uptime = Uptime.objects.filter(object=mo.id, stop=None).first()
+            serials = sn.get(mo.id, [])
+            inventory = mo.get_inventory()
+            if inventory:
+                serials += inventory[0].get_object_serials(chassis_only=False)
             r = {
                 "ts": ts,
                 "managed_object": mo,
@@ -77,7 +81,8 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "is_managed": mo.is_managed,
                 "location": mo.container.get_address_text() if mo.container else "",
                 "uptime": uptime.last_value if uptime else 0.0,
-                "tags": [str(t) for t in mo.tags] if mo.tags else []
+                "tags": [str(t) for t in mo.tags] if mo.tags else [],
+                "serials": list(set(serials))
                 # subscribers
                 # services
             }
@@ -168,3 +173,13 @@ class ManagedObjectsExtractor(BaseExtractor):
                 {"$project": project_expr}
             ])
         )
+
+    @staticmethod
+    def get_mo_sn():
+        """
+        Extract serial number from attributes
+        :return:
+        """
+        r = {mo_id: [serial] for mo_id, serial in
+             ManagedObjectAttribute.objects.filter(key="Serial Number").values_list("managed_object", "value")}
+        return r
