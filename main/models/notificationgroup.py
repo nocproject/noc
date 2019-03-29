@@ -15,15 +15,19 @@ from threading import Lock
 # Third-party modules
 import six
 from django.db import models
+from mongoengine.document import EmbeddedDocument
 import cachetools
 # NOC modules
 from noc.core.model.hacks import tuck_up_pants
 from noc.aaa.models.user import User
 from noc.settings import LANGUAGE_CODE
+from noc.lib.nosql import ForeignKeyField
 from noc.lib.timepattern import TimePatternList
 from noc.core.service.pub import pub
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.template import Template
 from .timepattern import TimePattern
+
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -268,3 +272,17 @@ class NotificationGroupOther(models.Model):
             self.time_pattern.name, self.notification_method,
             self.params
         )
+
+
+class Notifications(EmbeddedDocument):
+    meta = {
+        "strict": False
+    }
+    group = ForeignKeyField(NotificationGroup, required=False)
+    template = ForeignKeyField(Template, required=False)
+
+    def __unicode__(self):
+        return u"%s : %s" % (self.group, self.template)
+
+    def __eq__(self, other):
+        return (self.group == other.group and self.template == other.template)
