@@ -77,6 +77,8 @@ class ManagedObject(Model):
     has_snmp_v2c = BooleanField(description=_("Has SNMP v2c"))
     # Counter
     uptime = Float64Field(description=_("Uptime"))
+    # SerialNumber
+    serials = ArrayField(StringField(), description=_("Serial Numbers"))
     # Tags
     tags = ArrayField(StringField(), description=_("Tags"))
 
