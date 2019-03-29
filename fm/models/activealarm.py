@@ -34,8 +34,7 @@ from mongoengine.errors import SaveConditionError
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.aaa.models.user import User
 from noc.main.models.style import Style
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.template import Template
+from noc.main.models.notificationgroup import Notifications
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.datastream.decorator import datastream
@@ -123,8 +122,7 @@ class ActiveAlarm(Document):
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Template and notification group to send close notification
-    clear_template = ForeignKeyField(Template, required=False)
-    clear_notification_group = ForeignKeyField(NotificationGroup, required=False)
+    clear_notifications = ListField(EmbeddedDocumentField(Notifications))
     # Paths
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
@@ -316,28 +314,40 @@ class ActiveAlarm(Document):
         self.delete()
         # Close TT
         # MUST be after .delete() to prevent race conditions
-        if a.escalation_tt or self.clear_template:
-            if self.clear_template:
-                ctx = {"alarm": a}
-                subject = self.clear_template.render_subject(**ctx)
-                body = self.clear_template.render_body(**ctx)
+        if a.escalation_tt or self.clear_notifications:
+            subject = "Alarm cleared"
+            body = "Alarm has been cleared"
+            if self.clear_notifications:
+                for cn in self.clear_notifications:
+                    ctx = {"alarm": a}
+                    if "template" in cn:
+                        subject = cn["template"].render_subject(**ctx)
+                        body = cn["template"].render_body(**ctx)
+                    call_later(
+                        "noc.services.escalator.escalation.notify_close",
+                        scheduler="escalator",
+                        pool=self.managed_object.escalator_shard,
+                        max_runs=config.fm.alarm_close_retries,
+                        alarm_id=self.id,
+                        tt_id=self.escalation_tt,
+                        subject=subject,
+                        body=body,
+                        notification_group_id=cn["group"].id if "group" in cn else None,
+                        close_tt=self.close_tt,
+                    )
             else:
-                subject = "Alarm cleared"
-                body = "Alarm has been cleared"
-            call_later(
-                "noc.services.escalator.escalation.notify_close",
-                scheduler="escalator",
-                pool=self.managed_object.escalator_shard,
-                max_runs=config.fm.alarm_close_retries,
-                alarm_id=self.id,
-                tt_id=self.escalation_tt,
-                subject=subject,
-                body=body,
-                notification_group_id=self.clear_notification_group.id
-                if self.clear_notification_group
-                else None,
-                close_tt=self.close_tt,
-            )
+                call_later(
+                    "noc.services.escalator.escalation.notify_close",
+                    scheduler="escalator",
+                    pool=self.managed_object.escalator_shard,
+                    max_runs=config.fm.alarm_close_retries,
+                    alarm_id=self.id,
+                    tt_id=self.escalation_tt,
+                    subject=subject,
+                    body=body,
+                    notification_group_id=None,
+                    close_tt=self.close_tt,
+                )
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
@@ -789,9 +799,8 @@ class ActiveAlarm(Document):
                 {"_id": self.id}, {"$set": {"escalation_ctx": current_context}}
             )
 
-    def set_clear_notification(self, notification_group, template):
-        self.clear_notification_group = notification_group
-        self.clear_template = template
+    def set_clear_notifications(self, clear_notifications):
+        self.clear_notifications = clear_notifications
         self.safe_save(save_condition={"managed_object": {"$exists": True}, "id": self.id})
 
     def iter_consequences(self):

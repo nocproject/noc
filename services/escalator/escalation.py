@@ -23,7 +23,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
-from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.notificationgroup import NotificationGroup, Notifications
 from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 from noc.core.tt.error import TTError, TemporaryTTError
@@ -87,6 +87,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
     else:
         sample = PARENT_SAMPLE
     with Span(client="escalator", sample=sample) as ctx:
+        clear_notification = []
         alarm.set_escalation_context()
         # Evaluate escalation chain
         mo = alarm.managed_object
@@ -269,27 +270,41 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                 logger.debug("[%s] Notification message:\nSubject: %s\n%s", alarm_id, subject, body)
                 log("Sending notification to group %s", a.notification_group.name)
                 a.notification_group.notify(subject, body)
-                alarm.set_clear_notification(a.notification_group, a.clear_template)
+                notification = Notifications(
+                    group=a.notification_group if a.notification_group else None,
+                    template=a.clear_template if a.clear_template else None,
+                )
+                clear_notification += [notification]
                 metrics["escalation_notify"] += 1
             #
             if a.stop_processing:
                 logger.debug("Stopping processing")
                 break
+        alarm.set_clear_notifications(clear_notification)
         nalarm = get_alarm(alarm_id)
         if nalarm and nalarm.status == "C" and nalarm.escalation_tt:
             log("Alarm has been closed during escalation. Try to deescalate")
             metrics["escalation_closed_while_escalated"] += 1
             if not nalarm.escalation_close_ts and not nalarm.escalation_close_error:
-                notify_close(
-                    alarm_id=alarm_id,
-                    tt_id=nalarm.escalation_tt,
-                    subject="Closing",
-                    body="Closing",
-                    notification_group_id=alarm.clear_notification_group.id
-                    if alarm.clear_notification_group
-                    else None,
-                    close_tt=alarm.close_tt,
-                )
+                if alarm.clear_notifications:
+                    for cn in alarm.clear_notifications:
+                        notify_close(
+                            alarm_id=alarm_id,
+                            tt_id=nalarm.escalation_tt,
+                            subject="Closing",
+                            body="Closing",
+                            notification_group_id=cn["group"].id if "group" in cn else None,
+                            close_tt=alarm.close_tt,
+                        )
+                else:
+                    notify_close(
+                        alarm_id=alarm_id,
+                        tt_id=nalarm.escalation_tt,
+                        subject="Closing",
+                        body="Closing",
+                        notification_group_id=None,
+                        close_tt=alarm.close_tt,
+                    )
         logger.info("[%s] Escalations loop end", alarm_id)
 
 
