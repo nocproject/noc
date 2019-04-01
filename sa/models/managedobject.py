@@ -1650,7 +1650,7 @@ class ManagedObject(Model):
                 a_cls = get_handler(a_handler)
                 assert a_cls, "Invalid applicator %s" % a_handler
                 applicator = a_cls(e, **cfg)
-                applicator.apply()
+                applicator.apply(self)
         return e
 
 

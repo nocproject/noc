@@ -23,8 +23,13 @@ class QueryApplicator(BaseApplicator):
         for k in self.CONFIG:
             self.config[k] = kwargs.get(k, self.CONFIG[k])
 
-    def apply(self):
+    def apply(self, object):
         if not self.QUERY:
             return
+        cfg = {
+            "object": object,
+            "profile": object.profile.get_profile()
+        }
+        cfg.update(self.config)
         for q in self.QUERY:
-            list(self.confdb.query(q, **self.config))
+            list(self.confdb.query(q, **cfg))

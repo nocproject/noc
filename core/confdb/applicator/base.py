@@ -12,5 +12,5 @@ class BaseApplicator(object):
         self.confdb = confdb
         self.config = {}
 
-    def apply(self):
+    def apply(self, object):
         pass

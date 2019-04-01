@@ -14,7 +14,8 @@ from .query import QueryApplicator
 
 class DefaultAdminStatusApplicator(QueryApplicator):
     QUERY = [
-        "NotMatch('interfaces', X, 'admin-status') and Fact('interfaces', X, 'admin-status', default)"
+        "NotMatch('interfaces', X, 'admin-status') and "
+        "Fact('interfaces', X, 'admin-status', default)"
     ]
     CONFIG = {
         "default": "on"
