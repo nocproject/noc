@@ -38,6 +38,9 @@ class Profile(BaseProfile):
         "line_comment": "!"
     }
     config_normalizer = "ESNormalizer"
+    config_applicators = [
+        ("noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator", {"default": "on"})
+    ]
 
     rx_if_snmp_eth = re.compile(
         r"^Ethernet Port on Unit (?P<unit>\d+), port (?P<port>\d+)$",

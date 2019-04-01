@@ -16,6 +16,7 @@ import re
 from noc.core.vlan import has_vlan
 from .transformer import PredicateTransformer
 from .var import Var
+from ..db.base import ConfDB
 
 
 def visitor(args):
@@ -43,6 +44,14 @@ class Engine(object):
         g = eval(expr, {}, {"self": self, "_input": self.iter_initial(**kwargs)})
         for ctx in g:
             yield ctx
+
+    def dump(self, format="tree"):
+        return self.db.marshall(format)
+
+    def insert_bulk(self, iter):
+        if not self.db:
+            self.db = ConfDB()
+        self.db.insert_bulk(iter)
 
     def with_db(self, db):
         self.db = db
