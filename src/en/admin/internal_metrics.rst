@@ -96,12 +96,12 @@ Each element of the system that uses the cache is assigned a unique key - cache_
 +----------------------+-----------------------+--------------+-----------------------------------------------------------+
 
 
-..mon-HTTP client metrics:
+.. _internal_metrics-HTTP client metrics:
 
 HTTP client metrics
 ~~~~~~~~~~~~~~~~~~~
 
-Built-in HHTP client supports metrics:
+Built-in HTTP client supports metrics:
 
 +---------------------------+----------------------+-------------------+-------------------------------------------+
 | Metric name               | Tag value            | A place           | Physical meaning                          |
@@ -114,7 +114,7 @@ Built-in HHTP client supports metrics:
 +---------------------------+----------------------+-------------------+-------------------------------------------+
 
 
-..mon-Client RPC Metrics:
+.. _internal_metrics-Client RPC Metrics:
 
 Client RPC Metrics
 ~~~~~~~~~~~~~~~~~~
@@ -132,7 +132,7 @@ Supports the following tags:
 +-------------+-------------------------------------------------------------------------+-------------------+-------------------------------------------------------------+
 
 
-..mon-NSQ client metrics:
+.. _internal_metrics-NSQ client metrics:
 
 NSQ client metrics
 ~~~~~~~~~~~~~~~~~~
@@ -162,7 +162,7 @@ The client provides the following metrics:
 +-----------------------------+-----------------------------------------+-------------------+-----------------------------------------------------------------+
 
 
-..mon-DCS metrics:
+.. _internal_metrics-DCS metrics:
 
 DCS metrics
 ~~~~~~~~~~~
@@ -193,7 +193,7 @@ The client provides the following metrics:
 +-----------------------------+----------------------------+--------------+-------------------------------------------------------+
 
 
-..mon-Threadpool metrics:
+.. _internal_metrics-Threadpool metrics:
 
 Threadpool metrics
 ~~~~~~~~~~~~~~~~~~
@@ -224,7 +224,7 @@ This component is responsible for managing flows and provides the following metr
    * max - use services Web,NBI
 
 
-..mon-Scheduler metrics:
+.. _internal_metrics-Scheduler metrics:
 
 Scheduler metrics
 ~~~~~~~~~~~~~~~~~
@@ -250,7 +250,7 @@ Provides the following metrics:
 +---------------------------------+-----------+-----------+------------------------------------------------------------+
 
 
-..mon-Activator:
+.. _internal_metrics-Activator:
 
 Activator
 ~~~~~~~~~
@@ -270,7 +270,7 @@ Activator
 +-------------+------------------------+---------------------------+---------------------------------------------------------+
 
 
-..mon-Discovery:
+.. _internal_metrics-Discovery:
 
 Discovery
 ~~~~~~~~~
@@ -278,7 +278,7 @@ Discovery
 todo
 
 
-..mon-SAE:
+.. _internal_metrics-SAE:
 
 SAE
 ~~~
@@ -286,7 +286,7 @@ SAE
 todo
 
 
-..mon-Ping:
+.. _internal_metrics-Ping:
 
 Ping
 ~~~~
@@ -324,7 +324,7 @@ Ping
 +---------------------------+-----------+-----------------+-----------------------------------------------------------------------------+
 
 
-..mon-Collectors:
+.. _internal_metrics-Collectors:
 
 Collectors
 ~~~~~~~~~~
@@ -350,7 +350,7 @@ Collectors
 +-----------------+--------------------------+--------------------------------------------------------------------------+---------------------------------------------------------+
 
 
-..mon-Classifier:
+.. _internal_metrics-Classifier:
 
 Classifier
 ~~~~~~~~~~
@@ -396,7 +396,7 @@ Classifier
 +-----------------------+-----------+----------------------------+----------------------------------------------------------------------------------+
 
 
-..mon-Correlator:
+.. _internal_metrics-Correlator:
 
 Correlator
 ~~~~~~~~~~
@@ -438,7 +438,7 @@ Correlator
 +---------------------------+---------------------+---------------------------------------+-------------------------------------------------------------------------------------------------------------+
 
 
-..mon-Escalator:
+.. _internal_metrics-Escalator:
 
 Escalator
 ~~~~~~~~~
@@ -490,7 +490,7 @@ Escalator
 +-----------------------------------+-----------+------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-..mon-Mailsender:
+.. _internal_metrics-Mailsender:
 
 Mailsender
 ~~~~~~~~~~
@@ -508,7 +508,7 @@ System-wide metrics (self-monitoring)
 Subsystem metrics are calculated based on information from the database ( Postgres or MongoDB) and require an installed service seflmon.
 
 
-..mon-Task:
+.. _internal_metrics-Task:
 
 Task
 ~~~~
@@ -542,7 +542,7 @@ Tags are added to all metrics:
 +--------------------------------+----------------------+--------------+---------------------------------------------------------------------------------+
 
 
-..mon-Inventory:
+.. _internal_metrics-Inventory:
 
 Inventory
 ~~~~~~~~~
@@ -565,7 +565,7 @@ Inventory
 | inventory_managedobject_unmanaged | x         | selfmon.managedobject |                                                                                                          |
 +-----------------------------------+-----------+-----------------------+----------------------------------------------------------------------------------------------------------+
 
-..mon-FM:
+.. _internal_metrics-FM:
 
 FM
 ~~
