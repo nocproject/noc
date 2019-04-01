@@ -39,6 +39,7 @@ class Profile(BaseProfile):
     }
     config_normalizer = "ESNormalizer"
     config_applicators = [
+        "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
         ("noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator", {"default": "on"})
     ]
 
@@ -90,3 +91,13 @@ class Profile(BaseProfile):
             v, k = line.split(" ", 1)
             r[current_iface][k.strip()] = v.strip()
         return r
+
+    _IF_TYPES = {
+        "eth": "physical",
+        "vla": "SVI",
+        "tru": "aggregated"
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls._IF_TYPES.get(name[:3].lower(), "unknown")

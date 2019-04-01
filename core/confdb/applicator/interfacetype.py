@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# InterfaceTypeApplicator
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from .query import QueryApplicator
+
+
+class InterfaceTypeApplicator(QueryApplicator):
+    QUERY = [
+        "NotMatch('interfaces', X, 'type') and "
+        "Set(if_type=profile.get_interface_type(X)) and "
+        "Filter(if_type is not None) and "
+        "Fact('interfaces', X, 'type', if_type)"
+    ]
