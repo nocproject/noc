@@ -77,7 +77,7 @@ OUT3 = """interfaces
         {"name": "Fa 0/2"}
     ])
 ])
-def test_bound(conf, input, query, out_conf, output):
+def test_fact(conf, input, query, out_conf, output):
     db = ConfDB()
     db.insert_bulk(CONF1)
     e = Engine().with_db(db)

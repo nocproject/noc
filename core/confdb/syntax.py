@@ -70,6 +70,11 @@ SYNTAX = [
     ]),
     DEF("interfaces", [
         DEF(IF_NAME, [
+            DEF("type", [
+                DEF(CHOICES("physical", "SVI", "aggregated", "loopback", "management",
+                            "null", "tunnel", "other", "template", "dry", "unknown"),
+                    required=True, name="type", gen="make_interface_type")
+            ]),
             DEF("description", [
                 DEF(ANY, required=True, name="description", gen="make_interface_description")
             ]),

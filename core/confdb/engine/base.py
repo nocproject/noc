@@ -12,10 +12,12 @@ import ast
 import itertools
 import types
 import re
+from collections import defaultdict
 # NOC modules
-from noc.core.vlan import has_vlan
+from noc.core.vlan import has_vlan, optimize_filter
 from .transformer import PredicateTransformer
 from .var import Var
+from ..db.base import ConfDB
 
 
 def visitor(args):
@@ -37,12 +39,48 @@ class Engine(object):
         co = compile(tree, "<ast>", "eval")
         return co
 
+    def _expr_to_python(self, expr):
+        """
+        Convert expression to python expression
+        :param expr:
+        :return:
+        """
+        import astor
+        tree = ast.parse(expr, mode="eval")
+        tree = PredicateTransformer(self).visit(tree)
+        ast.fix_missing_locations(tree)
+        print(astor.to_source(tree))
+
     def query(self, expr, **kwargs):
         if not isinstance(expr, types.CodeType):
             expr = self.compile(expr)
         g = eval(expr, {}, {"self": self, "_input": self.iter_initial(**kwargs)})
         for ctx in g:
             yield ctx
+
+    def dump(self, format="tree"):
+        return self.db.marshall(format)
+
+    def insert_bulk(self, iter):
+        if not self.db:
+            self.db = ConfDB()
+        self.db.insert_bulk(iter)
+
+    def trim_and_append(self, path, value):
+        """
+        Trim all children nodes of path and append value
+        :param path: Tuple containing path
+        :param value: iterable yielding path
+        :return: True if value replaced, False otherwise
+        """
+        current = self.db.db
+        for p in path:
+            current = current.find(p)
+            if current is None:
+                return False
+        current.trim()
+        current.insert(value)
+        return True
 
     def with_db(self, db):
         self.db = db
@@ -316,6 +354,14 @@ class Engine(object):
         except StopIteration:
             yield {}
 
+    def op_Or(self, _input, *args):
+        # Split inputs
+        inputs = itertools.tee(_input, len(args))
+        # Make generators
+        gens = [a(self, g) for a, g in zip(args, inputs)]
+        #
+        return self.iter_unique(itertools.chain(*gens))
+
     def fn_Del(self, _input, *args):
         """
         Delete variables from context. Deduplicate contexts when necessary
@@ -383,4 +429,58 @@ class Engine(object):
                     continue
             elif not expr:
                 continue
+            yield ctx
+
+    def fn_Group(self, _input, *args):
+        # Group
+        contexts = {}
+        for ctx in _input:
+            kv = tuple(ctx.get(a) for a in args)
+            if kv in contexts:
+                contexts[kv].update(ctx)
+            else:
+                contexts[kv] = ctx
+        # Yield
+        for kv in sorted(contexts):
+            yield contexts[kv]
+
+    def _collapse_join(self, values, join):
+        return join.join(values)
+
+    def _collapse_joinrange(self, values, joinrange):
+        return optimize_filter(joinrange.join(values))
+
+    def fn_Collapse(self, _input, *args, **kwargs):
+        """
+        Collapse multiple keys to a single one following rules
+        :param _input:
+        :param args:
+        :param kwargs: One of collapse operation should be specified
+            * join=<sep> -- join lines with separator sep
+        :return:
+        """
+        assert self.db, "Current database is not set"
+        # Check operations
+        op = None
+        for k in kwargs:
+            op = getattr(self, "_collapse_%s" % k, None)
+            if op:
+                break
+        assert op, "Collapse operation is not set"
+        # kwargs are callables, evaluate them
+        collapse_args = {k: kwargs[k]({}) for k in kwargs}
+        # Group values
+        match_args = list(args) + [Var("$value")]
+        collected = defaultdict(list)  # path -> [value, ...]
+        for ctx in self.fn_Match(_input, *match_args):
+            path = tuple(self.resolve_var(ctx, p) for p in args)
+            collected[path] += [ctx["$value"]]
+        # Apply changes
+        for path in collected:
+            # Merge values
+            value = op(collected[path], **collapse_args)
+            # Replace
+            self.trim_and_append(path, [value])
+        # Pass contexts unchanged
+        for ctx in _input:
             yield ctx

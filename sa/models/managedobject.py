@@ -66,9 +66,10 @@ from noc.core.matcher import match
 from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
+from noc.core.confdb.engine.base import Engine
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 13
+MANAGEDOBJECT_CACHE_VERSION = 14
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -1624,6 +1625,33 @@ class ManagedObject(Model):
         normalizer = n_cls(self, self.iter_config_tokens(config), **n_config)
         for tokens in normalizer:
             yield tokens
+
+    def get_confdb(self, config=None):
+        """
+        Returns ready ConfDB engine instance
+
+        :param config: Configuration data
+        :return: confdb.Engine instance
+        """
+        profile = self.profile.get_profile()
+        applicators = profile.get_config_applicators(self)
+        e = Engine()
+        # Parse and normalize config
+        e.insert_bulk(self.iter_normalized_tokens(config))
+        # Apply applicators
+        if applicators:
+            for acfg in applicators:
+                if isinstance(acfg, six.string_types):
+                    a_handler, cfg = acfg, {}
+                else:
+                    a_handler, cfg = acfg
+                if not a_handler.startswith("noc."):
+                    a_handler = "noc.sa.profiles.%s.confdb.applicator.%s" % (profile.name, a_handler)
+                a_cls = get_handler(a_handler)
+                assert a_cls, "Invalid applicator %s" % a_handler
+                applicator = a_cls(e, **cfg)
+                applicator.apply(self)
+        return e
 
 
 @on_save

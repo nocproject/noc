@@ -222,6 +222,9 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     config_normalizer = None
     # Config normalizer settings
     config_normalizer_settings = {}
+    # Config applicators
+    # List of (<applicator handler>, <applicator settings>)
+    config_applicators = None
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
@@ -563,6 +566,15 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :return:
         """
         return cls.config_normalizer, cls.config_normalizer_settings
+
+    @classmethod
+    def get_config_applicators(cls, object):
+        """
+        Returns config applicators and settings
+        :param object: Managed Object instance
+        :return: None if no applicators. List of (applicator handler, applicator settings) otherwise
+        """
+        return cls.config_applicators
 
     @classmethod
     def get_http_request_middleware(cls, script):
