@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Ericsson.SEOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,14 +23,27 @@ class Script(BaseScript):
                         r"^Active BNS\s+:\s+CXCR:\s+(?P<sw_backup>\S+.*)$",
                         re.MULTILINE)
 
-    def execute(self):
+    def execute_snmp(self):
+        active_rev = self.snmp.get("1.3.6.1.4.1.193.81.2.7.1.3.0", cached=True)
+        version = self.snmp.get("1.3.6.1.4.1.193.81.2.7.1.2.1.3.%s" % active_rev, cached=True)
+        serial = self.snmp.get("1.3.6.1.4.1.193.81.2.7.1.2.1.2.%s" % active_rev, cached=True)
+        return {
+            "vendor": "Ericsson",
+            "platform": "Mini-Link",
+            "version": version,
+            "attributes": {
+                "Serial Number": serial
+            }
+        }
+
+    def execute_cli(self):
         ver = self.cli("show version", cached=True)
         for match in self.rx_ver.finditer(ver):
             version = match.group("version")
             sw_backup = match.group("sw_backup")
             return {
                 "vendor": "Ericsson",
-                "platform": "SEOS",
+                "platform": "Mini-Link",
                 "version": version,
                 "attributes": {
                     "sw_backup": sw_backup
