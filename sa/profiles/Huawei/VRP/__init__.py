@@ -87,7 +87,7 @@ class Profile(BaseProfile):
         },
         "is_ar": {
             "platform": {
-                "$regex": "^AR\d+.+"
+                "$regex": r"^AR\d+.+"
             }
         },
         "is_extended_entity_mib_supported": {
@@ -246,7 +246,7 @@ class Profile(BaseProfile):
         v = mac.replace(":", "").lower()
         return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
 
-    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+    spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)
