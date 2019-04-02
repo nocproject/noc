@@ -9,7 +9,6 @@
 # NOC modules
 from noc.core.error import NOCError
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.confdb.db.base import ConfDB
 
 
 class ConfigCheck(DiscoveryCheck):
@@ -38,9 +37,8 @@ class ConfigCheck(DiscoveryCheck):
             self.logger.info("ConfDB is not required. Skipping")
             return
         self.logger.info("Building ConfDB")
-        db = ConfDB()
-        db.insert_bulk(self.object.iter_normalized_tokens(config))
-        self.set_artefact("confdb", db)
+        confdb = self.object.get_confdb(config)
+        self.set_artefact("confdb", confdb)
 
     def get_config(self):
         p = self.object.get_config_policy()
@@ -56,8 +54,8 @@ class ConfigCheck(DiscoveryCheck):
         return None
 
     def get_config_script(self):
-        if "get_config" not in self.object.scripts:
-            self.logger.info("get_config script is not supported. Cannot request config from device")
+        if self.required_script not in self.object.scripts:
+            self.logger.info("%s script is not supported. Cannot request config from device", self.required_script)
             return None
         self.logger.info("Requesting config from device")
         try:
@@ -92,3 +90,6 @@ class ConfigCheck(DiscoveryCheck):
         except storage.Error as e:
             self.logger.info("Failed to download: %s", e)
             return None
+
+    def has_required_script(self):
+        return super(ConfigCheck, self).has_required_script() or self.object.get_config_policy() != "s"
