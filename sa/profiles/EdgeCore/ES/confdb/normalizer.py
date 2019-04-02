@@ -42,8 +42,10 @@ class ESNormalizer(BaseNormalizer):
 
     @match("interface", "ethernet", ANY, "port", "security", "max-mac-count", ANY)
     def normalize_port_security(self, tokens):
+        if_name = self.interface_name(tokens[1], tokens[2])
         yield self.make_unit_port_security_max_mac(
-            interface=self.interface_name(tokens[1], tokens[2]),
+            interface=if_name,
+            unit=if_name,
             limit=tokens[6]
         )
 
