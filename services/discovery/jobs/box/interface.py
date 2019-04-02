@@ -456,7 +456,7 @@ class InterfaceCheck(DiscoveryCheck):
             self.logger.error("confdb artefact is not set. Skipping")
             return None
         # Get interfaces and parse result
-        interfaces = {d["if_name"]:d for d in confdb.query(self.IF_QUERY)}
+        interfaces = {d["if_name"]: d for d in confdb.query(self.IF_QUERY)}
         instances = defaultdict(dict)
         for d in confdb.query(self.UNIT_QUERY):
             r = instances[d["vr"], d["instance"]]
