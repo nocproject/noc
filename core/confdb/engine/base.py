@@ -431,13 +431,31 @@ class Engine(object):
                 continue
             yield ctx
 
-    def fn_Group(self, _input, *args):
+    def fn_Group(self, _input, *args, **kwargs):
+        def update_context(g_ctx, new_ctx):
+            if stack:
+                for k in new_ctx:
+                    if k in stack:
+                        if k in g_ctx:
+                            g_ctx[k] += [new_ctx[k]]
+                        else:
+                            g_ctx[k] = [new_ctx[k]]
+                    else:
+                        g_ctx[k] = new_ctx[k]
+            else:
+                g_ctx.update(new_ctx)
+
+        #
+        stack = kwargs.get("stack")
+        # kwargs are callables, evaluate them
+        if stack:
+            stack = stack({})
         # Group
         contexts = {}
         for ctx in _input:
             kv = tuple(ctx.get(a) for a in args)
             if kv in contexts:
-                contexts[kv].update(ctx)
+                update_context(contexts[kv], ctx)
             else:
                 contexts[kv] = ctx
         # Yield
