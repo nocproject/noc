@@ -55,7 +55,6 @@ CONF1 = [
     ])
 ])
 def test_match(conf, query, output):
-    db = ConfDB()
-    db.insert_bulk(CONF1)
-    e = Engine().with_db(db)
+    e = Engine()
+    e.insert_bulk(conf)
     assert list(e.query(query)) == output

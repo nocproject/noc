@@ -69,7 +69,16 @@ from noc.core.confdb.engine.base import Engine
         {"x": 2, "y": 4}
     ]),
     # Deduplication
-    ({"x": [1, 2, 3, 4]}, "Set(x=x%2)", [{"x": 1}, {"x": 0}])
+    ({"x": [1, 2, 3, 4]}, "Set(x=x%2)", [{"x": 1}, {"x": 0}]),
+    # Or
+    ({"x": [1, 2, 3]}, "Set(y=1) or Set(y=2)", [
+        {"x": 1, "y": 1},
+        {"x": 2, "y": 1},
+        {"x": 3, "y": 1},
+        {"x": 1, "y": 2},
+        {"x": 2, "y": 2},
+        {"x": 3, "y": 2}
+    ])
 ])
 def test_set(input, query, output):
     e = Engine()

@@ -38,6 +38,18 @@ class Engine(object):
         co = compile(tree, "<ast>", "eval")
         return co
 
+    def _expr_to_python(self, expr):
+        """
+        Convert expression to python expression
+        :param expr:
+        :return:
+        """
+        import astor
+        tree = ast.parse(expr, mode="eval")
+        tree = PredicateTransformer(self).visit(tree)
+        ast.fix_missing_locations(tree)
+        print(astor.to_source(tree))
+
     def query(self, expr, **kwargs):
         if not isinstance(expr, types.CodeType):
             expr = self.compile(expr)
@@ -325,6 +337,14 @@ class Engine(object):
         except StopIteration:
             yield {}
 
+    def op_Or(self, _input, *args):
+        # Split inputs
+        inputs = itertools.tee(_input, len(args))
+        # Make generators
+        gens = [a(self, g) for a, g in zip(args, inputs)]
+        #
+        return self.iter_unique(itertools.chain(*gens))
+
     def fn_Del(self, _input, *args):
         """
         Delete variables from context. Deduplicate contexts when necessary
@@ -393,3 +413,16 @@ class Engine(object):
             elif not expr:
                 continue
             yield ctx
+
+    def fn_Group(self, _input, *args):
+        # Group
+        contexts = {}
+        for ctx in _input:
+            kv = tuple(ctx.get(a) for a in args)
+            if kv in contexts:
+                contexts[kv].update(ctx)
+            else:
+                contexts[kv] = ctx
+        # Yield
+        for kv in sorted(contexts):
+            yield contexts[kv]

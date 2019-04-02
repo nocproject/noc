@@ -16,6 +16,7 @@ CVAR_NAME = "_ctx"
 class PredicateTransformer(ast.NodeTransformer):
     def __init__(self, engine):
         self.engine = engine
+        self.input_counter = itertools.count()
         super(PredicateTransformer, self).__init__()
 
     def wrap_callable(self, node):
@@ -48,6 +49,8 @@ class PredicateTransformer(ast.NodeTransformer):
         return [wrap[v](a) for v, a in itertools.izip_longest(vx, args, fillvalue=vx[-1])]
 
     def visit_Call(self, node, _input=None):
+        if isinstance(node, ast.BoolOp):
+            return self.visit_BoolOp(node, _input=_input)
         if not _input:
             _input = ast.Name(id="_input", ctx=ast.Load())
         fn = getattr(self.engine, "fn_%s" % node.func.id)
@@ -63,14 +66,44 @@ class PredicateTransformer(ast.NodeTransformer):
             kwargs=node.kwargs
         )
 
-    def visit_BoolOp(self, node):
+    def visit_BoolOp(self, node, _input=None):
         def get_and_call_chain(chain):
             if len(chain) == 1:
                 return self.visit_Call(chain[0])
             return self.visit_Call(chain[0], get_and_call_chain(chain[1:]))
 
+        def get_or_call_chain(chain):
+            def make_or_call(cn):
+                l_input = ast.Name(id="_input_%d" % next(self.input_counter), ctx=ast.Load())
+
+                return ast.Lambda(
+                    args=ast.arguments(
+                        args=[ast.Name(id="self", ctx=ast.Param()), l_input],
+                        vararg=None,
+                        kwarg=None,
+                        defaults=[]
+                    ),
+                    body=self.visit_Call(cn, _input=l_input)
+                )
+
+            return ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id="self", ctx=ast.Load()),
+                    attr="op_Or",
+                    ctx=ast.Load()
+                ),
+                args=[_input] + [make_or_call(n) for n in chain],
+                keywords=[],
+                starargs=None,
+                kwargs=None
+            )
+
+        if not _input:
+            _input = ast.Name(id="_input", ctx=ast.Load())
         if isinstance(node.op, ast.And):
             return get_and_call_chain(list(reversed(node.values)))
+        elif isinstance(node.op, ast.Or):
+            return get_or_call_chain(node.values)
         return node
 
     def visit_Name(self, node):
