@@ -158,7 +158,7 @@ class AlarmDataStream(DataStream):
     @classmethod
     def get_meta(cls, data):
         return {
-            "alarmclass": data["alarm_class"]["id"]
+            "alarmclass": data["alarm_class"]["id"] if "alarm_class" in data else None
         }
 
     @classmethod
