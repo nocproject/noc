@@ -180,7 +180,7 @@ SYNTAX = [
                             ])
                         ], multi=True, name="vlan_id", gen="make_vlan_id")
                     ]),
-                    DEF("interface", [
+                    DEF("interfaces", [
                         DEF(IF_NAME, [
                             DEF("unit", [
                                 DEF(UNIT_NAME, [

@@ -56,22 +56,28 @@ class ESNormalizer(BaseNormalizer):
 
     @match("interface", "ethernet", ANY, "switchport", "allowed", "vlan", "add", ANY, "untagged")
     def normalize_switchport_untagged(self, tokens):
+        if_name = self.interface_name(tokens[1], tokens[2])
         yield self.make_switchport_untagged(
-            interface=self.interface_name(tokens[1], tokens[2]),
+            interface=if_name,
+            unit=if_name,
             vlan_filter=tokens[7]
         )
 
     @match("interface", "ethernet", ANY, "switchport", "allowed", "vlan", "add", ANY, "tagged")
     def normalize_switchport_tagged(self, tokens):
+        if_name = self.interface_name(tokens[1], tokens[2])
         yield self.make_switchport_tagged(
-            interface=self.interface_name(tokens[1], tokens[2]),
+            interface=if_name,
+            unit=if_name,
             vlan_filter=tokens[7]
         )
 
     @match("interface", "ethernet", ANY, "switchport", "native", "vlan", ANY)
     def normalize_switchport_native(self, tokens):
+        if_name = self.interface_name(tokens[1], tokens[2])
         yield self.make_switchport_native(
-            interface=self.interface_name(tokens[1], tokens[2]),
+            interface=if_name,
+            unit=if_name,
             vlan_id=tokens[6]
         )
 
@@ -88,8 +94,10 @@ class ESNormalizer(BaseNormalizer):
 
     @match("interface", "vlan", ANY, "ip", "address", ANY, ANY)
     def normalize_vlan_ip(self, tokens):
+        if_name = self.interface_name(tokens[1], tokens[2])
         yield self.make_unit_inet_address(
-            interface=self.interface_name(tokens[1], tokens[2]),
+            interface=if_name,
+            unit=if_name,
             address=self.to_prefix(tokens[5], tokens[6])
         )
 
