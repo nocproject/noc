@@ -67,6 +67,10 @@ class DataStream(object):
         """
         coll = cls.get_collection()
         coll.create_index(cls.F_CHANGEID, unique=True)
+        meta = cls.get_meta({})
+        if meta:
+            for m in meta:
+                coll.create_index("%s.%s" % (cls.F_META, m))
 
     @classmethod
     def get_object(cls, id):
