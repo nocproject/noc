@@ -56,10 +56,14 @@ class Profile(BaseProfile):
         'Eth 1/21'
         >>> Profile().convert_interface_name("Port12")
         'Eth 1/12'
+        >>> Profile().convert_interface_name("ethernet 1/1")
+        'Eth 1/1'
         """
         s = s.strip()
         if s.startswith("Port"):
             return "Eth 1/%s" % s[4:].strip()
+        if s.startswith("ethernet "):
+            return "Eth %s" % s[9:].strip()
         match = self.rx_if_snmp_eth.match(s)
         if match:
             return "Eth %s/%s" % (match.group("unit"),
