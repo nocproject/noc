@@ -3,7 +3,7 @@
 # Vendor: Ericsson
 # OS:     SEOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,9 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
+    """
+    For correct polling on snmp it is necessary to enable "snmp extended read" in settings
+    """
     name = "Ericsson.SEOS"
     pattern_more = "^---(more)---"
     pattern_unprivileged_prompt = \
