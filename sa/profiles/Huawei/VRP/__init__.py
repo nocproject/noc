@@ -53,6 +53,11 @@ class Profile(BaseProfile):
         # "end_of_context": "#"
     }
     config_normalizer = "VRPNormalizer"
+    config_applicators = [
+        "noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator",
+        "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
+        ("noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator", {"default": "on"})
+    ]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
     matchers = {
@@ -183,8 +188,12 @@ class Profile(BaseProfile):
         "Pos": None
     }
 
+    rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
+
     @classmethod
     def get_interface_type(cls, name):
+        if cls.rx_iftype.match(name):
+            return cls.INTERFACE_TYPES.get(cls.rx_iftype.match(name).group(1))
         return cls.INTERFACE_TYPES.get(name)
 
     def generate_prefix_list(self, name, pl, strict=True):

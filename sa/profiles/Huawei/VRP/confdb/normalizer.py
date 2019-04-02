@@ -8,9 +8,20 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.syntax import DEF, IF_NAME, BOOL
 
 
 class VRPNormalizer(BaseNormalizer):
+
+    SYNTAX = [
+        DEF("interfaces", [
+            DEF(IF_NAME, [
+                DEF("bpdu", [
+                    DEF(BOOL, required=False, name="enabled", gen="make_interface_ethernet_bpdu")
+                ])
+            ], multi=True, name="interface")
+        ]),
+    ]
 
     @match("sysname", ANY)
     def normalize_hostname(self, tokens):
@@ -101,15 +112,19 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("interface", ANY, "port", "hybrid", "pvid", "vlan", ANY)
     def normalize_switchport_untagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_switchport_untagged(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             vlan_filter=tokens[6]
         )
 
     @match("interface", ANY, "port", "trunk", "allow-pass", "vlan", REST)
     def normalize_switchport_tagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_switchport_tagged(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             vlan_filter=" ".join(tokens[6:]).replace(" to ", "-").replace(" ", ",")
         )
 
@@ -118,6 +133,13 @@ class VRPNormalizer(BaseNormalizer):
         yield self.make_interface_ethernet_autonegotiation(
             interface=self.interface_name(tokens[1]),
             mode="manual"
+        )
+
+    @match("interface", ANY, "bpdu", "enable")
+    def normalize_interface_bpdu(self, tokens):
+        yield self.make_interface_ethernet_bpdu(
+            interface=self.interface_name(tokens[1]),
+            enabled=True
         )
 
     # @match("interface", ANY, "stp", "disable")
@@ -136,8 +158,10 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("interface", ANY, "ip", "address", ANY, ANY)
     def normalize_vlan_ip(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_unit_inet_address(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             address=self.to_prefix(tokens[4], tokens[5])
         )
 
