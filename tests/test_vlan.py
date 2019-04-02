@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.vlan import has_vlan
+from noc.core.vlan import has_vlan, optimize_filter
 
 
 @pytest.mark.parametrize("vlan_filter,vlan,result", [
@@ -65,3 +65,33 @@ from noc.core.vlan import has_vlan
 ])
 def test_has_vlan(vlan_filter, vlan, result):
     assert has_vlan(vlan_filter, vlan) is result
+
+
+@pytest.mark.parametrize("vlan_filter,result", [
+    # Empty filter
+    ("", ""),
+    (" ", ""),
+    # Single value
+    ("1", "1"),
+    (" 1", "1"),
+    # Sparse single values
+    ("1,3", "1,3"),
+    ("1, 3", "1,3"),
+    # Sparse out-of-order values
+    ("3,1", "1,3"),
+    # Sparse ranges
+    ("1,5-7,10,15-20", "1,5-7,10,15-20"),
+    # Sparse out-of-order ranges
+    ("1,5-7,15-20,10", "1,5-7,10,15-20"),
+    # Single deduplication
+    ("1,7,5,3,5", "1,3,5,7"),
+    # Single-to-range
+    ("1,2,3", "1-3"),
+    ("1,3,2,4", "1-4"),
+    # Merge ranges
+    ("5,7,8-10,10-20", "5,7-20"),
+    # Nested ranges
+    ("1,5-10,4,3-20,40", "1,3-20,40")
+])
+def test_optimize_filter(vlan_filter, result):
+    assert optimize_filter(vlan_filter) == result

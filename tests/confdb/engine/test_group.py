@@ -23,29 +23,31 @@ CONF1 = [
 
 
 @pytest.mark.parametrize("conf,query,output", [
-    (CONF1, """(
-        Match("interfaces", name) or
-        Match("interfaces", name, "type", type) or
-        Match("interfaces", name, "description", description) or
-        Match("interfaces", name, "admin-status", admin_status)
-    ) and Group("name")""",
-     [
-         {
-             "admin_status": "on",
-             "description": "client 1",
-             "name": "Fa0/1",
-             "type": "physical"
-         },
-         {
-             "admin_status": "off",
-             "description": "client 2",
-             "name": "Fa0/2",
-             "type": "physical"
-         },
-         {
-             "name": "Fa0/3"
-         }
-     ]
+    (
+        CONF1,
+        """(
+            Match("interfaces", name) or
+            Match("interfaces", name, "type", type) or
+            Match("interfaces", name, "description", description) or
+            Match("interfaces", name, "admin-status", admin_status)
+        ) and Group("name")""",
+        [
+            {
+                "admin_status": "on",
+                "description": "client 1",
+                "name": "Fa0/1",
+                "type": "physical"
+            },
+            {
+                "admin_status": "off",
+                "description": "client 2",
+                "name": "Fa0/2",
+                "type": "physical"
+            },
+            {
+                "name": "Fa0/3"
+            }
+        ]
     )
 ])
 def test_group(conf, query, output):

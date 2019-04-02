@@ -10,7 +10,6 @@
 import pytest
 # NOC modules
 from noc.core.confdb.engine.base import Engine
-from noc.core.confdb.db.base import ConfDB
 
 CONF1 = [
     ["interface", "Fa 0/1", "description", "First interface"],

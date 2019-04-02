@@ -12,8 +12,9 @@ import ast
 import itertools
 import types
 import re
+from collections import defaultdict
 # NOC modules
-from noc.core.vlan import has_vlan
+from noc.core.vlan import has_vlan, optimize_filter
 from .transformer import PredicateTransformer
 from .var import Var
 from ..db.base import ConfDB
@@ -64,6 +65,22 @@ class Engine(object):
         if not self.db:
             self.db = ConfDB()
         self.db.insert_bulk(iter)
+
+    def trim_and_append(self, path, value):
+        """
+        Trim all children nodes of path and append value
+        :param path: Tuple containing path
+        :param value: iterable yielding path
+        :return: True if value replaced, False otherwise
+        """
+        current = self.db.db
+        for p in path:
+            current = current.find(p)
+            if current is None:
+                return False
+        current.trim()
+        current.insert(value)
+        return True
 
     def with_db(self, db):
         self.db = db
@@ -426,3 +443,44 @@ class Engine(object):
         # Yield
         for kv in sorted(contexts):
             yield contexts[kv]
+
+    def _collapse_join(self, values, join):
+        return join.join(values)
+
+    def _collapse_joinrange(self, values, joinrange):
+        return optimize_filter(joinrange.join(values))
+
+    def fn_Collapse(self, _input, *args, **kwargs):
+        """
+        Collapse multiple keys to a single one following rules
+        :param _input:
+        :param args:
+        :param kwargs: One of collapse operation should be specified
+            * join=<sep> -- join lines with separator sep
+        :return:
+        """
+        assert self.db, "Current database is not set"
+        # Check operations
+        op = None
+        for k in kwargs:
+            op = getattr(self, "_collapse_%s" % k, None)
+            if op:
+                break
+        assert op, "Collapse operation is not set"
+        # kwargs are callables, evaluate them
+        collapse_args = {k: kwargs[k]({}) for k in kwargs}
+        # Group values
+        match_args = list(args) + [Var("$value")]
+        collected = defaultdict(list)  # path -> [value, ...]
+        for ctx in self.fn_Match(_input, *match_args):
+            path = tuple(self.resolve_var(ctx, p) for p in args)
+            collected[path] += [ctx["$value"]]
+        # Apply changes
+        for path in collected:
+            # Merge values
+            value = op(collected[path], **collapse_args)
+            # Replace
+            self.trim_and_append(path, [value])
+        # Pass contexts unchanged
+        for ctx in _input:
+            yield ctx
