@@ -161,7 +161,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         def sort_path_key(s):
             """
             M - Main, C - Custom, G - Generic, P - profile
-            \|G|P
+             |G|P
             -+-+-
             M|3|1
             C|2|0
@@ -521,8 +521,20 @@ class Script(BaseScript):
         :param multi: True if single request can return several different paths.
             When False - only first call with composite path for same path will be returned
         """
+        if isinstance(value, six.string_types):
+            try:
+                value = float(value)
+            except ValueError:
+                self.logger.info("Invalid metric value. Skipping: %s(%s) = %r", metric, path, value)
+                return
         if callable(scale):
-            if not isinstance(value, list):
+            if isinstance(value, list):
+                try:
+                    value = [float(x) for x in value]
+                except ValueError:
+                    self.logger.info("Invalid metric value. Skipping: %s(%s) = %r", metric, path, value)
+                    return
+            else:
                 value = [value]
             value = scale(*value)
             scale = 1
