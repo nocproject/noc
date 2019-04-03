@@ -487,7 +487,7 @@ class DiscoveryCheck(object):
         pass
 
     def update_if_changed(self, obj, values, ignore_empty=None,
-                          async=False, bulk=None):
+                          wait=True, bulk=None):
         """
         Update fields if changed.
         :param obj: Document instance
@@ -495,7 +495,7 @@ class DiscoveryCheck(object):
         :param values: New values
         :type values: dict
         :param ignore_empty: List of fields which may be ignored if empty
-        :param async: set write concern to 0
+        :param wait: Wait for operation to complete. set write concern to 0 if False
         :param bulk: Execute as the bulk op instead
         :returns: List of changed (key, value)
         :rtype: list
@@ -521,7 +521,7 @@ class DiscoveryCheck(object):
                 }, op)]
             else:
                 kwargs = {}
-                if async:
+                if not wait:
                     kwargs["write_concern"] = {"w": 0}
                 obj.save(**kwargs)
         return changes
