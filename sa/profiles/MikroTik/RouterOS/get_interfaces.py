@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -153,7 +153,7 @@ class Script(BaseScript):
                 if (
                     r["vlan-mode"] in ["check", "secure"] and
                     r["vlan-header"] in ["add-if-missing", "leave-as-is"] and
-                    int(r["default-vlan-id"]) != 0
+                    r["default-vlan-id"] != "auto" and int(r["default-vlan-id"]) != 0
                 ):
                     vlan_tags[r["name"]] = True
                 else:
@@ -165,6 +165,9 @@ class Script(BaseScript):
             # Attach subinterfaces with `BRIDGE` AFI to parent
             v = self.cli_detail("/interface ethernet switch vlan print detail without-paging")
             for n, f, r in v:
+                # vlan-id=auto ? Need more testing
+                if not is_int(r["vlan-id"]):
+                    continue
                 vlan_id = int(r["vlan-id"])
                 ports = r["ports"].split(",")
                 if not ports:
