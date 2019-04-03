@@ -1381,7 +1381,7 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         """
         for method in self.policy_map[self.get_policy()]:
             check = getattr(self, "can_get_data_from_%s" % method)
-            if not check:
+            if not check():
                 continue
             getter = getattr(self, "request_data_from_%s" % method)
             data = getter()
@@ -1412,6 +1412,7 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
 
     def request_data_from_confdb(self):
         self.logger.info("Requesting data from ConfDB")
+        self.confdb = self.get_artefact("confdb")
         return self.get_data_from_confdb()
 
     def get_data_from_confdb(self):

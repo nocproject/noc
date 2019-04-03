@@ -235,9 +235,8 @@ class VLANCheck(PolicyDiscoveryCheck):
         return self.object.scripts.get_vlans()
 
     def get_data_from_confdb(self):
-        confdb = self.get_artefact("confdb")
         r = [{
             "vlan_id": d["vlan"],
             "name": d.get("name", "VLAN %s" % d["vlan"])
-        } for d in confdb.query(self.VLAN_QUERY)]
+        } for d in self.confdb.query(self.VLAN_QUERY)]
         return IGetVlans().clean_result(r)

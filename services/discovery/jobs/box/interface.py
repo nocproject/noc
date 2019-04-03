@@ -437,11 +437,10 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         return self.object.scripts.get_interfaces()
 
     def get_data_from_confdb(self):
-        confdb = self.get_artefact("confdb")
         # Get interfaces and parse result
-        interfaces = {d["if_name"]: d for d in confdb.query(self.IF_QUERY)}
+        interfaces = {d["if_name"]: d for d in self.confdb.query(self.IF_QUERY)}
         instances = defaultdict(dict)
-        for d in confdb.query(self.UNIT_QUERY):
+        for d in self.confdb.query(self.UNIT_QUERY):
             r = instances[d["vr"], d["instance"]]
             if not r:
                 r["virtual_router"] = d["vr"]
