@@ -12,7 +12,7 @@ from collections import defaultdict
 import six
 # NOC modules
 from noc.lib.text import ranges_to_list
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.core.service.rpc import RPCError
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
@@ -22,7 +22,7 @@ from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRu
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class InterfaceCheck(DiscoveryCheck):
+class InterfaceCheck(PolicyDiscoveryCheck):
     """
     Version discovery
     """
@@ -56,7 +56,7 @@ class InterfaceCheck(DiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking interfaces")
-        result = self.get_interfaces()
+        result = self.get_data()
         if not result:
             self.logger.error("Failed to get interfaces")
             return
@@ -430,31 +430,14 @@ class InterfaceCheck(DiscoveryCheck):
     def in_lag(x):
         return "aggregated_interface" in x and bool(x["aggregated_interface"])
 
-    def get_interfaces(self):
-        p = self.object.get_interface_discovery_policy()
-        if p == "s":  # Script
-            return self.get_interfaces_script()
-        elif p == "S":  # Script, ConfDB
-            return self.get_interfaces_script() or self.get_interfaces_confdb()
-        elif p == "C":  # ConfDB, Script
-            return self.get_interfaces_confdb() or self.get_interfaces_script()
-        elif p == "c":  # ConfDB
-            return self.get_interfaces_confdb()
-        return None
+    def get_policy(self):
+        return self.object.get_interface_discovery_policy()
 
-    def get_interfaces_script(self):
-        if self.required_script not in self.object.scripts:
-            self.logger.info("%s script is not supported. Cannot request interfaces from device", self.required_script)
-            return None
-        self.logger.info("Requesting interfaces from device")
+    def get_data_from_script(self):
         return self.object.scripts.get_interfaces()
 
-    def get_interfaces_confdb(self):
-        self.logger.info("Gathering interfaces from ConfDB")
+    def get_data_from_confdb(self):
         confdb = self.get_artefact("confdb")
-        if confdb is None:
-            self.logger.error("confdb artefact is not set. Skipping")
-            return None
         # Get interfaces and parse result
         interfaces = {d["if_name"]: d for d in confdb.query(self.IF_QUERY)}
         instances = defaultdict(dict)
@@ -515,6 +498,3 @@ class InterfaceCheck(DiscoveryCheck):
             for i in fi["interfaces"]:
                 i["subinterfaces"] = i["subinterfaces"].values()
         return IGetInterfaces().clean_result(r)
-
-    def has_required_script(self):
-        return super(InterfaceCheck, self).has_required_script() or self.object.get_interface_discovery_policy() != "s"

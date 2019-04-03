@@ -7,14 +7,14 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.inv.models.networksegment import NetworkSegment
 from noc.vc.models.vlan import VLAN
 from noc.core.perf import metrics
 from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class VLANCheck(DiscoveryCheck):
+class VLANCheck(PolicyDiscoveryCheck):
     """
     VLAN discovery
     """
@@ -112,7 +112,7 @@ class VLANCheck(DiscoveryCheck):
         """
         if self.object.segment.profile.enable_vlan:
             self.logger.info("[%s] Collecting VLANs", self.object.segment.name)
-            obj_vlans = self.get_vlans()
+            obj_vlans = self.get_data()
             if obj_vlans:
                 return [
                     # segment, vlan, name, description
@@ -228,43 +228,16 @@ class VLANCheck(DiscoveryCheck):
         for vlan in vlans:
             vlan.fire_event("seen")
 
-    def get_vlans(self):
-        def chained(*args):
-            for a in args:
-                r = a()
-                if r is not None:
-                    return r
-            return None
+    def get_policy(self):
+        return self.object.get_vlan_discovery_policy()
 
-        p = self.object.get_vlan_discovery_policy()
-        if p == "s":  # Script
-            return self.get_vlans_script()
-        elif p == "S":  # Script, ConfDB
-            return chained(self.get_vlans_script, self.get_vlans_confdb)
-        elif p == "C":  # ConfDB, Script
-            return chained(self.get_vlans_confdb, self.get_vlans_script)
-        elif p == "c":  # ConfDB
-            return self.get_vlans_confdb()
-        return None
-
-    def get_vlans_script(self):
-        if self.required_script not in self.object.scripts:
-            self.logger.info("%s script is not supported. Cannot request vlans from device", self.required_script)
-            return None
-        self.logger.info("Requesting vlans from device")
+    def get_data_from_script(self):
         return self.object.scripts.get_vlans()
 
-    def get_vlans_confdb(self):
-        self.logger.info("Gathering vlans from ConfDB")
+    def get_data_from_confdb(self):
         confdb = self.get_artefact("confdb")
-        if confdb is None:
-            self.logger.error("confdb artefact is not set. Skipping")
-            return None
         r = [{
             "vlan_id": d["vlan"],
             "name": d.get("name", "VLAN %s" % d["vlan"])
         } for d in confdb.query(self.VLAN_QUERY)]
         return IGetVlans().clean_result(r)
-
-    def has_required_script(self):
-        return super(VLANCheck, self).has_required_script() or self.object.get_vlan_discovery_policy() != "s"
