@@ -11,6 +11,7 @@
 """
 import re
 from noc.core.profile.base import BaseProfile
+from noc.core.script.error import NotSupportedError
 
 
 class Profile(BaseProfile):
@@ -61,9 +62,9 @@ class Profile(BaseProfile):
     }
 
     def cmp_version(self, x, y):
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)])
+        a = [int(z) for z in self.rx_ver.findall(x)]
+        b = [int(z) for z in self.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     def convert_interface_name(self, s):
         if s.startswith("Slot0/"):
@@ -96,7 +97,11 @@ class Profile(BaseProfile):
                 return "1.3.6.1.4.1.171.10.75.15"
         if v["platform"].startswith("DES-1210"):
             return "1.3.6.1.4.1.171.10.75.7"
-        return self.platforms[v["platform"]]
+        r = self.platforms.get(v["platform"])
+        if r:
+            return r
+        else:
+            raise NotSupportedError()
 
     rx_port = re.compile(
         r"^(?P<port>\d+)\s+"
