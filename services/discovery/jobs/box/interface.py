@@ -517,4 +517,4 @@ class InterfaceCheck(DiscoveryCheck):
         return IGetInterfaces().clean_result(r)
 
     def has_required_script(self):
-        return super(InterfaceCheck, self).has_required_script() or self.object.get_config_policy() != "s"
+        return super(InterfaceCheck, self).has_required_script() or self.object.get_interface_discovery_policy() != "s"
