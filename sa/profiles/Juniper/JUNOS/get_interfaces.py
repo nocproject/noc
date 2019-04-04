@@ -74,7 +74,7 @@ class Script(BaseScript):
     )
     rx_mtu = re.compile(r", MTU: (?P<mtu>\d+)")
     # IP-Header 172.17.1.6:172.17.1.1:47:df:64:0000000000000000
-    rx_ppp_address = re.compile(r"IP-Header (?P<src>\S+):(?P<dst>\S+):(?P<proto>\d+)")
+    rx_ppp_address = re.compile(r"IP-Header (?P<src>\S+?):(?P<dst>\S+?):(?P<proto>\d+)")
     rx_ri = re.compile(
         r"(?P<name>\S+?):\n"
         r"(?:  Description: (?P<description>.+?)\n)?"
