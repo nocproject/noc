@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -73,6 +73,8 @@ class Script(BaseScript):
         r"^\s+Donor interface: (?P<name>\S+)", re.MULTILINE
     )
     rx_mtu = re.compile(r", MTU: (?P<mtu>\d+)")
+    # IP-Header 172.17.1.6:172.17.1.1:47:df:64:0000000000000000
+    rx_ppp_address = re.compile(r"IP-Header (?P<src>\S+):(?P<dst>\S+):(?P<proto>\d+)")
     rx_ri = re.compile(
         r"(?P<name>\S+?):\n"
         r"(?:  Description: (?P<description>.+?)\n)?"
@@ -359,6 +361,21 @@ class Script(BaseScript):
                     match = self.rx_iface_unnumbered.search(s)
                     if match:
                         si["ip_unnumbered_subinterface"] = match.group("name")
+                # Get tunnel type
+                if iface["type"] == "tunnel":
+                    si["tunnel"] = {}
+                    if sname.startswith("ip"):
+                        si["tunnel"]["type"] = "IPIP"
+                    elif sname.startswith("st"):
+                        si["tunnel"]["type"] = "IPsec"
+                    elif sname.startswith("gr"):
+                        si["tunnel"]["type"] = "GRE"
+                        match = self.rx_ppp_addres.search(s)
+                        if match and int(match.group("proto")) == 47:  # GRE
+                            si["tunnel"]["local_address"] = match.group("src")
+                            si["tunnel"]["remote_address"] = match.group("dst")
+                    else:
+                        raise self.NotSupportedError("Unknown tunnel type")
                 # Append to subinterfaces list
                 subs += [si]
             if not subs:
