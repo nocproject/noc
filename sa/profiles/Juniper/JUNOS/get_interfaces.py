@@ -370,7 +370,7 @@ class Script(BaseScript):
                         si["tunnel"]["type"] = "IPsec"
                     elif sname.startswith("gr"):
                         si["tunnel"]["type"] = "GRE"
-                        match = self.rx_ppp_addres.search(s)
+                        match = self.rx_ppp_address.search(s)
                         if match and int(match.group("proto")) == 47:  # GRE
                             si["tunnel"]["local_address"] = match.group("src")
                             si["tunnel"]["remote_address"] = match.group("dst")
