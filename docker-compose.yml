@@ -6,12 +6,25 @@ services:
     working_dir: /docs
     volumes:
       - .:/docs
+      - ../noc:/noc
+
+  apidoc:
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    working_dir: /docs
+    volumes:
+      - .:/docs
+      - ../noc:/noc
+    command: sphinx-apidoc -o src/en/src /noc
 
   html-en:
     image: "registry.getnoc.com/infrastructure/docs:master"
     restart: "no"
     volumes:
       - .:/docs
+      - ../noc:/noc
+    environment:
+      NOC_SRC_PATH: /noc
     working_dir: /docs
     command: sphinx-build -a -E -b html src/en build/en
 

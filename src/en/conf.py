@@ -20,6 +20,15 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+
+# Attach NOC sources when necessary
+NOC_SRC_PATH = os.getenv("NOC_SRC_PATH")
+HAS_NOC_SRC = NOC_SRC_PATH and os.path.exists(NOC_SRC_PATH)
+
+if HAS_NOC_SRC:
+    sys.path.insert(0, os.path.dirname(NOC_SRC_PATH))
 
 # Python modules
 import datetime
@@ -58,6 +67,9 @@ extensions = [
     'sphinxcontrib.mermaid',
     'sphinxcontrib.httpdomain'
 ]
+
+if HAS_NOC_SRC:
+    extensions += ['sphinx.ext.autodoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
