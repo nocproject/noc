@@ -45,6 +45,17 @@ class Node(object):
             return "<Node %s (%s)>" % (token, self.handler.__name__)
         return "<Node %s>" % token
 
+    def get_children(self, token):
+        """
+        Find children by token
+        :param token:
+        :return: Node instance or None
+        """
+        for n in self.children:
+            if n.token == token:
+                return n
+        return None
+
     def match(self, token):
         return self.token is None or self.token is True or token == self.token
 
@@ -59,8 +70,11 @@ class Node(object):
 
     def append(self, pattern, handler, matcher=None):
         if pattern:
-            node = Node(pattern[0])
-            self.children += [node]
+            token = pattern[0]
+            node = self.get_children(token)
+            if not node:
+                node = Node(token)
+                self.children += [node]
             node.append(pattern[1:], handler)
         else:
             self.handler = handler
