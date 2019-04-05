@@ -76,9 +76,9 @@ class BaseNormalizerMetaclass(type):
             f = attrs[k]
             if not callable(f) or not hasattr(f, "_seq"):
                 continue
-            n.mtree.append(f._pattern, getattr(n, k), f._matcher)
+            for pattern, matcher in f._matcher:
+                n.mtree.append(pattern, getattr(n, k), matcher)
             del f._seq
-            del f._pattern
             del f._matcher
         # Process syntax
         if bases[0] == object:
@@ -226,9 +226,11 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
 
 def match(*args, **kwargs):
     def wrap(f):
-        f._seq = next(_match_seq)
-        f._pattern = args
-        f._matcher = kwargs.get("matcher")
+        if hasattr(f, "_seq"):
+            f._matcher += [(args, kwargs.get("matcher"))]
+        else:
+            f._seq = next(_match_seq)
+            f._matcher = [(args, kwargs.get("matcher"))]
         return f
 
     return wrap
