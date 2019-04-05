@@ -660,6 +660,15 @@ class ManagedObjectApplication(ExtModelApplication):
             "children": r
         }
 
+    @view(url="^(?P<id>\d+)/confdb/$", method=["GET"],
+          access="read", api=True)
+    def api_confdb(self, request, id):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        cdb = o.get_confdb()
+        return self.render_plain_text(cdb.dump("json"), mimetype="text/json")
+
     @view(url="^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"],
           access="read", api=True)
     def api_job_log(self, request, id, job):

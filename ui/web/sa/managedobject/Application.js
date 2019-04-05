@@ -87,6 +87,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onConfig
         });
 
+        me.confdbPreviewButton = Ext.create("Ext.button.Button", {
+            text: __("ConfDB"),
+            glyph: NOC.glyph.file_code_o,
+            scope: me,
+            handler: me.onConfDB
+        });
+
         me.cardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
             glyph: NOC.glyph.eye,
@@ -209,7 +216,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 historyHashPrefix: "config"
             })
         );
-
+        me.ITEM_CONFDB = me.registerItem("NOC.sa.managedobject.ConfDBPanel");
         me.ITEM_CONSOLE = me.registerItem(
             Ext.create("NOC.sa.managedobject.ConsolePanel", {app: me})
         );
@@ -1393,6 +1400,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.consoleButton,
                 me.scriptsButton,
                 me.configPreviewButton,
+                me.confdbPreviewButton,
                 me.inventoryButton,
                 me.interfacesButton,
                 me.cpeButton,
@@ -1554,6 +1562,11 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_CONFIG, me.currentRecord);
     },
     //
+    onConfDB: function() {
+        var me = this;
+        me.previewItem(me.ITEM_CONFDB, me.currentRecord);
+    },
+    //
     onInventory: function() {
         var me = this;
         me.previewItem(me.ITEM_INVENTORY, me.currentRecord);
@@ -1668,6 +1681,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         // Change button's visibility
         var disabled = !me.currentRecord;
         me.configPreviewButton.setDisabled(disabled || !me.hasPermission("config"));
+        me.confdbPreviewButton.setDisabled(disabled || !me.hasPermission("config"));
         me.consoleButton.setDisabled(disabled || !me.hasPermission("console") || !me.currentRecord.get("is_managed"));
         me.scriptsButton.setDisabled(disabled || !me.hasPermission("script") || !me.currentRecord.get("is_managed"));
         me.interfacesButton.setDisabled(disabled);
