@@ -67,6 +67,7 @@ class Node(object):
                 if c.match(tokens[0]):
                     for t in c.iter_matched(tokens[1:]):
                         yield t
+                    break
 
     def append(self, pattern, handler, matcher=None):
         if pattern:
