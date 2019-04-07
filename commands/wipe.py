@@ -112,25 +112,25 @@ class Command(BaseCommand):
         wipe(o)
 
     def get_user(self, u_id):
-            """
-            Get User by id or name
-            :param u_id: Object's id or name
-            :return: ManagedObject
-            :rtype: ManagedObject
-            """
-            from django.contrib.auth.models import User
+        """
+        Get User by id or name
+        :param u_id: Object's id or name
+        :return: ManagedObject
+        :rtype: ManagedObject
+        """
+        from django.contrib.auth.models import User
 
-            # Try to get object by id
-            if is_int(u_id):
-                try:
-                    return User.objects.get(id=int(u_id))
-                except User.DoesNotExist:
-                    pass
-            # Try to get object by name
+        # Try to get object by id
+        if is_int(u_id):
             try:
-                return User.objects.get(username=u_id)
+                return User.objects.get(id=int(u_id))
             except User.DoesNotExist:
-                return None
+                pass
+        # Try to get object by name
+        try:
+            return User.objects.get(username=u_id)
+        except User.DoesNotExist:
+            return None
 
     def wipe_user(self, o):
         """
