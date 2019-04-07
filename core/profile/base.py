@@ -222,6 +222,9 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     config_normalizer = None
     # Config normalizer settings
     config_normalizer_settings = {}
+    # List of confdb default tokens
+    # To be appended on every confdb initiation
+    confdb_defaults = None
     # Config applicators
     # List of (<applicator handler>, <applicator settings>)
     config_applicators = None
@@ -566,6 +569,15 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :return:
         """
         return cls.config_normalizer, cls.config_normalizer_settings
+
+    @classmethod
+    def get_confdb_defaults(cls, object):
+        """
+        Returns a list of confdb defaults to be inserted on every ConfDB creation
+        :param object:
+        :return:
+        """
+        return cls.confdb_defaults
 
     @classmethod
     def get_config_applicators(cls, object):

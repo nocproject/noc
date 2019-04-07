@@ -1680,16 +1680,21 @@ class ManagedObject(Model):
         for tokens in normalizer:
             yield tokens
 
-    def get_confdb(self, config=None):
+    def get_confdb(self, config=None, cleanup=True):
         """
         Returns ready ConfDB engine instance
 
         :param config: Configuration data
+        :param cleanup: Remove temporary nodes if True
         :return: confdb.Engine instance
         """
         profile = self.profile.get_profile()
         applicators = profile.get_config_applicators(self)
         e = Engine()
+        # insert defaults
+        defaults = profile.get_confdb_defaults(self)
+        if defaults:
+            e.insert_bulk(defaults)
         # Parse and normalize config
         e.insert_bulk(self.iter_normalized_tokens(config))
         # Apply applicators
@@ -1705,6 +1710,9 @@ class ManagedObject(Model):
                 assert a_cls, "Invalid applicator %s" % a_handler
                 applicator = a_cls(e, **cfg)
                 applicator.apply(self)
+        # Remove temporary nodes
+        if cleanup:
+            e.cleanup()
         return e
 
     @property

@@ -29,6 +29,8 @@ def visitor(args):
 
 
 class Engine(object):
+    CLEANUP_NODES = {"hints"}
+
     def __init__(self):
         self.db = None
 
@@ -138,6 +140,18 @@ class Engine(object):
         if callable(v):
             return v(ctx)
         return v
+
+    def cleanup(self):
+        """
+        Remove temporary nodes
+        :return:
+        """
+        assert self.db, "Database is not initialized"
+        current = self.db.db
+        if current.children:
+            for c in self.CLEANUP_NODES:
+                if c in current.children:
+                    del current.children[c]
 
     def fn_Set(self, _input, **kwargs):
         """

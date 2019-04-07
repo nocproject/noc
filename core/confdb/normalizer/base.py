@@ -121,7 +121,7 @@ class BaseNormalizerMetaclass(type):
     def contribute_gen(mcs, ncls, path):
         sdef = path[-1]
         # Check function name is not duplicated
-        assert not hasattr(ncls, sdef.gen)
+        assert not hasattr(ncls, sdef.gen), "Duplicated generator name: %s" % sdef.gen
         # Generate function
         args = []
         r = []
