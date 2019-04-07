@@ -115,7 +115,7 @@ SYNTAX = [
                     ])
                 ])
             ])
-        ], multi=True, name="interface"),
+        ], multi=True, name="interface", gen="make_interface")
     ]),
     DEF("protocols", [
         DEF("cdp", [
@@ -125,7 +125,12 @@ SYNTAX = [
         ]),
         DEF("lldp", [
             DEF("interface", [
-                DEF(IF_NAME, multi=True, name="interface", gen="make_lldp_interface")
+                DEF(IF_NAME, [
+                    DEF("admin-status", [
+                        DEF("rx", gen="make_lldp_admin_status_rx"),
+                        DEF("tx", gen="make_lldp_admin_status_tx")
+                    ])
+                ], multi=True, name="interface", gen="make_lldp_interface")
             ])
         ]),
         DEF("udld", [
@@ -326,5 +331,28 @@ SYNTAX = [
                 ], required=True, multi=True, name="instance", default="default")
             ], required=True)
         ], required=True, multi=True, name="vr", default="default")
+    ]),
+    # hints section will be dropped on ConfDB cleanup
+    DEF("hints", [
+        DEF("interfaces", [
+            DEF("defaults", [
+                DEF("admin-status", [
+                    DEF(BOOL, required=True, name="admin_status",
+                        gen="make_defaults_interface_admin_status")
+                ])
+            ])
+        ]),
+        DEF("protocols", [
+            DEF("lldp", [
+                DEF("status", [
+                    DEF(BOOL, name="status", required=True, gen="make_global_lldp_status")
+                ]),
+                DEF("interface", [
+                    DEF(IF_NAME, [
+                        DEF("off", gen="make_lldp_interface_disable")
+                    ], multi=True, name="interface")
+                ])
+            ])
+        ])
     ])
 ]
