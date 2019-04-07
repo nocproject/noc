@@ -557,7 +557,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "success": True
         }
 
-    @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
+    @view(method=["DELETE"], url=r"^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):
         """
         Override default method
@@ -670,9 +670,7 @@ class ManagedObjectApplication(ExtModelApplication):
         return self.render_plain_text(cdb.dump("json"), mimetype="text/json")
 
     @view(url=r"^(?P<id>\d+)/confdb/$", method=["GET"],
-          validate={
-              "query": StringParameter()
-          }, access="config", api=True)
+          validate={"query": StringParameter()}, access="config", api=True)
     def api_confdb_query(self, request, id, query=""):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
