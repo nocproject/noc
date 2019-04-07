@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.lib.text import split_alnum
-from noc.sa.interfaces.base import ListOfParameter, ModelParameter
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
@@ -242,7 +242,7 @@ class ManagedObjectApplication(ExtModelApplication):
         qs = qs.exclude(name__startswith="wiping-")
         return qs
 
-    @view(url="^(?P<id>\d+)/links/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/links/$", method=["GET"],
           access="read", api=True)
     def api_links(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -276,7 +276,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 }]
         return result
 
-    @view(url="^(?P<id>\d+)/discovery/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/discovery/$", method=["GET"],
           access="read", api=True)
     def api_discovery(self, request, id):
         from noc.core.scheduler.job import Job
@@ -320,7 +320,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r += [d]
         return r
 
-    @view(url="^actions/set_managed/$", method=["POST"],
+    @view(url=r"^actions/set_managed/$", method=["POST"],
           access="create", api=True,
           validate={
               "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
@@ -333,7 +333,7 @@ class ManagedObjectApplication(ExtModelApplication):
             o.save()
         return "Selected objects set to managed state"
 
-    @view(url="^actions/set_unmanaged/$", method=["POST"],
+    @view(url=r"^actions/set_unmanaged/$", method=["POST"],
           access="create", api=True,
           validate={
               "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
@@ -346,7 +346,7 @@ class ManagedObjectApplication(ExtModelApplication):
             o.save()
         return "Selected objects set to unmanaged state"
 
-    @view(url="^(?P<id>\d+)/discovery/run/$", method=["POST"],
+    @view(url=r"^(?P<id>\d+)/discovery/run/$", method=["POST"],
           access="change_discovery", api=True)
     def api_run_discovery(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -369,7 +369,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "success": True
         }
 
-    @view(url="^(?P<id>\d+)/discovery/stop/$", method=["POST"],
+    @view(url=r"^(?P<id>\d+)/discovery/stop/$", method=["POST"],
           access="change_discovery", api=True)
     def api_stop_discovery(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -392,7 +392,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "success": True
         }
 
-    @view(url="^(?P<id>\d+)/interface/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/interface/$", method=["GET"],
           access="read", api=True)
     def api_interface(self, request, id):
         """
@@ -521,7 +521,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "l3": sorted_iname(l3)
         }
 
-    @view(url="^(?P<id>\d+)/interface/$", method=["POST"],
+    @view(url=r"^(?P<id>\d+)/interface/$", method=["POST"],
           access="change_interface", api=True)
     def api_set_interface(self, request, id):
         def get_or_none(c, v):
@@ -585,7 +585,7 @@ class ManagedObjectApplication(ExtModelApplication):
         )
         return HttpResponse(status=self.DELETED)
 
-    @view(url="^actions/run_discovery/$", method=["POST"],
+    @view(url=r"^actions/run_discovery/$", method=["POST"],
           access="launch", api=True,
           validate={
               "ids": ListOfParameter(element=ModelParameter(ManagedObject), convert=True)
@@ -644,7 +644,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r["leaf"] = True
         return r
 
-    @view(url="^(?P<id>\d+)/inventory/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/inventory/$", method=["GET"],
           access="read", api=True)
     def api_inventory(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -660,8 +660,8 @@ class ManagedObjectApplication(ExtModelApplication):
             "children": r
         }
 
-    @view(url="^(?P<id>\d+)/confdb/$", method=["GET"],
-          access="read", api=True)
+    @view(url=r"^(?P<id>\d+)/confdb/$", method=["GET"],
+          access="config", api=True)
     def api_confdb(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -669,7 +669,29 @@ class ManagedObjectApplication(ExtModelApplication):
         cdb = o.get_confdb()
         return self.render_plain_text(cdb.dump("json"), mimetype="text/json")
 
-    @view(url="^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/confdb/$", method=["GET"],
+          validate={
+              "query": StringParameter()
+          }, access="config", api=True)
+    def api_confdb_query(self, request, id, query=""):
+        o = self.get_object_or_404(ManagedObject, id=id)
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        cdb = o.get_confdb()
+        try:
+            r = cdb.query(query)
+            result = {
+                "status": True,
+                "result": r
+            }
+        except SyntaxError as e:
+            result = {
+                "status": False,
+                "error": str(e)
+            }
+        return result
+
+    @view(url=r"^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"],
           access="read", api=True)
     def api_job_log(self, request, id, job):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -685,7 +707,7 @@ class ManagedObjectApplication(ExtModelApplication):
         else:
             return self.render_plain_text("No data")
 
-    @view(url="^(?P<id>\d+)/interactions/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/interactions/$", method=["GET"],
           access="interactions", api=True)
     def api_interactions(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -698,7 +720,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "text": i.text
         } for i in InteractionLog.objects.filter(object=o.id).order_by("-timestamp")]
 
-    @view(url="^(?P<id>\d+)/scripts/$", method=["GET"], access="script",
+    @view(url=r"^(?P<id>\d+)/scripts/$", method=["GET"], access="script",
           api=True)
     def api_scripts(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -722,7 +744,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r += [ss]
         return r
 
-    @view(url="^(?P<id>\d+)/scripts/(?P<name>[^/]+)/$",
+    @view(url=r"^(?P<id>\d+)/scripts/(?P<name>[^/]+)/$",
           method=["POST"], access="script", api=True)
     def api_run_script(self, request, id, name):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -745,7 +767,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "result": result
         }
 
-    @view(url="^(?P<id>\d+)/console/$",
+    @view(url=r"^(?P<id>\d+)/console/$",
           method=["POST"], access="console", api=True)
     def api_console_command(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -768,7 +790,7 @@ class ManagedObjectApplication(ExtModelApplication):
             "result": result
         }
 
-    @view(url="(?P<id>\d+)/caps/$", method=["GET"],
+    @view(url=r"(?P<id>\d+)/caps/$", method=["GET"],
           access="read", api=True)
     def api_get_caps(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -787,7 +809,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 }]
         return sorted(r, key=lambda x: x["capability"])
 
-    @view(url="(?P<id>\d+)/facts/$", method=["GET"],
+    @view(url=r"(?P<id>\d+)/facts/$", method=["GET"],
           access="read", api=True)
     def api_get_facts(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
@@ -809,7 +831,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 } for f in ObjectFact.objects.filter(object=o.id)),
             key=lambda x: (x["cls"], x["label"]))
 
-    @view(url="(?P<id>\d+)/revalidate/$", method=["POST"],
+    @view(url=r"(?P<id>\d+)/revalidate/$", method=["POST"],
           access="read", api=True)
     def api_revalidate(self, request, id):
         def revalidate(o):
@@ -822,7 +844,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         return self.submit_slow_op(request, revalidate, o)
 
-    @view(url="(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"],
+    @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"],
           access="action", api=True)
     def api_action(self, request, id, action):
         def execute(o, a, args):
@@ -840,7 +862,7 @@ class ManagedObjectApplication(ExtModelApplication):
             args = {}
         return self.submit_slow_op(request, execute, o, a, args)
 
-    @view(url="^link/fix/(?P<link_id>[0-9a-f]{24})/$",
+    @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$",
           method=["POST"], access="change_link")
     def api_fix_links(self, request, link_id):
         def get_mac(arp, ip):
@@ -939,7 +961,7 @@ class ManagedObjectApplication(ExtModelApplication):
         iface1.link_ptp(iface2, method="macfix")
         return success_status("Relinked")
 
-    @view(url="^(?P<id>\d+)/cpe/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/cpe/$", method=["GET"],
           access="read", api=True)
     def api_cpe(self, request, id):
         """
