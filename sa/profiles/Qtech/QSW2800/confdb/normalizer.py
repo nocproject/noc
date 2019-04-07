@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 from noc.lib.text import ranges_to_list
 
 
@@ -53,15 +53,40 @@ class Qtech2800Normalizer(BaseNormalizer):
         for vlan in ranges_to_list(tokens[1], splitter=";"):
             yield self.make_vlan_id(vlan_id=vlan)
 
+    @match("interface", ANY)
     @match("Interface", ANY)
     def normalize_interface(self, tokens):
-        yield "interface", self.interface_name(tokens[1])
+        if_name = self.interface_name(tokens[1])
+        yield self.make_interface(interface=if_name)
 
     @match("Interface", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
         yield self.make_interface_description(
             interface=self.interface_name(tokens[1]),
             description=" ".join(tokens[3:])
+        )
+
+    @match("Interface", ANY, "shutdown")
+    def normalize_interface_shutdown(self, tokens):
+        yield self.make_interface_admin_status(
+            interface=self.interface_name(tokens[1]),
+            admin_status=False
+        )
+
+    @match("lldp", "enable")
+    def normalize_enable_lldp(self, tokens):
+        self.set_context("lldp_disabled", False)
+        yield self.make_global_lldp_status(status=True)
+
+    # @match("enable", "stp")
+    # def normalize_enable_stp(self, tokens):
+    #     self.set_context("stp_disabled", False)
+    #     yield self.make_global_stp_status(status=True)
+
+    @match("Interface", ANY, "lldp", "disable")
+    def normalize_interface_lldp_enable(self, tokens):
+        yield self.make_lldp_interface_disable(
+            interface=self.interface_name(tokens[1])
         )
 
     @match("Interface", ANY, "switchport", "security", "maximum", ANY)
@@ -94,22 +119,29 @@ class Qtech2800Normalizer(BaseNormalizer):
 
     @match("Interface", ANY, "switchport", "access", "vlan", ANY)
     def normalize_switchport_untagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_switchport_untagged(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             vlan_filter=tokens[5]
         )
 
     @match("Interface", ANY, "switchport", "trunk", "allowed", "vlan", ANY)
     def normalize_switchport_tagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_switchport_tagged(
-            interface=self.interface_name(tokens[1]),
-            vlan_filter=ranges_to_list(tokens[7], splitter=";")
+            interface=if_name,
+            unit=if_name,
+            vlan_filter=",".join(str(x) for x in ranges_to_list(tokens[6], splitter=";"))
         )
 
+    @match("interface", ANY, "ip", "address", ANY, ANY)
     @match("Interface", ANY, "ip", "address", ANY, ANY)
     def normalize_vlan_ip(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_unit_inet_address(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             address=self.to_prefix(tokens[4], tokens[5])
         )
 
