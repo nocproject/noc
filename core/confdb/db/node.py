@@ -28,6 +28,12 @@ class Node(object):
             return None
         return self.children.get(token)
 
+    @staticmethod
+    def clean_token(token):
+        if isinstance(token, bool):
+            return "on" if token else "off"
+        return str(token)
+
     def insert(self, tokens):
         """
         Populate children with tokens
@@ -36,12 +42,20 @@ class Node(object):
         """
         if self.children is None:
             self.children = {}
-        token = tokens[0]
+        token = self.clean_token(tokens[0])
+        to_replace = False
+        if len(tokens) == 2 and isinstance(tokens[1], dict):
+            cfg = tokens[1]
+            tokens = None
+            to_replace = cfg.get("replace", False)
         cn = self.children.get(token)
         if not cn:
             cn = Node(token)
-            self.children[token] = cn
-        if len(tokens) > 1:
+            if to_replace and self.children:
+                self.children = {token: cn}
+            else:
+                self.children[token] = cn
+        if tokens and len(tokens) > 1:
             cn.insert(tokens[1:])
 
     def iter_nodes(self):

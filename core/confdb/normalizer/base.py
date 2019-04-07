@@ -115,15 +115,20 @@ class BaseNormalizerMetaclass(type):
             for c in sdef.children:
                 mcs.process_token(ncls, c, path)
         if sdef.gen:
-            mcs.contribute_gen(ncls, path)
+            mcs.contribute_gen(
+                ncls,
+                path,
+                replace=not sdef.children and sdef.required and not sdef.multi
+            )
 
     @classmethod
-    def contribute_gen(mcs, ncls, path):
+    def contribute_gen(mcs, ncls, path, replace=False):
         sdef = path[-1]
         # Check function name is not duplicated
         assert not hasattr(ncls, sdef.gen), "Duplicated generator name: %s" % sdef.gen
         # Generate function
         args = []
+        kw = {}
         r = []
         for p in path:
             if p.name:
@@ -134,6 +139,10 @@ class BaseNormalizerMetaclass(type):
                 r += [p.name]
             else:
                 r += ["'%s'" % p.token]
+        if replace:
+            kw["replace"] = True
+        if kw:
+            r += [str(kw)]
         body = "def %s(self, %s):\n    return %s" % (sdef.gen, ", ".join(args), ", ".join(r))
         ctx = {}
         exec(body, {}, ctx)
