@@ -63,5 +63,8 @@ class Node(object):
             for name in sorted(self.children):
                 yield self.children[name]
 
+    def has_children(self):
+        return bool(self.children)
+
     def trim(self):
         self.children = None

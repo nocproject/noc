@@ -158,6 +158,16 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
         self.object = object
         self.tokenizer = tokenizer
         self.deferable_contexts = defaultdict(dict)  # Name -> Context
+        self.context = {}
+
+    def set_context(self, name, value):
+        self.context[name] = value
+
+    def get_context(self, name, default=None):
+        return self.context.get(name, default)
+
+    def has_context(self, name):
+        return name in self.context
 
     def interface_name(self, *args):
         return self.object.profile.get_profile().convert_interface_name(" ".join(args))

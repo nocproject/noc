@@ -35,12 +35,20 @@ class Profile(BaseProfile):
     convert_mac = BaseProfile.convert_mac_to_dashed
     config_tokenizer = "indent"
     config_tokenizer_settings = {
-        "line_comment": "!"
+        "line_comment": "!",
+        "rewrite": [
+            (re.compile("^queue mode"), " queue mode")
+        ]
     }
     config_normalizer = "ESNormalizer"
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", True),
+        ("hints", "protocols", "lldp", "status", True)
+    ]
     config_applicators = [
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
-        ("noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator", {"default": "on"})
+        "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
+        "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator"
     ]
 
     rx_if_snmp_eth = re.compile(
