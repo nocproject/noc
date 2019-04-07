@@ -18,7 +18,7 @@ class LineTokenizer(BaseTokenizer):
     Line tokenizer. Splits line to tokens
     """
     name = "line"
-    rx_indent = re.compile("^\s+")
+    rx_indent = re.compile(r"^\s+")
 
     def __init__(self, data, eol="\n", tab_width=0, line_comment=None, inline_comment=None,
                  keep_indent=False, string_quote=None, rewrite=None):

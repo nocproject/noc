@@ -24,7 +24,7 @@ class DefaultLLDPStatusApplicator(QueryApplicator):
         "NotMatch('hints', 'protocols', 'lldp', 'interface', X, 'off') and "
         # For each interface with lldp admin status is not set
         "NotMatch('protocols', 'lldp', 'interface', X, 'admin-status') and "
-        # Set lldp admin-status to rx and tx 
+        # Set lldp admin-status to rx and tx
         "Fact('protocols', 'lldp', 'interface', X, 'admin-status', 'tx') and "
         "Fact('protocols', 'lldp', 'interface', X, 'admin-status', 'rx')"
     ]
