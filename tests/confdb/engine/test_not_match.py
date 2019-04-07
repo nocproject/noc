@@ -31,9 +31,9 @@ CONF1 = [
     (CONF1, "NotMatch('interfaces', 'Fa 0/1', 'description', 'First interface')", []),
     (CONF1, "NotMatch('interfaces', 'Fa 0/1', 'description', 'First interface!')", [{}]),
     # Match last unbound variable
-    (CONF1, "NotMatch('interface', 'Fa 0/1', 'description', x)", []),
+    (CONF1, "NotMatch('interfaces', 'Fa 0/1', 'description', x)", []),
     # Match two unbound variables
-    (CONF1, "Match('interface', x, 'description', y)", []),
+    (CONF1, "NotMatch('interfaces', x, 'description', y)", []),
     #
     # Match placeholder
     (CONF1, "NotMatch('interfaces', _x, 'admin-status')", [{}, {}, {}])

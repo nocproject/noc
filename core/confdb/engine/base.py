@@ -284,25 +284,25 @@ class Engine(object):
         """
         def not_match_token(node, c, current, rest):
             f = node.find(current)
-            if f and rest:
-                for wctx in not_match(f, c, rest):
-                    yield wctx
-            elif not f and not rest:
-                yield c  # Not found
-
-        def not_match_unbound(node, c, current, rest):
-            for f in node.iter_nodes():
-                nctx = c.copy()
-                current.set(nctx, f.token)
-                if rest:
-                    for wctx in not_match(f, nctx, rest):
+            if rest:
+                if f:  # Descent deeper
+                    for wctx in not_match(f, c, rest):
                         yield wctx
                 else:
-                    yield nctx
+                    yield c  # There is rest and token not found
+            elif not f:
+                yield c  # Last token mismatch
+
+        def not_match_unbound(node, c, current, rest):
+            if rest:
+                for f in node.iter_nodes():
+                    uctx = c.copy()
+                    current.set(uctx, f.token)
+                    for wctx in not_match_token(node, uctx, f.token, rest):
+                        yield wctx
 
         def not_match(node, c, where):
-            current = where[0]
-            rest = where[1:]
+            current, rest = where[0], where[1:]
             if isinstance(current, Var):
                 if current.is_bound(c):
                     for wctx in not_match_token(node, c, current.get(c), rest):
