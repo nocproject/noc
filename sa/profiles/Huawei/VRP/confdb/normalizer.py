@@ -67,7 +67,8 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("interface", ANY)
     def normalize_interface(self, tokens):
-        yield "interface", self.interface_name(tokens[1])
+        if_name = self.interface_name(tokens[1])
+        yield self.make_interface(interface=if_name)
 
     @match("interface", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
@@ -103,12 +104,13 @@ class VRPNormalizer(BaseNormalizer):
             interface=self.interface_name(tokens[1]),
             level=tokens[3]
         )
-    # @match("interface", "ethernet", ANY, "spanning-tree", "cost", ANY)
-    # def normalize_stp_cost(self, tokens):
-    #     yield self.make_spanning_tree_interface_cost(
-    #         interface=self.interface_name(tokens[1], tokens[2]),
-    #         cost=tokens[5]
-    #     )
+
+    @match("interface", ANY, "stp", "cost", ANY)
+    def normalize_stp_cost(self, tokens):
+        yield self.make_spanning_tree_interface_cost(
+            interface=self.interface_name(tokens[1]),
+            cost=tokens[4]
+        )
 
     @match("interface", ANY, "port", "hybrid", "pvid", "vlan", ANY)
     def normalize_switchport_untagged(self, tokens):
@@ -142,14 +144,35 @@ class VRPNormalizer(BaseNormalizer):
             enabled=True
         )
 
-    # @match("interface", ANY, "stp", "disable")
-    # def normalize_interface_stp_status(self, tokens):
-    #     yield self.make_spanning_tree_mode(
-    #         interface=self.interface_name(tokens[1]),
-    #         mode="off"
-    #     )
+    @match("interface", ANY, "loopback-detect", "enable")
+    def normalize_interface_no_loop_detect(self, tokens):
+        if not self.get_context("loop_detect_disabled"):
+            if_name = self.interface_name(tokens[1])
+            yield self.make_loop_detect_interface(interface=if_name)
 
-    @match("interface", ANY, "stp", "stp", "bpdu-filter", "enable")
+    @match("enable", "lldp")
+    def normalize_enable_lldp(self, tokens):
+        self.set_context("lldp_disabled", False)
+        yield self.make_global_lldp_status(status=True)
+
+    @match("enable", "stp")
+    def normalize_enable_stp(self, tokens):
+        self.set_context("stp_disabled", False)
+        yield self.make_global_stp_status(status=True)
+
+    @match("interface", ANY, "undo", "lldp", "enable")
+    def normalize_interface_lldp_enable(self, tokens):
+        yield self.make_lldp_interface_disable(
+            interface=self.interface_name(tokens[1])
+        )
+
+    @match("interface", ANY, "stp", "disable")
+    def normalize_interface_stp_status(self, tokens):
+        yield self.make_spanning_tree_interface_disable(
+            interface=self.interface_name(tokens[1])
+        )
+
+    @match("interface", ANY, "stp", "bpdu-filter", "enable")
     def normalize_interface_stp_bpdu_filter(self, tokens):
         yield self.make_spanning_tree_interface_bpdu_filter(
             interface=self.interface_name(tokens[1]),

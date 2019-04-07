@@ -153,6 +153,9 @@ SYNTAX = [
             ]),
             DEF("interface", [
                 DEF(IF_NAME, [
+                    DEF("admin-status", [
+                        DEF(BOOL, required=True, name="admin_status", gen="make_interface_spanning_tree_admin_status")
+                    ]),
                     DEF("cost", [
                         DEF(INTEGER, required=True,
                             name="cost", gen="make_spanning_tree_interface_cost")
@@ -355,6 +358,16 @@ SYNTAX = [
                 DEF("interface", [
                     DEF(IF_NAME, [
                         DEF("off", gen="make_lldp_interface_disable")
+                    ], multi=True, name="interface")
+                ])
+            ]),
+            DEF("spanning-tree", [
+                DEF("status", [
+                    DEF(BOOL, name="status", required=True, gen="make_global_spanning_tree_status")
+                ]),
+                DEF("interface", [
+                    DEF(IF_NAME, [
+                        DEF("off", gen="make_spanning_tree_interface_disable")
                     ], multi=True, name="interface")
                 ])
             ]),

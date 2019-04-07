@@ -53,10 +53,19 @@ class Profile(BaseProfile):
         # "end_of_context": "#"
     }
     config_normalizer = "VRPNormalizer"
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", True),
+        ("hints", "protocols", "lldp", "status", True),
+        ("hints", "protocols", "spanning-tree", "status", True),
+        ("hints", "protocols", "loop-detect", "status", False),
+    ]
     config_applicators = [
         "noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator",
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
-        ("noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator", {"default": "on"})
+        "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
+        "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
+        "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",
+        "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator"
     ]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
