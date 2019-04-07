@@ -43,12 +43,14 @@ class Profile(BaseProfile):
     config_normalizer = "ESNormalizer"
     confdb_defaults = [
         ("hints", "interfaces", "defaults", "admin-status", True),
-        ("hints", "protocols", "lldp", "status", True)
+        ("hints", "protocols", "lldp", "status", True),
+        ("hints", "protocols", "loop-detect", "status", True)
     ]
     config_applicators = [
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
         "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
-        "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator"
+        "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
+        "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator"
     ]
 
     rx_if_snmp_eth = re.compile(

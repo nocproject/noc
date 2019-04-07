@@ -169,6 +169,11 @@ SYNTAX = [
                     ])
                 ], multi=True, name="interface"),
             ])
+        ]),
+        DEF("loop-detect", [
+            DEF("interface", [
+                DEF(IF_NAME, multi=True, name="interface", gen="make_loop_detect_interface")
+            ])
         ])
     ]),
     DEF("virtual-router", [
@@ -350,6 +355,16 @@ SYNTAX = [
                 DEF("interface", [
                     DEF(IF_NAME, [
                         DEF("off", gen="make_lldp_interface_disable")
+                    ], multi=True, name="interface")
+                ])
+            ]),
+            DEF("loop-detect", [
+                DEF("status", [
+                    DEF(BOOL, name="status", required=True, gen="make_global_loop_detect_status")
+                ]),
+                DEF("interface", [
+                    DEF(IF_NAME, [
+                        DEF("off", gen="make_loop_detect_interface_disable")
                     ], multi=True, name="interface")
                 ])
             ])

@@ -115,6 +115,12 @@ class ESNormalizer(BaseNormalizer):
             if_name = self.interface_name(tokens[1], tokens[2])
             yield self.make_lldp_interface_disable(interface=if_name)
 
+    @match("interface", "ethernet", ANY, "no", "loopback-detection")
+    def normalize_interface_no_loop_detect(self, tokens):
+        if not self.get_context("loop_detect_disabled"):
+            if_name = self.interface_name(tokens[1], tokens[2])
+            yield self.make_loop_detect_interface_disable(interface=if_name)
+
     # @match("vlan", "database", "vlan", ANY, "name", ANY, "media", "ethernet", "state", "active")
     @match("vlan", "database", "vlan", ANY, "name", ANY, "media", "ethernet")
     @match("vlan", "database", "VLAN", ANY, "name", ANY, "media", "ethernet")
@@ -151,3 +157,8 @@ class ESNormalizer(BaseNormalizer):
     def normalize_no_lldp(self, tokens):
         self.set_context("lldp_disabled", True)
         yield self.make_global_lldp_status(status=False)
+
+    @match("no", "loopback-detection")
+    def normalize_no_loopback_detection(self, tokens):
+        self.set_context("loop_detect_disabled", True)
+        yield self.make_global_loop_detect_status(status=False)
