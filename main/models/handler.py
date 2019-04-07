@@ -35,6 +35,9 @@ class Handler(Document):
     description = StringField()
     allow_config_filter = BooleanField()
     allow_config_validation = BooleanField()
+    allow_config_diff = BooleanField()
+    allow_config_diff_filter = BooleanField()
+    allow_housekeeping = BooleanField()
     allow_resolver = BooleanField()
     allow_threshold = BooleanField()
 
