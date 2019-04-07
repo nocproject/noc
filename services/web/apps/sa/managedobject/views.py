@@ -669,7 +669,7 @@ class ManagedObjectApplication(ExtModelApplication):
         cdb = o.get_confdb()
         return self.render_plain_text(cdb.dump("json"), mimetype="text/json")
 
-    @view(url=r"^(?P<id>\d+)/confdb/$", method=["GET"],
+    @view(url=r"^(?P<id>\d+)/confdb/$", method=["POST"],
           validate={"query": StringParameter()}, access="config", api=True)
     def api_confdb_query(self, request, id, query=""):
         o = self.get_object_or_404(ManagedObject, id=id)
