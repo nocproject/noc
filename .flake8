@@ -8,4 +8,14 @@ exclude=.git,var,share
 #    Needs global refactoring, postponed for a while
 # F405 'xxx' may be undefined, or defined from star imports: xxx
 #    Needs global refactoring, postponed for a while
-ignore=E402,E501,F403,F405
+# W504 Line break occurred after a binary operator
+#    Changed PEP8 recommendation. Breaks already passed tests.
+#    Postponed for a while
+# W605 invalid escape sequence 'x'
+#    As of Python 3.6, a backslash-character pair that is
+#    not a valid escape sequence now generates a DeprecationWarning.
+#    Although this will eventually become a SyntaxError,
+#    that will not be for several Python releases.
+#    Not an actual error for Python2 and breaks already passed tests.
+#    Postponed for a while
+ignore=E402,E501,F403,F405,W504,W605
