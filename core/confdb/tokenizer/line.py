@@ -21,7 +21,7 @@ class LineTokenizer(BaseTokenizer):
     rx_indent = re.compile("^\s+")
 
     def __init__(self, data, eol="\n", tab_width=0, line_comment=None, inline_comment=None,
-                 keep_indent=False, string_quote=None):
+                 keep_indent=False, string_quote=None, rewrite=None):
         super(LineTokenizer, self).__init__(data)
         self.eol = eol
         self.tab_width = tab_width
@@ -29,6 +29,7 @@ class LineTokenizer(BaseTokenizer):
         self.inline_comment = inline_comment
         self.keep_indent = keep_indent
         self.string_quote = string_quote
+        self.rewrite = rewrite
 
     def iter_lines(self):
         dl = len(self.data)
@@ -63,6 +64,19 @@ class LineTokenizer(BaseTokenizer):
         tr = " " * self.tab_width
         for line in iter:
             yield line.replace("\t", tr)
+
+    def iter_rewrite(self, iter):
+        """
+        Apply `rewrite`
+        :param iter:
+        :return:
+        """
+        for line in iter:
+            for pattern, repl in self.rewrite:
+                line, n = pattern.subn(repl, line)
+                if n:
+                    break
+            yield line
 
     def iter_line_tokens(self, line):
         """
@@ -120,6 +134,8 @@ class LineTokenizer(BaseTokenizer):
         if self.inline_comment:
             g = self.iter_inline_comments(g)
         g = self.iter_not_empty(g)
+        if self.rewrite:
+            g = self.iter_rewrite(g)
         if self.string_quote:
             g_tokens = self.iter_line_quoted_tokens
         else:
