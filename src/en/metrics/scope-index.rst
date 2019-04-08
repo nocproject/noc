@@ -1,6 +1,8 @@
-=======
- Scopes
-=======
+.. _metrics-scopes:
+
+======
+Scopes
+======
 
 .. toctree::
     :titlesonly:

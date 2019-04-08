@@ -1,6 +1,8 @@
-======
- Types
-======
+.. _metrics-types:
+
+=====
+Types
+=====
 
 .. toctree::
     :titlesonly:
