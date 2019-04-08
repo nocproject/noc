@@ -18,7 +18,7 @@ class DefaultLoopDetectStatusApplicator(QueryApplicator):
     """
     CHECK_QUERY = "Match('hints', 'protocols', 'loop-detect', 'status')"
     QUERY = [
-        # LLDP is globally enabled
+        # loop-detect is globally enabled
         "Match('hints', 'protocols', 'loop-detect', 'status', 'on') and "
         # Get all physical interfaces and bind to variable X
         "Match('interfaces', X, 'type', 'physical') and "
@@ -26,7 +26,7 @@ class DefaultLoopDetectStatusApplicator(QueryApplicator):
         "Match('interfaces', X, 'admin-status', 'on') and "
         # Filter out explicitly disabled interfaces
         "NotMatch('hints', 'protocols', 'loop-detect', 'interface', X, 'off') and "
-        # For each interface with lldp admin status is not set
+        # For each interface with loop-detect interface is not set
         "NotMatch('protocols', 'loop-detect', 'interface', X) and "
         # Set loop-detect interface
         "Fact('protocols', 'loop-detect', 'interface', X)"

@@ -18,7 +18,7 @@ class DefaultSTPStatusApplicator(QueryApplicator):
     """
     CHECK_QUERY = "Match('hints', 'protocols', 'spanning-tree', 'status')"
     QUERY = [
-        # LLDP is globally enabled
+        # STP is globally enabled
         "Match('hints', 'protocols', 'spanning-tree', 'status', 'on') and "
         # Get all physical interfaces and bind to variable X
         "Match('interfaces', X, 'type', 'physical') and "
