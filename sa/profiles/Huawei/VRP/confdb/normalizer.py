@@ -8,9 +8,20 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.syntax import DEF, IF_NAME, BOOL
 
 
 class VRPNormalizer(BaseNormalizer):
+
+    SYNTAX = [
+        DEF("interfaces", [
+            DEF(IF_NAME, [
+                DEF("bpdu", [
+                    DEF(BOOL, required=False, name="enabled", gen="make_interface_ethernet_bpdu")
+                ])
+            ], multi=True, name="interface")
+        ]),
+    ]
 
     @match("sysname", ANY)
     def normalize_hostname(self, tokens):
@@ -56,7 +67,8 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("interface", ANY)
     def normalize_interface(self, tokens):
-        yield "interface", self.interface_name(tokens[1])
+        if_name = self.interface_name(tokens[1])
+        yield self.make_interface(interface=if_name)
 
     @match("interface", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
@@ -92,24 +104,29 @@ class VRPNormalizer(BaseNormalizer):
             interface=self.interface_name(tokens[1]),
             level=tokens[3]
         )
-    # @match("interface", "ethernet", ANY, "spanning-tree", "cost", ANY)
-    # def normalize_stp_cost(self, tokens):
-    #     yield self.make_spanning_tree_interface_cost(
-    #         interface=self.interface_name(tokens[1], tokens[2]),
-    #         cost=tokens[5]
-    #     )
+
+    @match("interface", ANY, "stp", "cost", ANY)
+    def normalize_stp_cost(self, tokens):
+        yield self.make_spanning_tree_interface_cost(
+            interface=self.interface_name(tokens[1]),
+            cost=tokens[4]
+        )
 
     @match("interface", ANY, "port", "hybrid", "pvid", "vlan", ANY)
     def normalize_switchport_untagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_switchport_untagged(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             vlan_filter=tokens[6]
         )
 
     @match("interface", ANY, "port", "trunk", "allow-pass", "vlan", REST)
     def normalize_switchport_tagged(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_switchport_tagged(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             vlan_filter=" ".join(tokens[6:]).replace(" to ", "-").replace(" ", ",")
         )
 
@@ -120,14 +137,42 @@ class VRPNormalizer(BaseNormalizer):
             mode="manual"
         )
 
-    # @match("interface", ANY, "stp", "disable")
-    # def normalize_interface_stp_status(self, tokens):
-    #     yield self.make_spanning_tree_mode(
-    #         interface=self.interface_name(tokens[1]),
-    #         mode="off"
-    #     )
+    @match("interface", ANY, "bpdu", "enable")
+    def normalize_interface_bpdu(self, tokens):
+        yield self.make_interface_ethernet_bpdu(
+            interface=self.interface_name(tokens[1]),
+            enabled=True
+        )
 
-    @match("interface", ANY, "stp", "stp", "bpdu-filter", "enable")
+    @match("interface", ANY, "loopback-detect", "enable")
+    def normalize_interface_no_loop_detect(self, tokens):
+        if not self.get_context("loop_detect_disabled"):
+            if_name = self.interface_name(tokens[1])
+            yield self.make_loop_detect_interface(interface=if_name)
+
+    @match("enable", "lldp")
+    def normalize_enable_lldp(self, tokens):
+        self.set_context("lldp_disabled", False)
+        yield self.make_global_lldp_status(status=True)
+
+    @match("enable", "stp")
+    def normalize_enable_stp(self, tokens):
+        self.set_context("stp_disabled", False)
+        yield self.make_global_stp_status(status=True)
+
+    @match("interface", ANY, "undo", "lldp", "enable")
+    def normalize_interface_lldp_enable(self, tokens):
+        yield self.make_lldp_interface_disable(
+            interface=self.interface_name(tokens[1])
+        )
+
+    @match("interface", ANY, "stp", "disable")
+    def normalize_interface_stp_status(self, tokens):
+        yield self.make_spanning_tree_interface_disable(
+            interface=self.interface_name(tokens[1])
+        )
+
+    @match("interface", ANY, "stp", "bpdu-filter", "enable")
     def normalize_interface_stp_bpdu_filter(self, tokens):
         yield self.make_spanning_tree_interface_bpdu_filter(
             interface=self.interface_name(tokens[1]),
@@ -136,8 +181,10 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("interface", ANY, "ip", "address", ANY, ANY)
     def normalize_vlan_ip(self, tokens):
+        if_name = self.interface_name(tokens[1])
         yield self.make_unit_inet_address(
-            interface=self.interface_name(tokens[1]),
+            interface=if_name,
+            unit=if_name,
             address=self.to_prefix(tokens[4], tokens[5])
         )
 

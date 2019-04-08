@@ -19,13 +19,13 @@ class JSONMarshaller(BaseMarshaller):
 
     @classmethod
     def marshall(cls, node):
-        def apply_node(r, n):
-            rr = {}
-            r[n.token] = rr
-            for lcn in n.iter_nodes():
-                apply_node(rr, lcn)
+        def get_node(n):
+            children = [get_node(cn) for cn in n.iter_nodes()]
+            r = {
+                "node": n.token
+            }
+            if children:
+                r["children"] = children
+            return r
 
-        result = {}
-        for cn in node.iter_nodes():
-            apply_node(result, cn)
-        return ujson.dumps(result, indent=2)
+        return ujson.dumps([get_node(x) for x in node.iter_nodes()])

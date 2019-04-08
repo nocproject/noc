@@ -17,18 +17,29 @@ class TreeMarshaller(BaseMarshaller):
 
     @classmethod
     def marshall(cls, node):
-        def dump_node(n, level):
-            lr = []
-            if level:
-                prefix = "| " * level
-            else:
-                prefix = ""
-            lr += ["%s+- %s" % (prefix, n.token)]
-            for lcn in n.iter_nodes():
-                lr += dump_node(lcn, level + 1)
-            return lr
+        def iter_node(n, lvl):
+            for lcn in reversed(list(n.iter_nodes())):
+                for d in iter_node(lcn, lvl + 1):
+                    yield d
+            if lvl >= 0:
+                yield (lvl, n.token)
 
+        # Process nodes in reversed order
         r = []
-        for cn in node.iter_nodes():
-            r += dump_node(cn, 0)
+        mask = None
+        for level, token in iter_node(node, -1):
+            new_mask = 1 << level
+            if mask is None:
+                # Last line
+                r.insert(0, "%s+- %s" % ("  " * level, token))
+                mask = new_mask
+            else:
+                mask = (new_mask | mask) & ((1 << (level + 1)) - 1)
+                r.insert(
+                    0,
+                    "%s+- %s" % (
+                        "".join("| " if mask & (1 << i) else "  " for i in range(level)),
+                        token
+                    )
+                )
         return "\n".join(r)

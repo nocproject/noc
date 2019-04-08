@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Application");
@@ -85,6 +85,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onConfig
+        });
+
+        me.confdbPreviewButton = Ext.create("Ext.button.Button", {
+            text: __("ConfDB"),
+            glyph: NOC.glyph.file_code_o,
+            scope: me,
+            handler: me.onConfDB
         });
 
         me.cardButton = Ext.create("Ext.button.Button", {
@@ -209,7 +216,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 historyHashPrefix: "config"
             })
         );
-
+        me.ITEM_CONFDB = me.registerItem("NOC.sa.managedobject.ConfDBPanel");
         me.ITEM_CONSOLE = me.registerItem(
             Ext.create("NOC.sa.managedobject.ConsolePanel", {app: me})
         );
@@ -850,7 +857,49 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     {"id": "d", "label": __("Download")}
                                 ]
                             }
-                        }
+                        },
+                        {
+                            name: "caps_discovery_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Caps Policy"),
+                            store: [
+                                ["P", __("Profile")],
+                                ["s", __("Script")],
+                                ["S", __("Script, ConfDB")],
+                                ["C", __("ConfDB, Script")],
+                                ["c", __("ConfDB")]
+                            ],
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "interface_discovery_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Interface Policy"),
+                            store: [
+                                ["P", __("Profile")],
+                                ["s", __("Script")],
+                                ["S", __("Script, ConfDB")],
+                                ["C", __("ConfDB, Script")],
+                                ["c", __("ConfDB")]
+                            ],
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "vlan_discovery_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("VLAN Policy"),
+                            store: [
+                                ["P", __("Profile")],
+                                ["s", __("Script")],
+                                ["S", __("Script, ConfDB")],
+                                ["C", __("ConfDB, Script")],
+                                ["c", __("ConfDB")]
+                            ],
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
                     ]
                 },
                 {
@@ -1351,6 +1400,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.consoleButton,
                 me.scriptsButton,
                 me.configPreviewButton,
+                me.confdbPreviewButton,
                 me.inventoryButton,
                 me.interfacesButton,
                 me.cpeButton,
@@ -1512,6 +1562,11 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_CONFIG, me.currentRecord);
     },
     //
+    onConfDB: function() {
+        var me = this;
+        me.previewItem(me.ITEM_CONFDB, me.currentRecord);
+    },
+    //
     onInventory: function() {
         var me = this;
         me.previewItem(me.ITEM_INVENTORY, me.currentRecord);
@@ -1626,6 +1681,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         // Change button's visibility
         var disabled = !me.currentRecord;
         me.configPreviewButton.setDisabled(disabled || !me.hasPermission("config"));
+        me.confdbPreviewButton.setDisabled(disabled || !me.hasPermission("config"));
         me.consoleButton.setDisabled(disabled || !me.hasPermission("console") || !me.currentRecord.get("is_managed"));
         me.scriptsButton.setDisabled(disabled || !me.hasPermission("script") || !me.currentRecord.get("is_managed"));
         me.interfacesButton.setDisabled(disabled);

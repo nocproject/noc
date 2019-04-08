@@ -16,9 +16,9 @@ class CollapseTaggedApplicator(QueryApplicator):
     QUERY = [
         "Collapse("
         "  'virtual-router', vr,"
-        "  'forwarding-instange', fi,"
+        "  'forwarding-instance', fi,"
         "  'interface', iface,"
         "  'unit', uint,"
-        "  'bridge', 'switchport', 'tagged'"
+        "  'bridge', 'switchport', 'tagged',"
         " joinrange=',')"
     ]

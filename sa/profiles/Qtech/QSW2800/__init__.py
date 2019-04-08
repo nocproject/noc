@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Vendor: Qtech
 # OS:     QSW2800
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
 # Python modules
 import re
@@ -47,6 +45,12 @@ class Profile(BaseProfile):
         "line_comment": "!"
     }
     config_normalizer = "Qtech2800Normalizer"
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", True),
+        ("hints", "protocols", "lldp", "status", False),
+        # ("hints", "protocols", "loop-detect", "status", False),
+    ]
+
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
     @classmethod
@@ -57,8 +61,9 @@ class Profile(BaseProfile):
         N1. .. .NM
         On Qtech.QSW2800
         """
-        return cmp([int(x) for x in v1.split("(")[0].split(".")],
-                   [int(x) for x in v2.split("(")[0].split(".")])
+        a = [int(x) for x in v1.split("(")[0].split(".")]
+        b = [int(x) for x in v2.split("(")[0].split(".")]
+        return (a > b) - (a < b)
 
     def convert_interface_name(self, s):
         """
@@ -72,6 +77,23 @@ class Profile(BaseProfile):
             return "Ethernet1/%d" % int(match.group("number"))
         else:
             return s
+
+    _IF_TYPES = {
+        "eth": "physical",
+        "vla": "SVI",
+        "vsf": "aggregated",
+        "po ": "aggregated",
+        "por": "aggregated",
+        "l2o": "tunnel",
+        "loo": "loopback",
+        "vpl": "other"
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        if name == "Ethernet0":
+            return "management"
+        return cls._IF_TYPES.get(name[:3].lower(), "unknown")
 
     @staticmethod
     def parse_table(block, part_name=None):

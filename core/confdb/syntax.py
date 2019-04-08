@@ -115,7 +115,7 @@ SYNTAX = [
                     ])
                 ])
             ])
-        ], multi=True, name="interface"),
+        ], multi=True, name="interface", gen="make_interface")
     ]),
     DEF("protocols", [
         DEF("cdp", [
@@ -125,7 +125,12 @@ SYNTAX = [
         ]),
         DEF("lldp", [
             DEF("interface", [
-                DEF(IF_NAME, multi=True, name="interface", gen="make_lldp_interface")
+                DEF(IF_NAME, [
+                    DEF("admin-status", [
+                        DEF("rx", gen="make_lldp_admin_status_rx"),
+                        DEF("tx", gen="make_lldp_admin_status_tx")
+                    ])
+                ], multi=True, name="interface", gen="make_lldp_interface")
             ])
         ]),
         DEF("udld", [
@@ -138,6 +143,9 @@ SYNTAX = [
                 DEF(CHOICES("stp", "rstp", "mstp", "pvst", "rapid-pvst"), required=True,
                     name="mode", gen="make_spanning_tree_mode")
             ]),
+            DEF("priority", [
+                DEF(INTEGER, name="priority", required=True, gen="make_spanning_tree_priority")
+            ]),
             DEF("instance", [
                 DEF(INTEGER, [
                     DEF("bridge-priority", [
@@ -148,6 +156,9 @@ SYNTAX = [
             ]),
             DEF("interface", [
                 DEF(IF_NAME, [
+                    DEF("admin-status", [
+                        DEF(BOOL, required=True, name="admin_status", gen="make_interface_spanning_tree_admin_status")
+                    ]),
                     DEF("cost", [
                         DEF(INTEGER, required=True,
                             name="cost", gen="make_spanning_tree_interface_cost")
@@ -163,6 +174,11 @@ SYNTAX = [
                             name="mode", gen="make_spanning_tree_interface_mode")
                     ])
                 ], multi=True, name="interface"),
+            ])
+        ]),
+        DEF("loop-detect", [
+            DEF("interface", [
+                DEF(IF_NAME, multi=True, name="interface", gen="make_loop_detect_interface")
             ])
         ])
     ]),
@@ -180,7 +196,7 @@ SYNTAX = [
                             ])
                         ], multi=True, name="vlan_id", gen="make_vlan_id")
                     ]),
-                    DEF("interface", [
+                    DEF("interfaces", [
                         DEF(IF_NAME, [
                             DEF("unit", [
                                 DEF(UNIT_NAME, [
@@ -326,5 +342,51 @@ SYNTAX = [
                 ], required=True, multi=True, name="instance", default="default")
             ], required=True)
         ], required=True, multi=True, name="vr", default="default")
+    ]),
+    # hints section will be dropped on ConfDB cleanup
+    DEF("hints", [
+        DEF("interfaces", [
+            DEF("defaults", [
+                DEF("admin-status", [
+                    DEF(BOOL, required=True, name="admin_status",
+                        gen="make_defaults_interface_admin_status")
+                ])
+            ])
+        ]),
+        DEF("protocols", [
+            DEF("lldp", [
+                DEF("status", [
+                    DEF(BOOL, name="status", required=True, gen="make_global_lldp_status")
+                ]),
+                DEF("interface", [
+                    DEF(IF_NAME, [
+                        DEF("off", gen="make_lldp_interface_disable")
+                    ], multi=True, name="interface")
+                ])
+            ]),
+            DEF("spanning-tree", [
+                DEF("status", [
+                    DEF(BOOL, name="status", required=True, gen="make_global_spanning_tree_status")
+                ]),
+                DEF("priority", [
+                    DEF(INTEGER, required=True, name="priority", gen="make_global_spanning_tree_priority")
+                ]),
+                DEF("interface", [
+                    DEF(IF_NAME, [
+                        DEF("off", gen="make_spanning_tree_interface_disable")
+                    ], multi=True, name="interface")
+                ])
+            ]),
+            DEF("loop-detect", [
+                DEF("status", [
+                    DEF(BOOL, name="status", required=True, gen="make_global_loop_detect_status")
+                ]),
+                DEF("interface", [
+                    DEF(IF_NAME, [
+                        DEF("off", gen="make_loop_detect_interface_disable")
+                    ], multi=True, name="interface")
+                ])
+            ])
+        ])
     ])
 ]

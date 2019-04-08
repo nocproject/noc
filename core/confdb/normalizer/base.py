@@ -45,6 +45,17 @@ class Node(object):
             return "<Node %s (%s)>" % (token, self.handler.__name__)
         return "<Node %s>" % token
 
+    def get_children(self, token):
+        """
+        Find children by token
+        :param token:
+        :return: Node instance or None
+        """
+        for n in self.children:
+            if n.token == token:
+                return n
+        return None
+
     def match(self, token):
         return self.token is None or self.token is True or token == self.token
 
@@ -56,11 +67,15 @@ class Node(object):
                 if c.match(tokens[0]):
                     for t in c.iter_matched(tokens[1:]):
                         yield t
+                    break
 
     def append(self, pattern, handler, matcher=None):
         if pattern:
-            node = Node(pattern[0])
-            self.children += [node]
+            token = pattern[0]
+            node = self.get_children(token)
+            if not node:
+                node = Node(token)
+                self.children += [node]
             node.append(pattern[1:], handler)
         else:
             self.handler = handler
@@ -76,9 +91,9 @@ class BaseNormalizerMetaclass(type):
             f = attrs[k]
             if not callable(f) or not hasattr(f, "_seq"):
                 continue
-            n.mtree.append(f._pattern, getattr(n, k), f._matcher)
+            for pattern, matcher in f._matcher:
+                n.mtree.append(pattern, getattr(n, k), matcher)
             del f._seq
-            del f._pattern
             del f._matcher
         # Process syntax
         if bases[0] == object:
@@ -100,15 +115,20 @@ class BaseNormalizerMetaclass(type):
             for c in sdef.children:
                 mcs.process_token(ncls, c, path)
         if sdef.gen:
-            mcs.contribute_gen(ncls, path)
+            mcs.contribute_gen(
+                ncls,
+                path,
+                replace=not sdef.children and sdef.required and not sdef.multi
+            )
 
     @classmethod
-    def contribute_gen(mcs, ncls, path):
+    def contribute_gen(mcs, ncls, path, replace=False):
         sdef = path[-1]
         # Check function name is not duplicated
-        assert not hasattr(ncls, sdef.gen)
+        assert not hasattr(ncls, sdef.gen), "Duplicated generator name: %s" % sdef.gen
         # Generate function
         args = []
+        kw = {}
         r = []
         for p in path:
             if p.name:
@@ -119,6 +139,10 @@ class BaseNormalizerMetaclass(type):
                 r += [p.name]
             else:
                 r += ["'%s'" % p.token]
+        if replace:
+            kw["replace"] = True
+        if kw:
+            r += [str(kw)]
         body = "def %s(self, %s):\n    return %s" % (sdef.gen, ", ".join(args), ", ".join(r))
         ctx = {}
         exec(body, {}, ctx)
@@ -134,6 +158,16 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
         self.object = object
         self.tokenizer = tokenizer
         self.deferable_contexts = defaultdict(dict)  # Name -> Context
+        self.context = {}
+
+    def set_context(self, name, value):
+        self.context[name] = value
+
+    def get_context(self, name, default=None):
+        return self.context.get(name, default)
+
+    def has_context(self, name):
+        return name in self.context
 
     def interface_name(self, *args):
         return self.object.profile.get_profile().convert_interface_name(" ".join(args))
@@ -226,9 +260,11 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
 
 def match(*args, **kwargs):
     def wrap(f):
-        f._seq = next(_match_seq)
-        f._pattern = args
-        f._matcher = kwargs.get("matcher")
+        if hasattr(f, "_seq"):
+            f._matcher += [(args, kwargs.get("matcher"))]
+        else:
+            f._seq = next(_match_seq)
+            f._matcher = [(args, kwargs.get("matcher"))]
         return f
 
     return wrap

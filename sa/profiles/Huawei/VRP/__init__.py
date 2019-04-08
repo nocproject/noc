@@ -53,6 +53,15 @@ class Profile(BaseProfile):
         # "end_of_context": "#"
     }
     config_normalizer = "VRPNormalizer"
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", True),
+        ("hints", "protocols", "lldp", "status", True),
+        ("hints", "protocols", "spanning-tree", "status", True),
+        ("hints", "protocols", "loop-detect", "status", False),
+    ]
+    config_applicators = [
+        "noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator",
+    ]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
     matchers = {
@@ -82,7 +91,7 @@ class Profile(BaseProfile):
         },
         "is_ar": {
             "platform": {
-                "$regex": "^AR\d+.+"
+                "$regex": r"^AR\d+.+"
             }
         },
         "is_extended_entity_mib_supported": {
@@ -183,8 +192,12 @@ class Profile(BaseProfile):
         "Pos": None
     }
 
+    rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
+
     @classmethod
     def get_interface_type(cls, name):
+        if cls.rx_iftype.match(name):
+            return cls.INTERFACE_TYPES.get(cls.rx_iftype.match(name).group(1))
         return cls.INTERFACE_TYPES.get(name)
 
     def generate_prefix_list(self, name, pl, strict=True):
@@ -237,7 +250,7 @@ class Profile(BaseProfile):
         v = mac.replace(":", "").lower()
         return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
 
-    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+    spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)

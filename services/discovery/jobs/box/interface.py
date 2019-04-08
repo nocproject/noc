@@ -2,28 +2,48 @@
 # ---------------------------------------------------------------------
 # Interface check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from collections import defaultdict
 # Third-party modules
 import six
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.lib.text import ranges_to_list
+from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.core.service.rpc import RPCError
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
-class InterfaceCheck(DiscoveryCheck):
+class InterfaceCheck(PolicyDiscoveryCheck):
     """
     Version discovery
     """
     name = "interface"
     required_script = "get_interfaces"
+
+    IF_QUERY = """(
+        Match("interfaces", if_name) or
+        Match("interfaces", if_name, "type", type) or
+        Match("interfaces", if_name, "description", description) or
+        Match("interfaces", if_name, "admin-status", admin_status)
+    ) and Group("if_name")"""
+
+    UNIT_QUERY = """(
+        Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit, "description", description) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit, "inet", "address", ipv4_addresses) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit, "inet6", "address", ipv6_addresses) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit, "bridge", "switchport", "tagged", tagged) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit, "bridge", "switchport", "untagged", untagged)
+    ) and Group("vr", "instance", "if_name", "unit", stack={"ipv4_addresses", "ipv6_addresses"})"""
 
     def __init__(self, *args, **kwargs):
         super(InterfaceCheck, self).__init__(*args, **kwargs)
@@ -36,7 +56,10 @@ class InterfaceCheck(DiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking interfaces")
-        result = self.object.scripts.get_interfaces()
+        result = self.get_data()
+        if not result:
+            self.logger.error("Failed to get interfaces")
+            return
         # Process forwarding instances
         for fi in result:
             vpn_id = fi.get("vpn_id")
@@ -367,6 +390,9 @@ class InterfaceCheck(DiscoveryCheck):
         """
         Try to resolve missed ifindexes
         """
+        if self.object.get_interface_discovery_policy() == "d":
+            self.logger.info("Cannot resolve ifindexes due to policy")
+            return
         missed_ifindexes = [
             n[1] for n in self.if_name_cache
             if (n in self.if_name_cache and
@@ -403,3 +429,71 @@ class InterfaceCheck(DiscoveryCheck):
     @staticmethod
     def in_lag(x):
         return "aggregated_interface" in x and bool(x["aggregated_interface"])
+
+    def get_policy(self):
+        return self.object.get_interface_discovery_policy()
+
+    def get_data_from_script(self):
+        return self.object.scripts.get_interfaces()
+
+    def get_data_from_confdb(self):
+        # Get interfaces and parse result
+        interfaces = {d["if_name"]: d for d in self.confdb.query(self.IF_QUERY)}
+        instances = defaultdict(dict)
+        for d in self.confdb.query(self.UNIT_QUERY):
+            r = instances[d["vr"], d["instance"]]
+            if not r:
+                r["virtual_router"] = d["vr"]
+                r["forwarding_instance"] = d["instance"]
+            if "interfaces" not in r:
+                r["interfaces"] = {}
+            if_name = d["if_name"]
+            p_iface = interfaces.get(if_name)
+            iface = r["interfaces"].get(if_name)
+            if iface is None:
+                iface = {
+                    "name": if_name,
+                    "type": p_iface.get("type", "unknown") if p_iface else "unknown",
+                    "admin_status": False,
+                    "subinterfaces": {}
+                }
+                r["interfaces"][if_name] = iface
+                if p_iface:
+                    if "description" in p_iface:
+                        iface["description"] = p_iface["description"]
+                    if "admin_status" in p_iface:
+                        iface["admin_status"] = p_iface["admin_status"] == "on"
+            unit = iface["subinterfaces"].get(d["unit"])
+            if unit is None:
+                unit = {
+                    "name": d["unit"],
+                    "enabled_afi": []
+                }
+                iface["subinterfaces"][d["unit"]] = unit
+            unit = iface["subinterfaces"][d["unit"]]
+            description = d.get("description")
+            if description:
+                unit["description"] = description
+            elif p_iface and p_iface.get("description"):
+                unit["description"] = p_iface["description"]
+            if "ipv4_addresses" in d:
+                unit["enabled_afi"] += ["IPv4"]
+                unit["ipv4_addresses"] = d["ipv4_addresses"]
+            if "ipv6_addresses" in d:
+                unit["enabled_afi"] += ["IPv6"]
+                unit["ipv6_addresses"] = d["ipv4_addresses"]
+            if "tagged" in d or "untagged" in d:
+                unit["enabled_afi"] += ["BRIDGE"]
+            if "untagged" in d:
+                unit["untagged_vlan"] = int(d["untagged"])
+            if "tagged" in d:
+                unit["tagged_vlans"] = ranges_to_list(d["tagged"])
+        # Flatten units
+        r = instances.values()
+        for fi in r:
+            # Flatten interfaces
+            fi["interfaces"] = fi["interfaces"].values()
+            # Flatten units
+            for i in fi["interfaces"]:
+                i["subinterfaces"] = i["subinterfaces"].values()
+        return IGetInterfaces().clean_result(r)

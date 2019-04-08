@@ -2,18 +2,19 @@
 # ---------------------------------------------------------------------
 # Vlan check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.inv.models.networksegment import NetworkSegment
 from noc.vc.models.vlan import VLAN
 from noc.core.perf import metrics
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
-class VLANCheck(DiscoveryCheck):
+class VLANCheck(PolicyDiscoveryCheck):
     """
     VLAN discovery
     """
@@ -22,6 +23,11 @@ class VLANCheck(DiscoveryCheck):
     # @todo: required_capabilities = ?
     # Fetch all segment VLANs if exceeded
     FULL_VLANS_THRESHOLD = 50
+
+    VLAN_QUERY = """(
+        Match("virtual-router", vr, "forwarding-instance", fi, "vlans", vlan) or
+        Match("virtual-router", vr, "forwarding-instance", fi, "vlans", vlan, "name", name)
+    ) and Group("vlan")"""
 
     def handler(self):
         self.logger.info("Checking VLANs")
@@ -34,7 +40,7 @@ class VLANCheck(DiscoveryCheck):
         # Get effective border segment
         segment = NetworkSegment.get_border_segment(self.object.segment)
         # Get list of VLANs from equipment
-        object_vlans = self.get_vlans(segment)
+        object_vlans = self.get_object_vlans(segment)
         # Merge with artifactory ones
         collected_vlans = self.merge_vlans(object_vlans)
         # Check we have collected any VLAN
@@ -99,21 +105,22 @@ class VLANCheck(DiscoveryCheck):
         """
         return "Discovered at %s(%s)" % (self.object.name, self.object.address)
 
-    def get_vlans(self, segment):
+    def get_object_vlans(self, segment):
         """
         Get vlans from equipment
         :return:
         """
         if self.object.segment.profile.enable_vlan:
             self.logger.info("[%s] Collecting VLANs", self.object.segment.name)
-            vlans = [
-                # segment, vlan, name, description
-                (segment, v["vlan_id"], v.get("name"), None)
-                for v in self.object.scripts.get_vlans()
-            ]
-            if not vlans:
-                self.logger.info("No any VLAN found")
-            return vlans
+            obj_vlans = self.get_data()
+            if obj_vlans:
+                return [
+                    # segment, vlan, name, description
+                    (segment, v["vlan_id"], v.get("name"), None)
+                    for v in obj_vlans
+                ]
+            self.logger.info("No any VLAN found")
+            return []
         else:
             self.logger.info(
                 "[%s] VLAN discovery is disabled. Not collecting VLANs",
@@ -220,3 +227,16 @@ class VLANCheck(DiscoveryCheck):
         """
         for vlan in vlans:
             vlan.fire_event("seen")
+
+    def get_policy(self):
+        return self.object.get_vlan_discovery_policy()
+
+    def get_data_from_script(self):
+        return self.object.scripts.get_vlans()
+
+    def get_data_from_confdb(self):
+        r = [{
+            "vlan_id": d["vlan"],
+            "name": d.get("name", "VLAN %s" % d["vlan"])
+        } for d in self.confdb.query(self.VLAN_QUERY)]
+        return IGetVlans().clean_result(r)

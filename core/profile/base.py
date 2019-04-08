@@ -16,6 +16,7 @@ import six
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
+from noc.core.handler import get_handler
 
 
 class BaseProfileMetaclass(type):
@@ -222,9 +223,22 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     config_normalizer = None
     # Config normalizer settings
     config_normalizer_settings = {}
+    # List of confdb default tokens
+    # To be appended on every confdb initiation
+    confdb_defaults = None
     # Config applicators
-    # List of (<applicator handler>, <applicator settings>)
+    # List of (<applicator handler>, <applicator settings>) or <applicator handler>
     config_applicators = None
+    # List of default applicators
+    # Activated by ConfDB `hints` section
+    default_config_applicators = [
+        "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
+        "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
+        "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
+        "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator",
+        "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",
+        "noc.core.confdb.applicator.stppriority.DefaultSTPPriorityApplicator"
+    ]
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
@@ -568,13 +582,49 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         return cls.config_normalizer, cls.config_normalizer_settings
 
     @classmethod
-    def get_config_applicators(cls, object):
+    def get_confdb_defaults(cls, object):
+        """
+        Returns a list of confdb defaults to be inserted on every ConfDB creation
+        :param object:
+        :return:
+        """
+        return cls.confdb_defaults
+
+    @classmethod
+    def iter_config_applicators(cls, object, confdb):
         """
         Returns config applicators and settings
         :param object: Managed Object instance
-        :return: None if no applicators. List of (applicator handler, applicator settings) otherwise
+        :param confdb: ConfDB Engine instance
+        :return: Iterate active config applicators (BaseApplicator instances)
         """
-        return cls.config_applicators
+        def get_applicator(cfg):
+            if isinstance(cfg, six.string_types):
+                a_handler, a_cfg = cfg, {}
+            else:
+                a_handler, a_cfg = cfg
+            if not a_handler.startswith("noc."):
+                a_handler = "noc.sa.profiles.%s.confdb.applicator.%s" % (profile_name, a_handler)
+            a_cls = get_handler(a_handler)
+            assert a_cls, "Invalid applicator %s" % a_handler
+            applicator = a_cls(object, confdb, **a_cfg)
+            if applicator.can_apply():
+                return applicator
+            return None
+
+        profile_name = object.get_profile().name
+        # Apply default applicators
+        if cls.default_config_applicators:
+            for acfg in cls.default_config_applicators:
+                a = get_applicator(acfg)
+                if a:
+                    yield a
+        # Apply profile local applicators
+        if cls.config_applicators:
+            for acfg in cls.default_config_applicators:
+                a = get_applicator(acfg)
+                if a:
+                    yield a
 
     @classmethod
     def get_http_request_middleware(cls, script):
@@ -585,6 +635,16 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         :return:
         """
         return cls.http_request_middleware
+
+    @classmethod
+    def has_confdb_support(cls, object):
+        tcls, _ = cls.get_config_tokenizer(object)
+        if not tcls:
+            return False
+        ncls, _ = cls.get_config_normalizer(object)
+        if not ncls:
+            return False
+        return True
 
     @classmethod
     def _get_patterns(cls):

@@ -436,6 +436,45 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Interface discovery settings
+    interface_discovery_policy = CharField(
+        "Interface Discovery Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="P"
+    )
+    # Caps discovery settings
+    caps_discovery_policy = CharField(
+        "Caps Discovery Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="P"
+    )
+    # VLAN discovery settings
+    vlan_discovery_policy = CharField(
+        "VLAN Discovery Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="P"
+    )
     # Autosegmentation
     autosegmentation_policy = CharField(
         max_length=1,
@@ -1555,6 +1594,21 @@ class ManagedObject(Model):
             return self.object_profile.config_policy
         return self.config_policy
 
+    def get_interface_discovery_policy(self):
+        if self.interface_discovery_policy == "P":
+            return self.object_profile.interface_discovery_policy
+        return self.interface_discovery_policy
+
+    def get_caps_discovery_policy(self):
+        if self.caps_discovery_policy == "P":
+            return self.object_profile.caps_discovery_policy
+        return self.caps_discovery_policy
+
+    def get_vlan_discovery_policy(self):
+        if self.vlan_discovery_policy == "P":
+            return self.object_profile.vlan_discovery_policy
+        return self.vlan_discovery_policy
+
     def get_full_fqdn(self):
         if not self.fqdn:
             return None
@@ -1644,32 +1698,33 @@ class ManagedObject(Model):
         for tokens in normalizer:
             yield tokens
 
-    def get_confdb(self, config=None):
+    def get_confdb(self, config=None, cleanup=True):
         """
         Returns ready ConfDB engine instance
 
         :param config: Configuration data
+        :param cleanup: Remove temporary nodes if True
         :return: confdb.Engine instance
         """
         profile = self.profile.get_profile()
-        applicators = profile.get_config_applicators(self)
         e = Engine()
+        # insert defaults
+        defaults = profile.get_confdb_defaults(self)
+        if defaults:
+            e.insert_bulk(defaults)
         # Parse and normalize config
         e.insert_bulk(self.iter_normalized_tokens(config))
         # Apply applicators
-        if applicators:
-            for acfg in applicators:
-                if isinstance(acfg, six.string_types):
-                    a_handler, cfg = acfg, {}
-                else:
-                    a_handler, cfg = acfg
-                if not a_handler.startswith("noc."):
-                    a_handler = "noc.sa.profiles.%s.confdb.applicator.%s" % (profile.name, a_handler)
-                a_cls = get_handler(a_handler)
-                assert a_cls, "Invalid applicator %s" % a_handler
-                applicator = a_cls(e, **cfg)
-                applicator.apply(self)
+        for applicator in profile.iter_config_applicators(self, e):
+            applicator.apply()
+        # Remove temporary nodes
+        if cleanup:
+            e.cleanup()
         return e
+
+    @property
+    def has_confdb_support(self):
+        return self.profile.get_profile().has_confdb_support(self)
 
 
 @on_save

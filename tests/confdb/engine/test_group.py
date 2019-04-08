@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Test engine's Group predicate
+# Test engine"s Group predicate
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -19,6 +19,13 @@ CONF1 = [
     ["interfaces", "Fa0/2", "type", "physical"],
     ["interfaces", "Fa0/2", "description", "client 2"],
     ["interfaces", "Fa0/3"]
+]
+
+CONF2 = [
+    ["interfaces", "Fa0/1", "address", "1.2.3.4"],
+    ["interfaces", "Fa0/1", "address", "5.6.7.8"],
+    ["interfaces", "Fa0/2", "address", "1.1.1.1"],
+    ["interfaces", "Fa0/3", "description", "test"]
 ]
 
 
@@ -47,6 +54,19 @@ CONF1 = [
             {
                 "name": "Fa0/3"
             }
+        ]
+    ),
+    (
+        CONF2,
+        """(
+            Match("interfaces", name) or
+            Match("interfaces", name, "address", address) or
+            Match("interfaces", name, "description", description)
+        ) and Group("name", stack={"address"})""",
+        [
+            {"address": ["1.2.3.4", "5.6.7.8"], "name": "Fa0/1"},
+            {"address": ["1.1.1.1"], "name": "Fa0/2"},
+            {"description": "test", "name": "Fa0/3"}
         ]
     )
 ])

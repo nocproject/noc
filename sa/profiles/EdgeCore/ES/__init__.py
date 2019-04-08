@@ -35,12 +35,18 @@ class Profile(BaseProfile):
     convert_mac = BaseProfile.convert_mac_to_dashed
     config_tokenizer = "indent"
     config_tokenizer_settings = {
-        "line_comment": "!"
+        "line_comment": "!",
+        "rewrite": [
+            (re.compile("^queue mode"), " queue mode")
+        ]
     }
     config_normalizer = "ESNormalizer"
-    config_applicators = [
-        "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
-        ("noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator", {"default": "on"})
+    confdb_defaults = [
+        ("hints", "interfaces", "defaults", "admin-status", True),
+        ("hints", "protocols", "lldp", "status", True),
+        ("hints", "protocols", "spanning-tree", "status", False),
+        ("hints", "protocols", "spanning-tree", "priority", "32768"),
+        ("hints", "protocols", "loop-detect", "status", True)
     ]
 
     rx_if_snmp_eth = re.compile(
@@ -56,10 +62,14 @@ class Profile(BaseProfile):
         'Eth 1/21'
         >>> Profile().convert_interface_name("Port12")
         'Eth 1/12'
+        >>> Profile().convert_interface_name("ethernet 1/1")
+        'Eth 1/1'
         """
         s = s.strip()
         if s.startswith("Port"):
             return "Eth 1/%s" % s[4:].strip()
+        if s.startswith("ethernet "):
+            return "Eth %s" % s[9:].strip()
         match = self.rx_if_snmp_eth.match(s)
         if match:
             return "Eth %s/%s" % (match.group("unit"),

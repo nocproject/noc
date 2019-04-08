@@ -29,6 +29,8 @@ def visitor(args):
 
 
 class Engine(object):
+    CLEANUP_NODES = {"hints"}
+
     def __init__(self):
         self.db = None
 
@@ -138,6 +140,18 @@ class Engine(object):
         if callable(v):
             return v(ctx)
         return v
+
+    def cleanup(self):
+        """
+        Remove temporary nodes
+        :return:
+        """
+        assert self.db, "Database is not initialized"
+        current = self.db.db
+        if current.children:
+            for c in self.CLEANUP_NODES:
+                if c in current.children:
+                    del current.children[c]
 
     def fn_Set(self, _input, **kwargs):
         """
@@ -270,25 +284,25 @@ class Engine(object):
         """
         def not_match_token(node, c, current, rest):
             f = node.find(current)
-            if f and rest:
-                for wctx in not_match(f, c, rest):
-                    yield wctx
-            elif not f and not rest:
-                yield c  # Not found
-
-        def not_match_unbound(node, c, current, rest):
-            for f in node.iter_nodes():
-                nctx = c.copy()
-                current.set(nctx, f.token)
-                if rest:
-                    for wctx in not_match(f, nctx, rest):
+            if rest:
+                if f:  # Descent deeper
+                    for wctx in not_match(f, c, rest):
                         yield wctx
                 else:
-                    yield nctx
+                    yield c  # There is rest and token not found
+            elif not f:
+                yield c  # Last token mismatch
+
+        def not_match_unbound(node, c, current, rest):
+            if rest:
+                for f in node.iter_nodes():
+                    uctx = c.copy()
+                    current.set(uctx, f.token)
+                    for wctx in not_match_token(node, uctx, f.token, rest):
+                        yield wctx
 
         def not_match(node, c, where):
-            current = where[0]
-            rest = where[1:]
+            current, rest = where[0], where[1:]
             if isinstance(current, Var):
                 if current.is_bound(c):
                     for wctx in not_match_token(node, c, current.get(c), rest):
@@ -431,13 +445,31 @@ class Engine(object):
                 continue
             yield ctx
 
-    def fn_Group(self, _input, *args):
+    def fn_Group(self, _input, *args, **kwargs):
+        def update_context(g_ctx, new_ctx):
+            if stack:
+                for k in new_ctx:
+                    if k in stack:
+                        if k in g_ctx:
+                            g_ctx[k] += [new_ctx[k]]
+                        else:
+                            g_ctx[k] = [new_ctx[k]]
+                    else:
+                        g_ctx[k] = new_ctx[k]
+            else:
+                g_ctx.update(new_ctx)
+
+        #
+        stack = kwargs.get("stack")
+        # kwargs are callables, evaluate them
+        if stack:
+            stack = stack({})
         # Group
         contexts = {}
         for ctx in _input:
             kv = tuple(ctx.get(a) for a in args)
             if kv in contexts:
-                contexts[kv].update(ctx)
+                update_context(contexts[kv], ctx)
             else:
                 contexts[kv] = ctx
         # Yield

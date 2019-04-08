@@ -180,6 +180,8 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_vpn_interface = models.BooleanField(default=False)
     # VPN discovery (MPLS)
     enable_box_discovery_vpn_mpls = models.BooleanField(default=False)
+    # VPN discovery (MPLS)
+    enable_box_discovery_vpn_confdb = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_address_interface = models.BooleanField(default=False)
     # IP discovery (Management)
@@ -188,10 +190,14 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_address_dhcp = models.BooleanField(default=False)
     # IP discovery (neighbbors)
     enable_box_discovery_address_neighbor = models.BooleanField(default=False)
+    # IP discovery (ConfDB)
+    enable_box_discovery_address_confdb = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_prefix_interface = models.BooleanField(default=False)
     # IP discovery (neighbbors)
     enable_box_discovery_prefix_neighbor = models.BooleanField(default=False)
+    # Prefix discovery (ConfDB)
+    enable_box_discovery_prefix_confdb = models.BooleanField(default=False)
     # Collect static vlans
     enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD
@@ -480,12 +486,20 @@ class ManagedObjectProfile(models.Model):
         VPNProfile,
         null=True, blank=True
     )
+    vpn_profile_confdb = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
     # Prefix discovery profiles
     prefix_profile_interface = DocumentReferenceField(
         PrefixProfile,
         null=True, blank=True
     )
     prefix_profile_neighbor = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    prefix_profile_confdb = DocumentReferenceField(
         PrefixProfile,
         null=True, blank=True
     )
@@ -503,6 +517,10 @@ class ManagedObjectProfile(models.Model):
         null=True, blank=True
     )
     address_profile_neighbor = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_confdb = DocumentReferenceField(
         AddressProfile,
         null=True, blank=True
     )
@@ -557,6 +575,42 @@ class ManagedObjectProfile(models.Model):
             ("C", "Change")
         ],
         default="C"
+    )
+    # Interface discovery settings
+    interface_discovery_policy = models.CharField(
+        _("Interface Discovery Policy"),
+        max_length=1,
+        choices=[
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="s"
+    )
+    # Caps discovery settings
+    caps_discovery_policy = models.CharField(
+        _("Caps Discovery Policy"),
+        max_length=1,
+        choices=[
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="s"
+    )
+    # VLAN discovery settings
+    vlan_discovery_policy = models.CharField(
+        _("VLAN Discovery Policy"),
+        max_length=1,
+        choices=[
+            ("s", "Script"),
+            ("S", "Script, ConfDB"),
+            ("C", "ConfDB, Script"),
+            ("c", "ConfDB")
+        ],
+        default="s"
     )
     # Behaviour on new platform detection in version check
     new_platform_creation_policy = models.CharField(

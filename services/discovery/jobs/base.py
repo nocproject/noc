@@ -487,7 +487,7 @@ class DiscoveryCheck(object):
         pass
 
     def update_if_changed(self, obj, values, ignore_empty=None,
-                          async=False, bulk=None):
+                          wait=True, bulk=None):
         """
         Update fields if changed.
         :param obj: Document instance
@@ -495,7 +495,7 @@ class DiscoveryCheck(object):
         :param values: New values
         :type values: dict
         :param ignore_empty: List of fields which may be ignored if empty
-        :param async: set write concern to 0
+        :param wait: Wait for operation to complete. set write concern to 0 if False
         :param bulk: Execute as the bulk op instead
         :returns: List of changed (key, value)
         :rtype: list
@@ -521,7 +521,7 @@ class DiscoveryCheck(object):
                 }, op)]
             else:
                 kwargs = {}
-                if async:
+                if not wait:
                     kwargs["write_concern"] = {"w": 0}
                 obj.save(**kwargs)
         return changes
@@ -1354,3 +1354,85 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
     def is_own_mac(self, mac):
         mr = DiscoveryID.macs_for_objects(self.object)
         return mr and any(1 for f, t in mr if f <= mac <= t)
+
+
+class PolicyDiscoveryCheck(DiscoveryCheck):
+    policy_name = None
+    policy_map = {
+        "s": ["script"],
+        "S": ["script", "confdb"],
+        "C": ["confdb", "script"],
+        "c": ["confdb"]
+    }
+
+    def get_policy(self):
+        """
+        Get effective policy
+        :return:
+        """
+        if self.policy_name:
+            return getattr(self.object, self.policy_name)()
+        raise NotImplementedError
+
+    def get_data(self):
+        """
+        Request data according to policy (Either from equipment of from ConfDB)
+        :return:
+        """
+        for method in self.policy_map[self.get_policy()]:
+            check = getattr(self, "can_get_data_from_%s" % method)
+            if not check():
+                continue
+            getter = getattr(self, "request_data_from_%s" % method)
+            data = getter()
+            if data is not None:
+                return data
+        return None
+
+    def request_data_from_script(self):
+        self.logger.info("Requesting data from device")
+        return self.get_data_from_script()
+
+    def get_data_from_script(self):
+        """
+        Actually get data from script. Should be overriden
+        :return:
+        """
+        return None
+
+    def can_get_data_from_script(self):
+        """
+        Check if object has all prerequisites to get data from script
+        :return:
+        """
+        if self.required_script not in self.object.scripts:
+            self.logger.info("%s script is not supported. Skipping", self.required_script)
+            return False
+        return True
+
+    def request_data_from_confdb(self):
+        self.logger.info("Requesting data from ConfDB")
+        self.confdb = self.get_artefact("confdb")
+        return self.get_data_from_confdb()
+
+    def get_data_from_confdb(self):
+        """
+        Actually get data from ConfDB. Should be overriden
+        :return:
+        """
+        return None
+
+    def can_get_data_from_confdb(self):
+        """
+        Check if object has all prerequisites to get data from ConfDB
+        :return:
+        """
+        confdb = self.get_artefact("confdb")
+        if confdb is None:
+            self.logger.error("confdb artefact is not set. Skipping")
+            return False
+        return True
+
+    def has_required_script(self):
+        return (super(PolicyDiscoveryCheck, self).has_required_script() or
+                self.get_policy() != ["script"])

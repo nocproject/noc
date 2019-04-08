@@ -174,3 +174,21 @@ class BoxDiscoveryJob(MODiscoveryJob):
 
     def get_alarm_weight(self):
         return self.object.object_profile.box_discovery_alarm_weight
+
+    def is_confdb_required(self):
+        """
+        Check if ConfDB is required by checks
+        :return:
+        """
+        mo = self.object
+        mop = self.object.object_profile
+        if mop.enable_box_discovery_caps and mo.get_caps_discovery_policy() != "s":
+            return True
+        if mop.enable_box_discovery_interface and mo.get_iterface_discovery_policy() != "s":
+            return True
+        if mop.enable_box_discovery_vlan and mo.get_iterface_discovery_policy() != "s":
+            return True
+        if (mop.enable_box_discovery_vpn_confdb or mop.enable_box_discovery_address_confdb or
+                mop.enable_box_discovery_prefix_confdb):
+            return True
+        return False
