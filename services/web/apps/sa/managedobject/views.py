@@ -39,7 +39,7 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.lib.text import split_alnum
-from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter, BooleanParameter
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
 from noc.sa.models.action import Action
@@ -670,18 +670,24 @@ class ManagedObjectApplication(ExtModelApplication):
         return self.render_plain_text(cdb.dump("json"), mimetype="text/json")
 
     @view(url=r"^(?P<id>\d+)/confdb/$", method=["POST"],
-          validate={"query": StringParameter()}, access="config", api=True)
-    def api_confdb_query(self, request, id, query=""):
+        validate={
+            "query": StringParameter(),
+            "cleanup": BooleanParameter(default=True),
+            "dump": BooleanParameter(default=False)
+        }, access="config", api=True)
+    def api_confdb_query(self, request, id, query="", cleanup=True, dump=False):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        cdb = o.get_confdb()
+        cdb = o.get_confdb(cleanup=cleanup)
         try:
             r = cdb.query(query)
             result = {
                 "status": True,
                 "result": r
             }
+            if dump:
+                result["confdb"] = ujson.loads(cdb)
         except SyntaxError as e:
             result = {
                 "status": False,
