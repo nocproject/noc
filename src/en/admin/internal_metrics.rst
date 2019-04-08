@@ -12,7 +12,7 @@ NOC Internal Metrics
     :class: singlecol
 
 
-.. _internal_metrics-Service Metrics:
+.. internal-metrics-service-metrics:
 
 Service Metrics
 ---------------
@@ -25,7 +25,7 @@ All metrics are tagged:
 * pool - in the case of a sharded service, an indication of the pool
 
 
-.. _internal_metrics-General Service Metrics:
+.. internal-metrics-general-service-metrics:
 
 General Service Metrics
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,7 +61,7 @@ General Service Metrics
 +---------------+---------------------------+---------------------------------------------------------+--------------------------------------------------------------------------------------+
 
 
-.. _internal_metrics-Cache metrics:
+.. internal-metrics-cache-metrics:
 
 Cache metrics
 ~~~~~~~~~~~~~
@@ -96,7 +96,7 @@ Each element of the system that uses the cache is assigned a unique key - cache_
 +----------------------+-----------------------+--------------+-----------------------------------------------------------+
 
 
-.. _internal_metrics-HTTP client metrics:
+.. internal-metrics-http-client-metrics:
 
 HTTP client metrics
 ~~~~~~~~~~~~~~~~~~~
@@ -114,7 +114,7 @@ Built-in HTTP client supports metrics:
 +---------------------------+----------------------+-------------------+-------------------------------------------+
 
 
-.. _internal_metrics-Client RPC Metrics:
+.. internal-metrics-client-rpc-metrics:
 
 Client RPC Metrics
 ~~~~~~~~~~~~~~~~~~
@@ -132,7 +132,7 @@ Supports the following tags:
 +-------------+-------------------------------------------------------------------------+-------------------+-------------------------------------------------------------+
 
 
-.. _internal_metrics-NSQ client metrics:
+.. internal-metrics-nsq-client-metrics:
 
 NSQ client metrics
 ~~~~~~~~~~~~~~~~~~
@@ -162,7 +162,7 @@ The client provides the following metrics:
 +-----------------------------+-----------------------------------------+-------------------+-----------------------------------------------------------------+
 
 
-.. _internal_metrics-DCS metrics:
+.. internal-metrics-dcs-metrics:
 
 DCS metrics
 ~~~~~~~~~~~
@@ -193,7 +193,7 @@ The client provides the following metrics:
 +-----------------------------+----------------------------+--------------+-------------------------------------------------------+
 
 
-.. _internal_metrics-Threadpool metrics:
+.. internal-metrics-threadpool-metrics:
 
 Threadpool metrics
 ~~~~~~~~~~~~~~~~~~
@@ -224,7 +224,7 @@ This component is responsible for managing flows and provides the following metr
    * max - use services Web,NBI
 
 
-.. _internal_metrics-Scheduler metrics:
+.. internal-metrics-scheduler-metrics:
 
 Scheduler metrics
 ~~~~~~~~~~~~~~~~~
@@ -250,7 +250,7 @@ Provides the following metrics:
 +---------------------------------+-----------+-----------+------------------------------------------------------------+
 
 
-.. _internal_metrics-Activator:
+.. internal-metrics-activator:
 
 Activator
 ~~~~~~~~~
@@ -270,7 +270,7 @@ Activator
 +-------------+------------------------+---------------------------+---------------------------------------------------------+
 
 
-.. _internal_metrics-Discovery:
+.. internal-metrics-discovery:
 
 Discovery
 ~~~~~~~~~
@@ -278,7 +278,7 @@ Discovery
 todo
 
 
-.. _internal_metrics-SAE:
+.. internal-metrics-sae:
 
 SAE
 ~~~
@@ -286,7 +286,7 @@ SAE
 todo
 
 
-.. _internal_metrics-Ping:
+.. internal-metrics-ping:
 
 Ping
 ~~~~
@@ -324,7 +324,7 @@ Ping
 +---------------------------+-----------+-----------------+-----------------------------------------------------------------------------+
 
 
-.. _internal_metrics-Collectors:
+.. internal-metrics-collectors:
 
 Collectors
 ~~~~~~~~~~
@@ -350,7 +350,7 @@ Collectors
 +-----------------+--------------------------+--------------------------------------------------------------------------+---------------------------------------------------------+
 
 
-.. _internal_metrics-Classifier:
+.. internal-metrics-classifier:
 
 Classifier
 ~~~~~~~~~~
@@ -396,7 +396,7 @@ Classifier
 +-----------------------+-----------+----------------------------+----------------------------------------------------------------------------------+
 
 
-.. _internal_metrics-Correlator:
+.. internal-metrics-corellator:
 
 Correlator
 ~~~~~~~~~~
@@ -438,7 +438,7 @@ Correlator
 +---------------------------+---------------------+---------------------------------------+-------------------------------------------------------------------------------------------------------------+
 
 
-.. _internal_metrics-Escalator:
+.. internal-metrics-escalator:
 
 Escalator
 ~~~~~~~~~
@@ -490,7 +490,7 @@ Escalator
 +-----------------------------------+-----------+------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
-.. _internal_metrics-Mailsender:
+.. internal-metrics-mailsender:
 
 Mailsender
 ~~~~~~~~~~
@@ -508,7 +508,7 @@ System-wide metrics (self-monitoring)
 Subsystem metrics are calculated based on information from the database ( Postgres or MongoDB) and require an installed service seflmon.
 
 
-.. _internal_metrics-Task:
+.. internal-metrics-task:
 
 Task
 ~~~~
@@ -542,7 +542,7 @@ Tags are added to all metrics:
 +--------------------------------+----------------------+--------------+---------------------------------------------------------------------------------+
 
 
-.. _internal_metrics-Inventory:
+.. internal-metrics-inventory:
 
 Inventory
 ~~~~~~~~~
@@ -565,7 +565,7 @@ Inventory
 | inventory_managedobject_unmanaged | x         | selfmon.managedobject |                                                                                                          |
 +-----------------------------------+-----------+-----------------------+----------------------------------------------------------------------------------------------------------+
 
-.. _internal_metrics-FM:
+.. internal-metrics-fm:
 
 FM
 ~~

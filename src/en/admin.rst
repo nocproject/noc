@@ -7,3 +7,4 @@ Administration
 
     /admin/configuration
     /admin/config
+    /admin/internal_metrics
