@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# DefaultSTPPriorityApplicator
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from .query import QueryApplicator
+
+
+class DefaultSTPPriorityApplicator(QueryApplicator):
+    QUERY = [
+        # STP is globally enabled
+        "Match('hints', 'protocols', 'spanning-tree', 'status', 'on') and "
+        # Global priority is set
+        "Match('hints', 'protocols', 'spanning-tree', 'priority', X) and "
+        # And priority is not configured
+        "NotMatch('protocols', 'spanning-tree', 'priority') and "
+        # Set priority
+        "Fact('protocols', 'spanning-tree', 'priority', X)"
+    ]

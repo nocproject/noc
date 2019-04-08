@@ -153,6 +153,26 @@ class ESNormalizer(BaseNormalizer):
             next_hop=tokens[2]
         )
 
+    @match("spanning-tree")
+    def normalize_spanning_tree(self, tokens):
+        self.set_context("spanning_tree_disabled", False)
+        yield self.make_global_spanning_tree_status(status=True)
+
+    @match("spanning-tree", "priority", ANY)
+    def normalize_spanning_tree_priority(self, tokens):
+        yield self.make_spanning_tree_priority(priority=tokens[2])
+
+    @match("no", "spanning-tree")
+    def normalize_no_spanning_tree(self, tokens):
+        self.set_context("spanning_tree_disabled", True)
+        yield self.make_global_spanning_tree_status(status=False)
+
+    @match("interface", "ethernet", ANY, "spanning-tree", "spanning-disabled")
+    def normalize_no_interface_spanning_tree(self, tokens):
+        if not self.get_context("spanning_tree_disabled"):
+            if_name = self.interface_name(tokens[1], tokens[2])
+            yield self.make_spanning_tree_interface_disable(interface=if_name)
+
     @match("no", "lldp")
     def normalize_no_lldp(self, tokens):
         self.set_context("lldp_disabled", True)

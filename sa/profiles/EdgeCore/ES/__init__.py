@@ -44,13 +44,17 @@ class Profile(BaseProfile):
     confdb_defaults = [
         ("hints", "interfaces", "defaults", "admin-status", True),
         ("hints", "protocols", "lldp", "status", True),
+        ("hints", "protocols", "spanning-tree", "status", False),
+        ("hints", "protocols", "spanning-tree", "priority", "32768"),
         ("hints", "protocols", "loop-detect", "status", True)
     ]
     config_applicators = [
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
         "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
         "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
-        "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator"
+        "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator",
+        "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",
+        "noc.core.confdb.applicator.stppriority.DefaultSTPPriorityApplicator"
     ]
 
     rx_if_snmp_eth = re.compile(

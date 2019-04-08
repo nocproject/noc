@@ -143,6 +143,9 @@ SYNTAX = [
                 DEF(CHOICES("stp", "rstp", "mstp", "pvst", "rapid-pvst"), required=True,
                     name="mode", gen="make_spanning_tree_mode")
             ]),
+            DEF("priority", [
+                DEF(INTEGER, name="priority", required=True, gen="make_spanning_tree_priority")
+            ]),
             DEF("instance", [
                 DEF(INTEGER, [
                     DEF("bridge-priority", [
@@ -364,6 +367,9 @@ SYNTAX = [
             DEF("spanning-tree", [
                 DEF("status", [
                     DEF(BOOL, name="status", required=True, gen="make_global_spanning_tree_status")
+                ]),
+                DEF("priority", [
+                    DEF(INTEGER, required=True, name="priority", gen="make_global_spanning_tree_priority")
                 ]),
                 DEF("interface", [
                     DEF(IF_NAME, [
