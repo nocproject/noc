@@ -669,7 +669,8 @@ class ManagedObjectApplication(ExtModelApplication):
         cdb = o.get_confdb()
         return self.render_plain_text(cdb.dump("json"), mimetype="text/json")
 
-    @view(url=r"^(?P<id>\d+)/confdb/$", method=["POST"],
+    @view(
+        url=r"^(?P<id>\d+)/confdb/$", method=["POST"],
         validate={
             "query": StringParameter(),
             "cleanup": BooleanParameter(default=True),
