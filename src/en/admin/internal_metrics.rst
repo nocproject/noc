@@ -1,4 +1,4 @@
-.. _admin-internal_metrics:
+.. _admin-internal-metrics:
 
 ====================
 NOC Internal Metrics
