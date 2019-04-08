@@ -50,12 +50,7 @@ class Profile(BaseProfile):
         ("hints", "protocols", "lldp", "status", False),
         # ("hints", "protocols", "loop-detect", "status", False),
     ]
-    config_applicators = [
-        "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
-        "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
-        "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
-        # "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator"
-    ]
+
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
     @classmethod
