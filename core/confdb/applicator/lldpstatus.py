@@ -13,6 +13,10 @@ from .query import QueryApplicator
 
 
 class DefaultLLDPStatusApplicator(QueryApplicator):
+    """
+    Apply non-disabled LLDP interfaces
+    """
+    CHECK_QUERY = "Match('hints', 'protocols', 'lldp', 'status')"
     QUERY = [
         # LLDP is globally enabled
         "Match('hints', 'protocols', 'lldp', 'status', 'on') and "

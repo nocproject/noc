@@ -13,6 +13,10 @@ from .query import QueryApplicator
 
 
 class DefaultSTPStatusApplicator(QueryApplicator):
+    """
+    Apply STP on interfaces
+    """
+    CHECK_QUERY = "Match('hints', 'protocols', 'spanning-tree', 'status')"
     QUERY = [
         # LLDP is globally enabled
         "Match('hints', 'protocols', 'spanning-tree', 'status', 'on') and "

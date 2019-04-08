@@ -13,6 +13,10 @@ from .query import QueryApplicator
 
 
 class DefaultLoopDetectStatusApplicator(QueryApplicator):
+    """
+    Apply loop-detect status
+    """
+    CHECK_QUERY = "Match('hints', 'protocols', 'loop-detect', 'status')"
     QUERY = [
         # LLDP is globally enabled
         "Match('hints', 'protocols', 'loop-detect', 'status', 'on') and "

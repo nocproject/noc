@@ -8,9 +8,13 @@
 
 
 class BaseApplicator(object):
-    def __init__(self, confdb):
+    def __init__(self, object, confdb):
+        self.object = object
         self.confdb = confdb
         self.config = {}
 
-    def apply(self, object):
+    def apply(self):
         pass
+
+    def can_apply(self):
+        return True

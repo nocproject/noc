@@ -61,11 +61,6 @@ class Profile(BaseProfile):
     ]
     config_applicators = [
         "noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator",
-        "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
-        "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
-        "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
-        "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",
-        "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator"
     ]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 

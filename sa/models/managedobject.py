@@ -1689,7 +1689,6 @@ class ManagedObject(Model):
         :return: confdb.Engine instance
         """
         profile = self.profile.get_profile()
-        applicators = profile.get_config_applicators(self)
         e = Engine()
         # insert defaults
         defaults = profile.get_confdb_defaults(self)
@@ -1698,18 +1697,8 @@ class ManagedObject(Model):
         # Parse and normalize config
         e.insert_bulk(self.iter_normalized_tokens(config))
         # Apply applicators
-        if applicators:
-            for acfg in applicators:
-                if isinstance(acfg, six.string_types):
-                    a_handler, cfg = acfg, {}
-                else:
-                    a_handler, cfg = acfg
-                if not a_handler.startswith("noc."):
-                    a_handler = "noc.sa.profiles.%s.confdb.applicator.%s" % (profile.name, a_handler)
-                a_cls = get_handler(a_handler)
-                assert a_cls, "Invalid applicator %s" % a_handler
-                applicator = a_cls(e, **cfg)
-                applicator.apply(self)
+        for applicator in profile.iter_config_applicators(self, e):
+            applicator.apply()
         # Remove temporary nodes
         if cleanup:
             e.cleanup()

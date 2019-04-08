@@ -13,6 +13,9 @@ from .query import QueryApplicator
 
 
 class InterfaceTypeApplicator(QueryApplicator):
+    """
+    Set missed interface types via profile's .get_interface_type()
+    """
     QUERY = [
         "NotMatch('interfaces', X, 'type') and "
         "Set(if_type=profile.get_interface_type(X)) and "
