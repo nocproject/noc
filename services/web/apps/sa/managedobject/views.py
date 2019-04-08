@@ -682,7 +682,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         cdb = o.get_confdb(cleanup=cleanup)
         try:
-            r = cdb.query(query)
+            r = list(cdb.query(query))
             result = {
                 "status": True,
                 "result": r
