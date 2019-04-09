@@ -3,7 +3,7 @@
 # Vendor: Juniper
 # OS:     JUNOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,6 +31,13 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
     command_exit = "exit"
+    config_tokenizer = "curly"
+    config_tokenizer_settings = {
+        "line_comment": "#",
+        "inline_comment": "##",
+        "explicit_eol": ";",
+        "string_quote": "\""
+    }
     default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
     matchers = {
