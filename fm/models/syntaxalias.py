@@ -18,7 +18,8 @@ class SyntaxAlias(Document):
         "collection": "noc.syntaxaliases",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "fm.syntaxaliases"
+        "json_collection": "fm.syntaxaliases",
+        "json_unique_fields": ["name"]
     }
     name = StringField(unique=True, required=True)
     syntax = DictField(required=False)

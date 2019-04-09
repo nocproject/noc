@@ -19,7 +19,8 @@ class Enumeration(Document):
         "collection": "noc.enumerations",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "fm.enumerations"
+        "json_collection": "fm.enumerations",
+        "json_unique_fields": ["name"]
     }
 
     name = StringField(unique=True)

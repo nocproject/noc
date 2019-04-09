@@ -2,18 +2,19 @@
 # ---------------------------------------------------------------------
 # EventClassificationRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 # Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
 # NOC modules
-from eventclass import EventClass
-from datasource import DataSource
+from .eventclass import EventClass
+from .datasource import DataSource
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.escape import json_escape as jq
 from noc.lib.text import quote_safe_path
@@ -84,7 +85,8 @@ class EventClassificationRule(Document):
         "json_collection": "fm.eventclassificationrules",
         "json_depends_on": [
             "fm.eventclasses"
-        ]
+        ],
+        "json_unique_fields": ["name"]
     }
     name = fields.StringField(required=True, unique=True)
     uuid = fields.UUIDField(binary=True)

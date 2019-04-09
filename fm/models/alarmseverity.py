@@ -32,7 +32,8 @@ class AlarmSeverity(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": ["severity"],
-        "json_collection": "fm.alarmseverities"
+        "json_collection": "fm.alarmseverities",
+        "json_unique_fields": ["name"]
     }
     name = StringField(required=True, unique=True)
     uuid = UUIDField(binary=True)
