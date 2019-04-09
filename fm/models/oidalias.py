@@ -18,7 +18,8 @@ class OIDAlias(Document):
         "collection": "noc.oidaliases",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "fm.oidaliases"
+        "json_collection": "fm.oidaliases",
+        "json_unique_fields": ["rewrite_oid"]
     }
 
     rewrite_oid = StringField(unique=True)
@@ -26,7 +27,7 @@ class OIDAlias(Document):
     description = StringField(required=False)
     uuid = UUIDField(binary=True)
 
-    ## Lookup cache
+    # Lookup cache
     cache = None
 
     def __unicode__(self):

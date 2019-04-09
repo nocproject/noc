@@ -53,6 +53,7 @@ class AlarmClass(Document):
         "json_depends_on": [
             "fm.alarmseverities"
         ],
+        "json_unique_fields": ["name"]
     }
 
     name = StringField(required=True, unique=True)

@@ -21,13 +21,14 @@ class MIBAlias(Document):
         "collection": "noc.mibaliases",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "fm.mibaliases"
+        "json_collection": "fm.mibaliases",
+        "json_unique_fields": ["rewrite_mib"]
     }
     rewrite_mib = StringField(unique=True)
     to_mib = StringField()
     uuid = UUIDField(binary=True)
 
-    ## Lookup cache
+    # Lookup cache
     cache = None
 
     def __unicode__(self):

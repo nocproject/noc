@@ -217,7 +217,8 @@ class EventClass(Document):
         "json_collection": "fm.eventclasses",
         "json_depends_on": [
             "fm.alarmclasses"
-        ]
+        ],
+        "json_unique_fields": ["name"]
     }
     name = fields.StringField(required=True, unique=True)
     uuid = fields.UUIDField(binary=True)
