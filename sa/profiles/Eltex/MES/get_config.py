@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetConfig
     cache = True  # used in get_fqdn and get_local_users
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         # Try snmp first
         #
         #

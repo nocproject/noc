@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.SMG.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,8 +15,7 @@ class Script(BaseScript):
     name = "Eltex.SMG.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         conf = self.cli("sh")
         conf = self.cli("cat /etc/config/cfg.yaml")
         return self.cleaned_config(conf)
-

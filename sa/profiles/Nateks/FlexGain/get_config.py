@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Nateks.FlexGain.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,6 +15,6 @@ class Script(BaseScript):
     name = "Nateks.FlexGain.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         config = self.cli("show runningcfg")
         return self.cleaned_config(config)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # H3C.VRP.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "H3C.VRP.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         self.cli("undo terminal monitor")
         config = self.cli("display current-configuration")
         config = self.profile.clean_spaces(config)

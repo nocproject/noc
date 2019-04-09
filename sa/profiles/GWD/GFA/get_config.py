@@ -15,6 +15,6 @@ class Script(BaseScript):
     name = "GWD.GFA.get_config"
     interface = IGetConfig
 
-    def execute_cli(self):
+    def execute_cli(self, **kwargs):
         config = self.cli("show running-config")
         return self.cleaned_config(config)

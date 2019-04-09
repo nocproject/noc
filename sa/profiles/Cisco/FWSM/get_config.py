@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.FWSM.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Cisco.FWSM.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         if self.access_profile.path:
             context = self.access_profile.path
             if context.startswith("/"):

@@ -3,7 +3,7 @@
 # Alcatel.7302.get_config
 # Author: scanbox@gmail.com
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     CLI_TIMEOUT = 600
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         self.cli("environment inhibit-alarms mode batch terminal-timeout timeout:30")
         config = self.cli("info configure flat")
         return self.cleaned_config(config)

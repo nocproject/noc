@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Aruba.ArubaOS.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
@@ -17,7 +15,7 @@ class Script(BaseScript):
     name = "Aruba.ArubaOS.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         v = self.cli("show running-config")
         if v.startswith("Building "):
             # Strip "Building configuration\n\n"
