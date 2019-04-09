@@ -184,9 +184,9 @@ class BoxDiscoveryJob(MODiscoveryJob):
         mop = self.object.object_profile
         if mop.enable_box_discovery_caps and mo.get_caps_discovery_policy() != "s":
             return True
-        if mop.enable_box_discovery_interface and mo.get_iterface_discovery_policy() != "s":
+        if mop.enable_box_discovery_interface and mo.get_interface_discovery_policy() != "s":
             return True
-        if mop.enable_box_discovery_vlan and mo.get_iterface_discovery_policy() != "s":
+        if mop.enable_box_discovery_vlan and mo.get_interface_discovery_policy() != "s":
             return True
         if (mop.enable_box_discovery_vpn_confdb or mop.enable_box_discovery_address_confdb or
                 mop.enable_box_discovery_prefix_confdb):
