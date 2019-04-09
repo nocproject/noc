@@ -56,7 +56,7 @@ def get_objects_metrics(managed_objects):
 
     for table, fields in itertools.groupby(sorted(mmm, key=lambda x: x[0]), key=lambda x: x[0]):
         fields = list(fields)
-        SQL = """SELECT managed_object, argMax(ts, ts), arrayStringConcat(path) as path, %s
+        SQL = """SELECT managed_object, argMax(ts, ts), arrayStringConcat(path, '|') as path, %s
               FROM %s
               WHERE
                 date >= toDate('%s')

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObject card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import datetime
 import operator
+import six
 # Third-party modules
 from django.db.models import Q
 from mongoengine.errors import DoesNotExist
@@ -164,69 +165,52 @@ class ManagedObjectCard(BaseCard):
 
         # Interfaces
         interfaces = []
+        metrics_map = ['Interface | Load | In',
+                       'Interface | Load | Out',
+                       'Interface | Errors | In',
+                       'Interface | Errors | Out']
 
         mo = ManagedObject.objects.filter(id=self.object.id)
 
-        iface_metrics, last_ts = get_interface_metrics(mo[0])
-        iface_metrics = iface_metrics[mo[0]]
+        ifaces_metrics, last_ts = get_interface_metrics(mo[0])
+        ifaces_metrics = ifaces_metrics[mo[0]]
 
         objects_metrics, last_time = get_objects_metrics(mo[0])
         objects_metrics = objects_metrics.get(mo[0])
 
-        meta = ""
-
+        meta = {}
         metric_type_name = dict(MetricType.objects.filter().scalar("name", "measure"))
         metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
+        if objects_metrics:
+            for path, mres in six.iteritems(objects_metrics):
+                for key in mres.keys():
+                    metric_name = "%s | %s" % (key, path) if any(path.split("|")) else key
+                    meta[metric_name] = {
+                        "type": metric_type_name[key],
+                        "value": mres[key]
+                    }
 
-        if objects_metrics is not None:
-            if objects_metrics.get("") is not None:
-                for key in objects_metrics.get("").keys():
-                    if metric_type_name[key] in ["bytes", "bit/s", "bool"]:
-                        objects_metrics.get("")[key] = {
-                            "type": metric_type_name[key],
-                            "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])
-                        }
-                    else:
-                        objects_metrics.get("")[key] = {
-                            "type": metric_type_name[key],
-                            "value": objects_metrics.get("")[key]
-                        }
-                meta = objects_metrics.get("")
-            else:
-                meta = {}
-
-        if iface_metrics is not None:
+        if ifaces_metrics:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
-                load_in = "-"
-                load_out = "-"
-                errors_in = "-"
-                errors_out = "-"
-                iface_get_link_name = iface_metrics.get(str(i.name))
-                if iface_get_link_name is not None:
-                    for key in iface_get_link_name.keys():
-                        meta_type = metric_type_name.get(key) or metric_type_field.get(key)
-                        iface_get_link_name[key] = {
-                            "type": meta_type,
-                            "value": self.humanize_speed(
-                                str(iface_get_link_name[key]),
-                                meta_type)
-                        }
-                        if key in ['Interface | Load | In',
-                                   'Interface | Load | Out',
-                                   'Interface | Errors | In',
-                                   'Interface | Errors | Out']:
-                            try:
-                                load_in = iface_get_link_name['Interface | Load | In']["value"] + \
-                                    iface_get_link_name['Interface | Load | In']["type"]
-                                load_out = iface_get_link_name['Interface | Load | Out']["value"] + \
-                                    iface_get_link_name['Interface | Load | Out']["type"]
-                                errors_in = iface_get_link_name['Interface | Errors | In']["value"]
-                                errors_out = iface_get_link_name['Interface | Errors | Out']["value"]
-                            except TypeError:
-                                pass
+                iface_metrics = ifaces_metrics.get(str(i.name))
+                if iface_metrics:
+                    for key, value in six.iteritems(iface_metrics):
+                        if key not in metrics_map:
+                            continue
+                        metric_type = metric_type_name.get(key) or metric_type_field.get(key)
+                        if key == "Interface | Load | In":
+                            load_in = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
+                        if key == "Interface | Load | Out":
+                            load_out = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
+                        if key == "Interface | Errors | In":
+                            errors_in = value if value else "-"
+                        if key == "Interface | Errors | Out":
+                            errors_out = value if value else "-"
                 else:
-                    iface_get_link_name = {}
-
+                    load_in = "-"
+                    load_out = "-"
+                    errors_in = "-"
+                    errors_out = "-"
                 interfaces += [{
                     "id": i.id,
                     "name": i.name,
