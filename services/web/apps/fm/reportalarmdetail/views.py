@@ -196,7 +196,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                                "$lte": fd}}
 
         match_duration = {"duration": {"$gte": min_duration}}
-        if max_duration is not 0:
+        if max_duration:
             match_duration = {"duration": {"$gte": min_duration, "$lte": max_duration}}
         mos = ManagedObject.objects.filter(is_managed=True)
 
