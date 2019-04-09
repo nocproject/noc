@@ -43,4 +43,5 @@ Reference
     /reference/remote-system
     /reference/apikey
     /reference/technology
+    /reference/external-storage
 
