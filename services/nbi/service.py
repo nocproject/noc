@@ -17,6 +17,7 @@ from noc.services.nbi.base import NBIAPI
 
 class NBIService(Service):
     name = "nbi"
+    require_nsq_writer = True
     if config.features.traefik:
         traefik_backend = "nbi"
         traefik_frontend_rule = "PathPrefix:/api/nbi"
