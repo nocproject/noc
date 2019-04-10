@@ -859,6 +859,23 @@ Ext.define("NOC.sa.managedobject.Application", {
                             }
                         },
                         {
+                            name: "config_fetch_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Config fetch Policy"),
+                            allowBlank: false,
+                            tooltip: __('Select method of config fetching'),
+                            displayField: "label",
+                            valueField: "id",
+                            store: {
+                                fields: ["id", "label"],
+                                data: [
+                                    {"id": "P", "label": __("Profile")},
+                                    {"id": "s", "label": __("Prefer Startup")},
+                                    {"id": "r", "label": __("Prefer Running")}
+                                ]
+                            }
+                        },
+                        {
                             name: "caps_discovery_policy",
                             xtype: "combobox",
                             fieldLabel: __("Caps Policy"),

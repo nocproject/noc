@@ -1730,7 +1730,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             listeners: {
                                                 render: me.addTooltip
                                             }
-
                                         },
                                         {
                                             name: "config_download_storage",
@@ -1763,6 +1762,32 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             },
                                             listeners: {
                                                 render: me.addTooltip
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Config Fetching"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "config_fetch_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Config Fetch Policy"),
+                                            allowBlank: false,
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    ["s", __("Prefer Startup")],
+                                                    ["r", __("Prefer Running")]
+                                                ]
                                             }
                                         }
                                     ]

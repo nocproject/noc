@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # OS.FreeBSD.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,10 +16,12 @@ class Script(BaseScript):
     name = "OS.FreeBSD.get_config"
     interface = IGetConfig
     rx_not_found = re.compile(r"^cat:.+?No (?:match|such file or directory)")
-    configs = ["/etc/rc.conf", "/etc/rc.conf.d/*",
-        "/usr/local/etc/rc.conf.d/*", "/etc/rc.local"]
+    configs = [
+        "/etc/rc.conf", "/etc/rc.conf.d/*",
+        "/usr/local/etc/rc.conf.d/*", "/etc/rc.local"
+    ]
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         config = ""
         for c in self.configs:
             conf = self.cli("cat -v %s ; echo" % c)

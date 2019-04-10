@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NSN.TIMOS.get_config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "NSN.TIMOS.get_config"
     interface = IGetConfig
 
-    def execute_cli(self):
+    def execute_cli(self, **kwargs):
         configs = []
 
         conf = {}

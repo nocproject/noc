@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "BDCOM.xPON.get_config"
     interface = IGetConfig
 
-    def execute_cli(self):
+    def execute_cli(self, **kwargs):
         try:
             config = self.cli("show running-config")
         except self.CLISyntaxError:

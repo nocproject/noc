@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Alentis.NetPing.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,14 +17,15 @@ class Script(BaseScript):
     name = "Alentis.NetPing.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute(self, **kwargs):
         r = ''
-        for url in ["/setup_get.cgi", "/termo_get.cgi", "/remcom_get.cgi",
+        for url in [
+            "/setup_get.cgi", "/termo_get.cgi", "/remcom_get.cgi",
             "/relay_get.cgi", "/sms_get.cgi", "/sendmail_get.cgi",
             "/io_get.cgi", "/curdet_get.cgi", "/ir_get.cgi", "/logic_get.cgi",
-            "/pwr_get.cgi"]:
+            "/pwr_get.cgi"
+        ]:
             conf = self.profile.var_data(self, url)
-            conf = json.dumps(conf,
-                sort_keys=True, indent=4, separators=(',', ': '))
+            conf = json.dumps(conf, sort_keys=True, indent=4, separators=(',', ': '))
             r = r + conf + '\n\n'
         return r

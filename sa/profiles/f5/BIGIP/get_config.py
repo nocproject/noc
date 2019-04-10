@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # f5.BIGIP.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetConfig
     CLI_TIMEOUT = 60
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         config = self.cli("list")
         config = self.strip_first_lines(config, 1)
         return self.cleaned_config(config)

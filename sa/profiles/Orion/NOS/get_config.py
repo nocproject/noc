@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Orion.NOS.get_config"
     interface = IGetConfig
 
-    def execute_cli(self):
+    def execute_cli(self, **kwargs):
         config = self.cli("show running-config")
         config = self.strip_first_lines(config, 2)
         return self.cleaned_config(config)

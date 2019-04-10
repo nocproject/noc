@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -13,7 +13,7 @@ class Script(BaseScript):
     name = "Protei.MediaGateway.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         self.cli("cd /usr/protei/CLI/Client")
         self.cli("./clip")
         for i in range(5):

@@ -70,7 +70,7 @@ from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 14
+MANAGEDOBJECT_CACHE_VERSION = 15
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -433,6 +433,16 @@ class ManagedObject(Model):
             ("S", "Script, Download"),
             ("D", "Download, Script"),
             ("d", "Download")
+        ],
+        default="P"
+    )
+    config_fetch_policy = CharField(
+        "Config Fetch Policy",
+        max_length=1,
+        choices=[
+            ("P", "From Profile"),
+            ("s", "Startup"),
+            ("r", "Running")
         ],
         default="P"
     )
@@ -1593,6 +1603,11 @@ class ManagedObject(Model):
         if self.config_policy == "P":
             return self.object_profile.config_policy
         return self.config_policy
+
+    def get_config_fetch_policy(self):
+        if self.config_fetch_policy == "P":
+            return self.object_profile.config_fetch_policy
+        return self.config_fetch_policy
 
     def get_interface_discovery_policy(self):
         if self.interface_discovery_policy == "P":
