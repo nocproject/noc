@@ -545,6 +545,15 @@ class ManagedObjectProfile(models.Model):
         blank=True, null=True,
         related_name="config_download_objects_set"
     )
+    config_fetch_policy = models.CharField(
+        _("Config Fetch Policy"),
+        max_length=1,
+        choices=[
+            ("s", "Startup"),
+            ("r", "Running")
+        ],
+        default="r"
+    )
     # Config mirror settings
     config_mirror_storage = DocumentReferenceField(
         ExtStorage,

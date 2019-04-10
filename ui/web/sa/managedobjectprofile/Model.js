@@ -707,6 +707,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: "s"
         },
         {
+            name: "config_fetch_policy",
+            type: "string",
+            defaultValue: "r"
+        },
+        {
             name: "interface_discovery_policy",
             type: "string",
             defaultValue: "s"

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetConfig
     cache = True  # used in get_fqdn and get_local_users
 
-    def execute(self):
+    def execute_cli(self, policy="r", **kwargs):
         # Try snmp first
         #
         #
@@ -51,5 +51,10 @@ class Script(BaseScript):
         """
 
         # Fallback to CLI
-        config = self.cli("show running-config", cached=True)
+        assert policy in ("r", "s")
+        if policy == "s":
+            config = self.cli("show startup-config")
+        else:
+            config = self.cli("show running-config", cached=True)
+        config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)

@@ -414,6 +414,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: "P"
         },
         {
+            name: "config_fetch_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
             name: "interface_discovery_policy",
             type: "string",
             defaultValue: "P"

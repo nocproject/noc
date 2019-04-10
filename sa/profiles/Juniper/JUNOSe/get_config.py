@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,16 +21,16 @@ class Script(BaseScript):
     interface = IGetConfig
     rx_service = re.compile("^(?P<service>\w+\.mac)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         # Get configuration
         try:
             config = self.cli("show running-configuration")
         except self.CLISyntaxError:
             config = self.cli("show configuration")
         configs = [{
-                "name": "config",
-                "config": self.cleaned_config(config)
-            }]
+            "name": "config",
+            "config": self.cleaned_config(config)
+        }]
         # Get services
         self.cli("terminal width 200")
         r = self.cli("show service-management service-definition brief | include True")

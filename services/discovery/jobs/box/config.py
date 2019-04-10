@@ -59,7 +59,7 @@ class ConfigCheck(DiscoveryCheck):
             return None
         self.logger.info("Requesting config from device")
         try:
-            return self.object.scripts.get_config()
+            return self.object.scripts.get_config(policy=self.object.get_config_fetch_policy())
         except NOCError as e:
             self.logger.error("Failed to request config: %s", e)
             return None

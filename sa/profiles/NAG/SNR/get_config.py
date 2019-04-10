@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,8 @@ class Script(BaseScript):
     name = "NAG.SNR.get_config"
     interface = IGetConfig
 
-    def execute(self, TFTP_root='', TFTP_IP='', file_name=''):
+    def execute_cli(self, **kwargs):
+        # def execute(self, TFTP_root='', TFTP_IP='', file_name=''):
         # Try snmp first
         #
         #
@@ -39,7 +40,7 @@ class Script(BaseScript):
                 conf_file = open(TFTP_root + '/' + file_name, 'r')
                 config = conf_file.read()
                 conf_file.close()
-#                config = self.strip_first_lines(config, 0)
+                config = self.strip_first_lines(config, 0)
                 return self.cleaned_config(config)
             except self.snmp.TimeOutError:
                 pass
