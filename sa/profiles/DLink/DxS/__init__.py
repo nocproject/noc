@@ -3,7 +3,7 @@
 # Vendor: D-Link
 # OS:     DxS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -125,7 +125,7 @@ class Profile(BaseProfile):
         neighbor = super(Profile, self).clean_lldp_neighbor(obj, neighbor)
         if (
             neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_ALIAS and
-            bool(self.rx_lldp_port.search(neighbor["remote_port"]))
+            self.rx_lldp_port.search(neighbor["remote_port"])
         ):
             neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
             return neighbor
