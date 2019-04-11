@@ -17,7 +17,7 @@ from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_P
 
 class Profile(BaseProfile):
     name = "DLink.DxS"
-    pattern_more = "CTRL\+C.+?a A[Ll][Ll]\s*"
+    pattern_more = r"CTRL\+C.+?a A[Ll][Ll]\s*"
     pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = \
         r"(Available commands|Next possible completions|Ambiguous token):"
