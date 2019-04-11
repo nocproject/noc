@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,26 +20,26 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\",\s+DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
         r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*,\s+SN: (?P<serial>\S+)",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE
     )
-
     rx_sfp = re.compile(
-        r"^(?P<number>Ethernet\d+(/\d+)*)\n\s+transceiver is present\n"
-        r"\s+type is(\s(?P<type>\S+[ \S+]*))?\n\s+name is\s(?P<vendor>\S+[ \S+]*)\n"
-        r"\s+part number is\s(?P<partno>\S+)\n\s+revision is\s(?P<rev>\S+)\n"
-        r"\s+serial number is\s(?P<serial>\S+)\n",
-        re.MULTILINE | re.DOTALL
+        r"^(?P<number>Ethernet\d+(/\d+)*)\n"
+        r"^\s+transceiver is present\n"
+        r"^\s+type is(?:\s(?P<type>\S+))?\s*\n"
+        r"^\s+name is\s(?P<vendor>\S+)\s*\n"
+        r"^\s+part number is\s(?P<partno>\S+(?: \S+)*)\s*\n"
+        r"^\s+revision is\s(?P<rev>\S+)\s*\n"
+        r"^\s+serial number is\s(?P<serial>\S+)\s*\n",
+        re.MULTILINE
     )
-
-    rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
-
+    rx_trans = re.compile(r"((?:100|1000|10G)BASE\S+)")
     # set of pids GEM modules w/o transceivers
     gem_w_o_sfp = set([
         "N55-M160L3",
         "N55-M160L3-V2"
     ])
 
-    def execute(self):
+    def execute_cli(self):
         objects = []
         trans = []
         v = self.cli("show inventory | no-more")
@@ -107,7 +107,7 @@ class Script(BaseScript):
                         t = dict(i)
                         # check number of chassis and module
                         if not number_c:
-                            if (len(t["number"].split("/")) == 2):
+                            if len(t["number"].split("/")) == 2:
                                 if t["number"].split("/")[0] == number:
                                     objects += [t]
                                     # rewrite number
@@ -129,7 +129,7 @@ class Script(BaseScript):
             except IndexError:
                 number = None
             return "CHASSIS", number, pid
-        elif "GEM" in descr or "Ethernet Module" in descr:
+        elif "GEM" in descr or "Ethernet Module" in descr or "Ethernet Expansion Module" in descr:
             number = name.split()[-1]
             return "GEM", number, pid
         elif "Superv" in descr:
