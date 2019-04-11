@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# VRF.project, Prefix.project, IP.project
+# ippool technologies
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
-# Django modules
-from django.db import models
+"""
+"""
 # Third-party modules
 from south.db import db
 from noc.core.model.fields import TextArrayField
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
-        db.add_column(
-            "ip_ippool",
-            "technologies",
-            TextArrayField("Technologies", default=["IPoE"])
-        )
+        db.add_column("ip_ippool", "technologies", TextArrayField("Technologies", default=["IPoE"]))
 
     def backwards(self):
         db.drop_column("ip_ippool", "technologies")
