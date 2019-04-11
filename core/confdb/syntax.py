@@ -186,6 +186,20 @@ SYNTAX = [
         DEF(VR_NAME, [
             DEF("forwarding-instance", [
                 DEF(FI_NAME, [
+                    DEF("type", [
+                        DEF(CHOICES("table", "vrf", "vpls"), required=True, name="type", gen="make_forwarding_instance_type")
+                    ]),
+                    DEF("route-distinguisher", [
+                        DEF(ANY, required=True, name="rd", gen="make_forwarding_instance_rd")
+                    ]),
+                    DEF("vrf-target", [
+                        DEF("import", [
+                            DEF(ANY, multi=True, name="target", gen="make_forwarding_instance_import_target")
+                        ]),
+                        DEF("export", [
+                            DEF(ANY, multi=True, name="target", gen="make_forwarding_instance_export_target")
+                        ])
+                    ]),
                     DEF("vlans", [
                         DEF(INTEGER, [
                             DEF("name", [
