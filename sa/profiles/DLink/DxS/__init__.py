@@ -3,7 +3,7 @@
 # Vendor: D-Link
 # OS:     DxS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,10 +17,12 @@ from noc.core.lldp import LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME
 
 class Profile(BaseProfile):
     name = "DLink.DxS"
-    pattern_more = "CTRL\+C.+?a A[Ll][Ll]\s*"
+    pattern_more = r"CTRL\+C.+?a A[Ll][Ll]\s*"
     pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = \
         r"(Available commands|Next possible completions|Ambiguous token):"
+    pattern_operation_error = \
+        r"This command can\'t be used when authentication policy is disabled."
     command_super = "enable admin"
     pattern_prompt = r"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
     password_submit = "\r\n"
@@ -28,7 +30,7 @@ class Profile(BaseProfile):
     command_exit = "logout"
     command_save_config = "save"
     rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
-    config_volatile = ["^%.*?$", "^config time \d\d.*?\n"]
+    config_volatile = [r"^%.*?$", r"^config time \d\d.*?\n"]
     telnet_naws = "\x00\x7f\x00\x7f"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 30
