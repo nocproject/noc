@@ -2,10 +2,13 @@
 # ---------------------------------------------------------------------
 # Initialize inventory hierarchy
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
+# Python modules
+from __future__ import print_function
 # NOC modules
 from noc.lib.nosql import get_db
 
@@ -20,40 +23,30 @@ class Migration(object):
         om = db.noc.objectmodels
         root = om.find_one({"name": "Root"})
         if not root:
-            print "    Create Root model stub"
-            root = om.insert({
-                "name": "Root",
-                "uuid": self.ROOT_UUID,
-                "data": {
-                    "container": {
-                        "container": True
-                    }
-                }
-            })
+            print("    Create Root model stub")
+            root = om.insert({"name": "Root", "uuid": self.ROOT_UUID, "data": {"container": {"container": True}}})
         else:
             root = root["_id"]
         lost_and_found = om.find_one({"name": "Lost&Found"})
         if not lost_and_found:
-            print "    Create Lost&Found model stub"
-            lost_and_found = om.insert({
-                "name": "Lost&Found",
-                "uuid": self.LOST_N_FOUND_UUID,
-                "data": {
-                    "container": {
-                        "container": True
+            print("    Create Lost&Found model stub")
+            lost_and_found = om.insert(
+                {
+                    "name": "Lost&Found",
+                    "uuid": self.LOST_N_FOUND_UUID,
+                    "data": {
+                        "container": {
+                            "container": True
+                        }
                     }
                 }
-            })
+            )
         else:
             lost_and_found = lost_and_found["_id"]
         # Create root object
         objects = db.noc.objects
         r = objects.insert({"name": "Root", "model": root})
-        lf = objects.insert({
-            "name": "Global Lost&Found",
-            "model": lost_and_found,
-            "container": r
-        })
+        lf = objects.insert({"name": "Global Lost&Found", "model": lost_and_found, "container": r})
         # Find all outer connection names
         m_c = {}
         containers = set()
@@ -75,14 +68,7 @@ class Migration(object):
                             break
             if not found:
                 # Set container
-                db.noc.objects.update(
-                    {"_id": o["_id"]},
-                    {
-                        "$set": {
-                            "container": lf
-                        }
-                    }
-                )
+                db.noc.objects.update({"_id": o["_id"]}, {"$set": {"container": lf}})
 
     def backwards(self):
         pass

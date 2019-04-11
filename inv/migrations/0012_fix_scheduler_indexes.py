@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Drop scheduler indexes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 import logging
 # NOC modules

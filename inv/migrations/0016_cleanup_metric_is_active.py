@@ -2,27 +2,23 @@
 # ----------------------------------------------------------------------
 # Initialize cleanup_metric_is_active field
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from pymongo import UpdateOne
+# NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
-        collections = [
-            InterfaceProfile._get_collection()
-        ]
+        collections = [InterfaceProfile._get_collection()]
         for collection in collections:
             bulk = []
-            for ip in collection.find({
-                "metrics.is_active": {
-                    "$exists": True
-                }
-            }):
+            for ip in collection.find({"metrics.is_active": {"$exists": True}}):
                 metrics = []
                 if "metrics" not in ip:
                     continue  # Not configured
@@ -32,13 +28,7 @@ class Migration:
                     if "is_active" in metric:
                         del metric["is_active"]
                     metrics += [metric]
-                bulk += [UpdateOne({
-                    "_id": ip["_id"]
-                }, {
-                    "$set": {
-                        "metrics": metrics
-                    }
-                })]
+                bulk += [UpdateOne({"_id": ip["_id"]}, {"$set": {"metrics": metrics}})]
             if bulk:
                 collection.bulk_write(bulk)
 

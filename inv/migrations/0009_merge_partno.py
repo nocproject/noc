@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # Initialize inventory hierarchy
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # NOC modules
 from noc.lib.nosql import get_db
 
 
 class Migration(object):
-
     def forwards(self):
         db = get_db()
         for om in db.noc.objectmodels.find():
@@ -36,12 +36,7 @@ class Migration(object):
                 so["data.asset.part_no"] = part_no
             if order_part_no:
                 so["data.asset.order_part_no"] = order_part_no
-            db.noc.objectmodels.update(
-                {"_id": om["_id"]},
-                {
-                    "$set": so,
-                    "$unset": uso
-                })
+            db.noc.objectmodels.update({"_id": om["_id"]}, {"$set": so, "$unset": uso})
 
     def backwards(self):
         pass
