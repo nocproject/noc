@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# kb_entry_yattachment
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 from django.db import models
 
@@ -18,16 +28,12 @@ class Migration(object):
             "kb_kbentryattachment", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("kb_entry", models.ForeignKey(KBEntry, verbose_name="KB Entry")),
-                ("name", models.CharField("Name", max_length=256)), (
-                    "description",
-                    models.CharField("Description", max_length=256, null=True, blank=True)
-                ), ("is_hidden", models.BooleanField("Is Hidden", default=False)),
-                ("file", models.FileField("File"))
+                ("name", models.CharField("Name", max_length=256)),
+                ("description", models.CharField("Description", max_length=256, null=True, blank=True)),
+                ("is_hidden", models.BooleanField("Is Hidden", default=False)), ("file", models.FileField("File"))
             )
         )
-        db.create_index(
-            "kb_kbentryattachment", ["kb_entry_id", "name"], unique=True, db_tablespace=""
-        )
+        db.create_index("kb_kbentryattachment", ["kb_entry_id", "name"], unique=True, db_tablespace="")
 
         db.send_create_signal("kb", ["KBEntryAttachment"])
 
