@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# ----------------------------------------------------------------------
+# lg query default data
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 
@@ -39,12 +42,13 @@ class Migration(object):
                     db.execute("INSERT INTO peer_lgquerytype(name) VALUES(%s)", [k])
                     qtype[k] = db.execute("SELECT id FROM peer_lgquerytype WHERE name=%s", [k])[0][0]
                 q = qtype[k]
-                if db.execute(
-                        "SELECT COUNT(*) FROM peer_lgquerycommand WHERE peering_point_type_id=%s AND query_type_id=%s",
-                        [ppt_id, q])[0][0] == 0:
+                if db.execute("""SELECT COUNT(*) FROM peer_lgquerycommand
+                                WHERE peering_point_type_id=%s
+                                AND query_type_id=%s""", [ppt_id, q])[0][0] == 0:
                     db.execute(
-                        "INSERT INTO peer_lgquerycommand(peering_point_type_id,query_type_id,command) VALUES(%s,%s,%s)",
-                        [ppt_id, q, v])
+                        """INSERT INTO peer_lgquerycommand(peering_point_type_id,query_type_id,command)
+                        VALUES(%s,%s,%s)""", [ppt_id, q, v]
+                    )
 
     def backwards(self):
-        "Write your backwards migration here"
+        pass
