@@ -232,6 +232,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # List of default applicators
     # Activated by ConfDB `hints` section
     default_config_applicators = [
+        "noc.core.confdb.applicator.rebase.RebaseApplicator",
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
         "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
         "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",

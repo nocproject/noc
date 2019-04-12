@@ -159,6 +159,7 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
         self.tokenizer = tokenizer
         self.deferable_contexts = defaultdict(dict)  # Name -> Context
         self.context = {}
+        self.rebase_id = itertools.count()
 
     def set_context(self, name, value):
         self.context[name] = value
@@ -256,6 +257,23 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
             else:
                 return None
         return r
+
+    def rebase(self, src, dst):
+        """
+        Mark the part of tree to be rebased to new location
+
+        Usage:
+        ...
+        for path in self.remap(src, dst):
+            yield path
+
+        :param src: Source path
+        :param dst: Destination path
+        :return:
+        """
+        r_id = str(next(self.rebase_id))
+        yield ("hints", "rebase", r_id, "from") + src
+        yield ("hints", "rebase", r_id, "to") + dst
 
 
 def match(*args, **kwargs):
