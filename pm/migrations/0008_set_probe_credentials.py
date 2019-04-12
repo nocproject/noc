@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# set probe credentials
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Python modules
 import os
+# Third-party modules
 from south.db import db
+# NOC modules
 from noc.lib.nosql import get_db
 
 
-class Migration:
-    depends_on = [
-        ("main", "0021_permission")
-    ]
+class Migration(object):
+    depends_on = [("main", "0021_permission")]
 
     def forwards(self):
         PROBEUSER = "noc-probe"
@@ -38,18 +47,11 @@ class Migration:
         )
         if r != 0:
             import sys
-            sys.stderr.write(
-                "\nCannot create probe user. Terminating\n"
-            )
+            sys.stderr.write("\nCannot create probe user. Terminating\n")
             sys.exit(1)
         uid = db.execute("SELECT id FROM auth_user WHERE username=%s", [PROBEUSER])[0][0]
         sid = mdb.noc.pm.storages.find_one({})["_id"]
-        mdb.noc.pm.probe.update({}, {
-            "$set": {
-                "storage": sid,
-                "user": uid
-            }
-        })
+        mdb.noc.pm.probe.update({}, {"$set": {"storage": sid, "user": uid}})
 
     def backwards(self):
         pass
