@@ -2,18 +2,20 @@
 # ---------------------------------------------------------------------
 # Default ResourceState
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         # ResourceState
-        db.execute("""
+        db.execute(
+            """
             INSERT INTO main_resourcestate(id, name, description,
                 is_active, is_starting, is_default, is_provisioned, step_to_id)
             VALUES
@@ -28,7 +30,8 @@ class Migration:
                 (5, 'SUSPEND', 'Temporary out of service', true,
                     false, false, false, NULL)
 
-        """)
+        """
+        )
         db.execute("SELECT setval('main_resourcestate_id_seq'::regclass, 5)")
 
     def backwards(self):

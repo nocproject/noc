@@ -1,23 +1,40 @@
-
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# refbook data array
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 from django.db import models
+# NOC modules
 from noc.core.model.fields import TextArrayField
 
-class Migration:
 
+class Migration(object):
     def forwards(self):
 
         db.delete_table('main_refbookdata')
 
         # Mock Models
-        RefBook = db.mock_model(model_name='RefBook', db_table='main_refbook', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        RefBook = db.mock_model(
+            model_name='RefBook',
+            db_table='main_refbook',
+            db_tablespace='',
+            pk_field_name='id',
+            pk_field_type=models.AutoField
+        )
 
         # Model 'RefBookData'
-        db.create_table('main_refbookdata', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('ref_book', models.ForeignKey(RefBook,verbose_name="Ref Book")),
-            ('value', TextArrayField("Value"))
-        ))
+        db.create_table(
+            'main_refbookdata', (
+                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book")), ('value', TextArrayField("Value"))
+            )
+        )
 
         db.send_create_signal('main', ['RefBookData'])
 
@@ -25,15 +42,28 @@ class Migration:
 
     def backwards(self):
         db.delete_table('main_refbookdata')
-        RefBook = db.mock_model(model_name='RefBook', db_table='main_refbook', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        RefBookField = db.mock_model(model_name='RefBookField', db_table='main_refbookfield', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        RefBook = db.mock_model(
+            model_name='RefBook',
+            db_table='main_refbook',
+            db_tablespace='',
+            pk_field_name='id',
+            pk_field_type=models.AutoField
+        )
+        RefBookField = db.mock_model(
+            model_name='RefBookField',
+            db_table='main_refbookfield',
+            db_tablespace='',
+            pk_field_name='id',
+            pk_field_type=models.AutoField
+        )
 
         # Model 'RefBookData'
-        db.create_table('main_refbookdata', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('ref_book', models.ForeignKey(RefBook,verbose_name="Ref Book")),
-            ('record_id', models.IntegerField("ID")),
-            ('field', models.ForeignKey(RefBookField,verbose_name="Field")),
-            ('value', models.TextField("Value",null=True,blank=True))
-        ))
-
+        db.create_table(
+            'main_refbookdata', (
+                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book")),
+                ('record_id', models.IntegerField("ID")),
+                ('field', models.ForeignKey(RefBookField, verbose_name="Field")),
+                ('value', models.TextField("Value", null=True, blank=True))
+            )
+        )

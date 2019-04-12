@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# ----------------------------------------------------------------------
+# implied permissions
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 from django.db import models
 
-class Migration:
+
+class Migration(object):
     def forwards(self):
-        db.add_column("main_permission", "implied",
-                      models.CharField("Implied", max_length=256,
-                                       null=True, blank=True))
+        db.add_column("main_permission", "implied", models.CharField("Implied", max_length=256, null=True, blank=True))
 
     def backwards(self):
         db.delete_column("main_checkpoint", "implied")

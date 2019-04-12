@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Migrate audit trail
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 import logging
 import re
@@ -20,7 +21,7 @@ from noc.lib.nosql import get_db
 logger = logging.getLogger("south")
 
 
-class Migration:
+class Migration(object):
     rx_field = re.compile("^[a-zA-Z0-9_]+$")
 
     def forwards(self):
@@ -61,16 +62,12 @@ class Migration:
         last_id = 0
         while True:
             bulk = []
-            for a_id, user_id, timestamp, model, db_table, op, subject, body in db.execute(
-                """
-                  SELECT id, user_id, "timestamp", model, db_table,
-                      operation, subject, body
-                  FROM main_audittrail
-                  WHERE id > %s
-                  ORDER BY id
-                  LIMIT 1000
-                """, [last_id]
-            ):
+            for a_id, user_id, timestamp, model, db_table, op, subject, body in db.execute("""
+                    SELECT id, user_id, "timestamp", model, db_table, operation, subject, body
+                    FROM main_audittrail
+                    WHERE id > %s
+                    ORDER BY id
+                    LIMIT 1000""", [last_id]):
                 o = {
                     "timestamp": timestamp,
                     "user": user_cache[user_id],
@@ -84,11 +81,7 @@ class Migration:
                     for k, v in iteritems(body, " = "):
                         if k == "id":
                             continue
-                        changes += [{
-                            "field": k,
-                            "old": None,
-                            "new": q(v)
-                        }]
+                        changes += [{"field": k, "old": None, "new": q(v)}]
                 elif op == "M":
                     # Parse modify operation
                     for k, v in iteritems(body, ": "):
@@ -100,22 +93,14 @@ class Migration:
                             x, y = X[0], None
                         else:
                             x, y = X
-                        changes += [{
-                            "field": k,
-                            "old": q(x),
-                            "new": q(y)
-                        }]
+                        changes += [{"field": k, "old": q(x), "new": q(y)}]
                 elif op == "D":
                     # Parse delete operation
                     for k, v in iteritems(body, " = "):
                         if k == "id":
                             o["id"] = q(v)
                             continue
-                        changes += [{
-                            "field": k,
-                            "old": None,
-                            "new": v
-                        }]
+                        changes += [{"field": k, "old": None, "new": v}]
                 else:
                     raise ValueError("Invalid op '%s'" % op)
                 o["changes"] = changes
@@ -128,9 +113,10 @@ class Migration:
                 try:
                     r = collection.bulk_write(bulk)
                     logger.info("Database has been synced")
-                    logger.info("Inserted: %d, Modify: %d, Deleted: %d",
-                                r.inserted_count + r.upserted_count,
-                                r.modified_count, r.deleted_count)
+                    logger.info(
+                        "Inserted: %d, Modify: %d, Deleted: %d", r.inserted_count + r.upserted_count, r.modified_count,
+                        r.deleted_count
+                    )
                 except BulkWriteError as e:
                     logger.error("Bulk write error: '%s'", e.details)
                     logger.error("Stopping check")

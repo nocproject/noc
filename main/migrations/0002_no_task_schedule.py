@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# ----------------------------------------------------------------------
+# no task schedule
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
+# ----------------------------------------------------------------------
 """
 """
-from south.db import db
-from django.db import models
 
-class Migration:
 
+class Migration(object):
     def forwards(self):
         pass
 
