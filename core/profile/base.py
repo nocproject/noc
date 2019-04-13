@@ -234,6 +234,7 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     default_config_applicators = [
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
         "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
+        "noc.core.confdb.applicator.fitype.DefaultForwardingInstanceTypeApplicator",
         "noc.core.confdb.applicator.lldpstatus.DefaultLLDPStatusApplicator",
         "noc.core.confdb.applicator.loopdetectstatus.DefaultLoopDetectStatusApplicator",
         "noc.core.confdb.applicator.stpstatus.DefaultSTPStatusApplicator",

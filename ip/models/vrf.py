@@ -112,7 +112,8 @@ class VRF(models.Model):
         choices=[
             ("M", "Manual"),
             ("i", "Interface"),
-            ("m", "MPLS")
+            ("m", "MPLS"),
+            ("c", "ConfDB")
         ],
         null=False, blank=False,
         default="M"
