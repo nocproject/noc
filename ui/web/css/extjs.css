@@ -440,3 +440,7 @@ TABLE {
 .x-panel.x-layer {
     position: fixed !important;
 }
+
+.x-grid-row-editor-wrap {
+    z-index: 20;
+}

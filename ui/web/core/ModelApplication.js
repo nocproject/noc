@@ -10,7 +10,8 @@ Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.core.ModelStore",
-        "NOC.core.InlineModelStore"
+        "NOC.core.InlineModelStore",
+        "NOC.core.InlineGrid"
     ],
     mixins: [
         "NOC.core.Export"
@@ -578,84 +579,9 @@ Ext.define("NOC.core.ModelApplication", {
                         model: inline.model
                     }),
                     gp = {
-                        xtype: "gridpanel",
+                        xtype: "inlinegrid",
                         columns: inline.columns,
-                        store: istore,
-                        selType: "rowmodel",
-                        minHeight: 130,
-                        dockedItems: [
-                            {
-                                xtype: "pagingtoolbar",
-                                store: istore,
-                                dock: "bottom",
-                                displayInfo: true
-                            }
-                        ],
-                        plugins: [
-                            Ext.create("Ext.grid.plugin.RowEditing", {
-                                clicksToEdit: 2,
-                                listeners: {
-                                    scope: me,
-                                    beforeedit: me.onInlineBeforeEdit,
-                                    edit: me.onInlineEdit,
-                                    canceledit: me.onInlineCancel
-                                }
-                            })
-                        ],
-                        tbar: [
-                            {
-                                text: __("Add"),
-                                glyph: NOC.glyph.plus,
-                                handler: function() {
-                                    var grid = this.up("panel"),
-                                        rowEditing = grid.plugins[0];
-                                    rowEditing.cancelEdit();
-                                    grid.store.insert(0, {});
-                                    rowEditing.startEdit(0, 0);
-                                }
-                            },
-                            {
-                                text: __("Append"),
-                                glyph: NOC.glyph.sign_in,
-                                handler: function() {
-                                    var grid = this.up("panel"),
-                                        position = grid.store.data.length,
-                                    rowEditing = grid.plugins[0];
-                                    rowEditing.cancelEdit();
-                                    grid.store.insert(position, {});
-                                    rowEditing.startEdit(position, 0);
-                                }
-                            },
-                            {
-                                text: __("Delete"),
-                                glyph: NOC.glyph.times,
-                                handler: function() {
-                                    var grid = this.up("panel"),
-                                        sm = grid.getSelectionModel(),
-                                        rowEditing = grid.plugins[0],
-                                        app = grid.up("panel").up("panel");
-                                    rowEditing.cancelEdit();
-                                    grid.store.remove(sm.getSelection());
-                                    if(grid.store.getCount() > 0) {
-                                        sm.select(0);
-                                    }
-                                    app.onInlineEdit();
-                                }
-                            }
-                        ],
-                        listeners: {
-                            validateedit: function(editor, e) {
-                                // @todo: Bring to plugin
-                                var form = editor.editor.getForm();
-                                // Process comboboxes
-                                form.getFields().each(function(field) {
-                                    e.record.set(field.name, field.getValue());
-                                    if(Ext.isDefined(field.getLookupData))
-                                        e.record.set(field.name + "__label",
-                                            field.getLookupData());
-                                });
-                            }
-                        }
+                        store: istore
                     };
                 formInlines.push({
                     xtype: "fieldset",
@@ -1293,24 +1219,6 @@ Ext.define("NOC.core.ModelApplication", {
             istore.setParent(parentId);
             istore.load();
         });
-    },
-    //
-    onInlineEdit: function() {
-        var me = this;
-        if(me.currentRecord) {
-            // deprecated method
-            // me.currentRecord.setDirty();
-        }
-    },
-    //
-    onInlineBeforeEdit: function(editor, context, eOpts) {
-        var me = this;
-    },
-    //
-    onInlineCancel: function(editor, context) {
-        if(Ext.isEmpty(context.originalValue)) {
-            context.grid.store.removeAt(context.rowIdx);
-        }
     },
     // Admin action selected
     onAction: function(menu, item, e) {
