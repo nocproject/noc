@@ -187,7 +187,11 @@ SYNTAX = [
             DEF("forwarding-instance", [
                 DEF(FI_NAME, [
                     DEF("type", [
-                        DEF(CHOICES("table", "vrf", "vpls"), required=True, name="type", gen="make_forwarding_instance_type")
+                        DEF(CHOICES("table", "vrf", "vpls"), required=True, name="type",
+                            gen="make_forwarding_instance_type")
+                    ]),
+                    DEF("description", [
+                        DEF(ANY, required=False, name="description", gen="make_forwarding_instance_description")
                     ]),
                     DEF("route-distinguisher", [
                         DEF(ANY, required=True, name="rd", gen="make_forwarding_instance_rd")

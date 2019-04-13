@@ -13,6 +13,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.ip.models.vrf import VRF
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
+from noc.core.vpn import get_vpn_id
 
 DiscoveredVPN = namedtuple("DiscoveredVPN", [
     "type",
@@ -27,16 +28,25 @@ DiscoveredVPN = namedtuple("DiscoveredVPN", [
 SRC_INTERFACE = "i"
 SRC_MPLS = "m"
 SRC_MANUAL = "M"
+SRC_CONFDB = "c"
 
 PREF_VALUE = {
     SRC_INTERFACE: 0,
     SRC_MPLS: 1,
-    SRC_MANUAL: 2
+    SRC_CONFDB: 2,
+    SRC_MANUAL: 3
 }
 
 
 class VPNCheck(DiscoveryCheck):
     name = "vpn"
+
+    VRF_QUERY = """(Match("virtual-router", vr, "forwarding-instance", name) or
+        Match("virtual-router", vr, "forwarding-instance", name, "type", type) or
+        Match("virtual-router", vr, "forwarding-instance", name, "route-distinguisher", rd) or
+        Match("virtual-router", vr, "forwarding-instance", name, "vrf-target", "export", rt_export) or
+        Match("virtual-router", vr, "forwarding-instance", name, "vrf-target", "import", rt_import)
+    ) and Group("vr", "name", stack={"rt_export", "rt_import"})"""
 
     def handler(self):
         vpns = self.get_vpns()
@@ -60,7 +70,11 @@ class VPNCheck(DiscoveryCheck):
                 vpns,
                 self.get_mpls_vpns()
             )
-
+        if self.object.object_profile.enable_box_discovery_vpn_confdb:
+            vpns = self.apply_vpns(
+                vpns,
+                self.get_confdb_vpns()
+            )
         return vpns
 
     def sync_vpns(self, vpns):
@@ -170,6 +184,41 @@ class VPNCheck(DiscoveryCheck):
                 source=SRC_MPLS
             ) for vpn in vpns if vpn.get("vpn_id")
         ]
+        return r
+
+    def get_confdb_vpns(self):
+        """
+        Get VPNs from ConfDB
+        :return: List of DiscoveredVPN
+        :return:
+        """
+        if not self.object.object_profile.vpn_profile_confdb:
+            self.logger.info("Default ConfDB VPN profile is not set. Skipping ConfDB VPN discovery")
+            return []
+        # @todo: Check VPN capability
+        confdb = self.get_artefact("confdb") or self.object.get_confdb()
+        if confdb is None:
+            self.logger.error("confdb artefact is not set. Skipping ConfDB VPNs")
+            return []
+        self.logger.debug("Getting ConfDB VPNS")
+        r = []
+        for vpn in confdb.query(self.VRF_QUERY):
+            vpn["type"] = vpn["type"].upper() if vpn["type"] in ["vrf", "vpls"] else vpn["type"]
+            try:
+                vpn_id = get_vpn_id(vpn)
+            except ValueError:
+                continue
+            r += [
+                DiscoveredVPN(
+                    rd=vpn.get("rd"),
+                    vpn_id=vpn_id,
+                    name=vpn["name"],
+                    type=vpn["type"],
+                    profile=self.object.object_profile.vpn_profile_confdb,
+                    description=vpn.get("description"),
+                    source=SRC_CONFDB
+                )
+            ]
         return r
 
     @staticmethod
@@ -296,7 +345,8 @@ class VPNCheck(DiscoveryCheck):
     def is_enabled_for_object(object):
         return (
             object.object_profile.enable_box_discovery_vpn_interface or
-            object.object_profile.enable_box_discovery_vpn_mpls
+            object.object_profile.enable_box_discovery_vpn_mpls or
+            object.object_profile.enable_box_discovery_vpn_confdb
         )
 
     def get_unique_vpn_name(self, vpn):
