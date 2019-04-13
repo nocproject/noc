@@ -89,7 +89,10 @@ Ext.define("NOC.core.CMText", {
     },
 
     initEditor: function () {
-        var me = this;
+        var me = this,
+            keyRun = function() {
+                CodeMirror.signal(me.editor, "run");
+            };
 
         // Create CodeMirror
         CodeMirror.modeURL = "/ui/pkg/codemirror/mode/%N/%N.js";
@@ -112,8 +115,17 @@ Ext.define("NOC.core.CMText", {
             css.style.height = "100%";
         }
         me.setTheme(NOC.settings.preview_theme);
+        me.editor.on("change", function(editor) {
+            me.fireEvent("change", editor, editor.getValue());
+        }, me);
+        me.editor.on("run", function() {
+            me.fireEvent("run");
+        }, me);
+        me.editor.addKeyMap({
+            "Cmd-R": keyRun,
+            "Ctr-R": keyRun
+        });
     },
-
     // Set CodeMirror theme
     setTheme: function (name) {
         var me = this;
