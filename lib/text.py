@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Various text-processing utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
 def parse_table(s, allow_wrap=False, allow_extend=False, expand_columns=False,
-                max_width=0, footer=None, n_row_delim=""):
+                max_width=0, footer=None, n_row_delim="", expand_tabs=True):
     """
     Parse string containing table an return a list of table rows.
     Each row is a list of cells.
@@ -45,14 +45,17 @@ def parse_table(s, allow_wrap=False, allow_extend=False, expand_columns=False,
     :type footer: string
     :param n_row_delim: Append delimiter to next cell line
     :type n_row_delim: string
+    :param expand_tabs: Apply expandtabs() to each line
+    :type expand_tabs: bool
     """
     r = []
     columns = []
     if footer is not None:
         rx_footer = re.compile(footer)
     for line in s.splitlines():
-        # Replace tabs with spaces with step 8
-        line = line.expandtabs()
+        if expand_tabs:
+            # Replace tabs with spaces with step 8
+            line = line.expandtabs()
         if not line.strip() and footer is None:
             columns = []
             continue
@@ -385,7 +388,7 @@ def str_dict(d):
     return ", ".join("%s=%s" % (k, d[k]) for k in d)
 
 
-rx_safe_path = re.compile("[^a-z0-9\-\+]+", re.IGNORECASE)
+rx_safe_path = re.compile(r"[^a-z0-9\-\+]+", re.IGNORECASE)
 
 
 def quote_safe_path(d):

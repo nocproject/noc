@@ -206,7 +206,17 @@ g2      00:11:22:33:44:55 GigabitEthernet SS555_XXXX_Skeeee     B, R      109
         {"allow_extend": True, "allow_wrap": True},
         [['g1', '00:11:22:33:44:55', 'GigabitEthernet0/0/3', 'SS555_XXXX_Skeeeex_333_Stack', 'B, R', '109'],
          ['g2', '00:11:22:33:44:55', 'GigabitEthernet1/0/3', 'SS555_XXXX_Skeeeex_333_Stack', 'B, R', '109']]
-    )
+    ),
+    (
+        """
+  Port        Device ID          Port ID         System Name    Capabilities  TTL
+--------- ----------------- ----------------- ----------------- ------------ -----
+te1/0/3        (1RY\t#       GigabitEthernet1/  MBH_75_00020_1       B, R      106
+                            3/0
+""",
+        {"allow_extend": True, "allow_wrap": True, "expand_tabs": False},
+        [['te1/0/3', '(1RY\t#', 'GigabitEthernet1/3/0', 'MBH_75_00020_1', 'B, R', '106']]
+    ),
 ])
 def test_parse_table(value, kwargs, expected):
     assert parse_table(value, **kwargs) == expected
