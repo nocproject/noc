@@ -24,6 +24,7 @@ this Manual and additional editions of this text.
     /metrics
     /api
     /technologies
+    /src
     /glossary
     /releases
     /todos
