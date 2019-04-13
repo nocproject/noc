@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Set .state NOT NULL
+# Set .state
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         # Get default resource state id
         r = db.execute("SELECT id FROM main_resourcestate WHERE is_default = true")
