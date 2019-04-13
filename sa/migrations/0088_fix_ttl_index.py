@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# ----------------------------------------------------------------------
+# fix ttl index
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
-#
+# ----------------------------------------------------------------------
+"""
+"""
+# NOC modules
 from noc.lib.nosql import get_db
 
-class Migration:
+
+class Migration(object):
     def forwards(self):
-        db = get_db()
         c = get_db()["noc.log.sa.interaction"]
         c.drop_index("expire_1")
 

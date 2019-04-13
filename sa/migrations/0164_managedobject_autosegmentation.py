@@ -2,17 +2,18 @@
 # ----------------------------------------------------------------------
 # Add ManagedObjectProfile.mac_collect_* fields
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 # NOC modules
 from django.db import models
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db.add_column(
             "sa_managedobject",
@@ -46,5 +47,4 @@ class Migration:
         )
 
     def backwards(self):
-        db.delete_column("sa_managedobject",
-                         "autosegmentation_policy")
+        db.delete_column("sa_managedobject", "autosegmentation_policy")

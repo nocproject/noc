@@ -1,9 +1,18 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# finish tag migration
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 
-class Migration:
-    TAG_MODELS = ["sa_activator", "sa_managedobject",
-                  "sa_commandsnippet"]
+
+class Migration(object):
+    TAG_MODELS = ["sa_activator", "sa_managedobject", "sa_commandsnippet"]
 
     def forwards(self):
         # Drop old tags

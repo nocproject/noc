@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# ----------------------------------------------------------------------
+# managedobjectprofile discovery
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
-# Django modules
-from django.db import models
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
+from django.db import models
 from south.db import db
 
 
-class Migration:
+class Migration(object):
     RENAME_COLUMNS = [
         # Box
         ("enable_box_discovery_version", "enable_version_inventory"),
@@ -31,8 +33,7 @@ class Migration:
         ("enable_box_discovery_udld", "enable_udld_discovery"),
         # Periodic
         ("enable_periodic_discovery_uptime", "enable_uptime_discovery"),
-        ("enable_periodic_discovery_interface_status",
-         "enable_interface_status_discovery"),
+        ("enable_periodic_discovery_interface_status", "enable_interface_status_discovery"),
         ("enable_periodic_discovery_mac", "enable_mac_discovery"),
         ("enable_periodic_discovery_ip", "enable_ip_discovery"),
     ]
@@ -85,51 +86,15 @@ class Migration:
         for o, n in self.RENAME_COLUMNS:
             db.rename_column("sa_managedobjectprofile", n, o)
         # Create new columns
-        db.add_column(
-            "sa_managedobjectprofile",
-            "enable_box_discovery",
-            models.BooleanField(default=False)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "box_discovery_interval",
-            models.IntegerField(default=86400)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "box_discovery_failed_interval",
-            models.IntegerField(default=10800)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "box_discovery_on_system_start",
-            models.BooleanField(default=False)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "box_discovery_system_start_delay",
-            models.IntegerField(default=300)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "box_discovery_on_config_changed",
-            models.BooleanField(default=False)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "box_discovery_config_changed_delay",
-            models.IntegerField(default=300)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "enable_periodic_discovery",
-            models.BooleanField(default=False)
-        )
-        db.add_column(
-            "sa_managedobjectprofile",
-            "periodic_discovery_interval",
-            models.IntegerField(default=300)
-        )
+        db.add_column("sa_managedobjectprofile", "enable_box_discovery", models.BooleanField(default=False))
+        db.add_column("sa_managedobjectprofile", "box_discovery_interval", models.IntegerField(default=86400))
+        db.add_column("sa_managedobjectprofile", "box_discovery_failed_interval", models.IntegerField(default=10800))
+        db.add_column("sa_managedobjectprofile", "box_discovery_on_system_start", models.BooleanField(default=False))
+        db.add_column("sa_managedobjectprofile", "box_discovery_system_start_delay", models.IntegerField(default=300))
+        db.add_column("sa_managedobjectprofile", "box_discovery_on_config_changed", models.BooleanField(default=False))
+        db.add_column("sa_managedobjectprofile", "box_discovery_config_changed_delay", models.IntegerField(default=300))
+        db.add_column("sa_managedobjectprofile", "enable_periodic_discovery", models.BooleanField(default=False))
+        db.add_column("sa_managedobjectprofile", "periodic_discovery_interval", models.IntegerField(default=300))
         # Drop deprecated columns
         for n in self.DROP_COLUMNS:
             db.drop_column("sa_managedobjectprofile", n)

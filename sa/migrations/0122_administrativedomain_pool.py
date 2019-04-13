@@ -1,24 +1,24 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# administrativedomain pool
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 # NOC models
 from noc.core.model.fields import DocumentReferenceField
-from noc.lib.nosql import get_db
 
 
-class Migration:
-    depends_on = [
-        ("main", "0055_default_pool")
-    ]
+class Migration(object):
+    depends_on = [("main", "0055_default_pool")]
 
     def forwards(self):
-        db.add_column("sa_administrativedomain", "default_pool",
-            DocumentReferenceField(
-                "self", null=True, blank=True
-            )
-        )
-        db.create_index(
-            "sa_administrativedomain",
-            ["default_pool"], unique=False, db_tablespace="")
+        db.add_column("sa_administrativedomain", "default_pool", DocumentReferenceField("self", null=True, blank=True))
+        db.create_index("sa_administrativedomain", ["default_pool"], unique=False, db_tablespace="")
 
     def backwards(self):
         db.delete_column("sa_administrativedomain", "default_pool")

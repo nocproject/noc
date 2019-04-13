@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-#
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# ----------------------------------------------------------------------
+# convert caps
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # NOC modules
 from noc.lib.nosql import get_db
 
@@ -20,10 +21,7 @@ class Migration(object):
                     "source": sources.get(ci["capability"], "caps")
                 }
 
-            return {
-                "_id": doc["object"],
-                "caps": [convert_caps(c) for c in doc["caps"]]
-            }
+            return {"_id": doc["object"], "caps": [convert_caps(c) for c in doc["caps"]]}
 
         db = get_db()
         caps = db["noc.sa.objectcapabilities"]

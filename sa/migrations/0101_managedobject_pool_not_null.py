@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# ----------------------------------------------------------------------
+# managedobject pool not null
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db.execute("ALTER TABLE sa_managedobject ALTER pool SET NOT NULL")
 

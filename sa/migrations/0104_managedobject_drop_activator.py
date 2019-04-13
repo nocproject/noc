@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# ----------------------------------------------------------------------
+# managedobject drop activator_id
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db.delete_column("sa_managedobject", "activator_id")
 

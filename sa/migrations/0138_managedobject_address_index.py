@@ -1,11 +1,17 @@
-from south.db import db
-from django.db import models
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# managedobject address index
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         return
-        db.execute("CREATE INDEX x_managedobject_addressprefix ON sa_managedobject (CAST(address AS inet))")
 
     def backwards(self):
-        db.drop_index("x_managedobject_addressprefix")
+        pass

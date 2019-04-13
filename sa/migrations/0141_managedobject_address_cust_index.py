@@ -1,8 +1,17 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# managedobject address cust index
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
-from django.db import models
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         func = """create or replace function cast_test_to_inet(varchar) returns inet as $$
         declare
@@ -16,8 +25,10 @@ class Migration:
         $$ language plpgsql immutable strict"""
 
         # Check index exists
-        i = db.execute("""SELECT * FROM pg_indexes 
-                          WHERE tablename='sa_managedobject' AND indexname='x_managedobject_addressprefix'""")
+        i = db.execute(
+            """SELECT * FROM pg_indexes
+                          WHERE tablename='sa_managedobject' AND indexname='x_managedobject_addressprefix'"""
+        )
         if i:
             db.execute("DROP INDEX %s" % "x_managedobject_addressprefix")
 
