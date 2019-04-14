@@ -263,17 +263,18 @@ class BaseNormalizer(six.with_metaclass(BaseNormalizerMetaclass, object)):
         Mark the part of tree to be rebased to new location
 
         Usage:
-        ...
-        for path in self.remap(src, dst):
-            yield path
+        yield self.rebase(src, dst):
 
         :param src: Source path
         :param dst: Destination path
         :return:
         """
-        r_id = str(next(self.rebase_id))
-        yield ("hints", "rebase", r_id, "from") + src
-        yield ("hints", "rebase", r_id, "to") + dst
+        def wrap():
+            r_id = str(next(self.rebase_id))
+            yield ("hints", "rebase", r_id, "from") + src
+            yield ("hints", "rebase", r_id, "to") + dst
+
+        return wrap
 
 
 def match(*args, **kwargs):
