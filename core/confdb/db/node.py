@@ -28,6 +28,31 @@ class Node(object):
             return None
         return self.children.get(token)
 
+    def find_path(self, tokens):
+        """
+        Recursively find by path
+        :param tokens: Iterable containing tokens
+        :return:
+        """
+        current = self
+        for p in tokens:
+            current = current.find(p)
+            if not current:
+                return None
+        return current
+
+    def merge_children(self, children):
+        """
+        Apply children
+        :param children: Dict of children
+        :return:
+        """
+        if not children:
+            return
+        if not self.children:
+            self.children = {}
+        self.children.update(children)
+
     @staticmethod
     def clean_token(token):
         if isinstance(token, bool):
@@ -38,7 +63,7 @@ class Node(object):
         """
         Populate children with tokens
         :param tokens: tuple of tokens
-        :return: None
+        :return: Inserted node
         """
         if self.children is None:
             self.children = {}
@@ -56,7 +81,8 @@ class Node(object):
             else:
                 self.children[token] = cn
         if tokens and len(tokens) > 1:
-            cn.insert(tokens[1:])
+            return cn.insert(tokens[1:])
+        return cn
 
     def iter_nodes(self):
         if self.children:

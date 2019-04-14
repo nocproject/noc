@@ -84,6 +84,31 @@ class Engine(object):
         current.insert(value)
         return True
 
+    def find(self, *args):
+        """
+        Find node by path
+        :param args: Path
+        :return:
+        """
+        assert self.db, "Database is not initialized"
+        root = self.db.db
+        return root.find_path(args)
+
+    def rebase(self, src, dst):
+        assert self.db, "Database is not initialized"
+        root = self.db.db
+        # Find source
+        src_node = root.find_path(src)
+        if not src_node:
+            return
+        # Ensure path to destination
+        dst_node = root.insert(dst)
+        # Merge node
+        dst_node.merge_children(src_node.children)
+        # Remove source node
+        prev = root.find_path(src[:-1])
+        del prev.children[src[-1]]
+
     def with_db(self, db):
         self.db = db
         return self
