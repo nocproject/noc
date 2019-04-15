@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# ----------------------------------------------------------------------
+# split object
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 from django.db import models
@@ -27,18 +30,12 @@ class Migration(object):
         db.create_table(
             "cm_config", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)), (
-                    "push_every",
-                    models.PositiveIntegerField(
-                        "Push Every (secs)", default=86400, blank=True, null=True
-                    )
-                ), ("next_push", models.DateTimeField("Next Push", blank=True, null=True)),
-                ("last_push", models.DateTimeField("Last Push", blank=True, null=True)), (
-                    "pull_every",
-                    models.PositiveIntegerField(
-                        "Pull Every (secs)", default=86400, blank=True, null=True
-                    )
-                ), ("next_pull", models.DateTimeField("Next Pull", blank=True, null=True)),
+                ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)),
+                ("push_every", models.PositiveIntegerField("Push Every (secs)", default=86400, blank=True, null=True)),
+                ("next_push", models.DateTimeField("Next Push", blank=True, null=True)),
+                ("last_push", models.DateTimeField("Last Push", blank=True, null=True)),
+                ("pull_every", models.PositiveIntegerField("Pull Every (secs)", default=86400, blank=True, null=True)),
+                ("next_pull", models.DateTimeField("Next Pull", blank=True, null=True)),
                 ("last_pull", models.DateTimeField("Last Pull", blank=True, null=True)),
                 ("activator", models.ForeignKey(Activator, verbose_name="Activator")),
                 ("profile_name", models.CharField("Profile", max_length=128)),
@@ -46,10 +43,9 @@ class Migration(object):
                 ("address", models.CharField("Address", max_length=64)),
                 ("port", models.PositiveIntegerField("Port", blank=True, null=True)),
                 ("user", models.CharField("User", max_length=32, blank=True, null=True)),
-                ("password", models.CharField("Password", max_length=32, blank=True, null=True)), (
-                    "super_password",
-                    models.CharField("Super Password", max_length=32, blank=True, null=True)
-                ), ("remote_path", models.CharField("Path", max_length=32, blank=True, null=True))
+                ("password", models.CharField("Password", max_length=32, blank=True, null=True)),
+                ("super_password", models.CharField("Super Password", max_length=32, blank=True, null=True)),
+                ("remote_path", models.CharField("Path", max_length=32, blank=True, null=True))
             )
         )
         # Mock Models
@@ -80,18 +76,12 @@ class Migration(object):
         db.create_table(
             "cm_prefixlist", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)), (
-                    "push_every",
-                    models.PositiveIntegerField(
-                        "Push Every (secs)", default=86400, blank=True, null=True
-                    )
-                ), ("next_push", models.DateTimeField("Next Push", blank=True, null=True)),
-                ("last_push", models.DateTimeField("Last Push", blank=True, null=True)), (
-                    "pull_every",
-                    models.PositiveIntegerField(
-                        "Pull Every (secs)", default=86400, blank=True, null=True
-                    )
-                ), ("next_pull", models.DateTimeField("Next Pull", blank=True, null=True)),
+                ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)),
+                ("push_every", models.PositiveIntegerField("Push Every (secs)", default=86400, blank=True, null=True)),
+                ("next_push", models.DateTimeField("Next Push", blank=True, null=True)),
+                ("last_push", models.DateTimeField("Last Push", blank=True, null=True)),
+                ("pull_every", models.PositiveIntegerField("Pull Every (secs)", default=86400, blank=True, null=True)),
+                ("next_pull", models.DateTimeField("Next Pull", blank=True, null=True)),
                 ("last_pull", models.DateTimeField("Last Pull", blank=True, null=True))
             )
         )
@@ -123,28 +113,18 @@ class Migration(object):
         db.create_table(
             "cm_dns", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)), (
-                    "push_every",
-                    models.PositiveIntegerField(
-                        "Push Every (secs)", default=86400, blank=True, null=True
-                    )
-                ), ("next_push", models.DateTimeField("Next Push", blank=True, null=True)),
-                ("last_push", models.DateTimeField("Last Push", blank=True, null=True)), (
-                    "pull_every",
-                    models.PositiveIntegerField(
-                        "Pull Every (secs)", default=86400, blank=True, null=True
-                    )
-                ), ("next_pull", models.DateTimeField("Next Pull", blank=True, null=True)),
+                ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)),
+                ("push_every", models.PositiveIntegerField("Push Every (secs)", default=86400, blank=True, null=True)),
+                ("next_push", models.DateTimeField("Next Push", blank=True, null=True)),
+                ("last_push", models.DateTimeField("Last Push", blank=True, null=True)),
+                ("pull_every", models.PositiveIntegerField("Pull Every (secs)", default=86400, blank=True, null=True)),
+                ("next_pull", models.DateTimeField("Next Pull", blank=True, null=True)),
                 ("last_pull", models.DateTimeField("Last Pull", blank=True, null=True))
             )
         )
         # Mock Models
         DNS = db.mock_model(
-            model_name="DNS",
-            db_table="cm_dns",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            model_name="DNS", db_table="cm_dns", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
         )
         ObjectCategory = db.mock_model(
             model_name="ObjectCategory",

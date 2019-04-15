@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# ----------------------------------------------------------------------
+# access profile
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 from django.db import models
@@ -14,53 +17,27 @@ from noc.core.script.scheme import TELNET, SSH
 
 class Migration(object):
     def forwards(self):
-        db.add_column("cm_object", "scheme", models.IntegerField("Scheme", blank=True, null=True,
-                                                                 choices=[(0, "telnet"),
-                                                                          (1, "ssh")]))
         db.add_column(
-            "cm_object",
-            "address",
-            models.CharField("Address", max_length=64, blank=True, null=True)
+            "cm_object", "scheme",
+            models.IntegerField("Scheme", blank=True, null=True, choices=[(0, "telnet"), (1, "ssh")])
         )
+        db.add_column("cm_object", "address", models.CharField("Address", max_length=64, blank=True, null=True))
+        db.add_column("cm_object", "port", models.PositiveIntegerField("Port", blank=True, null=True))
+        db.add_column("cm_object", "user", models.CharField("User", max_length=32, blank=True, null=True))
+        db.add_column("cm_object", "password", models.CharField("Password", max_length=32, blank=True, null=True))
         db.add_column(
-            "cm_object",
-            "port",
-            models.PositiveIntegerField("Port", blank=True, null=True)
+            "cm_object", "super_password", models.CharField("Super Password", max_length=32, blank=True, null=True)
         )
-        db.add_column(
-            "cm_object",
-            "user",
-            models.CharField("User", max_length=32, blank=True, null=True)
-        )
-        db.add_column(
-            "cm_object",
-            "password",
-            models.CharField("Password", max_length=32, blank=True, null=True)
-        )
-        db.add_column(
-            "cm_object",
-            "super_password",
-            models.CharField("Super Password", max_length=32, blank=True, null=True)
-        )
-        db.add_column(
-            "cm_object",
-            "remote_path",
-            models.CharField("Path", max_length=32, blank=True, null=True)
-        )
-        for id, url in db.execute(
-                "SELECT id,stream_url FROM cm_object WHERE stream_url!='ssh://u:p@localhost/'"):
+        db.add_column("cm_object", "remote_path", models.CharField("Path", max_length=32, blank=True, null=True))
+        for id, url in db.execute("SELECT id,stream_url FROM cm_object WHERE stream_url!='ssh://u:p@localhost/'"):
             u = URL(url)
-            scheme = {
-                "telnet": TELNET,
-                "ssh": SSH
-            }[u.scheme]
+            scheme = {"telnet": TELNET, "ssh": SSH}[u.scheme]
             if u.path == "/":
                 u.path = None
             db.execute(
                 "UPDATE cm_object "
                 "SET scheme=%s,address=%s,port=%s,\"user\"=%s,password=%s,remote_path=%s "
-                "WHERE id=%s",
-                [scheme, u.host, u.port, u.user, u.password, u.path, id]
+                "WHERE id=%s", [scheme, u.host, u.port, u.user, u.password, u.path, id]
             )
         db.delete_column("cm_object", "stream_url")
 
