@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# e164
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
 # NOC modules
 from noc.lib.nosql import get_db
 
@@ -7,11 +16,7 @@ class Migration(object):
         db = get_db()
         coll = db["noc.dialplans"]
         if not coll.count_documents({}):
-            coll.insert({
-                "name": "E.164",
-                "description": "E.164 numbering plan",
-                "mask": "\d{3,15}"
-            })
+            coll.insert({"name": "E.164", "description": "E.164 numbering plan", "mask": "\d{3,15}"})
 
     def backwards(self):
         pass
