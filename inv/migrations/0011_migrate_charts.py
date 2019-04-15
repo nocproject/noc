@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Migrate segment settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 import datetime
 import logging
@@ -25,18 +26,19 @@ class Migration(object):
         cstate = mdb.noc.inv.networkchartstate
         msettings = mdb.noc.mapsettings
         for cid, name, description, selector_id in db.execute(
-                "SELECT id, name, description, selector_id FROM inv_networkchart"
-        ):
+                "SELECT id, name, description, selector_id FROM inv_networkchart"):
             logger.info("Migrating chart '%s'", name)
             # Create segment
             sid = ObjectId()
-            segments.insert({
-                "_id": sid,
-                "name": name,
-                "description": description,
-                "settings": {},
-                "selector": selector_id
-            })
+            segments.insert(
+                {
+                    "_id": sid,
+                    "name": name,
+                    "description": description,
+                    "settings": {},
+                    "selector": selector_id
+                }
+            )
             # Get state
             nodes = []
             mx = 0.0
@@ -49,22 +51,19 @@ class Migration(object):
                 y = float(s["state"]["y"])
                 mx = max(mx, x)
                 my = max(my, y)
-                nodes += [{
-                    "type": "managedobject",
-                    "id": str(s["object"]),
-                    "x": x,
-                    "y": y
-                }]
+                nodes += [{"type": "managedobject", "id": str(s["object"]), "x": x, "y": y}]
             if nodes:
-                msettings.insert({
-                    "segment": str(sid),
-                    "changed": datetime.datetime.now(),
-                    "user": "migration",
-                    "nodes": nodes,
-                    "links": [],
-                    "width": mx + 70,
-                    "height": my + 70
-                })
+                msettings.insert(
+                    {
+                        "segment": str(sid),
+                        "changed": datetime.datetime.now(),
+                        "user": "migration",
+                        "nodes": nodes,
+                        "links": [],
+                        "width": mx + 70,
+                        "height": my + 70
+                    }
+                )
         #
         db.drop_table("inv_networkchart")
         cstate.drop()
