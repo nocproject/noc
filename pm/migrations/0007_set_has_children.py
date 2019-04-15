@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
-
+# ----------------------------------------------------------------------
+# set has children
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Python modules
+from __future__ import print_function
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
@@ -7,7 +16,7 @@ from pymongo import UpdateOne
 from noc.lib.nosql import get_db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db = get_db()
         metrics = db.noc.ts.metrics
@@ -20,18 +29,14 @@ class Migration:
         if has_children:
             bulk = []
             for name in has_children:
-                bulk += [UpdateOne({"name": name}, {
-                    "$set": {
-                        "has_children": has_children[name]
-                    }
-                })]
+                bulk += [UpdateOne({"name": name}, {"$set": {"has_children": has_children[name]}})]
             if bulk:
                 print("Commiting changes to database")
                 try:
                     metrics.bulk_write(bulk)
                     print("Database has been synced")
                 except BulkWriteError as e:
-                    print("Bulk write error: '%s'", e.details)
+                    print(("Bulk write error: '%s'", e.details))
                     print("Stopping check")
 
     def backwards(self):
