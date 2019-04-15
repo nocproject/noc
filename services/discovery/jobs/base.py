@@ -342,13 +342,13 @@ class DiscoveryCheck(object):
     # If not None, check job has all required artefacts
     required_artefacts = None
     #
-    fatal_errors = set([
+    fatal_errors = {
         ERR_CLI_AUTH_FAILED,
         ERR_CLI_NO_SUPER_COMMAND,
         ERR_CLI_LOW_PRIVILEGES,
         ERR_CLI_CONNECTION_REFUSED,
         ERR_CLI_SSH_PROTOCOL_ERROR
-    ])
+    }
     # Error -> Alarm class mappings
     error_map = {
         ERR_CLI_AUTH_FAILED: "Discovery | Error | Auth Failed",
@@ -695,6 +695,20 @@ class DiscoveryCheck(object):
         if keys:
             self.logger.info("Invalidating neighor cache: %s" % ", ".join(keys))
             cache.delete_many(keys, TopologyDiscoveryCheck.NEIGHBOR_CACHE_VERSION)
+
+    def get_confdb(self):
+        # Check cached value
+        if hasattr(self, "confdb"):
+            return self.confdb
+        # Check artefact
+        if self.has_artefact("confdb"):
+            self.confdb = self.get_artefact("confdb")
+            return self.confdb
+        # Create
+        self.logger.info("Building ConfDB")
+        self.confdb = self.object.get_confdb()
+        self.set_artefact("confdb", self.confdb)
+        return self.confdb
 
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
@@ -1411,8 +1425,7 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         return True
 
     def request_data_from_confdb(self):
-        self.logger.info("Requesting data from ConfDB")
-        self.confdb = self.get_artefact("confdb")
+        # self.confdb is set by can_get_data_from_confdb
         return self.get_data_from_confdb()
 
     def get_data_from_confdb(self):
@@ -1427,7 +1440,7 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         Check if object has all prerequisites to get data from ConfDB
         :return:
         """
-        confdb = self.get_artefact("confdb")
+        confdb = self.get_confdb()
         if confdb is None:
             self.logger.error("confdb artefact is not set. Skipping")
             return False

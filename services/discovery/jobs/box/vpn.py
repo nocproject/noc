@@ -196,7 +196,7 @@ class VPNCheck(DiscoveryCheck):
             self.logger.info("Default ConfDB VPN profile is not set. Skipping ConfDB VPN discovery")
             return []
         # @todo: Check VPN capability
-        confdb = self.get_artefact("confdb") or self.object.get_confdb()
+        confdb = self.get_confdb()
         if confdb is None:
             self.logger.error("confdb artefact is not set. Skipping ConfDB VPNs")
             return []
