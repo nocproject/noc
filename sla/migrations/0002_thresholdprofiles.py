@@ -5,7 +5,8 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 import itertools
 import operator
@@ -47,10 +48,7 @@ class Migration(object):
                     tp = {"_id": tp_id}
                 # Fill profile
                 tp["name"] = "sp-%05d-%03d" % (next(current), n)
-                tp["description"] = "Migrated for SLA profile '%s' metric '%s'" % (
-                    doc["name"],
-                    metric["metric_type"]
-                )
+                tp["description"] = "Migrated for SLA profile '%s' metric '%s'" % (doc["name"], metric["metric_type"])
                 tp["window_type"] = metric.get("window_type")
                 tp["window"] = metric.get("window")
                 tp["window_function"] = metric.get("window_function")
@@ -58,56 +56,61 @@ class Migration(object):
                 # Build thresholds
                 tp["thresholds"] = []
                 if metric.get("high_error", False):
-                    tp["thresholds"] += [{
-                        "op": ">=",
-                        "value": metric["high_error"],
-                        "clear_op": "<",
-                        "clear_value": metric["high_error"],
-                        "alarm_class": self.get_alarm_class_id("NOC | PM | High Error")
-                    }]
+                    tp["thresholds"] += [
+                        {
+                            "op": ">=",
+                            "value": metric["high_error"],
+                            "clear_op": "<",
+                            "clear_value": metric["high_error"],
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Error")
+                        }
+                    ]
                 if metric.get("low_error", False):
-                    tp["thresholds"] += [{
-                        "op": "<=",
-                        "value": metric["low_error"],
-                        "clear_op": ">",
-                        "clear_value": metric["low_error"],
-                        "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error")
-                    }]
+                    tp["thresholds"] += [
+                        {
+                            "op": "<=",
+                            "value": metric["low_error"],
+                            "clear_op": ">",
+                            "clear_value": metric["low_error"],
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error")
+                        }
+                    ]
                 if metric.get("low_warn", False):
-                    tp["thresholds"] += [{
-                        "op": "<=",
-                        "value": metric["low_warn"],
-                        "clear_op": ">",
-                        "clear_value": metric["low_warn"],
-                        "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning")
-                    }]
+                    tp["thresholds"] += [
+                        {
+                            "op": "<=",
+                            "value": metric["low_warn"],
+                            "clear_op": ">",
+                            "clear_value": metric["low_warn"],
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning")
+                        }
+                    ]
                 if metric.get("high_warn", False):
-                    tp["thresholds"] += [{
-                        "op": ">=",
-                        "value": metric["high_warn"],
-                        "clear_op": "<",
-                        "clear_value": metric["high_warn"],
-                        "alarm_class": self.get_alarm_class_id("NOC | PM | High Warning")
-                    }]
+                    tp["thresholds"] += [
+                        {
+                            "op": ">=",
+                            "value": metric["high_warn"],
+                            "clear_op": "<",
+                            "clear_value": metric["high_warn"],
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Warning")
+                        }
+                    ]
                 # Save profile
                 tp_coll.insert_one(tp)
                 #
                 metric["threshold_profile"] = tp_id
             # Store back
-            p_coll.update_one({
-                "_id": doc.pop("_id")
-            }, {
-                "$set": doc
-            })
+            p_coll.update_one({"_id": doc.pop("_id")}, {"$set": doc})
 
     def backwards(self):
         pass
 
     @staticmethod
     def has_thresholds(metric):
-        return (metric.get("low_error", False) or metric.get("low_warn", False) or
-                metric.get("high_warn", False) or metric.get("high_error", False) or
-                metric.get("threshold_profile"))
+        return (
+            metric.get("low_error", False) or metric.get("low_warn", False) or metric.get("high_warn", False) or
+            metric.get("high_error", False) or metric.get("threshold_profile")
+        )
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_ac_cache"))
