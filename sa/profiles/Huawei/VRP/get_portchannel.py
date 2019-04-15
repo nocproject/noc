@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     rx_chan_line_vrp5 = re.compile(
         r"(?P<interface>Eth-Trunk\d+).*?\n"
-        r"(?:LAG ID: \d+\s+)?WorkingMode: (?P<mode>\S+).*?\n"
+        r"(?:LAG ID: \d+\s+)?Working\s?Mode: (?P<mode>\S+).*?\n"
         r"(?:Actor)?PortName[^\n]+(?P<members>.*?)(\n\s*\n|\n\s\s)",
         re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
