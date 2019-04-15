@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# initial
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 from django.db import models
 
@@ -28,8 +38,7 @@ class Migration(object):
         db.create_table(
             "kb_kbentry", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("subject", models.CharField("Subject", max_length=256)),
-                ("body", models.TextField("Body")),
+                ("subject", models.CharField("Subject", max_length=256)), ("body", models.TextField("Body")),
                 ("language", models.ForeignKey(Language, verbose_name=Language)),
                 ("markup_language", models.CharField("Markup Language", max_length="16"))
             )
@@ -81,8 +90,7 @@ class Migration(object):
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("kb_entry", models.ForeignKey(KBEntry, verbose_name="KB Entry")),
                 ("timestamp", models.DateTimeField("Timestamp", auto_now_add=True)),
-                ("user", models.ForeignKey(User, verbose_name=User)),
-                ("diff", models.TextField("Diff"))
+                ("user", models.ForeignKey(User, verbose_name=User)), ("diff", models.TextField("Diff"))
             )
         )
 

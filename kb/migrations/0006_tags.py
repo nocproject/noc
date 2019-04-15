@@ -1,5 +1,15 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# tags
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
+# NOC modules
 from noc.core.model.fields import AutoCompleteTagsField
 
 
