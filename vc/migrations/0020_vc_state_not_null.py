@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # Set .state NOT NULL
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db.execute("ALTER TABLE vc_vc ALTER state_id SET NOT NULL")
 
