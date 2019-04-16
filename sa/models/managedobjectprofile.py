@@ -148,6 +148,17 @@ class ManagedObjectProfile(models.Model):
     box_discovery_interval = models.IntegerField(default=86400)
     # Retry interval in case of failure (Object is down)
     box_discovery_failed_interval = models.IntegerField(default=10800)
+    # Running policy for box discovery
+    box_discovery_running_policy = models.CharField(
+        _("Box Running Policy"),
+        choices=[
+            ("R", _("Require Up")),
+            ("r", _("Require if enabled")),
+            ("i", _("Ignore"))
+        ],
+        max_length=1,
+        default="R"
+    )
     # Start box discovery when system start registered
     box_discovery_on_system_start = models.BooleanField(default=False)
     # after delay
@@ -249,6 +260,16 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery = models.BooleanField(default=True)
     # Periodic discovery repeat interval
     periodic_discovery_interval = models.IntegerField(default=300)
+    periodic_discovery_running_policy = models.CharField(
+        _("Periodic Running Policy"),
+        choices=[
+            ("R", _("Require Up")),
+            ("r", _("Require if enabled")),
+            ("i", _("Ignore"))
+        ],
+        max_length=1,
+        default="R"
+    )
     # Collect uptime
     enable_periodic_discovery_uptime = models.BooleanField(default=False)
     # Collect interface status

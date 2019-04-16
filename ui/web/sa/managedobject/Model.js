@@ -355,6 +355,16 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: "P"
         },
         {
+            name: "box_discovery_running_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "periodic_discovery_running_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
             name: "cli_session_policy",
             type: "string",
             defaultValue: "P"

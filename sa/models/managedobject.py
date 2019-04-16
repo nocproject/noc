@@ -344,6 +344,29 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Discovery running policy
+    box_discovery_running_policy = CharField(
+        "Box Running Policy",
+        choices=[
+            ("P", "From Profile"),
+            ("R", "Require Up"),
+            ("r", "Require if enabled"),
+            ("i", "Ignore")
+        ],
+        max_length=1,
+        default="P"
+    )
+    periodic_discovery_running_policy = CharField(
+        "Periodic Running Policy",
+        choices=[
+            ("P", "From Profile"),
+            ("R", "Require Up"),
+            ("r", "Require if enabled"),
+            ("i", "Ignore")
+        ],
+        max_length=1,
+        default="P"
+    )
     # Raise alarms on discovery problems
     box_discovery_alarm_policy = CharField(
         "Box Discovery Alarm Policy",
@@ -1623,6 +1646,16 @@ class ManagedObject(Model):
         if self.vlan_discovery_policy == "P":
             return self.object_profile.vlan_discovery_policy
         return self.vlan_discovery_policy
+
+    def get_effective_box_discovery_running_policy(self):
+        if self.box_discovery_running_policy == "P":
+            return self.object_profile.box_discovery_running_policy
+        return self.box_discovery_running_policy
+
+    def get_effective_periodic_discovery_running_policy(self):
+        if self.periodic_discovery_running_policy == "P":
+            return self.object_profile.periodic_discovery_running_policy
+        return self.periodic_discovery_running_policy
 
     def get_full_fqdn(self):
         if not self.fqdn:

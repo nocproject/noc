@@ -143,6 +143,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 10800
         },
         {
+            name: "box_discovery_running_policy",
+            type: "string",
+            defaultValue: "R"
+        },
+        {
             name: "box_discovery_on_system_start",
             type: "boolean",
             defaultValue: false
@@ -395,6 +400,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "periodic_discovery_interval",
             type: "integer",
             defaultValue: 300
+        },
+        {
+            name: "periodic_discovery_running_policy",
+            type: "string",
+            defaultValue: "R"
         },
         {
             name: "enable_periodic_discovery_uptime",
