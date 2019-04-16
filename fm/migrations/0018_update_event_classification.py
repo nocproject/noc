@@ -1,9 +1,17 @@
-
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# update event classification
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 
 
-class Migration:
-
+class Migration(object):
     def forwards(self):
         db.execute("DROP FUNCTION update_event_classification(INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT[][])")
         db.execute(PROC)
@@ -11,7 +19,8 @@ class Migration:
     def backwards(self):
         pass
 
-PROC="""
+
+PROC = """
 CREATE OR REPLACE
 FUNCTION update_event_classification(INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT[][])
 RETURNS VOID
@@ -21,7 +30,7 @@ DECLARE
     p_event_id          ALIAS FOR $1;
     p_rule_id           ALIAS FOR $2;
     p_event_class_id    ALIAS FOR $3;
-    p_event_category_id ALIAS FOR $4; 
+    p_event_category_id ALIAS FOR $4;
     p_event_priority_id ALIAS FOR $5;
     p_subject           ALIAS FOR $6;
     p_body              ALIAS FOR $7;

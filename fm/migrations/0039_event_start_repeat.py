@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# ----------------------------------------------------------------------
+# event start repeat
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
+# ----------------------------------------------------------------------
+"""
+"""
+# NOC modules
+from noc.lib.nosql import get_db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
-        from noc.lib.nosql import get_db
         db = get_db()
         for c in [db.noc.events.active, db.noc.events.archive]:
             # @todo: Set start_timestamp = timestamp
-            c.update(
-                {"repeats": {"$exists": False}},
-                {
-                    "$set": {
-                        "repeats": 1
-                    }
-                }
-            )
+            c.update({"repeats": {"$exists": False}}, {"$set": {"repeats": 1}})
 
     def backwards(self):
         pass

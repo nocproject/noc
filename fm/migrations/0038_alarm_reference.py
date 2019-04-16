@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# ----------------------------------------------------------------------
+# alarm reference
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
-# Third-party modules
-from south.db import db
+# ----------------------------------------------------------------------
+"""
+"""
 # NOC modules
 from noc.lib.nosql import get_db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         def process_event(event_id, alarm_id):
             e = None

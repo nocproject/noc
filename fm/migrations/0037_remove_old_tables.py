@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# ----------------------------------------------------------------------
+# remove old tables
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
+# ----------------------------------------------------------------------
 """
 """
-import datetime
+# Third-party modules
 from south.db import db
-from django.db import models
 
-class Migration:
+
+class Migration(object):
     def forwards(self):
         db.delete_table("fm_eventrepeat")
         db.delete_table("fm_eventlog")

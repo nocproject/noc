@@ -1,17 +1,25 @@
 # -*- coding: utf-8 -*-
-
+# ----------------------------------------------------------------------
+# sp close event
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 
 
-class Migration:
-
+class Migration(object):
     def forwards(self):
         db.execute(SQL_PROC)
 
     def backwards(self):
         db.execute("DROP FUNCTION close_event(INTEGER,TEXT)")
 
-SQL_PROC="""
+
+SQL_PROC = """
 CREATE OR REPLACE
 FUNCTION close_event(INTEGER,TEXT)
 RETURNS VOID
