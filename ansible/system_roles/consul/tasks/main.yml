@@ -8,6 +8,8 @@
     host: "{{ item }}"
   with_items: "{{ groups['svc-consul-exec'] }}"
   when: "'bootstrap' in hostvars[item]['consul_power'] or 'server' in hostvars[item]['consul_power']"
+  tags:
+    - config
 
 # Add user
 - name: Add Consul user
@@ -18,6 +20,8 @@
     system: "True"
     home: "{{ consul_home }}"
     shell: "/bin/sh"
+  tags:
+    - config
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
@@ -35,6 +39,8 @@
 
 - name: Include dir settings
   import_tasks: dirs.yml
+  tags:
+    - config
 
 - name: Install consul python bindings
   import_tasks: control.yml
