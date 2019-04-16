@@ -1,24 +1,33 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# migrate tags
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 from noc.core.model.fields import TagsField
 
 
-class Migration:
-    TAG_MODELS = ["ip_vrfgroup", "ip_vrf", "ip_prefix",
-                  "ip_address", "ip_addressrange"]
+class Migration(object):
+    TAG_MODELS = ["ip_vrfgroup", "ip_vrf", "ip_prefix", "ip_address", "ip_addressrange"]
 
     def forwards(self):
         # Create temporary tags fields
         for m in self.TAG_MODELS:
-            db.add_column(
-                m, "tmp_tags", TagsField("Tags", null=True, blank=True))
+            db.add_column(m, "tmp_tags", TagsField("Tags", null=True, blank=True))
         # Migrate data
         for m in self.TAG_MODELS:
-            db.execute("""
+            db.execute(
+                """
             UPDATE %s
             SET tmp_tags = string_to_array(regexp_replace(tags, ',$', ''), ',')
             WHERE tags != ''
-            """ % m)
+            """ % m
+            )
 
     def backwards(self):
         pass

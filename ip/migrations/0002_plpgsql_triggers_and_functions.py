@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# ----------------------------------------------------------------------
+# plpgsql triggers and functions
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
 class Migration(object):
-    depends_on = (
-        ("sa", "0002_trigger"),
-    )
+    depends_on = (("sa", "0002_trigger"),)
 
     def forwards(self):
         if not self.has_column("ip_ipv4block", "prefix_cidr"):
@@ -40,14 +41,16 @@ class Migration(object):
             FROM pg_attribute a JOIN pg_class p ON (p.oid=a.attrelid)
             WHERE p.relname='%s'
               AND a.attname='%s'
-            """ % (table, name))[0][0]
+            """ % (table, name)
+        )[0][0]
 
     def has_trigger(self, table, name):
         return db.execute(
             """SELECT COUNT(*)>0
             FROM pg_trigger t JOIN pg_class p ON (p.oid=t.tgrelid)
             WHERE p.relname='%s'
-              AND t.tgname='%s'""" % (table, name))[0][0]
+              AND t.tgname='%s'""" % (table, name)
+        )[0][0]
 
 
 RAW_SQL_CREATE = """

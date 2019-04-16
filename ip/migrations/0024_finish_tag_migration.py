@@ -1,9 +1,18 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# finish tag migration
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 
-class Migration:
-    TAG_MODELS = ["ip_vrfgroup", "ip_vrf", "ip_prefix",
-                  "ip_address", "ip_addressrange"]
+
+class Migration(object):
+    TAG_MODELS = ["ip_vrfgroup", "ip_vrf", "ip_prefix", "ip_address", "ip_addressrange"]
 
     def forwards(self):
         # Drop old tags

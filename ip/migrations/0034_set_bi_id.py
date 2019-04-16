@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# <describe module here>
+# set bi_id
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # NOC modules
 from noc.core.handler import get_handler
 

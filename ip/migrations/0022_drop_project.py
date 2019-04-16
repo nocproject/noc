@@ -2,27 +2,32 @@
 # ---------------------------------------------------------------------
 # VRF, Prefix, Address .project field
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
 class Migration(object):
     def migrate_project(self, table):
-        r = db.execute("""
+        r = db.execute(
+            """
             SELECT COUNT(*)
             FROM %s
-            WHERE project IS NOT NULL AND project != ''""" % table)[0][0]
+            WHERE project IS NOT NULL AND project != ''""" % table
+        )[0][0]
         if r:
             # Create custom field
-            db.execute("""
+            db.execute(
+                """
             INSERT INTO main_customfield("table", name, is_active,
                 label, "type", max_length, is_indexed)
             VALUES(%s, 'project', TRUE, 'Project', 'str', 256, TRUE)
-            """, [table])
+            """, [table]
+            )
 
             # Move data
             db.execute("""

@@ -2,10 +2,11 @@
 # ----------------------------------------------------------------------
 # Migrate Prefix.state field
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 # NOC modules
@@ -26,14 +27,7 @@ class Migration(object):
         # Make legacy Address.state_id field nullable
         db.execute("ALTER TABLE ip_prefix ALTER state_id DROP NOT NULL")
         # Create new Address.state
-        db.add_column(
-            "ip_prefix",
-            "state",
-            DocumentReferenceField(
-                "wf.State",
-                null=True, blank=True
-            )
-        )
+        db.add_column("ip_prefix", "state", DocumentReferenceField("wf.State", null=True, blank=True))
         # Fill Address.state
         for i in range(1, 6):
             db.execute(
