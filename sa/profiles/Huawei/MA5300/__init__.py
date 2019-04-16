@@ -21,7 +21,8 @@ class Profile(BaseProfile):
         (r"Warning: Battery is low power!", "\n"),
         (r"\{\s<cr>.*\s\}:", "\n"),
         (r"^Are you sure?\[Y/N\]", "y\n"),
-        (r"^\{ terminal\<K\> \}\:", "terminal\n")
+        (r"^\{ terminal\<K\> \}\:", "terminal\n"),
+        (r"\{ <cr>\|interface<K> \}\:", "\n")
     ]
     pattern_username = r"^Username:"
     pattern_password = r"^Password:"
@@ -30,6 +31,7 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "save"
+    enable_cli_session = False  # With False mixin commands output over script
     pattern_prompt = r"(?P<hostname>\S+)(?:\(.*)?#"
     pattern_unprivileged_prompt = \
         r"^(?P<hostname>[a-zA-Z0-9-_\.\/()]+)(?:-[a-zA-Z0-9/]+)*>$"
@@ -52,17 +54,32 @@ class Profile(BaseProfile):
     # Timeout for snmp GET request for get_interface_status_ex
     snmp_ifstatus_get_timeout = 3
 
-    def setup_session(self, script):
-        script.cli("terminal type vt100", ignore_errors=True)
-        script.cli("config", ignore_errors=True)
-        script.cli("line vty 0 3", ignore_errors=True)
-        script.cli("history size 0", ignore_errors=True)
-        script.cli("length 0", ignore_errors=True)
-        script.cli("exit", ignore_errors=True)
-        script.cli("cls", ignore_errors=True)
+    _IF_TYPES = {
+        "aux": "other",
+        "loo": "loopback",
+        "m-e": "management",
+        "nul": "null",
+        "vla": "SVI"
+    }
 
-    def shutdown_session(self, script):
-        script.cli("config", ignore_errors=True)
-        script.cli("line vty 0 3", ignore_errors=True)
-        script.cli("no length 0", ignore_errors=True)
-        script.cli("exit", ignore_errors=True)
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls._IF_TYPES.get(name[:3].lower(), "unknown")
+
+    def get_interface_snmp_index(self, name):
+        return None
+
+    # def setup_session(self, script):
+    #     script.cli("terminal type vt100", ignore_errors=True)
+    #     script.cli("config", ignore_errors=True)
+    #     script.cli("line vty 0 3", ignore_errors=True)
+    #     script.cli("history size 0", ignore_errors=True)
+    #     script.cli("length 0", ignore_errors=True)
+    #     script.cli("exit", ignore_errors=True)
+    #     script.cli("cls", ignore_errors=True)
+
+    # def shutdown_session(self, script):
+    #     script.cli("config", ignore_errors=True)
+    #     script.cli("line vty 0 3", ignore_errors=True)
+    #     script.cli("no length 0", ignore_errors=True)
+    #     script.cli("exit", ignore_errors=True)
