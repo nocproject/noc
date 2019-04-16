@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# ----------------------------------------------------------------------
+# inet rtr
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party modules
 from south.db import db
 from django.db import models
@@ -11,17 +14,18 @@ from django.db import models
 
 class Migration(object):
     def forwards(self):
-        AS = db.mock_model(model_name='AS', db_table='peer_as', db_tablespace='',
-                           pk_field_name='id', pk_field_type=models.AutoField)
+        AS = db.mock_model(
+            model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+        )
         if db.execute("SELECT COUNT(*) FROM peer_peeringpoint")[0][0] > 0:
-            db.add_column("peer_peeringpoint", "local_as",
-                          models.ForeignKey(AS, verbose_name="Local AS", blank=True, null=True))
+            db.add_column(
+                "peer_peeringpoint", "local_as", models.ForeignKey(AS, verbose_name="Local AS", blank=True, null=True)
+            )
             as_id = db.execute("SELECT MIN(id) FROM peer_as")[0][0]
             db.execute("UPDATE peer_peeringpoint SET local_as_id=%s", [as_id])
             db.execute("ALTER TABLE peer_peeringpoint ALTER local_as_id SET NOT NULL")
         else:
-            db.add_column("peer_peeringpoint", "local_as",
-                          models.ForeignKey(AS, verbose_name="Local AS"))
+            db.add_column("peer_peeringpoint", "local_as", models.ForeignKey(AS, verbose_name="Local AS"))
         db.add_column("peer_peer", "masklen", models.PositiveIntegerField("Masklen", default=30))
 
     def backwards(self):

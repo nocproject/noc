@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# ----------------------------------------------------------------------
+# community type
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Third-party models
 from south.db import db
 
-NAMES = [
-    "Other Normal",
-    "Other Extended"
-]
+NAMES = ["Other Normal", "Other Extended"]
 
 
-class Migration:
-
+class Migration(object):
     def forwards(self):
         for n in NAMES:
             if db.execute("SELECT COUNT(*) FROM peer_communitytype WHERE name=%s", [n])[0][0] == 0:

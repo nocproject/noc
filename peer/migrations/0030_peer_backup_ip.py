@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
-
+# ----------------------------------------------------------------------
+# peer backup ip
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
+# NOC modules
 from noc.core.model.fields import INETField
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         # Adding field 'Peer.remote_backup_ip'
-        db.add_column('peer_peer', 'remote_backup_ip',
-                      INETField("Remote Backup IP", null=True,
-                                blank=True))
+        db.add_column('peer_peer', 'remote_backup_ip', INETField("Remote Backup IP", null=True, blank=True))
         # Adding field 'Peer.local_backup_ip'
-        db.add_column('peer_peer', 'local_backup_ip',
-                      INETField("Local Backup IP", null=True,
-                                blank=True))
+        db.add_column('peer_peer', 'local_backup_ip', INETField("Local Backup IP", null=True, blank=True))
 
     def backwards(self):
         # Deleting field 'Peer.remote_backup_ip'
