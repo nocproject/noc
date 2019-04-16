@@ -88,7 +88,7 @@ class Profile(BaseProfile):
         >>> Profile().convert_interface_name_cisco("gi1/0/1?")
         'Gi 1/0/1'
         """
-        match = self.rx_eltex_interface_name.match(s)
+        match = self.rx_eltex_interface_name.match(str(s))
         if is_int(s):
             return "Vl %s" % s
         elif s in ["oob", "stack-port"]:
