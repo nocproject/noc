@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # Drop django-tagging tables
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         for t in ["tagging_taggeditem", "tagging_tag"]:
             if db.execute("SELECT COUNT(*) FROM pg_class WHERE relname='%s'" % t)[0][0] == 1:
