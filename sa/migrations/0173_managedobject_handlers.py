@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# <describe module here>
+# managedobject handlers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 # NOC modules
@@ -25,11 +26,7 @@ class Migration(object):
             coll = get_db()["handlers"]
             for h in handlers:
                 name = h.split(".")[-2]
-                coll.insert({
-                    "_id": h,
-                    "name": name,
-                    "allow_config_filter": True
-                })
+                coll.insert({"_id": h, "name": name, "allow_config_filter": True})
         handlers = set()
         for h, in db.execute("SELECT DISTINCT config_validation_handler FROM sa_managedobject"):
             if h:
@@ -38,11 +35,7 @@ class Migration(object):
             coll = get_db()["handlers"]
             for h in handlers:
                 name = h.split(".")[-2]
-                coll.insert({
-                    "_id": h,
-                    "name": name,
-                    "allow_config_validation": True
-                })
+                coll.insert({"_id": h, "name": name, "allow_config_validation": True})
 
     def backwards(self):
         pass

@@ -1,7 +1,19 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# managedobject platform
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# NOC modules
 import uuid
+# Third-party modules
 import bson
 from south.db import db
 from django.db import models
+# Third-party modules
 from noc.core.model.fields import DocumentReferenceField
 from noc.lib.nosql import get_db
 
@@ -14,7 +26,8 @@ class Migration(object):
         pcoll = get_db()["noc.platforms"]
         fcoll = get_db()["noc.firmwares"]
 
-        data = db.execute("""
+        data = db.execute(
+            """
           SELECT
             DISTINCT
             mo.profile AS profile,
@@ -28,7 +41,8 @@ class Migration(object):
           WHERE
             a2.key = 'platform'
             AND a3.key = 'version'
-        """)
+        """
+        )
         platforms = set()  # vendor, platform
         versions = set()  # profile, version
         for profile, vendor, platform, version in data:
@@ -42,38 +56,44 @@ class Migration(object):
         for vendor, platform in platforms:
             u = uuid.uuid4()
             v = bson.ObjectId(vendor)
-            pcoll.update_one({
-                "vendor": v,
-                "name": platform
-            }, {
-                "$set": {
-                    "name": platform,
-                    "full_name": platform
-                },
-                "$setOnInsert": {
+            pcoll.update_one(
+                {
                     "vendor": v,
-                    "uuid": u
-                }
-            }, upsert=True)
+                    "name": platform
+                }, {
+                    "$set": {
+                        "name": platform,
+                        "full_name": platform
+                    },
+                    "$setOnInsert": {
+                        "vendor": v,
+                        "uuid": u
+                    }
+                },
+                upsert=True
+            )
         # Create firmware
         for profile, vendor, version in versions:
             u = uuid.uuid4()
             pv = bson.ObjectId(profile)
             vv = bson.ObjectId(vendor)
-            fcoll.update({
-                "profile": pv,
-                "vendor": vv,
-                "version": version
-            }, {
-                "$set": {
-                    "version": version
-                },
-                "$setOnInsert": {
+            fcoll.update(
+                {
                     "profile": pv,
                     "vendor": vv,
-                    "uuid": u
-                }
-            }, upsert=True)
+                    "version": version
+                }, {
+                    "$set": {
+                        "version": version
+                    },
+                    "$setOnInsert": {
+                        "profile": pv,
+                        "vendor": vv,
+                        "uuid": u
+                    }
+                },
+                upsert=True
+            )
         # Get platforms records
         pmap = {}  # vendor, platform -> id
         for d in pcoll.find({}, {"_id": 1, "vendor": 1, "name": 1}):
@@ -83,35 +103,15 @@ class Migration(object):
         for d in fcoll.find({}, {"_id": 1, "profile": 1, "version": 1}):
             fmap[str(d["profile"]), d["version"]] = str(d["_id"])
         # Create .platform field
-        db.add_column(
-            "sa_managedobject",
-            "platform",
-            DocumentReferenceField(
-                "inv.Platform", null=True, blank=True
-            )
-        )
+        db.add_column("sa_managedobject", "platform", DocumentReferenceField("inv.Platform", null=True, blank=True))
         # Create .version field
-        db.add_column(
-            "sa_managedobject",
-            "version",
-            DocumentReferenceField(
-                "inv.Firmware", null=True, blank=True
-            )
-        )
+        db.add_column("sa_managedobject", "version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
         # Create .next_version field
-        db.add_column(
-            "sa_managedobject",
-            "next_version",
-            DocumentReferenceField(
-                "inv.Firmware", null=True, blank=True
-            )
-        )
+        db.add_column("sa_managedobject", "next_version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
         # Create software_image field
         db.add_column(
-            "sa_managedobject",
-            "software_image",
-            models.CharField("Software Image", max_length=255,
-                             null=True, blank=True)
+            "sa_managedobject", "software_image",
+            models.CharField("Software Image", max_length=255, null=True, blank=True)
         )
         #
         for profile, vendor, platform, version in data:
@@ -119,7 +119,8 @@ class Migration(object):
             vendor = vendor.strip() if vendor else None
             if not platform or not vendor:
                 continue
-            db.execute("""
+            db.execute(
+                """
                 UPDATE sa_managedobject
                 SET
                   platform = %s,
@@ -139,18 +140,13 @@ class Migration(object):
                       AND a3.key = 'version'
                       AND a3.value = %s
                   )
-            """, [
-                pmap[vendor, platform],
-                fmap[profile, version],
-                profile,
-                vendor,
-                platform,
-                version
-            ])
+            """, [pmap[vendor, platform], fmap[profile, version], profile, vendor, platform, version]
+            )
         # Fill software_image field
         images = db.execute("SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key='image'")
         for img, in images:
-            db.execute("""
+            db.execute(
+                """
             UPDATE sa_managedobject
             SET software_image = %s
             WHERE
@@ -161,12 +157,15 @@ class Migration(object):
                   key = 'image'
                   AND value = %s
                 )
-            """, [img, img])
+            """, [img, img]
+            )
         # Remove old data
-        db.execute("""
+        db.execute(
+            """
           DELETE FROM sa_managedobjectattribute
           WHERE key IN ('vendor', 'platform', 'version', 'image')
-        """)
+        """
+        )
 
     def backwards(self):
         pass

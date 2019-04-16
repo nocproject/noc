@@ -2,17 +2,18 @@
 # ----------------------------------------------------------------------
 # Add ManagedObjectProfile.mac_collect_* fields
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 # NOC modules
 from django.db import models
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         db.add_column(
             "sa_managedobjectprofile",
@@ -43,22 +44,14 @@ class Migration:
             )
         )
         db.add_column(
-            "sa_managedobjectprofile",
-            "autosegmentation_level_limit",
-            models.IntegerField("Level", default=999)
+            "sa_managedobjectprofile", "autosegmentation_level_limit", models.IntegerField("Level", default=999)
         )
         db.add_column(
-            "sa_managedobjectprofile",
-            "autosegmentation_segment_name",
-            models.CharField(
-                max_length=255,
-                default="{{object.name}}"
-            ))
+            "sa_managedobjectprofile", "autosegmentation_segment_name",
+            models.CharField(max_length=255, default="{{object.name}}")
+        )
 
     def backwards(self):
-        db.delete_column("sa_managedobjectprofile",
-                         "autosegmentation_policy")
-        db.delete_column("sa_managedobjectprofile",
-                         "autosegmentation_level_limit")
-        db.delete_column("sa_managedobjectprofile",
-                         "autosegmentation_segment_name")
+        db.delete_column("sa_managedobjectprofile", "autosegmentation_policy")
+        db.delete_column("sa_managedobjectprofile", "autosegmentation_level_limit")
+        db.delete_column("sa_managedobjectprofile", "autosegmentation_segment_name")

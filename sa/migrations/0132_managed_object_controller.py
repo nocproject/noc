@@ -1,32 +1,32 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# managedobject controller
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from south.db import db
 from django.db import models
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         ManagedObject = db.mock_model(
             model_name="ManagedObject",
             db_table="sa_managedobject",
-            db_tablespace="", pk_field_name="id",
-            pk_field_type=models.AutoField)
+            db_tablespace="",
+            pk_field_name="id",
+            pk_field_type=models.AutoField
+        )
 
         db.add_column(
-            "sa_managedobject",
-            "controller",
-            models.ForeignKey(
-                ManagedObject,
-                verbose_name="Controller",
-                blank=True, null=True
-            )
+            "sa_managedobject", "controller",
+            models.ForeignKey(ManagedObject, verbose_name="Controller", blank=True, null=True)
         )
-        db.add_column(
-            "sa_managedobject",
-            "last_seen",
-            models.DateTimeField(
-                "Last Seen",
-                blank=True, null=True
-            )
-        )
+        db.add_column("sa_managedobject", "last_seen", models.DateTimeField("Last Seen", blank=True, null=True))
 
     def backwards(self):
         db.delete_column("sa_managedobject", "controller_id")
