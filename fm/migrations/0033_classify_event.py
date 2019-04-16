@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# ----------------------------------------------------------------------
+# classify event
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
+# ----------------------------------------------------------------------
 """
 """
+# Third-party modules
 from south.db import db
 
 
-class Migration:
+class Migration(object):
 
-    CREATE_CLASSIFY_EVENT="""
+    CREATE_CLASSIFY_EVENT = """
     CREATE OR REPLACE
     FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])
     RETURNS VOID
@@ -49,11 +52,11 @@ class Migration:
     $$ LANGUAGE plpgsql;
     """
 
-    DROP_CLASSIFY_EVENT="DROP FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])"
+    DROP_CLASSIFY_EVENT = """
+        DROP FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])"""
 
     def forwards(self):
         db.execute(self.CREATE_CLASSIFY_EVENT)
 
     def backwards(self):
         db.execute(self.DROP_CLASSIFY_EVENT)
-

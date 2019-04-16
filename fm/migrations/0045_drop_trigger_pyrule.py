@@ -2,10 +2,11 @@
 # ----------------------------------------------------------------------
 # Replace pyrule with handlers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Third-party modules
 from south.db import db
 from django.db import models
@@ -13,29 +14,19 @@ from django.db import models
 
 class Migration(object):
     def forwards(self):
+        db.add_column("fm_alarmtrigger", "handler", models.CharField("Handler", max_length=128, null=True, blank=True))
         db.add_column(
-            "fm_alarmtrigger",
-            "handler",
-            models.CharField("Handler",
-                             max_length=128, null=True, blank=True)
+            "fm_alarmtrigger", "description", models.CharField("Description", max_length=256, null=True, blank=True)
         )
         db.add_column(
-            "fm_alarmtrigger",
-            "description",
-            models.CharField("Description",
-                             max_length=256, null=True, blank=True)
-        )
-        db.add_column(
-            "fm_eventtrigger",
-            "description",
-            models.CharField("Description",
-                             max_length=256, null=True, blank=True)
+            "fm_eventtrigger", "description", models.CharField("Description", max_length=256, null=True, blank=True)
         )
         # Fill description
         rows = db.execute(
             """SELECT t.id, r.name
             FROM fm_eventtrigger t JOIN main_pyrule r ON (t.pyrule_id = r.id)
-            """)
+            """
+        )
         for t_id, rule_name in rows:
             db.execute(
                 """UPDATE fm_eventtrigger
@@ -46,7 +37,8 @@ class Migration(object):
         rows = db.execute(
             """SELECT t.id, r.name
             FROM fm_alarmtrigger t JOIN main_pyrule r ON (t.pyrule_id = r.id)
-            """)
+            """
+        )
         for t_id, rule_name in rows:
             db.execute(
                 """UPDATE fm_alarmtrigger
