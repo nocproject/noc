@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DVG.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^WAN MAC \[+(?P<mac>\S+)+\]$", re.MULTILINE)
     SNMP_GET_OIDS = {
-        "SNMP": mib["IF-MIB::ifPhysAddress", 2]
+        "SNMP": [mib["IF-MIB::ifPhysAddress", 2]]
     }
 
     def execute_cli(self):
