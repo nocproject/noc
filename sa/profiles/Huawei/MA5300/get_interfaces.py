@@ -6,8 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-"""
-"""
 # Python modules
 import re
 # NOC modules
@@ -18,6 +16,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "Huawei.MA5300.get_interfaces"
     interface = IGetInterfaces
+    keep_cli_session = False
 
     rx_iface_sep = re.compile(r"^ Vlan ID",
                               re.MULTILINE | re.IGNORECASE)
@@ -56,13 +55,6 @@ class Script(BaseScript):
     rx_mtu = re.compile(
         r"^\s*The Maximum Transmit Unit is (?P<mtu>\d+)", re.MULTILINE)
     rx_mac = re.compile(r"Hardware address is (?P<mac>\S+)")
-    types = {
-        "Aux": "other",
-        "Loo": "loopback",
-        "M-E": "management",
-        "NUL": "null",
-        "Vla": "SVI"
-    }
 
     def execute(self):
         interfaces = []
@@ -163,7 +155,7 @@ class Script(BaseScript):
                 mac = ""
             iface = {
                 "name": ifname,
-                "type": self.types[ifname[:3]],
+                "type": self.profile.get_interface_type(ifname),
                 "admin_state": match.group("admin_state") == "up",
                 "oper_state": match.group("oper_state") == "up",
                 "subinterfaces": [{
