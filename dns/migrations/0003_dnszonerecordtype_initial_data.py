@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# ----------------------------------------------------------------------
+# dnszonerecordtype data
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
+# Python modules
+from __future__ import print_function
 # Third-party modules
 from south.db import db
-
 
 RECORD_TYPES = [
     ("A", True),
@@ -44,18 +48,18 @@ RECORD_TYPES = [
     ("TXT", True),
 ]
 
-class Migration:
+
+class Migration(object):
     def forwards(self):
         rt = []
         for rtype, is_visible in RECORD_TYPES:
-            if db.execute("SELECT COUNT(*) FROM dns_dnszonerecordtype WHERE type=%s",
-                          [rtype])[0][0] > 0:
+            if db.execute("SELECT COUNT(*) FROM dns_dnszonerecordtype WHERE type=%s", [rtype])[0][0] > 0:
                 continue
             rt += [(rtype, is_visible)]
         if rt:
-            print "Creating DNS Zone record types: %s" % ", ".join(sorted([x[0] for x in rt]))
+            print("Creating DNS Zone record types: %s" % ", ".join(sorted([x[0] for x in rt])))
             for rtype, is_visible in rt:
                 db.execute("INSERT INTO dns_dnszonerecordtype(type, is_visible) VALUES(%s, %s)", [rtype, is_visible])
 
     def backwards(self):
-        """Write your backwards migration here"""
+        pass
