@@ -2,13 +2,18 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, \
+    LLDP_PORT_SUBTYPE_NAME, \
+    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_WLAN_ACCESS_POINT, \
+    LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE, \
+    lldp_caps_to_bits
 
 
 class Script(BaseScript):
@@ -17,48 +22,40 @@ class Script(BaseScript):
 
     def execute(self):
         res = []
-        device_id = self.scripts.get_fqdn()
         interfaces = []
-        for n, f, r in self.cli_detail(
-        "/interface print detail without-paging where type=\"ether\""):
+        for n, f, r in self.cli_detail("/interface print detail without-paging where type=\"ether\""):
             interfaces += [r["name"]]
-        # Get neighbors
-        neighbors = []
-        for n, f, r in self.cli_detail(
-        "/ip neighbor print detail without-paging"):
+        for n, f, r in self.cli_detail("/ip neighbor print detail without-paging"):
             if "system-caps" not in r or r["system-caps"] == "":
                 continue
             if r["interface"] not in interfaces:
                 continue
             if "address4" in r and "address4" != "":
-                chassis_id_subtype = 5
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
                 chassis_id = r["address4"]
             elif "mac-address" in r and "mac-address" != "":
-                chassis_id_subtype = 4
+                chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
                 chassis_id = r["mac-address"]
             else:
                 raise self.NotSupportedError()
             if "interface-name" in r and "interface-name" != "":
-                port_subtype = 5
+                port_subtype = LLDP_PORT_SUBTYPE_NAME
                 port = r["interface-name"]
             else:
                 raise self.NotSupportedError()
-            caps = 0
-            for c in r["system-caps"].split(","):
-                    c = c.strip()
-                    if not c:
-                        break
-                    # Need more examples
-                    caps |= {
-                        "other": 1,
-                        "repeater": 2,
-                        "bridge": 4,
-                        #"WLAN Access Point": 8,
-                        "router": 16,
-                        "telephone": 32,
-                        #"DOCSIS Cable Device": 64,
-                        #"Station Only": 128
-                    }[c]
+            caps = lldp_caps_to_bits(
+                r["system-caps"].strip().split(","),
+                {
+                    "other": LLDP_CAP_OTHER,
+                    "repeater": LLDP_CAP_REPEATER,
+                    "bridge": LLDP_CAP_BRIDGE,
+                    "wlan-ap": LLDP_CAP_WLAN_ACCESS_POINT,
+                    "router": LLDP_CAP_ROUTER,
+                    "telephone": LLDP_CAP_TELEPHONE,
+                    # "": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                    # "": LLDP_CAP_STATION_ONLY,  # S-VLAN
+                }
+            )
             interface = {
                 "local_interface": r["interface"],
                 "neighbors": [{
@@ -70,7 +67,6 @@ class Script(BaseScript):
                 }]
             }
             if "system-description" in r:
-                interface["neighbors"][0]["remote_system_description"] = \
-                r["system-description"]
+                interface["neighbors"][0]["remote_system_description"] = r["system-description"]
             res += [interface]
         return res
