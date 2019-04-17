@@ -14,22 +14,30 @@ from threading import Lock
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.contrib.auth.models import User, Group
 import cachetools
 # NOC modules
 from noc.project.models.project import Project
 from noc.lib.validators import check_rd
-from noc.core.model.fields import TagsField, DocumentReferenceField
+from noc.core.model.fields import TagsField, DocumentReferenceField, JSONField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.state import State
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
 
 
 id_lock = Lock()
+
+is_prefix_perm = ListOfParameter(element=[
+    ModelParameter(User, required=False),
+    ModelParameter(Group, required=False),
+    StringParameter(choices=["can_view", "can_change", "can_create"])
+], default=[])
 
 
 @full_text_search
@@ -120,6 +128,7 @@ class VRF(models.Model):
         null=False, blank=False,
         default="M"
     )
+    direct_permissions = JSONField()
 
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"
@@ -201,6 +210,8 @@ class VRF(models.Model):
                     else:
                         # Cannot change until emptied
                         self.afi_ipv6 = True
+        if self.direct_permissions:
+            is_prefix_perm.clean(self.direct_permissions)
         # Save VRF
         super(VRF, self).save(**kwargs)
         if self.afi_ipv4:
@@ -250,3 +261,6 @@ class VRF(models.Model):
         self.save()
         # Delete
         super(VRF, self).delete(*args, **kwargs)
+
+    def get_permission(self):
+        return self.direct_permissions

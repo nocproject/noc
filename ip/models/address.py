@@ -16,7 +16,8 @@ from django.db import models
 from noc.config import config
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.model.fields import TagsField, INETField, MACField
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.core.model.fields import TagsField, INETField, MACField, JSONField
 from noc.lib.validators import ValidationError, check_fqdn, check_ipv4, check_ipv6
 from noc.main.models.textindex import full_text_search
 from noc.core.model.fields import DocumentReferenceField
@@ -131,6 +132,11 @@ class Address(models.Model):
         null=False, blank=False,
         default="M"
     )
+    administrative_domain = models.ForeignKey(
+        AdministrativeDomain, verbose_name="Administrative domain",
+        on_delete=models.SET_NULL,
+        null=True, related_name="adm_domain_set")
+    direct_permissions = JSONField()
 
     csv_ignored_fields = ["prefix"]
 
@@ -261,6 +267,9 @@ class Address(models.Model):
     @property
     def is_ipv6(self):
         return self.afi == "6"
+
+    def get_administrative_domain(self):
+        return self.administrative_domain
 
 
 # Avoid django's validation failure

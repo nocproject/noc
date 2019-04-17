@@ -17,10 +17,11 @@ from django.db import models, connection
 import cachetools
 # NOC modules
 from noc.aaa.models.user import User
+from noc.aaa.models.group import Group
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
-from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey
+from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey, JSONField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
@@ -30,11 +31,20 @@ from noc.core.translation import ugettext as _
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_delete_check
 from noc.wf.models.state import State
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
 
 id_lock = Lock()
+
+_path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+is_prefix_perm = ListOfParameter(element=[
+    ModelParameter(User, required=False),
+    ModelParameter(Group, required=False),
+    StringParameter(choices=["can_view", "can_change", "can_create"])
+], default=[])
 
 
 @full_text_search
@@ -159,6 +169,7 @@ class Prefix(models.Model):
         null=False, blank=False,
         default="M"
     )
+    direct_permissions = JSONField()
 
     csv_ignored_fields = ["parent"]
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -252,6 +263,9 @@ class Prefix(models.Model):
         # Check root prefix have no parent
         if self.is_root and self.parent:
             raise ValidationError("Root prefix cannot have parent")
+        # Check permission
+        if self.direct_permissions:
+            is_prefix_perm.clean(self.direct_permissions)
 
     def save(self, **kwargs):
         """
@@ -769,6 +783,16 @@ class Prefix(models.Model):
         if not self.parent:
             return None
         return self.parent.get_effective_as()
+
+    def get_permission(self):
+        return self.direct_permissions
+
+    def get_effective_permission(self):
+        if self.is_root:
+            return self.vrf.get_permission()
+        if not self.parent:
+            return self.get_permission()
+        return self.parent.get_effective_permission() + self.get_permission()
 
 
 # Avoid circular references

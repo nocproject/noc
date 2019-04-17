@@ -7,8 +7,11 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import json
 import psycopg2
+from psycopg2.extras import Json
 from django.db import models
+from django.core import exceptions
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 import six
 from bson import ObjectId
@@ -313,3 +316,52 @@ class ObjectIDArrayField(models.Field):
         if isinstance(value, (six.string_types, ObjectId)):
             value = [value]
         return "{ %s }" % ", ".join(str(x) for x in value)
+
+class JSONField(models.Field):
+    empty_strings_allowed = False
+    description = 'A JSON object'
+    default_error_messages = {
+        'invalid': "Value must be valid JSON.",
+    }
+    __metaclass__ = models.SubfieldBase
+
+    def db_type(self, connection):
+        return 'jsonb'
+
+    # def get_transform(self, name):
+    #     transform = super(JSONField, self).get_transform(name)
+    #     if transform:
+    #         return transform
+    #     return KeyTransformFactory(name)
+
+    def get_prep_value(self, value):
+        if value is not None:
+            return psycopg2.extras.Json(value)
+        return value
+
+    def get_prep_lookup(self, lookup_type, value):
+        if lookup_type in ('has_key', 'has_keys', 'has_any_keys'):
+            return value
+        if isinstance(value, (dict, list)):
+            return Json(value)
+        return super(JSONField, self).get_prep_lookup(lookup_type, value)
+
+    def validate(self, value, model_instance):
+        super(JSONField, self).validate(value, model_instance)
+        try:
+            json.dumps(value)
+        except TypeError:
+            raise exceptions.ValidationError(
+                self.error_messages['invalid'],
+                code='invalid',
+                params={'value': value},
+            )
+
+    def value_to_string(self, obj):
+        value = self.value_from_object(obj)
+        return value
+
+    def formfield(self, **kwargs):
+        defaults = {'form_class': JSONField}
+        defaults.update(kwargs)
+        return super(JSONField, self).formfield(**defaults)
