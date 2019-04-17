@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,28 +15,26 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
-# from noc.core.mib import mib
 from noc.core.mac import MAC
 from noc.core.mib import mib
+from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, \
+    LLDP_CHASSIS_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_COMPONENT, \
+    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NETWORK_ADDRESS, LLDP_PORT_SUBTYPE_LOCAL, \
+    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_WLAN_ACCESS_POINT, \
+    LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE, LLDP_CAP_DOCSIS_CABLE_DEVICE, LLDP_CAP_STATION_ONLY, \
+    lldp_caps_to_bits
 
 
 class Script(BaseScript):
     name = "Eltex.MES.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    CAPS_MAP = {
-        "O": 1, "r": 2, "B": 4,
-        "W": 8, "R": 16, "T": 32,
-        "C": 64, "S": 128, "D": 256,
-        "H": 512, "TP": 1024,
-    }
-
     rx_detail = re.compile(
         r"^Device ID: (?P<dev_id>\S+)\s*\n"
         r"^Port ID: (?P<port_id>\S+)\s*\n"
         r"^Capabilities:(?P<caps>.*)\n"
         r"^System Name:(?P<sys_name>.*)\n"
-        r"^System description:(?P<sys_descr>.*)\n"
+        r"^System description:(?P<sys_descr>(?:.*\n)*?)"
         r"^Port description:(?P<port_descr>.*)\n",
         re.MULTILINE
     )
@@ -49,13 +47,13 @@ class Script(BaseScript):
                 [mib["LLDP-MIB::lldpLocPortIdSubtype"],
                  mib["LLDP-MIB::lldpLocPortId"],
                  mib["LLDP-MIB::lldpLocPortDesc"]]):
-            if port_subtype == 1:
+            if port_subtype == LLDP_PORT_SUBTYPE_ALIAS:
                 # Iface alias
                 iface_name = port_descr
-            elif port_subtype == 3:
+            elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
                 # Iface MAC address
                 raise NotImplementedError()
-            elif port_subtype == 7 and port_id.isdigit():
+            elif port_subtype == LLDP_PORT_SUBTYPE_LOCAL and port_id.isdigit():
                 # Iface local (ifindex)
                 iface_name = names[int(port_id)]
             else:
@@ -88,13 +86,13 @@ class Script(BaseScript):
                 if v:
                     neigh = dict(zip(neighb, v[2:]))
                     # cleaning
-                    if neigh["remote_port_subtype"] == 2:
-                        neigh["remote_port_subtype"] = 1
+                    if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
+                        neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
                     neigh["remote_port"] = neigh["remote_port"].strip(" \x00")  # \x00 Found on some devices
-                    if neigh["remote_chassis_id_subtype"] == 4:
+                    if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
                         neigh["remote_chassis_id"] = \
                             MAC(neigh["remote_chassis_id"])
-                    if neigh["remote_port_subtype"] == 3:
+                    if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                         try:
                             neigh["remote_port"] = MAC(neigh["remote_port"])
                         except ValueError:
@@ -111,42 +109,52 @@ class Script(BaseScript):
         r = []
         # Fallback to CLI
         lldp = self.cli("show lldp neighbors")
-        for link in parse_table(lldp, allow_wrap=True):
+        for link in parse_table(lldp, allow_wrap=True, expand_tabs=False):
             local_interface = link[0]
             remote_chassis_id = link[1]
             remote_port = link[2]
             remote_system_name = link[3]
             # Build neighbor data
             # Get capability
-            cap = 0
-            for c in link[4].split(","):
-                c = c.strip()
-                if c:
-                    cap |= self.CAPS_MAP[c]
-
+            cap = lldp_caps_to_bits(
+                link[4].strip().split(","),
+                {
+                    "O": LLDP_CAP_OTHER,
+                    "r": LLDP_CAP_REPEATER,
+                    "B": LLDP_CAP_BRIDGE,
+                    "W": LLDP_CAP_WLAN_ACCESS_POINT,
+                    "R": LLDP_CAP_ROUTER,
+                    "T": LLDP_CAP_TELEPHONE,
+                    "D": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                    "S": LLDP_CAP_STATION_ONLY,  # S-VLAN
+                    "C": 256,  # C-VLAN
+                    "H": 512,  # Host
+                    "TP": 1024  # Two Ports MAC Relay
+                }
+            )
             if (is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id)):
-                remote_chassis_id_subtype = 5
+                remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(remote_chassis_id):
                 remote_chassis_id = MACAddressParameter().clean(
                     remote_chassis_id
                 )
-                remote_chassis_id_subtype = 4
+                remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
             else:
-                remote_chassis_id_subtype = 7
+                remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
 
             # Get remote port subtype
-            remote_port_subtype = 1
+            remote_port_subtype = LLDP_PORT_SUBTYPE_ALIAS
             if is_ipv4(remote_port):
                 # Actually networkAddress(4)
-                remote_port_subtype = 4
+                remote_port_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
-                remote_port_subtype = 3
+                remote_port_subtype = LLDP_PORT_SUBTYPE_MAC
             elif is_int(remote_port):
                 # Actually local(7)
-                remote_port_subtype = 7
+                remote_port_subtype = LLDP_PORT_SUBTYPE_LOCAL
             i = {
                 "local_interface": local_interface,
                 "neighbors": []
@@ -163,7 +171,7 @@ class Script(BaseScript):
             #
             # XXX: Dirty hack for older firmware. Switch rebooted.
             #
-            if remote_chassis_id_subtype != 7:
+            if remote_chassis_id_subtype != LLDP_CHASSIS_SUBTYPE_LOCAL:
                 i["neighbors"] = [n]
                 r += [i]
                 continue
@@ -173,14 +181,14 @@ class Script(BaseScript):
                 if match:
                     remote_chassis_id = match.group("dev_id")
                     if is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id):
-                        remote_chassis_id_subtype = 5
+                        remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
                     elif is_mac(remote_chassis_id):
                         remote_chassis_id = MACAddressParameter().clean(
                             remote_chassis_id
                         )
-                        remote_chassis_id_subtype = 4
+                        remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
                     else:
-                        remote_chassis_id_subtype = 7
+                        remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
                     n["remote_chassis_id"] = remote_chassis_id
                     n["remote_chassis_id_subtype"] = remote_chassis_id_subtype
                     if match.group("sys_name").strip():
