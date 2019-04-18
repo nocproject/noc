@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Test matcher
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,17 +11,17 @@ from noc.core.matcher import match
 
 
 def test_zero():
-    assert match({}, {}) == True
-    assert match({"k", "v"}, {}) == True
+    assert match({}, {}) is True
+    assert match({"k", "v"}, {}) is True
 
 
 def test_eq():
-    assert match({"x": "y"}, {"x": "y"}) == True
+    assert match({"x": "y"}, {"x": "y"}) is True
 
 
 def test_eq_and():
-    assert match({"x": "y", "m": "n"}, {"x": "y", "m": "k"}) == False
-    assert match({"x": "y", "m": "n"}, {"x": "y", "m": "n"}) == True
+    assert match({"x": "y", "m": "n"}, {"x": "y", "m": "k"}) is False
+    assert match({"x": "y", "m": "n"}, {"x": "y", "m": "n"}) is True
 
 
 def test_regex():
@@ -32,7 +32,7 @@ def test_regex():
         "platform": {
             "$regex": "^S"
         }
-    }) == True
+    }) is True
     assert match({
         "platform": "E600",
         "vendor": "Force10"
@@ -40,7 +40,7 @@ def test_regex():
         "platform": {
             "$regex": "^S"
         }
-    }) == False
+    }) is False
     assert match({
         "platform": "S50N",
         "vendor": "Force10"
@@ -49,7 +49,7 @@ def test_regex():
             "$regex": "^S"
         },
         "vendor": "Force10"
-    }) == True
+    }) is True
     assert match({
         "platform": "S50N",
         "vendor": "Force10"
@@ -58,7 +58,7 @@ def test_regex():
             "$regex": "^S"
         },
         "vendor": "Dell"
-    }) == False
+    }) is False
 
 
 def test_in():
@@ -69,7 +69,7 @@ def test_in():
         "platform": {
             "$in": ["S50N", "S50P"]
         }
-    }) == True
+    }) is True
     assert match({
         "platform": "S50N",
         "vendor": "Force10"
@@ -80,7 +80,7 @@ def test_in():
         "vendor": {
             "$in": ["Force10", "Dell"]
         }
-    }) == True
+    }) is True
     assert match({
         "platform": "S25N",
         "vendor": "Force10"
@@ -88,7 +88,7 @@ def test_in():
         "platform": {
             "$in": ["S50N", "S50P"]
         }
-    }) == False
+    }) is False
 
 
 def test_gt():
@@ -98,21 +98,21 @@ def test_gt():
         "version": {
             "$gt": "12.2(48)SE"
         }
-    }) == True
+    }) is True
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$gt": "12.2(50)SE"
         }
-    }) == False
+    }) is False
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$gt": "12.2(51)SE"
         }
-    }) == False
+    }) is False
 
 
 def test_gte():
@@ -122,21 +122,21 @@ def test_gte():
         "version": {
             "$gte": "12.2(48)SE"
         }
-    }) == True
+    }) is True
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$gte": "12.2(50)SE"
         }
-    }) == True
+    }) is True
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$gte": "12.2(51)SE"
         }
-    }) == False
+    }) is False
 
 
 def test_lt():
@@ -146,21 +146,21 @@ def test_lt():
         "version": {
             "$lt": "12.2(48)SE"
         }
-    }) == False
+    }) is False
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$lt": "12.2(50)SE"
         }
-    }) == False
+    }) is False
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$lt": "12.2(51)SE"
         }
-    }) == True
+    }) is True
 
 
 def test_lte():
@@ -170,21 +170,21 @@ def test_lte():
         "version": {
             "$lte": "12.2(48)SE"
         }
-    }) == False
+    }) is False
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$lte": "12.2(50)SE"
         }
-    }) == True
+    }) is True
     assert match({
         "version": "12.2(50)SE"
     }, {
         "version": {
             "$lte": "12.2(51)SE"
         }
-    }) == True
+    }) is True
 
 
 def test_between():
@@ -195,7 +195,7 @@ def test_between():
             "$gte": "12.2(48)SE",
             "$lte": "12.2(52)SE"
         }
-    }) == False
+    }) is False
     assert match({
         "version": "12.2(48)SE"
     }, {
@@ -203,7 +203,7 @@ def test_between():
             "$gte": "12.2(48)SE",
             "$lte": "12.2(52)SE"
         }
-    }) == True
+    }) is True
     assert match({
         "version": "12.2(50)SE"
     }, {
@@ -211,7 +211,7 @@ def test_between():
             "$gte": "12.2(48)SE",
             "$lte": "12.2(52)SE"
         }
-    }) == True
+    }) is True
     assert match({
         "version": "12.2(52)SE"
     }, {
@@ -219,7 +219,7 @@ def test_between():
             "$gte": "12.2(48)SE",
             "$lte": "12.2(52)SE"
         }
-    }) == True
+    }) is True
     assert match({
         "version": "12.2(60)SE"
     }, {
@@ -227,4 +227,4 @@ def test_between():
             "$gte": "12.2(48)SE",
             "$lte": "12.2(52)SE"
         }
-    }) == False
+    }) is False
