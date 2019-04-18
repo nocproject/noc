@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Peer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from django.db import models
 # Peer modules
 from noc.project.models.project import Project
 from noc.core.model.fields import INETField, TagsField
-from noc.lib.tt import tt_url
 from noc.config import config
 from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
@@ -94,10 +93,6 @@ class Peer(models.Model):
         super(Peer, self).save(*args, **kwargs)
         self.peering_point.sync_cm_prefix_list()
         self.touch_rpsl()
-
-    @property
-    def tt_url(self):
-        return tt_url(self)
 
     @property
     def all_communities(self):
