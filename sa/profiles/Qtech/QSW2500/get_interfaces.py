@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2500.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_port = re.compile(
-        "^\s*(?P<port>\d+)\s*(?P<admin_status>enable|disable)\s+"
+        r"^\s*(?P<port>\d+)\s*(?P<admin_status>enable|disable)\s*"
         r"(?P<oper_status>up|down)", re.MULTILINE)
     rx_vlan = re.compile(
         r"^Port: (?P<port>\d+)\s*\n"
