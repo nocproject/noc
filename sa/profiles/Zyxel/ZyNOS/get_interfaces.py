@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,6 +41,10 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_gvrp = re.compile(
         r"^Port\s+(?P<interface>\d+)$",
+        re.MULTILINE)
+    rx_lldp = re.compile(
+        r"^\s+(?P<interface>\d+)\s+(tx\-rx|rx\-only|tx\-only)"
+        r"\s+\S+\s+\S+\s+\S+\s+\S+$",
         re.MULTILINE)
 
     # @todo: vlan trunking, STP, LLDP (fw >= 3.90)
@@ -129,6 +133,15 @@ class Script(BaseScript):
         if "gvrpEnable = YES" in cmd:
             for match in self.rx_gvrp.finditer(cmd):
                 gvrp += [match.group("interface")]
+        # Get lldp
+        lldp = []
+        if self.has_capability("Network | LLDP"):
+            try:
+                cmd = self.cli("show lldp config interface port-channel *")
+                for match in self.rx_lldp.finditer(cmd):
+                    lldp += [match.group("interface")]
+            except self.CLISyntaxError:
+                pass
 
         # Get mac
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
@@ -172,6 +185,8 @@ class Script(BaseScript):
                 iface["enabled_protocols"] += ["CTP"]
             if name in gvrp:
                 iface["enabled_protocols"] += ["GVRP"]
+            if name in lldp:
+                iface["enabled_protocols"] += ["LLDP"]
             interfaces += [iface]
 
         # Get SVIs
