@@ -93,6 +93,10 @@ Ext.define("NOC.ip.vrf.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "direct_permissions",
+            type: "auto"
         }
     ]
 });

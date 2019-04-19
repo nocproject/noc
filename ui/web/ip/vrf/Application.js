@@ -13,7 +13,9 @@ Ext.define("NOC.ip.vrf.Application", {
         "NOC.ip.vrfgroup.LookupField",
         "NOC.vc.vpnprofile.LookupField",
         "NOC.main.resourcestate.LookupField",
-        "NOC.project.project.LookupField"
+        "NOC.project.project.LookupField",
+        "NOC.main.user.LookupField",
+        "NOC.main.group.LookupField"
     ],
     model: "NOC.ip.vrf.Model",
     search: true,
@@ -172,6 +174,40 @@ Ext.define("NOC.ip.vrf.Application", {
                     startDay: 1,
                     fieldLabel: __("Allocated till"),
                     allowBlank: true
+                },
+                {
+                    name: "direct_permissions",
+                    xtype: "gridfield",
+                    fieldLabel: __("Permissions"),
+                    columns: [
+                        {
+                            text: __("User"),
+                            dataIndex: "user",
+                            editor: "main.user.LookupField",
+                            renderer: NOC.render.Lookup("user"),
+                            width: 100
+                        },
+                        {
+                            text: __("Group"),
+                            dataIndex: "group",
+                            editor: "main.group.LookupField",
+                            renderer: NOC.render.Lookup("group"),
+                            width: 150
+                        },
+                        {
+                            text: __("Permission"),
+                            dataIndex: "permission",
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["can_view", "can_view"],
+                                    ["can_change", "can_change"],
+                                    ["can_create", "can_create"]
+                                ]
+                            },
+                            width: 150
+                        }
+                    ]
                 }
             ],
             formToolbar: [

@@ -13,7 +13,9 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
         "NOC.ip.vrf.LookupField",
         "NOC.peer.as.LookupField",
         "NOC.vc.vc.LookupField",
-        "NOC.project.project.LookupField"
+        "NOC.project.project.LookupField",
+        "NOC.main.user.LookupField",
+        "NOC.main.group.LookupField"
     ],
     currentPrefixId: null,
     restUrl: "/ip/prefix/",
@@ -155,6 +157,40 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     ],
                     labelWidth: 180,
                     uiStyle: "medium"
+                },
+                {
+                    name: "direct_permissions",
+                    xtype: "gridfield",
+                    fieldLabel: __("Permissions"),
+                    columns: [
+                        {
+                            text: __("User"),
+                            dataIndex: "user",
+                            editor: "main.user.LookupField",
+                            renderer: NOC.render.Lookup("user"),
+                            width: 100
+                        },
+                        {
+                            text: __("Group"),
+                            dataIndex: "group",
+                            editor: "main.group.LookupField",
+                            renderer: NOC.render.Lookup("group"),
+                            width: 150
+                        },
+                        {
+                            text: __("Permission"),
+                            dataIndex: "permission",
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["can_view", "can_view"],
+                                    ["can_change", "can_change"],
+                                    ["can_create", "can_create"]
+                                ]
+                            },
+                            width: 150
+                        }
+                    ]
                 }
             ],
             formToolbar: [

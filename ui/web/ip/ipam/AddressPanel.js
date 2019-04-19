@@ -11,7 +11,9 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
     requires: [
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.sa.managedobject.LookupField"
+        "NOC.sa.managedobject.LookupField",
+        "NOC.main.user.LookupField",
+        "NOC.main.group.LookupField"
     ],
     currentAddressId: null,
     restUrl: "/ip/address/",
@@ -131,6 +133,40 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "displayfield",
                     fieldLabel: __("Source"),
                     allowBlank: true
+                },
+                {
+                    name: "direct_permissions",
+                    xtype: "gridfield",
+                    fieldLabel: __("Permissions"),
+                    columns: [
+                        {
+                            text: __("User"),
+                            dataIndex: "user",
+                            editor: "main.user.LookupField",
+                            renderer: NOC.render.Lookup("user"),
+                            width: 100
+                        },
+                        {
+                            text: __("Group"),
+                            dataIndex: "group",
+                            editor: "main.group.LookupField",
+                            renderer: NOC.render.Lookup("group"),
+                            width: 150
+                        },
+                        {
+                            text: __("Permission"),
+                            dataIndex: "permission",
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["can_view", "can_view"],
+                                    ["can_change", "can_change"],
+                                    ["can_create", "can_create"]
+                                ]
+                            },
+                            width: 150
+                        }
+                    ]
                 }
             ]
         });
