@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from django.contrib.auth.models import User, Group
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.ip.models.vrfgroup import VRFGroup
@@ -46,6 +48,8 @@ class VRFApplication(ExtModelApplication):
                 "rd": data.get("rd")
             }
             data["vpn_id"] = get_vpn_id(vdata)
+        if data.get("direct_permissions"):
+            data["direct_permissions"] = [[x["user"], x["group"], x["permission"]] for x in data["direct_permissions"]]
         return super(VRFApplication, self).clean(data)
 
     @view(
@@ -75,3 +79,19 @@ class VRFApplication(ExtModelApplication):
             "status": True,
             "imported": n
         }
+
+    def instance_to_dict(self, o, fields=None):
+        r = super(VRFApplication, self).instance_to_dict(o, fields=fields)
+        r["direct_permissions"] = []
+        if o.direct_permissions:
+            for user, group, perm in o.direct_permissions:
+                user = User.objects.get(id=user)
+                group = Group.objects.get(id=group)
+                r["direct_permissions"] += [{
+                    "user": user.id,
+                    "user__label": user.username,
+                    "group": group.id,
+                    "group__label": group.name,
+                    "permission": perm
+                }]
+        return r

@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from django.contrib.auth.models import User, Group
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.ip.models.address import Address
@@ -37,3 +39,24 @@ class AddressApplication(ExtModelApplication):
     def queryset(self, request, query=None):
         qs = super(AddressApplication, self).queryset(request, query=query)
         return qs.filter(PrefixAccess.read_Q(request.user, field="address", table="ip_address"))
+
+    def clean(self, data):
+        if data.get("direct_permissions"):
+            data["direct_permissions"] = [[x["user"], x["group"], x["permission"]] for x in data["direct_permissions"]]
+        return super(AddressApplication, self).clean(data)
+
+    def instance_to_dict(self, o, fields=None):
+        r = super(AddressApplication, self).instance_to_dict(o, fields=fields)
+        r["direct_permissions"] = []
+        if o.direct_permissions:
+            for user, group, perm in o.direct_permissions:
+                user = User.objects.get(id=user)
+                group = Group.objects.get(id=group)
+                r["direct_permissions"] += [{
+                    "user": user.id,
+                    "user__label": user.username,
+                    "group": group.id,
+                    "group__label": group.name,
+                    "permission": perm
+                }]
+        return r

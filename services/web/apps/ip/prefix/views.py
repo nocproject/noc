@@ -10,6 +10,7 @@
 from operator import attrgetter
 # Third-party modules
 from django.http import HttpResponse
+from django.contrib.auth.models import User, Group
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.ip.models.vrf import VRF
@@ -44,6 +45,27 @@ class PrefixApplication(ExtModelApplication):
     def queryset(self, request, query=None):
         qs = super(PrefixApplication, self).queryset(request, query=query)
         return qs.filter(PrefixAccess.read_Q(request.user))
+
+    def clean(self, data):
+        if data.get("direct_permissions"):
+            data["direct_permissions"] = [[x["user"], x["group"], x["permission"]] for x in data["direct_permissions"]]
+        return super(PrefixApplication, self).clean(data)
+
+    def instance_to_dict(self, o, fields=None):
+        r = super(PrefixApplication, self).instance_to_dict(o, fields=fields)
+        r["direct_permissions"] = []
+        if o.direct_permissions:
+            for user, group, perm in o.direct_permissions:
+                user = User.objects.get(id=user)
+                group = Group.objects.get(id=group)
+                r["direct_permissions"] += [{
+                    "user": user.id,
+                    "user__label": user.username,
+                    "group": group.id,
+                    "group__label": group.name,
+                    "permission": perm
+                }]
+        return r
 
     @view(
         url="^(?P<prefix_id>\d+)/rebase/$",

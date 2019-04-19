@@ -135,7 +135,7 @@ class Address(models.Model):
     administrative_domain = models.ForeignKey(
         AdministrativeDomain, verbose_name="Administrative domain",
         on_delete=models.SET_NULL,
-        null=True, related_name="adm_domain_set")
+        null=True, blank=True, related_name="adm_domain_set")
     direct_permissions = JSONField()
 
     csv_ignored_fields = ["prefix"]
