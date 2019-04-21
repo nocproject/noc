@@ -190,54 +190,52 @@ class ManagedObjectCard(BaseCard):
                         "value": mres[key]
                     }
 
-        if ifaces_metrics:
-            for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
-                iface_metrics = ifaces_metrics.get(str(i.name))
-                if iface_metrics:
-                    for key, value in six.iteritems(iface_metrics):
-                        if key not in metrics_map:
-                            continue
-                        metric_type = metric_type_name.get(key) or metric_type_field.get(key)
-                        if key == "Interface | Load | In":
-                            load_in = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
-                        if key == "Interface | Load | Out":
-                            load_out = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
-                        if key == "Interface | Errors | In":
-                            errors_in = value if value else "-"
-                        if key == "Interface | Errors | Out":
-                            errors_out = value if value else "-"
-                else:
-                    load_in = "-"
-                    load_out = "-"
-                    errors_in = "-"
-                    errors_out = "-"
-                interfaces += [{
-                    "id": i.id,
-                    "name": i.name,
-                    "admin_status": i.admin_status,
-                    "oper_status": i.oper_status,
-                    "mac": i.mac or "",
-                    "full_duplex": i.full_duplex,
-                    "load_in": load_in,
-                    "load_out": load_out,
-                    "errors_in": errors_in,
-                    "errors_out": errors_out,
-                    "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
-                    "untagged_vlan": None,
-                    "tagged_vlan": None,
-                    "profile": i.profile,
-                    "service": i.service,
-                    "service_summary":
-                        service_summary.get("interface").get(i.id, {}),
-                    "description": i.description
-                }]
+        for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
+            load_in = "-"
+            load_out = "-"
+            errors_in = "-"
+            errors_out = "-"
+            iface_metrics = ifaces_metrics.get(str(i.name))
+            if iface_metrics:
+                for key, value in six.iteritems(iface_metrics):
+                    if key not in metrics_map:
+                        continue
+                    metric_type = metric_type_name.get(key) or metric_type_field.get(key)
+                    if key == "Interface | Load | In":
+                        load_in = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
+                    if key == "Interface | Load | Out":
+                        load_out = "%s%s" % (self.humanize_speed(value, metric_type), metric_type) if value else "-"
+                    if key == "Interface | Errors | In":
+                        errors_in = value if value else "-"
+                    if key == "Interface | Errors | Out":
+                        errors_out = value if value else "-"
+            interfaces += [{
+                "id": i.id,
+                "name": i.name,
+                "admin_status": i.admin_status,
+                "oper_status": i.oper_status,
+                "mac": i.mac or "",
+                "full_duplex": i.full_duplex,
+                "load_in": load_in,
+                "load_out": load_out,
+                "errors_in": errors_in,
+                "errors_out": errors_out,
+                "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
+                "untagged_vlan": None,
+                "tagged_vlan": None,
+                "profile": i.profile,
+                "service": i.service,
+                "service_summary":
+                    service_summary.get("interface").get(i.id, {}),
+                "description": i.description
+            }]
 
-                si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
-                if len(si) == 1:
-                    si = si[0]
-                    interfaces[-1]["untagged_vlan"] = si.untagged_vlan
-                    interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
-            interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
+            si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
+            if len(si) == 1:
+                si = si[0]
+                interfaces[-1]["untagged_vlan"] = si.untagged_vlan
+                interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
+        interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
         # Resource groups
         # Service groups (i.e. server)
         static_services = set(self.object.static_service_groups)
