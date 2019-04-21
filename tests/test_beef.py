@@ -42,8 +42,9 @@ def get_beef_tests():
 
 
 def beef_test_name(v):
-    _, path = v
-    return path
+    if type(v) == tuple:
+        return v[1]
+    return None
 
 
 @pytest.fixture(params=get_beef_tests(), ids=beef_test_name)

@@ -85,7 +85,7 @@ class TextIndex(Document):
         model_id = get_model_id(sender)
         object_id = str(instance.id)
         logger.info("Update FTS index for %s:%s", model_id, object_id)
-        TextIndex._get_collection().update(
+        TextIndex._get_collection().update_one(
             {
                 "model": model_id,
                 "object": object_id
@@ -108,7 +108,7 @@ class TextIndex(Document):
         model_id = get_model_id(sender)
         object_id = str(instance.id)
         logger.info("Remove FTS index for %s:%s", model_id, object_id)
-        TextIndex._get_collection().remove({
+        TextIndex._get_collection().delete_one({
             "model": model_id,
             "object": object_id
         })

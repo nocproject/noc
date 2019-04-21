@@ -209,8 +209,14 @@ def get_by_path(mo, path):
     return v
 
 
+def get_discovery_object_name(x):
+    if type(x) == tuple:
+        return "%s:%s" % (x[2], x[0])
+    return None
+
+
 @pytest.fixture(scope="module", params=get_discovery_configs(),
-                ids=lambda x: "%s:%s" % (x[2], x[0]))
+                ids=get_discovery_object_name)
 def discovery_object(request):
     global _configs
     name, address, pool_name, beef_storage_url, beef_path, data = request.param
