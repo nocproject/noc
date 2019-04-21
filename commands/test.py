@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Test framework
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,6 +30,11 @@ class Command(BaseCommand):
             help="Verbose output"
         )
         run_parser.add_argument(
+            "--test-db",
+            help="Test database name",
+            default=os.environ.get("NOC_TEST_DB")
+        )
+        run_parser.add_argument(
             "--coverage-report",
             help="Write coverage report to specified directory"
         )
@@ -54,13 +59,16 @@ class Command(BaseCommand):
     def handle_check(self, check_cmd, *args, **options):
         return getattr(self, "handle_check_%s" % check_cmd)(*args, **options)
 
-    def handle_run(self, tests=None, verbose=False, statistics=False,
+    def handle_run(self, tests=None, verbose=False, test_db=None, statistics=False,
                    coverage_report=False, test_report=None, *args, **options):
         def run_tests(args):
             self.print("Running test")
             # Must be imported within coverage
             from noc.config import config
-            db_name = "test_%d" % time.time()
+            if test_db:
+                db_name = test_db
+            else:
+                db_name = "test_%d" % time.time()  # Generate unique database name
             # Override database names
             config.pg.db = db_name
             config.mongo.db = db_name

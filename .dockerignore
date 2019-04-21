@@ -1,0 +1,4 @@
+## migrations dns:032 and sa:076 looks for this file and fails on no mercurial in image
+scripts/migrate-repo
+.git/
+.docker/

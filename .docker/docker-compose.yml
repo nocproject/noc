@@ -1,0 +1,296 @@
+version: "2.4"
+
+services:
+  mongo:
+    image: "mongo:4.0"
+    command: --wiredTigerCacheSizeGB 1.5 --bind_ip_all --nojournal
+    volumes:
+      - ./files/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      MONGO_INITDB_DATABASE: noc
+      MONGO_INITDB_ROOT_USERNAME: noc
+      MONGO_INITDB_ROOT_PASSWORD: noc
+
+  postgres:
+    image: "postgres:9.6"
+    environment:
+      POSTGRES_USER: noc
+      POSTGRES_DB: noc
+      POSTGRES_PASSWORD: noc
+    command: -c fsync=off
+    healthcheck:
+      test: ["CMD", "su", "-", "postgres", "-c", "psql -U noc -l | grep noc"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  migrate:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    working_dir: /opt/noc
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      clickhouse:
+        condition: service_started
+    command: >
+      sh -c "set -xe
+      && /usr/bin/python ./commands/migrate.py
+      && ./noc ensure-indexes
+      && /usr/bin/python ./commands/migrate-ch.py
+      && /usr/bin/python ./scripts/deploy/install-packages requirements/collections.json
+      && ./noc collection sync
+      && ./noc sync-perm
+      && ./noc sync-mibs
+      "
+    env_file:
+      - noc.conf
+
+  tests:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    working_dir: /opt/noc
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      clickhouse:
+        condition: service_started
+      nsqd:
+        condition: service_started
+    command: ./noc test run --coverage-report=/opt/noc/var/coverage --test-report=/opt/noc/var/test_report/index.html --statistics
+    environment:
+      NOC_TEST_DB: noc_tests
+    env_file:
+      - noc.conf
+
+  nsqlookupd:
+    image: nsqio/nsq:v1.1.0
+    command: /nsqlookupd
+
+  nsqd:
+    image: nsqio/nsq:v1.1.0
+    depends_on:
+      - nsqlookupd
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --mem-queue-size=10000
+
+  web:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - clickhouse
+      - redis
+      - nsqd
+      - nsqlookupd
+      - login
+    command: /usr/bin/python /opt/noc/services/web/service.py
+    env_file:
+      - noc.conf
+
+  login:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+    command: /usr/bin/python /opt/noc/services/login/service.py
+
+    env_file:
+      - noc.conf
+
+  card:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - redis
+      - login
+    command: /usr/bin/python /opt/noc/services/card/service.py
+
+    env_file:
+      - noc.conf
+
+  mrt:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+    command: /usr/bin/python /opt/noc/services/mrt/service.py
+
+    env_file:
+      - noc.conf
+
+  sae:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - redis
+    command: /usr/bin/python /opt/noc/services/sae/service.py
+    env_file:
+      - noc.conf
+
+  datasource:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+    command: /usr/bin/python /opt/noc/services/datasource/service.py
+
+    env_file:
+      - noc.conf
+
+  datastream:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+    command: /usr/bin/python /opt/noc/services/datastream/service.py
+    env_file:
+      - noc.conf
+
+  nbi:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - clickhouse
+      - login
+      - nsqd
+    command: /usr/bin/python /opt/noc/services/nbi/service.py
+    env_file:
+      - noc.conf
+
+  activator-default:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    command: /usr/bin/python /opt/noc/services/activator/service.py
+    environment:
+      NOC_POOL: default
+      NOC_LOGLEVEL: debug
+    env_file:
+      - noc.conf
+
+  bi:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - clickhouse
+    command: /usr/bin/python /opt/noc/services/bi/service.py
+    env_file:
+      - noc.conf
+
+  scheduler:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - redis
+    command: /usr/bin/python /opt/noc/services/scheduler/service.py
+
+    env_file:
+      - noc.conf
+
+  classifier:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - redis
+      - nsqlookupd
+      - nsqd
+    command: /usr/bin/python /opt/noc/services/classifier/service.py
+
+    env_file:
+      - noc.conf
+
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+
+  memcached:
+    image: memcached:alpine
+
+  redis:
+    image: redis:5-alpine
+
+  chwriter:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - clickhouse
+      - nsqlookupd
+      - nsqd
+    command: /usr/bin/python /opt/noc/services/chwriter/service.py
+    env_file:
+      - noc.conf
+
+  selfmon:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+      - nsqlookupd
+      - nsqd
+    command: /usr/bin/python /opt/noc/services/selfmon/service.py
+
+    env_file:
+      - noc.conf
+
+  mib:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - mongo
+    command: /usr/bin/python /opt/noc/services/mib/service.py
+
+    env_file:
+      - noc.conf
+
+  syslogcollector:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build
+    restart: "no"
+    depends_on:
+      - nsqd
+      - datastream
+    command: /usr/bin/python /opt/noc/services/syslogcollector/service.py
+    env_file:
+      - noc.conf

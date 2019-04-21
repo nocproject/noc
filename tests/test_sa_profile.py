@@ -54,4 +54,7 @@ def test_profile_name(sa_profile):
         req_name = req_name[16:]
         if req_name == "Generic":
             pytest.skip("Generic profile")
+        parts = req_name.split(".")
+        assert 2 <= len(parts) <= 3
+        req_name = "%s.%s" % (parts[0], parts[1])
     assert profile.name == req_name
