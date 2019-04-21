@@ -32,7 +32,7 @@ class MismatchStringValidator(TextValidator):
 
     def check(self, template, error_text, **kwargs):
         tpl = self.expand_template(template)
-        if tpl not in self.get_config_block():
+        if tpl in self.get_config_block():
             if self.scope == self.INTERFACE:
                 obj = self.object.name
             else:
