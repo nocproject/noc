@@ -40,6 +40,10 @@ class VRFApplication(ExtModelApplication):
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile.style else ""
 
+    def queryset(self, request, query=None):
+        qs = super(VRFApplication, self).queryset(request, query=query)
+        return qs.filter(VRF.read_Q(request.user, include_prefix=False))
+
     def clean(self, data):
         if not data.get("vpn_id"):
             vdata = {

@@ -75,14 +75,13 @@ class IPAMApplication(ExtApplication):
                                               root)
         # Get search query
         query = ""
+        q = VRF.read_Q(request.user)
         if "q" in request.GET:
             query = request.GET["q"]
-            q = (
+            q &= (
                 Q(name__icontains=query) |
                 Q(rd=query) | Q(description__icontains=query)
             )
-        else:
-            q = Q()
         # Display grouped VRFs
         q_afi = Q(afi_ipv4=True) | Q(afi_ipv6=True)
         groups = []
@@ -143,6 +142,7 @@ class IPAMApplication(ExtApplication):
         can_add_prefix = can_change
         can_add_address = can_change and len(prefixes) == 0
         can_edit_special = prefix.effective_prefix_special_address == "I"
+        can_show = {p.id for p in prefixes if Prefix.has_access(user, vrf, afi, p)}
         # Bookmarks
         has_bookmark = prefix.has_bookmark(user)
         bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
@@ -327,7 +327,8 @@ class IPAMApplication(ExtApplication):
             styles=styles,
             ranges=ranges,
             max_slots=max_slots,
-            l_prefixes=l_prefixes
+            l_prefixes=l_prefixes,
+            can_show=can_show
         )
 
     class QuickJumpForm(forms.Form):

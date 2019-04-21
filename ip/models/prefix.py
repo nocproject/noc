@@ -14,6 +14,7 @@ from collections import defaultdict
 # Third-party modules
 import six
 from django.db import models, connection
+from django.db.models import Q
 import cachetools
 # NOC modules
 from noc.aaa.models.user import User
@@ -25,6 +26,7 @@ from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, 
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
+from noc.lib.db import SQL
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
@@ -40,10 +42,12 @@ id_lock = Lock()
 
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
+PERMISSIONS_LIST = ["can_view", "can_state", "can_change", "can_create", "can_delete", "can_delegate"]
+
 is_prefix_perm = ListOfParameter(element=[
     ModelParameter(User, required=False),
     ModelParameter(Group, required=False),
-    StringParameter(choices=["can_view", "can_change", "can_create"])
+    StringParameter(choices=PERMISSIONS_LIST)
 ], default=[])
 
 
@@ -265,6 +269,7 @@ class Prefix(models.Model):
             raise ValidationError("Root prefix cannot have parent")
         # Check permission
         if self.direct_permissions:
+            # @todo check permission level (view -> state -> change -> delegate
             is_prefix_perm.clean(self.direct_permissions)
 
     def save(self, **kwargs):
@@ -447,7 +452,9 @@ class Prefix(models.Model):
         :param user:
         :return:
         """
-        return PrefixAccess.user_can_view(
+        if self.is_root:
+            return True
+        return Prefix.has_access(
             user, self.vrf, self.afi, self.prefix)
 
     def can_change(self, user):
@@ -456,8 +463,8 @@ class Prefix(models.Model):
         :param user:
         :return:
         """
-        return PrefixAccess.user_can_change(
-            user, self.vrf, self.afi, self.prefix)
+        return Prefix.has_access(
+            user, self.vrf, self.afi, self.prefix, "can_change")
 
     def has_bookmark(self, user):
         """
@@ -785,7 +792,7 @@ class Prefix(models.Model):
         return self.parent.get_effective_as()
 
     def get_permission(self):
-        return self.direct_permissions
+        return self.direct_permissions or []
 
     def get_effective_permission(self):
         if self.is_root:
@@ -793,6 +800,73 @@ class Prefix(models.Model):
         if not self.parent:
             return self.get_permission()
         return self.parent.get_effective_permission() + self.get_permission()
+
+    @classmethod
+    def access_Q(cls, user, vrf, afi, prefix, permission=None):
+        """
+        :param user:
+        :param vrf:
+        :param afi:
+        :param prefix:
+        :param permission:
+        :return:
+        """
+        groups = user.groups.values_list("id", flat=True)
+        extra = {"where": ["prefix >>= %s"], "params": [str(prefix)]}
+        if groups:
+            where_q = "(perm -> 0 @> %s OR perm -> 1 <@ %s)"
+            extra["params"] += [str(user.id), str(list(groups))]
+        else:
+            where_q = "perm -> 0 @> %s"
+            extra["params"] += [str(user.id)]
+        if permission and permission in PERMISSIONS_LIST:
+            where_q += " AND perm -> 2 @> %s::jsonb"
+            extra["params"] += ['"%s"' % permission]
+        extra["where"] += ["EXISTS(SELECT 1 "
+                           "FROM jsonb_array_elements(direct_permissions) perm "
+                           "WHERE %s)" % where_q]
+        return Prefix.objects.filter(vrf=vrf, afi=afi).extra(**extra)
+
+    @classmethod
+    def has_access(cls, user, vrf, afi, prefix, permission=None):
+        """
+        Check user has access to prefix
+        :param user:
+        :param vrf:
+        :param afi:
+        :param prefix:
+        :param permission:
+        :return:
+        """
+        if user.is_superuser:
+            return True
+        if isinstance(prefix, Prefix):
+            prefix = prefix.prefix
+        else:
+            prefix = str(prefix)
+        if "/" not in prefix:
+            if afi == "4":
+                prefix += "/32"
+            else:
+                prefix += "/128"
+        # Check VRF permission
+        if vrf.has_access(user, include_prefix=False):
+            return True
+        r = Prefix.access_Q(user, vrf, afi, prefix, permission)
+        return r.exists()
+
+    @classmethod
+    def read_Q(cls, user, include_vrf=False):
+        if user.is_superuser:
+            return Q()  # No restrictions
+        groups = list(user.groups.values_list("id", flat=True))
+        q = "EXISTS(SELECT 1 FROM jsonb_array_elements(direct_permissions) perm "\
+            "WHERE (perm -> 0 @> '%s' OR perm -> 1 <@ '%s'))" % (str(user.id), str(groups))
+        if include_vrf:
+            vrf_ids = list(VRF.objects.filter(VRF.read_Q(user, include_prefix=False)).values_list("id", flat=True))
+            if vrf_ids:
+                q += " OR vrf_id = ANY(ARRAY%s)" % str(vrf_ids)
+        return SQL(q)
 
 
 # Avoid circular references

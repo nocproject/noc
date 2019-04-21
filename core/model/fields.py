@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import json
+import ujson
 import psycopg2
 from psycopg2.extras import Json
 from django.db import models
@@ -349,7 +349,7 @@ class JSONField(models.Field):
     def validate(self, value, model_instance):
         super(JSONField, self).validate(value, model_instance)
         try:
-            json.dumps(value)
+            ujson.dumps(value)
         except TypeError:
             raise exceptions.ValidationError(
                 self.error_messages['invalid'],

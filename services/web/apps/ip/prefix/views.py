@@ -15,7 +15,6 @@ from django.contrib.auth.models import User, Group
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
-from noc.ip.models.prefixaccess import PrefixAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import ModelParameter, PrefixParameter
 from noc.core.ip import IP
@@ -34,17 +33,18 @@ class PrefixApplication(ExtModelApplication):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
 
     def can_create(self, user, obj):
-        return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
+        # return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
+        return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_create")
 
     def can_update(self, user, obj):
-        return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
+        return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_change")
 
     def can_delete(self, user, obj):
-        return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
+        return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_delete")
 
     def queryset(self, request, query=None):
         qs = super(PrefixApplication, self).queryset(request, query=query)
-        return qs.filter(PrefixAccess.read_Q(request.user))
+        return qs.filter(Prefix.read_Q(request.user))
 
     def clean(self, data):
         if data.get("direct_permissions"):
@@ -68,7 +68,7 @@ class PrefixApplication(ExtModelApplication):
         return r
 
     @view(
-        url="^(?P<prefix_id>\d+)/rebase/$",
+        url=r"^(?P<prefix_id>\d+)/rebase/$",
         method=["POST"], access="rebase", api=True,
         validate={
             "to_vrf": ModelParameter(VRF),
@@ -84,7 +84,7 @@ class PrefixApplication(ExtModelApplication):
             return self.response_bad_request(str(e))
 
     @view(
-        url="^(?P<prefix_id>\d+)/suggest_free/$",
+        url=r"^(?P<prefix_id>\d+)/suggest_free/$",
         method=["GET"], access="read", api=True
     )
     def api_suggest_free(self, request, prefix_id):
@@ -117,7 +117,7 @@ class PrefixApplication(ExtModelApplication):
                     break
         return suggestions
 
-    @view(method=["DELETE"], url="^(?P<id>\d+)/recursive/$", access="delete", api=True)
+    @view(method=["DELETE"], url=r"^(?P<id>\d+)/recursive/$", access="delete", api=True)
     def api_delete_recursive(self, request, id):
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})

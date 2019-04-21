@@ -15,12 +15,14 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User, Group
+from django.db.models import Q
 import cachetools
 # NOC modules
 from noc.project.models.project import Project
 from noc.lib.validators import check_rd
 from noc.core.model.fields import TagsField, DocumentReferenceField, JSONField
 from noc.lib.app.site import site
+from noc.lib.db import SQL
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
@@ -263,4 +265,28 @@ class VRF(models.Model):
         super(VRF, self).delete(*args, **kwargs)
 
     def get_permission(self):
-        return self.direct_permissions
+        return self.direct_permissions or []
+
+    @classmethod
+    def read_Q(cls, user, include_prefix=True):
+        from .prefix import Prefix
+        if user.is_superuser:
+            return Q()  # No restrictions
+        groups = list(user.groups.values_list("id", flat=True))
+        q = "EXISTS(SELECT 1 FROM jsonb_array_elements(direct_permissions) perm " \
+            "WHERE (perm -> 0 @> '%s' OR perm -> 1 <@ '%s'))" % (str(user.id), str(groups))
+        if include_prefix:
+            vrf_ids = set(Prefix.objects.filter(Prefix.read_Q(user)).values_list("vrf_id", flat=True))
+            if vrf_ids:
+                q += " OR ip_vrf.id = ANY(ARRAY%s)" % str(list(vrf_ids))
+        return SQL(q)
+
+    def has_access(self, user, include_prefix=True):
+        from .prefix import Prefix
+        if user.is_superuser:
+            return True
+        groups = set(user.groups.values_list("id", flat=True))
+        r = [perm for p_user, p_group, perm in self.get_permission() if p_user == user.id or p_group in groups]
+        if include_prefix:
+            r = Prefix.has_access(user, self, self.afi_ipv4, "0.0.0.0/0")
+        return r
