@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Abstract Wiki parsers class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from __future__ import absolute_import
 from noc.lib.validators import is_int
-from noc.settings import config
 
 
 class BaseParser(object):
@@ -47,9 +46,7 @@ class BaseParser(object):
         if link.startswith("KB") and is_int(link[2:]):
             return u"<a href='/kb/view/%s/'>%s</a>" % (link[2:], text)
         elif link.startswith("TT"):
-            tt = {"tt": link[2:]}
-            tt_url = config.get("tt", "url", tt) % tt
-            return u"<a href='%s'>%s</a>" % (tt_url, text)
+            return link[2:]
         elif link.startswith("attach:"):
             if text == link:
                 text = link[7:]
