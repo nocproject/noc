@@ -85,7 +85,7 @@ services:
       nsqd:
         condition: service_started
     command: >
-      sh -c "set -xe
+      sh -c "
       for i in services/*; do
         /usr/bin/python3 $$i/service.py;
       done"
