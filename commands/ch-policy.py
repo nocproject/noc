@@ -82,7 +82,10 @@ class Command(BaseCommand):
                 self.print("%d\n" % i)
                 time.sleep(1)
             for c in partition_claimed:
-                ch.execute("ALTER TABLE %s.%s DROP PARTITION '%s'" % (config.clickhouse.db, c[0], c[1]))
+                table, part = c[0], c[1]
+                if table.startswith(".inner"):
+                    table = table[7:]
+                ch.execute("ALTER TABLE %s.%s DROP PARTITION '%s'" % (config.clickhouse.db, table, part))
             self.print("# Done. %d bytes to be reclaimed" % claimed_bytes)
 
     def get_inactive_partition(self, connect):
