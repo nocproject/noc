@@ -87,7 +87,7 @@ services:
     command: >
       sh -c "set -xe
       for i in services/*;
-        do python3 $i/service.py;
+        do python3 $$i/service.py;
       done"
     env_file:
       - noc.conf
