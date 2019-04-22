@@ -86,8 +86,8 @@ services:
         condition: service_started
     command: >
       sh -c "set -xe
-      for i in services/*;
-        do python3 $$i/service.py;
+      for i in services/*; do
+        /usr/bin/python3 $$i/service.py;
       done"
     env_file:
       - noc.conf
