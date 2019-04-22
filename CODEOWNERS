@@ -51,3 +51,6 @@ CODEOWNERS @dv
 
 # CI settings
 /.gitlab-ci.yml @dv @freeseacher
+
+# Docker files
+/.docker/ @dv @freeseacher
