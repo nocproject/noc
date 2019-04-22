@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Eltex.MES.get_interface_status
+# Planet.WGSD.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -21,30 +22,25 @@ class Script(BaseScript):
         r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<status>Up|Down)\s+\S+\s+\S.*$",
         re.MULTILINE)
 
-    def execute(self, interface=None):
+    def execute_snmp(self, interface=None):
         r = []
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                                                  "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
-                    if n[:2] == 'fa' or n[:2] == 'gi' or n[:2] == 'te':
-                        if interface:
-                            if n == interface:
-                                r.append({
-                                    "interface": n,
-                                    "status": int(s) == 1
-                                })
-                        else:
-                            r.append({
-                                "interface": n,
-                                "status": int(s) == 1
-                            })
-                return r
-            except self.snmp.TimeOutError:
-                pass
+        for n, s in self.snmp.join_tables(mib["IF-MIB::ifName"], mib["IF-MIB::ifOperStatus"]):
+            if n[:2] == 'fa' or n[:2] == 'gi' or n[:2] == 'te':
+                if interface:
+                    if n == interface:
+                        r.append({
+                            "interface": n,
+                            "status": int(s) == 1
+                        })
+                else:
+                    r.append({
+                        "interface": n,
+                        "status": int(s) == 1
+                    })
+        return r
 
-        # Fallback to CLI
+    def execute_cli(self, interface=None):
+        r = []
         if interface:
             cmd = "show interfaces status %s" % interface
         else:
