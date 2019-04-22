@@ -25,7 +25,7 @@ class JSONSessionMiddleware(BaseMiddleware):
 
     def process_post(self, url, body, headers):
         if self.http.session_id and isinstance(body, dict):
-            body[self.session_param] = self.http.session_id
+            body[self.session_param] = str(self.http.session_id)
         return url, body, headers
 
     def process_put(self, url, body, headers):
