@@ -153,14 +153,18 @@ class ExtApplication(Application):
             try:
                 limit = int(limit)
             except ValueError:
-                raise HttpResponse(400, "Invalid %s param" % self.limit_param)
+                return HttpResponse(400, "Invalid %s param" % self.limit_param)
+        if limit < 0:
+            return HttpResponse(400, "Invalid %s param" % self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param) or 0
         if start:
             try:
                 start = int(start)
             except ValueError:
-                raise HttpResponse(400, "Invalid %s param" % self.start_param)
+                return HttpResponse(400, "Invalid %s param" % self.start_param)
+        if start < 0:
+            return HttpResponse(400, "Invalid %s param" % self.start_param)
         query = q.get(self.query_param)
         only = q.get(self.only_param)
         if only:
@@ -218,13 +222,13 @@ class ExtApplication(Application):
             data = data.order_by(*ordering)
         # Apply row limit if necessary
         if self.row_limit:
-            limit = min(limit, self.row_limit + 1)
+            limit = min(limit or self.row_limit, self.row_limit + 1)
         # Apply paging
         if limit:
             data = data[start:start + limit]
         # Fetch and format data
         out = [formatter(o, fields=only) for o in data]
-        if self.row_limit and len(out) == self.row_limit + 1:
+        if self.row_limit and len(out) > self.row_limit + 1:
             return self.response(
                 "System records limit exceeded (%d records)" % self.row_limit,
                 status=self.TOO_LARGE)
