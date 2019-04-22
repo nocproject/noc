@@ -271,6 +271,10 @@ class Address(models.Model):
     def get_administrative_domain(self):
         return self.administrative_domain
 
+    @classmethod
+    def has_access(cls, user, vrf, afi, prefix, permission=None):
+        return Prefix.has_access(user, vrf, afi, prefix, permission=permission)
+
 
 # Avoid django's validation failure
 from .prefix import Prefix

@@ -418,8 +418,7 @@ class IPAMApplication(ExtApplication):
             return self.response_forbidden("Invalid AFI")
         address = self.get_object_or_404(Address, vrf=vrf, afi=afi,
                                          address=address)
-        if not PrefixAccess.user_can_change(request.user, vrf, afi,
-                                            address.address):
+        if not Prefix.has_access(request.user, vrf, afi, address.address, "can_delete"):
             return self.response_forbidden()
             # Check not in locked range
         if AddressRange.address_is_locked(vrf, afi, address.address):

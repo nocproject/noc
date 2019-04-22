@@ -11,7 +11,7 @@ from django.contrib.auth.models import User, Group
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.ip.models.address import Address
-from noc.ip.models.prefixaccess import PrefixAccess
+from noc.ip.models.prefix import Prefix
 from noc.lib.app.decorators.state import state_handler
 
 
@@ -28,17 +28,17 @@ class AddressApplication(ExtModelApplication):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
 
     def can_create(self, user, obj):
-        return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
+        return Address.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_create")
 
     def can_update(self, user, obj):
-        return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
+        return Address.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_change")
 
     def can_delete(self, user, obj):
-        return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
+        return Address.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_delete")
 
     def queryset(self, request, query=None):
         qs = super(AddressApplication, self).queryset(request, query=query)
-        return qs.filter(PrefixAccess.read_Q(request.user, field="address", table="ip_address"))
+        return qs.filter(Prefix.read_Q(request.user))
 
     def clean(self, data):
         if data.get("direct_permissions"):
