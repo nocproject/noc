@@ -100,12 +100,21 @@ class MODiscoveryJob(PeriodicJob):
             }
         }, upsert=True)
 
+    def get_running_policy(self):
+        raise NotImplementedError
+
     def can_run(self):
-        # @todo: Make configurable
-        os = self.object.get_status()
-        if not os:
-            self.logger.info("Object ping Fail, Job will not run")
-        return self.object.is_managed and os
+        # Check object is managed
+        if not self.object.is_managed:
+            self.logger.info("Object is not managed. Skipping job")
+            return False
+        # Check object status according to policy
+        rp = self.get_running_policy()
+        if rp == "R" or (rp == "r" and self.object.object_profile.enable_ping):
+            if not self.object.get_status():
+                self.logger.info("Object is down. Skipping job")
+                return False
+        return True
 
     @contextlib.contextmanager
     def check_timer(self, name):

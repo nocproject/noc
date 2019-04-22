@@ -56,6 +56,9 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
         if self.object.object_profile.enable_periodic_discovery_metrics:
             MetricsCheck(self).run()
 
+    def get_running_policy(self):
+        return self.object.get_effective_periodic_discovery_running_policy()
+
     def can_run(self):
         return (super(PeriodicDiscoveryJob, self).can_run() and
                 self.object.object_profile.enable_periodic_discovery and

@@ -569,9 +569,28 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             title: __("Box discovery"),
                             items: [
                                 {
-                                    name: "enable_box_discovery",
-                                    xtype: "checkbox",
-                                    boxLabel: __("Enable")
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    items: [
+                                        {
+                                            name: "enable_box_discovery",
+                                            xtype: "checkbox",
+                                            boxLabel: __("Enable")
+                                        },
+                                        {
+                                            name: "box_discovery_running_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Running Policy"),
+                                            store: [
+                                                ["R", __("Require Up")],
+                                                ["r", __("Require Up if ping enabled")],
+                                                ["i", __("Always Run")]
+                                            ],
+                                            allowBlank: false,
+                                            uiStyle: "medium",
+                                            padding: "0 0 0 4px"
+                                        }
+                                    ]
                                 },
                                 {
                                     xtype: "fieldset",
@@ -1521,9 +1540,28 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             title: __("Periodic discovery"),
                             items: [
                                 {
-                                    name: "enable_periodic_discovery",
-                                    xtype: "checkbox",
-                                    boxLabel: __("Enable")
+                                    xtype: "container",
+                                    layout: "hbox",
+                                    items: [
+                                        {
+                                            name: "enable_periodic_discovery",
+                                            xtype: "checkbox",
+                                            boxLabel: __("Enable")
+                                        },
+                                        {
+                                            name: "periodic_discovery_running_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Running Policy"),
+                                            store: [
+                                                ["R", __("Require Up")],
+                                                ["r", __("Require Up if ping enabled")],
+                                                ["i", __("Always Run")]
+                                            ],
+                                            allowBlank: false,
+                                            uiStyle: "medium",
+                                            padding: "0 0 0 4px"
+                                        }
+                                    ]
                                 },
                                 {
                                     xtype: "fieldset",

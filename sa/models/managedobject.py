@@ -70,7 +70,7 @@ from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 15
+MANAGEDOBJECT_CACHE_VERSION = 16
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -342,6 +342,29 @@ class ManagedObject(Model):
             ("P", "From Profile"),
             ("R", "Escalate as depended")
         ],
+        default="P"
+    )
+    # Discovery running policy
+    box_discovery_running_policy = CharField(
+        "Box Running Policy",
+        choices=[
+            ("P", "From Profile"),
+            ("R", "Require Up"),
+            ("r", "Require if enabled"),
+            ("i", "Ignore")
+        ],
+        max_length=1,
+        default="P"
+    )
+    periodic_discovery_running_policy = CharField(
+        "Periodic Running Policy",
+        choices=[
+            ("P", "From Profile"),
+            ("R", "Require Up"),
+            ("r", "Require if enabled"),
+            ("i", "Ignore")
+        ],
+        max_length=1,
         default="P"
     )
     # Raise alarms on discovery problems
@@ -1623,6 +1646,16 @@ class ManagedObject(Model):
         if self.vlan_discovery_policy == "P":
             return self.object_profile.vlan_discovery_policy
         return self.vlan_discovery_policy
+
+    def get_effective_box_discovery_running_policy(self):
+        if self.box_discovery_running_policy == "P":
+            return self.object_profile.box_discovery_running_policy
+        return self.box_discovery_running_policy
+
+    def get_effective_periodic_discovery_running_policy(self):
+        if self.periodic_discovery_running_policy == "P":
+            return self.object_profile.periodic_discovery_running_policy
+        return self.periodic_discovery_running_policy
 
     def get_full_fqdn(self):
         if not self.fqdn:

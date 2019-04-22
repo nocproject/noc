@@ -152,6 +152,9 @@ class BoxDiscoveryJob(MODiscoveryJob):
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
 
+    def get_running_policy(self):
+        return self.object.get_effective_box_discovery_running_policy()
+
     def can_run(self):
         return (super(BoxDiscoveryJob, self).can_run() and
                 self.object.object_profile.enable_box_discovery)
