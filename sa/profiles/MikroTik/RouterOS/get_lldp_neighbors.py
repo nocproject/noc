@@ -9,11 +9,13 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, \
-    LLDP_PORT_SUBTYPE_NAME, \
-    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_WLAN_ACCESS_POINT, \
-    LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE, \
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE,
     lldp_caps_to_bits
+)
 
 
 class Script(BaseScript):
