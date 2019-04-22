@@ -22,8 +22,8 @@ class TestTestMainLanguage(BaseModelTest):
         :return:
         """
         en = Language.objects.get(name="English")
-        assert en.name == "English"
-        assert en.native_name == "English"
+        assert en.name == u"English"
+        assert en.native_name == u"English"
         ru = Language.objects.get(name="Russian")
-        assert ru.name == "Russian"
-        assert ru.native_name == "Русский"
+        assert ru.name == u"Russian"
+        assert ru.native_name == u"Русский"

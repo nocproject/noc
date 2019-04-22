@@ -2,19 +2,41 @@
 # ----------------------------------------------------------------------
 # AlarmClass dictionary test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
+import itertools
+# Third-party modules
+import pytest
 # NOC modules
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
-from .base import BaseDictionaryTest
 
 
-class TestAlarmClass(BaseDictionaryTest):
-    model = AlarmClass
-    FIELDS = [
-        ("name", "String")
-    ]
+MODEL = AlarmClass
+FIELDS = [
+    ("name", "String")
+]
+
+
+def test_fields_test():
+    assert len(FIELDS) == len(MODEL._fields_order)
+
+
+@pytest.mark.parametrize("name,db_type", FIELDS)
+def test_field_name(name, db_type):
+    assert name in MODEL._fields
+
+
+@pytest.mark.parametrize("name,db_type", FIELDS)
+def test_field_db_type(name, db_type):
+    assert MODEL._fields[name].get_db_type() == db_type
+
+
+@pytest.mark.parametrize("order,fields", list(itertools.izip_longest(MODEL._fields_order, FIELDS)))
+def test_field_db_type(order, fields):
+    assert fields is not None
+    name, db_type = fields
+    assert order == name
+
