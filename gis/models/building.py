@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Building object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,12 +15,17 @@ from mongoengine.fields import (StringField, IntField, BooleanField,
                                 DictField, DateTimeField)
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
+from noc.core.model.decorator import on_save
+from noc.core.model.decorator import on_delete_check
 from .entrance import Entrance
 from .division import Division
-from noc.core.model.decorator import on_save
 
 
 @on_save
+@on_delete_check(check=[
+    ("gis.Address", "building"), 
+    ("inv.CoveredBuilding", "building")
+])
 class Building(Document):
     meta = {
         "collection": "noc.buildings",

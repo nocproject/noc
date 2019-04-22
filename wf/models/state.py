@@ -40,7 +40,8 @@ STATE_JOB = "noc.core.wf.transition.state_job"
     ("crm.Subscriber", "state"),
     ("crm.Supplier", "state"),
     ("phone.PhoneNumber", "state"),
-    ("phone.PhoneRange", "state")
+    ("phone.PhoneRange", "state"),
+    ("vc.VLAN", "state")
 ])
 @on_save
 class State(Document):

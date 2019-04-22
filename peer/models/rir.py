@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # RIR model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,8 +10,10 @@
 import time
 import urllib
 import urllib2
-# Django modules
+# Third-party modules
 from django.db import models
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 
 
 class RIRDBUpdateError(Exception):
@@ -26,6 +28,11 @@ except ImportError:
     RIPE_SYNCUPDATES_URL = "http://syncupdates.db.ripe.net"
 
 
+@on_delete_check(check=[
+    ("peer.Person", "rir"),
+    ("peer.AS", "rir"),
+    ("peer.Maintainer", "rir")
+])
 class RIR(models.Model):
     """
     Regional internet registries

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Organisation model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 # Third-party modules
 from django.db import models
 # NOC modules
+from noc.core.model.decorator import on_delete_check
 from .maintainer import Maintainer
 
 
@@ -19,6 +20,9 @@ ORG_TYPE_CHOICES = [
 ]
 
 
+@on_delete_check(check=[
+    ("peer.AS", "organisation")
+])
 class Organisation(models.Model):
     class Meta(object):
         verbose_name = "Organisation"
