@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import re
 # Third-party modules
 import pytest
 # NOC modules
@@ -80,13 +82,35 @@ TOKENS5 = [
     ("    ", "description", "multi line", "interface", "e2", "description here")
 ]
 
+CFG6 = """! Config
+interface e0
+  description test
+queue mode strict
+  some instruction
+
+interface e1
+  description test2
+queue mode strict
+  some other instruction"""
+
+TOKENS6 = [
+    ("interface", "e0"),
+    ("  ", "description", "test"),
+    ("  ", "queue", "mode", "strict"),
+    ("  ", "some", "instruction"),
+    ("interface", "e1"),
+    ("  ", "description", "test2"),
+    ("  ", "queue", "mode", "strict"),
+    ("  ", "some", "other", "instruction")
+]
 
 @pytest.mark.parametrize("input,config,expected", [
     (CFG1, {}, TOKENS1),
     (CFG2, {"inline_comment": "#"}, TOKENS2),
     (CFG3, {"inline_comment": "//"}, TOKENS3),
     (CFG4, {"line_comment": "!", "tab_width": 4, "keep_indent": True}, TOKENS4),
-    (CFG5, {"line_comment": "!", "tab_width": 4, "keep_indent": True, "string_quote": "\""}, TOKENS5)
+    (CFG5, {"line_comment": "!", "tab_width": 4, "keep_indent": True, "string_quote": "\""}, TOKENS5),
+    (CFG6, {"line_comment": "!", "keep_indent": True, "rewrite": [(re.compile(r"^queue mode"), "  queue mode")]}, TOKENS6)
 ])
 def test_tokenizer(input, config, expected):
     tokenizer = LineTokenizer(input, **config)
