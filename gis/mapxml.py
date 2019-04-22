@@ -10,7 +10,7 @@
 from xml.dom.minidom import Document
 # NOC modules
 from noc.gis.models import Style, FontSet
-from noc.settings import config
+from noc.config import config
 
 
 SYMBOLIZERS = dict((s.lower()[:-10], s) for s in (
@@ -122,11 +122,11 @@ def map_to_xml(m, pretty_xml=False):
         ds = l.datasource.copy()
         if ds["type"] == "postgis" and ds["dbname"] == "":
             # Use NOC's database credentials
-            ds["dbname"] = config.get("database", "name")
-            ds["host"] = config.get("database", "host")
-            ds["port"] = config.get("database", "port")
-            ds["user"] = config.get("database", "user")
-            ds["password"] = config.get("database", "password")
+            ds["dbname"] = config.pg.db
+            ds["host"] = config.pg.addresses[0].host
+            ds["port"] = config.pg.addresses[0].port
+            ds["user"] = config.pg.user
+            ds["password"] = config.pg.password
         for k in ds:
             # <Parameter>
             tt = doc.createElement("Parameter")
