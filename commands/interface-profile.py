@@ -9,14 +9,12 @@
 # Python modules
 import argparse
 # NOC modules
-from noc.core.management.base import BaseCommand, CommandError
+from noc.core.management.base import BaseCommand
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.text import split_alnum
-from noc.settings import config
-from noc.core.handler import get_handler
 
 
 class Command(BaseCommand):
@@ -92,8 +90,7 @@ class Command(BaseCommand):
 
     def handle_show(self, moo, *args, **options):
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None)
-                                            or o.profile.name))
+            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name))
             ifaces = self.get_interfaces(o)
             if not ifaces:
                 self.stdout.write("No ifaces on object\n")
@@ -105,8 +102,7 @@ class Command(BaseCommand):
 
     def handle_reset(self, moo, *args, **kwargs):
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None)
-                                              or o.profile.name))
+            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name))
             for i in Interface.objects.filter(managed_object=o.id):
                 if i.profile:
                     self.stdout.write("    resetting profile on %s to default\n" % i.name)
@@ -143,6 +139,7 @@ class Command(BaseCommand):
                     else:
                         v = "Not matched"
                     self.show_interface(tps, i, v)
+
 
 if __name__ == "__main__":
     Command().run()
