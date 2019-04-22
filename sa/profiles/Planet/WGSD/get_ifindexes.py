@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Planet.WCDG.get_ifindexes
+# Planet.WGSD.get_ifindexes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetifindexes import IGetIfindexes
 
 
 class Script(BaseScript):
-    name = "Planet.WCDG.get_ifindexes"
+    name = "Planet.WGSD.get_ifindexes"
     interface = IGetIfindexes
     cache = True
     requires = []

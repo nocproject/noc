@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
-    name = "GWD.GFA..get_mac_address_table"
+    name = "GWD.GFA.get_mac_address_table"
     interface = IGetMACAddressTable
 
     rx_mac = re.compile(

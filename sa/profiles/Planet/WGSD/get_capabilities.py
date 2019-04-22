@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Planet.WGSD.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_lldp_cli(self):
         """
-        Check box has lldp enabled on Eltex
+        Check box has lldp enabled
         """
         cmd = self.cli("show lldp configuration", ignore_errors=True)
         return self.rx_lldp_en.search(cmd) is not None
@@ -36,7 +36,7 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_lacp_cli(self):
         """
-        Check box has lacp enabled on Eltex
+        Check box has lacp enabled
         """
         cmd = self.cli("show lacp Port-Channel", ignore_errors=True)
         return self.rx_lacp_en.search(cmd) is not None
@@ -44,7 +44,7 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_stp_cli(self):
         """
-        Check box has stp enabled on Eltex
+        Check box has stp enabled
         """
         cmd = self.cli("show spanning-tree", ignore_errors=True)
         return self.rx_stp_en.search(cmd) is not None
@@ -52,7 +52,7 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_gvrp_cli(self):
         """
-        Check box has gvrp enabled on Eltex
+        Check box has gvrp enabled
         """
         cmd = self.cli("show gvrp configuration", ignore_errors=True)
         return self.rx_gvrp_en.search(cmd) is not None
@@ -64,7 +64,7 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.cli("show version")
+        r = self.cli("show version", cached=True)
         return [e[0] for e in parse_table(r)]
 
     def execute_platform_cli(self, caps):
