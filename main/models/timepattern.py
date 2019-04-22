@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # TimePattern database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,6 +25,8 @@ id_lock = Lock()
     ("fm.AlarmTrigger", "time_pattern"),
     ("fm.EventTrigger", "time_pattern"),
     ("main.TimePatternTerm", "time_pattern"),
+    ("main.NotificationGroupUser", "time_pattern"),
+    ("main.NotificationGroupOther", "time_pattern"),
     ("maintenance.Maintenance", "time_pattern"),
     ("sa.ManagedObject", "time_pattern"),
     ("main.UserProfileContact", "time_pattern")

@@ -94,6 +94,7 @@ _MODELS = {
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
     "main.ExtStorage": "noc.main.models.extstorage.ExtStorage",
     "main.Favorites": "noc.main.models.favorites.Favorites",
+    "main.Handler": "noc.main.models.handler.Handler",
     "main.Language": "noc.main.models.language.Language",
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
@@ -311,6 +312,7 @@ _MODELS = {
     "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout",
     # phone models
     "phone.DialPlan": "noc.phone.models.dialplan.DialPlan",
+    "phone.NumberCategory": "noc.phone.models.numbercategory.NumberCategory",
     "phone.PhoneNumber": "noc.phone.models.phonenumber.PhoneNumber",
     "phone.PhoneNumberProfile": "noc.phone.models.phonenumberprofile.PhoneNumberProfile",
     "phone.PhoneRange": "noc.phone.models.phonerange.PhoneRange",

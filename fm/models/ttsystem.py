@@ -29,6 +29,7 @@ DEFAULT_TTSYSTEM_SHARD = "default"
 
 @on_delete_check(check=[
     ("sa.ManagedObject", "tt_system"),
+    ("sa.ManagedObjectSelector", "filter_tt_system")
 ])
 class TTSystem(Document):
     meta = {

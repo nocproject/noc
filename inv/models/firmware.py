@@ -31,7 +31,8 @@ id_lock = threading.Lock()
 @bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "version"),
-    ("sa.ManagedObject", "next_version")
+    ("sa.ManagedObject", "next_version"),
+    ("sa.ManagedObjectSelector", "filter_version")
 ])
 class Firmware(Document):
     meta = {

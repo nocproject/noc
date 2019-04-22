@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Address Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,7 +31,8 @@ id_lock = Lock()
     ("sa.ManagedObjectProfile", "address_profile_interface"),
     ("sa.ManagedObjectProfile", "address_profile_management"),
     ("sa.ManagedObjectProfile", "address_profile_dhcp"),
-    ("sa.ManagedObjectProfile", "address_profile_neighbor")
+    ("sa.ManagedObjectProfile", "address_profile_neighbor"),
+    ("sa.ManagedObjectProfile", "address_profile_confdb")
 ])
 class AddressProfile(Document):
     meta = {

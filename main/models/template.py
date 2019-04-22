@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Template model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ def template_validator(value):
     ("main.SystemTemplate", "template"),
     ("sa.ManagedObjectProfile", "beef_path_template"),
     ("sa.ManagedObjectProfile", "config_mirror_template"),
+    ("sa.ManagedObjectProfile", "config_download_template"),
     ("vc.VPNProfile", "name_template")
 ])
 class Template(models.Model):

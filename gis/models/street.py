@@ -2,18 +2,24 @@
 # ---------------------------------------------------------------------
 # Street object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, BooleanField, DateTimeField)
 from noc.lib.nosql import PlainReferenceField
 # NOC modules
-from division import Division
+from noc.core.model.decorator import on_delete_check
+from .division import Division
 
 
+@on_delete_check(check=[
+    ("gis.Address", "street")
+])
 class Street(Document):
     meta = {
         "collection": "noc.streets",

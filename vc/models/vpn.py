@@ -46,7 +46,8 @@ class RouteTargetItem(EmbeddedDocument):
 
 @bi_sync
 @on_delete_check(check=[
-    ("vc.VPN", "parent")
+    ("vc.VPN", "parent"),
+    ("vc.VLAN", "vpn")
 ])
 @workflow
 class VPN(Document):

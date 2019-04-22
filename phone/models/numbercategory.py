@@ -31,7 +31,9 @@ class NumberCategoryRule(EmbeddedDocument):
 
 class NumberCategory(Document):
     meta = {
-        "collection": "noc.numbercategories"
+        "collection": "noc.numbercategories",
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

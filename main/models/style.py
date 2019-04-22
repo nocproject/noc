@@ -35,7 +35,9 @@ id_lock = Lock()
         ("fm.ActiveAlarm", "style"),
         ("peer.ASProfile", "style"),
         ("phone.PhoneNumberProfile", "style"),
-        ("phone.PhoneRangeProfile", "style")
+        ("phone.PhoneRangeProfile", "style"),
+        ("fm.ActiveAlarm", "custom_style"),
+        ("vc.VLANProfile", "style")
     ]
 )
 class Style(models.Model):

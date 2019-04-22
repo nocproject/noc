@@ -31,7 +31,8 @@ id_lock = Lock()
     ("vc.VPN", "profile"),
     ("ip.VRF", "profile"),
     ("sa.ManagedObjectProfile", "vpn_profile_interface"),
-    ("sa.ManagedObjectProfile", "vpn_profile_mpls")
+    ("sa.ManagedObjectProfile", "vpn_profile_mpls"),
+    ("sa.ManagedObjectProfile", "vpn_profile_confdb")
 ])
 class VPNProfile(Document):
     meta = {

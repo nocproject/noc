@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Prefix Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ id_lock = Lock()
     ("ip.Prefix", "profile"),
     ("sa.ManagedObjectProfile", "prefix_profile_interface"),
     ("sa.ManagedObjectProfile", "prefix_profile_neighbor"),
+    ("sa.ManagedObjectProfile", "prefix_profile_confdb"),
     ("vc.VPNProfile", "default_prefix_profile"),
     ("peer.ASProfile", "prefix_profile_whois_route")
 ])
