@@ -70,7 +70,7 @@ from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 15
+MANAGEDOBJECT_CACHE_VERSION = 16
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
