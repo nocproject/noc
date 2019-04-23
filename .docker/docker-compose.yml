@@ -22,7 +22,7 @@ services:
       test: ["CMD", "su", "-", "postgres", "-c", "psql -U noc -l | grep noc"]
       interval: 3s
       timeout: 3s
-      retries: 5
+      retries: 100
 
   migrate:
     build:

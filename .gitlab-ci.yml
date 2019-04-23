@@ -68,19 +68,27 @@ futurize:
   tags:
     - docker
 
-Test:
+Test migrate:
   stage: test
-  before_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG} up -d clickhouse postgres mongo
   script:
     # see docker/docker-compose.yml for complete list of migrations
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG} build migrate
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG} up --exit-code-from migrate migrate
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG} build tests
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG} up --exit-code-from tests tests
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate build migrate
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate up --exit-code-from migrate migrate
   after_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG} down
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG} rm -v
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate down
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate rm -v
+  tags:
+    - shell
+  allow_failure: false
+
+Test code:
+  stage: test
+  script:
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests build tests
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests up --exit-code-from tests tests
+  after_script:
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests down
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests rm -v
   tags:
     - shell
   allow_failure: true
