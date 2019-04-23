@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CustomField model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import logging
 from functools import reduce
+import threading
 # Third-party modules
 from django.db import models, connection
 from django.db.models import signals as django_signals
@@ -21,6 +22,7 @@ from noc.lib.validators import is_int
 from .customfieldenumgroup import CustomFieldEnumGroup
 
 logger = logging.getLogger(__name__)
+id_lock = threading.Lock()
 
 
 class CustomField(models.Model):
@@ -68,6 +70,7 @@ class CustomField(models.Model):
                                    null=True, blank=True)
     _cfields = {}
     _installed = set()
+    _table_fields = None
 
     def __unicode__(self):
         return u"%s.%s" % (self.table, self.name)
@@ -272,7 +275,14 @@ class CustomField(models.Model):
 
     @classmethod
     def table_fields(cls, table):
-        return CustomField.objects.filter(is_active=True, table=table)
+        with id_lock:
+            if cls._table_fields is None:
+                cls._table_fields = {}
+                for cf in CustomField.objects.filter(is_active=True):
+                    if cf.table not in cls._table_fields:
+                        cls._table_fields[cf.table] = []
+                    cls._table_fields[cf.table] += [cf]
+            return cls._table_fields.get(table, [])
 
     @classmethod
     def install_fields(cls):
