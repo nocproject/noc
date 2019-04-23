@@ -12,6 +12,7 @@ import sys
 import glob
 import os
 import threading
+import warnings
 # NOC modules
 from noc.core.loader.base import BaseLoader
 from noc.config import config
@@ -58,9 +59,10 @@ class ProfileLoader(BaseLoader):
                             profile = self.find_class(mn, BaseProfile, name)
                             if profile:
                                 if not profile.__module__.endswith(".profile"):
-                                    self.logger.info(
-                                        "Deprecation warning on %s profile: "
-                                        "__init__.py should be moved to profile.py", name)
+                                    warnings.warn(
+                                        "%s profile: __init__.py should be moved to profile.py" % name,
+                                        DeprecationWarning
+                                    )
                                 profile.initialize()
                                 break
                 self.profiles[name] = profile
