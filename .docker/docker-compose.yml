@@ -70,6 +70,28 @@ services:
     env_file:
       - noc.conf
 
+  python3:
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile.build3
+    working_dir: /opt/noc
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      clickhouse:
+        condition: service_started
+      nsqd:
+        condition: service_started
+    command: >
+      sh -c "
+      for i in services/*; do
+        /usr/bin/python3 $$i/service.py;
+      done"
+    env_file:
+      - noc.conf
+
   nsqlookupd:
     image: nsqio/nsq:v1.1.0
     command: /nsqlookupd

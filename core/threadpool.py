@@ -2,13 +2,12 @@
 # ----------------------------------------------------------------------
 # ThreadPool class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import threading
-import thread
 import logging
 import itertools
 import time
@@ -16,8 +15,10 @@ import datetime
 from collections import deque
 import sys
 # Third-party modules
+from six.moves import _thread
 from concurrent.futures import Future
 from tornado.gen import with_timeout
+# NOC modules
 from noc.config import config
 from noc.core.span import Span, get_current_span
 from noc.core.error import NOCError, ERR_UNKNOWN
@@ -75,7 +76,7 @@ class ThreadPoolExecutor(object):
                     return self.queue.popleft()
                 # Waiting lock
                 if not e:
-                    e = thread.allocate_lock()
+                    e = _thread.allocate_lock()
                     e.acquire()
                 self.waiters.insert(0, e)
             # Wait for condition or timeout
