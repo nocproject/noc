@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  Data Loader
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2017 The NOC Project
+#  Copyright (C) 2007-2019 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ import functools
 import itertools
 # Third party modules
 import six
+from six.moves import zip_longest
 # NOC modules
 # from noc.lib.nosql import MultipleObjectsReturned
 # from django.core.exceptions import MultipleObjectsReturned as MultipleObjectsReturnedD
@@ -430,10 +431,7 @@ class BaseLoader(object):
             "remote_system": v["remote_system"],
             "remote_id": v["remote_id"]
         }
-        for fn, (ov, nv) in zip(
-                self.fields[1:],
-                itertools.izip_longest(o[1:], n[1:])
-        ):
+        for fn, (ov, nv) in zip(self.fields[1:], zip_longest(o[1:], n[1:])):
             if ov != nv:
                 self.logger.debug("   %s: %s -> %s", fn, ov, nv)
                 vv[fn] = v[fn]

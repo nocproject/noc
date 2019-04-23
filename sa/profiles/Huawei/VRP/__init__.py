@@ -3,15 +3,17 @@
 # Vendor: Huawei
 # OS:     VRP
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 import numpy as np
-from itertools import izip, izip_longest, dropwhile
+from itertools import izip, dropwhile
 from collections import defaultdict
+# Third-party modules
+from six.moves import zip_longest
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -383,7 +385,7 @@ class Profile(BaseProfile):
         empty_header = None
         header = {}
 
-        for num, lines in enumerate(izip_longest(*v, fillvalue='-')):
+        for num, lines in enumerate(zip_longest(*v, fillvalue='-')):
             #
             if empty_header is None:
                 empty_header = (' ',) * len(lines)

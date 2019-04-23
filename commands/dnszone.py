@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # Import DNS Zone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import print_function
 import argparse
-import itertools
 import re
+# Third-party modules
+from six.moves import zip_longest
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.dns.models.dnszone import DNSZone
@@ -446,7 +447,7 @@ class Command(BaseCommand):
         """
         parts = split_alnum(line.strip())
         v = 0
-        for t, mult in itertools.izip_longest(parts[::2], parts[1::2]):
+        for t, mult in zip_longest(parts[::2], parts[1::2]):
             if mult is None:
                 v += t
                 break
