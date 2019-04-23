@@ -12,6 +12,7 @@ import itertools
 import os
 import six
 # Third-party modules
+from six.moves import zip_longest
 import yaml
 # NOC modules
 from .base import BaseProtocol
@@ -54,11 +55,7 @@ class YAMLProtocol(BaseProtocol):
                 continue
             if prefix != current:
                 # Common part
-                current = [
-                    x for x, y
-                    in itertools.izip_longest(current, prefix)
-                    if x == y
-                ]
+                current = [x for x, y in zip_longest(current, prefix) if x == y]
                 for pp in prefix[len(current):]:
                     r += ["%s%s:" % (self.INDENT * len(current), pp)]
                     current += [pp]

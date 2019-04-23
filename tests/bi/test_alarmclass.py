@@ -6,10 +6,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import itertools
 # Third-party modules
 import pytest
+from six.moves import zip_longest
 # NOC modules
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
 
@@ -34,7 +33,7 @@ def test_field_db_type(name, db_type):
     assert MODEL._fields[name].get_db_type() == db_type
 
 
-@pytest.mark.parametrize("order,fields", list(itertools.izip_longest(MODEL._fields_order, FIELDS)))
+@pytest.mark.parametrize("order,fields", list(zip_longest(MODEL._fields_order, FIELDS)))
 def test_field_db_type(order, fields):
     assert fields is not None
     name, db_type = fields

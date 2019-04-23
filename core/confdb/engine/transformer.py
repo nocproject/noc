@@ -9,6 +9,8 @@
 # Python modules
 import ast
 import itertools
+# Third-party modules
+from six.moves import zip_longest
 
 CVAR_NAME = "_ctx"
 
@@ -46,7 +48,7 @@ class PredicateTransformer(ast.NodeTransformer):
             "x": self.wrap_expr,
             "v": self.wrap_visitor
         }
-        return [wrap[v](a) for v, a in itertools.izip_longest(vx, args, fillvalue=vx[-1])]
+        return [wrap[v](a) for v, a in zip_longest(vx, args, fillvalue=vx[-1])]
 
     def visit_Call(self, node, _input=None):
         if isinstance(node, ast.BoolOp):
