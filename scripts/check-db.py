@@ -2,10 +2,12 @@
 # ----------------------------------------------------------------------
 # Check database connection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
+# Python modules
 import sys
 
 
@@ -14,7 +16,7 @@ def check_pg():
     from django.db import connection
     try:
         c = connection.cursor()
-    except psycopg2.OperationalError, why:
+    except psycopg2.OperationalError as why:
         sys.stderr.write("ERROR: %s\n" % why)
         sys.exit(1)
 
@@ -24,7 +26,7 @@ def check_mongo():
     import pymongo
     try:
         db = get_db()
-    except pymongo.errors.OperationFailure, why:
+    except pymongo.errors.OperationFailure as why:
         sys.stderr.write("ERROR: %s\n" % why)
         sys.exit(1)
     version = db.connection.server_info()["version"]
@@ -34,6 +36,7 @@ def check_mongo():
     if major < 2 or (major == 2 and minor < 4):
         sys.stderr.write("ERROR: MongoDB 2.4 or later required")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     if sys.argv[1] == "--pg":

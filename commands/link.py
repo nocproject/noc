@@ -2,11 +2,13 @@
 # ---------------------------------------------------------------------
 # Link management CLI interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Python modules
+from __future__ import print_function
 import argparse
 from collections import defaultdict
 # NOC modules
@@ -44,7 +46,7 @@ class Command(BaseCommand):
                                    help="Show discovery method")
 
     def handle(self, *args, **options):
-        print args
+        print(args)
         action = options["cmd"]
         if not action:
             action = "show"
@@ -60,10 +62,10 @@ class Command(BaseCommand):
         r = []
         for mo in i:
             r += [", ".join(format_interface(li) for li in i[mo])]
-        l = " --- ".join(r)
+        link = " --- ".join(r)
         if show_method:
-            l += " [%s]" % link.discovery_method
-        self.stdout.write(l)
+            link += " [%s]" % link.discovery_method
+        self.stdout.write(link)
 
     def handle_show(self, *args, **options):
         show_method = options.get("show_method")
@@ -72,9 +74,9 @@ class Command(BaseCommand):
             for i in args:
                 iface = Interface.get_interface(i)
                 if iface:
-                    l = Link.objects.filter(interfaces=iface.id).first()
-                    if l:
-                        self.show_link(l, show_method)
+                    link = Link.objects.filter(interfaces=iface.id).first()
+                    if link:
+                        self.show_link(link, show_method)
         else:
             # Show all links
             for l in Link.objects.all():
@@ -98,7 +100,7 @@ class Command(BaseCommand):
             raise CommandError("Invalid interface: %s" % args[1])
         try:
             i1.link_ptp(i2)
-        except ValueError, why:
+        except ValueError as why:
             raise CommandError(str(why))
 
     def handle_remove(self, *args, **options):
@@ -112,6 +114,7 @@ class Command(BaseCommand):
             iface = Interface.get_interface(i)
             if iface:
                 iface.unlink()
+
 
 if __name__ == "__main__":
     Command().run()

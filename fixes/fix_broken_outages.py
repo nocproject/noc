@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Fix outages
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # NOC modules
 from noc.fm.models.outage import Outage
 
@@ -16,7 +17,7 @@ def fix():
     Problem has been related to out-of-order NSQ messages
     and has been fixed 08-NOV-2016
     """
-    print ("Fixing broken outages")
+    print("Fixing broken outages")
     r = Outage._get_collection().aggregate([
         {
             "$project": {
@@ -36,4 +37,4 @@ def fix():
                 "$in": ids
             }
         })
-    print (" ... Done (%d records fixed)" % len(ids))
+    print(" ... Done (%d records fixed)" % len(ids))

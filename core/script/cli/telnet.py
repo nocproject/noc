@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Telnet CLI
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-
-## Tornado modules
+# ----------------------------------------------------------------------
+# Telnet CLI
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from tornado.iostream import IOStream
 import tornado.gen
-## NOC modules
+# NOC modules
 from base import CLI
 
 IAC = chr(0xFF)  # Interpret As Command
@@ -162,7 +163,7 @@ class TelnetIOStream(IOStream):
         self.logger.debug("Send IAC SB %r %r IAC SE",
                           opt, data)
         self.out_iac_seq += [sb]
-        #self.write_to_fd(sb)
+        # self.write_to_fd(sb)
 
     def process_iac(self, cmd, opt):
         """

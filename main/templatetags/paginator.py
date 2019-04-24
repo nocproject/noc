@@ -1,7 +1,17 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
 # http://code.djangoproject.com/wiki/PaginatorTag
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Third-party modules
 from django import template
 
 register = template.Library()
+
 
 def paginator(context, adjacent_pages=2):
     """
@@ -11,9 +21,10 @@ def paginator(context, adjacent_pages=2):
     last page links in addition to those created by the object_list generic
     view.
     """
-    page_numbers = [n for n in \
-                    range(context["page"] - adjacent_pages, context["page"] + adjacent_pages + 1) \
-                    if n > 0 and n <= context["pages"]]
+    page_numbers = [
+        n for n in range(context["page"] - adjacent_pages, context["page"] + adjacent_pages + 1)
+        if n > 0 and n <= context["pages"]
+    ]
     return {
         "hits": context["hits"],
         "results_per_page": context["results_per_page"],
@@ -27,5 +38,6 @@ def paginator(context, adjacent_pages=2):
         "show_first": 1 not in page_numbers,
         "show_last": context["pages"] not in page_numbers,
     }
+
 
 register.inclusion_tag("main/templatetags/paginator.html", takes_context=True)(paginator)

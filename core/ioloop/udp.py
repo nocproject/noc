@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Tornado IOLoop UDP socket
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+# Tornado IOLoop UDP socket
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+"""
+"""
 # Python modules
 import errno
 import socket
-## Third-party modules
+# Third-party modules
 from tornado.ioloop import IOLoop
 from tornado.concurrent import TracebackFuture
 from tornado.util import errno_from_exception

@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Audit handlers
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 import datetime
 # NOC modules
@@ -36,6 +37,7 @@ def get_seconds(section, option):
     except ValueError:
         raise "Invalid expiration option in %s:%s" % (section, option)
     return v * m
+
 
 # Expiration settings
 TTL_COMMAND = config.audit.command_ttl

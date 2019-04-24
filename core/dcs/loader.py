@@ -2,13 +2,13 @@
 # ----------------------------------------------------------------------
 # Service loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
-
+# ----------------------------------------------------------------------
+"""
+"""
 # Python modules
 from threading import Lock
-import os
 # NOC modules
 from noc.core.handler import get_handler
 from noc.config import config

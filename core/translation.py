@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Translation utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-
-## Python modules
+# ----------------------------------------------------------------------
+# Translation utilities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+"""
+"""
+# Python modules
 import os
 import logging
 import gettext
@@ -33,5 +34,10 @@ def set_translation(service, lang):
                 lang
             )
 
-_ugettext = lambda x: x
-ugettext = lambda x: _ugettext(x)
+
+def _ugettext(x):
+    return x
+
+
+def ugettext(x):
+    return _ugettext(x)

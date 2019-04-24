@@ -4,11 +4,12 @@
 # Downloader is a class performing download and parsing of refbook
 # And returning a list of hashes (for RefBook.bulk_upload)
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
+# NOC modules
 from noc.lib.registry import Registry
 
 
@@ -18,6 +19,8 @@ class DownloaderRegistry(Registry):
     subdir = "refbooks/downloaders"
     classname = "Downloader"
     apps = ["noc.main"]
+
+
 downloader_registry = DownloaderRegistry()
 
 

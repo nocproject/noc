@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # Inventory module datasources
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # NOC modules
 from noc.lib.datasource import DataSource
 from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.subinterface import SubInterface
 from noc.sa.interfaces.base import MACAddressParameter
@@ -72,7 +72,7 @@ class ChassisDS(DataSource):
         if ipv4:
             if SubInterface.objects.filter(
                     ipv4_addresses=ipv4).count() == 1:
-                self._object =  SubInterface.objects.filter(
+                self._object = SubInterface.objects.filter(
                     ipv4_addresses=ipv4).first().managed_object
 
     @property

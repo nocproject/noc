@@ -1,12 +1,12 @@
-#!./bin/python
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # build noc.models._MODELS manifest
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 from collections import defaultdict
 # Third-party modules
@@ -58,6 +58,7 @@ def build():
     out[-1] = out[-1][:-1]  # Remove last comma
     out += ["}"]
     print "\n".join(out)
+
 
 if __name__ == "__main__":
     build()

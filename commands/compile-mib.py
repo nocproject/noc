@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Compile loaded MIB to the compact JSON representation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 import sys
 import os
@@ -35,11 +36,11 @@ class Command(BaseCommand):
         mib_list = options.get("list")
         if mib_list:
             with open(mib_list) as f:
-                for l in f:
-                    l = l.strip()
-                    if not l:
+                for mlist in f:
+                    mlist = mlist.strip()
+                    if not mlist:
                         continue
-                    m, p = l.strip().split(",", 1)
+                    m, p = mlist.strip().split(",", 1)
                     job += [(m, p)]
         else:
             if len(args) != 1:
@@ -80,8 +81,8 @@ class Command(BaseCommand):
             [
                 {
                     "oid": d.oid,
-                    "name": (a for a in d.aliases
-                             if a.startswith(mib.name + "::")).next(),
+                    "name": next((a for a in d.aliases
+                                  if a.startswith(mib.name + "::"))),
                     "description": d.description,
                     "syntax": d.syntax
                 } for d in MIBData.objects.filter(
@@ -109,6 +110,7 @@ class Command(BaseCommand):
         out.write(ujson.dumps(data))
         if out_path:
             out.close()
+
 
 if __name__ == "__main__":
     Command().run()

@@ -5,7 +5,8 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
+"""
+"""
 # Python modules
 import time
 import urllib
@@ -18,6 +19,7 @@ from noc.core.model.decorator import on_delete_check
 
 class RIRDBUpdateError(Exception):
     pass
+
 
 # Check ssl library is available
 try:
@@ -37,7 +39,7 @@ class RIR(models.Model):
     """
     Regional internet registries
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "RIR"
         verbose_name_plural = "RIRs"
         db_table = "peer_rir"
@@ -45,8 +47,7 @@ class RIR(models.Model):
         ordering = ["name"]
 
     name = models.CharField("Name", max_length=64, unique=True)
-    whois = models.CharField("Whois", max_length=64,
-        blank=True, null=True)
+    whois = models.CharField("Whois", max_length=64, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -70,6 +71,6 @@ class RIR(models.Model):
             f = urllib2.urlopen(url=RIPE_SYNCUPDATES_URL,
                                 data=urllib.urlencode({"DATA": data}))
             data = f.read()
-        except urllib2.URLError, why:
+        except urllib2.URLError as why:
             data = "Update failed: %s" % why
         return data
