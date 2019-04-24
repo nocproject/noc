@@ -223,12 +223,28 @@ class Script(BaseScript):
                         "oper_status": i["oper_status"],
                         "enabled_protocols": []
                     }
+                    if "mac" in i:
+                        self.si["mac"] = i["mac"]
                     i["subinterfaces"] += [self.si]
                 else:
-                    self.logger.debug(
-                        '\nError: subinterfaces already exists in interface \n%s\n' % i
-                    )
-                    continue
+                    for sub in i["subinterfaces"]:
+                        if sub["name"] == r["interface"]:
+                            self.logger.debug(
+                                '\nError: subinterfaces already exists in interface \n%s\n' % i
+                            )
+                            break
+                    else:
+                        self.si = {
+                            "name": r["interface"],
+                            "enabled_afi": [],
+                            # XXX Workaround
+                            "admin_status": i["admin_status"],
+                            "oper_status": i["oper_status"],
+                            "enabled_protocols": []
+                        }
+                        if "mac" in i:
+                            self.si["mac"] = i["mac"]
+                        i["subinterfaces"] += [self.si]
             else:
                 for i in ifaces:
                     iface = ifaces[i]
