@@ -56,7 +56,7 @@ class Script(BaseScript):
         r"^\s*The bridge has priority (?P<bridge_priority>\d+), "
         r"address (?P<bridge_id>\S+)\s*\n"
         r"^\s*Configured hello time \d+, max age \d+, forward time \d+\s*\n"
-        r"^\s*The root bridge has priority (?P<root_priority>\d+), "
+        r"^\s*The root bridge has priority\s+(?P<root_priority>\d+), "
         r"address (?P<root_id>\S+)\s*\n",
         re.MULTILINE)
     rx_vlans = re.compile(r"^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
