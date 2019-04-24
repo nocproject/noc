@@ -68,6 +68,17 @@ futurize:
   tags:
     - docker
 
+futurize stage2:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/" || true)
+    - /bin/future2.sh "$FLIST"
+  except:
+    - master
+  tags:
+    - docker
+
 Test migrate:
   stage: test
   script:
