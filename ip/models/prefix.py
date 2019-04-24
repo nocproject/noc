@@ -766,4 +766,3 @@ from noc.dns.models.dnszone import DNSZone
 from .address import Address
 from .prefixaccess import PrefixAccess
 from .addressrange import AddressRange
-from .prefixbookmark import PrefixBookmark  # noqa
