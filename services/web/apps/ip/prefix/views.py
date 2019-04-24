@@ -119,3 +119,12 @@ class PrefixApplication(ExtModelApplication):
                     "message": "ERROR: %s" % e
                 }, status=self.CONFLICT)
         return HttpResponse(status=self.DELETED)
+
+    @view(r"^(?P<id>\d+)/get_path/$", access="read", api=True)
+    def api_get_path(self, request, id):
+        o = self.get_object_or_404(Prefix, id=int(id))
+        try:
+            path = [Prefix.objects.get(id=ns) for ns in o.get_path()]
+            return {"data": [{"id": str(p.id), "name": unicode(p.name), "afi": p.afi} for p in path]}
+        except ValueError as e:
+            return self.response_bad_request(str(e))

@@ -158,6 +158,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 <th class="vc">VC</th>
                 <th class="description">Description</th>
                 <th class="usage">Usage</th>
+                <th class="usage">Address Usage</th>
                 <th class="tt">TT</th>
                 <th>Tags</th>
             </tr>
@@ -184,6 +185,17 @@ document.currentPrefix = "{{ prefix.prefix }}";
                                  aria-valuemax="100"
                                  title="{{ p.usage_percent }}"
                             ><span>{{p.usage_percent}}</span></div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress" title="{{ p.address_usage_percent }}">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: {{ p.usage_percent }}"
+                                 aria-valuenow="{{ p.address_usage_percent }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 title="{{ p.address_usage_percent }}"
+                            ><span>{{p.address_usage_percent}}</span></div>
                         </div>
                     </td>
                     <td>{% if p.tt %}{{p.tt}}{% endif %}</td>
@@ -214,7 +226,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
     .noc-r-none {
         background-color: #ffffff;
     }
-    
+
     .noc-ri-none {
         border-left-width: 5px;
         border-left-style: none;
@@ -225,7 +237,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
         .noc-r-{{r.id}} {
             background-color: {{r.color}};
         }
-        
+
         .noc-ri-{{r.id}} {
             border-left-width: 5px;
             border-left-style: solid;
@@ -240,12 +252,12 @@ document.currentPrefix = "{{ prefix.prefix }}";
             SPOT={{spot|safe}};
             spotted=false;
             free_shown=false;
-            
+
             function install_spotted() {
                 var i;
                 if(spotted)
                     return;
-                
+
                 var addresses=$.map($("#addresses .used-address"),function(v) {return v;});
                 var $ce=addresses.shift();
                 var ca=$(".address a",$ce).html(); /* Current address */
@@ -302,7 +314,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 });
                 spotted=true;
             }
-            
+
             function toggle_free() {
                 install_spotted();
                 if(free_shown) {
@@ -318,7 +330,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 }
                 return false;
             }
-            
+
             var _in_pingtest=false;
             var _ping_task_id=0;
 
@@ -349,7 +361,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
             }
 
             function check_ping_task() {
-                if(!_in_pingtest) 
+                if(!_in_pingtest)
                     return;
                 $.get("/ip/ipam/{{ vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/ping_check/"+_ping_task_id+"/",function(data,status,request) {
                     if(data==null) {
