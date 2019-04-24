@@ -20,7 +20,7 @@ class Migration(object):
         # Create default profile
         P_ID = "5ae04bcb45ce8300f385edb2"
         pcoll = get_db()["asprofiles"]
-        pcoll.insert({"_id": bson.ObjectId(P_ID), "name": "default", "description": "Default Profile"})
+        pcoll.insert_one({"_id": bson.ObjectId(P_ID), "name": "default", "description": "Default Profile"})
         # Create AS.profile
         db.add_column("peer_as", "profile", DocumentReferenceField("peer.ASProfile", null=True, blank=True))
         # Update profiles

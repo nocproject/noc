@@ -19,7 +19,7 @@ class Migration(object):
     def forwards(self):
         mdb = get_db()
         for a_id, name in db.execute("SELECT id, name FROM sa_activator"):
-            mdb.noc.pools.insert({"name": "P%04d" % a_id, "description": name})
+            mdb.noc.pools.insert_one({"name": "P%04d" % a_id, "description": name})
 
     def backwards(self):
         pass

@@ -16,7 +16,7 @@ class Migration(object):
         db = get_db()
         for c in [db.noc.events.active, db.noc.events.archive]:
             # @todo: Set start_timestamp = timestamp
-            c.update({"repeats": {"$exists": False}}, {"$set": {"repeats": 1}})
+            c.update_many({"repeats": {"$exists": False}}, {"$set": {"repeats": 1}})
 
     def backwards(self):
         pass

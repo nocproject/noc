@@ -16,7 +16,7 @@ class Migration(object):
         db = get_db()
         scount = db.noc.pm.storages.count_documents({})
         if scount == 0:
-            db.noc.pm.storages.insert(
+            db.noc.pm.storages.insert_one(
                 {
                     "name": "default",
                     "collectors": [
@@ -47,7 +47,7 @@ class Migration(object):
         elif scount == 1:
             s = db.noc.pm.storages.find()[0]
             if "access" not in s or not s["access"]:
-                db.noc.pm.storages.update(
+                db.noc.pm.storages.update_many(
                     {}, {
                         "$set": {
                             "collectors": [

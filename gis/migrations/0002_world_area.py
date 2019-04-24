@@ -15,7 +15,7 @@ class Migration(object):
     def forwards(self):
         areas = get_db().noc.gis.areas
         if not areas.count_documents({"name": "World"}):
-            areas.insert(
+            areas.insert_one(
                 {
                     "name": "World",
                     "is_active": True,

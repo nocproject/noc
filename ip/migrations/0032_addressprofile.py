@@ -51,7 +51,7 @@ class Migration(object):
             style_profiles[style_id] = p_id
             profiles += [p]
         # Insert profiles to database
-        coll.insert(profiles)
+        coll.insert_many(profiles)
         # Create Prefix.profile field
         db.add_column("ip_address", "profile", DocumentReferenceField("ip.AddressProfile", null=True, blank=True))
         # Migrate profile styles

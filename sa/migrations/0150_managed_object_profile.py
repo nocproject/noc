@@ -24,7 +24,7 @@ class Migration(object):
         pcoll = get_db()["noc.profiles"]
         for p in profiles:
             u = uuid.uuid4()
-            pcoll.update({"name": p}, {"$set": {"name": p}, "$setOnInsert": {"uuid": u}}, upsert=True)
+            pcoll.update_many({"name": p}, {"$set": {"name": p}, "$setOnInsert": {"uuid": u}}, upsert=True)
         # Get profile record mappings
         pmap = {}  # name -> id
         for d in pcoll.find({}, {"_id": 1, "name": 1}):

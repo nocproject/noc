@@ -18,7 +18,7 @@ from noc.core.model.fields import DocumentReferenceField
 class Migration(object):
     def forwards(self):
         p_id = bson.ObjectId()
-        get_db()["capsprofiles"].insert(
+        get_db()["capsprofiles"].insert_one(
             {
                 "_id": p_id,
                 "name": "default",
