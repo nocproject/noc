@@ -58,7 +58,8 @@ class GroupApplication(ModelApplication):
     model_admin = GroupAdmin
     menu = [_("Setup"), _("Groups")]
     glyph = "users"
-    title = "Groups"
+    title = _("Groups")
+    app_alias = "auth"
 
     @view(url=r"^add/legacy/$", url_name="admin:auth_group_add", access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):

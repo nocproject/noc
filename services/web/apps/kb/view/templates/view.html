@@ -15,12 +15,12 @@
 {% block content %}
 <ul class="object-tools">
     {% if has_bookmark %}
-        <LI><A HREF="{% url kb:view:bookmark e.id 'unset' %}" class="addlink">Unset Bookmark</A></LI>
+        <LI><A HREF="{% url 'kb:view:bookmark' e.id 'unset' %}" class="addlink">Unset Bookmark</A></LI>
     {% else %}
-        <LI><A HREF="{% url kb:view:bookmark e.id 'set' %}" class="addlink">Set Bookmark</A></LI>
+        <LI><A HREF="{% url 'kb:view:bookmark' e.id 'set' %}" class="addlink">Set Bookmark</A></LI>
     {% endif %}
-    <LI><A HREF="{% url kb:kbentry:add %}" class="addlink">Add KB Entry</A></LI>
-    <LI><A HREF="{% url kb:kbentry:change e.id %}" class="addlink">Edit</A></LI>
+    <LI><A HREF="{% url 'kb:kbentry:add' %}" class="addlink">Add KB Entry</A></LI>
+    <LI><A HREF="{% url 'kb:kbentry:change' e.id %}" class="addlink">Edit</A></LI>
 </ul>
 <h1>KB{{e.id}}: {{e.subject}}</h1>
 {{e.html|safe}}
@@ -31,7 +31,7 @@
     <TR><TH>Name</TH><TH>Description</TH><TH>Size</TH><TH>Last Changed</TH></TR>
     {% for a in e.visible_attachments %}
         <TR>
-            <TD><A HREF="{% url kb:view:attachment e.id a.name %}">{{a.name}}</A></TD>
+            <TD><A HREF="{% url 'kb:view:attachment' e.id a.name %}">{{a.name}}</A></TD>
             <TD>{{a.description}}</TD>
             <TD>{{a.size|filesizeformat}}</TD>
             <TD>{{a.mtime|date}} {{a.mtime|time}}</TD>

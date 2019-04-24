@@ -3,7 +3,7 @@
 <h1>Select Template</h1>
 <table border="0">
 {%for t in templates%}
-<tr class="{%cycle 'row1' 'row2'%}"><td><a href="{% url kb:kbentry:from_template t.id %}">{{t.name}}</a></td></tr>
+<tr class="{%cycle 'row1' 'row2'%}"><td><a href="{% url 'kb:kbentry:from_template' t.id %}">{{t.name}}</a></td></tr>
 {%endfor%}
 </table>
 {% endblock %}

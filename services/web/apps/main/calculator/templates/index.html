@@ -5,7 +5,7 @@
 <DIV CLASS="module">
     <table border="0">
     {% for cn,title in calculators %}
-        <TR><TH SCOPE="row"><A HREF="{% url main:calculator:calculate cn%}">{{title}}</A></TH></TR>
+        <TR><TH SCOPE="row"><A HREF="{% url 'main:calculator:calculate' cn%}">{{title}}</A></TH></TR>
     {% endfor %}
     </TABLE>
 </DIV>

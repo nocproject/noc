@@ -3,7 +3,7 @@
 {% block content %}
 {% if can_edit %}
 <ul class="object-tools">
-    <li><a href="{% url main:refbook:new rb.id%}" class="addlink">Add Record</a></li>
+    <li><a href="{% url 'main:refbook:new' rb.id%}" class="addlink">Add Record</a></li>
 </ul>
 {% endif %}
 
@@ -11,7 +11,7 @@
 <div class="module filtered" id="changelist">
 {% if rb.can_search %}
 <div id="toolbar">
-    <form id="changelist-search" action="{% url main:refbook:view rb.id %}" method="get">{% csrf_token %}
+    <form id="changelist-search" action="{% url 'main:refbook:view' rb.id %}" method="get">{% csrf_token %}
         <div>
             <input type="hidden" name="page" value="{{page}}" />
             <label for="searchbar"><img src="/media/admin/img/icon_searchbox.png" alt="Search" /></label>
@@ -30,7 +30,7 @@
     {% for d in object_list %}
     <tr class="{%cycle 'row1' 'row2'%}">
         {% for c in d.value %}
-        <td><a href="{% url main:refbook:item rb.id d.id %}">{{c}}</a></td>
+        <td><a href="{% url 'main:refbook:item' rb.id d.id %}">{{c}}</a></td>
         {% endfor %}
     </tr>
     {% endfor %}

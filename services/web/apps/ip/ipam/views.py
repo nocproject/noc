@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # IP Address space management application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from operator import itemgetter
 # Third-party modules modules
+import ujson
 from django import forms
 from django.db.models import Q
-from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.translation import ugettext_lazy as _
 from noc.core.ip import IP
 # NOC modules
@@ -284,7 +284,7 @@ class IPAMApplication(ExtApplication):
                     if rrs:
                         cr = rrs.pop(0)
                 spot += [(None if a is None else a.address, c, a in special_addr)]
-            spot = JSONEncoder(ensure_ascii=False).encode(spot)
+            spot = ujson.dumps(spot)
         else:
             spot = None
         can_ping = spot is not None and len(

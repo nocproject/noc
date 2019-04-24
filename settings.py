@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Django settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,6 +18,9 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = []
 MANAGERS = ADMINS
 SERVER_EMAIL = None
+
+# It is up to upstream server to check Host header
+ALLOWED_HOSTS = ["*"]
 
 # RDBMS settings
 DATABASES = {

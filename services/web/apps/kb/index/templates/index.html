@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 {% block content %}
 <ul class="object-tools">
-    <LI><A HREF="{% url kb:kbentry:add %}" class="addlink">Add KB Entry</A></LI>
+    <LI><A HREF="{% url 'kb:kbentry:add' %}" class="addlink">Add KB Entry</A></LI>
 </ul>
 
 <h1>Knowledge Base</h1>
@@ -47,14 +47,14 @@
 <DIV ID="tabs-nav">
     {% for t,n in tabs %}
         <SPAN CLASS='{% ifequal tab t %}selected-tab{%else%}unselected-tab{%endifequal%}'>
-            <A HREF="{% url kb:index:tab t %}">{{n}}</A>
+            <A HREF="{% url 'kb:index:tab' t %}">{{n}}</A>
         </SPAN>
     {% endfor %}
 </DIV>
 {% ifequal tab "categories" %}
 <TABLE BORDER="0">
 {% for e in entries %}
-<TR CLASS="{% cycle 'row1' 'row2' %}"><td><a href="{% url kb:index:category e.id %}">{{e.name}}</a></td></tr>
+<TR CLASS="{% cycle 'row1' 'row2' %}"><td><a href="{% url 'kb:index:category' e.id %}">{{e.name}}</a></td></tr>
 {% endfor %}
 </TABLE>
 {%else%}
@@ -62,7 +62,7 @@
     <TR><TH>#</TH><TH>Subject</TH><TH>Views</TH><TH>Modified</TH><TH>Modified by</TH></TR>
     {% for e in entries %}
     <TR CLASS="{% cycle 'row1' 'row2' %}">
-        <TD ALIGN="right"><A HREF="{% url kb:view:view e.id %}">KB{{e.id}}</A></TD>
+        <TD ALIGN="right"><A HREF="{% url 'kb:view:view' e.id %}">KB{{e.id}}</A></TD>
         <TD>{{e.subject}}</TD>
         <TD>{{e.preview_count}}</TD>
         <TD>{{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}}</TD>
