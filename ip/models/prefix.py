@@ -443,7 +443,7 @@ class Prefix(models.Model):
         :param user:
         :return:
         """
-        from .prefixbookmark import PrefixBookmark
+        from .prefixbookmark import PrefixBookmark  # noqa
         try:
             PrefixBookmark.objects.get(user=user, prefix=self)
             return True
@@ -456,7 +456,7 @@ class Prefix(models.Model):
         :param user:
         :return:
         """
-        from .prefixbookmark import PrefixBookmark
+        from .prefixbookmark import PrefixBookmark  # noqa
         b, created = PrefixBookmark.objects.get_or_create(user=user,
                                                           prefix=self)
         if created:
@@ -486,6 +486,11 @@ class Prefix(models.Model):
     @classmethod
     def get_search_result_url(cls, obj_id):
         return "/api/card/view/prefix/%s/" % obj_id
+
+    def get_path(self):
+        return Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["prefix >>= %s"],
+            params=[self.prefix]).order_by("prefix").values_list("id", flat=True)
 
     @property
     def address_ranges(self):
@@ -669,8 +674,9 @@ class Prefix(models.Model):
         """
         # Filter IPv4 only
         ipv4_prefixes = [p for p in prefixes if p.is_ipv4]
-        # Calculate nested prefixrs
+        # Calculate nested prefixes
         usage = defaultdict(int)
+        address_usage = defaultdict(int)
         for parent, prefix in Prefix.objects.filter(
                 parent__in=ipv4_prefixes
         ).values_list("parent", "prefix"):
@@ -685,13 +691,44 @@ class Prefix(models.Model):
         ).values_list("prefix", "count"):
             usage[parent] += count
             has_address.add(parent)
+            address_usage[parent] += count
         # Update usage cache
         for p in ipv4_prefixes:
             ln = int(p.prefix.split("/")[1])
             size = 2 ** (32 - ln)
             if p.id in has_address and size > 2:  # Not /31 or /32
                 size -= 2  # Exclude broadcast and network
+                p._address_usage_cache = float(address_usage[p.id]) * 100.0 / float(size)
+                print(p, float(address_usage[p.id]) * 100.0 / float(size))
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
+
+    @property
+    def address_usage(self):
+        if self.is_ipv4:
+            usage = getattr(self, "_address_usage_cache", None)
+            if usage is not None:
+                # Use update_prefixes_usage results
+                return usage
+            size = IPv4(self.prefix).size
+            if not size:
+                return 100.0
+            n_ips = Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+                where=["address <<= %s"], params=[str(self.prefix)]).count()
+            n_pfx = Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+                where=["prefix <<= %s"], params=[str(self.prefix)]).count()
+            if n_ips:
+                if size > 2:  # Not /31 or /32
+                    size -= 2 * n_pfx  # Exclude broadcast and network
+            return float(n_ips) * 100.0 / float(size)
+        else:
+            return None
+
+    @property
+    def address_usage_percent(self):
+        u = self.address_usage
+        if u is None:
+            return ""
+        return "%.2f%%" % u
 
     def is_empty(self):
         """

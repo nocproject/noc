@@ -163,7 +163,8 @@ class IPAMApplication(ExtApplication):
                 ("Netmask", prefix.netmask),
                 ("Widlcard", prefix.wildcard),
                 ("Size", prefix.size),
-                ("Usage", prefix.usage_percent)
+                ("Usage", prefix.usage_percent),
+                ("Usage Address", prefix.address_usage_percent),
             ]
         if addresses:
             prefix_info += [("Used addresses", len(addresses))]
