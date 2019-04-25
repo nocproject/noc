@@ -7,7 +7,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
 # Python modules
 import re
 # NOC modules
@@ -36,6 +35,7 @@ class Profile(BaseProfile):
     ]
 
     rx_iface = re.compile(r"^[fgvn]\d+\S*$")
+    rx_iface_lldp = re.compile(r"^(?:Gig)\d+\S*$")
 
     def convert_interface_name(self, interface):
         if bool(self.rx_iface.search(interface)):
@@ -47,6 +47,10 @@ class Profile(BaseProfile):
                 return "VLAN" + interface[1:]
             if interface.startswith("n"):
                 return "Null" + interface[1:]
+        if bool(self.rx_iface_lldp.search(interface)):
+            if interface.startswith("Gig"):
+                return "GigaEthernet" + interface[3:]
+            # Need more examples
         return interface
 
     def setup_session(self, script):
