@@ -57,7 +57,7 @@ class Script(BaseScript):
         r"address (?P<bridge_id>\S+)\s*\n"
         r"^\s*Configured hello time \d+, max age \d+, forward time \d+\s*\n"
         r"^\s*The root bridge has priority\s+(?P<root_priority>\d+), "
-        r"address (?P<root_id>\S+)\s*\n",
+        r"address\s+(?P<root_id>\S+)\s*\n",
         re.MULTILINE)
     rx_vlans = re.compile(r"^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port1 = re.compile(
