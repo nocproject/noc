@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MIBs Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ from noc.core.translation import ugettext as _
 
 class ReportreportMIBs(SimpleReport):
     title = _("Installed MIBs")
+
     def get_data(self, request, **kwargs):
         data = []  # Mib, Last Updated, Entries, Depends, Used by
         for m in MIB.objects.order_by("name"):
@@ -22,7 +23,8 @@ class ReportreportMIBs(SimpleReport):
             data += [[m.name, m.last_updated, ec,
                       ", ".join(m.depends_on),
                       ", ".join([x.name for x in m.depended_by])]]
-        return self.from_dataset(title=self.title,
+        return self.from_dataset(
+            title=self.title,
             columns=[
                 TableColumn("MIB", total_label="Total:"),
                 TableColumn("Last Updated", format="date"),

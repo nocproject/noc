@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # annotations handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -97,17 +97,17 @@ class AnnotationsHandler(tornado.web.RequestHandler):
                 if f <= d["timestamp"] <= t:
                     r += [{
                         "annotation": annotation,
-                        "time": mktime(d["timestamp"].timetuple())*1000 + d["timestamp"].microsecond / 1000,
+                        "time": mktime(d["timestamp"].timetuple()) * 1000 + d["timestamp"].microsecond / 1000,
                         "title": AlarmClass.get_by_id(d["alarm_class"]).name
-                        #"tags": X,
-                        #"text": X
+                        # "tags": X,
+                        # "text": X
                     }]
                 if "clear_timestamp" in d and f <= d["clear_timestamp"] <= t:
                     r += [{
                         "annotation": annotation,
-                        "time": mktime(d["timestamp"].timetuple())*1000 + d["timestamp"].microsecond / 1000,
+                        "time": mktime(d["timestamp"].timetuple()) * 1000 + d["timestamp"].microsecond / 1000,
                         "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name
-                        #"tags": X,
-                        #"text": X
+                        # "tags": X,
+                        # "text": X
                     }]
         return r

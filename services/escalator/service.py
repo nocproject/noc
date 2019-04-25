@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Escalator
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -64,6 +64,7 @@ class EscalatorService(Service):
                 sample=config.escalator.sample
             )
             self.shards[sn].run()
+
 
 if __name__ == "__main__":
     EscalatorService().start()

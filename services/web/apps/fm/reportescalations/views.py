@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.reportescalations
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  fm.reportescalations
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2019 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import operator
-## Django modules
+# Third-party modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
 from noc.fm.models.activealarm import ActiveAlarm

@@ -2,9 +2,10 @@
 # ----------------------------------------------------------------------
 # noc-classifier exceptions
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
 
 class InvalidPatternException(Exception):
     pass

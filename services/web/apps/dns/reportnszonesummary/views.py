@@ -2,22 +2,25 @@
 # ---------------------------------------------------------------------
 # NS Zone Summary Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from noc.lib.app.simplereport import SimpleReport,TableColumn
+
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.core.translation import ugettext as _
-#
-#
-#
+
+
 class Reportreportnszonesummary(SimpleReport):
     title = _("NS Zone Summary")
-    def get_data(self,**kwargs):
-        return self.from_query(title=self.title,
+
+    def get_data(self, **kwargs):
+        return self.from_query(
+            title=self.title,
             columns=[
                 "NS",
-                TableColumn("Master",format="integer",align="right"),
-                TableColumn("Slave",format="integer",align="right"),
+                TableColumn("Master", format="integer", align="right"),
+                TableColumn("Slave", format="integer", align="right"),
             ],
             query="""SELECT ns.name,
                     (

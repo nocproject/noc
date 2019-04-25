@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Segment Layout engine
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ import networkx as nx
 
 
 class Layout(object):
-    #@ fixme have to be configured ?
+    # @ fixme have to be configured ?
     SCALE_FACTOR = 130
     LINK_SPACING = 10
 
