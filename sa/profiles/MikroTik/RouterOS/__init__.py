@@ -40,7 +40,7 @@ class Profile(BaseProfile):
         :return:
         """
         if script.parent is None:
-            user = script.credentials.get("user", "")
+            user = script.credentials.get("user", "") or ""
             if not user.endswith("+ct255w255h"):
                 script.credentials["user"] = user + "+ct255w255h"
         self.add_script_method(script, "cli_detail", self.cli_detail)
@@ -62,8 +62,8 @@ class Profile(BaseProfile):
         else:
             return self.parse_detail(script.cli(cmd))
 
-    rx_p_new = re.compile("^\s*(?P<line>\d+)\s+")
-    rx_key = re.compile("([0-9a-zA-Z\-]+)=")
+    rx_p_new = re.compile(r"^\s*(?P<line>\d+)\s+")
+    rx_key = re.compile(r"([0-9a-zA-Z\-]+)=")
 
     def parse_detail(self, s):
         """
