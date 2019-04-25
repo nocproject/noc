@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Nateks.FlexGain.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -20,19 +20,19 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_mac = re.compile(
-        "(?P<ifname>.+):\s*MAC Address\s+:(?P<mac>\S+)", re.MULTILINE)
+        r"(?P<ifname>.+):\s*MAC Address\s+:(?P<mac>\S+)", re.MULTILINE)
     rx_vlan = re.compile(
-        "(?P<vlan_id>\d+)\s+(?P<ifname>\S+)\s+(?P<state>Tagged|unTagged)")
+        r"(?P<vlan_id>\d+)\s+(?P<ifname>\S+)\s+(?P<state>Tagged|unTagged)")
     rx_vpivci = re.compile(
-        "\s+\d+\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+(?P<pvid>\d+)\s+\d+")
+        r"\s+\d+\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+(?P<pvid>\d+)\s+\d+")
     rx_ge = re.compile(
-        "^(?P<ifname>Gigabit Ethernet\s+\d+)\s*,\s*Index\s*:\s+(?P<ifindex>\d+)",
+        r"^(?P<ifname>Gigabit Ethernet\s+\d+)\s*,\s*Index\s*:\s+(?P<ifindex>\d+)",
         re.MULTILINE)
     rx_status = re.compile(
         r"Port\s*:\s*Admin/Oper:(?P<admin_status>On|Off)/(?P<oper_status>On|Off)")
     rx_xdsl = re.compile(
-        "^Slot\s*:\s*(?P<slot>\d+),\s*Port:\s*(?P<port>\d+)\s*,\s*"
-        "Bridge\s*:\s*(?P<bridge>\d+)\s*,\s*Index\s*:\s*(?P<ifindex>\d+)",
+        r"^Slot\s*:\s*(?P<slot>\d+),\s*Port:\s*(?P<port>\d+)\s*,\s*"
+        r"Bridge\s*:\s*(?P<bridge>\d+)\s*,\s*Index\s*:\s*(?P<ifindex>\d+)",
         re.MULTILINE)
     rx_ip = re.compile(
         r"Management Port IP Address\s*:\s*(?P<ip>\S+)\s*/\s*(?P<mask>\S+)")
@@ -83,7 +83,7 @@ class Script(BaseScript):
                     i["subinterfaces"][0]["mac"] = ifmacs[ifname]
                 for v in vlans:
                     if v["ifname"] == ifname:
-                        if v["tagged"] == True:
+                        if v["tagged"] is True:
                             if v["vlan_id"] == "1":
                                 continue
                             if "tagged_vlans" in i["subinterfaces"][0]:
@@ -95,12 +95,15 @@ class Script(BaseScript):
                 interfaces += [i]
             match = self.rx_xdsl.search(l)
             if match:
-                ifname = "%s/%s/%s" % (match.group("slot"), \
-                match.group("port"), match.group("bridge"))
+                ifname = "%s/%s/%s" % (match.group("slot"), match.group("port"), match.group("bridge"))
                 v = self.cli("show interface xdsl %s" % ifname[:-2])
-                match1 = self.rx_status.search(v)
-                oper_status = bool(match1.group("oper_status") == "On")
-                admin_status = bool(match1.group("admin_status") == "On")
+                if "Not found any xDSL card in slot" in v:
+                    oper_status = False
+                    admin_status = False
+                else:
+                    match1 = self.rx_status.search(v)
+                    oper_status = bool(match1.group("oper_status") == "On")
+                    admin_status = bool(match1.group("admin_status") == "On")
                 i = {
                     "name": ifname,
                     "type": "physical",
@@ -126,16 +129,16 @@ class Script(BaseScript):
         v = self.cli("show management gbe")
         i = {
             "name": "gbe",
-                "type": "SVI",
+            "type": "SVI",
+            "oper_status": True,
+            "admin_status": True,
+            "subinterfaces": [{
+                "name": "gbe",
                 "oper_status": True,
                 "admin_status": True,
-                "subinterfaces": [{
-                    "name": "gbe",
-                    "oper_status": True,
-                    "admin_status": True,
-                    "enabled_afi": ['IPv4']
-                }]
-            }
+                "enabled_afi": ['IPv4']
+            }]
+        }
         for l in v.split("\n"):
             match = self.rx_ip.search(l)
             if match:
@@ -151,16 +154,16 @@ class Script(BaseScript):
         v = self.cli("show management mgmt")
         i = {
             "name": "mgmt",
-                "type": "management",
+            "type": "management",
+            "oper_status": True,
+            "admin_status": True,
+            "subinterfaces": [{
+                "name": "mgmt",
                 "oper_status": True,
                 "admin_status": True,
-                "subinterfaces": [{
-                    "name": "mgmt",
-                    "oper_status": True,
-                    "admin_status": True,
-                    "enabled_afi": ['IPv4']
-                }]
-            }
+                "enabled_afi": ['IPv4']
+            }]
+        }
         for l in v.split("\n"):
             match = self.rx_ip.search(l)
             if match:
