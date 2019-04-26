@@ -56,9 +56,17 @@ def py_module(request):
     return request.param
 
 
+@pytest.mark.dependency(name="module_import")
 def test_import(py_module):
     m = __import__(py_module, {}, {}, "*")
     assert m
+
+
+@pytest.mark.dependency(depends=["module_import"])
+def test_module_empty_docstrings(py_module):
+    m = __import__(py_module, {}, {}, "*")
+    if m.__doc__ is not None:
+        assert m.__doc__.strip(), "Module-level docstring must not be empty"
 
 
 @pytest.fixture(scope="module", params=[f for f in _git_ls() if f.endswith("__init__.py")])
