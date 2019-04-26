@@ -48,3 +48,4 @@ fs==2.0.21
 tornadis==0.8.1
 hiredis==0.2.0
 redis==2.10.6
+future==0.17.1

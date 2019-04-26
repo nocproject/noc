@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+from builtins import str
 import os
 # Third-party modules
 from django.http import HttpResponse
@@ -149,21 +150,21 @@ class ExtApplication(Application):
             q = dict((str(k), v[0] if len(v) == 1 else v)
                      for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
-        if limit:
+        if limit and limit > 0:
             try:
                 limit = int(limit)
             except ValueError:
                 return HttpResponse(400, "Invalid %s param" % self.limit_param)
-        if limit < 0:
+        if limit and limit < 0:
             return HttpResponse(400, "Invalid %s param" % self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param) or 0
-        if start:
+        if start and start > 0:
             try:
                 start = int(start)
             except ValueError:
                 return HttpResponse(400, "Invalid %s param" % self.start_param)
-        if start < 0:
+        elif start and start < 0:
             return HttpResponse(400, "Invalid %s param" % self.start_param)
         query = q.get(self.query_param)
         only = q.get(self.only_param)
