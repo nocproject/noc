@@ -46,7 +46,10 @@ class Script(BaseScript):
             v = "debug hal show optic-info slot %d" % slot
         else:
             v = "debug hal show optic-info"
-        v = self.cli(v)
+        try:
+            v = self.cli(v)
+        except self.CLISyntaxError:
+            return r
         port = None
         for block in self.rx_trans_split.split(v):
             if is_int(block):
@@ -186,6 +189,8 @@ class Script(BaseScript):
             if "Switch" in k:
                 k = "Switch-1"
             elif "PSU" in k:
+                continue
+            elif "VIM" in k:
                 continue
             elif "-" not in k or not v:
                 continue
