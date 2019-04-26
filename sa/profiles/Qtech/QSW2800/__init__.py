@@ -53,6 +53,14 @@ class Profile(BaseProfile):
 
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
+    matchers = {
+        "is_new_metric": {
+             "caps": {
+                "$in": ["Qtech | OID | Memory Usage 11"]
+                    }
+        }
+    }
+
     @classmethod
     def cmp_version(cls, v1, v2):
         """

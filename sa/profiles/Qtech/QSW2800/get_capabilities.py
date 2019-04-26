@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -37,6 +37,19 @@ class Script(BaseScript):
                 return True
         except self.snmp.TimeOutError:
             return False
+
+    def has_snmp_memory_oids(self):
+        """
+        Check box has memory usage 1.3.6.1.4.1.27514.100.1.11.11.0 enabled on Qtech
+        """
+        r = []
+        try:
+            x = self.snmp.get("1.3.6.1.4.1.27514.100.1.11.11.0")
+            if x > 0:
+                r += ["Qtech | OID | Memory Usage 11"]
+        except self.snmp.TimeOutError:
+            pass
+        return r
 
     @false_on_cli_error
     def has_stp_cli(self):
@@ -86,3 +99,9 @@ class Script(BaseScript):
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
+        for m in self.has_snmp_memory_oids():
+            caps[m] = True
+
+    def execute_platform_snmp(self, caps):
+        for m in self.has_snmp_memory_oids():
+            caps[m] = True
