@@ -2,17 +2,15 @@
 # ----------------------------------------------------------------------
 # Raisecom.RCIOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.text import ranges_to_list
 from noc.core.ip import IPv4, IPv6
 
 
@@ -32,13 +30,14 @@ class Script(BaseScript):
         r"(^\s+.+?\s+MTU:\s*(?P<mtu>\d+).+?\n)?"
         r"(^.+?\n)?"
         r"(^.+?\n)?"
-        r"(^\s+Forwarding mode is SWITCH_ACCESS, pvid is (?P<pvid>\d+), mirror \S+, loopback-detect (?P<ctp_state>\S+),.+\n)?",
+        r"(^\s+Forwarding mode is SWITCH_ACCESS, pvid is (?P<pvid>\d+), mirror \S+"
+        r", loopback-detect (?P<ctp_state>\S+),.+\n)?",
         re.MULTILINE)
     rx_conf_iface = re.compile(
         r"^interface (?P<iface>\S+)\s*\n"
         r"((?P<cfg>.*?)\n)?"
         r"^!\s*\n",
-        re.MULTILINE| re.DOTALL)
+        re.MULTILINE | re.DOTALL)
     rx_trunk = re.compile(r"switchport trunk permit vlan (?P<vlan_id>\d+)")
 
     def execute(self):

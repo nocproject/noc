@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-import re
 
 
 class Script(BaseScript):
@@ -19,12 +20,13 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
         r"(?P<mode>ACCESS|TRUNK)\s+(?P<access_vlan>\d+)\s+"
-        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)?\n", re.MULTILINE)
+        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)?\n", re.MULTILINE
+    )
 
     def execute(self):
         r = []
         c = self.cli("show interfaces switchport")
-        c = self.rx_cont.sub("," , c)  # Unwind continuation lines
+        c = self.rx_cont.sub(",", c)  # Unwind continuation lines
 
         for match in self.rx_line.finditer(c):
             trunk = match.group("mode") == "TRUNK"
@@ -49,14 +51,16 @@ class Script(BaseScript):
                 for p in self.scripts.get_portchannel():
                     if p["interface"] == shortname:
                         members = p["members"]
-            r += [{
-                "interface": interface,
-                "status": match.group("status") == "enabled",
-                #"description"    : "Dummy";
-                "802.1Q Enabled": trunk,
-                "802.1ad Tunnel": False,
-                "untagged": pvid,
-                "tagged": tagged,
-                "members": members
-                }]
+            r += [
+                {
+                    "interface": interface,
+                    "status": match.group("status") == "enabled",
+                    # "description"    : "Dummy";
+                    "802.1Q Enabled": trunk,
+                    "802.1ad Tunnel": False,
+                    "untagged": pvid,
+                    "tagged": tagged,
+                    "members": members
+                }
+            ]
         return r

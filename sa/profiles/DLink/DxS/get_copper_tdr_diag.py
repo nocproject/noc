@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_copper_tdr_diag
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -18,10 +17,24 @@ from noc.sa.profiles.DLink.DxS import DES3200
 class Script(BaseScript):
     name = "DLink.DxS.get_copper_tdr_diag"
     interface = IGetCopperTDRDiag
-    rx_link_ok = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+(?:Link Up\s+OK|Link Down\s+ShutDown)\s+(?P<length>\d+)", re.IGNORECASE)
-    rx_link_nc = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Down\s+(?:No Cable)(\s+\-)?", re.IGNORECASE)
-    rx_link_pr = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link (?:Up|Down)\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short)\s+at\s+(?P<length>\d+)\s*M\s+-", re.IGNORECASE)
-    rx_pair = re.compile(r"^\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short|Not Support)(\s+at\s+(?P<length>\d+)\s*M)?", re.IGNORECASE)
+    rx_link_ok = re.compile(
+        r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+"
+        r"(?:Link Up\s+OK|Link Down\s+ShutDown)\s+(?P<length>\d+)",
+        re.IGNORECASE
+    )
+    rx_link_nc = re.compile(
+        r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+"
+        r"Link Down\s+(?:No Cable)(\s+\-)?",
+        re.IGNORECASE
+    )
+    rx_link_pr = re.compile(
+        r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+"
+        r"Link (?:Up|Down)\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short)\s+at\s+(?P<length>\d+)\s*M\s+-",
+        re.IGNORECASE
+    )
+    rx_pair = re.compile(
+        r"^\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short|Not Support)(\s+at\s+(?P<length>\d+)\s*M)?", re.IGNORECASE
+    )
     variance = 0
 
     def parce_pair(self, pair, status, distance=None):
@@ -37,8 +50,7 @@ class Script(BaseScript):
         else:
             raise self.NotSupportedError()
         if distance is not None:
-            return {"pair": pair, "status": st, "distance_cm": int(distance),
-            "variance_cm": self.variance}
+            return {"pair": pair, "status": st, "distance_cm": int(distance), "variance_cm": self.variance}
         else:
             return {"pair": pair, "status": st, "distance_cm": 0}
 
@@ -57,53 +69,80 @@ class Script(BaseScript):
         test = s.splitlines()
         i = 0
         while i < len(test):
-            l = test[i]
+            ln = test[i]
 
-            match = self.rx_link_ok.search(l)
+            match = self.rx_link_ok.search(ln)
             if match:
                 length = int(match.group("length")) * 100
-                r += [{
-                    "interface":match.group("interface"),
-                    "pairs": [
-                        {"pair": 1, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance},
-                        {"pair": 2, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance},
-                        {"pair": 3, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance},
-                        {"pair": 4, "status": "T",
-                        "distance_cm": length, "variance_cm": self.variance}
-                    ]
-                }]
+                r += [
+                    {
+                        "interface": match.group("interface"),
+                        "pairs": [
+                            {
+                                "pair": 1,
+                                "status": "T",
+                                "distance_cm": length,
+                                "variance_cm": self.variance
+                            }, {
+                                "pair": 2,
+                                "status": "T",
+                                "distance_cm": length,
+                                "variance_cm": self.variance
+                            }, {
+                                "pair": 3,
+                                "status": "T",
+                                "distance_cm": length,
+                                "variance_cm": self.variance
+                            }, {
+                                "pair": 4,
+                                "status": "T",
+                                "distance_cm": length,
+                                "variance_cm": self.variance
+                            }
+                        ]
+                    }
+                ]
 
-            match = self.rx_link_nc.search(l)
+            match = self.rx_link_nc.search(ln)
             if match:
-                r += [{
-                    "interface":match.group("interface"),
-                    "pairs": [
-                        {"pair": 1, "status": "N", "distance_cm": 0},
-                        {"pair": 2, "status": "N", "distance_cm": 0},
-                        {"pair": 3, "status": "N", "distance_cm": 0},
-                        {"pair": 4, "status": "N", "distance_cm": 0}
-                    ]
-                }]
+                r += [
+                    {
+                        "interface": match.group("interface"),
+                        "pairs": [
+                            {
+                                "pair": 1,
+                                "status": "N",
+                                "distance_cm": 0
+                            }, {
+                                "pair": 2,
+                                "status": "N",
+                                "distance_cm": 0
+                            }, {
+                                "pair": 3,
+                                "status": "N",
+                                "distance_cm": 0
+                            }, {
+                                "pair": 4,
+                                "status": "N",
+                                "distance_cm": 0
+                            }
+                        ]
+                    }
+                ]
 
-            match = self.rx_link_pr.search(l)
+            match = self.rx_link_pr.search(ln)
             if match:
                 pair = int(match.group("num"))
                 status = match.group("status")
                 distance = int(match.group("length"))
-                link = {
-                    "interface": match.group("interface"),
-                    "pairs": []
-                }
+                link = {"interface": match.group("interface"), "pairs": []}
                 p = self.parce_pair(pair, status, distance)
                 link["pairs"].append(p)
 
                 i += 1
-                l = test[i]
+                ln = test[i]
 
-                match = self.rx_pair.search(l)
+                match = self.rx_pair.search(ln)
                 while match and i < len(test):
                     pair = int(match.group("num"))
                     status = match.group("status")
@@ -115,8 +154,8 @@ class Script(BaseScript):
                     link["pairs"].append(p)
 
                     i += 1
-                    l = test[i]
-                    match = self.rx_pair.search(l)
+                    ln = test[i]
+                    match = self.rx_pair.search(ln)
 
                 r.append(link)
                 i -= 1

@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import string
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -42,11 +41,11 @@ class Script(BaseScript):
         else:
             cmd = "show interface brief | excl Port"
 
-        for l in self.cli(cmd).splitlines():
-            l=l.replace("Disabled"," Disabled ")
-            l=l.replace("Up"," Up ")
-            l=l.replace("DisabN"," Disabled N")
-            match = rx_interface_status.match(l)
+        for ln in self.cli(cmd).splitlines():
+            ln = ln.replace("Disabled", " Disabled ")
+            ln = ln.replace("Up", " Up ")
+            ln = ln.replace("DisabN", " Disabled N")
+            match = rx_interface_status.match(ln)
             if match:
                 r += [{
                     "interface": match.group("interface"),

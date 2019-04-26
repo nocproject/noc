@@ -2,33 +2,26 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-#from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import list_to_ranges
-import re
 
 
 class Script(BaseScript):
     name = "HP.ProCurve.get_spanning_tree"
     interface = IGetSpanningTree
 
-    ##
-    ## walkMIB wrapper
-    ## Return single value
-    ##
+    # walkMIB wrapper. Return single value
     def mib_get(self, oid):
         v = self.cli("walkMIB %s" % oid)
         return v.split("=", 1)[1].strip()
 
-    ##
-    ## Returns hash of index->value
-    ##
+    # Returns hash of index->value
     def mib_walk(self, oid):
         r = {}
         last_id = None
@@ -49,9 +42,7 @@ class Script(BaseScript):
                 r[last_id] += "\n" + l
         return r
 
-    ##
-    ## MSTP Parsing
-    ##
+    # MSTP Parsing
     def process_mstp(self):
         r = {
             "mode": "MSTP",
@@ -105,7 +96,7 @@ class Script(BaseScript):
                     except KeyError:
                         vlans[instance_id] = v[instance_id]
 
-        if not vlans.has_key(0):
+        if 0 not in vlans:
             vlans[0] = ''
         # Convert bitmask to vlan list
         rest_vlans = set(range(1, 4096))
@@ -125,18 +116,14 @@ class Script(BaseScript):
             if not v and instance_id == 0:
                 v = rest_vlans
             instances[instance_id]["vlans"] = list_to_ranges(sorted(v))
-        #
+
         # Process interfaces
-        #
         # port_id -> {"interface","port_id","edge","point_to_point"}
         ports = {}
         ifname = self.mib_walk("ifName")
         v = self.mib_walk("dot1dBasePortIfIndex")
         for port_id in v:
-            ports[port_id] = {
-                "interface": ifname[int(v[port_id])],
-                "port_id": port_id
-            }
+            ports[port_id] = {"interface": ifname[int(v[port_id])], "port_id": port_id}
         # Edge port status
         v = self.mib_walk("hpicfBridgeRstpOperEdgePort")
         for port_id in v:
@@ -145,9 +132,8 @@ class Script(BaseScript):
         v = self.mib_walk("hpicfBridgeRstpOperPointToPointMac")
         for port_id in v:
             ports[port_id]["point_to_point"] = v[port_id] == "1"
-        #
+
         # Process instance interfaces
-        #
         instance_ports = {}  # instance_id -> port_id -> data
         for instance_id in instances:
             instance_ports[instance_id] = {}
@@ -206,32 +192,25 @@ class Script(BaseScript):
                     v["designated_bridge_id"] = bridge_id
                 if "designated_bridge_priority" not in v:
                     v["designated_bridge_priority"] = 32768
-        #
+
         # Install interfaces
-        #
         for instance_id in instances:
-            instances[instance_id]["interfaces"] = sorted(instance_ports[instance_id].values(), lambda x, y: cmp(x["port_id"], y["port_id"]))
-        #
+            instances[instance_id]["interfaces"] = sorted(
+                instance_ports[instance_id].values(), lambda x, y: cmp(x["port_id"], y["port_id"])
+            )
+
         # Install instances
-        #
         r["instances"] = sorted(instances.values(), lambda x, y: cmp(x["id"], y["id"]))
         return r
 
-    ##
     def process_rstp(self):
-        r = {
-            "mode": "RSTP"
-        }
+        r = {"mode": "RSTP"}
         # Get bridge id
         bridge_id = self.mib_get("dot1dBaseBridgeAddress").replace(" ", "")
         bridge_id = "%s-%s" % (bridge_id[:6], bridge_id[6:])
 
         # Create instances
-        instance = {
-            'id': 0,
-            'vlans': "1-4095",
-            'bridge_id': bridge_id
-        }
+        instance = {'id': 0, 'vlans': "1-4095", 'bridge_id': bridge_id}
 
         for l in self.cli('sh spanning-tree instance ist').splitlines():
             if l.find('Switch Priority') > 0:
@@ -278,13 +257,13 @@ class Script(BaseScript):
                     iface['designated_port_id'] = l.split(':')[2].rstrip()
 
             if not iface:
-                    continue
+                continue
 
             for p in ports:
-                    if iface['interface'] == ports[p]['interface']:
-                        iface['port_id'] = '%s.%s' % (pri, ports[p]['port_id'])
-                        iface['edge'] = ports[p]['edge']
-                        iface['point_to_point'] = ports[p]['point_to_point']
+                if iface['interface'] == ports[p]['interface']:
+                    iface['port_id'] = '%s.%s' % (pri, ports[p]['port_id'])
+                    iface['edge'] = ports[p]['edge']
+                    iface['point_to_point'] = ports[p]['point_to_point']
             try:
                 instance['interfaces'].append(iface)
             except KeyError:

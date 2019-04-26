@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # HP.Comware.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -25,8 +24,7 @@ class Script(BaseScript):
         r"(^\s+round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms\n)?",
         re.MULTILINE)
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping"
         if count:
             cmd += " -c %d" % int(count)
@@ -35,9 +33,9 @@ class Script(BaseScript):
         if source_address:
             cmd += " -a %s" % source_address
         if size:
-            cmd+=" -s %d" % int(size)
+            cmd += " -s %d" % int(size)
         if df:
-            cmd+=" -f"
+            cmd += " -f"
         cmd = "%s %s" % (cmd, address)
         match = self.rx_result.search(self.cli(cmd))
         if not match:

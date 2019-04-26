@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # DLink.DAS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -58,6 +57,7 @@ class Script(BaseScript):
         "Fast": "unknown",
         "ATM": "physical",
     }
+
     def execute(self):
         interfaces = []
         v = self.cli("get interface stats")

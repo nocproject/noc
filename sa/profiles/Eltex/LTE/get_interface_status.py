@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.LTE.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,14 +26,13 @@ class Script(BaseScript):
         with self.profile.switch(self):
             cmd = self.cli("show ports", cached=True)
             for match in self.rx_port.finditer(cmd):
-                if interface is not None \
-                and interface == match.group("interface"):
+                if interface is not None and interface == match.group("interface"):
                     return [{
                         "interface": match.group("interface"),
                         "status": match.group("status") == "up"
                     }]
                 else:
-                    r+= [{
+                    r += [{
                         "interface": match.group("interface"),
                         "status": match.group("status") == "up"
                     }]

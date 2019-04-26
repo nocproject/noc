@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,15 +17,10 @@ class Script(BaseScript):
     name = "Linksys.SPS2xx.get_switchport"
     interface = IGetSwitchport
 
-    rx_vlan = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*",
-        re.IGNORECASE)
-    rx_description = re.compile(
-        r"^(?P<interface>(e|g|t)\S+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-    rx_channel_description = re.compile(
-        r"^(?P<interface>ch\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-    rx_vlan_stack = re.compile(
-        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
+    rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*", re.IGNORECASE)
+    rx_description = re.compile(r"^(?P<interface>(e|g|t)\S+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    rx_channel_description = re.compile(r"^(?P<interface>ch\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
     def execute(self):
         # Get portchannels
@@ -39,7 +34,7 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         try:
@@ -52,30 +47,42 @@ class Script(BaseScript):
 
         # Try snmp first
         if self.has_snmp():
+
             def hex2bin(ports):
                 bin = [
-                    '0000', '0001', '0010', '0011',
-                    '0100', '0101', '0110', '0111',
-                    '1000', '1001', '1010', '1011',
-                    '1100', '1101', '1110', '1111',
-                    ]
+                    '0000',
+                    '0001',
+                    '0010',
+                    '0011',
+                    '0100',
+                    '0101',
+                    '0110',
+                    '0111',
+                    '1000',
+                    '1001',
+                    '1010',
+                    '1011',
+                    '1100',
+                    '1101',
+                    '1110',
+                    '1111',
+                ]
                 ports = ["%02x" % ord(c) for c in ports]
                 p = ''
                 for c in ports:
-                   for i in range(len(c)):
+                    for i in range(len(c)):
                         p += bin[int(c[i], 16)]
                 return p
+
             try:
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.7.1.4.2.1.3",
-                     "1.3.6.1.2.1.17.7.1.4.2.1.4",
-                     "1.3.6.1.2.1.17.7.1.4.2.1.5"]):
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.2.1.4",
+                                               "1.3.6.1.2.1.17.7.1.4.2.1.5"]):
                     tagged = v[2]
                     untagged = v[3]
 
-#                    s = self.hex_to_bin(untagged)
+                    # s = self.hex_to_bin(untagged)
                     s = hex2bin(untagged)
                     un = []
                     for i in range(len(s)):
@@ -83,14 +90,13 @@ class Script(BaseScript):
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
+                                port_vlans.update({iface: {
+                                    "tagged": [],
+                                    "untagged": '',
+                                }})
                             port_vlans[iface]["untagged"] = v[1]
                             un += [str(i + 1)]
+
 
 #                    s = self.hex_to_bin(tagged)
                     s = hex2bin(tagged)
@@ -99,19 +105,15 @@ class Script(BaseScript):
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
+                                port_vlans.update({iface: {
+                                    "tagged": [],
+                                    "untagged": '',
+                                }})
                             port_vlans[iface]["tagged"].append(v[1])
 
                 # Get switchport description
                 port_descr = {}
-                for iface, description in self.snmp.join_tables(
-                        "1.3.6.1.2.1.31.1.1.1.1",
-                        "1.3.6.1.2.1.31.1.1.1.18"):
+                for iface, description in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
                     port_descr.update({iface: description})
 
                 # Get switchport data and overall result
@@ -150,14 +152,12 @@ class Script(BaseScript):
                         else:
                             tagged = port_vlans[name]["tagged"]
                         swp = {
-                                "status": status,
-                                "description": description,
-                                "802.1Q Enabled": len(port_vlans.get(name,
-                                                '')) > 0,
-                                "802.1ad Tunnel": vlan_stack_status.get(name,
-                                                False),
-                                "tagged": tagged,
-                                }
+                            "status": status,
+                            "description": description,
+                            "802.1Q Enabled": len(port_vlans.get(name, '')) > 0,
+                            "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                            "tagged": tagged,
+                        }
                         if name in port_vlans:
                             if port_vlans[name]["untagged"]:
                                 swp["untagged"] = port_vlans[name]["untagged"]
@@ -178,9 +178,7 @@ class Script(BaseScript):
                 for p in port_channels:
                     if interface in p["members"]:
                         interface = p["interface"]
-                        vlan_list = self.cli(
-                            "show interfaces switchport port-channel %s"
-                            % interface).splitlines()
+                        vlan_list = self.cli("show interfaces switchport port-channel %s" % interface).splitlines()
                         port_channels.remove(p)
                         break
             else:
@@ -188,10 +186,9 @@ class Script(BaseScript):
                 vlan_list = self.cli(cmd).splitlines()
             if interface not in port_vlans:
                 port_vlans.update({interface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                })
+                    "tagged": [],
+                    "untagged": '',
+                }})
             for vlans in vlan_list:
                 vlan = self.rx_vlan.match(vlans)
                 if vlan:
@@ -245,12 +242,12 @@ class Script(BaseScript):
                 write = True
             if write:
                 swp = {
-                        "status": status,
-                        "description": description,
-                        "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
-                        "802.1ad Tunnel": vlan_stack_status.get(name, False),
-                        "tagged": port_vlans[name]["tagged"],
-                        }
+                    "status": status,
+                    "description": description,
+                    "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
+                    "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                    "tagged": port_vlans[name]["tagged"],
+                }
                 if port_vlans[name]["untagged"]:
                     swp["untagged"] = port_vlans[name]["untagged"]
                 swp["interface"] = name

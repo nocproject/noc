@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Telindus.SHDSL.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+
 
 class Script(BaseScript):
     name = "Telindus.SHDSL.get_version"
@@ -27,11 +28,7 @@ class Script(BaseScript):
                 for ver in vr:
                     if ver.startswith("T"):
                         version = ver
-                return {
-                        "vendor": "Telindus",
-                        "version": version,
-                        "platform": platform
-                        }
+                return {"vendor": "Telindus", "version": version, "platform": platform}
             except self.snmp.TimeOutError:
                 pass
         # Fallback to CLI

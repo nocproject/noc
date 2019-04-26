@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -99,38 +99,38 @@ class Script(BaseScript):
                 nodata = ""
                 if "Port" in match2:
                     partno = ""
-                    l = match2.split()
-                    self.logger.debug(l)
-                    if l[4] == "EMPTY":
+                    ln = match2.split()
+                    self.logger.debug(ln)
+                    if ln[4] == "EMPTY":
                         port = ""
                     elif "M-TX" in match2:
                         nodata = "1"
-                        port = l[1][:-1]
-                        trans = " ".join(l[4:])
+                        port = ln[1][:-1]
+                        trans = " ".join(ln[4:])
                         serial = "None"
                     elif "UNKNOWN" in match2:
                         nodata = "1"
-                        port = l[1][:-1]
-                        trans = " ".join(l[4:])
+                        port = ln[1][:-1]
+                        trans = " ".join(ln[4:])
                         serial = "None"
                     else:
-                        port = l[1][:-1]
-                        self.logger.debug(l[4])
+                        port = ln[1][:-1]
+                        self.logger.debug(ln[4])
                         self.logger.debug(port)
-                        trans = " ".join(l[4:])
+                        trans = " ".join(ln[4:])
                         serial = ""
                 elif "Vendor" in match2:
-                    l = match2.split()
-                    self.logger.debug(l)
-                    descr = l[1]
+                    ln = match2.split()
+                    self.logger.debug(ln)
+                    descr = ln[1]
                 elif "Serial" in match2:
-                    l = match2.split()
-                    # descr=l[2]
-                    if l[4]:
-                        serial = l[4]
+                    ln = match2.split()
+                    # descr=ln[2]
+                    if ln[4]:
+                        serial = ln[4]
                     else:
                         serial = "SNUNKNOWN"
-                    partno = l[2]
+                    partno = ln[2]
                 # if match2[0].split("/")[0]==match1[0] and match2[1]!="EMPTY":
                 # self.logger.debug(match2)
                 if nodata:
@@ -181,29 +181,29 @@ class Script(BaseScript):
                 self.logger.debug(media)
                 for match2 in media.splitlines():
                     if "Port" in match2:
-                        l = match2.split()
-                        self.logger.debug(l)
-                        if l[4] == "EMPTY":
+                        ln = match2.split()
+                        self.logger.debug(ln)
+                        if ln[4] == "EMPTY":
                             port = ""
                         else:
-                            port = l[1][:-1].split("/")[1]
-                            self.logger.debug(l[4])
+                            port = ln[1][:-1].split("/")[1]
+                            self.logger.debug(ln[4])
                             self.logger.debug(port)
-                            trans = " ".join(l[4:])
+                            trans = " ".join(ln[4:])
                             serial = ""
                     elif "Vendor" in match2:
-                        l = match2.split()
-                        self.logger.debug(l)
-                        descr = l[1]
+                        ln = match2.split()
+                        self.logger.debug(ln)
+                        descr = ln[1]
                     elif "Serial" in match2:
-                        l = match2.split()
-                        self.logger.debug(l)
-                        #			descr=l[2]
-                        if l[4]:
-                            serial = l[4]
+                        ln = match2.split()
+                        self.logger.debug(ln)
+                        # descr=l[2]
+                        if ln[4]:
+                            serial = ln[4]
                         else:
                             serial = "SNUNKNOWN"
-                        partno = l[2]
+                        partno = ln[2]
                         if not partno:
                             partno = self.TRANS_MAP[trans]
                         if serial:
@@ -229,13 +229,13 @@ class Script(BaseScript):
             # Power for RX-chassis
             power = self.cli("show chassis")
             for line in power.splitlines():
-                if "Power" in line and not "Fail" in line:
+                if "Power" in line and "Fail" not in line:
                     if "Power" == line.split()[0]:
                         if "Installed" in line:
-                            l = line.split()
-                            pwn = l[1]
-                            partno = l[2][1:]
-                            descr = " ".join([l[4], l[5][:-2]])
+                            ln = line.split()
+                            pwn = ln[1]
+                            partno = ln[2][1:]
+                            descr = " ".join([ln[4], ln[5][:-2]])
                             serial = "None"
                             objects += [{
                                 "builtin": False,
@@ -278,8 +278,7 @@ class Script(BaseScript):
                     "vendor": "BROCADE"
                 }]
                 for trans in self.rx_media_rx.findall(media):
-                    if trans[0].split("/")[
-                        0] == num and slot_type == "CARD":
+                    if trans[0].split("/")[0] == num and slot_type == "CARD":
                         ntr = trans[0].split("/")[1]
                         descr = trans[1].strip()
                         partno = trans[2].strip()
@@ -314,7 +313,7 @@ class Script(BaseScript):
                             "builtin": False,
                             "description": match2[1],
                             "number": match2[0].split("/")[1],
-                            #				"number": match2[0],
+                            # "number": match2[0],
                             "part_no": self.TRANS_MAP[match2[1]],
                             "serial": "SNUNKNOWN",
                             "type": "XCVR",

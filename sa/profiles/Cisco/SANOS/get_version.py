@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # Cisco.SANOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
+
 
 rx_platform = re.compile(
     r"^Hardware\n\s+cisco\s+(?P<platform>MDS\s+\S+)", re.MULTILINE)
@@ -20,6 +22,7 @@ rx_version = re.compile(
 rx_image = re.compile(
     r"system image file is:\s+bootflash:\/(?P<image>\S+)",
     re.MULTILINE | re.DOTALL)
+
 
 class Script(BaseScript):
     name = "Cisco.SANOS.get_version"

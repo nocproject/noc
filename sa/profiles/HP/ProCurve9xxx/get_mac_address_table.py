@@ -2,35 +2,30 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve9xxx.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
 
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_mac_address_table"
     interface = IGetMACAddressTable
 
-    ##
-    ## Parse MAC address table
-    ##
+    # Parse MAC address table
     dataline = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}")
 
     def parse_mac_table(self, s):
         r = []
         for line in s.splitlines():
             if self.dataline.match(line):
-               l = line.split()
-               r.append([l[0], l[1], l[3]])
+                ln = line.split()
+                r.append([ln[0], ln[1], ln[3]])
         return r
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -43,17 +38,13 @@ class Script(BaseScript):
             rmac = mac.replace(":", "").lower()
         r = []
         for v in vlans:
-#            try:
-                for m, port, type in self.parse_mac_table(self.cli("show mac-address vlan %d" % v)):
-                    rrmac = m.replace(".", "").lower()
-                    if (not interface or port == interface) \
-                    and (not mac or rmac == rrmac):
-                        r += [{
-                            "vlan_id": v,
-                            "mac": m,
-                            "interfaces": [port],
-                            "type": type
-                        }]
+            # try:
+            for m, port, type in self.parse_mac_table(self.cli("show mac-address vlan %d" % v)):
+                rrmac = m.replace(".", "").lower()
+                if (not interface or port == interface) and (not mac or rmac == rrmac):
+                    r += [{"vlan_id": v, "mac": m, "interfaces": [port], "type": type}]
+
+
 #            except TypeError:
 #                r = []
         return r

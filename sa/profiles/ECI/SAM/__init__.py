@@ -3,7 +3,7 @@
 # Vendor: ECI http://www.ecitele.com/
 # OS:     SAM
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,15 +21,15 @@ class Profile(BaseProfile):
     pattern_prompt = r"^( >>|\S+ >(?: \S+ >)?|\S+ (?:\- SHOW(?:\\\S+)?)?>)"
     pattern_syntax_error = r": no such command"
 
-    #pattern_prompt = r"^Select menu option.*:"
+    # pattern_prompt = r"^Select menu option.*:"
     pattern_more = [
         (r"Enter <CR> for more or 'q' to quit--:", "\r"),
         (r"press <SPACE> to continue or <ENTER> to quit", "               \n"),
     ]
     command_exit = "logout"
-    #telnet_slow_send_password = True
-    #telnet_send_on_connect = "\r"
-    #convert_mac = BaseProfile.convert_mac_to_dashed
+    # telnet_slow_send_password = True
+    # telnet_send_on_connect = "\r"
+    # convert_mac = BaseProfile.convert_mac_to_dashed
 
     def setup_script(self, script):
         if script.parent is None:

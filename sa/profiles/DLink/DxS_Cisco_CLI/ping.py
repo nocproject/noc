@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-import re
 
 
 class Script(BaseScript):
@@ -18,10 +19,10 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
         r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"
-        r" ms)?", re.MULTILINE | re.DOTALL)
+        r" ms)?", re.MULTILINE | re.DOTALL
+    )
 
-    def execute(self, address, count=None, source_address=None, size=None, \
-        df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         if ":" in address:
             cmd = "ping ipv6 %s" % address
             if count:
@@ -39,15 +40,15 @@ class Script(BaseScript):
             if size:
                 cmd += " length %d" % int(size)
         # Don't implemented, may be in future firmware revisions ?
-        #if df:
+        # if df:
         #    cmd+=" df-bit"
         match = self.rx_result.search(self.cli(cmd))
         if not match:
             raise self.NotSupportedError()
         return {
-                "success": int(match.group("success")),
-                "count": int(match.group("count")),
-                "min": match.group("min"),
-                "avg": match.group("avg"),
-                "max": match.group("max")
-            }
+            "success": int(match.group("success")),
+            "count": int(match.group("count")),
+            "min": match.group("min"),
+            "avg": match.group("avg"),
+            "max": match.group("max")
+        }

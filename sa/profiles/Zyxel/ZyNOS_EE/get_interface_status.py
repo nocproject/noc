@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS_EE.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,9 +17,7 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS_EE.get_interface_status"
     interface = IGetInterfaceStatus
 
-    rx_link = re.compile(
-        r"^( |)(?P<interface>\d+)\s+\d+\s+(?P<status>\d)\s+\S+\s+\S+\s+\S+$",
-        re.MULTILINE)
+    rx_link = re.compile(r"^( |)(?P<interface>\d+)\s+\d+\s+(?P<status>\d)\s+\S+\s+\S+\s+\S+$", re.MULTILINE)
 
     def execute(self, interface=None):
         r = []
@@ -29,20 +27,16 @@ class Script(BaseScript):
             try:
                 if interface is None:
                     # Join # IF-MIB::ifIndex, IF-MIB::ifOperStatus
-                    for n, s in self.snmp.join_tables("1.3.6.1.2.1.2.2.1.1",
-                                                      "1.3.6.1.2.1.2.2.1.8",
-                                                      max_index=1023):
+                    for n, s in self.snmp.join_tables("1.3.6.1.2.1.2.2.1.1", "1.3.6.1.2.1.2.2.1.8", max_index=1023):
                         r.append({
                             "interface": n,
                             "status": int(s) == 1  # ifOperStatus up(1)
-                            })
+                        })
                     return r
                 else:
-                    n = self.snmp.get("1.3.6.1.2.1.2.2.1.1.%d"
-                                    % int(interface))
-                    s = self.snmp.get("1.3.6.1.2.1.2.2.1.8.%d"
-                                    % int(interface))
-                    return [{"interface":n, "status":int(s) == 1}]
+                    n = self.snmp.get("1.3.6.1.2.1.2.2.1.1.%d" % int(interface))
+                    s = self.snmp.get("1.3.6.1.2.1.2.2.1.8.%d" % int(interface))
+                    return [{"interface": n, "status": int(s) == 1}]
             except self.snmp.TimeOutError:
                 pass
 
@@ -53,17 +47,11 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         for match in self.rx_link.finditer(s):
             if interface is None:
-                r.append({
-                        "interface": match.group("interface"),
-                        "status": match.group("status") == '1'
-                        })
+                r.append({"interface": match.group("interface"), "status": match.group("status") == '1'})
             else:
                 iface = match.group("interface")
                 if interface == iface:
-                    r = [{
-                        "interface": iface,
-                        "status": match.group("status") == '1'
-                        }]
+                    r = [{"interface": iface, "status": match.group("status") == '1'}]
         if not r:
             raise self.NotSupportedError()
         return r

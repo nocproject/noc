@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Rubytech.l2ms.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -55,7 +55,6 @@ class Script(BaseScript):
         r".*Serial Number\s+:\s(?P<sn>[^, ]+)\n"
         , re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-
     def execute(self):
         ver = ""
         self.cli("system", cached=True)
@@ -74,5 +73,5 @@ class Script(BaseScript):
                 "HW": match.group("hwversion"),
                 "SN": match.group("sn"),
                 "Bios": match.group("biosversion"),
-                          }
             }
+        }

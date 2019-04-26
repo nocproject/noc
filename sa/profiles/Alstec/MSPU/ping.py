@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Alstec.MSPU.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"(?P<count>\d+) packets transmitted, (?P<success>\d+) received,")
+
     def execute(self, address, count=None, source_address=None,
                 size=None, df=None, vrf=None):
         cmd = "ping %s" % address

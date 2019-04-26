@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_inventory
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,15 +11,15 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
+
 
 class Script(BaseScript):
     name = "Alcatel.7324RU.get_inventory"
     interface = IGetInventory
 
     rx_info = re.compile(r"Model:\s+7324\sRU\s(?P<hw1>\S+)\n.+Hardware\s"
-        r"version:\s+(?P<hw2>\w+)\n\s+Serial\snumber:\s(?P<serial>\w+)",
-        re.DOTALL)
+                         r"version:\s+(?P<hw2>\w+)\n\s+Serial\snumber:\s(?P<serial>\w+)",
+                         re.DOTALL)
 
     def execute(self):
         s = self.cli("sys info show", cached=True)

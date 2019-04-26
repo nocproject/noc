@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # HP.1905.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class Script(BaseScript):
             portchannels = self.scripts.get_portchannel()
             for p in portchannels:
                 portchannel_members += p["members"]
-        except:
+        except Exception:
             pass
 
         # Get interafces status
@@ -34,16 +34,16 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
-#        try:
-#            cmd = self.cli("show vlan-stacking")
-#            for match in self.rx_vlan_stack.finditer(cmd):
-#                if match.group("role").lower() == "tunnel":
-#                    vlan_stack_status[int(match.group("interface"))] = True
-#        except self.CLISyntaxError:
-#            pass
+        #        try:
+        #            cmd = self.cli("show vlan-stacking")
+        #            for match in self.rx_vlan_stack.finditer(cmd):
+        #                if match.group("role").lower() == "tunnel":
+        #                    vlan_stack_status[int(match.group("interface"))] = True
+        #        except self.CLISyntaxError:
+        #            pass
 
         # Try snmp first
         if self.has_snmp():
@@ -51,9 +51,8 @@ class Script(BaseScript):
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
                 for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.4",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+                    ["1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.2.1.4", "1.3.6.1.2.1.17.7.1.4.2.1.5"],
+                        bulk=True):
                     tagged = v[2]
                     untagged = v[3]
 
@@ -71,12 +70,10 @@ class Script(BaseScript):
 #                                oid = "1.3.6.1.2.1.2.2.1.2." + str(i + 1)
 #                                iface = self.snmp.get(oid, cached=True)
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
+                                port_vlans.update({iface: {
+                                    "tagged": [],
+                                    "untagged": '',
+                                }})
                             port_vlans[iface]["untagged"] = v[1]
                             un += [str(i + 1)]
 
@@ -87,31 +84,29 @@ class Script(BaseScript):
                                 iface = 'Ethernet0/' + str(i + 1)
                             else:
                                 iface = 'Copper0/' + str(i + 1)
+
+
 #                            oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
 #                            iface = self.snmp.get(oid, cached=True)
 #                            if not iface:
 #                                oid = "1.3.6.1.2.1.2.2.1.2." + str(i + 1)
 #                                iface = self.snmp.get(oid, cached=True)
                             if iface not in port_vlans:
-                                port_vlans.update(
-                                    {iface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                    })
+                                port_vlans.update({iface: {
+                                    "tagged": [],
+                                    "untagged": '',
+                                }})
                             port_vlans[iface]["tagged"].append(v[1])
 
                 # Get switchport description
                 port_descr = {}
-                for iface, description in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
+                for iface, description in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
                     port_descr.update({iface: description})
             except self.snmp.TimeOutError:
                 time.sleep(2)
                 port_descr = {}
                 try:
-                    for iface, description in self.snmp.join_tables(
-                        "1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.2.2.1.2"):
+                    for iface, description in self.snmp.join_tables("1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.2.2.1.2"):
                         port_descr.update({iface: description})
                 except self.snmp.TimeOutError:
                     raise Exception("Not implemented")
@@ -153,14 +148,12 @@ class Script(BaseScript):
                         else:
                             tagged = port_vlans[name]["tagged"]
                         swp = {
-                                "status": status,
-                                "description": description,
-                                "802.1Q Enabled": len(port_vlans.get(name,
-                                                '')) > 0,
-                                "802.1ad Tunnel": vlan_stack_status.get(name,
-                                                False),
-                                "tagged": tagged,
-                                }
+                            "status": status,
+                            "description": description,
+                            "802.1Q Enabled": len(port_vlans.get(name, '')) > 0,
+                            "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                            "tagged": tagged,
+                        }
                         if name in port_vlans:
                             if port_vlans[name]["untagged"]:
                                 swp["untagged"] = port_vlans[name]["untagged"]

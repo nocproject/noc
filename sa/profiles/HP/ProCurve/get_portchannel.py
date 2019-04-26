@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -18,10 +17,7 @@ class Script(BaseScript):
     name = "HP.ProCurve.get_portchannel"
     interface = IGetPortchannel
 
-    rx_trunk = re.compile(r"^\s*(?P<port>\S+)\s+\|.+?\|"
-                          "\s+(?P<trunk>\S+)\s+(?P<type>(\S+)?"
-                          "$)", re.MULTILINE)
-
+    rx_trunk = re.compile(r"^\s*(?P<port>\S+)\s+\|.+?\|\s+(?P<trunk>\S+)\s+(?P<type>(\S+)?$)", re.MULTILINE)
 
     def execute(self):
         r = []
