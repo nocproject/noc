@@ -17,8 +17,9 @@ import cachetools
 # NOC modules
 from .subscriberprofile import SubscriberProfile
 from noc.main.models.remotesystem import RemoteSystem
-from noc.lib.nosql import PlainReferenceField
+from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.wf.models.state import State
+from noc.project.models.project import Project
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 
@@ -46,6 +47,7 @@ class Subscriber(Document):
     # Technical contacts
     tech_contact_person = StringField()
     tech_contact_phone = StringField()
+    project = ForeignKeyField(Project)
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
