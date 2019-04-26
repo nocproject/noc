@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ import argparse
 import functools
 from collections import defaultdict
 import random
+import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -136,6 +137,7 @@ class Service(object):
         self.pid = os.getpid()
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
+        self.startup_ts = None
         # channel, fields -> data
         self._metrics = defaultdict(list)
         self.metrics_lock = threading.Lock()
@@ -304,6 +306,7 @@ class Service(object):
         """
         Run main server loop
         """
+        self.startup_ts = time.time()
         parser = self.create_parser()
         self.add_arguments(parser)
         options = parser.parse_args(sys.argv[1:])
@@ -584,7 +587,7 @@ class Service(object):
         if r:
             # Finally call on_activate
             yield self.on_activate()
-            self.logger.info("Service is active")
+            self.logger.info("Service is active (in %.2fms)", self.uptime() * 1000)
         else:
             raise self.RegistrationError()
 
@@ -1012,3 +1015,8 @@ class Service(object):
             return self.dcs.get_status()
         else:
             return 200, "OK"
+
+    def uptime(self):
+        if not self.startup_ts:
+            return 0
+        return time.time() - self.startup_ts
