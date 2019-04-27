@@ -55,6 +55,15 @@ Ext.define("NOC.crm.subscriber.Model", {
             type: "string"
         },
         {
+            name: "project",
+            type: "int"
+        },
+        {
+            name: "project__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "tags",
             type: "auto"
         },

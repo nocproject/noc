@@ -11,7 +11,8 @@ Ext.define("NOC.crm.supplier.Application", {
     requires: [
         "NOC.crm.supplier.Model",
         "NOC.crm.supplierprofile.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.project.project.LookupField"
     ],
     model: "NOC.crm.supplier.Model",
     search: true,
@@ -72,6 +73,12 @@ Ext.define("NOC.crm.supplier.Application", {
                     fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "expand"
+                },
+                {
+                    name: "project",
+                    xtype: "project.project.LookupField",
+                    fieldLabel: __("Project"),
+                    allowBlank: true
                 },
                 {
                     xtype: "fieldset",

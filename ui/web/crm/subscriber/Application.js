@@ -11,7 +11,8 @@ Ext.define("NOC.crm.subscriber.Application", {
     requires: [
         "NOC.crm.subscriber.Model",
         "NOC.crm.subscriberprofile.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.project.project.LookupField"
     ],
     model: "NOC.crm.subscriber.Model",
     search: true,
@@ -94,6 +95,12 @@ Ext.define("NOC.crm.subscriber.Application", {
                     fieldLabel: __("Phone"),
                     allowBlank: true,
                     uiStyle: "extra"
+                },
+                {
+                    name: "project",
+                    xtype: "project.project.LookupField",
+                    fieldLabel: __("Project"),
+                    allowBlank: true
                 },
                 {
                     xtype: "fieldset",
