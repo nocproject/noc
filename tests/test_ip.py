@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # noc.core.ip tests
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,25 +12,40 @@ import pytest
 from noc.core.ip import IP, IPv4, IPv6, PrefixDB
 
 
-def test_ip_prefix():
-    assert repr(IP.prefix("192.168.0.1")) == "<IPv4 192.168.0.1/32>"
-    assert repr(IP.prefix("::/0")), "<IPv6 ::/0>"
-    assert repr(IP.prefix("2001:db8::/32")) == "<IPv6 2001:db8::/32>"
-    assert repr(IP.prefix("::ffff:192.168.0.1")) == "<IPv6 ::ffff:192.168.0.1/128>"
+@pytest.mark.parametrize("prefix,result", [
+    ("192.168.0.1", "<IPv4 192.168.0.1/32>"),
+    ("::/0", "<IPv6 ::/0>"),
+    ("2001:db8::/32", "<IPv6 2001:db8::/32>"),
+    ("::ffff:192.168.0.1", "<IPv6 ::ffff:192.168.0.1/128>")
+])
+def test_ip_prefix(prefix, result):
+    assert repr(IP.prefix(prefix)) == result
 
 
-def test_ip_afi():
-    assert IP.get_afi("192.168.0.0/24") == "4"
-    assert IP.get_afi("::1/128") == "6"
+@pytest.mark.parametrize("prefix,afi", [
+    ("192.168.0.0/24", "4"),
+    ("::1/128", "6")
+])
+def test_ip_afi(prefix, afi):
+    assert IP.get_afi(prefix) == afi
 
 
-def test_ipv4_in():
-    assert "192.168.0.0/24" in IPv4("192.168.0.0/24")
-    assert IPv4("192.168.0.0/24") in IPv4("192.168.0.0/24")
-    assert "192.168.1.1" not in IPv4("192.168.0.0/24")
-    assert IPv4("192.168.1.1") not in IPv4("192.168.0.0/24")
+@pytest.mark.parametrize("p1,p2,result", [
+    ("192.168.0.0/24", IPv4("192.168.0.0/24"), True),
+    (IPv4("192.168.0.0/24"), IPv4("192.168.0.0/24"), True),
+    ("192.168.1.1", IPv4("192.168.0.0/24"), False),
+    (IPv4("192.168.1.1"), IPv4("192.168.0.0/24"), False)
+])
+def test_ipv4_in(p1, p2, result):
+    assert (p1 in p2) is result
+
+
+@pytest.mark.parametrize("p1,p2", [
+    ("::1", "192.168.0.0/24")
+])
+def test_ipv4_in_value_error(p1, p2):
     with pytest.raises(ValueError):
-        "::1" in IPv4("192.168.0.0/24")
+        p1 in IPv4(p2)
 
 
 def test_ipv4_str():
@@ -232,36 +247,31 @@ def test_ipv4_last():
     assert repr(IPv4("192.168.0.5/24").last) == "<IPv4 192.168.0.255/24>"
 
 
-def test_ipv4_area_spot():
-    assert [repr(x) for x in IPv4("192.168.0.0/24").area_spot([], dist=2)] == []
-    assert [repr(x) for x in IPv4("192.168.0.0/24").area_spot([], dist=2, sep=True)] == []
-    assert [repr(x) for x in IPv4("192.168.0.0/30").area_spot(["192.168.0.1"], dist=16, sep=True)
-            ] == ["<IPv4 192.168.0.1/32>", "<IPv4 192.168.0.2/32>"]
-    assert [
-        repr(x) for x in IPv4("192.168.0.0/24")
-        .area_spot(["192.168.0.1", "192.168.0.2", "192.168.0.128"], dist=2)
-    ] == [
+@pytest.mark.parametrize("prefix,addresses,cfg,result", [
+    ("192.168.0.0/24", [], {"dist": 2}, []),
+    ("192.168.0.0/24", [], {"dist": 2, "sep": True}, []),
+    ("192.168.0.0/30", ["192.168.0.1"], {"dist": 16, "sep": True},
+     ["<IPv4 192.168.0.1/32>", "<IPv4 192.168.0.2/32>"]),
+    ("192.168.0.0/30", ["192.168.0.1"], {"dist": 16, "sep": True, "exclude_special": False},
+     ["<IPv4 192.168.0.0/32>", "<IPv4 192.168.0.1/32>", "<IPv4 192.168.0.2/32>", "<IPv4 192.168.0.3/32>"]),
+    ("192.168.0.0/24", ["192.168.0.1", "192.168.0.2", "192.168.0.128"], {"dist": 2}, [
         "<IPv4 192.168.0.1/32>", "<IPv4 192.168.0.2/32>", "<IPv4 192.168.0.3/32>",
         "<IPv4 192.168.0.4/32>", "<IPv4 192.168.0.126/32>", "<IPv4 192.168.0.127/32>",
         "<IPv4 192.168.0.128/32>", "<IPv4 192.168.0.129/32>", "<IPv4 192.168.0.130/32>"
-    ]
-    assert [
-        repr(x) for x in IPv4("192.168.0.0/24")
-        .area_spot(["192.168.0.1", "192.168.0.2", "192.168.0.128"], dist=2, sep=True)
-    ] == [
+    ]),
+    ("192.168.0.0/24", ["192.168.0.1", "192.168.0.2", "192.168.0.128"], {"dist": 2, "sep": True}, [
         "<IPv4 192.168.0.1/32>", "<IPv4 192.168.0.2/32>", "<IPv4 192.168.0.3/32>",
         "<IPv4 192.168.0.4/32>", "None", "<IPv4 192.168.0.126/32>", "<IPv4 192.168.0.127/32>",
         "<IPv4 192.168.0.128/32>", "<IPv4 192.168.0.129/32>", "<IPv4 192.168.0.130/32>"
-    ]
-    assert [
-        repr(x) for x in IPv4("192.168.0.0/24")
-        .area_spot(["192.168.0.1", "192.168.0.254"], dist=2, sep=True)
-    ] == [
+    ]),
+    ("192.168.0.0/24", ["192.168.0.1", "192.168.0.254"], {"dist": 2, "sep": True}, [
         "<IPv4 192.168.0.1/32>", "<IPv4 192.168.0.2/32>", "<IPv4 192.168.0.3/32>", "None",
         "<IPv4 192.168.0.252/32>", "<IPv4 192.168.0.253/32>", "<IPv4 192.168.0.254/32>"
-    ]
-    assert [repr(x) for x in IPv4("192.168.0.0/31")
-            .area_spot(["192.168.0.1"], dist=2, sep=True)] == ["<IPv4 192.168.0.1/32>"]
+    ]),
+    ("192.168.0.0/31", ["192.168.0.1"], {"dist": 2, "sep": True}, ["<IPv4 192.168.0.0/32>", "<IPv4 192.168.0.1/32>"])
+])
+def test_ipv4_area_spot(prefix, addresses, cfg, result):
+    assert [repr(x) for x in IPv4(prefix).area_spot(addresses, **cfg)] == result
 
 
 def test_ipv4_normalized():
@@ -316,6 +326,14 @@ def test_ipv4_netmask_to_len(ipv4_netmask_len):
     assert IPv4.netmask_to_len(m) == b
 
 
+@pytest.mark.parametrize("addr,result", [
+    ("192.168.0.1", "192.168.0.1"),
+    ("127.0.0.1", "127.0.0.1")
+])
+def test_ipv4_expand(addr, result):
+    assert IPv4.expand(addr) == result
+
+
 def test_ipv6_str():
     # Fully qualified
     assert str(IPv6("::/0")), "::/0"
@@ -335,6 +353,17 @@ def test_ipv4_range_to_prefixes():
     ]
     assert [repr(x)
             for x in IPv4.range_to_prefixes('0.0.0.0', '255.255.255.255')] == ["<IPv4 0.0.0.0/0>"]
+
+
+@pytest.mark.parametrize("prefix,special", [
+    ("192.168.0.0/24", {"192.168.0.0", "192.168.0.255"}),
+    ("192.168.0.0/16", {"192.168.0.0", "192.168.255.255"}),
+    ("192.168.0.0/32", set()),
+    ("192.168.0.0/31", set()),
+    ("192.168.0.0/30", {"192.168.0.0", "192.168.0.3"}),
+])
+def test_ipv4_special_addresses(prefix, special):
+    assert IPv4.prefix(prefix).special_addresses == set(IPv4(a) for a in special)
 
 
 def test_ipv6_unicode():
@@ -517,19 +546,29 @@ def test_ipv6_digits():
     ]
 
 
-@pytest.fixture(
-    params=[
-        # prefix, base, new base, result
-        ("2001:db8::7/128", "2001:db8::/32", "2001:db9::/32", "2001:db9::7/128"),
-    ]
-)
-def ipv6_rebase(request):
-    return request.param
+@pytest.mark.parametrize("prefix,base,new_base,result", [
+    ("2001:db8::7/128", "2001:db8::/32", "2001:db9::/32", "2001:db9::7/128"),
+])
+def test_ipv6_rebase(prefix, base, new_base, result):
+    assert IPv6(prefix).rebase(IPv6(base), IPv6(new_base)) == IPv6(result)
 
 
-def test_ipv6_rebase(ipv6_rebase):
-    p, b, nb, r = ipv6_rebase
-    assert IPv6(p).rebase(IPv6(b), IPv6(nb)) == IPv6(r)
+@pytest.mark.parametrize("prefix", [
+    "2001:db8::7/128",
+    "2001:db8::/32",
+    "2001:db9::/32",
+    "2001:db9::7/128"
+])
+def test_ipv6_special_addresses(prefix):
+    assert IPv6.prefix(prefix).special_addresses == set()
+
+
+@pytest.mark.parametrize("addr,result", [
+    ("2001:db8::7/128", "2001:db8:0:0:0:0:0:7/128"),
+    ("2001:db8:1:2:3:4:5:7/128", "2001:db8:1:2:3:4:5:7/128")
+])
+def test_ipv6_expand(addr, result):
+    assert IPv6.expand(addr) == result
 
 
 def test_prefixdb_ipv4():

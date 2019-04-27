@@ -50,7 +50,7 @@ class IPAMApplication(ExtApplication):
         else:
             dist = self.ADDRESS_SPOT_DIST
         return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
-                           dist=dist, sep=sep)
+                           dist=dist, sep=sep, exclude_special=False)
 
     @view(url=r"^$", url_name="index", menu="Assigned Addresses",
           access="view")
@@ -140,6 +140,7 @@ class IPAMApplication(ExtApplication):
         can_change_maintainers = user.is_superuser
         can_add_prefix = can_change
         can_add_address = can_change and len(prefixes) == 0
+        can_edit_special = prefix.effective_prefix_special_address == "I"
         # Bookmarks
         has_bookmark = prefix.has_bookmark(user)
         bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
@@ -269,6 +270,7 @@ class IPAMApplication(ExtApplication):
                 a.slots = c
         # Address spot
         if can_add_address:
+            special_addr = IP.prefix(prefix.prefix).special_addresses
             c = [None] * max_slots
             rrs = rs[:]
             if rrs:
@@ -281,7 +283,7 @@ class IPAMApplication(ExtApplication):
                     c = [None if cc is None else cc.id for cc in cr[2]]
                     if rrs:
                         cr = rrs.pop(0)
-                spot += [(None if a is None else a.address, c)]
+                spot += [(None if a is None else a.address, c, a in special_addr)]
             spot = JSONEncoder(ensure_ascii=False).encode(spot)
         else:
             spot = None
@@ -315,6 +317,7 @@ class IPAMApplication(ExtApplication):
             can_change_maintainers=can_change_maintainers,
             can_add_prefix=can_add_prefix,
             can_add_address=can_add_address,
+            can_edit_special=can_edit_special,
             has_bookmark=has_bookmark,
             bookmarks=bookmarks,
             spot=spot,

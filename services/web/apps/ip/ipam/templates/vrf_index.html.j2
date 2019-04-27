@@ -262,10 +262,12 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 var $ce=addresses.shift();
                 var ca=$(".address a",$ce).html(); /* Current address */
                 var $cp=$("#at-start"); /* Current insertion point */
+                var canEditSpec={% if can_edit_special %}true{% else %}false{% endif %}
                 /* Walk through all spotted addresses */
                 $.each(SPOT,function(index,spot){
                     var value=spot[0];
                     var slots=spot[1];
+                    var isSpecial=spot[2];
                     if(value==ca) {
                         /* Get next address */
                         $cp=$($ce);
@@ -283,7 +285,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                         }
                         /* Insert row */
                         var $v;
-                        if(value) {
+                        if(value && !isSpecial || ( value && isSpecial && canEditSpec)) {
                             $v = $(
                                 "<tr class='free-address' style='display:none'>" +
                                 s +
@@ -298,6 +300,18 @@ document.currentPrefix = "{{ prefix.prefix }}";
                                 "onclick=\"app.onAddAddress({{ prefix.id }}, '" + value + "')\">" +
                                 "Add Address" +
                                 "</button>" +
+                                "</td>" +
+                                "</tr>"
+                            )
+                        } else if(value && isSpecial && !canEditSpec) {
+                            $v = $(
+                                "<tr class='special-address' style='display:none'>" +
+                                s +
+                                "<td><img id='s_" + value +
+                                "' class='s_img' src='/ui/web/img/blank_1x1.png'/></td>" +
+                                "<td>" +
+                                value +
+                                "</td><td colspan='7'>" +
                                 "</td>" +
                                 "</tr>"
                             )
@@ -320,11 +334,13 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 if(free_shown) {
                     $(".free-address").hide();
                     $(".free-address-sep").hide();
+                    $(".special-address").hide();
                     $("#toggle-free-link").text("Show free addresses");
                     free_shown=false;
                 } else {
                     $(".free-address").show();
                     $(".free-address-sep").show();
+                    $(".special-address").show();
                     $("#toggle-free-link").text("Hide free addresses");
                     free_shown=true;
                 }

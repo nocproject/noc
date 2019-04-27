@@ -637,6 +637,10 @@ class Prefix(models.Model):
         return self.prefix_discovery_policy
 
     @property
+    def effective_prefix_special_address(self):
+        return self.profile.prefix_special_address_policy
+
+    @property
     def usage(self):
         if self.is_ipv4:
             usage = getattr(self, "_usage_cache", None)
@@ -647,16 +651,15 @@ class Prefix(models.Model):
             if not size:
                 return 100.0
             n_ips = Address.objects.filter(prefix=self).count()
+            if self.effective_prefix_special_address == "X":
+                # Exclude special addresses
+                n_ips -= len(IPv4(self.prefix).special_addresses)
             n_pfx = sum(
                 IPv4(p).size
                 for p in Prefix.objects.filter(parent=self).only("prefix").values_list("prefix", flat=True)
             )
-            if n_ips:
-                if size > 2:  # Not /31 or /32
-                    size -= 2  # Exclude broadcast and network
             return float(n_ips + n_pfx) * 100.0 / float(size)
-        else:
-            return None
+        return None
 
     @property
     def usage_percent(self):
@@ -697,7 +700,8 @@ class Prefix(models.Model):
             ln = int(p.prefix.split("/")[1])
             size = 2 ** (32 - ln)
             if p.id in has_address and size > 2:  # Not /31 or /32
-                size -= 2  # Exclude broadcast and network
+                if p.effective_prefix_special_address == "X":
+                    size -= 2  # Exclude broadcast and network
                 p._address_usage_cache = float(address_usage[p.id]) * 100.0 / float(size)
                 print(p, float(address_usage[p.id]) * 100.0 / float(size))
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
@@ -714,11 +718,10 @@ class Prefix(models.Model):
                 return 100.0
             n_ips = Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
                 where=["address <<= %s"], params=[str(self.prefix)]).count()
-            n_pfx = Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-                where=["prefix <<= %s"], params=[str(self.prefix)]).count()
-            if n_ips:
-                if size > 2:  # Not /31 or /32
-                    size -= 2 * n_pfx  # Exclude broadcast and network
+            if self.effective_prefix_special_address == "X":
+                n_pfx = Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+                    where=["prefix <<= %s"], params=[str(self.prefix)]).count()
+                n_ips -= len(IPv4(self.prefix).special_addresses) * n_pfx
             return float(n_ips) * 100.0 / float(size)
         else:
             return None

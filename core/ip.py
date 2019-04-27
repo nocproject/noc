@@ -177,10 +177,10 @@ class IP(object):
         for p in db.iter_free(self):
             yield p
 
-    def area_spot(self, addresses, dist, sep=False):
+    def area_spot(self, addresses, dist, sep=False, exclude_special=True):
         """
         Returns a list of addresses, laying inside prefix and containing area
-        aroung given addresses
+        around given addresses
 
         :param addresses: Used addresses
         :type addresses: list
@@ -188,6 +188,8 @@ class IP(object):
         :type dist: int
         :param sep: Insert None into the gaps if sep is True
         :type sep: bool
+        :param exclude_special: Exclude Broadcast & network addresses
+        :type exclude_special: bool
         :return: List containing area spot
         :rtype: list
         """
@@ -198,11 +200,10 @@ class IP(object):
         # Return all addresses except network and broadcast
         # for IPv4, when a dist is larger than network size
         if self.afi == "4" and dist >= self.size:
-            d = 0 if s_first.address in addresses else 1
-            if self.mask == 31:
-                return list((s_first + d).iter_address(until=s_last))
-            else:
-                return list((s_first + d).iter_address(until=s_last - 1))
+            if exclude_special:
+                ignored = self.special_addresses
+                return [a for a in s_first.iter_address(until=s_last) if a not in ignored]
+            return list(s_first.iter_address(until=s_last))
         # Left only addresses remaining in prefix and convert them to
         # IP instances
         addresses = set(
@@ -238,17 +239,11 @@ class IP(object):
                 break
             last = a
         # Return result
-        if self.afi == "4" and self.mask != 31:
-            # Remove network and broadcast address
-            ignored = [
-                IP.prefix(a.address) for a in (self.first, self.last)
-            ]
-            ignored = [a for a in ignored if a not in addresses]
-            return [a for a in spot if (
-                a is None or
-                a not in ignored)]
-        else:
-            return spot
+        if exclude_special:
+            ignored = self.special_addresses
+            if ignored:
+                return [a for a in spot if a is None or a not in ignored]
+        return spot
 
     def rebase(self, base, new_base):
         """
@@ -274,6 +269,15 @@ class IP(object):
             return IPv6.expand(addr)
         else:
             return IPv4.expand(addr)
+
+    @property
+    def special_addresses(self):
+        """
+        Set of 'special' addresses for prefix. 'special' addresses, like network or broadcast
+        usually can't be allocated or used
+        :return: Set of specoal addresses
+        """
+        return set()
 
 
 class IPv4(IP):
@@ -543,6 +547,14 @@ class IPv4(IP):
         :return:
         """
         return addr
+
+    @property
+    def special_addresses(self):
+        sa = super(IPv4, self).special_addresses
+        if self.mask < 31:
+            sa.add(self.first.set_mask())
+            sa.add(self.last.set_mask())
+        return sa
 
 
 class IPv6(IP):
