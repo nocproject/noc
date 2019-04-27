@@ -23,6 +23,8 @@ from noc.phone.models.phonerange import PhoneRange
 from noc.phone.models.phonenumber import PhoneNumber
 from noc.vc.models.vpn import VPN
 from noc.vc.models.vlan import VLAN
+from noc.crm.models.subscriber import Subscriber
+from noc.crm.models.supplier import Supplier
 from .base import BaseCard
 
 
@@ -58,6 +60,10 @@ class ProjectCard(BaseCard):
         vpns = list(VPN.objects.filter(project=self.object).order_by("name"))
         # Get project'a phone ranges
         vlans = list(VLAN.objects.filter(project=self.object).order_by("id"))
+        # Get project's subscribers
+        subscribers = list(Subscriber.objects.filter(project=self.object).order_by("id"))
+        # Get project's supplier
+        suppliers = list(Supplier.objects.filter(project=self.object).order_by("id"))
         return {
             "object": self.object,
             "vrfs": vrfs,
@@ -71,6 +77,8 @@ class ProjectCard(BaseCard):
             "peers": peers,
             "phonenumbers": phonenumbers,
             "phoneranges": phoneranges,
+            "subscribers": subscribers,
+            "suppliers": suppliers,
             "vpns": vpns,
             "vlans": vlans
         }

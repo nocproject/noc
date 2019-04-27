@@ -22,6 +22,9 @@ class SubscriberApplication(ExtDocApplication):
     menu = _("Subscribers")
     model = Subscriber
     query_fields = ["name__icontains"]
+    implied_permissions = {
+        "read": ["project:project:lookup"]
+    }
 
     def field_row_class(self, o):
         if o.profile and o.profile.style:

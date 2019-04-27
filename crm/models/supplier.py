@@ -17,8 +17,9 @@ import cachetools
 # NOC modules
 from .supplierprofile import SupplierProfile
 from noc.main.models.remotesystem import RemoteSystem
-from noc.lib.nosql import PlainReferenceField
+from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.wf.models.state import State
+from noc.project.models.project import Project
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
@@ -46,6 +47,7 @@ class Supplier(Document):
     is_affilated = BooleanField(default=False)
     profile = PlainReferenceField(SupplierProfile)
     state = PlainReferenceField(State)
+    project = ForeignKeyField(Project)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

@@ -10,6 +10,63 @@
         <td>{{object.description}}</td>
     <tr>
     {% endif %}
+
+    {% if suppliers %}
+    <tr>
+        <th scope="row">{{ _("Supplier") }}</th>
+        <td>
+            <table class="table">
+                <thead>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("Profile") }}</th>
+                    <th>{{ _("State") }}</th>
+                    <th>{{ _("Is affilated") }}</th>
+                </thead>
+                <tbody>
+                    {% for s in suppliers %}
+                        <tr>
+                            <td>{{ s.name }}</td>
+                            <td>{{ s.profile.name }}</td>
+                            <td>{{ s.state.name }}</td>
+                            <td>{% if s.is_affilated%}{{ _("Yes") }}{% else %}{{ _("No") }}{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
+    {% if subscribers %}
+    <tr>
+        <th scope="row">{{ _("Subscribers") }}</th>
+        <td>
+            <table class="table">
+                <thead>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("Profile") }}</th>
+                    <th>{{ _("State") }}</th>
+                    <th>{{ _("Address") }}</th>
+                    <th>{{ _("Tech Contact") }}</th>
+                    <th>{{ _("Tech Contact Phone") }}</th>
+                </thead>
+                <tbody>
+                    {% for s in subscribers %}
+                        <tr>
+                            <td>{{ s.name }}</td>
+                            <td>{{ s.profile.name }}</td>
+                            <td>{{ s.state.name }}</td>
+                            <td>{{ s.address}}</td>
+                            <td>{{ s.tech_contact_person }}</td>
+                            <td>{{ s.tech_contact_phone }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% endif %}
+
     {% if vrfs %}
     <tr>
         <th scope="row">{{ _("VRF") }}</th>
@@ -257,7 +314,7 @@
                             <td><a href="/api/card/view/dialplan/{{ n.dialplan.id }}">{{ n.dialplan.name }}</a></td>
                             <td>{{ n.name }}</td>
                             <td>{{ n.number }}</td>
-                            <td>{{ r.state.name }}</td>
+                            <td>{{ n.state.name }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
