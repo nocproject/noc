@@ -121,6 +121,10 @@ th[class=ippool-to]
     background-color: #ccc;
 }
 
+.special-address {
+    background-color: #e81 !important;
+}
+
 .free-address-sep {
     background-color: #ccc;
 }

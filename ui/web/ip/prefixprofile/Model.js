@@ -85,6 +85,11 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             name: "seen_propagation_policy",
             type: "string",
             defaultValue: "P"
+        },
+        {
+            name: "prefix_special_address_policy",
+            type: "string",
+            defaultValue: "X"
         }
     ]
 });

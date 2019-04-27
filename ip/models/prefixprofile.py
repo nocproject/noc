@@ -78,6 +78,13 @@ class PrefixProfile(Document):
             ("D", "Disable")
         ], default="P"
     )
+    # Include/Exclude broadcast & network addresses from prefix
+    prefix_special_address_policy = StringField(
+        choices=[
+            ("I", "Include"),
+            ("X", "Exclude")
+        ], default="X"
+    )
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
