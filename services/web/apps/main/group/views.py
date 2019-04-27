@@ -18,7 +18,10 @@ from noc.core.translation import ugettext as _
 
 
 class GroupChangeForm(forms.ModelForm):
-    noc_group_permissions = forms.CharField(label="Group Access", widget=AccessWidget, required=False)
+    noc_group_permissions = forms.CharField(
+        label="Group Access",
+        widget=AccessWidget, required=False
+    )
 
     class Meta(object):
         model = Group
@@ -40,15 +43,13 @@ class GroupChangeForm(forms.ModelForm):
         return model
 
 
-# Admin for groups
 class GroupAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('name',)}),
-        (_('Access'), {'fields': ('noc_group_permissions',),
-                       "classes": ["collapse"]}),
+        (None, {"fields": ("name",)}),
+        (_("Access"), {"fields": ("noc_group_permissions",), "classes": ["collapse"]}),
     )
-    search_fields = ('name',)
-    ordering = ('name',)
+    search_fields = ("name",)
+    ordering = ("name",)
     list_display = ("name",)
     form = GroupChangeForm
 
