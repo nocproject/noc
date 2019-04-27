@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import tornado.ioloop
 import tornado.gen
 # NOC modules
 from noc.config import config

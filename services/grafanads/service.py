@@ -7,12 +7,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
 # NOC modules
 from noc.core.service.ui import UIService
-from .check import CheckHandler
-from .annotations import AnnotationsHandler
+from check import CheckHandler
+from annotations import AnnotationsHandler
 
 
 class GrafanaDSService(UIService):

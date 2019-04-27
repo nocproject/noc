@@ -7,11 +7,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from __future__ import absolute_import
 # NOC modules
 from noc.core.service.ui import UIService
-from .api.bi import BIAPI
+from api.bi import BIAPI
 from noc.core.service.authapi import AuthAPIRequestHandler
 from noc.config import config
 
