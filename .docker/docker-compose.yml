@@ -3,13 +3,27 @@ version: "2.4"
 services:
   mongo:
     image: "mongo:4.0"
-    command: --wiredTigerCacheSizeGB 1.5 --bind_ip_all --nojournal
+    command: --wiredTigerCacheSizeGB 1.5 --bind_ip_all --replSet noc --port 27017
     volumes:
-      - ./files/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - ./files/mongo-init.js:/docker-entrypoint-initdb.d/01mongo-init.js
     environment:
       MONGO_INITDB_DATABASE: noc
       MONGO_INITDB_ROOT_USERNAME: noc
       MONGO_INITDB_ROOT_PASSWORD: noc
+
+  mongodb-repl-set-init:
+    image: "mongo:4.0"
+    depends_on:
+      mongo:
+        condition: service_started
+    volumes:
+      - ./files/rs-init.sh:/rs-init.sh
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: noc
+      MONGO_INITDB_ROOT_PASSWORD: noc
+      MONGO_REPL_SET_NAME: noc
+      MONGO_REPL_SET_HOSTS: mongo
+    entrypoint: sh /rs-init.sh
 
   postgres:
     image: "postgres:9.6"
@@ -32,7 +46,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      mongo:
+      mongodb-repl-set-init:
         condition: service_started
       clickhouse:
         condition: service_started
@@ -58,7 +72,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      mongo:
+      mongodb-repl-set-init:
         condition: service_started
       clickhouse:
         condition: service_started
@@ -78,7 +92,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      mongo:
+      mongodb-repl-set-init:
         condition: service_started
       clickhouse:
         condition: service_started
@@ -87,7 +101,7 @@ services:
     command: >
       sh -c "
       for i in services/*; do
-        /usr/bin/python3 $$i/service.py;
+        timeout 10 /usr/bin/python3 $$i/service.py;
       done"
     env_file:
       - noc.conf
