@@ -1228,7 +1228,7 @@ class ManagedObject(Model):
         dir_path = os.path.dirname(path)
         try:
             with storage.open_fs() as fs:
-                if dir_path and dir_path != "/":
+                if dir_path and dir_path != "/" and not fs.isdir(dir_path):
                     logger.debug("[%s] Ensuring directory: %s", self.name, dir_path)
                     fs.makedirs(dir_path, recreate=True)
                 logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
