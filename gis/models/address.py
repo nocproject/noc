@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Address object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -94,7 +94,6 @@ class Address(Document):
                 }
             })
 
-
     def display_ru(self, levels=0, to_level=None, sep=", "):
         """
         Russian-style short display
@@ -160,6 +159,7 @@ class Address(Document):
         return sep.join(n)
 
     # @todo: cmp_addr
+
 
 #
 RU_SHORT_AFTER = set([u"б-р", u"проезд", u"пер", u"ш"])

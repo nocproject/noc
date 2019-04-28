@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Crashinfo
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -147,7 +147,7 @@ class Crashinfo(Document):
         self.status = "R"
         self.save()
 
-#
+
 mongoengine.signals.pre_delete.connect(
     Crashinfo.on_delete,
     sender=Crashinfo

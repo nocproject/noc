@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Base classes for geocoding parsers
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Pyton modules
+# Python modules
+from __future__ import print_function
 import itertools
-# NOC modules
-from noc.gis.models.address import Address
 
 
 class GeocodingParser(object):
@@ -22,7 +21,7 @@ class GeocodingParser(object):
         pass
 
     def feed_building(self, b_id, addr, coords):
-        print "BUILDING(%s=%s)" % (self.ID_ADDR, b_id) , addr, coords
+        print("BUILDING(%s=%s)" % (self.ID_ADDR, b_id), addr, coords)
 
     def get_centroid(self, points):
         """

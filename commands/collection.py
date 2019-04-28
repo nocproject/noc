@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Collections manipulation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -121,8 +121,8 @@ class Command(BaseCommand):
             if remove:
                 os.unlink(fp)
 
-    def handle_export(self, list_collection=False, 
-                      export_path=None, export_collections=None, 
+    def handle_export(self, list_collection=False,
+                      export_path=None, export_collections=None,
                       export_model_names=None, export_model_uuids=None):
         MODELS = {}
         for c in COLLECTIONS:
@@ -170,6 +170,7 @@ class Command(BaseCommand):
                         o.to_json(),
                         mode=0o644
                     )
+
 
 if __name__ == "__main__":
     Command().run()

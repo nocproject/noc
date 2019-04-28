@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # metrics uploading
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -64,6 +64,7 @@ class Command(BaseCommand):
             sharder.pub()
             if rm:
                 os.unlink(fn)
+
 
 if __name__ == "__main__":
     Command().run()

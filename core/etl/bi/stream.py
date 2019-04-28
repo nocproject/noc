@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Base BI extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import itertools
 import gzip
 import shutil
 from noc.config import config
+
 
 class Stream(object):
     CHUNK_SIZE = config.bi.chunk_size

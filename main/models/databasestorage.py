@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DatabaseStorage
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ class DatabaseStorage(models.Model):
     """
     Database Storage
     """
-    class Meta:
+    class Meta(object):
         app_label = "main"
         db_table = "main_databasestorage"
         verbose_name = "Database Storage"
@@ -28,9 +28,8 @@ class DatabaseStorage(models.Model):
     size = models.IntegerField("Size")
     mtime = models.DateTimeField("MTime")
 
-    ##
-    ## Options for DatabaseStorage
-    ##
+    # Options for DatabaseStorage
+
     @classmethod
     def dbs_options(cls):
         return {
@@ -47,7 +46,7 @@ class DatabaseStorage(models.Model):
         Get DatabaseStorage instance
         """
         return DBS(cls.dbs_options())
-#
+
+
 # Default database storage
-#
 database_storage = DatabaseStorage.get_dbs()

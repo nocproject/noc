@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Forwarding Instance model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ class ForwardingInstance(Document):
 
     @property
     def subinterface_set(self):
-        ## Avoid circular references
+        # Avoid circular references
         from subinterface import SubInterface
 
         return SubInterface.objects.filter(forwarding_instance=self.id)

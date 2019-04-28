@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # L3 topology
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 import tempfile
 import subprocess
@@ -118,7 +119,7 @@ class Command(BaseCommand):
         out += ["}"]
         data = "\n".join(out)
         if ext is None:
-            print data
+            print(data)
         elif ext == ".dot":
             with open(options["output"], "w") as f:
                 f.write(data)
@@ -156,12 +157,16 @@ class Command(BaseCommand):
                      "managed_object": 1}
         if afi == self.IPv4:
             check = check_ipv4
-            get_addresses = lambda x: x.get("ipv4_addresses", [])
+
+            def get_addresses(x):
+                return x.get("ipv4_addresses", [])
             AFI = "IPv4"
             si_fields["ipv4_addresses"] = 1
         elif afi == self.IPv6:
             check = check_ipv6
-            get_addresses = lambda x: x.get("ipv6_addresses", [])
+
+            def get_addresses(x):
+                return x.get("ipv6_addresses", [])
             AFI = "IPv6"
             si_fields["ipv6_addresses"] = 1
         else:
@@ -213,6 +218,7 @@ class Command(BaseCommand):
                     rd = None  # Missed data
             self.rd_cache[object, fi] = rd
         return rd
+
 
 if __name__ == "__main__":
     Command().run()

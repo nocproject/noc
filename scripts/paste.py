@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # CustomerPortal Paste CLI tool
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -96,6 +96,7 @@ def main():
         ttl=parse_ttl(options.expire),
         public=bool(options.public)
     )["url"]
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.CRITICAL)

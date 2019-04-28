@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface parameters
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Interface parameters
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
-from error import InterfaceTypeError
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from .error import InterfaceTypeError
 
 
 class BaseParameter(object):
@@ -134,7 +136,7 @@ class ORParameter(BaseParameter):
         self.required = self.left.required or self.right.required
 
     def clean(self, value):
-        if value is None and self.required == False:
+        if value is None and self.required is False:
             return None
         try:
             return self.left.clean(value)

@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Autocommit pg database wrapper
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Autocommit pg database wrapper
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from django.db.backends.postgresql_psycopg2.base import \
     DatabaseWrapper as PGDatabaseWrapper
-from django.conf import settings
 
 
 class DatabaseWrapper(PGDatabaseWrapper):

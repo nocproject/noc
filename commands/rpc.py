@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## RPC cli
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  RPC cli
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2019 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import os
+# Python modules
 import argparse
 import pprint
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.service.client import open_sync_rpc, RPCError
 
@@ -60,6 +59,7 @@ class Command(BaseCommand):
             )
         else:
             self.stdout.write(str(result) + "\n")
+
 
 if __name__ == "__main__":
     Command().run()

@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # ./noc clean-asset
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import print_function
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.object import Object
-from noc.inv.models.objectconnection import ObjectConnection
 
 
 class Command(BaseCommand):
@@ -31,7 +32,7 @@ class Command(BaseCommand):
             self.clean_obj(o)
 
     def clean_obj(self, obj):
-        print "Cleaning %s %s (%s)" % (obj.model.name, obj.name, obj.id)
+        print ("Cleaning %s %s (%s)" % (obj.model.name, obj.name, obj.id))
         # Clean children
         for o in Object.objects.filter(container=obj.id):
             self.clean_obj(o)
@@ -39,6 +40,7 @@ class Command(BaseCommand):
         for name, remote, remote_name in obj.iter_connections("i"):
             self.clean_obj(remote)
         obj.delete()
+
 
 if __name__ == "__main__":
     Command().run()
