@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # Classification Rules Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-# Django modules
+# Third-party modules
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
@@ -39,10 +39,10 @@ class ReportClassificationRules(SimpleReport):
             if p_re and not re.search(p_re, profile):
                 # Skip
                 continue
-            data += [SectionRow("%s (%s)"%(r.name, r.preference))]
+            data += [SectionRow("%s (%s)" % (r.name, r.preference))]
             data += [["Event Class", r.event_class.name]]
             for p in r.patterns:
                 data += [[p.key_re, p.value_re]]
         return self.from_dataset(title=self.title,
-                                 columns=["Key RE","Value RE"],
+                                 columns=["Key RE", "Value RE"],
                                  data=data)

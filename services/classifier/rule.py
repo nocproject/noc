@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,8 +41,7 @@ class Rule(object):
                 logging.debug("Rule '%s' cloned by rule '%s'" % (
                     rule.name, clone_rule.name))
                 p0 = [(x.key_re, x.value_re) for x in rule.patterns]
-                p1 = [(y.key_re, y.value_re) for y in [
-                                clone_rule.rewrite(x) for x in rule.patterns]]
+                p1 = [(y.key_re, y.value_re) for y in [clone_rule.rewrite(x) for x in rule.patterns]]
                 logging.debug("%s -> %s" % (p0, p1))
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
@@ -54,11 +53,10 @@ class Rule(object):
         # Parse datasources
         for ds in rule.datasources:
             self.datasources[ds.name] = eval(
-                    "lambda vars: datasource_registry['%s'](%s)" % (
-                        ds.datasource,
-                        ", ".join(["%s=vars['%s']" % (k, v)
-                                   for k, v in ds.search.items()])),
-                    {"datasource_registry": datasource_registry}, {})
+                "lambda vars: datasource_registry['%s'](%s)" %
+                (ds.datasource, ", ".join(["%s=vars['%s']" % (k, v) for k, v in ds.search.items()])),
+                {"datasource_registry": datasource_registry}, {}
+            )
         # Parse vars
         for v in rule.vars:
             value = v["value"]
@@ -220,13 +218,16 @@ class Rule(object):
                 else:
                     c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, var_context)" % (k, k)]
         if e_vars_used:
-            #c += ["return self.fixup(e_vars)"]
+            # c += ["return self.fixup(e_vars)"]
             for name in self.fixups:
                 r = name.split("__")
                 if len(r) == 2:
                     if r[1] in ("ifindex",):
                         # call fixup with managed object
-                        c += ["e_vars[\"%s\"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
+                        c += [
+                            "e_vars[\"%s\"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars[\"%s\"]))" %
+                            (r[0], r[1], name)
+                        ]
                     else:
                         c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
                 else:
@@ -244,8 +245,7 @@ class Rule(object):
         cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
         self.code = "\n".join(cc)
         code = compile(self.code, "<string>", "exec")
-        exec code in {"rule": self, "new": new,
-                      "logging": logging, "fm_unescape": fm_unescape}
+        exec(code, {"rule": self, "new": new, "logging": logging, "fm_unescape": fm_unescape})
 
     def clone(self, rules):
         """

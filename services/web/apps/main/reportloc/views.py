@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Lines of Code  Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,8 +51,7 @@ class ReportLOC(SimpleReport):
         for m in [m for m in settings.INSTALLED_APPS if
                   m.startswith("noc.")]:
             m = m[4:]
-            module_name = __import__("noc.%s" % m, {}, {},
-                ["MODULE_NAME"]).MODULE_NAME
+            module_name = __import__("noc.%s" % m, {}, {}, ["MODULE_NAME"]).MODULE_NAME
             data += [SectionRow(module_name)]
             # Scan models
             models_path = os.path.join(m, "models.py")
@@ -74,8 +73,7 @@ class ReportLOC(SimpleReport):
             py_loc, _, _ = dir_loc(os.path.join(m, "migrations"))
             data += [["Migrations", "", py_loc, 0, 0]]
             # Scan Management
-            for dirpath, dirnames, filenames in os.walk(
-                os.path.join(m, "management", "commands")):
+            for dirpath, dirnames, filenames in os.walk(os.path.join(m, "management", "commands")):
                 for f in [f for f in filenames if
                           f.endswith(".py") and f != "__init__.py"]:
                     py_loc = lines(os.path.join(dirpath, f))
@@ -105,8 +103,7 @@ class ReportLOC(SimpleReport):
                                   f.endswith(".html")]:
                             html_loc += lines(os.path.join(dirpath, f))
                 data += [
-                    ["Application", "%s.%s" % (m, app), py_loc, html_loc
-                        , tests_loc]]
+                    ["Application", "%s.%s" % (m, app), py_loc, html_loc, tests_loc]]
                 # Scan Profiles
             if m == "sa":
                 for d in glob.glob("sa/profiles/*/*"):
@@ -127,15 +124,13 @@ class ReportLOC(SimpleReport):
                           f != "models.py"]:
                     py_loc += lines(os.path.join(dirpath, f))
             data += [["Other", "", py_loc, 0, 0]]
-        return self.from_dataset(title=self.title,
+        return self.from_dataset(
+            title=self.title,
             columns=[
                 "Type",
                 TableColumn("Name", total_label="Total"),
-                TableColumn("Python", format="numeric", align="right",
-                    total="sum"),
-                TableColumn("HTML", format="numeric", align="right",
-                    total="sum"),
-                TableColumn("Tests", format="numeric", align="right",
-                    total="sum"),
-                ],
+                TableColumn("Python", format="numeric", align="right", total="sum"),
+                TableColumn("HTML", format="numeric", align="right", total="sum"),
+                TableColumn("Tests", format="numeric", align="right", total="sum"),
+            ],
             data=data)

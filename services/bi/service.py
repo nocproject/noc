@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # BI service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,9 +25,9 @@ class BIService(UIService):
         traefik_backend = "bi"
         traefik_frontend_rule = "PathPrefix:/api/bi"
 
-
     def __init__(self):
         super(BIService, self).__init__()
+
 
 if __name__ == "__main__":
     BIService().start()

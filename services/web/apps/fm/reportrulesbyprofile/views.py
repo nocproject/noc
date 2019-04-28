@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Rules by Profile Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ from noc.core.translation import ugettext as _
 class Reportreportrulesbyprofile(SimpleReport):
     title = _("Rules by Profile")
 
-    def get_data(self,**kwargs):
+    def get_data(self, **kwargs):
         # profile -> (syslog, snmp, other)
         r = dict([(p, [0, 0, 0]) for p in profile_loader.iter_profiles()])
         for rule in EventClassificationRule.objects.all():

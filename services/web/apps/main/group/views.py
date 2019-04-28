@@ -2,27 +2,25 @@
 # ---------------------------------------------------------------------
 # Group Group Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.utils.translation import  ugettext_lazy as _
+# Third-party modules
 from django import forms
-# NOC modules
-from noc.lib.app.modelapplication import ModelApplication, view
 from django.contrib.auth.models import Group
 from django.contrib import admin
+# NOC modules
+from noc.lib.app.modelapplication import ModelApplication, view
 from noc.services.web.apps.main.user.widgets import AccessWidget
 from noc.main.models.permission import Permission
 from noc.core.translation import ugettext as _
 
 
 class GroupChangeForm(forms.ModelForm):
-    noc_group_permissions = forms.CharField(label="Group Access",
-        widget=AccessWidget, required=False)
+    noc_group_permissions = forms.CharField(label="Group Access", widget=AccessWidget, required=False)
 
-    class Meta:
+    class Meta(object):
         model = Group
 
     def __init__(self, *args, **kwargs):
@@ -42,23 +40,20 @@ class GroupChangeForm(forms.ModelForm):
         Permission.set_group_permissions(model, self.new_perms)
         return model
 
-#
+
 # Admin for groups
-#
 class GroupAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name',)}),
         (_('Access'), {'fields': ('noc_group_permissions',),
                        "classes": ["collapse"]}),
-        )
+    )
     search_fields = ('name',)
     ordering = ('name',)
     list_display = ("name",)
     form = GroupChangeForm
 
-#
-#
-#
+
 class GroupApplication(ModelApplication):
     model = Group
     model_admin = GroupAdmin
@@ -66,12 +61,10 @@ class GroupApplication(ModelApplication):
     glyph = "users"
     title = "Groups"
 
-    @view(url=r"^add/legacy/$", url_name="admin:auth_group_add",
-        access="add")
+    @view(url=r"^add/legacy/$", url_name="admin:auth_group_add", access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")
 
-    @view(url=r"^legacy/$", url_name="admin:auth_group_changelist",
-        access=True)
+    @view(url=r"^legacy/$", url_name="admin:auth_group_changelist", access=True)
     def view_legacy_changelist(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")

@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # Scheduler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,6 +30,7 @@ class SchedulerService(Service):
             ioloop=self.ioloop
         )
         self.scheduler.run()
+
 
 if __name__ == "__main__":
     SchedulerService().start()
