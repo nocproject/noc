@@ -13,6 +13,7 @@ import six
 # NOC modules
 from noc.lib.text import ranges_to_list
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
+from noc.core.vpn import get_vpn_id
 from noc.core.service.rpc import RPCError
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
@@ -44,6 +45,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit, "bridge", "switchport", "tagged", tagged) or
         Match("virtual-router", vr, "forwarding-instance", instance, "interfaces", if_name, "unit", unit, "bridge", "switchport", "untagged", untagged)
     ) and Group("vr", "instance", "if_name", "unit", stack={"ipv4_addresses", "ipv6_addresses"})"""
+
+    VRF_QUERY = """(Match("virtual-router", vr, "forwarding-instance", instance) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "type", type) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "route-distinguisher", rd) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "vrf-target", "export", rt_export) or
+        Match("virtual-router", vr, "forwarding-instance", instance, "vrf-target", "import", rt_import)
+    ) and Group("vr", "instance", stack={"rt_export"})"""
 
     def __init__(self, *args, **kwargs):
         super(InterfaceCheck, self).__init__(*args, **kwargs)
@@ -439,12 +447,24 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     def get_data_from_confdb(self):
         # Get interfaces and parse result
         interfaces = {d["if_name"]: d for d in self.confdb.query(self.IF_QUERY)}
+        vrfs = {(d["vr"], d["instance"]): d for d in self.confdb.query(self.VRF_QUERY)}
         instances = defaultdict(dict)
         for d in self.confdb.query(self.UNIT_QUERY):
             r = instances[d["vr"], d["instance"]]
             if not r:
                 r["virtual_router"] = d["vr"]
                 r["forwarding_instance"] = d["instance"]
+                if vrfs and (d["vr"], d["instance"]) in vrfs:
+                    try:
+                        vrf = vrfs[d["vr"], d["instance"]]
+                        r["vpn_id"] = get_vpn_id({
+                            "name": vrf["instance"],
+                            "rd": vrf.get("rd"),
+                            "rt_export": vrf.get("rt_export", []),
+                            "type": vrf["type"].upper() if vrf["type"] in ["vrf", "vpls"] else vrf["type"]
+                        })
+                    except ValueError:
+                        pass
             if "interfaces" not in r:
                 r["interfaces"] = {}
             if_name = d["if_name"]
