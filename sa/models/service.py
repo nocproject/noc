@@ -21,7 +21,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_save, on_delete
+from noc.core.model.decorator import on_save, on_delete, on_delete_check
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +29,9 @@ logger = logging.getLogger(__name__)
 @bi_sync
 @on_save
 @on_delete
+@on_delete_check(clean=[
+    ("phone.PhoneNumber", "service")
+])
 class Service(Document):
     meta = {
         "collection": "noc.services",

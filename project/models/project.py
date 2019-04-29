@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Project models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,8 @@ id_lock = Lock()
 
 
 @on_delete_check(check=[
+    ("crm.Subscriber", "project"),
+    ("crm.Supplier", "project"),
     ("dns.DNSZone", "project"),
     ("inv.Interface", "project"),
     ("inv.SubInterface", "project"),

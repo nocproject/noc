@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,12 @@ id_lock = threading.Lock()
 @bi_sync
 @on_delete_check(check=[
     ("inv.Firmware", "profile"),
-    ("sa.ManagedObject", "profile")
+    ("sa.ActionCommands", "profile"),
+    ("sa.ManagedObject", "profile"),
+    ("sa.ManagedObjectSelector", "filter_profile"),
+    ("sa.ProfileCheckRule", "profile"),
+    ("dev.Spec", "profile"),
+    ("peer.PeeringPoint", "profile")
 ])
 class Profile(Document):
     meta = {

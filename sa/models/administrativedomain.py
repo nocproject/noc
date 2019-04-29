@@ -36,7 +36,8 @@ id_lock = Lock()
     ("sa.ManagedObjectSelector", "filter_administrative_domain"),
     ("sa.UserAccess", "administrative_domain"),
     ("sa.AdministrativeDomain", "parent"),
-    ("phone.PhoneNumber", "administrative_domain")
+    ("phone.PhoneNumber", "administrative_domain"),
+    ("phone.PhoneRange", "administrative_domain")
 ])
 class AdministrativeDomain(models.Model):
     """

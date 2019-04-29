@@ -12,8 +12,12 @@ from mongoengine.fields import StringField
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(ignore=[
+    ("inv.SubInterface", "forwarding_instance")
+])
 class ForwardingInstance(Document):
     """
     Non-default forwarding instances

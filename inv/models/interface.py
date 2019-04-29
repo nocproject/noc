@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
-from noc.core.model.decorator import on_delete
+from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.datastream.decorator import datastream
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
@@ -46,6 +46,12 @@ logger = logging.getLogger(__name__)
 
 @on_delete
 @datastream
+@on_delete_check(ignore=[
+    ("inv.Link", "interfaces"),
+    ("inv.Interface", "aggregated_interface"),
+    ("inv.SubInterface", "interface"),
+    ("inv.MACDB", "interface")
+])
 class Interface(Document):
     """
     Interfaces

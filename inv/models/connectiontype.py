@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ConnectionType model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,9 +17,13 @@ from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 from noc.main.models.doccategory import category
+from noc.core.model.decorator import on_delete_check
 
 
 @category
+@on_delete_check(check=[
+    ("inv.ConnectionType", "extend")
+])
 class ConnectionType(Document):
     """
     Equipment vendor

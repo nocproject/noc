@@ -32,7 +32,8 @@ id_lock = threading.Lock()
 @on_delete_check(check=[
     ("sa.ManagedObject", "version"),
     ("sa.ManagedObject", "next_version"),
-    ("sa.ManagedObjectSelector", "filter_version")
+    ("sa.ManagedObjectSelector", "filter_version"),
+    ("inv.FirmwarePolicy", "firmware")
 ])
 class Firmware(Document):
     meta = {

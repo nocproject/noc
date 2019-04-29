@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # UserProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 # NOC modules
 from noc import settings
 from noc.core.middleware.tls import get_user
+from noc.core.model.decorator import on_delete_check
 
 
 class UserProfileManager(models.Manager):
@@ -36,6 +37,9 @@ class UserProfileManager(models.Manager):
             return s.get_query_set()
 
 
+@on_delete_check(check=[
+    ("main.UserProfileContact", "user_profile")
+])
 class UserProfile(models.Model):
     """
     User profile

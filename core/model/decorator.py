@@ -136,7 +136,7 @@ def on_init(cls):
     return cls
 
 
-def on_delete_check(check=None, clean=None, delete=None):
+def on_delete_check(check=None, clean=None, delete=None, ignore=None):
     """
     Class decorator to check and process constraints before
     trying to delete documents
@@ -155,6 +155,10 @@ def on_delete_check(check=None, clean=None, delete=None):
         ],
         # Remove records referred by deleted one
         delete=[
+            ("model", "field")
+        ],
+        # Ignore checks
+        ignore=[
             ("model", "field")
         ]
     )
@@ -202,26 +206,28 @@ def on_delete_check(check=None, clean=None, delete=None):
             yield model, model_id, field
 
     def decorator(cls):
-        if is_document(cls):
-            mongo_signals.pre_delete.connect(
-                on_delete_handler,
-                sender=cls,
-                weak=False
-            )
-            setup["is_document"] = True
-        else:
-            django_signals.pre_delete.connect(
-                on_delete_handler,
-                sender=cls,
-                weak=False  # Cannot use weak reference due to lost of internal scope
-            )
+        if cfg["check"] or cfg["clean"] or cfg["delete"]:
+            if is_document(cls):
+                mongo_signals.pre_delete.connect(
+                    on_delete_handler,
+                    sender=cls,
+                    weak=False
+                )
+                setup["is_document"] = True
+            else:
+                django_signals.pre_delete.connect(
+                    on_delete_handler,
+                    sender=cls,
+                    weak=False  # Cannot use weak reference due to lost of internal scope
+                )
         cls._on_delete = cfg
         return cls
 
     cfg = {
         "check": check or [],
         "clean": clean or [],
-        "delete": delete or []
+        "delete": delete or [],
+        "ignore": ignore or []
     }
     setup = {
         "is_document": False

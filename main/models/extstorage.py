@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ExtStorage model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("sa.ManagedObjectProfile", "config_mirror_storage"),
     ("sa.ManagedObjectProfile", "beef_storage"),
+    ("sa.ManagedObjectProfile", "config_download_storage")
 ])
 class ExtStorage(Document):
     meta = {
