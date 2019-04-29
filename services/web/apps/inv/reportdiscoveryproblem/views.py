@@ -6,8 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import operator
+# Third-party modules
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport

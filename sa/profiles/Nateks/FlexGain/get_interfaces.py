@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Nateks.FlexGain.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -83,7 +82,7 @@ class Script(BaseScript):
                     i["subinterfaces"][0]["mac"] = ifmacs[ifname]
                 for v in vlans:
                     if v["ifname"] == ifname:
-                        if v["tagged"] == True:
+                        if v["tagged"] is True:
                             if v["vlan_id"] == "1":
                                 continue
                             if "tagged_vlans" in i["subinterfaces"][0]:
@@ -95,8 +94,7 @@ class Script(BaseScript):
                 interfaces += [i]
             match = self.rx_xdsl.search(l)
             if match:
-                ifname = "%s/%s/%s" % (match.group("slot"), \
-                match.group("port"), match.group("bridge"))
+                ifname = "%s/%s/%s" % (match.group("slot"), match.group("port"), match.group("bridge"))
                 v = self.cli("show interface xdsl %s" % ifname[:-2])
                 match1 = self.rx_status.search(v)
                 oper_status = bool(match1.group("oper_status") == "On")
@@ -126,23 +124,22 @@ class Script(BaseScript):
         v = self.cli("show management gbe")
         i = {
             "name": "gbe",
-                "type": "SVI",
+            "type": "SVI",
+            "oper_status": True,
+            "admin_status": True,
+            "subinterfaces": [{
+                "name": "gbe",
                 "oper_status": True,
                 "admin_status": True,
-                "subinterfaces": [{
-                    "name": "gbe",
-                    "oper_status": True,
-                    "admin_status": True,
-                    "enabled_afi": ['IPv4']
-                }]
-            }
+                "enabled_afi": ['IPv4']
+            }]
+        }
         for l in v.split("\n"):
             match = self.rx_ip.search(l)
             if match:
                 ip_address = match.group("ip")
                 ip_subnet = match.group("mask")
-                ip_address = "%s/%s" % (
-                    ip_address, IPv4.netmask_to_len(ip_subnet))
+                ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                 i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
             match = self.rx_mgmt_vlan.search(l)
             if match:
@@ -151,16 +148,16 @@ class Script(BaseScript):
         v = self.cli("show management mgmt")
         i = {
             "name": "mgmt",
-                "type": "management",
+            "type": "management",
+            "oper_status": True,
+            "admin_status": True,
+            "subinterfaces": [{
+                "name": "mgmt",
                 "oper_status": True,
                 "admin_status": True,
-                "subinterfaces": [{
-                    "name": "mgmt",
-                    "oper_status": True,
-                    "admin_status": True,
-                    "enabled_afi": ['IPv4']
-                }]
-            }
+                "enabled_afi": ['IPv4']
+            }]
+        }
         for l in v.split("\n"):
             match = self.rx_ip.search(l)
             if match:

@@ -2,17 +2,18 @@
 # ---------------------------------------------------------------------
 # Carelink.SWG.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.lib.validators import is_int
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
@@ -95,7 +96,6 @@ class Script(BaseScript):
             "mac": mac,
             "subinterfaces": [{
                 "name": "mgmt",
-                "enabled_afi": ["BRIDGE"],
                 "vlan_ids": match.group("vlan_id"),
                 "ipv4_addresses": [ip_address],
                 "enabled_afi": ["IPv4"],

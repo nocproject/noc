@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -27,7 +28,7 @@ class Script(BaseScript):
             v = self.cli("display link-aggregation verbose")
         r = []
         for match in self.rx_po_members.finditer(v):
-            found = False;
+            found = False
             for i in r:
                 if i["interface"] == match.group("agg_interface"):
                     i["members"] += [match.group("interface")]

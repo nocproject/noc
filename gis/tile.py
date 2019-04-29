@@ -85,8 +85,8 @@ class TileWorker(object):
         self.m = mapnik2.Map(TS, TS)
         try:
             mapnik2.load_map_from_string(self.m, self.xml)
-        except RuntimeError, why:
-            logging.error("Cannot load map: %s" % why)
+        except RuntimeError as e:
+            logging.error("Cannot load map: %s" % e)
             os._exit(1)
         self.prj = mapnik2.Projection(self.m.srs)
         self.log("Waiting for tasks")
@@ -134,7 +134,7 @@ class TileTask(object):
                 top = max(NE[1] - PAD_TILES, 0)
                 bottom = min(SW[1] + PAD_TILES, M)
                 a_size = (right - left + 1) * (bottom - top + 1)
-                self.log("Checking area '%s' at zoom level %d "\
+                self.log("Checking area '%s' at zoom level %d "
                          " (%d x %d = %d tiles)" % (area.name, zoom,
                                                     right - left + 1,
                                                     bottom - top + 1,
@@ -162,7 +162,7 @@ class TileTask(object):
         self.log("Looking for areas:")
         n = 0
         for a in Area.objects.order_by("name"):
-            self.log("    %s [%s - %s] %s Zoom %d - %d" %(
+            self.log("    %s [%s - %s] %s Zoom %d - %d" % (
                 a.name, a.SW, a.NE,
                 "(active)" if a.is_active else "(disabled)",
                 a.min_zoom, a.max_zoom
@@ -207,6 +207,7 @@ class TileTask(object):
             w.join()
         dt = time.time() - t0
         speed = float(nt) / dt if nt and dt > 0 else 0
-        self.log("Finishing processing map '%s'. " \
-                 "%d tiles processed in %8.2fs (%8.2f tiles/s)" % (
-            self.map.name, nt, dt, speed))
+        self.log(
+            "Finishing processing map '%s'. "
+            "%d tiles processed in %8.2fs (%8.2f tiles/s)" % (self.map.name, nt, dt, speed)
+        )
