@@ -35,7 +35,8 @@ class Script(BaseScript):
     rx_bootprom1 = re.compile(
         r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
     rx_hardware1 = re.compile(
-         r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE)
+        r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE
+    )
     rx_serial1 = re.compile(
         r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$",
         re.MULTILINE)
@@ -44,33 +45,28 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0",
-                                        cached=True)
-                if platform == '' or platform == None:
+                platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0", cached=True)
+                if not platform:
                     raise self.snmp.TimeOutError
                 if " " in platform:
                     platform = platform.split(' ')[1]
-                version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0",
-                                        cached=True)
+                version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0", cached=True)
                 version = version.split(' ')[2]
-                bootprom = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.9.0",
-                                         cached=True)
+                bootprom = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.9.0", cached=True)
                 bootprom = bootprom.split('V')[1]
-                hardware = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.8.0",
-                                         cached=True)
+                hardware = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.8.0", cached=True)
                 hardware = hardware.split('V')[1]
-                serial = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.19.0",
-                                       cached=True)
+                serial = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.19.0", cached=True)
                 return {
-                        "vendor": "Qtech",
-                        "platform": platform,
-                        "version": version,
-                        "attributes": {
-                            "Boot PROM": bootprom,
-                            "HW version": hardware,
-                            "Serial Number": serial
-                            }
-                        }
+                    "vendor": "Qtech",
+                    "platform": platform,
+                    "version": version,
+                    "attributes": {
+                        "Boot PROM": bootprom,
+                        "HW version": hardware,
+                        "Serial Number": serial
+                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -91,12 +87,12 @@ class Script(BaseScript):
             hardware = self.re_search(self.rx_hardware1, ver)
             serial = self.re_search(self.rx_serial1, ver)
         return {
-                "vendor": "Qtech",
-                "platform": platform,
-                "version": version,
-                "attributes": {
-                    "Boot PROM": bootprom.group("bootprom").strip(),
-                    "HW version": hardware.group("hardware").strip(),
-                    "Serial Number": serial.group("serial").strip()
-                    }
-                }
+            "vendor": "Qtech",
+            "platform": platform,
+            "version": version,
+            "attributes": {
+                "Boot PROM": bootprom.group("bootprom").strip(),
+                "HW version": hardware.group("hardware").strip(),
+                "Serial Number": serial.group("serial").strip()
+            }
+        }

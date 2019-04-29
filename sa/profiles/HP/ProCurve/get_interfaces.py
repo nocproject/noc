@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -19,20 +18,22 @@ class Script(BaseScript):
     name = "HP.ProCurve.get_interfaces"
     interface = IGetInterfaces
 
-    iftypes = {"6": "physical",
-               "161": "aggregated",
-               "54": "aggregated",
-               "53": "SVI",
-               "24": "loopback",
-               }
+    iftypes = {
+        "6": "physical",
+        "161": "aggregated",
+        "54": "aggregated",
+        "53": "SVI",
+        "24": "loopback",
+    }
 
-    objstr = {"ifName": "name",
-              "ifDescr": "description",
-              "ifPhysAddress": "mac",
-              "ifType": "type",
-              "ifAdminStatus": "admin_status",
-              "ifOperStatus": "oper_status",
-              }
+    objstr = {
+        "ifName": "name",
+        "ifDescr": "description",
+        "ifPhysAddress": "mac",
+        "ifType": "type",
+        "ifAdminStatus": "admin_status",
+        "ifOperStatus": "oper_status",
+    }
 
     rx_ip = re.compile(r"\s+(?P<name>\S+)\s+\|\s+(Manual|Disabled)\s"
                        "+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"
@@ -48,7 +49,7 @@ class Script(BaseScript):
 
         try:
             sh_ospf = self.cli("show ip ospf interface")
-        except:
+        except Exception:
             sh_ospf = False
 
         portchannel_members = {}  # member -> (portchannel, type)
@@ -59,7 +60,6 @@ class Script(BaseScript):
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
 
-        pvm = {}
         switchports = {}
         vlans = self.scripts.get_vlans()
         if vlans:
@@ -103,7 +103,7 @@ class Script(BaseScript):
                                 if o.split():
                                     if o.split()[0] == match.group("ip"):
                                         sub["is_ospf"] = True
-            if ifname in switchports and not ifname in portchannel_members:
+            if ifname in switchports and ifname not in portchannel_members:
                 sub["enabled_afi"] += ["BRIDGE"]
                 u, t = switchports[ifname]
                 if u:
