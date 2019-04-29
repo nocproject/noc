@@ -2,17 +2,15 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -22,8 +20,9 @@ class Script(BaseScript):
     rx_localport = re.compile(r"^\s*(\S+)\s*\|\s*local\s+(\d+)\s+.+?$", re.MULTILINE)
     rx_split = re.compile(r"^\s*----.+?\n", re.MULTILINE | re.DOTALL)
     rx_line = re.compile(r"^\s*(?P<port>\S+)\s*|", re.MULTILINE | re.DOTALL)
-    #rx_chassis_id=re.compile(r"^\s*ChassisId\s*:\s*(.{17})",re.MULTILINE|re.DOTALL|re.IGNORECASE)
-    rx_chassis_id = re.compile(r"ChassisType\s*:\s*(\S+).+?ChassisId\s*:\s*([a-zA-Z0-9\.\- ]+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    # rx_chassis_id=re.compile(r"^\s*ChassisId\s*:\s*(.{17})",re.MULTILINE|re.DOTALL|re.IGNORECASE)
+    rx_chassis_id = re.compile(r"ChassisType\s*:\s*(\S+).+?ChassisId\s*:\s*([a-zA-Z0-9\.\- ]+)",
+                               re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_port_id = re.compile(r"^\s*PortId\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_sys_name = re.compile(r"^\s*SysName\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_sys_descr = re.compile(r"^\s*System Descr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
@@ -39,11 +38,11 @@ class Script(BaseScript):
             local_port_ids[port] = int(local_id)
         # Get neighbors
         v = self.cli("show lldp info remote-device")
-        for l in self.rx_split.split(v)[1].splitlines():
-            l = l.strip()
-            if not l:
+        for ln in self.rx_split.split(v)[1].splitlines():
+            ln = ln.strip()
+            if not ln:
                 continue
-            match = self.rx_line.search(l)
+            match = self.rx_line.search(ln)
             if not match:
                 continue
             local_interface = match.group("port")
@@ -68,8 +67,7 @@ class Script(BaseScript):
                 remote_chassis_id = remote_chassis_id.strip()
             n = {
                 "remote_chassis_id": remote_chassis_id,
-                "remote_port_subtype": 5,
-                 "remote_chassis_id_subtype": remote_chassis_id_subtype
+                "remote_port_subtype": 5, "remote_chassis_id_subtype": remote_chassis_id_subtype
             }
             # Get remote port
             match = self.rx_port_id.search(v)

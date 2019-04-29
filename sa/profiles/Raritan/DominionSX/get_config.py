@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # Raritan.DominionSX.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetconfig import IGetConfig
+
+# Python modules
 import urlparse
 import os
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
+
 
 class Script(BaseScript):
     name = "Raritan.DominionSX.get_config"

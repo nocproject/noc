@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # Cisco.ASA.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -17,8 +18,7 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     # Member 0 : GigabitEthernet0/2 , Full-duplex, 1000Mb/s
-    rx_po2_members = re.compile(
-        r"^\s+Member\s+\d+\s+:\s+(?P<interface>.+?)\s+.*$")
+    rx_po2_members = re.compile(r"^\s+Member\s+\d+\s+:\s+(?P<interface>.+?)\s+.*$")
 
     def execute(self):
         r = []
@@ -38,8 +38,8 @@ class Script(BaseScript):
         table.pop(0)
         for l in table:
             row = l.split()
-            interface = dict(zip(headline[:-1], row[:len(headline)-1]))
-            interface['Ports'] = row[len(headline)-1:]
+            interface = dict(zip(headline[:-1], row[:len(headline) - 1]))
+            interface['Ports'] = row[len(headline) - 1:]
             members = []
             for m in interface['Ports']:
                 members += [m.split("(")[0]]
@@ -55,10 +55,11 @@ class Script(BaseScript):
                 consist only Interfaces"""
                 nextinterface = True
 
-            r += [{
-                "interface": "Po %s" % interface['Group'],
-                "members": members,
-                "type": "L",  # <!> TODO: port-channel type detection
-                }]
-
+            r += [
+                {
+                    "interface": "Po %s" % interface['Group'],
+                    "members": members,
+                    "type": "L",  # <!> TODO: port-channel type detection
+                }
+            ]
         return r

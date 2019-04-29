@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # Rubytech.l2ms.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-'''
-'''
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
+
 
 class Script(BaseScript):
     name = "Rubytech.l2ms.get_fqdn"
@@ -25,7 +25,7 @@ class Script(BaseScript):
                 # sysName.0
                 v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
                 if v:
-                   return v
+                    return v
             except self.snmp.TimeOutError:
                 pass
 

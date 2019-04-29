@@ -2,17 +2,14 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -37,8 +34,7 @@ class Script(BaseScript):
     rx_ip_iface = re.compile(r"(?P<vlan_name>.+)",
                              re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
-    rx_des = re.compile(r"Description:\s+(?P<des>.+)",
-                       re.MULTILINE | re.IGNORECASE)
+    rx_des = re.compile(r"Description:\s+(?P<des>.+)", re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)",
                        re.MULTILINE | re.IGNORECASE)
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
@@ -138,7 +134,7 @@ class Script(BaseScript):
             "interfaces": [],
             "type": "physical"
         }
-            # Portchanel
+        # Portchanel
         for s in self.rx_line.split(v)[1:]:
             n = {}
             enabled_protocols = []
@@ -156,7 +152,7 @@ class Script(BaseScript):
             match = self.rx_descr.search(s)
             description = match.group("description")
             if description:
-                description = description.decode("ascii","ignore")
+                description = description.decode("ascii", "ignore")
             if iface in portchannel_members:
                 ai, is_lacp = portchannel_members[iface]
                 n["aggregated_interface"] = ai
@@ -209,7 +205,7 @@ class Script(BaseScript):
             mac = match.group("mac")
             match = self.rx_des.search(s)
             if match:
-                description = match.group("des").decode("ascii","ignore")
+                description = match.group("des").decode("ascii", "ignore")
 
             enabled_protocols = []
             if ospf_enable and iface in ospf:
@@ -241,5 +237,5 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["description"] = description
             r += [iface]
 
-        #quit()
+        # quit()
         return [{"interfaces": r}]

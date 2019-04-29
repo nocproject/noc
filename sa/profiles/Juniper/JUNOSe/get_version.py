@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -21,11 +20,11 @@ rx_snmp_ver = re.compile(
     r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?SW Version\s:"
     r"\s\((?P<version>[A-Za-z0-9\- \.\[\]]+)\)")
 
+
 class Script(BaseScript):
     name = "Juniper.JUNOSe.get_version"
     cache = True
     interface = IGetVersion
-
 
     def execute(self):
         if self.has_snmp():

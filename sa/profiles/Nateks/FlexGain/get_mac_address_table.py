@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -37,6 +36,6 @@ class Script(BaseScript):
                 "vlan_id": int(match.group("vlan_id")),
                 "mac": mac if mac else match.group("mac"),
                 "interfaces": [match.group("interface")],
-                "type": {"DYNAMIC":"D", "STATIC":"S"}[match.group("type")]
+                "type": {"DYNAMIC": "D", "STATIC": "S"}[match.group("type")]
             }]
         return r

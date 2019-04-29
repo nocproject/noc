@@ -2,15 +2,15 @@
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -83,8 +83,8 @@ class Script(BaseScript):
         adm_status = []
         gvrp = self.get_gvrp()
         stp = self.get_stp()
-        #ctp = self.get_ctp()
-        #lldp = self.get_lldp()
+        # ctp = self.get_ctp()
+        # lldp = self.get_lldp()
         for l in self.cli("show interfaces description").split("\n"):
             match = self.rx_descr.match(l.strip())
             if match:

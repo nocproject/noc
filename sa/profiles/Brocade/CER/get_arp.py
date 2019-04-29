@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Brocade.CER.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetARP
     rx_line = re.compile('^\\d+\\s+(?P<ip>\\S+)\\s+(?P<mac>\\S+)\\s+(?P<type>\\S+)\\s+\\d+\\s+(?P<interface>\\S+)')
 
-    def execute(self, vrf = None):
+    def execute(self, vrf=None):
         if vrf:
             s = self.cli('show arp vrf %s' % vrf)
         else:
@@ -33,8 +33,5 @@ class Script(BaseScript):
             if mac.lower() in ('incomplete' or 'none') or type.lower() in ('pending', 'invalid'):
                 continue
             else:
-                r.append({'ip': match.group('ip'),
-                 'mac': match.group('mac'),
-                 'interface': match.group('interface')})
-
+                r.append({'ip': match.group('ip'), 'mac': match.group('mac'), 'interface': match.group('interface')})
         return r

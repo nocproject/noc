@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -20,11 +21,11 @@ class Script(BaseScript):
     rx_iface = re.compile("Interface\s+(?P<iface>\S+)")
 
     types = {
-           "gi": "physical",
-           "te": "physical",
-           "po": "aggregated",
-           "br": "SVI",
-           }
+        "gi": "physical",
+        "te": "physical",
+        "po": "aggregated",
+        "br": "SVI",
+    }
 
     def execute(self, interface=None):
         stp = []
@@ -86,7 +87,7 @@ class Script(BaseScript):
                 "name": ifname,
                 "type": typ,
                 "admin_status": astate == "Up",
-                "oper_status": lstate =="Up",
+                "oper_status": lstate == "Up",
                 "mac": mac,
                 "enabled_protocols": ["NDP"],
                 "subinterfaces": [sub]

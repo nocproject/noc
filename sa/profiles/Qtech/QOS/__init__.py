@@ -3,11 +3,11 @@
 # Vendor: Qtech
 # OS:     QOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-#SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.27514.6.178
+# SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.27514.6.178
 
 # Python modules
 import re

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.TIMOS.ping
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -36,9 +36,9 @@ class Script(BaseScript):
         if source_address:
             cmd += " source %s" % source_address
         if size:
-            cmd+=" size %d" % int(size)
+            cmd += " size %d" % int(size)
         if df:
-            cmd+=" do-not-fragment"
+            cmd += " do-not-fragment"
         v = self.cli(cmd)
         match = self.rx_result.search(v)
         if match:

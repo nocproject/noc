@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Opticin.OS.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC Modules
@@ -25,16 +24,14 @@ class Script(BaseScript):
             try:
                 oids = {}
                 # Get OID -> VLAN ID mapping
-                for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    bulk=True):  # dot1qVlanFdbId
+                for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.2.1.3", bulk=True):  # dot1qVlanFdbId
                     oids[oid.split(".")[-1]] = v
                 # Get VLAN names
                 result = []
-                for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1",
-                    bulk=True):  # dot1qVlanStaticName
+                for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1", bulk=True):  # dot1qVlanStaticName
                     o = oid.split(".")[-1]
                     result += [{
-                        "vlan_id":int(oids[o]),
+                        "vlan_id": int(oids[o]),
                         "name":v.strip().rstrip('\x00')
                     }]
                 return sorted(
@@ -43,9 +40,7 @@ class Script(BaseScript):
             except self.snmp.TimeOutError:
                 # SNMP failed, continue with CLI
                 pass
-        ##
-        ## Other
-        ##
+        # Other
         else:
             rx_vlan_line = re.compile(
                 r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S*\s+\S*)",

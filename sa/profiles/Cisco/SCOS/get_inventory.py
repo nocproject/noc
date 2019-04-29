@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.SCOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,8 +20,7 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
         r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+"
-        r"(?P<vid>\S+[^\,]+)?\s*, SN: (?P<serial>\S+)",
-        re.MULTILINE | re.DOTALL
+        r"(?P<vid>\S+[^\,]+)?\s*, SN: (?P<serial>\S+)", re.MULTILINE | re.DOTALL
     )
 
     def execute(self):
@@ -29,13 +28,12 @@ class Script(BaseScript):
         v = self.cli("show inventory raw")
         for match in self.rx_item.finditer(v):
             vendor = None
-            #Internal containers, bays, links, ports, processors
-            #Not needed
+            # Internal containers, bays, links, ports, processors
+            # Not needed
             if match.group("pid") == '""':
                 continue
             type, number, part_no = self.get_type(
-                match.group("name"), match.group("pid"),
-                match.group("descr"), len(objects)
+                match.group("name"), match.group("pid"), match.group("descr"), len(objects)
             )
             serial = match.group("serial")
             descr = match.group("descr")
@@ -53,20 +51,22 @@ class Script(BaseScript):
                 continue
             else:
                 if not vendor:
-                     if "NoName" in part_no or "Unknown" in part_no:
-                         vendor = "NONAME"
-                     else:
-                         vendor = "CISCO"
-                objects += [{
-                    "type": type,
-                    "number": number,
-                    "vendor": vendor,
-                    "serial": serial,
-                    "description": descr.strip(),
-                    "part_no": [part_no],
-                    "revision": vid,
-                    "builtin": False
-                }]
+                    if "NoName" in part_no or "Unknown" in part_no:
+                        vendor = "NONAME"
+                    else:
+                        vendor = "CISCO"
+                objects += [
+                    {
+                        "type": type,
+                        "number": number,
+                        "vendor": vendor,
+                        "serial": serial,
+                        "description": descr.strip(),
+                        "part_no": [part_no],
+                        "revision": vid,
+                        "builtin": False
+                    }
+                ]
 
         # Sort transceivers
         r = []
@@ -76,17 +76,15 @@ class Script(BaseScript):
                 continue
             elif "SPA" in i.get("type"):
                 for p in objects:
-                    if ("XCVR" in p.get("type") and
-                        i.get("number") == p.get("number").split("/")[1]):
-                           t = p.copy()
-                           t["number"] = p.get("number").split("/")[2]
-                           r += [i]
-                           r += [t]
+                    if ("XCVR" in p.get("type") and i.get("number") == p.get("number").split("/")[1]):
+                        t = p.copy()
+                        t["number"] = p.get("number").split("/")[2]
+                        r += [i]
+                        r += [t]
             else:
                 r += [i]
 
         return r
-
 
     def get_type(self, name, pid, descr, lo):
         """
@@ -94,8 +92,7 @@ class Script(BaseScript):
         """
         if pid is None:
             pid = ""
-        if (pid.startswith("XFP") or
-                pid.startswith("SFP")):
+        if (pid.startswith("XFP") or pid.startswith("SFP")):
             # Transceivers
             # Get number
             if name.startswith("SCE8000 optic"):

@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_resolver_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetresolverconfig import IGetResolverConfig
-import re
 
 
 class Script(BaseScript):
@@ -22,7 +23,7 @@ class Script(BaseScript):
             s = self.cli("show name_server")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        r = { "nameservers": [] }
+        r = {"nameservers": []}
         for l in s.splitlines():
             match = self.rx_res.search(l.strip())
             if match:

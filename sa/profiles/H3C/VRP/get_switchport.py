@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # H3C.VRP.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,9 +21,10 @@ class Script(BaseScript):
 
     def execute(self):
         rx_line = re.compile(
-            r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
-        rx_descr = re.compile(
-            r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
+            r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+"
+            r"(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE
+        )
+        rx_descr = re.compile(r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
 
         # Get descriptions
         descriptions = {}
@@ -34,7 +35,8 @@ class Script(BaseScript):
                 r"^(?P<interface>(?:Eth|GE|TENGE)\d+/\d+/\d+)\s+"
                 r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
                 r"(?P<duplex>.+?)\s+(?P<mode>access|trunk|hybrid|trunking)\s+"
-                r"(?P<pvid>\d+)(\s*(?P<description>\S*?))$" , re.MULTILINE)
+                r"(?P<pvid>\d+)(\s*(?P<description>\S*?))$", re.MULTILINE
+            )
             v = self.cli("display brief interface")
 
         for match in rx_descr.finditer(v):
@@ -53,8 +55,7 @@ class Script(BaseScript):
         portchannels = self.scripts.get_portchannel()
 
         # Get vlans
-        known_vlans = set([vlan["vlan_id"] for vlan in
-                           self.scripts.get_vlans()])
+        known_vlans = set([vlan["vlan_id"] for vlan in self.scripts.get_vlans()])
 
         # Get ports in vlans
         r = []
@@ -62,7 +63,7 @@ class Script(BaseScript):
             v = self.cli("display port allow-vlan")
         elif self.match_version(version__startswith="3.10"):
             rx_line = re.compile(
-               r"""
+                r"""
                (?P<interface>\S+)\scurrent\sstate
                .*?
                PVID:\s(?P<pvid>\d+)
@@ -70,18 +71,16 @@ class Script(BaseScript):
                Port\slink-type:\s(?P<mode>access|trunk|hybrid|trunking)
                .*?
                (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
-               """,
-               re.MULTILINE | re.DOTALL | re.VERBOSE)
+               """, re.MULTILINE | re.DOTALL | re.VERBOSE
+            )
             v = self.cli("display interface")
         else:
             v = self.cli("display port vlan")
 
         for match in rx_line.finditer(v):
             interface = match.group("interface")
-            if interface.startswith("Vlan") \
-            or interface.startswith("NULL") \
-            or interface.startswith("DCN-Serial") \
-            or interface.startswith("Cpos-Trunk"):
+            if interface.startswith("Vlan") or interface.startswith("NULL") or interface.startswith(
+                    "DCN-Serial") or interface.startswith("Cpos-Trunk"):
                 continue
             port = {}
             tagged = []
@@ -93,7 +92,7 @@ class Script(BaseScript):
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)
                     # For VRP version 5.3
-                    if r and r[-1]["interface"] == match.group("interface"): 
+                    if r and r[-1]["interface"] == match.group("interface"):
                         r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
                         continue
             members = []

@@ -2,15 +2,15 @@
 # ---------------------------------------------------------------------
 # Nateks.FlexGain.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-import re
 
 
 class Script(BaseScript):
@@ -41,7 +41,6 @@ class Script(BaseScript):
         r"^\s+Manufacture\s*:.*\n"  # Need more examples
         r"^\s+S/N\s*:(?P<serial>.+)\n",
         re.MULTILINE)
-
 
     def execute(self):
         r = []

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.SCOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,22 +22,26 @@ class Script(BaseScript):
     name = "Cisco.SCOS.get_interfaces"
     interface = IGetInterfaces
 
-    rx_int = re.compile(r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n"
-        r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
-    rx_stat = re.compile(r"ifAdminStatus.\d+\s+=\s+(?P<a_stat>\d)\n"
-        r"ifOperStatus.\d+\s+=\s+(?P<o_stat>\d)\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
-    rx_mac = re.compile(r"ifPhysAddress.\d+\s+=\s+"
-        r"(?P<mac>\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2})\s+\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
-    rx_ip = re.compile(r"ip address:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\n"
-        r"subnet mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\n",
-        re.MULTILINE | re.IGNORECASE)
+    rx_int = re.compile(
+        r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n"
+        r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
+    rx_stat = re.compile(
+        r"ifAdminStatus.\d+\s+=\s+(?P<a_stat>\d)\n"
+        r"ifOperStatus.\d+\s+=\s+(?P<o_stat>\d)\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
+    rx_mac = re.compile(
+        r"ifPhysAddress.\d+\s+=\s+"
+        r"(?P<mac>\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2})\s+\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
+    rx_ip = re.compile(
+        r"ip address:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\n"
+        r"subnet mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\n", re.MULTILINE | re.IGNORECASE
+    )
 
     def execute(self):
         ifaces = {}
-        #Get interfaces from mibs
+        # Get interfaces from mibs
         try:
             c = self.cli("sh snmp MIB MIB-II interfaces")
         except self.CLISyntaxError:
@@ -63,7 +67,7 @@ class Script(BaseScript):
                     else:
                         mac = None
 
-                    #Create sub
+                    # Create sub
                     sub = {
                         "name": name,
                         "enabled_protocols": [],
@@ -77,7 +81,7 @@ class Script(BaseScript):
                     if mac:
                         sub["mac"] = mac
 
-                    #Create iface
+                    # Create iface
                     ifaces[name] = {
                         "name": name,
                         "enabled_protocols": [],
@@ -90,16 +94,8 @@ class Script(BaseScript):
                     if mac:
                         ifaces[name]["mac"] = mac
         # Create afi
-        afi_m = {
-            "forwarding_instance": "Managment",
-            "type": "ip",
-            "interfaces": []
-        }
-        afi_b = {
-            "forwarding_instance": "DPI",
-            "type": "bridge",
-            "interfaces": []
-        }
+        afi_m = {"forwarding_instance": "Managment", "type": "ip", "interfaces": []}
+        afi_b = {"forwarding_instance": "DPI", "type": "bridge", "interfaces": []}
 
         for i in ifaces:
             if ifaces[i].get("mac"):

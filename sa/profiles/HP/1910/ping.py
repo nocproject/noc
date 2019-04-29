@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # HP.1910.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,20 +18,21 @@ class Script(BaseScript):
     interface = IPing
 
     rx_result = re.compile(
-        r"\s+(?P<count>\d+) packet\(s\) transmitted.\s+(?P<success>\d+) packet\(s\) received.\s+\S+% packet loss.\s+round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms",
-        re.DOTALL | re.MULTILINE)
+        r"\s+(?P<count>\d+) packet\(s\) transmitted.\s+(?P<success>\d+) packet\(s\) received.\s+"
+        r"\S+% packet loss.\s+round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms",
+        re.DOTALL | re.MULTILINE
+    )
 
-    def execute(self, address, count=None, source_address=None,
-        size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping -q"
         if df:
-            cmd+=" -f"
+            cmd += " -f"
         if count:
             cmd += " -c %d" % int(count)
         if size:
             cmd += " -s %d" % int(size)
         if source_address:
-            cmd +=" -a %s" % source_address
+            cmd += " -a %s" % source_address
         cmd += " %s" % address
         ping = self.cli(cmd)
         result = self.rx_result.search(ping)
@@ -41,5 +42,5 @@ class Script(BaseScript):
             "min": result.group("min"),
             "avg": result.group("avg"),
             "max": result.group("max")
-            }
+        }
         return r

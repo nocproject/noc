@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES5448.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
 
 
@@ -69,7 +67,7 @@ class Script(BaseScript):
                     "remote_chassis_id_subtype": self.CHASSIS_SUBTYPE[
                         match.group("chassis_id_subtype").strip()
                     ],
-                    "remote_port":  match.group("port_id").strip(),
+                    "remote_port": match.group("port_id").strip(),
                     "remote_port_subtype": self.PORT_SUBTYPE[
                         match.group("port_id_subtype").strip()
                     ],
@@ -78,11 +76,9 @@ class Script(BaseScript):
                 if match.group("system_name").strip():
                     n["remote_system_name"] = match.group("system_name").strip()
                 if match.group("system_description").strip():
-                    n["remote_system_description"] = \
-                    match.group("system_description").strip()
+                    n["remote_system_description"] = match.group("system_description").strip()
                 if match.group("port_description").strip():
-                    n["remote_port_description"] = \
-                        match.group("port_description").strip()
+                    n["remote_port_description"] = match.group("port_description").strip()
                 iface["neighbors"] += [n]
             r += [iface]
         return r

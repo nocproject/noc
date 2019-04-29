@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------
 # Huawei.VRP.get_oam_status
 # ---------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------
 
@@ -18,13 +18,14 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_oam_status"
     interface = IGetOAMStatus
 
-    rx_line = re.compile(r"""
+    rx_line = re.compile(
+        r"""
     \s+Interface:\s+(?P<interface>.+?)\n
     .+?
     Remote\sMAC:\s+(?P<mac>.+?)\n
-    """, re.VERBOSE | re.DOTALL | re.MULTILINE)
-    oam_splitter = re.compile(r"\s+-{52}(?P<oam>.+?)Remote\sEFM",
-         re.DOTALL | re.MULTILINE)
+    """, re.VERBOSE | re.DOTALL | re.MULTILINE
+    )
+    oam_splitter = re.compile(r"\s+-{52}(?P<oam>.+?)Remote\sEFM", re.DOTALL | re.MULTILINE)
 
     def execute(self, **kwargs):
         r = []
@@ -41,12 +42,8 @@ class Script(BaseScript):
                 iface = match.group("interface").strip()
                 mac = match.group("mac")
                 try:
-                    mac=MACAddressParameter().clean(mac)
-                except:
-                   continue
-                r += [{
-                    "interface": iface,
-                    "remote_mac": mac,
-                    "caps": ["L"]
-                }]
+                    mac = MACAddressParameter().clean(mac)
+                except Exception:
+                    continue
+                r += [{"interface": iface, "remote_mac": mac, "caps": ["L"]}]
         return r

@@ -1,9 +1,8 @@
-
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # HP.1910.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -21,13 +18,16 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_line = re.compile(
-        r"^\s*LLDP neighbor-information of port \d+\[(?P<interface>\S+)\]:.\s+Neighbor index\s+:\s+\d+.\s+Update time\s+:\s+\d+ days,\d+ hours,\d+ minutes,\d+ seconds.\s+Chassis type\s+:\s+(?P<chassis_type>(\S+ \S+ \S+|\S+ \S+|\S+)).\s+Chassis ID\s+:\s+(?P<chassis_id>\S+).\s+Port ID type\s+:\s+(?P<port_type>(\S+ \S+ \S+|\S+ \S+|\S+)).\s+Port ID\s+:\s+(?P<port_id>\S+).\s+Port description\s+:\s+(\S+ \S+ \S+|\S+ \S+|\S+).\s+System name\s+:\s+(?P<name>\S+)",
+        r"^\s*LLDP neighbor-information of port \d+\[(?P<interface>\S+)\]:.\s+Neighbor index\s+:\s+\d+.\s+"
+        r"Update time\s+:\s+\d+ days,\d+ hours,\d+ minutes,\d+ seconds.\s+Chassis type\s+:\s+"
+        r"(?P<chassis_type>(\S+ \S+ \S+|\S+ \S+|\S+)).\s+Chassis ID\s+:\s+(?P<chassis_id>\S+).\s+"
+        r"Port ID type\s+:\s+(?P<port_type>(\S+ \S+ \S+|\S+ \S+|\S+)).\s+Port ID\s+:\s+(?P<port_id>\S+).\s+"
+        r"Port description\s+:\s+(\S+ \S+ \S+|\S+ \S+|\S+).\s+System name\s+:\s+(?P<name>\S+)",
         re.DOTALL | re.MULTILINE)
 
     rx_capabilities = re.compile(
         r"^\s+System capabilities enabled\s+:\s+(?P<capabilities>\S+)\s*",
         re.DOTALL | re.MULTILINE)
-
 
     def execute(self):
         r = []
@@ -127,7 +127,7 @@ class Script(BaseScript):
                     "remote_port_subtype": remote_port_subtype,
                     "remote_chassis_id_subtype": remote_chassis_id_subtype,
                     "remote_system_name": remote_system_name,
-                    }
+                }
 
                 i["neighbors"].append(n)
                 r.append(i)

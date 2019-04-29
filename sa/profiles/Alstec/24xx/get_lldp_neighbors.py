@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Alstec.24xx.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,8 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.lib.text import parse_table
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6
-from noc.core.mac import MAC
+from noc.lib.validators import is_ipv4, is_ipv6
 
 
 class Script(BaseScript):
@@ -23,14 +22,10 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<port>(?:Gi|Te|Po|e|g|cch)\S+)\s+(?P<system_id>\S+)\s+"
-        r"(?P<port_id>\S+)\s+(?P<system_name>.*)\s+(?P<caps>\S+)\s+\d+",
-        re.IGNORECASE)
+        r"(?P<port_id>\S+)\s+(?P<system_name>.*)\s+(?P<caps>\S+)\s+\d+", re.IGNORECASE
+    )
 
-    CAPS = {
-        "": 0, "O": 1, "r": 2,
-        "B": 4, "W": 8, "R": 16,
-        "T": 32, "D": 64, "H": 128
-    }
+    CAPS = {"": 0, "O": 1, "r": 2, "B": 4, "W": 8, "R": 16, "T": 32, "D": 64, "H": 128}
 
     def execute(self):
         r = []
@@ -42,49 +37,49 @@ class Script(BaseScript):
         v = v.replace("\n\n", "\n")
         for l in parse_table(v, allow_extend=True):
             if not l[0]:
-                data[-1] = [s[0]+s[1] for s in zip(data[-1], l)]
+                data[-1] = [s[0] + s[1] for s in zip(data[-1], l)]
                 continue
             data += [l]
 
         for d in data:
-                chassis_id = d[2]
-                if is_ipv4(chassis_id) or is_ipv6(chassis_id):
-                        chassis_id_subtype = 5
-                else:
-                        try:
-                            MACAddressParameter().clean(chassis_id)
-                            chassis_id_subtype = 4
-                        except ValueError:
-                            chassis_id_subtype = 7
-                port_id = d[3]
-                if is_ipv4(port_id) or is_ipv6(port_id):
-                        port_id_subtype = 4
-                else:
-                        try:
-                            MACAddressParameter().clean(port_id)
-                            port_id_subtype = 3
-                        except ValueError:
-                            port_id_subtype = 7
-                # caps = sum([self.CAPS[s.strip()] for s in d[4].split(",")])
-                caps = 0
-                if not chassis_id:
-                    continue
+            chassis_id = d[2]
+            if is_ipv4(chassis_id) or is_ipv6(chassis_id):
+                chassis_id_subtype = 5
+            else:
+                try:
+                    MACAddressParameter().clean(chassis_id)
+                    chassis_id_subtype = 4
+                except ValueError:
+                    chassis_id_subtype = 7
+            port_id = d[3]
+            if is_ipv4(port_id) or is_ipv6(port_id):
+                port_id_subtype = 4
+            else:
+                try:
+                    MACAddressParameter().clean(port_id)
+                    port_id_subtype = 3
+                except ValueError:
+                    port_id_subtype = 7
+            # caps = sum([self.CAPS[s.strip()] for s in d[4].split(",")])
+            caps = 0
+            if not chassis_id:
+                continue
 
-                neighbor = {
-                    "remote_chassis_id": chassis_id,
-                    "remote_chassis_id_subtype": chassis_id_subtype,
-                    "remote_port": port_id,
-                    "remote_port_subtype": port_id_subtype,
-                    "remote_capabilities": caps
-                }
-                """
+            neighbor = {
+                "remote_chassis_id": chassis_id,
+                "remote_chassis_id_subtype": chassis_id_subtype,
+                "remote_port": port_id,
+                "remote_port_subtype": port_id_subtype,
+                "remote_capabilities": caps
+            }
+            """
                 if match.group("system_name"):
                     neighbor["remote_system_name"] = match.group("system_name")
                 """
-                neighbor["remote_system_name"] = d[4]
-                r += [{
-                    # "local_interface": match.group("port"),
-                    "local_interface": d[0],
-                    "neighbors": [neighbor]
-                }]
+            neighbor["remote_system_name"] = d[4]
+            r += [{
+                # "local_interface": match.group("port"),
+                "local_interface": d[0],
+                "neighbors": [neighbor]
+            }]
         return r

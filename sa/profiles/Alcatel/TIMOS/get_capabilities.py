@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.TIMOS.get_capabilities_ex
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+
 
 class Script(BaseScript):
     name = "Alcatel.TIMOS.get_capabilities"
@@ -52,7 +53,7 @@ class Script(BaseScript):
         Check box has bfd enabled
         """
         cmd = self.cli("show router bfd interface")
-        return not "No Matching Entries Found" in cmd
+        return "No Matching Entries Found" not in cmd
 
     @false_on_cli_error
     def has_lacp_cli(self):

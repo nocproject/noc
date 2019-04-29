@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # OS.FreeBSD.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -24,7 +25,7 @@ class Script(BaseScript):
     rx_if_inet = re.compile(
         r"^\tinet (?P<inet>\S+) netmask (?P<netmask>\S+)\s*(broadcast .+)?$")
     rx_if_inet6 = re.compile(
-    r"^\tinet6 (?P<inet6>\S+) prefixlen (?P<prefixlen>\S+)\s*(scopeid .+)?$")
+        r"^\tinet6 (?P<inet6>\S+) prefixlen (?P<prefixlen>\S+)\s*(scopeid .+)?$")
     rx_if_status = re.compile(
         r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
     rx_if_vlan = re.compile(
@@ -139,10 +140,9 @@ class Script(BaseScript):
             for i in self.portchannel:
                 if self.iface["name"] == i["interface"]:
                     self.iface["type"] = "aggregated"
-                    #self.subiface["enabled_afi"] = ["BRIDGE"]
+                    # self.subiface["enabled_afi"] = ["BRIDGE"]
                 if self.iface["name"] in i["members"]:
-                    if i["type"] == "L" and \
-                    not "LACP" in self.iface["enabled_protocols"]:
+                    if i["type"] == "L" and "LACP" not in self.iface["enabled_protocols"]:
                         self.iface["enabled_protocols"] += ["LACP"]
                     self.iface["aggregated_interface"] = i["interface"]
             match = self.rx_if_wlan.search(s)
@@ -152,7 +152,7 @@ class Script(BaseScript):
             match = self.rx_if_bridge.search(s)
             if match:
                 self.iface["type"] = "SVI"
-                if not "BRIDGE" in self.subiface["enabled_afi"]:
+                if "BRIDGE" not in self.subiface["enabled_afi"]:
                     self.subiface["enabled_afi"] += ["BRIDGE"]
                 continue
             match = self.rx_if_bridge_m.search(s)

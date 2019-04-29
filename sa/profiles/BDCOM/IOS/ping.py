@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # BDCOM.IOS.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,6 @@ class Script(BaseScript):
         r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
         r"received, \d+% packet loss\n",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
-
 
     def execute(self, address, count=None, source_address=None,
                 size=None, df=None, *args, **kwargs):

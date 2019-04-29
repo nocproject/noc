@@ -2,9 +2,10 @@
 # ---------------------------------------------------------------------
 # Proscend.SHDSL.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 # Python modules
 import re
 # NOC modules
@@ -21,6 +22,7 @@ class Script(BaseScript):
     rx_ver = re.compile(r"^\s*Firmware Version\s+:(?P<version>\S+)\n", re.MULTILINE)
     rx_hver = re.compile(r"^\s*Software Version\s+:(?P<hversion>\S+)\n", re.MULTILINE)
     rx_serial = re.compile(r"^\s*Serial No\s+:(?P<serial>\S+)\n", re.MULTILINE)
+
     def execute(self):
         ver = self.cli("show system", cached=True)
         match = self.re_search(self.rx_platform, ver)
@@ -34,5 +36,5 @@ class Script(BaseScript):
             "attributes": {
                 "HW version": hmatch.group("hversion"),
                 "Serial Number": smatch.group("serial")
-                          }
             }
+        }

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,11 +17,11 @@ rx_mac = re.compile(
 rx_mac1 = re.compile(
     r"^\d+\s+(?P<mac>\S+)\s+STATIC\s+System\s+CPU$", re.MULTILINE)
 
+
 class Script(BaseScript):
     name = "Qtech.QSW.get_chassis_id"
     interface = IGetChassisID
     cache = True
-
 
     def execute(self):
         # Try SNMP first

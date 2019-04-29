@@ -2,29 +2,34 @@
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
     name = "Force10.FTOS.get_spanning_tree"
     interface = IGetSpanningTree
-    ##
-    ## MSTP Mode parsing
-    ##
+
+    # MSTP Mode parsing
     rx_mstp_instance_list = re.compile(r"^\s*(\d+)", re.MULTILINE)
-    rx_mstp_region = re.compile(r"MST Region Name:\s+(?P<region>\S+).*Revision:\s+(?P<revision>\d+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_mstp_vlans = re.compile(
-        r"^MSTI \d VLANs mapped\s+(?P<vlans>.+?)$", re.MULTILINE)
-    rx_mstp_root = re.compile(r"^Root\s+ID\s+Priority\s+(?P<root_priority>\d+),\s+Address\s+(?P<root_id>\S+)", re.MULTILINE)
-    rx_mstp_bridge = re.compile(r"^Bridge\s+ID\s+Priority\s+(?P<bridge_priority>\d+),\s+Address\s+(?P<bridge_id>\S+)", re.MULTILINE)
+    rx_mstp_region = re.compile(
+        r"MST Region Name:\s+(?P<region>\S+).*Revision:\s+(?P<revision>\d+)", re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
+    rx_mstp_vlans = re.compile(r"^MSTI \d VLANs mapped\s+(?P<vlans>.+?)$", re.MULTILINE)
+    rx_mstp_root = re.compile(
+        r"^Root\s+ID\s+Priority\s+(?P<root_priority>\d+),\s+Address\s+(?P<root_id>\S+)", re.MULTILINE
+    )
+    rx_mstp_bridge = re.compile(
+        r"^Bridge\s+ID\s+Priority\s+(?P<bridge_priority>\d+),\s+Address\s+(?P<bridge_id>\S+)", re.MULTILINE
+    )
 
     def process_mstp(self):
         # Get Instances List
@@ -84,7 +89,8 @@ class Script(BaseScript):
                     "desg": "designated",
                     "???": "master",
                     "????": "nonstp",
-                    "_": "unknown"}[role.lower()]  # @todo: refine roles
+                    "_": "unknown"
+                }[role.lower()]  # @todo: refine roles
                 i["point_to_point"] = "P2P" in link_type.upper()
                 i["edge"] = True if edge.lower().startswith("y") else False
             # Append instance to result

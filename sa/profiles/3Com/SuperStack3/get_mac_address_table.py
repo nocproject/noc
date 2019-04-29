@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # 3Com.SuperStack3.get_mac_address_table
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -40,6 +40,6 @@ class Script(BaseScript):
                     "vlan_id": vid,
                     "mac": match.group("mac"),
                     "interfaces": [interface],
-                    "type": {"no":"D", "yes":"S"}[match.group("type").lower()]
+                    "type": {"no": "D", "yes": "S"}[match.group("type").lower()]
                 }]
         return r

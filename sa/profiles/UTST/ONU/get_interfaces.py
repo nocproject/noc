@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # UTST.ONU.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
 
 class Script(BaseScript):
     name = "UTST.ONU.get_interfaces"

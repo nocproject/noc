@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -19,40 +18,38 @@ class Script(BaseScript):
     cache = True
     interface = IGetSwitchport
 
-    objstr = {"ifName": "interface",
-              "ifDescr": "description",
-              "ifOperStatus": "status"
-              }
+    objstr = {"ifName": "interface", "ifDescr": "description", "ifOperStatus": "status"}
 
     def getVlanPort(self):
 
         untag = {}
         tag = {}
         egr = {}
-        lmap = {"dot1qVlanStaticUntaggedPorts": untag,
-                "dot1qVlanStaticEgressPorts": egr,
-                }
+        lmap = {
+            "dot1qVlanStaticUntaggedPorts": untag,
+            "dot1qVlanStaticEgressPorts": egr,
+        }
         stat = 'dot1qVlanStatic'
         lines = self.cli("walkMIB " + " ".join(lmap.keys())).split(stat)[1:-1]
 
         for l in lines:
-                    inc = 0
-                    leaf, val = l.split(' = ')
-                    type, vlan = leaf.split('.')
-                    lmap[stat+type][int(vlan)] = []
-                    for hex in val.split():
-                        dec = int(hex, 16)
-                        bit = 1
-                        for p in range(8, 0, -1):
-                            if dec & bit == bit:
-                                lmap[stat+type][int(vlan)] += [p + inc]
-                            bit <<= 1
-                        inc = inc + 8
+            inc = 0
+            leaf, val = l.split(' = ')
+            type, vlan = leaf.split('.')
+            lmap[stat + type][int(vlan)] = []
+            for hex in val.split():
+                dec = int(hex, 16)
+                bit = 1
+                for p in range(8, 0, -1):
+                    if dec & bit == bit:
+                        lmap[stat + type][int(vlan)] += [p + inc]
+                    bit <<= 1
+                inc = inc + 8
 
         for i in egr.keys():
             for j in egr[i]:
-                if not j in untag[i]:
-                    if not i in tag.keys():
+                if j not in untag[i]:
+                    if i not in tag.keys():
                         tag[i] = []
                     tag[i] += [j]
         return untag, tag
@@ -64,8 +61,7 @@ class Script(BaseScript):
         iface = {}
         sports = []
         step = len(self.objstr)
-        lines = self.cli("walkMIB " + " "
-                         .join(self.objstr.keys())).split("\n")[:-1]
+        lines = self.cli("walkMIB " + " ".join(self.objstr.keys())).split("\n")[:-1]
         portchannel_members = {}  # member -> (portchannel, type)
         portchannels = {}  # portchannel name -> [members]
 

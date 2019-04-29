@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.AOS.get_interface_status
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class Script(BaseScript):
                     mib["IF-MIB::ifName"],
                     mib["IF-MIB::ifOperStatus"]
                 ]):
-                    r += [{"interface": n, "status":int(s) == 1}]
+                    r += [{"interface": n, "status": int(s) == 1}]
                 return r
             except self.snmp.TimeOutError:
                 pass

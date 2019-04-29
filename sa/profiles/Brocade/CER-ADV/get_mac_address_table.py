@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Brocade.CER-ADV.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,16 +30,15 @@ class Script(BaseScript):
         r = []
         for line in s.splitlines():
             if self.dataline.match(line):
-                l = line.split()
-                r.append([l[0], l[1], l[3]])
-
+                ln = line.split()
+                r.append([ln[0], ln[1], ln[3]])
         return r
 
-    def execute(self, interface = None, vlan = None, mac = None):
+    def execute(self, interface=None, vlan=None, mac=None):
         if vlan:
             vlans = [vlan]
         else:
-            vlans = [ r['vlan_id'] for r in self.scripts.get_vlans() ]
+            vlans = [r['vlan_id'] for r in self.scripts.get_vlans()]
         if mac:
             rmac = mac.replace(':', '').lower()
         r = []
@@ -47,9 +46,5 @@ class Script(BaseScript):
             for m, port, type in self.parse_mac_table(self.cli('show mac-address vlan %d' % v)):
                 rrmac = m.replace('.', '').lower()
                 if (not interface or port == interface) and (not mac or rmac == rrmac):
-                    r += [{'vlan_id': v,
-                      'mac': m,
-                      'interfaces': [port],
-                      'type': type}]
-
+                    r += [{'vlan_id': v, 'mac': m, 'interfaces': [port], 'type': type}]
         return r

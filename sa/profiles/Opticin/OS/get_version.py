@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Opticin.OS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC Modules
@@ -19,9 +18,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    ##
-    ## Main dispatcher
-    ##
+    # Main dispatcher
     def execute(self):
         try:
             s = self.cli("show version", cached=True)
@@ -29,9 +26,7 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         return self.get_version(s, None)
 
-    ##
-    ## 35xx
-    ##
+    # 35xx
     rx_ver = re.compile(
         r"^\s*The system fireware version is\s+:\s*\n\s+(?P<platform>.+?)-V(?P<version>\S+)EN,",
         re.MULTILINE | re.IGNORECASE)
