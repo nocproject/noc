@@ -204,6 +204,9 @@ SYNTAX = [
                             DEF(ANY, multi=True, name="target", gen="make_forwarding_instance_export_target")
                         ])
                     ]),
+                    DEF("vpn-id", [
+                        DEF(ANY, required=True, name="vpn_id", gen="make_forwarding_instance_vpn_id")
+                    ]),
                     DEF("vlans", [
                         DEF(INTEGER, [
                             DEF("name", [
