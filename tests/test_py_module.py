@@ -56,13 +56,12 @@ def py_module(request):
     return request.param
 
 
-@pytest.mark.dependency(name="module_import")
 def test_import(py_module):
     m = __import__(py_module, {}, {}, "*")
     assert m
 
 
-@pytest.mark.dependency(depends=["module_import"])
+@pytest.mark.xfail
 def test_module_empty_docstrings(py_module):
     m = __import__(py_module, {}, {}, "*")
     if m.__doc__ is not None:
