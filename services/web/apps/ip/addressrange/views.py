@@ -68,7 +68,7 @@ class AddressRangeApplication(ExtModelApplication):
                      data["from_address"],
                      data["to_address"]
                  )
-                 if r.is_locked is True]
+                 if r.is_locked is True and r.name != data["name"]]
             if r:
                 raise ValueError("Locked range overlaps with ahother locked range: %s" % unicode(r[0]))
         return data
