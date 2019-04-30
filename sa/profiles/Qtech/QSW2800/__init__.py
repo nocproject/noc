@@ -22,6 +22,7 @@ class Profile(BaseProfile):
         (r"^Confirm to overwrite current startup-config configuration",
             "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
+        (r"^Process with reboot(?: after)?", "\ny\n")
     ]
     pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
