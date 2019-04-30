@@ -94,7 +94,7 @@ class Script(BaseScript):
                     r += [x.strip(" \x00")]
                 if r:
                     return r
-            except self.snmp.TimeOutError:
+            except (self.snmp.TimeOutError, self.snmp.SNMPError):
                 pass
         try:
             v = self.cli("display elabel slot 0")
@@ -120,7 +120,7 @@ class Script(BaseScript):
                     r += [x.strip(" \x00")]
                 if r:
                     return r
-            except self.snmp.TimeOutError:
+            except (self.snmp.TimeOutError, self.snmp.SNMPError):
                 pass
         try:
             v = self.cli("display patch-information")
@@ -166,8 +166,10 @@ class Script(BaseScript):
         return platform, match.group("version"), image
 
     def execute_snmp(self, **kwargs):
-
-        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
+        try:
+            v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
+            raise NotImplementedError()
         platform, version, image = self.parse_version(v)
         serial = []
         for oid, x in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
