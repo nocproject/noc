@@ -87,7 +87,7 @@ Test migrate:
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate build migrate
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate up --exit-code-from migrate migrate
   after_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate down
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate down -v
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate rm -v
   tags:
     - shell
@@ -99,7 +99,7 @@ Test code:
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests build tests
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests up --exit-code-from tests tests
   after_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests down
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests down -v
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests rm -v
   tags:
     - shell
@@ -114,7 +114,7 @@ Test python 3:
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 build python3
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 up --exit-code-from python3 python3
   after_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 down
+    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 down -v
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 rm -v
   tags:
     - shell
