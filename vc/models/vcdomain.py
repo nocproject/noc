@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # VCDomain model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+from builtins import range, object
 from django.db import models
 # NOC modules
 from .vctype import VCType
@@ -34,7 +35,7 @@ class VCDomain(models.Model):
     """
     Virtual circuit domain, allows to separate unique VC spaces
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "VC Domain"
         verbose_name_plural = "VC Domains"
         db_table = "vc_vcdomain"

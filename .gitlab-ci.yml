@@ -78,6 +78,7 @@ futurize stage2:
     - master
   tags:
     - docker
+  allow_failure: true
 
 Test migrate:
   stage: test

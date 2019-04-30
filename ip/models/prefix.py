@@ -709,7 +709,6 @@ class Prefix(models.Model):
                 if p.effective_prefix_special_address == "X":
                     size -= 2  # Exclude broadcast and network
                 p._address_usage_cache = float(address_usage[p.id]) * 100.0 / float(size)
-                print(p, float(address_usage[p.id]) * 100.0 / float(size))
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     @property

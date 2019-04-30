@@ -13,6 +13,7 @@ import operator
 import logging
 from exceptions import ImportError
 # Third-party modules
+from builtins import str
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, LongField,
                                 ListField, BooleanField, IntField, EmbeddedDocumentField)

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+from builtins import str
 import pytest
 import bson
 # NOC modules
