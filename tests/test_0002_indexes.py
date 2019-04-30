@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Database migrations
+# Test ensure-indexes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,9 +11,14 @@ import pytest
 
 
 @pytest.mark.usefixtures("database")
-def test_database_migrations(database):
+def test_indexes(database):
     """
-    Force database migrations
+    Create indexes
     :param database:
     :return:
     """
+    try:
+        with open("commands/ensure-indexes.py") as f:
+            exec(f.read())
+    except SystemExit as e:
+        assert e.code == 0

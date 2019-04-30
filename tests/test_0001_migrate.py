@@ -1,29 +1,22 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# <describe module here>
+# Database migrations
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-import operator
 # Third-party modules
 import pytest
-# NOC modules
-from noc.core.collection.base import Collection
-
-
-@pytest.fixture(params=list(Collection.iter_collections()), ids=operator.attrgetter("name"))
-def collection(request):
-    return request.param
 
 
 @pytest.mark.usefixtures("database")
-def test_collection_load(database, collection):
+def test_database_migrations(database):
     """
-    Load collection
+    Force database migrations
     :param database:
     :return:
     """
-    collection.sync()
+    from django.core.management import call_command
+
+    call_command("migrate", no_initial_data=True, noinput=True, ignore_ghosts=True)

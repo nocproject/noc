@@ -23,8 +23,6 @@ def database(request):
     _create_pg_db()
     _create_mongo_db()
     _create_clickhouse_db()
-    # Initialize database
-    _apply_migrations()
     # Return control to the test
     yield
     # Cleanup databases
@@ -114,14 +112,3 @@ def _drop_clickhouse_db():
     Drop clickhouse database
     :return:
     """
-
-
-def _apply_migrations():
-    """
-    Apply database migrations
-    :return:
-    """
-    from django.core.management import call_command
-
-    call_command("syncdb", interactive=False, load_initial_data=False)
-    call_command("migrate", no_initial_data=True, noinput=True, ignore_ghosts=True)

@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 # Third-party modules
 import pytest
+import six
 # NOC modules
 from .util import get_models, get_documents
 
@@ -23,4 +24,4 @@ def test_model_unicode(model):
 @pytest.mark.parametrize("model", get_documents())
 def test_document_unicode(model):
     for o in model.objects.all():
-        assert unicode(o)
+        assert isinstance(unicode(o), six.string_types)
