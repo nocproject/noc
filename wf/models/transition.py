@@ -77,6 +77,9 @@ class Transition(Document):
     # Object id in BI
     bi_id = LongField(unique=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return u"%s: %s -> %s [%s]" % (self.workflow.name, self.from_state.name,
                                        self.to_state.name, self.label)

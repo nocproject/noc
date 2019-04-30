@@ -27,6 +27,8 @@ from noc.core.model.decorator import on_delete_check
     ("vc.VC", "vc_domain"),
     ("vc.VCBindFilter", "vc_domain"),
     ("vc.VCDomainProvisioningConfig", "vc_domain"),
+], ignore=[
+    ("inv.MACDB", "vc_domain")
 ])
 class VCDomain(models.Model):
     """

@@ -21,7 +21,9 @@ class DocCategory(Document):
         "collection": "noc.doccategories",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["type"]
+        "indexes": [
+            ("type", "name")
+        ]
     }
 
     name = StringField()
