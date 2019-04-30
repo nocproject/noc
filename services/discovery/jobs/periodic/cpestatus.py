@@ -25,6 +25,7 @@ class CPEStatusCheck(DiscoveryCheck):
         "Network | PON | OLT"
     }
     UNKNOWN_STATUS = "unknown"
+    ACTIVE_STATUS = "active"
 
     def handler(self):
         policy = self.get_policy()
@@ -33,11 +34,13 @@ class CPEStatusCheck(DiscoveryCheck):
             current = self.get_current_statuses()
         else:
             current = self.get_current_cpe()
+        self.logger.debug("Current CPE count: %d" % len(current))
         for c in six.itervalues(current):
             if "id" in c:
                 c["local_id"] = c.pop("id")
         # Collect last statuses
         last = self.get_last_statuses(current)
+        self.logger.debug("Last CPE count: %d" % len(last))
         # Apply changes
         self.apply_changes(current, last)
 
@@ -107,6 +110,7 @@ class CPEStatusCheck(DiscoveryCheck):
         :param last:
         :return:
         """
+        self.logger.debug("Apply changes")
         bulk = []
         left = set(
             global_id
@@ -165,19 +169,32 @@ class CPEStatusCheck(DiscoveryCheck):
         # Apply changes
         if bulk:
             self.logger.info("Saving %d changes", len(bulk))
-            CPEStatus._get_collection().bulk_write(bulk)
+            self.logger.debug("Changes: %s", bulk)
+            r = CPEStatus._get_collection().bulk_write(bulk)
+            self.logger.info(
+                "%d bulk operations complete "
+                "inserted=%d, updated=%d, removed=%d",
+                len(bulk),
+                r.inserted_count,
+                r.modified_count,
+                r.deleted_count
+            )
         else:
             self.logger.info("Nothing changed")
 
-    def get_difference(self, old, new):
+    def get_difference(self, old, new, active_only=True):
         """
         Calculate difference between two dicts
         :param old:
         :param new:
+        :param active_only:
         :return: dict of changes, list of changes
         """
         r = {}
         changes = []
+        if active_only and old["managed_object"] != new["managed_object"] and new["status"] != self.ACTIVE_STATUS:
+            self.logger.info("[%s] Deny move to another manged_object when object is inactive", old["global_id"])
+            return r, changes
         for k in new:
             if new[k] is None or new[k] == "":
                 continue
