@@ -60,8 +60,8 @@ class AttributeIsolator(IsolatorClass):
     OP_ATTR_MAP = {
         "2": {"1": False,
               "2": True},
-        "7": {"1": str(Profile.get_by_name("Generic.Host").id),
-              "2": str(Profile.get_by_name("Generic.Host").id),
+        "7": {"1": str(Profile.get_generic_profile_id()),
+              "2": str(Profile.get_generic_profile_id()),
               "ne": ["2"]},
         "13020": {"1": False,
                   "2": True,
