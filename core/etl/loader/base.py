@@ -16,7 +16,6 @@ import csv
 import time
 import shutil
 import functools
-import itertools
 # Third party modules
 import six
 # NOC modules
@@ -88,6 +87,7 @@ class BaseLoader(object):
         self.logger = PrefixLoggerAdapter(
             logger, "%s][%s" % (self.system.name, self.name)
         )
+        self.disable_mappings = False
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system.name, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
@@ -150,7 +150,7 @@ class BaseLoader(object):
         with open(self.mappings_path) as f:
             reader = csv.reader(f)
             for k, v in reader:
-                self.mappings[k] = v
+                self.mappings[self.clean_str(k)] = v
         self.logger.info("%d mappings restored", len(self.mappings))
 
     def get_new_state(self):
@@ -331,6 +331,7 @@ class BaseLoader(object):
         Create object with attributes. Override to save complex
         data structures
         """
+        self.logger.debug("Create object")
         for k, nv in six.iteritems(v):
             if k == "tags":
                 # Merge tags
@@ -525,10 +526,13 @@ class BaseLoader(object):
 
     def clean_map_str(self, mappings, value):
         value = self.clean_str(value)
-        if value:
+        if self.disable_mappings and not mappings:
+            return value
+        elif value:
             try:
                 value = mappings[value]
             except KeyError:
+                self.logger.warning("Deferred. Unknown map value: %s", value)
                 raise self.Deferred
         return value
 
@@ -545,6 +549,8 @@ class BaseLoader(object):
     def clean_reference(self, mappings, r_model, value):
         if not value:
             return None
+        elif self.disable_mappings and not mappings:
+            return value
         else:
             # @todo: Get proper mappings
             try:
@@ -558,6 +564,8 @@ class BaseLoader(object):
     def clean_int_reference(self, mappings, r_model, value):
         if not value:
             return None
+        elif self.disable_mappings and not mappings:
+            return value
         else:
             # @todo: Get proper mappings
             try:
