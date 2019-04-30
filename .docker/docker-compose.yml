@@ -78,7 +78,11 @@ services:
         condition: service_started
       nsqd:
         condition: service_started
-    command: ./noc test run --coverage-report=/opt/noc/var/coverage --test-report=/opt/noc/var/test_report/index.html --statistics
+    command: >
+      sh -c "set -xe
+      && /usr/bin/python ./scripts/deploy/install-packages requirements/collections.json
+      && ./noc test run --coverage-report=/opt/noc/var/coverage --test-report=/opt/noc/var/test_report/index.html --statistics
+      "
     environment:
       NOC_TEST_DB: noc_tests
     env_file:
