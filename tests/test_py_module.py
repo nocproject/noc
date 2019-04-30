@@ -33,7 +33,7 @@ def _git_ls():
 def get_py_modules_list():
     result = []
     for path in _git_ls():
-        if not path.endswith(".py"):
+        if path.startswith(".") or not path.endswith(".py"):
             continue
         parts = path.split(os.sep)
         if parts[0] == "tests" or path == "setup.py" or "tests" in parts:

@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # NumberCategory model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 from threading import Lock
 import operator
@@ -16,8 +17,9 @@ from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField)
 import cachetools
 # NOC modules
-from dialplan import DialPlan
 from noc.lib.nosql import PlainReferenceField
+from noc.core.model.decorator import on_delete_check
+from .dialplan import DialPlan
 
 id_lock = Lock()
 
@@ -29,6 +31,9 @@ class NumberCategoryRule(EmbeddedDocument):
     description = StringField()
 
 
+@on_delete_check(check=[
+    ("phone.PhoneNumber", "category")
+])
 class NumberCategory(Document):
     meta = {
         "collection": "noc.numbercategories",

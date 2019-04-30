@@ -32,7 +32,7 @@ def get_model_id(object):
                            object._class_name)
     else:
         # Model
-        return u"%s.%s" % (object._meta.app_label,
+        return u"%s.%s" % (object._meta.app_label if object._meta.app_label != "auth" else "main",
                            object._meta.object_name)
 
 

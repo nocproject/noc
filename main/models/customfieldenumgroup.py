@@ -2,14 +2,20 @@
 # ---------------------------------------------------------------------
 # CustomFieldEnumGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.db import models
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("main.CustomField", "enum_group"),
+    ("main.CustomFieldEnumValue", "enum_group")
+])
 class CustomFieldEnumGroup(models.Model):
     """
     Enumeration groups for custom fields

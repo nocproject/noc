@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ResourceState model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,8 @@ from noc.core.model.decorator import on_delete_check
 
 @on_delete_check(check=[
     ("inv.Interface", "state"),
-    ("vc.VC", "state")
+    ("vc.VC", "state"),
+    ("main.ResourceState", "step_to")
 ])
 class ResourceState(models.Model):
     class Meta:

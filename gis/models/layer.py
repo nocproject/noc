@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Map Layer
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,10 +18,14 @@ import cachetools
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("inv.Object", "layer")
+])
 class Layer(Document):
     meta = {
         "collection": "noc.layers",

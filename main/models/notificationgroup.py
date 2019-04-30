@@ -43,12 +43,16 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
     ("dns.DNSZone", "notification_group"),
     ("dns.DNSZoneProfile", "notification_group"),
     ("fm.ActiveAlarm", "clear_notification_group"),
-    # ("fm.EscalationItem", "administrative_domain")
     ("fm.AlarmTrigger", "notification_group"),
     ("fm.EventTrigger", "notification_group"),
     ("inv.InterfaceProfile", "status_change_notification"),
     ("main.ReportSubscription", "notification_group"),
-    ("vc.VCDomainProvisioningConfig", "notification_group")
+    ("main.NotificationGroupOther", "notification_group"),
+    ("main.NotificationGroupUser", "notification_group"),
+    ("main.SystemNotification", "notification_group"),
+    ("sa.ObjectNotification", "notification_group"),
+    ("vc.VCDomainProvisioningConfig", "notification_group"),
+    ("peer.PeeringPoint", "prefix_list_notification_group")
 ])
 class NotificationGroup(models.Model):
     """
