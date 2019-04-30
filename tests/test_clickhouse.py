@@ -2,34 +2,39 @@
 # ----------------------------------------------------------------------
 # Test core.clickhouse package
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
+# Third-party modules
+import pytest
 # NOC modules
 from noc.core.clickhouse.model import Model, NestedModel
-from noc.core.clickhouse.fields import (
-    StringField, Int8Field, NestedField, DateField
-)
+from noc.core.clickhouse.fields import StringField, Int8Field, NestedField, DateField
 
 
-def test_nested():
-    class Pair(NestedModel):
-        index = Int8Field()
-        text = StringField()
+class Pair(NestedModel):
+    index = Int8Field()
+    text = StringField()
 
-    class MyModel(Model):
-        class Meta(object):
-            db_table = "mymodel"
 
-        date = DateField()
-        text = StringField()
-        pairs = NestedField(Pair)
+class MyModel(Model):
+    class Meta(object):
+        db_table = "mymodel"
 
+    date = DateField()
+    text = StringField()
+    pairs = NestedField(Pair)
+
+
+def test_mymodel_fingerprint():
     # Check field order and fingerprint
     assert MyModel.get_fingerprint() == "mymodel|date|text|pairs.index|pairs.text"
+
+
+def test_mymodel_to_tsv():
     # Check TSV conversion
     today = datetime.date.today()
     tsv = MyModel.to_tsv(
@@ -50,21 +55,8 @@ def test_nested():
     assert tsv == valid_tsv
 
 
-def test_to_python():
-    class Pair(NestedModel):
-        index = Int8Field()
-        text = StringField()
-
-    class MyModel(Model):
-        class Meta(object):
-            db_table = "mymodel"
-
-        date = DateField()
-        text = StringField()
-        pairs = NestedField(Pair)
-
-    # Check field order and fingerprint
-    assert MyModel.get_fingerprint() == "mymodel|date|text|pairs.index|pairs.text"
+@pytest.mark.xfail
+def test_mymodel_to_python():
     # Check TSV conversion
     today = datetime.date.today()
     ch_data = MyModel.to_python([today.isoformat(), "Test", "1:'First',2:'Second'"])
