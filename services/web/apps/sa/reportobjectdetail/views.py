@@ -26,6 +26,7 @@ from noc.lib.app.reportdatasources.report_objectifacesstatusstat import ReportOb
 from noc.lib.app.reportdatasources.report_objectcaps import ReportObjectCaps
 from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.lib.app.reportdatasources.report_objectconfig import ReportObjectConfig
+from noc.lib.app.reportdatasources.report_objectattributes import ReportObjectAttributes
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -40,6 +41,18 @@ from noc.inv.models.platform import Platform
 from noc.core.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
+
+
+def get_column_width(name):
+    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
+                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
+        return 8
+    elif name.startswith("ADM_PATH"):
+        return excel_column_format["ADMIN_DOMAIN"]
+    elif name in excel_column_format:
+        return excel_column_format[name]
+    return 15
 
 
 class ReportAdPath(object):
@@ -112,7 +125,7 @@ class ReportObjectDetailApplication(ExtApplication):
     def api_report(self, request, o_format, is_managed=None,
                    administrative_domain=None, selector=None, pool=None,
                    segment=None, avail_status=False, columns=None, ids=None,
-                   detail_stat=None):
+                   detail_stat=None, enable_autowidth=False):
         def row(row):
             def qe(v):
                 if v is None:
@@ -132,7 +145,6 @@ class ReportObjectDetailApplication(ExtApplication):
             return [row[i] for i in cmap]
 
         type_columns = ["Up/10G", "Up/1G", "Up/100M", "Up/10M", "Down/-", "-"]
-
         cols = [
             "id",
             "object_name",
@@ -145,6 +157,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "object_platform",
             "object_version",
             "object_serial",
+            "object_attr_patch",
             "auth_profile",
             "avail",
             "admin_domain",
@@ -172,6 +185,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "OBJECT_PLATFORM",
             "OBJECT_VERSION",
             "OBJECT_SERIAL",
+            "OBJECT_ATTR_PATCH",
             "AUTH_PROFILE",
             "AVAIL",
             "ADMIN_DOMAIN",
@@ -223,6 +237,10 @@ class ReportObjectDetailApplication(ExtApplication):
             iss = iter(ReportObjectIfacesStatusStat(mos_id))
         else:
             iss = None
+        if "object_attr_patch" in columns_filter or "object_serial" in columns_filter:
+            roa = iter(ReportObjectAttributes(mos_id))
+        else:
+            roa = None
         hn = iter(ReportObjectsHostname1(mos_id))
         rc = iter(ReportObjectConfig(mos_id))
         # ccc = iter(ReportObjectCaps(mos_id))
@@ -266,6 +284,10 @@ class ReportObjectDetailApplication(ExtApplication):
                 mo_continer = next(container_lookup)
             else:
                 mo_continer = [{}]
+            if roa:
+                serial, hw_ver, patch = next(roa)[0]
+            else:
+                serial, hw_ver, patch = "", "", ""
             r += [translate_row(row([
                 mo_id,
                 name,
@@ -278,7 +300,8 @@ class ReportObjectDetailApplication(ExtApplication):
                 Platform.get_by_id(platform) if platform else "",
                 Firmware.get_by_id(version) if version else "",
                 # Serial
-                mo_continer[0].get("serial", ""),
+                mo_continer[0].get("serial", "") or serial,
+                patch or "",
                 auth_profile,
                 _("Yes") if avail.get(mo_id, None) else _("No"),
                 ad,
@@ -317,22 +340,33 @@ class ReportObjectDetailApplication(ExtApplication):
             return response
         elif o_format == "xlsx":
             # with tempfile.NamedTemporaryFile(mode="wb") as f:
-
             #    wb = xlsxwriter.Workbook(f.name)
-                response = StringIO.StringIO()
-                wb = xlsxwriter.Workbook(response)
-                ws = wb.add_worksheet("Objects")
-                for rn, x in enumerate(r):
-                    for cn, c in enumerate(x):
-                        ws.write(rn, cn, c)
-                ws.autofilter(0, 0, rn, cn)
-                wb.close()
-                response.seek(0)
-                response = HttpResponse(response.getvalue(),
-                                        content_type="application/vnd.ms-excel")
-                # response = HttpResponse(
-                #     content_type="application/x-ms-excel")
-                response[
-                    "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
-                response.close()
-                return response
+            response = StringIO.StringIO()
+            wb = xlsxwriter.Workbook(response)
+            cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+            ws = wb.add_worksheet("Objects")
+            max_column_data_length = {}
+            for rn, x in enumerate(r):
+                for cn, c in enumerate(x):
+                    if rn and (r[0][cn] not in max_column_data_length
+                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                        max_column_data_length[r[0][cn]] = len(str(c))
+                    ws.write(rn, cn, c, cf1)
+            # for
+            ws.autofilter(0, 0, rn, cn)
+            for cn, c in enumerate(r[0]):
+                # Set column width
+                width = get_column_width(c)
+                if enable_autowidth and width < max_column_data_length[c]:
+                    width = max_column_data_length[c]
+                ws.set_column(cn, cn, width=width)
+            wb.close()
+            response.seek(0)
+            response = HttpResponse(response.getvalue(),
+                                    content_type="application/vnd.ms-excel")
+            # response = HttpResponse(
+            #     content_type="application/x-ms-excel")
+            response[
+                "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
+            response.close()
+            return response
