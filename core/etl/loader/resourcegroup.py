@@ -16,7 +16,7 @@ from noc.inv.models.technology import Technology
 
 class ResourceGroupLoader(BaseLoader):
     """
-    Administrative division loader
+    Resource group loader
     """
     name = "resourcegroup"
     model = ResourceGroup
