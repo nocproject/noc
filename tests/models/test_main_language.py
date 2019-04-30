@@ -2,28 +2,41 @@
 # ----------------------------------------------------------------------
 # main.Language tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
+# Third-party modules
+import pytest
 # NOC modules
-from .base import BaseModelTest
 from noc.main.models.language import Language
 
 
-class TestTestMainLanguage(BaseModelTest):
-    model = Language
+@pytest.mark.parametrize("name,rec_name,native_name", [
+    ("English", u"English", u"English"),
+    ("Russian", u"Russian", u"Русский")
+])
+def test_default_language(name, rec_name, native_name):
+    lang = Language.objects.get(name=name)
+    assert lang.name == rec_name
+    assert lang.native_name == native_name
 
-    def test_default_languages(self):
-        """
-        Check migration filled languages
-        :return:
-        """
-        en = Language.objects.get(name="English")
-        assert en.name == u"English"
-        assert en.native_name == u"English"
-        ru = Language.objects.get(name="Russian")
-        assert ru.name == u"Russian"
-        assert ru.native_name == u"Русский"
+
+@pytest.mark.parametrize("data", [
+    {"name": "Tengwar", "native_name": "Quenya", "is_active": False},
+    {"name": "Klingon", "native_name": "Klingon", "is_active": True}
+])
+def test_insert(data):
+    lang = Language(**data)
+    lang.save()
+    for k in data:
+        assert getattr(lang, k) == data[k]
+    # Fetch record
+    lang = Language.objects.get(name=data["name"])
+    assert lang.pk
+    for k in data:
+        assert getattr(lang, k) == data[k]
+    # Delete record
+    lang.delete()
