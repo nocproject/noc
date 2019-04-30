@@ -78,6 +78,7 @@ futurize stage2:
     - master
   tags:
     - docker
+  allow_failure: true
 
 Test migrate:
   stage: test
@@ -102,7 +103,7 @@ Test code:
     - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests rm -v
   tags:
     - shell
-  allow_failure: true
+  allow_failure: false
 
 Test python 3:
   stage: test

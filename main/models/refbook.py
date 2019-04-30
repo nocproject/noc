@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Refbook
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,18 +12,22 @@ import datetime
 # Third-party modules
 from django.db import models
 # NOC modules
-from .language import Language
 from noc.main.refbooks.downloaders import downloader_registry
+from noc.core.model.decorator import on_delete_check
+from .language import Language
 
 downloader_registry.register_all()
 
 
+@on_delete_check(check=[
+    ("main.RefBookField", "ref_book"),
+    ("main.RefBookData", "ref_book")
+])
 class RefBook(models.Model):
     """
     Reference Books
     """
-
-    class Meta:
+    class Meta(object):
         app_label = "main"
         verbose_name = "Ref Book"
         verbose_name_plural = "Ref Books"

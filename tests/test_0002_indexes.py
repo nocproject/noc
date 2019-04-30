@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# sa.Profile tests
+# Test ensure-indexes
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import bson
-# NOC modules
-from noc.sa.models.profile import Profile
+import pytest
 
 
-def test_generic_profile_id():
-    p = Profile.get_generic_profile_id()
-    assert p
-    assert isinstance(p, bson.ObjectId)
+@pytest.mark.usefixtures("database")
+def test_indexes(database):
+    """
+    Create indexes
+    :param database:
+    :return:
+    """
+    try:
+        with open("commands/ensure-indexes.py") as f:
+            exec(f.read())
+    except SystemExit as e:
+        assert e.code == 0

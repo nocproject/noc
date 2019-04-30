@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Prefix model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,15 +19,15 @@ import cachetools
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
-from noc.core.model.fields import TagsField, CIDRField
+from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
-from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
 from noc.core.wf.decorator import workflow
+from noc.core.model.decorator import on_delete_check
 from noc.wf.models.state import State
 from .vrf import VRF
 from .afi import AFI_CHOICES
@@ -38,6 +38,12 @@ id_lock = Lock()
 
 @full_text_search
 @workflow
+@on_delete_check(ignore=[
+    ("ip.PrefixBookmark", "prefix"),
+    ("ip.Prefix", "parent"),
+    ("ip.Prefix", "ipv6_transition"),
+    ("ip.Address", "prefix")
+])
 class Prefix(models.Model):
     """
     Allocated prefix
@@ -703,7 +709,6 @@ class Prefix(models.Model):
                 if p.effective_prefix_special_address == "X":
                     size -= 2  # Exclude broadcast and network
                 p._address_usage_cache = float(address_usage[p.id]) * 100.0 / float(size)
-                print(p, float(address_usage[p.id]) * 100.0 / float(size))
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     @property

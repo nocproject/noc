@@ -13,6 +13,7 @@ import operator
 import logging
 from exceptions import ImportError
 # Third-party modules
+from builtins import str
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, LongField,
                                 ListField, BooleanField, IntField, EmbeddedDocumentField)
@@ -76,6 +77,9 @@ class Transition(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return u"%s: %s -> %s [%s]" % (self.workflow.name, self.from_state.name,

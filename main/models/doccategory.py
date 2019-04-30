@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Common document category
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,9 @@ class DocCategory(Document):
         "collection": "noc.doccategories",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["type"]
+        "indexes": [
+            ("type", "name")
+        ]
     }
 
     name = StringField()

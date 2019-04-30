@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# sa.Profile tests
+# Test application permissions
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import bson
 # NOC modules
-from noc.sa.models.profile import Profile
+from noc.main.models.permission import Permission
+from noc.core.service.loader import get_service
+from noc.lib.app.site import site
 
 
-def test_generic_profile_id():
-    p = Profile.get_generic_profile_id()
-    assert p
-    assert isinstance(p, bson.ObjectId)
+def test_permissions():
+    site.service = get_service()
+    Permission.sync()
+    assert Permission.objects.count() > 0
