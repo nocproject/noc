@@ -47,7 +47,7 @@ class Script(BaseScript):
         """
         try:
             r = self.snmp.get("1.3.6.1.4.1.2011.5.25.134.1.1.1.0")
-        except self.snmp.TimeOutError:
+        except (self.snmp.TimeOutError, self.snmp.SNMPError):
             r = 0
         return bool(r)
 
@@ -65,7 +65,7 @@ class Script(BaseScript):
         Check box has BFD enabled
         """
         r = self.cli("display bfd configuration all")
-        return r and not ("Please enable BFD in global mode first" in r)
+        return "Please enable BFD in global mode first" not in r
 
     @false_on_cli_error
     def has_udld_cli(self):
@@ -127,7 +127,7 @@ class Script(BaseScript):
         try:
             self.snmp.getnext("1.3.6.1.4.1.2011.5.25.31.1.1.1.1", bulk=False, only_first=True)
             r += ["Huawei | MIB | ENTITY-EXTENT-MIB"]
-        except self.snmp.TimeOutError:
+        except (self.snmp.SNMPError, self.snmp.TimeOutError):
             pass
         return r
 
@@ -167,5 +167,6 @@ class Script(BaseScript):
         mod = self.get_modules()
         if mod:
             caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
-        for m in self.has_mibs():
+        hm = self.has_mibs()
+        for m in hm:
             caps[m] = True

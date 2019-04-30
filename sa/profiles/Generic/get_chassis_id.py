@@ -62,13 +62,16 @@ class Script(BaseScript):
                         pass
         # Process SNMP GETNEXT requests
         oids = self.get_snmp_getnext_oids()
-        for oid in oids:
-            for k, v in self.snmp.getnext(oid):
-                if v:
-                    try:
-                        macs.add(MAC(v))
-                    except ValueError:
-                        pass
+        try:
+            for oid in oids:
+                for k, v in self.snmp.getnext(oid):
+                    if v:
+                        try:
+                            macs.add(MAC(v))
+                        except ValueError:
+                            pass
+        except SNMPError:
+            pass
         # Filter and convert macs
         r = [{
             "first_chassis_mac": mac,
