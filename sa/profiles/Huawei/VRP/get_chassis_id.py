@@ -15,13 +15,11 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 class Script(BaseScript):
     name = "Huawei.VRP.get_chassis_id"
-    cache = True
+    always_prefer = "S"
     interface = IGetChassisID
 
-    rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)",
-                        re.IGNORECASE | re.MULTILINE)
-    rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\s*\.(?P<id>\S+)",
-                         re.IGNORECASE | re.MULTILINE)
+    rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
+    rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\s*\.(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
     def execute_cli(self):
         v = self.cli("display stp")
