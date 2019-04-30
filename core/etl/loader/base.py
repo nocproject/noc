@@ -88,7 +88,7 @@ class BaseLoader(object):
         self.logger = PrefixLoggerAdapter(
             logger, "%s][%s" % (self.system.name, self.name)
         )
-        self.allow_manual_reference = False
+        self.disable_mappings = False
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system.name, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
@@ -524,7 +524,7 @@ class BaseLoader(object):
 
     def clean_map_str(self, mappings, value):
         value = self.clean_str(value)
-        if self.allow_manual_reference and not mappings:
+        if self.disable_mappings and not mappings:
             return value
         elif value:
             try:
@@ -547,7 +547,7 @@ class BaseLoader(object):
     def clean_reference(self, mappings, r_model, value):
         if not value:
             return None
-        elif self.allow_manual_reference and not mappings:
+        elif self.disable_mappings and not mappings:
             return value
         else:
             # @todo: Get proper mappings
@@ -562,7 +562,7 @@ class BaseLoader(object):
     def clean_int_reference(self, mappings, r_model, value):
         if not value:
             return None
-        elif self.allow_manual_reference and not mappings:
+        elif self.disable_mappings and not mappings:
             return value
         else:
             # @todo: Get proper mappings
