@@ -22,8 +22,16 @@ class Script(BaseScript):
     rx_date = re.compile(r"(?P<yy>\d\d)(?P<mm>\d\d)(?P<dd>\d\d)")
 
     def execute(self):
-        ns = {'isapi': 'http://www.isapi.org/ver20/XMLSchema'}
+        ns = {'isapi': 'http://www.isapi.org/ver20/XMLSchema',
+              'std-cgi': 'http://www.std-cgi.com/ver20/XMLSchema',
+              'hikvision': 'http://www.hikvision.com/ver20/XMLSchema'}
         v = self.http.get("/ISAPI/System/deviceInfo", use_basic=True)
+        if "std-cgi" in v:
+            ns['ns'] = ns["std-cgi"]
+        elif "www.hikvision.com" in v:
+            ns['ns'] = ns["hikvision"]
+        else:
+            ns['ns'] = ns["isapi"]
         root = ElementTree.fromstring(v)
 
         return {
