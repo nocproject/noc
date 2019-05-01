@@ -18,9 +18,11 @@ from .middleware.base import BaseMiddleware
 from .middleware.loader import loader
 
 
+class HTTPError(NOCError):
+    default_code = ERR_HTTP_UNKNOWN
+
+
 class HTTP(object):
-    class HTTPError(NOCError):
-        default_code = ERR_HTTP_UNKNOWN
 
     def __init__(self, script):
         self.script = script
@@ -84,13 +86,13 @@ class HTTP(object):
             password=password
         )
         if not 200 <= code <= 299:
-            raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
+            raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         self._process_cookies(headers)
         if json:
             try:
                 result = ujson.loads(result)
             except ValueError as e:
-                raise self.HTTPError("Failed to decode JSON: %s", e)
+                raise HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
@@ -139,13 +141,13 @@ class HTTP(object):
             password=password
         )
         if not 200 <= code <= 299:
-            raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
+            raise HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         self._process_cookies(headers)
         if json:
             try:
                 return ujson.loads(result)
             except ValueError as e:
-                raise self.HTTPError(msg="Failed to decode JSON: %s" % e)
+                raise HTTPError(msg="Failed to decode JSON: %s" % e)
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
