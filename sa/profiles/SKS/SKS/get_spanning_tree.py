@@ -83,7 +83,8 @@ class Script(BaseScript):
         r"^\s*Designated port id is (?P<designated_port_id>\S+)",
         re.MULTILINE)
     PORT_STATE = {
-        "Forwarding": "forwarding"
+        "Forwarding": "forwarding",
+        "Blocking": "blocking"
     }
     PORT_ROLE = {
         "DesignatedPort": "designated"
