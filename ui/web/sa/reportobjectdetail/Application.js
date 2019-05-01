@@ -47,6 +47,12 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 labelAlign: "left",
                 width: 500,
                 allowBlank: true
+            },
+            {
+                name: "enable_autowidth",
+                xtype: "checkboxfield",
+                boxLabel: __("Enable Excel column autowidth"),
+                allowBlank: false
             }
         ],
         storeData: [
@@ -61,6 +67,7 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
             ["object_platform", __("Platform"), false],
             ["object_version", __("SW Version"), false],
             ["object_serial", __("Serial Number"), false],
+            ["object_attr_patch", __("Add. attributes: sw. patch"), false],
             ["auth_profile", __("Auth Profile"), false],
             ["avail", __("Avail"), false],
             ["admin_domain", __("Admin. Domain"), true],
