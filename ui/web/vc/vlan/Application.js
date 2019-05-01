@@ -70,8 +70,13 @@ Ext.define("NOC.vc.vlan.Application", {
                 {
                     text: __("Parent"),
                     dataIndex: "parent",
-                    flex: 1,
+                    width: 200,
                     renderer: NOC.render.Lookup("parent")
+                },
+                {
+                    text: __("Description"),
+                    dataIndex: "description",
+                    flex: 1
                 }
             ],
 
@@ -278,6 +283,7 @@ Ext.define("NOC.vc.vlan.Application", {
                     '            <td style="width: 200px">{managed_object_name}</td>\n' +
                     '            <td>\n' +
                     '                <tpl foreach="interfaces">\n' +
+                    '                {name}: ' +
                     '                {ipv4_addresses}\n' +
                     '                {ipv6_addresses}\n' +
                     '                </tpl>\n' +
