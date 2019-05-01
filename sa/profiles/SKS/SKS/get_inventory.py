@@ -2,10 +2,9 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -19,7 +18,7 @@ class Script(BaseScript):
     cache = True
 
     def execute(self):
-        v = self.cli("show version")
+        v = self.cli("show version", cached=True)
         if "Unit" in v:
             stack = {}
             r = []
@@ -31,7 +30,7 @@ class Script(BaseScript):
                     "revision": i[3]
                 }
             v = self.cli("show system", cached=True)
-            t = parse_table(v, footer="Unit\s+Temperature")
+            t = parse_table(v, footer=r"Unit\s+Temperature")
             for i in t:
                 platform = i[1]
                 if platform == "SKS 10G":

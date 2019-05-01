@@ -2,10 +2,9 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
 
 # Python modules
 import re
@@ -30,13 +29,13 @@ class Script(BaseScript):
         r"^\s*Serial number : (?P<serial>\S+)")
 
     rx_ver2 = re.compile(
-        r"^(?P<platform>SKS\-\S+) Series Software, Version (?P<version>\S+)",
+        r"^(?P<platform>S(?:KS|WA)\-\S+) Series Software, Version (?P<version>\S+)",
         re.MULTILINE
     )
     rx_rs = re.compile(
         r"^ROM: System Bootstrap, Version (?P<bootprom>\S+),\s*"
         r"hardware version:\s*(?P<hardware>\S+)\s*\n"
-        r"^Serial num:\s*(?P<serial>\S+)", re.MULTILINE)
+        r"^Serial num:\s*(?P<serial>\w+),?", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show version", cached=True)
