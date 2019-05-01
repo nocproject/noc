@@ -38,5 +38,5 @@ def get_handler(path):
     try:
         c = getattr(m, obj_name)
     except AttributeError as e:
-        raise ImportError("Cannot load handler '%s': %s" % (path, e))
+        raise ImportError("Cannot get handler attribute '%s': %s" % (path, e))
     return c
