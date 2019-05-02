@@ -192,7 +192,8 @@ class CPEStatusCheck(DiscoveryCheck):
         """
         r = {}
         changes = []
-        if active_only and old["managed_object"] != new["managed_object"] and new["status"] != self.ACTIVE_STATUS:
+        if active_only and old and old["managed_object"] != new["managed_object"]\
+                and new["status"] != self.ACTIVE_STATUS:
             self.logger.info("[%s] Deny move to another manged_object when object is inactive", old["global_id"])
             return r, changes
         for k in new:
