@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Alstec.24xx.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -30,14 +30,17 @@ class Script(BaseScript):
         r"(^vlan tagging (?P<tagged>\S+)\s*\n)?",
         re.MULTILINE)
     rx_ip = re.compile(
-        r"^\s*IP Address\s*\.+ (?P<ip_address>\S+)\s*\n"
+        r"^\s*IP(?:v4)? Address\s*\.+ (?P<ip_address>\S+)\s*\n"
         r"^\s*Subnet Mask\s*\.+ (?P<ip_subnet>\S+)\s*\n"
         r"(^\s*(Additional )?IP Address\s*\.+ \S+\s*\n)?"
         r"(^\s*(Additional )?Subnet Mask\s*\.+ \S+\s*\n)?"
         r"(^\s*Default Gateway\s*\.+ \S+\s*\n)?"
-        r"(^\s*IPv6 AutoConfig Mode\s*\.+ \S+\s*\n)?"
+        r"(^\s*DHCPv4 Mode\s*\.+ \S+\s*\n)?"
+        r"(^\s*IPv6 Auto[Cc]onfig Mode\s*\.+ \S+\s*\n)?"
         r"(^\s*IPv6 Administrative Mode\s*\.+ \S+\s*\n)?"
         r"(^\s*IPv6 (address|Prefix is)\s*\.+ (?P<ipv6_address>\S+)\s*\n)?"
+        r"(^\s*DHCPv6 Mode\s*\.+ \S+\s*\n)?"
+        r"(^\s*IPv6 Link-Local Address\s*\.+ \S+\s*\n)?"
         r"^\s*(MAC Address|Burned In MAC Address)\s*\.+ (?P<mac>\S+)\s*\n"
         r"(^\s*Locally Administered MAC address\s*\.+ \S+\s*\n)?"
         r"(^\s*MAC Address Types?\s*\.+ .+\s*\n)?"
@@ -47,7 +50,7 @@ class Script(BaseScript):
         r"^\s*Management VLAN ID\s*\.+ (?P<vlan_id>\d+)\s*\n",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         sw = {sp["interface"]: {
             "tagged": sp["tagged"],
             "untagged": sp.get("untagged")
