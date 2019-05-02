@@ -3,7 +3,7 @@
 # Vendor: Orion (Orion Networks)
 # OS:     NOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,6 +38,23 @@ class Profile(BaseProfile):
         r"^Serial number\s*:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE)
 
+    rx_ver2 = re.compile(
+        r"^Product Name\s*:\s*(?P<platform>.+)\s*\n"
+        r"^Hardware Version: (?P<hardware>\S+)\s*\n"
+        r"^Software Version: NOS_(?P<version>\d+\.\d+\.\d+).+\n"
+        r"(^PCB Version.+\n)?"
+        r"(^CPLD Version.+\n)?"
+        r"(^NOS Version.+\n)?"
+        r"^Bootstrap Version: (?P<bootprom>\d+\.\d+\.\d+).*\n"
+        r"(^Compiled.+\n)?"
+        r"\s*\n"
+        r"^System MacAddress:\s*(?P<mac>\S+)\s*\n"
+        r"^Serial number:\s*(?P<serial>\S+)\s*\n",
+        re.MULTILINE)
+
     def get_version(self, script):
         c = script.cli("show version", cached=True)
-        return self.rx_ver.search(c).groupdict()
+        match = self.rx_ver.search(c)
+        if not match:
+            match = self.rx_ver2.search(c)
+        return match.groupdict()
