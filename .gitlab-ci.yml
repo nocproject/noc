@@ -10,8 +10,15 @@ flake8:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/"|| true)
-    - if [ ! -z "$FLIST" ]; then flake8 $FLIST; else true; fi
+    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/"|| true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        flake8 $FLIST;
+      else
+        echo "No files to lint"
+        true;
+      fi
   except:
     - master
   tags:
@@ -22,8 +29,15 @@ yapf:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
-    - if [ ! -z "$FLIST" ]; then yapf -d -vv $FLIST; else true; fi
+    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD)  |egrep ".py$" || true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        yapf -d -vv $FLIST;
+      else
+        echo "No files to lint"
+        true;
+      fi
   tags:
     - docker
   allow_failure: true
@@ -34,10 +48,16 @@ xenon:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD)  |egrep ".py$" || true)
     - x=0
-    #- if [ ! -z $FLIST ]; then xenon --max-absolute B --max-modules B --max-average B  $FLIST; fi
-    - if [ ! -z "$FLIST" ]; then for i in "${FLIST}" ; do (xenon --max-absolute B --max-modules B --max-average B "$i"; let x+=$?); done; fi
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        for i in "${FLIST}";
+        do
+          (xenon --max-absolute B --max-modules B --max-average B "$i"; let x+=$?);
+        done;
+      fi
     - if [ "$x" -gt 0 ] ; then exit 1; fi
   except:
     - master
@@ -50,8 +70,15 @@ pylint:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
-    - if [ ! -z "$FLIST" ]; then pylint "$FLIST" ; else true; fi
+    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        pylint "$FLIST";
+      else
+        echo "No files to lint"
+        true;
+      fi
   except:
     - master
   tags:
@@ -61,7 +88,7 @@ futurize:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/" || true)
+    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/" || true)
     - /bin/future.sh "$FLIST"
   except:
     - master
@@ -72,7 +99,7 @@ futurize stage2:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/" || true)
+    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/" || true)
     - /bin/future2.sh "$FLIST"
   except:
     - master
@@ -82,25 +109,57 @@ futurize stage2:
 
 Test migrate:
   stage: test
+  before_script:
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
   script:
     # see docker/docker-compose.yml for complete list of migrations
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate build migrate
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate up --exit-code-from migrate migrate
+    - >
+     docker-compose
+     -f .docker/docker-compose.yml
+     -p "${DOCKER_COMPOSE_PROJECT}-migrate"
+     build migrate
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-migrate"
+      up
+      --exit-code-from migrate
+      migrate
   after_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate down -v
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-migrate rm -v
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-migrate"
+      down -v
   tags:
     - shell
   allow_failure: false
 
 Test code:
   stage: test
+  before_script:
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
   script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests build tests
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests up --exit-code-from tests tests
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-tests"
+      build tests
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-tests"
+      up
+      --exit-code-from tests
+      tests
   after_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests down -v
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-tests rm -v
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-tests"
+      down -v
   tags:
     - shell
   allow_failure: false
@@ -108,14 +167,28 @@ Test code:
 Test python 3:
   stage: test
   before_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 up -d clickhouse postgres mongo
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
   script:
     # see docker/docker-compose.yml for complete list of migrations
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 build python3
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 up --exit-code-from python3 python3
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-py3"
+      build python3
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-py3"
+      up
+      --exit-code-from python3
+      python3
   after_script:
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 down -v
-    - docker-compose -f .docker/docker-compose.yml -p ${CI_COMMIT_REF_SLUG}-py3 rm -v
+    - DOCKER_COMPOSE_PROJECT=${CI_COMMIT_REF_SLUG}-${CI_JOB_ID}
+    - >
+      docker-compose
+      -f .docker/docker-compose.yml
+      -p "${DOCKER_COMPOSE_PROJECT}-py3"
+      down -v
   tags:
     - shell
   allow_failure: true
@@ -125,7 +198,7 @@ Build release image:
   stage: Build release container
   before_script:
     # registry.getnoc.com/noc/noc/code:stable
-    - export CONTAINER_NAME=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
+    - CONTAINER_NAME=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CONTAINER_NAME -f .docker/Dockerfile .
@@ -140,10 +213,15 @@ Build nginx image:
   stage: Build additional release containers
   before_script:
     # registry.getnoc.com/noc/noc/static:stable
-    - export CONTAINER_NAME=$CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
+    - CONTAINER_NAME=$CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build --no-cache --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG -t ${CONTAINER_NAME} -f Dockerfile.static .
+    - >
+      docker build
+      --no-cache
+      --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
+      -t ${CONTAINER_NAME}
+      -f Dockerfile.static .
     - docker push ${CONTAINER_NAME}
     - docker rmi ${CONTAINER_NAME}
   tags:
@@ -155,10 +233,15 @@ Build dev image:
   stage: Build additional release containers
   before_script:
     # registry.getnoc.com/noc/noc/dev:stable
-    - export CONTAINER_NAME=$CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG
+    - CONTAINER_NAME=$CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build --no-cache --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG -t ${CONTAINER_NAME} -f Dockerfile.dev .
+    - >
+      docker build
+      --no-cache
+      --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
+      -t ${CONTAINER_NAME}
+      -f Dockerfile.dev .
     - docker push ${CONTAINER_NAME}
     - docker rmi ${CONTAINER_NAME}
   tags:
