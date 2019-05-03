@@ -11,6 +11,8 @@ import logging
 import operator
 from threading import Lock
 import re
+import six
+from collections import defaultdict
 # Third-party modules
 from builtins import str, object
 import cachetools
@@ -30,13 +32,13 @@ class ProfileChecker(object):
     _rules_cache = cachetools.TTLCache(10, ttl=60)
     _re_cache = {}
 
-    def __init__(self, address, pool, logger=None, snmp_community=None,
+    def __init__(self, address=None, pool=None, logger=None, snmp_community=None,
                  calling_service="profilechecker", snmp_version=SNMP_v2c):
         self.address = address
         self.pool = pool
         self.logger = PrefixLoggerAdapter(
             logger or self.base_logger,
-            "%s][%s" % (self.pool, self.address)
+            "%s][%s" % (self.pool or "", self.address or "")
         )
         self.result_cache = {}  # (method, param) -> result
         self.error = None
@@ -44,13 +46,35 @@ class ProfileChecker(object):
         self.calling_service = calling_service
         self.snmp_version = snmp_version
 
+    def find_profile(self, method, param, result):
+        """
+        Find profile by method
+        :param method: Fingerprint getting method
+        :param param: Method params
+        :param result: Getting params result
+        :return:
+        """
+        r = defaultdict(list)
+        d = self.get_rules()
+        for k, value in sorted(six.iteritems(d), key=lambda x: x[0]):
+            for v in value:
+                r[v] += value[v]
+        if (method, param) not in r:
+            self.logger.warning("Not find rule for method: %s %s", method, param)
+            return
+        for match_method, value, action, profile, rname in r[(method, param)]:
+            if self.is_match(result, match_method, value):
+                self.logger.info("Matched profile: %s (%s)", profile, rname)
+                # @todo: process MAYBE rule
+                return profile
+
     def get_profile(self):
         """
         Returns profile for object, or None when not known
         """
         snmp_result = ""
         http_result = ""
-        for ruleset in self.get_rules():
+        for ruleset in self.iter_rules():
             for (method, param), actions in ruleset:
                 try:
                     result = self.do_check(method, param)
@@ -118,7 +142,12 @@ class ProfileChecker(object):
                 r.profile,
                 r.name
             )]
-        return [list(d[p].items()) for p in sorted(d)]
+        return d
+
+    def iter_rules(self):
+        d = self.get_rules()
+        for p in sorted(d):
+            yield d[p].items()
 
     @cachetools.cachedmethod(operator.attrgetter("_re_cache"))
     def get_re(self, regexp):
