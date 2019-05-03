@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # NOC modules
 from noc.lib.nosql import get_db
 
@@ -18,7 +17,7 @@ class Migration(object):
         collection = db.noc.networksegments
 
         if collection.count_documents({}) == 0:
-            collection.insert({"name": "ALL", "parent": None, "description": "All network", "settings": {}})
+            collection.insert_one({"name": "ALL", "parent": None, "description": "All network", "settings": {}})
 
     def backwards(self):
         pass

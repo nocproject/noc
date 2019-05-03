@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 import bson
 import bson.int64
@@ -60,7 +59,7 @@ class Migration(object):
             style_profiles[style_id] = p_id
             profiles += [p]
         # Insert profiles to database
-        coll.insert(profiles)
+        coll.insert_many(profiles)
         # Create Prefix.profile field
         db.add_column("ip_vrf", "profile", DocumentReferenceField("vc.VPNProfile", null=True, blank=True))
         # Migrate profile styles

@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 import bson
 # NOC modules
@@ -17,7 +16,7 @@ class Migration(object):
     def forwards(self):
         db = get_db()
         # Workflow
-        db["workflows"].insert(
+        db["workflows"].insert_many(
             [
                 {
                     "_id": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -35,7 +34,7 @@ class Migration(object):
             ]
         )
         # State
-        db["states"].insert(
+        db["states"].insert_many(
             [
                 {
                     "_id": bson.ObjectId("5a17f61b1bb6270001bd0328"),
@@ -134,7 +133,7 @@ class Migration(object):
             ]
         )
         # Transitions
-        db["transitions"].insert(
+        db["transitions"].insert_many(
             [
                 {
                     "_id": bson.ObjectId("5a1813e41bb6270001c70309"),

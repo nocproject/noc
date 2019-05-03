@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from south.db import db
 import bson
@@ -18,7 +17,7 @@ from noc.core.model.fields import DocumentReferenceField
 class Migration(object):
     def forwards(self):
         p_id = bson.ObjectId()
-        get_db()["capsprofiles"].insert(
+        get_db()["capsprofiles"].insert_one(
             {
                 "_id": p_id,
                 "name": "default",

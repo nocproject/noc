@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # NOC modules
 from noc.lib.nosql import get_db
 
@@ -16,7 +15,7 @@ class Migration(object):
         db = get_db()
         coll = db["noc.interface_profiles"]
         for d in list(coll.find({}, {"_id": 1, "mac_discovery": 1})):
-            coll.update(
+            coll.update_many(
                 {
                     "_id": d["_id"]
                 }, {

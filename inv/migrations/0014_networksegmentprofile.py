@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 import bson
 # NOC modules
@@ -17,7 +16,7 @@ class Migration(object):
     def forwards(self):
         db = get_db()
         coll = db["noc.networksegmentprofiles"]
-        result = coll.insert(
+        result = coll.insert_one(
             {
                 "name": "default",
                 "description": "Default segment profile",
