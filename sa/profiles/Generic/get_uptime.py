@@ -28,6 +28,6 @@ class Script(BaseScript):
                 # DES-1210-28/ME/B3 fw 10.04.B020 return 'VLAN-1002'
                 if is_float(su):
                     return float(su) / 100.0
-            except self.snmp.TimeOutError:
+            except (self.snmp.TimeOutError, self.snmp.SNMPError):
                 pass
         return None
