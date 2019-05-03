@@ -19,19 +19,19 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_mac = re.compile(
-        "(?P<ifname>.+):\s*MAC Address\s+:(?P<mac>\S+)", re.MULTILINE)
+        r"(?P<ifname>.+):\s*MAC Address\s+:(?P<mac>\S+)", re.MULTILINE)
     rx_vlan = re.compile(
-        "(?P<vlan_id>\d+)\s+(?P<ifname>\S+)\s+(?P<state>Tagged|unTagged)")
+        r"(?P<vlan_id>\d+)\s+(?P<ifname>\S+)\s+(?P<state>Tagged|unTagged)")
     rx_vpivci = re.compile(
-        "\s+\d+\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+(?P<pvid>\d+)\s+\d+")
+        r"\s+\d+\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+(?P<pvid>\d+)\s+\d+")
     rx_ge = re.compile(
-        "^(?P<ifname>Gigabit Ethernet\s+\d+)\s*,\s*Index\s*:\s+(?P<ifindex>\d+)",
+        r"^(?P<ifname>Gigabit Ethernet\s+\d+)\s*,\s*Index\s*:\s+(?P<ifindex>\d+)",
         re.MULTILINE)
     rx_status = re.compile(
         r"Port\s*:\s*Admin/Oper:(?P<admin_status>On|Off)/(?P<oper_status>On|Off)")
     rx_xdsl = re.compile(
-        "^Slot\s*:\s*(?P<slot>\d+),\s*Port:\s*(?P<port>\d+)\s*,\s*"
-        "Bridge\s*:\s*(?P<bridge>\d+)\s*,\s*Index\s*:\s*(?P<ifindex>\d+)",
+        r"^Slot\s*:\s*(?P<slot>\d+),\s*Port:\s*(?P<port>\d+)\s*,\s*"
+        r"Bridge\s*:\s*(?P<bridge>\d+)\s*,\s*Index\s*:\s*(?P<ifindex>\d+)",
         re.MULTILINE)
     rx_ip = re.compile(
         r"Management Port IP Address\s*:\s*(?P<ip>\S+)\s*/\s*(?P<mask>\S+)")
@@ -96,9 +96,13 @@ class Script(BaseScript):
             if match:
                 ifname = "%s/%s/%s" % (match.group("slot"), match.group("port"), match.group("bridge"))
                 v = self.cli("show interface xdsl %s" % ifname[:-2])
-                match1 = self.rx_status.search(v)
-                oper_status = bool(match1.group("oper_status") == "On")
-                admin_status = bool(match1.group("admin_status") == "On")
+                if "Not found any xDSL card in slot" in v:
+                    oper_status = False
+                    admin_status = False
+                else:
+                    match1 = self.rx_status.search(v)
+                    oper_status = bool(match1.group("oper_status") == "On")
+                    admin_status = bool(match1.group("admin_status") == "On")
                 i = {
                     "name": ifname,
                     "type": "physical",
