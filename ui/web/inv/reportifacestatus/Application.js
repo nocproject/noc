@@ -55,7 +55,7 @@ Ext.define("NOC.inv.reportifacestatus.Application", {
             {
                 name: "zero",
                 xtype: "checkboxfield",
-                boxLabel: __("Exclude ports in the status down"),
+                boxLabel: __("Exclude ports in the status \"down\""),
                 value: true,
                 allowBlank: false
             },
