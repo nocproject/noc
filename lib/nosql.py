@@ -21,7 +21,6 @@ import bson
 # NOC modules
 from noc.config import config
 from noc.models import get_model
-from noc.core.mongo.pool import Pool
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,6 @@ for i in range(RETRIES):
     try:
         logger.info("Connecting to MongoDB %s", ca)
         connect_args = config.mongo_connection_args
-        connect_args["_pool_class"] = Pool
         connect(**connect_args)
         break
     except mongoengine.connection.MongoEngineConnectionError as e:
