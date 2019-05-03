@@ -104,9 +104,11 @@ services:
         condition: service_started
     command: >
       sh -c "
+      echo 'Trying to compile' &&
+      find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile &&
       for i in services/*; do
-        timeout 10 /usr/bin/python3 $$i/service.py;
-      done"
+        timeout -t 10 /usr/bin/python3 $$i/service.py;
+      done;"
     env_file:
       - noc.conf
 
