@@ -91,7 +91,7 @@ class Beef(object):
         self.cli_encoding = self.get_or_die(data, "cli_encoding")
         self._cli_decoder = getattr(self, "cli_decode_%s" % self.cli_encoding)
 
-    def get_data(self):
+    def get_data(self, decode=False):
         return {
             "version": "1",
             "uuid": self.uuid,
@@ -107,17 +107,17 @@ class Beef(object):
             "cli_encoding": self.cli_encoding,
             "cli_fsm": [{
                 "state": d.state,
-                "reply": d.reply
+                "reply": d.reply if not decode else [self._cli_decoder(reply) for reply in d.reply]
             } for d in self.cli_fsm],
             "cli": [{
                 "names": d.names,
                 "request": d.request,
-                "reply": d.reply
+                "reply": d.reply if not decode else [self._cli_decoder(reply) for reply in d.reply]
             } for d in self.cli],
             "mib_encoding": self.mib_encoding,
             "mib": [{
                 "oid": d.oid,
-                "value": d.value
+                "value": d.value if not decode else self._mib_decoder(d.value)
             } for d in self.mib]
         }
 

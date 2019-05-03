@@ -13,12 +13,15 @@ import argparse
 import pprint
 import re
 # Third-party modules
+from fs import open_fs
 import ujson
+import yaml
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
 from noc.core.span import get_spans, Span
 from noc.core.script.loader import loader
+from noc.core.script.beef import Beef
 from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF, TELNET, SSH, HTTP, HTTPS
 
 
@@ -36,7 +39,7 @@ class Command(BaseCommand):
         out_group.add_argument(
             "--yaml",
             action="store_true",
-            dest="yaml",
+            dest="yaml_o",
             default=False,
             help="YAML output"
         )
@@ -56,6 +59,12 @@ class Command(BaseCommand):
             help="Append all issued commands to spec"
         )
         parser.add_argument(
+            "-o",
+            dest="beef_output",
+            type=unicode,
+            help="Save script output to beef"
+        )
+        parser.add_argument(
             "script",
             nargs=1,
             help="Script name"
@@ -72,8 +81,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, script, object_name, arguments, pretty,
-               yaml, use_snmp, access_preference, update_spec,
-               *args, **options):
+               yaml_o, use_snmp, access_preference, update_spec,
+               beef_output, *args, **options):
         # Get object
         obj = self.get_object(object_name[0])
         # Build credentials
@@ -117,19 +126,36 @@ class Command(BaseCommand):
             timeout=3600,
             name=script
         )
-        span_sample = 1 if update_spec else 0
+        span_sample = 1 if update_spec or beef_output else 0
         with Span(sample=span_sample):
             result = scr.run()
         if pretty:
             pprint.pprint(result)
-        elif yaml:
-            import yaml
+        elif yaml_o:
             import sys
             yaml.dump(result, sys.stdout)
         else:
             self.stdout.write("%s\n" % result)
         if update_spec:
             self.update_spec(update_spec, scr)
+        if beef_output:
+            spec = self.update_spec(update_spec, scr, save=False)
+            bef_script_class = loader.get_script("%s.%s" % (obj.profile.name, "get_beef"))
+            beef_scr = bef_script_class(
+                service=service,
+                credentials=credentials,
+                capabilities=caps,
+                args={"spec": spec.get_spec_request()},
+                version=version,
+                timeout=3600,
+                name="%s.%s" % (obj.profile.name, "get_beef")
+            )
+            bdata = beef_scr.run()
+            beef = Beef.from_json(bdata)
+            storage = StorageStub("osfs:///")
+            sdata = beef.get_data(decode=True)
+            with storage.open_fs() as fs:
+                fs.setbytes(beef_output, bytes(yaml.dump(sdata)))
 
     def get_object(self, object_name):
         """
@@ -225,11 +251,12 @@ class Command(BaseCommand):
                 args[name] = parse_json(read_file(value))
         return args
 
-    def update_spec(self, name, script):
+    def update_spec(self, name, script, save=True):
         """
         Update named spec
         :param name: Spec name
         :param script: BaseScript instance
+        :param save:
         :return:
         """
         from noc.dev.models.quiz import Quiz
@@ -296,6 +323,8 @@ class Command(BaseCommand):
                     value=cmd
                 )]
             changed = True
+        if not save:
+            return spec
         if changed:
             spec.save()
 
@@ -371,6 +400,17 @@ class JSONObject(object):
 
     def get_access_preference(self):
         return self.access_preference
+
+
+class StorageStub(object):
+    def __init__(self, url):
+        self.url = url
+
+    def open_fs(self):
+        return open_fs(self.url)
+
+    class Error(Exception):
+        pass
 
 
 if __name__ == "__main__":
