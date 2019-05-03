@@ -215,4 +215,4 @@ class GridVCS(object):
         )
 
     def ensure_collection(self):
-        self.files.ensure_index([("object", 1), ("ft", 1)])
+        self.files.create_index([("object", 1), ("ft", 1)])
