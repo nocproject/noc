@@ -76,6 +76,7 @@ class Command(BaseCommand):
         )
         export_parser.add_argument(
             "--path",
+            type=unicode,
             help="Path name"
         )
         export_parser.add_argument(
@@ -90,6 +91,7 @@ class Command(BaseCommand):
         )
         import_parser.add_argument(
             "--path",
+            type=unicode,
             help="Path name"
         )
         import_parser.add_argument(
@@ -105,6 +107,7 @@ class Command(BaseCommand):
         )
         list_parser.add_argument(
             "--path",
+            type=unicode,
             help="Path name"
         )
         # test command
@@ -120,10 +123,12 @@ class Command(BaseCommand):
         )
         run_parser.add_argument(
             "--path",
+            type=unicode,
             help="Path name"
         )
         run_parser.add_argument(
             "--access-preference",
+            default="SC",
             help="Access preference"
         )
         out_group = run_parser.add_mutually_exclusive_group()
@@ -154,6 +159,7 @@ class Command(BaseCommand):
         )
         create_test_case_parser.add_argument(
             "--path",
+            type=unicode,
             help="Path name"
         )
         create_test_case_parser.add_argument(
@@ -162,6 +168,7 @@ class Command(BaseCommand):
         )
         create_test_case_parser.add_argument(
             "--test-path",
+            type=unicode,
             help="Path name"
         )
         create_test_case_parser.add_argument(
@@ -170,6 +177,7 @@ class Command(BaseCommand):
         )
         create_test_case_parser.add_argument(
             "--config-path",
+            default=u"/",
             help="Path name"
         )
         create_test_case_parser.add_argument(
@@ -186,6 +194,7 @@ class Command(BaseCommand):
         )
         build_test_case_parser.add_argument(
             "--test-path",
+            type=unicode,
             help="Path name"
         )
 
@@ -297,13 +306,7 @@ class Command(BaseCommand):
         """
         st = self.get_storage(storage, beef=True)
         beef = self.get_beef(st, path)
-        data = beef.get_data()
-        for c in data["cli_fsm"]:
-            c["reply"] = [beef._cli_decoder(reply) for reply in c["reply"]]
-        for c in data["cli"]:
-            c["reply"] = [beef._cli_decoder(reply) for reply in c["reply"]]
-        for m in data["mib"]:
-            m["value"] = beef._mib_decoder(m["value"])
+        data = beef.get_data(decode=True)
         if not export_path:
             self.print(yaml.dump(data))
         else:
@@ -537,11 +540,11 @@ class Command(BaseCommand):
 
     def get_config(self, storage=None, path=None):
         r = defaultdict(list)
-        if path:
-            path += "*"
+        # if path:
+        #     path += "*"
         for config_st in self.iter_storage(name=storage, beef_test_config=True):
             with config_st.open_fs() as fs:
-                for config_path in fs.walk.files(filter=path):
+                for config_path in fs.walk.files(path=path):
                     cfg = fs.getbytes(unicode(config_path))
                     data = yaml.safe_load(cfg)
                     r[data.get("beef", "")] += [data]
@@ -579,12 +582,12 @@ class Command(BaseCommand):
         :return:
         """
         r = {}
-        if path:
-            path += "*"
+        # if path:
+        #     path += "*"
         for storage in self.iter_storage(name=storage, beef=True):
             # self.print("\n%sStorage: %s%s\n" % ("=" * 20, storage.name, "=" * 20))
             st_fs = storage.open_fs()
-            for beef_path in st_fs.walk.files(filter=path):
+            for beef_path in st_fs.walk.files(path=path):
                 beef = self.get_beef(storage, beef_path)
                 if uuids and beef.uuid not in uuids:
                     continue
