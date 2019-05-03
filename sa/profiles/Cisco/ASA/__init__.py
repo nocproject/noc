@@ -25,6 +25,7 @@ class Profile(BaseProfile):
     command_more = " "
     command_disable_pager = "terminal pager 0"
     default_parser = "noc.cm.parsers.Cisco.ASA.base.BaseASAParser"
+    config_volatile = [r"\sat\s\d+:\d+:\d+\.\d+\s\S+\s\S+\s\S+\s\d+\s\d+\n"]
 
     def convert_interface_name(self, interface):
         il = interface.lower()
