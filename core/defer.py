@@ -57,4 +57,4 @@ def call_later(name, delay=None, scheduler="scheduler", pool=None,
     }
     logger.info("Delayed call to %s(%s) in %ss", name, data, delay or "0")
     logger.debug("update(%s, %s, upsert=True)", q, op)
-    scheduler.get_collection().update(q, op, upsert=True)
+    scheduler.get_collection().update_one(q, op, upsert=True)
