@@ -206,6 +206,7 @@ class Rule(object):
                 c += ["    return None"]
         # Vars binding
         if self.vars:
+            # pylint: disable=basestring-builtin
             has_expressions = any(v for v in self.vars.values()
                                   if not isinstance(v, basestring))
             if has_expressions:
@@ -245,7 +246,7 @@ class Rule(object):
         cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
         self.code = "\n".join(cc)
         code = compile(self.code, "<string>", "exec")
-        exec(code, {"rule": self, "new": new, "logging": logging, "fm_unescape": fm_unescape})
+        exec code in {"rule": self, "new": new, "logging": logging, "fm_unescape": fm_unescape}
 
     def clone(self, rules):
         """
