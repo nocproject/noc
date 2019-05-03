@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 from __future__ import print_function
 # NOC modules
@@ -24,13 +23,14 @@ class Migration(object):
         root = om.find_one({"name": "Root"})
         if not root:
             print("    Create Root model stub")
-            root = om.insert({"name": "Root", "uuid": self.ROOT_UUID, "data": {"container": {"container": True}}})
+            root = om.insert_one({"name": "Root", "uuid": self.ROOT_UUID, "data": {"container": {"container": True}}})
+            root = root.inserted_id
         else:
             root = root["_id"]
         lost_and_found = om.find_one({"name": "Lost&Found"})
         if not lost_and_found:
             print("    Create Lost&Found model stub")
-            lost_and_found = om.insert(
+            lost_and_found = om.insert_one(
                 {
                     "name": "Lost&Found",
                     "uuid": self.LOST_N_FOUND_UUID,
@@ -41,12 +41,15 @@ class Migration(object):
                     }
                 }
             )
+            lost_and_found = lost_and_found.inserted_id
         else:
             lost_and_found = lost_and_found["_id"]
         # Create root object
         objects = db.noc.objects
-        r = objects.insert({"name": "Root", "model": root})
-        lf = objects.insert({"name": "Global Lost&Found", "model": lost_and_found, "container": r})
+        r = objects.insert_one({"name": "Root", "model": root})
+        r = r.inserted_id
+        lf = objects.insert_one({"name": "Global Lost&Found", "model": lost_and_found, "container": r})
+        lf = lf.inserted_id
         # Find all outer connection names
         m_c = {}
         containers = set()
@@ -68,7 +71,7 @@ class Migration(object):
                             break
             if not found:
                 # Set container
-                db.noc.objects.update({"_id": o["_id"]}, {"$set": {"container": lf}})
+                db.noc.objects.update_many({"_id": o["_id"]}, {"$set": {"container": lf}})
 
     def backwards(self):
         pass
