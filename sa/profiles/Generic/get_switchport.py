@@ -36,6 +36,9 @@ class Script(BaseScript):
 
         # Getting PVID
         for oid, pvid in self.snmp.getnext(mib["Q-BRIDGE-MIB::dot1qPvid"]):
+            if not pvid:
+                # if pvid is 0
+                continue
             o = oid.split(".")[-1]
             # pvid[pid_ifindex_mappings[o]] = v
             result[o] = {

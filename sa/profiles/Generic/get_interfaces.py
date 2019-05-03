@@ -15,6 +15,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.mac import MAC
 from noc.core.mib import mib
 from noc.core.ip import IPv4
+from noc.lib.validators import is_mac
 
 
 class Script(BaseScript):
@@ -168,7 +169,7 @@ class Script(BaseScript):
                 if l in ip_ifaces:
                     s["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]
                     s["enabled_afi"] = ["IPv4"]
-                if iface["mac_address"]:
+                if iface["mac_address"] and is_mac(iface["mac_address"]):
                     s["mac"] = MAC(iface["mac_address"])
                 subs[iface_name] += [s.copy()]
                 # r[-1]["subinterfaces"] += [s]
@@ -187,7 +188,7 @@ class Script(BaseScript):
                     i["enabled_protocols"] = ["LACP"]
             if i["name"] in aggregated:
                 i["type"] = "aggregated"
-            if iface["mac_address"]:
+            if iface["mac_address"] and is_mac(iface["mac_address"]):
                 i["mac"] = MAC(iface["mac_address"])
             # sub = {"subinterfaces": [i.copy()]}
             r += [i]
