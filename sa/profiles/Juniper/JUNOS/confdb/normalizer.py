@@ -22,7 +22,7 @@ class JunOSNormalizer(BaseNormalizer):
 
     @match("system", "domain-name", ANY)
     def normalize_domain_name(self, tokens):
-        yield self.make_domain_name(domain_name=tokens[4])
+        yield self.make_domain_name(domain_name=tokens[2])
 
     @match("system", "services", "http")
     def normalize_http_server(self, tokens):
