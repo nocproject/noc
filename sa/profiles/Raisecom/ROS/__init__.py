@@ -81,6 +81,20 @@ class Profile(BaseProfile):
         r"Serial number: (?P<serial>\S+)\s*\n",
         re.MULTILINE)
 
+    rx_ver3 = re.compile(
+        r"Product Name: (?P<platform>\S+)\s*\n"
+        r"Hardware Version: (?P<hw_rev>\S+)\s*\n"
+        r"Software Version: (?P<version>\S+)\s*\n"
+        r"PCB Version:.+\n"
+        r"(FPGA Version:.+\n)?"
+        r"CPLD Version:.+\n"
+        r"REAP Version:.+\n"
+        r"Bootstrap Version: (?P<bootstrap>\S+)\s*\n"
+        r"Compiled.+\n\n"
+        r"System MacAddress: (?P<mac>\S+)\s*\n"
+        r"Serial number: (?P<serial>\S+)\s*\n",
+        re.MULTILINE)
+
     # Version start  ROS_4.15.1200_20161130(Compiled Nov 30 2016, 10:51:45)
     rx_ver_2016 = re.compile(
         r"Product name: (?P<platform>\S+)\s*\n"
@@ -137,7 +151,11 @@ class Profile(BaseProfile):
             return match.groupdict()
         else:
             match = self.rx_ver_2017.search(c)
+        if match:
             return match.groupdict()
+        else:
+            match = self.rx_ver3.search(c)
+        return match.groupdict()
 
     rx_port = re.compile("^port(|\s+)(?P<port>\d+)")
 
