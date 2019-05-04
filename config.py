@@ -634,8 +634,7 @@ class Config(BaseConfig):
             self._mongo_connection_args = {
                 "db": self.mongo.db,
                 "username": self.mongo.user,
-                "password": self.mongo.password,
-                "socketKeepAlive": True
+                "password": self.mongo.password
             }
             if self.mongo.app_name:
                 self._mongo_connection_args["appname"] = self.mongo.app_name
