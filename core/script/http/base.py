@@ -23,6 +23,7 @@ class HTTPError(NOCError):
 
 
 class HTTP(object):
+    HTTPError = HTTPError
 
     def __init__(self, script):
         self.script = script
