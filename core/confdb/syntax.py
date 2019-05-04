@@ -256,7 +256,55 @@ SYNTAX = [
                                                 DEF(INTEGER, required=True,
                                                     name="limit", gen="make_unit_port_security_max_mac")
                                             ])
-                                        ])
+                                        ]),
+                                        DEF("input_vlan_map", [
+                                            DEF("stack", [
+                                                DEF(CHOICES("0", "1", "2"), required=True, default="0",
+                                                    name="stack", gen="make_input_vlan_map_stack")]),
+                                            DEF("outer_vlans", [
+                                                DEF(ANY, required=False, multi=True, name="vlan_filter",
+                                                    gen="make_input_vlan_map_outer_vlans"),
+                                            ]),
+                                            DEF("inner_vlans", [
+                                                DEF(ANY, required=False, multi=True, name="vlan_filter",
+                                                    gen="make_input_vlan_map_inner_vlans"),
+                                            ]),
+                                            DEF("rewrite", [
+                                                DEF(CHOICES("pop", "push", "swap", "drop"), [
+                                                    DEF(ANY, name="vlan", required=False,
+                                                        gen="make_input_vlan_map_rewrite_vlan")
+                                                ], name="op",
+                                                    required=True, gen="make_input_vlan_map_rewrite_operation"),
+                                            ], required=False, multi=True, name="op_num")
+                                        ], multi=True, required=True, name="num"),
+                                        DEF("output_vlan_map", [
+                                            DEF("stack", [
+                                                DEF(CHOICES("0", "1", "2"), required=True, default="0",
+                                                    name="stack", gen="make_output_vlan_map_stack")]),
+                                            DEF("outer_vlans", [
+                                                DEF(ANY, required=False, multi=True, name="vlan_filter",
+                                                    gen="make_output_vlan_map_outer_vlans"),
+                                            ]),
+                                            DEF("inner_vlans", [
+                                                DEF(ANY, required=False, multi=True, name="vlan_filter",
+                                                    gen="make_output_vlan_map_inner_vlans"),
+                                            ]),
+                                            DEF("rewrite", [
+                                                DEF(CHOICES("pop", "push", "swap", "drop"), [
+                                                    DEF(ANY, name="vlan", required=False,
+                                                        gen="make_output_vlan_map_rewrite_vlan")
+                                                ], name="op",
+                                                    required=True, gen="make_output_vlan_map_rewrite_operation"),
+                                            ], required=False, multi=True, name="op_num")
+                                        ], multi=True, required=True, name="num"),
+                                        DEF("dynamic_vlans", [
+                                            DEF(ANY, [
+                                                DEF("service", [
+                                                    DEF(CHOICES("voice", "mvr"), name="service",
+                                                        gen="make_interface_serivce_vlan")
+                                                ]),
+                                            ], multi=True, name="vlan_filter")
+                                        ], required=False)
                                     ]),
                                 ], multi=True, name="unit", default="0")
                             ])
