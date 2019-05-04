@@ -5,6 +5,7 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+# pylint: disable=c0301, basestring-builtin
 
 # Python modules
 import re
@@ -503,10 +504,14 @@ class StringListParameter(ListOfParameter):
     ['1', '2', '3']
     >>> StringListParameter().clean(["1",2,"3"])
     ['1', '2', '3']
+    >>> StringListParameter(choices=["1", "2"]).clean(["1", "2", "3"]) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+      ...
+    ValueError: StringParameter: '3'
     """
     def __init__(self, required=True, default=None, convert=False, choices=None):
         super(StringListParameter, self).__init__(
-            element=StringParameter(choices=None), required=required,
+            element=StringParameter(choices=choices), required=required,
             default=default, convert=convert)
 
 
