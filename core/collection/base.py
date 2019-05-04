@@ -128,7 +128,7 @@ class Collection(object):
         :return:
         """
         coll = self.get_state_collection()
-        coll.update({
+        coll.update_one({
             "_id": self.name,
         }, {
             "$set": {

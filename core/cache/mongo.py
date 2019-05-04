@@ -60,7 +60,7 @@ class MongoCache(BaseCache):
         k = self.make_key(key, version)
         ttl = ttl or config.memcached.default_ttl
         expires = datetime.datetime.now() + datetime.timedelta(seconds=ttl)
-        self.get_collection().update({
+        self.get_collection().update_one({
             self.KEY_FIELD: k
         }, {
             "$set": {
@@ -72,6 +72,6 @@ class MongoCache(BaseCache):
 
     def delete(self, key, version=None):
         k = self.make_key(key, version)
-        self.get_collection().remove({
+        self.get_collection().delete_one({
             self.KEY_FIELD: k
         })
