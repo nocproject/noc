@@ -6,11 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.script.http.base import HTTPError
 
 
 class Script(BaseScript):
@@ -34,7 +33,7 @@ class Script(BaseScript):
         self.logger.debug("URL path is: %s" % urlpath)
         try:
             rr = self.http.get(urlpath)
-        except self.http.HTTPError:
+        except HTTPError:
             return {"vendor": "DLink",
                     "version": "",
                     "platform": ""}

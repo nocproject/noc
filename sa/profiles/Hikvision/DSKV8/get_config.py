@@ -13,6 +13,7 @@ import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
+from noc.core.script.http.base import HTTPError
 
 
 class Script(BaseScript):
@@ -69,7 +70,7 @@ class Script(BaseScript):
             c += "WDR:\n"
             c += "    mode: %s\n" % v['WDR']['mode'][0]['_text']
             c += "    WDRLevel: %s\n" % v['WDR']['WDRLevel'][0]['_text']
-        except self.http.HTTPError:
+        except HTTPError:
             pass
 
         try:
@@ -79,11 +80,12 @@ class Script(BaseScript):
             c += "BLC:\n"
             c += "    enabled: %s\n" % v['BLC']['enabled'][0]['_text']
             c += "    BLCMode: %s\n" % v['BLC']['BLCMode'][0]['_text']
-        except self.http.HTTPError:
+        except HTTPError:
             pass
 
         try:
-            v = self.http.get("/ISAPI/System/Video/inputs/channels/1/overlays/capabilities", json=False, cached=True, use_basic=True)
+            v = self.http.get("/ISAPI/System/Video/inputs/channels/1/overlays/capabilities",
+                              json=False, cached=True, use_basic=True)
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
             overlay = v['VideoOverlay']['TextOverlayList'][0]['TextOverlay']
@@ -97,7 +99,7 @@ class Script(BaseScript):
                 else:
                     c += "    TextOverlay%d: \"\"\n" % i
                 i = i + 1
-        except self.http.HTTPError:
+        except HTTPError:
             pass
 
         try:
@@ -107,7 +109,7 @@ class Script(BaseScript):
             timeMode = v['Time']['timeMode'][0]['_text']
             c += "Time:\n"
             c += "    timeMode: %s\n" % timeMode
-        except self.http.HTTPError:
+        except HTTPError:
             pass
 
         try:
@@ -121,7 +123,7 @@ class Script(BaseScript):
             for o in ntp_servers:
                 text = o['ipAddress'][0]['_text']
                 c += "    NTPServer%d: %s\n" % (i, text)
-        except self.http.HTTPError:
+        except HTTPError:
             pass
 
         return c
