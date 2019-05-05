@@ -91,14 +91,14 @@ class Firmware(Document):
         return to_json({
             "$collection": self._meta["json_collection"],
             "profile__name": self.profile.name,
-            "vendor__code": self.vendor.code,
+            "vendor__code": self.vendor.code[0],
             "version": self.version,
             "uuid": self.uuid
         }, order=["profile__name", "vendor__code", "version", "uuid"])
 
     def get_json_path(self):
         return os.path.join(
-            self.vendor.code,
+            self.vendor.code[0],
             self.profile.name,
             "%s.json" % self.version.replace(os.sep, "_")
         )
