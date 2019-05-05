@@ -88,7 +88,7 @@ class Layer(Document):
     def json_data(self):
         r = {
             "name": self.name,
-            "$collection": self._meta["$collection"],
+            "$collection": self._meta["json_collection"],
             "code": self.code,
             "uuid": str(self.uuid),
             "min_zoom": self.min_zoom,
