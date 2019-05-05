@@ -23,7 +23,7 @@ def get_files():
     except (OSError, subprocess.CalledProcessError):
         # No git, emulate
         data = subprocess.check_output(["find", ".", "-type", "f", "-print"])
-        return [p[:2] for p in data.splitlines()]
+        return [p[2:] for p in data.splitlines()]
 
 
 @cachetools.cached(cache={})
