@@ -14,6 +14,21 @@ import ast
 import pytest
 import cachetools
 
+ALLOW_XFAIL = {
+    "noc.services.login.backends.pam",
+    "noc.services.web.apps.kb.parsers.mediawiki",
+    "noc.services.classifier.xrulelookup",
+    "noc.commands.translation",
+    "noc.scripts.build-pop-links",
+    "noc.scripts.build-models",
+    "noc.scripts.build.compile-handlebars",
+    "noc.scripts.check-db",
+    "noc.scripts.paste",
+    "noc.scripts.migrate-ignored-interfaces",
+    "noc.gis.parsers.address.fias",
+    "noc.gis.tile"
+}
+
 
 @cachetools.cached(cache={})
 def get_files():
@@ -50,16 +65,28 @@ def get_py_modules_list():
 
 @pytest.mark.parametrize("module", get_py_modules_list())
 def test_import(module):
-    m = __import__(module, {}, {}, "*")
-    assert m
+    try:
+        m = __import__(module, {}, {}, "*")
+        assert m
+    except ImportError as e:
+        if module in ALLOW_XFAIL:
+            pytest.xfail(str(e))
+        else:
+            pytest.fail(str(e))
 
 
 @pytest.mark.parametrize("module", get_py_modules_list())
 def test_module_empty_docstrings(module):
-    m = __import__(module, {}, {}, "*")
-    if m.__doc__ is not None and not m.__doc__.strip():
-        # assert m.__doc__.strip(), "Module-level docstring must not be empty"
-        pytest.xfail("Module-level docstring must not be empty")
+    try:
+        m = __import__(module, {}, {}, "*")
+        if m.__doc__ is not None and not m.__doc__.strip():
+            # assert m.__doc__.strip(), "Module-level docstring must not be empty"
+            pytest.xfail("Module-level docstring must not be empty")
+    except ImportError as e:
+        if module in ALLOW_XFAIL:
+            pytest.xfail(str(e))
+        else:
+            pytest.fail(str(e))
 
 
 @pytest.mark.parametrize("path", [f for f in get_files() if f.endswith("__init__.py")])

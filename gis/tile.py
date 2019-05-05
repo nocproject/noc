@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # TileCache updater
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,18 +13,13 @@ import threading
 import Queue
 import time
 import datetime
+# Third-party modules
+import mapnik2
 # NOC modules
-from noc.settings import IS_TEST
 from noc.config import config
 from noc.gis.models import TileCache, Area
 from noc.gis.mapxml import map_to_xml
 from noc.gis.geo import xy_to_ll, ll_to_xy, TS, MIN_ZOOM, MAX_ZOOM
-# Third-party modules
-try:
-    import mapnik2
-except ImportError, why:
-    if not IS_TEST:
-        raise ImportError(*why)
 
 
 # Render additional N tiles around areas
