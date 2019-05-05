@@ -33,7 +33,7 @@ class ProfileChecker(object):
     _re_cache = {}
 
     def __init__(self, address=None, pool=None, logger=None, snmp_community=None,
-                 calling_service="profilechecker", snmp_version=SNMP_v2c):
+                 calling_service="profilechecker", snmp_version=None):
         self.address = address
         self.pool = pool
         self.logger = PrefixLoggerAdapter(
@@ -44,7 +44,7 @@ class ProfileChecker(object):
         self.error = None
         self.snmp_community = snmp_community
         self.calling_service = calling_service
-        self.snmp_version = snmp_version
+        self.snmp_version = snmp_version or [SNMP_v2c]
 
     def find_profile(self, method, param, result):
         """
@@ -184,12 +184,15 @@ class ProfileChecker(object):
         except KeyError:
             self.logger.error("Cannot resolve OID '%s'. Ignoring", param)
             return None
-        if self.snmp_version == SNMP_v1:
-            return self.snmp_v1_get(param)
-        elif self.snmp_version == SNMP_v2c:
-            return self.snmp_v2c_get(param)
-        else:
-            raise NOCError(msg="Unsupported SNMP version")
+        for v in self.snmp_version:
+            if v == SNMP_v1:
+                r = self.snmp_v1_get(param)
+            elif v == SNMP_v2c:
+                r = self.snmp_v2c_get(param)
+            else:
+                raise NOCError(msg="Unsupported SNMP version")
+            if r:
+                return r
 
     def check_http_get(self, param):
         """

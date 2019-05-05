@@ -55,17 +55,17 @@ class ProfileCheck(DiscoveryCheck):
             # Use guessed community
             # as defined one may be invalid
             snmp_community = self.object._suggest_snmp[0]
-            snmp_version = {
+            snmp_version = [{
                 "snmp_v1_get": SNMP_v1,
                 "snmp_v2c_get": SNMP_v2c
-            }[self.object._suggest_snmp[2]]
+            }[self.object._suggest_snmp[2]]]
         else:
             snmp_community = self.object.credentials.snmp_ro
             caps = self.object.get_caps()
             if caps.get("SNMP | v2c") is False or caps.get("SNMP | v2c") is None:
-                snmp_version = SNMP_v1
+                snmp_version = [SNMP_v1, SNMP_v2c]
             else:
-                snmp_version = SNMP_v2c
+                snmp_version = [SNMP_v2c, SNMP_v1]
         #
         checker = ProfileChecker(
             self.object.address, self.object.pool.name,
