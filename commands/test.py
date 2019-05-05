@@ -134,6 +134,9 @@ class Command(BaseCommand):
         n_skipped = len(stats.get("skipped", []))
         n_error = len(stats.get("error", []))
         n_failed = len(stats.get("failed", []))
+        n_xfailed = len(stats.get("xfailed", []))
+        n_xpassed = len(stats.get("xpassed", []))
+        n_warnings = len(stats.get("warnings", []))
         if n_error or n_failed:
             status = "Failed"
         else:
@@ -143,6 +146,9 @@ class Command(BaseCommand):
         self.print("Tests Skipped:      : %s" % n_skipped)
         self.print("Tests Failed:       : %s" % n_failed)
         self.print("Tests Error:        : %s" % n_error)
+        self.print("Tests XFailed       : %s" % n_xfailed)
+        self.print("Tests XPassed       : %s" % n_xpassed)
+        self.print("Tests Warnings      : %s" % n_warnings)
         self.print("Coverage            : %d%%" % totals.pc_covered)
         self.print("Coverage Statements : %s" % totals.n_statements)
         self.print("Coverage Missing    : %s" % totals.n_missing)
