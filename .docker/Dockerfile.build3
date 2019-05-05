@@ -20,8 +20,7 @@ RUN apk add --update --no-cache \
     py3-pip \
     snappy \
     tzdata \
-    curl \
-    git
+    curl
 RUN apk add --no-cache --virtual .build-deps \
     cyrus-sasl-dev \
     gcc \

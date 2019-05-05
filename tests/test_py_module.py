@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Test python module loading
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,9 +24,10 @@ def _git_ls():
     try:
         data = subprocess.check_output(["git", "ls-tree", "HEAD", "-r", "--name-only"])
         _ls_data = data.splitlines()
-    except OSError:
-        # No git
-        _ls_data = []
+    except (OSError, subprocess.CalledProcessError):
+        # No git, emulate
+        data = subprocess.check_output(["find", ".", "-type", "f", "-print"])
+        _ls_data = [p[:2] for p in data.splitlines()]
     return _ls_data
 
 
