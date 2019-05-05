@@ -12,28 +12,24 @@ import os
 import ast
 # Third-party modules
 import pytest
+import cachetools
 
-_ls_data = None
 
-
-def _git_ls():
-    global _ls_data
-
-    if _ls_data is not None:
-        return _ls_data
+@cachetools.cached(cache={})
+def get_files():
     try:
         data = subprocess.check_output(["git", "ls-tree", "HEAD", "-r", "--name-only"])
-        _ls_data = data.splitlines()
+        return data.splitlines()
     except (OSError, subprocess.CalledProcessError):
         # No git, emulate
         data = subprocess.check_output(["find", ".", "-type", "f", "-print"])
-        _ls_data = [p[:2] for p in data.splitlines()]
-    return _ls_data
+        return [p[:2] for p in data.splitlines()]
 
 
+@cachetools.cached(cache={})
 def get_py_modules_list():
     result = []
-    for path in _git_ls():
+    for path in get_files():
         if path.startswith(".") or not path.endswith(".py"):
             continue
         parts = path.split(os.sep)
@@ -52,30 +48,23 @@ def get_py_modules_list():
     return result
 
 
-@pytest.fixture(scope="module", params=get_py_modules_list())
-def py_module(request):
-    return request.param
-
-
-def test_import(py_module):
-    m = __import__(py_module, {}, {}, "*")
+@pytest.mark.parametrize("module", get_py_modules_list())
+def test_import(module):
+    m = __import__(module, {}, {}, "*")
     assert m
 
 
-def test_module_empty_docstrings(py_module):
-    m = __import__(py_module, {}, {}, "*")
+@pytest.mark.parametrize("module", get_py_modules_list())
+def test_module_empty_docstrings(module):
+    m = __import__(module, {}, {}, "*")
     if m.__doc__ is not None and not m.__doc__.strip():
         # assert m.__doc__.strip(), "Module-level docstring must not be empty"
         pytest.xfail("Module-level docstring must not be empty")
 
 
-@pytest.fixture(scope="module", params=[f for f in _git_ls() if f.endswith("__init__.py")])
-def py_init(request):
-    return request.param
-
-
-def test_init(py_init):
-    with open(py_init) as f:
+@pytest.mark.parametrize("path", [f for f in get_files() if f.endswith("__init__.py")])
+def test_init(path):
+    with open(path) as f:
         data = f.read()
-    n = compile(data, py_init, "exec", ast.PyCF_ONLY_AST)
+    n = compile(data, path, "exec", ast.PyCF_ONLY_AST)
     assert bool(n.body) or not bool(data), "__init__.py must be empty"
