@@ -22,6 +22,7 @@ RUN apk add --update --no-cache \
     snappy \
     tzdata \
     curl \
+    git \
    && apk add --no-cache --virtual .build-deps \
         cyrus-sasl-dev \
         cython \

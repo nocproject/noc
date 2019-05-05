@@ -21,7 +21,6 @@ contrib/share/*
 !/.gitignore
 !/.dockerignore
 !/.gitlab-ci.yml
-!/.gitignore
 !/.flake8
 !/.pylintrc
 !/.coveragerc
