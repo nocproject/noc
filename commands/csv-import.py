@@ -2,12 +2,12 @@
 # ---------------------------------------------------------------------
 # Import data from CSV
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import with_statement, print_function
+from __future__ import print_function
 import argparse
 import sys
 # Django modules

@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Inject event from JSON files
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
-from __future__ import with_statement
+from __future__ import print_function
 import sys
 import time
 import json
@@ -30,7 +29,7 @@ class Command(BaseCommand):
                             nargs=argparse.REMAINDER)
 
     def _usage(self):
-        print "./noc inject-event <object name> [<file1> [ .. <fileN>]]"
+        print("./noc inject-event <object name> [<file1> [ .. <fileN>]]")
         sys.exit(0)
 
     def handle(self, *args, **options):

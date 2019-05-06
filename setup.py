@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # Distutils setup.py
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from __future__ import with_statement
+# Python modules
 from distutils.core import setup
 import distutils.command.sdist
 from distutils.command.install import INSTALL_SCHEMES
@@ -27,6 +27,7 @@ def get_version():
     with open("VERSION") as f:
         return f.read().strip()
 
+
 MANIFEST = []
 
 
@@ -39,8 +40,7 @@ def get_manifest():
     if not MANIFEST:
         if os.path.exists(".hg"):
             # Rebuild MANIFEST file every time mercurial repo found
-            proc = subprocess.Popen(["hg", "locate"], stdout=subprocess.PIPE,
-                                                    stderr=subprocess.PIPE)
+            proc = subprocess.Popen(["hg", "locate"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = proc.communicate()
             mf = stdout.splitlines()
             if os.path.exists(".hgsub"):
@@ -50,8 +50,7 @@ def get_manifest():
                             continue
                         sr, r = l.split("=", 1)
                         sr = sr.strip()
-                        proc = subprocess.Popen(["hg", "-R", sr, "locate"],
-                                                stdout=subprocess.PIPE,
+                        proc = subprocess.Popen(["hg", "-R", sr, "locate"], stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE)
                         stdout, stderr = proc.communicate()
                         mf += [sr + "/" + x for x in stdout.splitlines()]
@@ -98,6 +97,8 @@ class noc_sdist(distutils.command.sdist.sdist):
 #
 # Monkeypatch distutils to install noc to the desired location
 #
+
+
 for scheme in INSTALL_SCHEMES.values():
     scheme["purelib"] = PREFIX
     scheme["data"] = PREFIX

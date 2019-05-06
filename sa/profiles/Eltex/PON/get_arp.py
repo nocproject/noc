@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Eltex.PON.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import with_statement
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -56,11 +55,11 @@ class Script(BaseScript):
                     "ip": match.group("ip"),
                     "mac": None,
                     "interface": None
-                    })
+                })
             else:
                 r.append({
                     "ip": match.group("ip"),
                     "mac": mac,
                     "interface": match.group("interface")
-                    })
+                })
         return r
