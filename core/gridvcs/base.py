@@ -11,11 +11,11 @@ from __future__ import absolute_import
 import datetime
 import difflib
 import zlib
+import struct
 # Third-party modules
 import pymongo
 import gridfs
 import gridfs.errors
-from mercurial.mdiff import patch
 import bsdiff4
 # NOC modules
 from noc.lib.nosql import get_db, ObjectId
@@ -46,7 +46,8 @@ class GridVCS(object):
             return self.T_FILE, dst
         return self.T_BSDIFF4, delta
 
-    def apply_delta(self, type, src, delta):
+    @classmethod
+    def apply_delta(cls, type, src, delta):
         """
         Apply delta
         :param type: Delta type
@@ -54,9 +55,10 @@ class GridVCS(object):
         :param delta: Delta
         :return: Patched string
         """
-        return getattr(self, "apply_delta_%s" % type)(src, delta)
+        return getattr(cls, "apply_delta_%s" % type)(src, delta)
 
-    def apply_delta_F(self, src, delta):
+    @staticmethod
+    def apply_delta_F(src, delta):
         """
         Raw string
         :param src:
@@ -65,16 +67,31 @@ class GridVCS(object):
         """
         return delta
 
-    def apply_delta_b(self, src, delta):
+    @staticmethod
+    def apply_delta_b(src, delta):
         """
-        Mercurial bdiff
+        Mercurial mdiff. Slow python implementation ported from Mercurial 0.4.
+        For legacy installations support only
         :param src:
         :param delta:
         :return:
         """
-        return patch(src, delta)
+        last = pos = 0
+        r = []
+        d_len = len(delta)
 
-    def apply_delta_B(self, src, delta):
+        while pos < d_len:
+            p1, p2, p_len = struct.unpack(">lll", delta[pos:pos + 12])
+            pos += 12
+            r.append(src[last:p1])
+            r.append(delta[pos:pos + p_len])
+            pos += p_len
+            last = p2
+        r.append(src[last:])
+        return "".join(r)
+
+    @staticmethod
+    def apply_delta_B(src, delta):
         """
         BSDIFF4 diff
         :param src:
@@ -83,20 +100,24 @@ class GridVCS(object):
         """
         return bsdiff4.patch(src, delta)
 
-    def compress(self, data, method=None):
+    @classmethod
+    def compress(cls, data, method=None):
         if method:
-            return getattr(self, "compress_%s" % method)(data)
+            return getattr(cls, "compress_%s" % method)(data)
         return data
 
-    def decompress(self, data, method=None):
+    @classmethod
+    def decompress(cls, data, method=None):
         if method:
-            return getattr(self, "decompress_%s" % method)(data)
+            return getattr(cls, "decompress_%s" % method)(data)
         return data
 
-    def compress_z(self, data):
+    @staticmethod
+    def compress_z(data):
         return zlib.compress(data)
 
-    def decompress_z(self, data):
+    @staticmethod
+    def decompress_z(data):
         return zlib.decompress(data)
 
     def put(self, object, data, ts=None):

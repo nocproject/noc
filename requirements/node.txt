@@ -30,7 +30,6 @@ tornado==4.5.3
 requests==2.20.0
 supervisor==3.3.1
 supervisor-serialrestart==0.1.1
-mercurial>=3.4.2
 cachetools==1.1.5
 Pygments==2.2.0
 noc-pkg-pyclips==1.0.7
