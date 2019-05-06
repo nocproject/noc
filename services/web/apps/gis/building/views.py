@@ -2,12 +2,12 @@
 # ---------------------------------------------------------------------
 # gis.building application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.lib.app.docinline import DocInline
 from noc.gis.models.division import Division
 from noc.gis.models.building import Building
