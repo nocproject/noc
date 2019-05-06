@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Ensure MongoDB indexes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -46,6 +46,8 @@ class Command(BaseCommand):
         self.index_datastreams()
         # Index GridVCS
         self.index_gridvcs()
+        # Index mongo cache
+        self.index_cache()
         # @todo: Detect changes
         self.print("OK")
 
@@ -105,6 +107,13 @@ class Command(BaseCommand):
     def index_gridvcs(self):
         for repo in REPOS:
             GridVCS(repo).ensure_collection()
+
+    def index_cache(self):
+        from noc.core.cache.base import cache
+        if not hasattr(cache, "ensure_indexes"):
+            return
+        self.print("[%s] Indexing cache" % cache.__class__.__name__)
+        cache.ensure_indexes()
 
 
 if __name__ == "__main__":
