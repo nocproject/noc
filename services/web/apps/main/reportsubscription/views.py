@@ -2,12 +2,12 @@
 # ---------------------------------------------------------------------
 # main.reportsubscription application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.lib.app.site import site
 from noc.main.models.reportsubscription import ReportSubscription
 from noc.core.translation import ugettext as _
