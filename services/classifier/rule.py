@@ -10,6 +10,8 @@
 import re
 import logging
 import new
+# Third-party modules
+import six
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -206,15 +208,14 @@ class Rule(object):
                 c += ["    return None"]
         # Vars binding
         if self.vars:
-            # pylint: disable=basestring-builtin
             has_expressions = any(v for v in self.vars.values()
-                                  if not isinstance(v, basestring))
+                                  if not isinstance(v, six.string_types))
             if has_expressions:
                 # Callculate vars context
                 c += ["var_context = {'event': event}"]
                 c += ["var_context.update(e_vars)"]
             for k, v in self.vars.items():
-                if isinstance(v, basestring):
+                if isinstance(v, six.string_types):
                     c += ["e_vars[\"%s\"] = \"%s\"" % (k, pyq(v))]
                 else:
                     c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, var_context)" % (k, k)]

@@ -2,15 +2,15 @@
 # ---------------------------------------------------------------------
 # Basic DLink parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
 # Third-party modules
-from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
-    Literal, delimitedList
+import six
+from pyparsing import nums, Word, Group, Optional, Suppress, Combine, Literal, delimitedList
 # NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
@@ -18,8 +18,8 @@ from noc.lib.validators import is_ipv4, is_int
 
 
 class BaseDLinkParser(BaseParser):
-    STATUSES = set(["sntp"])
-    SERVICES = set(["telnet", "web", "ssh", "password_recovery"])
+    STATUSES = {"sntp"}
+    SERVICES = {"telnet", "web", "ssh", "password_recovery"}
 
     def parse(self, config):
         # Various protocol statuses
@@ -78,7 +78,7 @@ class BaseDLinkParser(BaseParser):
         """
         for s, _, _ in PORT_EXPR.scanString(expr):
             for x in s.asList():
-                if isinstance(x, basestring):
+                if isinstance(x, six.string_types):
                     # Single port
                     yield x
                 elif len(x) == 2:
@@ -96,7 +96,7 @@ class BaseDLinkParser(BaseParser):
                 elif x[1] == ":(":
                     pfx = "%s:%%s" % x[0]
                     for y in x[2:]:
-                        if isinstance(y, basestring):
+                        if isinstance(y, six.string_types):
                             yield pfx % y
                         else:
                             for i in range(int(y[0]), int(y[1]) + 1):

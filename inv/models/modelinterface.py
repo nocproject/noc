@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ModelInterface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import os
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, UUIDField)
@@ -72,7 +73,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
         return int(value)
 
     def clean_float(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             return float(value.replace(",", "."))
         else:
             return float(value)
@@ -158,7 +159,7 @@ class ModelInterface(Document):
                 if a.name in v:
                     vv = v[a.name]
                     if a.type == "strlist":
-                        if isinstance(vv, basestring):
+                        if isinstance(vv, six.string_types):
                             vv = [vv]
                         r = set()
                         for x in vv:

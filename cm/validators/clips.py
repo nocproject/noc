@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # CLIPS rule-based validator
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,8 @@
 from __future__ import absolute_import
 import logging
 import re
-# Django modules
+# Third-party modules
+import six
 from django.template import Template, Context
 # NOC modules
 from .base import BaseValidator
@@ -49,7 +50,7 @@ class CLIPSValidator(BaseValidator):
         # CLIPS Escape
         for n in ctx:
             v = ctx[n]
-            if isinstance(v, basestring):
+            if isinstance(v, six.string_types):
                 v = v.replace("\\", "\\\\").replace("\"", "\\\"")
                 ctx[n] = v
         # Insert rule number to (assert (error ..))
