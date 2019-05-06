@@ -17,50 +17,53 @@ from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.nosql import get_db
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
-from noc.cm.models.object import Object
+from noc.dns.models.dnszone import DNSZone
 from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
-    """
-    Report Form
-    """
     repo = forms.ChoiceField(label=_("Type"),
                              choices=[("config", "config"),
-                                      ("prefix-list", "prefix-list")])
+                                      ("dnszone", "DNS")])
     days = forms.IntegerField(label=_("In Days"), min_value=1)
 
 
-class ReportreportLatestChanges(SimpleReport):
+class ReportLatestChangesApplication(SimpleReport):
     title = _("Latest Changes")
     form = ReportForm
 
     def get_data(self, request, repo="config", days=1, **kwargs):
-        data = []
         baseline = datetime.datetime.now() - datetime.timedelta(days=days)
-        if repo == "config":
-            mos = ManagedObject.objects.filter()
-            if not request.user.is_superuser:
-                mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
-            mos = dict(mos.values_list("id", "name"))
-            config_db = get_db()["noc.gridvcs.config.files"].with_options(
-                read_preference=ReadPreference.SECONDARY_PREFERRED)
-            pipeline = [{"$match": {"ts": {"$gte": baseline}}},
-                        {"$group": {"_id": "$object", "last_ts": {"$max": "$ts"}}},
-                        {"$sort": {"_id": 1}}]
-            for value in config_db.aggregate(pipeline):
-                if value["_id"] not in mos:
-                    continue
-                data += [(mos[value["_id"]], value["last_ts"])]
-
+        coll = get_db()["noc.gridvcs.%s.files" % repo].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED)
+        pipeline = [
+            {"$match": {"ts": {"$gte": baseline}}},
+            {"$group": {"_id": "$object", "last_ts": {"$max": "$ts"}}},
+            {"$sort": {"_id": 1}}
+        ]
+        if repo == "config" and not request.user.is_superuser:
+            objects = ManagedObject.objects.filter(
+                administrative_domain__in=UserAccess.get_domains(request.user)).values_list("id", "name")
+            pipeline = [{"$match": {"object": {"$in": objects}}}] + pipeline
+        # Perform query
+        data = list(coll.aggregate(pipeline))
+        # Resolve names
+        if data:
+            seen_ids = list(set(d["_id"] for d in data))
+            n_map = {}
+            if repo == "config":
+                n_map = dict(ManagedObject.objects.filter(id__in=list(seen_ids)).values_list("id", "name"))
+            elif repo == "dns":
+                n_map = dict(DNSZone.objects.filter(id__in=list(seen_ids)).values_list("id", "name"))
+            result = [(d["_id"], n_map.get(d["_id"], "-"), d["last_ts"]) for d in data]
         else:
-            oc = Object.get_object_class(repo)
-            data = [(o, o.last_modified) for o in
-                    oc.objects.filter(last_modified__gte=baseline).order_by("-last_modified")]
+            result = []
         return self.from_dataset(
             title="%s: %s in %d days" % (self.title, repo, days),
             columns=[
-                "Object",
+                "ID",
+                "Name",
                 TableColumn(_("Last Changed"), format="datetime")],
-            data=data,
-            enumerate=True)
+            data=result,
+            enumerate=True
+        )

@@ -14,7 +14,6 @@ COPY . /opt/noc
 RUN apk add --update --no-cache \
     ca-certificates \
     libpq libssh2 \
-    mercurial \
     py-cffi \
     py-numpy \
     py-pip \

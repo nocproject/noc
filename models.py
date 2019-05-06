@@ -240,8 +240,6 @@ _MODELS = {
     "cm.ErrorType": "noc.cm.models.errortype.ErrorType",
     "cm.ObjectFact": "noc.cm.models.objectfact.ObjectFact",
     "cm.ObjectNotify": "noc.cm.models.objectnotify.ObjectNotify",
-    "cm.PrefixList": "noc.cm.models.prefixlist.PrefixList",
-    "cm.RPSL": "noc.cm.models.rpsl.RPSL",
     "cm.ValidationPolicy": "noc.cm.models.validationpolicy.ValidationPolicy",
     "cm.ValidationPolicySettings": "noc.cm.models.validationpolicysettings.ValidationPolicySettings",
     "cm.ValidationRule": "noc.cm.models.validationrule.ValidationRule",
