@@ -64,10 +64,10 @@ class LogicPermision(Permission):
     Boolean logic permission. Used to combine two permissions
     using logic condition
     """
-    def __init__(self, l, r):
+    def __init__(self, left, right):
         super(Permission, self).__init__()
-        self.l = l
-        self.r = r
+        self.left = left
+        self.right = right
 
 
 class ORPermission(LogicPermision):
@@ -75,10 +75,10 @@ class ORPermission(LogicPermision):
     _or_ combination. Permit if either left or right conditions are met
     """
     def check(self, app, user, obj=None):
-        return self.l.check(app, user, obj) or self.r.check(app, user, obj)
+        return self.left.check(app, user, obj) or self.right.check(app, user, obj)
 
     def queryset(self, request):
-        return self.l.queryset(request) | self.r.queryset(request)
+        return self.left.queryset(request) | self.right.queryset(request)
 
 
 class ANDPermission(LogicPermision):
@@ -86,10 +86,10 @@ class ANDPermission(LogicPermision):
     _and_ combination. Permit if both left and right conditions are met
     """
     def check(self, app, user, obj=None):
-        return self.l.check(app, user, obj) and self.r.check(app, user, obj)
+        return self.left.check(app, user, obj) and self.right.check(app, user, obj)
 
     def queryset(self, request):
-        return self.l.queryset(request) & self.r.queryset(request)
+        return self.left.queryset(request) & self.right.queryset(request)
 
 
 class Permit(Permission):

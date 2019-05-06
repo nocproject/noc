@@ -2,27 +2,25 @@
 # ---------------------------------------------------------------------
 # ModelInline
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.db.models.fields import CharField, BooleanField, IntegerField,\
-    FloatField, related
+# Python modules
+from functools import reduce
+# Third-party modules
+from django.db.models.fields import CharField, BooleanField, IntegerField, FloatField, related
 from django.db.models import Q
 from django.db.utils import IntegrityError
 # NOC modules
-from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
-                               FloatParameter, ModelParameter,
-                               StringParameter, TagsParameter,
-                               StringListParameter,
-                               NoneParameter, InterfaceTypeError)
+from noc.sa.interfaces.base import (BooleanParameter, IntParameter, FloatParameter, ModelParameter,
+                                    TagsParameter, StringListParameter, NoneParameter)
 from noc.lib.validators import is_int
 from noc.core.model.fields import TextArrayField
 
 
 class ModelInline(object):
-    ## HTTP Result Codes
+    # HTTP Result Codes
     OK = 200
     CREATED = 201
     DELETED = 204
@@ -34,7 +32,7 @@ class ModelInline(object):
     INTERNAL_ERROR = 500
     NOT_IMPLEMENTED = 501
     THROTTLED = 503
-    ## Recognized GET parameters
+    # Recognized GET parameters
     ignored_params = ["_dc"]
     page_param = "__page"
     start_param = "__start"
@@ -79,36 +77,47 @@ class ModelInline(object):
                                  for f in self.model._meta.fields
                                  if f.unique and isinstance(f, CharField)]
         # Add searchable custom fields
-        self.query_fields += ["%s__%s" % (f.name, self.query_condition)
-            for f in self.get_custom_fields() if f.is_searchable]
-        #
+        self.query_fields += [
+            "%s__%s" % (f.name, self.query_condition)
+            for f in self.get_custom_fields() if f.is_searchable
+        ]
 
     def contribute_to_class(self, app, name):
         # Add List handler
-        app.add_view("api_%s_list" % name, self.api_list,
+        app.add_view(
+            "api_%s_list" % name, self.api_list,
             method=["GET"],
             url="^(?P<parent>[^/]+)/%s/$" % name,
-            access="read", api=True)
+            access="read", api=True
+        )
         # Add Create handler
-        app.add_view("api_%s_create" % name, self.api_create,
+        app.add_view(
+            "api_%s_create" % name, self.api_create,
             method=["POST"],
             url="^(?P<parent>[^/]+)/%s/$" % name,
-            access="create", api=True)
+            access="create", api=True
+        )
         # Add Read Handler
-        app.add_view("api_%s_read" % name, self.api_read,
+        app.add_view(
+            "api_%s_read" % name, self.api_read,
             method=["GET"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
-            access="read", api=True)
+            access="read", api=True
+        )
         # Add Update Handler
-        app.add_view("api_%s_update" % name, self.api_update,
+        app.add_view(
+            "api_%s_update" % name, self.api_update,
             method=["PUT"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
-            access="update", api=True)
+            access="update", api=True
+        )
         # Add Delete Handler
-        app.add_view("api_%s_delete" % name, self.api_delete,
+        app.add_view(
+            "api_%s_delete" % name, self.api_delete,
             method=["DELETE"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
-            access="delete", api=True)
+            access="delete", api=True
+        )
 
     def set_app(self, app):
         self.app = app
@@ -148,8 +157,10 @@ class ModelInline(object):
             return StringListParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
-            return ModelParameter(field.rel.to,
-                required=not field.null)
+            return ModelParameter(
+                field.rel.to,
+                required=not field.null
+            )
         else:
             return None
 
@@ -163,9 +174,11 @@ class ModelInline(object):
             else:
                 return f
 
-        q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
+        q = reduce(
+            lambda x, y: x | Q(**{get_q(y): query}),
             self.query_fields[1:],
-            Q(**{get_q(self.query_fields[0]): query}))
+            Q(**{get_q(self.query_fields[0]): query})
+        )
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -223,7 +236,8 @@ class ModelInline(object):
             if np in self.ignored_params or p in (
                 self.limit_param, self.page_param, self.start_param,
                 self.format_param, self.sort_param, self.query_param,
-                self.only_param):
+                self.only_param
+            ):
                 continue
             v = q[p]
             if v == "\x00":
@@ -237,7 +251,7 @@ class ModelInline(object):
                     self.model._meta.db_table, self.model._meta.pk.name,
                     model._meta.get_field_by_name(fn)[0].attname,
                     model._meta.db_table
-                    )
+                )
                 if None in nq:
                     nq[None] += [extra_where]
                 else:
@@ -270,8 +284,7 @@ class ModelInline(object):
                 r[f.name] = getattr(o, f.name)
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
-                if (v is not None and
-                    type(v) not in (str, unicode, int, long, bool, list)):
+                if v is not None and not isinstance(v, (str, unicode, int, long, bool, list)):
                     v = unicode(v)
                 r[f.name] = v
             else:
@@ -294,8 +307,10 @@ class ModelInline(object):
         Returns a list of requested object objects
         """
         # Todo: Fix
-        q = dict((str(k), v[0] if len(v) == 1 else v)
-            for k, v in request.GET.lists())
+        q = dict(
+            (str(k), v[0] if len(v) == 1 else v)
+            for k, v in request.GET.lists()
+        )
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -338,59 +353,52 @@ class ModelInline(object):
         return self.app.response(out, status=self.OK)
 
     def api_list(self, request, parent):
-        return self.list_data(request, self.instance_to_dict,
-            parent=int(parent))
+        return self.list_data(
+            request, self.instance_to_dict,
+            parent=int(parent)
+        )
 
     def api_create(self, request, parent):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
             attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
-        except ValueError, why:
-            return self.app.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.app.BAD_REQUEST)
-        except InterfaceTypeError, why:
-            return self.app.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.BAD_REQUEST)
+        except ValueError as e:
+            return self.app.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(e)
+            }, status=self.app.BAD_REQUEST)
         try:
             # Exclude callable values from query
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
-            qattrs = dict((k, attrs[k])
-                for k in attrs if not callable(attrs[k]))
+            qattrs = dict(
+                (k, attrs[k])
+                for k in attrs if not callable(attrs[k])
+            )
             # Check for duplicates
             self.queryset(request).get(**qattrs)
-            return self.app.render_json(
-                    {
-                    "status": False,
-                    "message": "Duplicated record"
-                },
+            return self.app.render_json({
+                "status": False,
+                "message": "Duplicated record"
+            },
                 status=self.CONFLICT)
         except self.model.MultipleObjectsReturned:
-            return self.app.render_json(
-                    {
-                    "status": False,
-                    "message": "Duplicated record"
-                }, status=self.CONFLICT)
+            return self.app.render_json({
+                "status": False,
+                "message": "Duplicated record"
+            }, status=self.CONFLICT)
         except self.model.DoesNotExist:
             attrs[self.parent_rel] = parent
             o = self.model(**attrs)
             try:
                 o.save()
             except IntegrityError:
-                return self.app.render_json(
-                        {
-                        "status": False,
-                        "message": "Integrity error"
-                    }, status=self.CONFLICT)
+                return self.app.render_json({
+                    "status": False,
+                    "message": "Integrity error"
+                }, status=self.CONFLICT)
             format = request.GET.get(self.format_param)
             if format == "ext":
                 r = {
@@ -413,28 +421,22 @@ class ModelInline(object):
         only = request.GET.get(self.only_param)
         if only:
             only = only.split(",")
-        return self.app.response(self.instance_to_dict(o, fields=only),
-            status=self.OK)
+        return self.app.response(
+            self.instance_to_dict(o, fields=only),
+            status=self.OK
+        )
 
     def api_update(self, request, parent, id):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
             attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
-        except ValueError, why:
-            return self.app.render_json(
-                    {
-                    "status": False,
-                    "message": "Bad request",
-                    "traceback": str(why)
-                }, status=self.BAD_REQUEST)
-        except InterfaceTypeError, why:
-            return self.app.render_json(
-                    {
-                    "status": False,
-                    "message": "Bad request",
-                    "traceback": str(why)
-                }, status=self.BAD_REQUEST)
+        except ValueError as e:
+            return self.app.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(e)
+            }, status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(id=int(id))
         except self.model.DoesNotExist:
@@ -445,11 +447,10 @@ class ModelInline(object):
         try:
             o.save()
         except IntegrityError:
-            return self.app.render_json(
-                    {
-                    "status": False,
-                    "message": "Integrity error"
-                }, status=self.CONFLICT)
+            return self.app.render_json({
+                "status": False,
+                "message": "Integrity error"
+            }, status=self.CONFLICT)
         return self.app.response(status=self.OK)
 
     def api_delete(self, request, parent, id):

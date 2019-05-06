@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # REST helper interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ class DateTimeParameter(StringParameter):
         "%Y-%m-%dT%H:%M:%S.%f",
         "%Y-%m-%d"
     ]
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
