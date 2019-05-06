@@ -296,7 +296,7 @@ class TableColumn(ReportNode):
         :return:
         """
         d = self.format_data(s)
-        if type(d) != SafeString:
+        if not isinstance(d, SafeString):
             d = self.quote(d)
         return "<td%s>%s</td>" % (self.html_td_attrs(), d)
 
@@ -567,7 +567,7 @@ class TableSection(ReportSection):
         if self.data:
             n = 1
             for row in self.data:
-                if type(row) == SectionRow:
+                if isinstance(row, SectionRow):
                     # Display section row
                     if (current_section and self.has_total and
                             current_section.subtotal):
@@ -624,14 +624,14 @@ class TableSection(ReportSection):
             if self.enumerate:
                 n = 1
                 for row in self.data:
-                    if type(row) == SectionRow:
+                    if isinstance(row, SectionRow):
                         writer.writerow([row.name])
                         continue
                     writer.writerow([n] + list(row))
                     n += 1
             else:
                 for row in self.data:
-                    if type(row) == SectionRow:
+                    if isinstance(row, SectionRow):
                         writer.writerow([row.name])
                         continue
                     writer.writerow(row)
@@ -658,7 +658,7 @@ class TableSection(ReportSection):
             if self.enumerate:
                 n = 1
                 for row in self.data:
-                    if type(row) == SectionRow:
+                    if isinstance(row, SectionRow):
                         # writer.writerow([row.name])
                         prefix = [mrf, row.name]
                         if date:
@@ -668,7 +668,7 @@ class TableSection(ReportSection):
                     n += 1
             else:
                 for row in self.data:
-                    if type(row) == SectionRow:
+                    if isinstance(row, SectionRow):
                         # writer.writerow([row.name])
                         prefix = [mrf, row.name]
                         if date:

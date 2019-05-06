@@ -34,7 +34,7 @@ class CapabilityRule(object):
     def from_json(cls, data):
         if "oids" not in data:
             raise ValueError("oids is required")
-        if type(data["oids"]) != list:
+        if not isinstance(data["oids"], list):
             raise ValueError("oids must be list")
         return CapabilityRule(
             oids=[load_rule(d) for d in data["oids"]]

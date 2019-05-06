@@ -22,8 +22,7 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.cli("interface show", cached=True)
-        macs = self.rx_line.findall(v)
-        macs.sort()
+        macs = sorted(self.rx_line.findall(v))
         return [{
             "first_chassis_mac": f,
             "last_chassis_mac": t

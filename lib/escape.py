@@ -17,7 +17,7 @@ def json_escape(s):
     """
     Escape JSON predefined sequences
     """
-    if type(s) == bool:
+    if isinstance(s, bool):
         return "true" if s else "false"
     if s is None:
         return ""

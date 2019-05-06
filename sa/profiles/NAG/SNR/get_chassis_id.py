@@ -35,8 +35,7 @@ class Script(BaseScript):
                 pass
 
         # Fallback to CLI
-        macs = self.rx_mac.findall(self.cli("show version", cached=True))
-        macs.sort()
+        macs = sorted(self.rx_mac.findall(self.cli("show version", cached=True)))
         return [{
             "first_chassis_mac": f,
             "last_chassis_mac": t

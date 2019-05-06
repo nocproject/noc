@@ -23,8 +23,7 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
-        macs = self.rx_mac.findall(self.cli("get system manuf info"))
-        macs.sort()
+        macs = sorted(self.rx_mac.findall(self.cli("get system manuf info")))
         return [{
             "first_chassis_mac": f,
             "last_chassis_mac": t

@@ -42,7 +42,7 @@ def get_beef_tests():
 
 
 def beef_test_name(v):
-    if type(v) == tuple:
+    if isinstance(v, tuple):
         return v[1]
     return None
 

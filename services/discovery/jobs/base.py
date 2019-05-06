@@ -514,7 +514,7 @@ class DiscoveryCheck(object):
         for k, v in six.iteritems(values):
             vv = getattr(obj, k)
             if v != vv:
-                if type(v) != int or not hasattr(vv, "id") or v != vv.id:
+                if not isinstance(v, int) or not hasattr(vv, "id") or v != vv.id:
                     if k in ignore_empty and (v is None or v == ""):
                         continue
                     setattr(obj, k, v)

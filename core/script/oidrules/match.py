@@ -40,7 +40,7 @@ class MatcherRule(object):
     def from_json(cls, data):
         if "$match" not in data:
             raise ValueError("Matcher is required")
-        if type(data["$match"]) != list:
+        if not isinstance(data["$match"], list):
             raise ValueError("$match must be list")
         return MatcherRule(
             oids=[(d.get("$match"), load_rule(d)) for d in data["$match"]],
