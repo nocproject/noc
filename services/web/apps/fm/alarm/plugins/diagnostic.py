@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # DiagnosticPlugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.template import Template, Context
 # NOC modules
 from base import AlarmPlugin
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
