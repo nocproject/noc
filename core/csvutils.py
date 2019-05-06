@@ -36,7 +36,7 @@ def update_if_changed(obj, values):
     for k, v in values.items():
         vv = getattr(obj, k)
         if v != vv:
-            if type(v) != int or not hasattr(vv, "id") or v != vv.id:
+            if not isinstance(v, int) or not hasattr(vv, "id") or v != vv.id:
                 setattr(obj, k, v)
                 changes += [(k, v)]
     if changes:

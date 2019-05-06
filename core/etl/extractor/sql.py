@@ -17,7 +17,7 @@ class SQLExtractor(BaseExtractor):
         """
         Returns tuple of SQL Query, list of bind parameters
         """
-        if type(self.SQL) == list:
+        if isinstance(self.SQL, list):
             for sql in self.SQL:
                 yield sql, []
         else:

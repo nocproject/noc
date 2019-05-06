@@ -430,7 +430,7 @@ class AssetCheck(DiscoveryCheck):
         """
         Register missed part number
         """
-        if type(part_no) != list:
+        if not isinstance(part_no, list):
             part_no = [part_no]
         for p in part_no:
             if p not in self.unknown_part_no:
@@ -608,7 +608,7 @@ class AssetCheck(DiscoveryCheck):
         Try to resolve using model map
         """
         # Process list of part no
-        if type(part_no) == list:
+        if isinstance(part_no, list):
             for p in part_no:
                 m = self.get_model_map(vendor, p, serial)
                 if m:

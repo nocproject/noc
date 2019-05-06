@@ -98,7 +98,7 @@ class MIB(Document):
             enum_map = s.get("enum_map", {})
             for k in syntax:
                 sk = syntax[k]
-                if type(sk) != dict:
+                if not isinstance(sk, dict):
                     continue
                 if "nodetype" in sk and sk["nodetype"] == "namednumber":
                     enum_map[sk["number"]] = k

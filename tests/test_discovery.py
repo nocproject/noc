@@ -210,7 +210,7 @@ def get_by_path(mo, path):
 
 
 def get_discovery_object_name(x):
-    if type(x) == tuple:
+    if isinstance(x, tuple):
         return "%s:%s" % (x[2], x[0])
     return None
 

@@ -33,8 +33,7 @@ class Script(BaseScript):
             }]
         else:
             cmd = self.cli("show interface")
-            macs = self.rx_mac2.findall(cmd)
-            macs.sort()
+            macs = sorted(self.rx_mac2.findall(cmd))
             return [{
                 "first_chassis_mac": f,
                 "last_chassis_mac": t

@@ -344,7 +344,7 @@ class ManagedObjectSelector(models.Model):
 
         if type(s) in (int, long, str, unicode):
             s = [s]
-        if type(s) != list:
+        if not isinstance(s, list):
             raise ValueError("list required")
         objects = set()
         for so in s:

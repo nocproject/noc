@@ -203,7 +203,7 @@ class MetricScriptBase(BaseScriptMetaclass):
             raise ValueError(
                 "Failed to parse file '%s': %s" % (path, e)
             )
-        if type(data) != dict:
+        if not isinstance(data, dict):
             raise ValueError(
                 "Error in file '%s': Must be defined as object" % path
             )

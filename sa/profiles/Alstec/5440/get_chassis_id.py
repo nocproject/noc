@@ -24,8 +24,7 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.cli("brctl showmacs br0", cached=True)
-        macs = self.rx_mac.findall(v)
-        macs.sort()
+        macs = sorted(self.rx_mac.findall(v))
         return [{
             "first_chassis_mac": f,
             "last_chassis_mac": t

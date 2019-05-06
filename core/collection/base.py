@@ -224,7 +224,7 @@ class Collection(object):
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
-            if (type(field) == ListField and
+            if (isinstance(field, ListField) and
                     isinstance(field.field, EmbeddedDocumentField)):
                 edoc = field.field.document_type
                 try:

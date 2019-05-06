@@ -20,8 +20,7 @@ class Script(BaseScript):
     rx_mac = re.compile(r"MAC address\s+: ((?:[0-9A-F]{2}[:\-]){5}[0-9A-F]{2})")
 
     def execute_cli(self):
-        macs = self.rx_mac.findall(self.cli("show mac"))
-        macs.sort()
+        macs = sorted(self.rx_mac.findall(self.cli("show mac")))
         return [{
             "first_chassis_mac": f,
             "last_chassis_mac": t

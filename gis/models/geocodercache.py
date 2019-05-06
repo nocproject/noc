@@ -81,7 +81,7 @@ class GeocoderCache(Document):
 
     @classmethod
     def clean_query(cls, query):
-        if type(query) == str:
+        if isinstance(query, str):
             query = unicode(query, "utf-8")
         query = query.upper().encode("utf-8")
         query = cls.rx_slash.sub("/", query)
