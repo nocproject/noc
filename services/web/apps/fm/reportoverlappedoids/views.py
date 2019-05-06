@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # fm.reportoverlappedoids
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.core.translation import ugettext as _
 
