@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import with_statement
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -19,9 +18,9 @@ class Script(BaseScript):
     name = "DLink.DxS_Smart.get_interfaces"
     interface = IGetInterfaces
 
-    rx_ipif = re.compile(r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n"
-    r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_ipif = re.compile(
+        r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n"
+        r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n", re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     rx_mgmt_vlan = re.compile(
         r"^802.1Q Management VLAN\s+: (?P<vlan>\S+)\s*\n")
@@ -42,8 +41,7 @@ class Script(BaseScript):
                 for n, s in self.snmp.join_tables(
                         "1.3.6.1.2.1.31.1.1.1.1",
                         "1.3.6.1.2.1.2.2.1.7"):  # IF-MIB
-                    if n[:3] == 'Aux' or n[:4] == 'Vlan' \
-                    or n[:11] == 'InLoopBack':
+                    if n[:3] == 'Aux' or n[:4] == 'Vlan' or n[:11] == 'InLoopBack':
                         continue
                     else:
                         if n[:6] == "Slot0/":
