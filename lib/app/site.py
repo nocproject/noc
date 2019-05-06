@@ -33,7 +33,7 @@ from noc.core.debug import error_report
 logger = logging.getLogger(__name__)
 
 
-class ProxyNode:
+class ProxyNode(object):
     pass
 
 
@@ -425,7 +425,7 @@ class Site(object):
             # Do not discover site twice
             return
         # Connect to mongodb
-        import noc.lib.nosql # noqa:F401
+        import noc.lib.nosql  # noqa:F401
         self.installed_applications = []
         prefix = "services/web/apps"
         # Load applications

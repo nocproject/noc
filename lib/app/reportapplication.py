@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # ReportApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from application import Application, view
 from noc.core.translation import ugettext as _
+from .application import Application, view
 
 
 class ReportApplication(Application):
@@ -18,7 +20,7 @@ class ReportApplication(Application):
         "text": "text/plain; charset=utf-8",
         "html": "text/html; charset=utf-8",
         "csv": "text/csv; charser=utf-8",
-        }
+    }
     # List of CSS links
     styles = []
     # Inline CSS
