@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # inv.reportdiscovery
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
+
 # Python modules
-import operator
 import re
 from collections import defaultdict
+# Third-party modules
 from django import forms
 # NOC modules
 from noc.core.cache.base import cache
@@ -103,7 +102,6 @@ class ReportPendingLinks(object):
                             "remote_id": "%s; %s; %s" % (mo.name, mo.profile.name, iface),
                             "remote_iface": pend_str.group("remote_iface")}
                         # print(discovery["problems"]["lldp"])
-                pass
 
             n += 10000
 

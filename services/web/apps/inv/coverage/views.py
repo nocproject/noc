@@ -2,12 +2,12 @@
 # ---------------------------------------------------------------------
 # inv.coverage application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.lib.app.docinline import DocInline
 from noc.inv.models.coverage import Coverage
 from noc.inv.models.coveredobject import CoveredObject

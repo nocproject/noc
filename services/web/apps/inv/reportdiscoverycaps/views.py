@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # inv.reportdiscoverycaps
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import operator
+# Third-party modules
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
