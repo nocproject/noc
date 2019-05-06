@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # FM models utils
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from bson import ObjectId
 
 
@@ -40,7 +41,7 @@ def get_severity(alarms):
     def f(a):
         if hasattr(a, "id"):
             return a.id
-        elif isinstance(a, basestring):
+        elif isinstance(a, six.string_types):
             return ObjectId(a)
         else:
             return a

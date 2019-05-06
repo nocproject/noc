@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic RouterOS parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,9 @@
 import re
 from collections import defaultdict
 # Third-party modules
-from pyparsing import *
+import six
+from pyparsing import (Word, Suppress, alphanums, QuotedString, Group, LineStart, Literal,
+                       restOfLine, ZeroOrMore, Optional, FollowedBy)
 # NOC modules
 from noc.cm.parsers.pyparser import BasePyParser
 
@@ -55,7 +57,7 @@ class RouterOSParser(BasePyParser):
         return dict((k, v) for k, v in tokens)
 
     def get_interface_fact(self, name):
-        if isinstance(name, basestring):
+        if isinstance(name, six.string_types):
             return super(RouterOSParser, self).get_interface_fact(name)
         else:
             default_name = name[2]
@@ -76,7 +78,7 @@ class RouterOSParser(BasePyParser):
 
     def on_set(self, tokens):
         if self.set_handler:
-            if isinstance(tokens[0], basestring) or tokens[0][0] == "find":
+            if isinstance(tokens[0], six.string_types) or tokens[0][0] == "find":
                 name = tokens[0]
                 args = self.parse_kvp(tokens[1:])
             else:

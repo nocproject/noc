@@ -6,11 +6,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from tornado.iostream import IOStream
 import tornado.gen
+# Third-party modules
+import six
 # NOC modules
-from base import CLI
+from .base import CLI
 
 IAC = chr(0xFF)  # Interpret As Command
 DONT = chr(0xFE)
@@ -196,7 +200,7 @@ class TelnetIOStream(IOStream):
         :param opt:
         :return:
         """
-        if isinstance(opt, basestring):
+        if isinstance(opt, six.string_types):
             opt = ord(opt)
         return "%s %s" % (
             IAC_CMD.get(cmd, cmd),

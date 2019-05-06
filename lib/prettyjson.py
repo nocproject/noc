@@ -2,12 +2,15 @@
 # ---------------------------------------------------------------------
 # Pretty JSON formatter
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import uuid
+from functools import reduce
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.escape import json_escape
 from noc.lib.text import indent
@@ -25,7 +28,7 @@ class PrettyJSON(object):
     def convert(cls, o, i, order=None):
         if o is None:
             return indent("null", i)
-        if isinstance(o, basestring):
+        if isinstance(o, six.string_types):
             return indent("\"%s\"" % json_escape(o), i)
         elif isinstance(o, bool):
             return indent("true" if o else "false", i)

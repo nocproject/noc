@@ -2,9 +2,12 @@
 # ---------------------------------------------------------------------
 # Routing Policy Specification Language (RFC2622) routines
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Third-party modules
+import six
 
 RPLS_IDENT = 20
 
@@ -20,7 +23,7 @@ def rpsl_format(rpsl, ident=None):
         ident = RPLS_IDENT
     out = []
     mask = "%%-%ds%%s" % ident
-    if isinstance(rpsl, basestring):
+    if isinstance(rpsl, six.string_types):
         rpsl = rpsl.split("\n")
     for l in [x for x in rpsl if ":" in x]:
         k, v = l.split(":", 1)

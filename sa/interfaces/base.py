@@ -2,10 +2,9 @@
 # ----------------------------------------------------------------------
 # Abstract script interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-# pylint: disable=c0301, basestring-builtin
 
 # Python modules
 import re
@@ -336,7 +335,7 @@ class InstanceOfParameter(Parameter):
         super(InstanceOfParameter, self).__init__(required=required,
                                                   default=default)
         self.cls = cls
-        if isinstance(cls, basestring):
+        if isinstance(cls, six.string_types):
             self.is_valid = self.is_valid_classname
         else:
             self.is_valid = self.is_valid_instance
@@ -390,7 +389,7 @@ class SubclassOfParameter(Parameter):
         super(SubclassOfParameter, self).__init__(required=required,
                                                   default=default)
         self.cls = cls
-        if isinstance(cls, basestring):
+        if isinstance(cls, six.string_types):
             self.is_valid = self.is_valid_classname
         else:
             self.is_valid = self.is_valid_class
@@ -638,7 +637,7 @@ class DateTimeParameter(StringParameter):
     def form_clean(self, value):
         if value is None and self.default is not None:
             value = self.default
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             if "." in value:
                 dt, _, us = value.partition(".")
                 dt = datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
@@ -670,7 +669,7 @@ class DateTimeShiftParameter(StringParameter):
     def form_clean(self, value):
         if value is None and self.default is not None:
             value = self.default
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             if "." in value:
                 dt, _, us = value.partition(".")
                 dt = datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
@@ -939,7 +938,7 @@ class VLANIDMapParameter(StringParameter):
         >>> VLANIDMapParameter().clean("")
         ''
         """
-        if isinstance(value, basestring) and not value.strip():
+        if isinstance(value, six.string_types) and not value.strip():
             return ""
         vp = VLANIDParameter()
         try:
@@ -1109,7 +1108,7 @@ class GeoPointParameter(Parameter):
                 return [float(x) for x in value]
             except ValueError:
                 self.raise_error(value)
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.string_types):
             v = value.replace(" ", "")
             if not v or "," not in v:
                 self.raise_error(value)
@@ -1211,7 +1210,7 @@ class TagsParameter(Parameter):
         if type(value) in (list, tuple):
             v = [unicode(v).strip() for v in value]
             return [x for x in v if x]
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.string_types):
             v = [unicode(x.strip()) for x in value.split(",")]
             return [x for x in v if x]
         else:
@@ -1224,7 +1223,7 @@ class ColorParameter(Parameter):
             return self.default
         if type(value) in (int, long):
             return value
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             if value.startswith("#"):
                 value = value[1:]
             if len(value) == 6:
