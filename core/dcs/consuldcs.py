@@ -24,7 +24,7 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from .base import DCSBase, ResolverBase
 
-ConsulRepearableCodes = set([500, 598, 599])
+ConsulRepearableCodes = {500, 598, 599}
 ConsulRepeatableErrors = consul.base.Timeout
 
 CONSUL_CONNECT_TIMEOUT = config.consul.connect_timeout

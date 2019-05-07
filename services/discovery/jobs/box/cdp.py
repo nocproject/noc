@@ -19,7 +19,7 @@ class CDPCheck(TopologyDiscoveryCheck):
     required_script = "get_cdp_neighbors"
     required_capabilities = ["Network | CDP"]
 
-    RESERVED_NAMES = set(["Switch", "Router", "MikroTik"])
+    RESERVED_NAMES = {"Switch", "Router", "MikroTik"}
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_cdp_neighbors()

@@ -2,10 +2,11 @@
 # ---------------------------------------------------------------------
 # Interface Facts Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport
@@ -43,7 +44,7 @@ class ReportFilterApplication(SimpleReport):
     form = ReportForm
     try:
         default_pool = Pool.objects.get(name="default")
-    except:
+    except Pool.DoesNotExist:
         default_pool = Pool.objects.all()[0]
     predefined_reports = {
         "default": PredefinedReport(
@@ -77,10 +78,10 @@ class ReportFilterApplication(SimpleReport):
         # Interface._get_collection()
         while mos_ids[(0 + n):(10000 + n)]:
             mos_ids_f = mos_ids[(0 + n):(10000 + n)]
-            s_iface = set(["%d.%s" % (mo.id, name) for mo, name in iface])
+            s_iface = {"%d.%s" % (mo.id, name) for mo, name in iface}
             of = ObjectFact.objects.filter(object__in=mos_ids_f,
                                            cls="subinterface", attrs__traffic_control_broadcast=False)
-            a_f = set([".".join((str(o.object.id), o.attrs["name"])) for o in of])
+            a_f = {".".join((str(o.object.id), o.attrs["name"])) for o in of}
             res.extend(a_f.intersection(s_iface))
             n += 10000
         for s in res:

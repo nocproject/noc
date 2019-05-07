@@ -78,7 +78,7 @@ class Script(BaseScript):
             return []
 
         # Get vlans, as set([1,2,3,10])
-        known_vlans = set([vlan["vlan_id"] for vlan in self.scripts.get_vlans()])
+        known_vlans = {vlan["vlan_id"] for vlan in self.scripts.get_vlans()}
 
         # Set up interface statuses
         for intstatus in self.scripts.get_interface_status():

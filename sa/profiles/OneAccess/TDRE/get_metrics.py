@@ -38,7 +38,7 @@ class Script(GetMetricsScript):
         re.MULTILINE
     )
 
-    ALL_SLA_METRICS = set(["SLA | ICMP RTT", "SLA | UDP RTT", "SLA | JITTER"])
+    ALL_SLA_METRICS = {"SLA | ICMP RTT", "SLA | UDP RTT", "SLA | JITTER"}
     SLA_ICMP_RTT = "SLA | ICMP RTT"
     SLA_UDP_RTT = "SLA | UDP RTT"
     SLA_JITTER = "SLA | JITTER"

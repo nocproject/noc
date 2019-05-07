@@ -87,7 +87,7 @@ class ProfileLoader(BaseLoader):
         """
         Scan all available profiles
         """
-        ns = set([GENERIC_PROFILE])
+        ns = {GENERIC_PROFILE}
         for px in config.get_customized_paths(os.path.join("sa", "profiles"), prefer_custom=True):
             px = os.path.join(px, "*", "*", "__init__.py")
             for path in glob.glob(px):

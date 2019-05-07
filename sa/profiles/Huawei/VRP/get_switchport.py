@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -64,7 +64,6 @@ class Script(BaseScript):
                     yield int(is_v)
 
     def execute_snmp(self, **kwargs):
-
         names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
         r = {}
         for port_num, ifindex, port_type, pvid in self.snmp.get_tables(
@@ -135,9 +134,7 @@ class Script(BaseScript):
         portchannels = self.scripts.get_portchannel()
 
         # Get vlans
-        known_vlans = set([vlan["vlan_id"] for vlan in
-                           self.scripts.get_vlans()])
-
+        known_vlans = {vlan["vlan_id"] for vlan in self.scripts.get_vlans()}
         # Get ports in vlans
         r = []
         version = self.profile.fix_version(self.scripts.get_version())

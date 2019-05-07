@@ -15,10 +15,10 @@ class Script(BaseScript):
     name = "HP.iLO2.get_config"
     interface = IGetConfig
 
-    EXCLUDE_TARGETS = set([
+    EXCLUDE_TARGETS = {
         "/map1/firmware1",
         "/map1/log1"
-    ])
+    }
 
     def walk(self, dir):
         r = self.cli("show %s" % dir).split("\n")

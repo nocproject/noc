@@ -29,8 +29,8 @@ class Rule(object):
         if self.alarm_class:
             self.severity = self.alarm_class.default_severity.severity
             self.unique = self.alarm_class.is_unique
-            a_vars = set([v.name for v in self.alarm_class.vars])
-            e_vars = set([v.name for v in self.event_class.vars])
+            a_vars = {v.name for v in self.alarm_class.vars}
+            e_vars = {v.name for v in self.event_class.vars}
             for v in a_vars.intersection(e_vars):
                 self.var_mapping[v] = v
             if dr.var_mapping:

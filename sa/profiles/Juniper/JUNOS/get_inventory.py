@@ -49,7 +49,7 @@ class Script(BaseScript):
     }
 
     IGNORED = {
-        "RE": set([
+        "RE": {
             "750-026468",  # EX2200-24T-4G
             "750-026331",  # EX2200-48P-4G, POE
             "750-033065",  # EX4200-24T, 8 POE
@@ -59,7 +59,7 @@ class Script(BaseScript):
             "750-021778",  # RE-SRX210B
             "710-015273",  # RE-J4350-2540
             "710-017560"   # RE-J2320-2000
-        ])
+        }
     }
 
     def parse_hardware(self, v):

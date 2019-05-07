@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # peer.peer application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -55,9 +55,9 @@ class PeerApplication(ExtModelApplication):
         if not has_local_backup and has_remote_backup:
             raise ValueError("One of backup addresses given. Set peer address")
         # Check all link addresses belongs to one AFI
-        if len(set([IP.prefix(data[x]).afi for x in
-                    ["local_ip", "remote_ip", "local_backup_ip", "remote_backup_ip"] if
-                    x in data and data[x]])) > 1:
+        if len({IP.prefix(data[x]).afi for x in
+                ["local_ip", "remote_ip", "local_backup_ip", "remote_backup_ip"]
+                if x in data and data[x]}) > 1:
             raise ValueError("All neighboring addresses must have same address family")
         return data
 

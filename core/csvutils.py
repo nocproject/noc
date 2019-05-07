@@ -19,7 +19,7 @@ IR_FAIL = 0  # Fail on first conflict
 IR_SKIP = 1  # Skip conflicted records
 IR_UPDATE = 2  # Overwrite conflicted records
 # Set of ignored fields
-IGNORED_FIELDS = set(["id", "bi_id"])
+IGNORED_FIELDS = {"id", "bi_id"}
 
 
 def update_if_changed(obj, values):
@@ -123,15 +123,13 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     # Process model fields
     field_names = set()
     required_fields = set()
-    unique_fields = set([ff.name for ff in model._meta.fields if ff.unique])
+    unique_fields = {ff.name for ff in model._meta.fields if ff.unique}
     fk = {}  # Foreign keys: name->(model,field)
     # find boolean fields
-    booleans = set([ff.name for ff in model._meta.fields if
-                    isinstance(ff, models.BooleanField)])
-    integers = set([ff.name for ff in model._meta.fields if
-                    isinstance(ff, models.IntegerField)])
+    booleans = {ff.name for ff in model._meta.fields if isinstance(ff, models.BooleanField)}
+    integers = {ff.name for ff in model._meta.fields if isinstance(ff, models.IntegerField)}
     # Search for foreign keys and required fields
-    ir = set(["id", "bi_id"])
+    ir = {"id", "bi_id"}
     ir.update(getattr(model, "csv_ignored_fields", []))
     for name, required, rel, rname in get_model_fields(model):
         field_names.add(name)

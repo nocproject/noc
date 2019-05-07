@@ -55,7 +55,7 @@ class Script(BaseScript):
         portchannels = self.scripts.get_portchannel()
 
         # Get vlans
-        known_vlans = set([vlan["vlan_id"] for vlan in self.scripts.get_vlans()])
+        known_vlans = {vlan["vlan_id"] for vlan in self.scripts.get_vlans()}
 
         # Get ports in vlans
         r = []

@@ -90,9 +90,7 @@ class Script(BaseScript):
             vv = self.cli("show port %s information detail" % p["interface"])
             v = v + vv + "\n"
         # Get vlans
-        known_vlans = set(
-            [vlan["vlan_id"] for vlan in self.scripts.get_vlans()]
-        )
+        known_vlans = {vlan["vlan_id"] for vlan in self.scripts.get_vlans()}
         # For each interface
         for s in self.rx_line.split(v)[1:]:
             tagged = []
