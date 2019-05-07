@@ -12,7 +12,7 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 class Script(GetMetricsScript):
     name = "EdgeCore.ES.get_metrics"
 
-    ALL_IFACE_METRICS = set(["Interface | Errors | CRC", "Interface | Errors | Frame"])
+    ALL_IFACE_METRICS = {"Interface | Errors | CRC", "Interface | Errors | Frame"}
 
     def collect_profile_metrics(self, metrics):
         if self.has_capability("DB | Interfaces"):

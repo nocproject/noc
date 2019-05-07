@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Peer cone analysys
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ class ReportLOC(SimpleReport):
                     try:
                         prefixes[pfx].add(p.id)
                     except KeyError:
-                        prefixes[pfx] = set([p.id])
+                        prefixes[pfx] = {p.id}
         # Calculate unique powers
         for pfx in prefixes:
             pfx_peers = prefixes[pfx]

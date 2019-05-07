@@ -38,7 +38,7 @@ class UserChangeForm(forms.ModelForm):
             self.initial["noc_user_permissions"] = "user:" + self.initial["username"]
         self.new_perms = set()
         if args:
-            self.new_perms = set([p[5:] for p in args[0] if p.startswith("perm_")])
+            self.new_perms = {p[5:] for p in args[0] if p.startswith("perm_")}
 
     def clean_password(self):
         return self.initial["password"]

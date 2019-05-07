@@ -55,7 +55,7 @@ DEFAULT_PORTS = {
 }
 
 # Methods require Content-Length header
-REQUIRE_LENGTH_METHODS = set(["POST", "PUT"])
+REQUIRE_LENGTH_METHODS = {"POST", "PUT"}
 
 ns_lock = threading.Lock()
 ns_cache = cachetools.TTLCache(NS_CACHE_SIZE, ttl=RESOLVER_TTL)

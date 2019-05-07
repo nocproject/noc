@@ -42,7 +42,7 @@ class Script(BaseScript):
                 if match:
                     applied_pl.add("%s %s" % (match.group(1), match.group(2)))
             # Build new prefix-list
-            new_pl = set(["%s %s" % (x, suffix) for x in l["prefix_list"]])
+            new_pl = {"%s %s" % (x, suffix) for x in l["prefix_list"]}
             # Delete obsolete records
             actions += [
                 "delete policy-options policy-statement %s term pass from "

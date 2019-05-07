@@ -23,15 +23,15 @@ class SLACheck(DiscoveryCheck):
 
     PROFILE_CAPS = {
         #
-        "Cisco.IOS": set([
+        "Cisco.IOS": {
             "Cisco | IP | SLA | Probes"
-        ]),
-        "Juniper.JUNOS": set([
+        },
+        "Juniper.JUNOS": {
             "Juniper | RPM | Probes"
-        ]),
-        "OneAccess.TDRE": set([
+        },
+        "OneAccess.TDRE": {
             "OneAccess | IP | SLA | Probes"
-        ]),
+        },
         # Fallback
         GENERIC_PROFILE: set()
     }

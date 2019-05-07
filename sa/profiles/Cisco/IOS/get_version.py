@@ -49,12 +49,12 @@ class Script(BaseScript):
         r"^cisco (?P<part_no>\S+) \(\S+\) processor( "
         r"\(revision(?P<revision>.+?)\))? with",
         re.IGNORECASE | re.MULTILINE)
-    IGNORED_SERIAL = set([
+    IGNORED_SERIAL = {
         "H22L714"
-    ])
-    IGNORED_NAMES = set([
+    }
+    IGNORED_NAMES = {
         "c7201"
-    ])
+    }
 
     def clear_platform(self, platform):
         """

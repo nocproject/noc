@@ -65,7 +65,7 @@ class CapabilityApplication(ExtDocApplication):
             for b in reversed(e):
                 context[b.strip()] += children
                 children = [{"text": b.strip(), "children": context[b.strip()]}]
-        kk = set([k[0].strip() for (k, g) in itertools.groupby(caps_d, key=lambda x: x[:1]) if k])
+        kk = {k[0].strip() for (k, g) in itertools.groupby(caps_d, key=lambda x: x[:1]) if k}
         for k in kk:
             root_c["children"] += [{"text": k, "children": context[k]}]
 

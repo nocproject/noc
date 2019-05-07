@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.objectlist application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,11 +15,10 @@ from noc.lib.nosql import Q as m_Q
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.firmware import Firmware
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.sa.interfaces.base import (ListOfParameter, IPv4Parameter, DictParameter)
+from noc.sa.interfaces.base import ListOfParameter, IPv4Parameter, DictParameter
 from noc.sa.models.useraccess import UserAccess
 
 
@@ -70,7 +69,7 @@ class ObjectListApplication(ExtApplication):
         ids = set()
         self.logger.debug("Cleaned query: %s" % nq)
         if "ids" in nq:
-            ids = set([int(nid) for nid in nq["ids"]])
+            ids = {int(nid) for nid in nq["ids"]}
             del nq["ids"]
 
         if "administrative_domain" in nq:

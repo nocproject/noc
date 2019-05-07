@@ -34,10 +34,10 @@ class Script(BaseScript):
     )
     rx_trans = re.compile(r"((?:100|1000|10G)BASE\S+)")
     # set of pids GEM modules w/o transceivers
-    gem_w_o_sfp = set([
+    gem_w_o_sfp = {
         "N55-M160L3",
         "N55-M160L3-V2"
-    ])
+    }
 
     def execute_cli(self):
         objects = []

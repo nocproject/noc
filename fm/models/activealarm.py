@@ -541,7 +541,7 @@ class ActiveAlarm(Document):
         """
         Generator yielding all affected managed objects
         """
-        seen = set([self.managed_object])
+        seen = {self.managed_object}
         yield self.managed_object
         for a in self.iter_consequences():
             if a.managed_object not in seen:

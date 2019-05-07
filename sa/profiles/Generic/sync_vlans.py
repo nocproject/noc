@@ -19,8 +19,8 @@ class Script(BaseScript):
         for v in vlans:
             v_map[v["vlan_id"]] = v["name"]
         r_vlans = self.scripts.get_vlans()
-        dev_vlans = set([v["vlan_id"] for v in r_vlans])
-        db_vlans = set([v["vlan_id"] for v in vlans])
+        dev_vlans = {v["vlan_id"] for v in r_vlans}
+        db_vlans = {v["vlan_id"] for v in vlans}
         # Do not provision VLAN1
         if 1 in dev_vlans:
             dev_vlans.remove(1)

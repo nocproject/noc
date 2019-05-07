@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -167,8 +167,7 @@ class Script(BaseScript):
         for p in self.get_description():
             descriptions[p["interface"]] = p["description"]
         # Get vlans
-        known_vlans = set([vlan["vlan_id"] for vlan in
-                           self.scripts.get_vlans()])
+        known_vlans = {vlan["vlan_id"] for vlan in self.scripts.get_vlans()}
         # For each interface
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_body.search(s)

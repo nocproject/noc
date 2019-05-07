@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic Huawei parser
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,16 +16,15 @@ from noc.lib.validators import is_ipv4
 
 
 class BaseVRPParser(BaseParser):
-
     def __init__(self, managed_object):
         super(BaseVRPParser, self).__init__(managed_object)
 
-    STATUSES = set(["sntp"])
-    SERVICES = set(["telnet", "web", "ssh", "cluster",
-                    "ntdp", "ndp", "lldp", "dhcp",
-                    "http server", "http secure-server",
-                    "telnet server", "stp", "info-center"])
-    PROTOCOLS = set(["ntdp", "ndp", "bpdu"])
+    STATUSES = {"sntp"}
+    SERVICES = {"telnet", "web", "ssh", "cluster",
+                "ntdp", "ndp", "lldp", "dhcp",
+                "http server", "http secure-server",
+                "telnet server", "stp", "info-center"}
+    PROTOCOLS = {"ntdp", "ndp", "bpdu"}
 
     def parse(self, config):
         # Various protocol statuses
@@ -75,43 +74,42 @@ class BaseVRPParser(BaseParser):
             elif line.startswith("aaa"):
                 continue
             elif "interface" in context:
-                    if line.startswith("shutdown"):
-                        self.on_interface_shutdown(ll)
-                    elif line.startswith("description"):
-                        self.on_interface_descripion(ll)
-                    elif line.startswith("ip address "):
-                        self.on_subinterface_ipv4_address(ll)
-                    elif line.startswith("broadcast-suppression") or line.startswith("multicast-suppression") \
-                            or line.startswith("unicast-suppression"):
-                        self.on_storm_control(ll)
-                    elif line.startswith("speed "):
-                        self.on_interface_speed(ll)
-                    elif line.startswith("duplex "):
-                        self.on_interface_duplex(ll)
-                    elif line.startswith("negotiation"):
-                        # undo negotiation auto
-                        pass
-                    elif line.startswith("port link-type"):
-                        # port link-type trunk
-                        pass
-                    elif line.startswith("port-security"):
-                        self.on_interface_port_security(ll)
-                    elif line.startswith("port trunk allow-pass ") or \
-                            line.startswith("port hybrid tagged vlan "):
-                        # port trunk allow-pass vlan 118 718
-                        self.on_interface_tagged(ll)
-                    elif line.startswith("port hybrid "):
-                        # port hybrid pvid vlan 2925
-                        # undo port hybrid vlan 1
-                        # mac-limit maximum 6
-                        self.on_interface_untagged(ll)
-                    elif line.startswith("eth-trunk"):
-                        self.on_interface_aggregate(ll)
-                    elif ll[0] in self.PROTOCOLS:
+                if line.startswith("shutdown"):
+                    self.on_interface_shutdown(ll)
+                elif line.startswith("description"):
+                    self.on_interface_descripion(ll)
+                elif line.startswith("ip address "):
+                    self.on_subinterface_ipv4_address(ll)
+                elif (line.startswith("broadcast-suppression") or line.startswith("multicast-suppression") or
+                      line.startswith("unicast-suppression")):
+                    self.on_storm_control(ll)
+                elif line.startswith("speed "):
+                    self.on_interface_speed(ll)
+                elif line.startswith("duplex "):
+                    self.on_interface_duplex(ll)
+                elif line.startswith("negotiation"):
+                    # undo negotiation auto
+                    pass
+                elif line.startswith("port link-type"):
+                    # port link-type trunk
+                    pass
+                elif line.startswith("port-security"):
+                    self.on_interface_port_security(ll)
+                elif line.startswith("port trunk allow-pass ") or line.startswith("port hybrid tagged vlan "):
+                    # port trunk allow-pass vlan 118 718
+                    self.on_interface_tagged(ll)
+                elif line.startswith("port hybrid "):
+                    # port hybrid pvid vlan 2925
+                    # undo port hybrid vlan 1
+                    # mac-limit maximum 6
+                    self.on_interface_untagged(ll)
+                elif line.startswith("eth-trunk"):
+                    self.on_interface_aggregate(ll)
+                elif ll[0] in self.PROTOCOLS:
+                    self.on_interface_protocols(ll)
+                elif len(ll) > 1:
+                    if ll[1] in self.PROTOCOLS:
                         self.on_interface_protocols(ll)
-                    elif len(ll) > 1:
-                        if ll[1] in self.PROTOCOLS:
-                            self.on_interface_protocols(ll)
             elif line.startswith("vlan batch "):
                 # vlan batch 777 1221 to 1244 2478 4010
                 pass
@@ -305,7 +303,7 @@ class BaseVRPParser(BaseParser):
         if tokens[1] == "enable":
             si.port_security = True
         if tokens[1] == "max-mac-num":
-                si.port_security_max = tokens[-1]
+            si.port_security_max = tokens[-1]
 
     def on_interface_untagged(self, tokens):
         """
@@ -369,5 +367,3 @@ class BaseVRPParser(BaseParser):
         # nh = rest.pop(0)
         if is_ipv4(nh):
             sf.next_hop = nh
-        else:
-            pass

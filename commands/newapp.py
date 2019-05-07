@@ -191,7 +191,7 @@ class Command(BaseCommand):
         if not os.path.isdir(ts_root):
             raise CommandError("Inconsistent template set %s" % templateset)
         # Get installed modules
-        modules = set([a[4:] for a in INSTALLED_APPS if a.startswith("noc.")])
+        modules = {a[4:] for a in INSTALLED_APPS if a.startswith("noc.")}
         # Fill templates
         for app in args:
             self.print("Creating skeleton for %s" % app)

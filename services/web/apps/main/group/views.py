@@ -30,8 +30,7 @@ class GroupChangeForm(forms.ModelForm):
         self.new_perms = set()
         if args:
             # Fetch posted permissions
-            self.new_perms = set(
-                [p[5:] for p in args[0] if p.startswith("perm_")])
+            self.new_perms = {p[5:] for p in args[0] if p.startswith("perm_")}
 
     def save(self, commit=True):
         model = super(GroupChangeForm, self).save(commit)

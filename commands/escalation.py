@@ -146,7 +146,7 @@ class Command(BaseCommand):
             """
             Generator yielding all affected managed objects
             """
-            seen = set([alarm.managed_object])
+            seen = {alarm.managed_object}
             yield alarm.managed_object
             for a in iter_consequences(alarm):
                 if a.managed_object not in seen:

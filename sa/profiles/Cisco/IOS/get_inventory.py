@@ -56,23 +56,23 @@ class Script(BaseScript):
 
     slot_id = 0
 
-    IGNORED_SERIAL = set([
+    IGNORED_SERIAL = {
         "H22L714"
-    ])
+    }
 
-    IGNORED_NAMES = set([
+    IGNORED_NAMES = {
         "c7201"
-    ])
+    }
 
-    GBIC_MODULES = set([
+    GBIC_MODULES = {
         "WS-X6K-SUP2-2GE",
         "WS-X6724-SFP"
-    ])
+    }
 
-    ISR_MB = set([
+    ISR_MB = {
         "CISCO2801",
         "CISCO2811"
-    ])
+    }
 
     def get_inv(self):
         objects = []

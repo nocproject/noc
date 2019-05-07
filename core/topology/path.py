@@ -94,7 +94,7 @@ def get_shortest_path(start, goal):
     closed_set = set()
     # Currently discovered nodes than are not evaluated yet.
     # Start node is already known
-    open_set = set([start])
+    open_set = {start}
     # For each node, which node it can most efficiently be reached from.
     # If a node can be reached from many nodes, cameFrom will eventually contain the
     # most efficient previous step.

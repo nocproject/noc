@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # gis.overlay application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,10 +22,7 @@ class OverlayApplication(ExtDocApplication):
     model = Overlay
 
     def extra_permissions(self):
-        x = set([s.permission_name
-                 for s in
-                 Overlay.objects.all()])
-        return list(x)
+        return list({s.permission_name for s in Overlay.objects.all()})
 
     @view(url="^gate/(?P<gate_id>[a-zA-Z0-9_\-]+)/$", method=["GET"],
           access="launch", api=True)
