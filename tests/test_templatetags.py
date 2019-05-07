@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # Template tags test
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django import template
-# NOC modules
-from noc.lib.test import NOCTestCase
+# Third-party modules
+import django.template
+import pytest
+
 
 PYTHON1_TPL = """
 {% load python %}
@@ -69,19 +69,13 @@ v=2
 v1=7
 """
 
-class TemplateTestCase(NOCTestCase):
-    def render(self, tpl, context={}):
-        ctx = template.Context(context)
-        return template.Template(tpl).render(ctx)
 
-    def test_python(self):
-        """
-        {% python %} tag test
-        :return:
-        """
-        self.assertEquals(self.render(PYTHON1_TPL, {"x": 1}),
-                          PYTHON1_OUT)
-        self.assertEquals(self.render(PYTHON2_TPL, {"n": 3}),
-                          PYTHON2_OUT)
-        self.assertEquals(self.render(PYTHON3_TPL, {"v": 2}),
-                          PYTHON3_OUT)
+@pytest.mark.parametrize("template,context,expected", [
+    (PYTHON1_TPL, {"x": 1}, PYTHON1_OUT),
+    (PYTHON2_TPL, {"n": 3}, PYTHON2_OUT),
+    (PYTHON3_TPL, {"v": 2}, PYTHON3_OUT)
+])
+def test_templatetags(template, context, expected):
+    ctx = django.template.Context(context)
+    result = django.template.Template(template).render(ctx)
+    assert result == expected
