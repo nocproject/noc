@@ -1,2 +1,5 @@
 [run]
 omit = *tests*
+
+[report]
+ignore_errors = True
