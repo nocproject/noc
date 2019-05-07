@@ -68,9 +68,43 @@ TOKENS1 = [
     ("services", "isis", "interface", "ge-0/0/1.0")
 ]
 
+CFG2 = """snmp {
+    community pub1ic {
+        authorization read-only;
+    }
+    community nnnn {
+        authorization read-only;
+    }
+    community "@default" {
+        authorization read-only;
+    }
+    community TTT {
+        authorization read-only;
+        clients {
+            10.10.10.0/26;
+        }
+    }
+}
+"""
+
+TOKENS2 = [
+    ("snmp",),
+    ("snmp", "community", "pub1ic"),
+    ("snmp", "community", "pub1ic", "authorization", "read-only"),
+    ("snmp", "community", "nnnn"),
+    ("snmp", "community", "nnnn", "authorization", "read-only"),
+    ("snmp", "community", "@default"),
+    ("snmp", "community", "@default", "authorization", "read-only"),
+    ("snmp", "community", "TTT"),
+    ("snmp", "community", "TTT", "authorization", "read-only"),
+    ("snmp", "community", "TTT", "clients"),
+    ("snmp", "community", "TTT", "clients", "10.10.10.0/26")
+]
+
 
 @pytest.mark.parametrize("input,config,expected", [
     (CFG1, {"line_comment": "#", "explicit_eol": ";"}, TOKENS1),
+    (CFG2, {"line_comment": "#", "explicit_eol": ";", "string_quote": "\""}, TOKENS2),
 ])
 def test_tokenizer(input, config, expected):
     tokenizer = CurlyTokenizer(input, **config)

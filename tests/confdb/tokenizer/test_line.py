@@ -70,6 +70,9 @@ interface e1
 
 interface e2
     description "multi line" interface e2 "description here"
+
+interface e3
+    description "multi line" Z
 """
 
 TOKENS5 = [
@@ -79,7 +82,9 @@ TOKENS5 = [
     ("interface", "e1"),
     ("    ", "description", "unterminated description"),
     ("interface", "e2"),
-    ("    ", "description", "multi line", "interface", "e2", "description here")
+    ("    ", "description", "multi line", "interface", "e2", "description here"),
+    ("interface", "e3"),
+    ("    ", "description", "multi line", "Z")
 ]
 
 CFG6 = """! Config
