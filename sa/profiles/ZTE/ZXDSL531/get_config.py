@@ -13,7 +13,7 @@ class Script(BaseScript):
     name = "ZTE.ZXDSL531.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute(self, **kwargs):
         if self.access_profile.scheme == self.TELNET:
             config = self.cli("dumpcfg")
         elif self.access_profile.scheme == self.HTTP:
