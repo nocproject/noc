@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
     def list_commands(self):
         commands = set()
-        for root in config.get_customized_paths("commands"):
+        for root in ["commands"]:
             for f in os.listdir(root):
                 help = ""
                 if f.startswith("_") or f.startswith("."):
