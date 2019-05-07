@@ -121,6 +121,7 @@ class Command(BaseCommand):
         """
         from coverage.results import Numbers
         from coverage.report import Reporter
+        from coverage.misc import NoSource
         from noc.tests.conftest import _stats as stats
 
         self.print("---[ Test session statistics ]------")
@@ -128,7 +129,10 @@ class Command(BaseCommand):
         reporter = Reporter(cov, cov.config)
         totals = Numbers()
         for fr in reporter.find_file_reporters(None):
-            analysis = cov._analyze(fr)
+            try:
+                analysis = cov._analyze(fr)
+            except NoSource:
+                continue
             totals += analysis.numbers
         n_passed = len(stats.get("passed", []))
         n_skipped = len(stats.get("skipped", []))
