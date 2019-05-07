@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Base Validator class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
-
+# Third-party modules
+import six
 # NOC modules
 from noc.cm.facts.error import Error
 from noc.config import config
@@ -53,7 +54,7 @@ class ValidatorBase(type):
         return m
 
 
-class BaseValidator(object):
+class BaseValidator(six.with_metaclass(ValidatorBase, object)):
     """
     Validator base class.
     Preparation call sequence:
@@ -68,7 +69,6 @@ class BaseValidator(object):
 
     Then errors collected via engine.iter_errors
     """
-    __metaclass__ = ValidatorBase
     TITLE = None
     DESCRIPTION = None
     PRIORITY = 1000

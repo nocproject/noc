@@ -2,12 +2,36 @@
 # ----------------------------------------------------------------------
 # NRI Port mapper
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+import six
 
-class BasePortMapper(object):
+
+class PortMapperBase(type):
+    """
+    Process @match decorators
+    """
+    def __new__(mcs, name, bases, attrs):
+        n = type.__new__(mcs, name, bases, attrs)
+        for m in dir(n):
+            mm = getattr(n, m)
+            if hasattr(mm, "_match"):
+                for d in mm._match:
+                    if d["local"] and d["profile"]:
+                        n._profile_to_local[d["profile"]] = mm
+                    elif d["local"] and d["platform"]:
+                        n._platform_to_local[d["platform"]] = mm
+                    elif not d["local"] and d["profile"]:
+                        n._profile_to_remote[d["profile"]] = mm
+                    elif not d["local"] and d["platform"]:
+                        n._platform_to_remote[d["platform"]] = mm
+        return n
+
+
+class BasePortMapper(six.with_metaclass(PortMapperBase, object)):
     """
     Basic class to convert port notation from external NRI and back.
     External NRI system is defined in managed object's
@@ -23,26 +47,6 @@ class BasePortMapper(object):
     _platform_to_local = {}
     _profile_to_remote = {}
     _platform_to_remote = {}
-
-    class __metaclass__(type):
-        """
-        Process @match decorators
-        """
-        def __new__(mcs, name, bases, attrs):
-            n = type.__new__(mcs, name, bases, attrs)
-            for m in dir(n):
-                mm = getattr(n, m)
-                if hasattr(mm, "_match"):
-                    for d in mm._match:
-                        if d["local"] and d["profile"]:
-                            n._profile_to_local[d["profile"]] = mm
-                        elif d["local"] and d["platform"]:
-                            n._platform_to_local[d["platform"]] = mm
-                        elif not d["local"] and d["profile"]:
-                            n._profile_to_remote[d["profile"]] = mm
-                        elif not d["local"] and d["platform"]:
-                            n._platform_to_remote[d["platform"]] = mm
-            return n
 
     def __init__(self, managed_object):
         self.managed_object = managed_object
@@ -60,8 +64,7 @@ class BasePortMapper(object):
         mm = self._profile_to_local.get(self.profile)
         if mm:
             return mm(self, name)
-        else:
-            return None
+        return None
 
     def to_remote(self, name):
         """
@@ -74,8 +77,7 @@ class BasePortMapper(object):
         mm = self._profile_to_remote.get(self.profile)
         if mm:
             return mm(self, name)
-        else:
-            return None
+        return None
 
 
 def to_local(profile=None, platform=None):

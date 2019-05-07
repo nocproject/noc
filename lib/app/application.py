@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Application class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -108,14 +108,13 @@ class ApplicationBase(type):
         return m
 
 
-class Application(object):
+class Application(six.with_metaclass(ApplicationBase, object)):
     """
     Basic application class.
 
     Application combined by set of methods, decorated with @view.
     Each method accepts requests and returns reply
     """
-    __metaclass__ = ApplicationBase
     title = "APPLICATION TITLE"
     icon = "icon_application"
     glyph = "file"
