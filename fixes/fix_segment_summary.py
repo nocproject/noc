@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Update segmet summary
+# Update segment summary
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
@@ -14,4 +14,4 @@ from noc.inv.models.networksegment import NetworkSegment
 
 def fix():
     for ns in NetworkSegment.objects.all():
-        ns.update_summary()
+        NetworkSegment.update_summary(ns)
