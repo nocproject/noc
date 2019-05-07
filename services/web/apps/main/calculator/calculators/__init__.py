@@ -2,12 +2,13 @@
 # ---------------------------------------------------------------------
 # Calculators framework
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-# from noc.lib.render import render
+# Third-party modules
+import six
+# NOC modules
 from noc.lib.registry import Registry
 
 
@@ -21,9 +22,6 @@ class CalculatorRegistry(Registry):
 calculator_registry = CalculatorRegistry()
 
 
-#
-# Calculator metaclass
-#
 class CalculatorBase(type):
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
@@ -31,11 +29,7 @@ class CalculatorBase(type):
         return m
 
 
-#
-#
-#
-class Calculator(object):
-    __metaclass__ = CalculatorBase
+class Calculator(six.with_metaclass(CalculatorBase, object)):
     name = None
     title = None
     description = None
@@ -57,8 +51,10 @@ class Calculator(object):
                                title=self.title, result=result,
                                description=self.description)
 
-    #
-    # Returns a list of pairs or None
-    #
     def calculate(**kwargs):
+        """
+        Returns a list of pairs or None
+        :param kwargs:
+        :return:
+        """
         return None

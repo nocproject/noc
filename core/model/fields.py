@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Custom field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -55,12 +55,10 @@ class INETField(models.Field):
         return value
 
 
-class MACField(models.Field):
+class MACField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     MACField maps to the PostgreSQL MACADDR field
     """
-    __metaclass__ = models.SubfieldBase
-
     def db_type(self, connection):
         return "MACADDR"
 
@@ -84,12 +82,10 @@ class BinaryField(models.Field):
         return "BYTEA"
 
 
-class TextArrayField(models.Field):
+class TextArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     Text Array field maps to PostgreSQL TEXT[] type
     """
-    __metaclass__ = models.SubfieldBase
-
     def db_type(self, connection):
         return "TEXT[]"
 
@@ -113,12 +109,10 @@ class TextArrayField(models.Field):
         return ""
 
 
-class TextArray2Field(models.Field):
+class TextArray2Field(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     Two-dimensioned text array field maps to PostgreSQL TEXT[][]
     """
-    __metaclass__ = models.SubfieldBase
-
     def db_type(self, connection):
         return "TEXT[][]"
 
@@ -137,12 +131,10 @@ class TextArray2Field(models.Field):
         return [[to_unicode(y) for y in x] for x in value]
 
 
-class InetArrayField(models.Field):
+class InetArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     INETArrayField maps to PostgreSQL INET[] type
     """
-    __metaclass__ = models.SubfieldBase
-
     def db_type(self, connection):
         return "INET[]"
 
@@ -161,9 +153,7 @@ class InetArrayField(models.Field):
         return "{ " + ", ".join(value) + " }"
 
 
-class DateTimeArrayField(models.Field):
-    __metaclass__ = models.SubfieldBase
-
+class DateTimeArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def db_type(self, connection):
         return "TIMESTAMP[]"
 
@@ -182,12 +172,10 @@ class DateTimeArrayField(models.Field):
         return "{ " + ", ".join([str(x) for x in value]) + " }"
 
 
-class PickledField(models.Field):
+class PickledField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     Pickled object
     """
-    __metaclass__ = models.SubfieldBase
-
     def db_type(self, connection):
         return "BYTEA"
 
@@ -207,7 +195,6 @@ class AutoCompleteTagsField(models.Field):
     """
     Autocomplete tags fields
     """
-
     def db_type(self, connection):
         return "TEXT"
 
@@ -220,9 +207,7 @@ class AutoCompleteTagsField(models.Field):
         return super(AutoCompleteTagsField, self).formfield(**defaults)
 
 
-class TagsField(models.Field):
-    __metaclass__ = models.SubfieldBase
-
+class TagsField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def db_type(self, connection):
         return "TEXT[]"
 
@@ -230,8 +215,7 @@ class TagsField(models.Field):
         def to_unicode(s):
             if isinstance(s, unicode):
                 return s
-            else:
-                return unicode(s, "utf-8")
+            return unicode(s, "utf-8")
 
         if value is None:
             return None
@@ -256,11 +240,10 @@ class TagsField(models.Field):
         return value
 
 
-class ColorField(models.Field):
+class ColorField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     Color field
     """
-    __metaclass__ = models.SubfieldBase
     default_validators = []
 
     def db_type(self, connection):
@@ -395,12 +378,10 @@ class CachedForeignKey(models.ForeignKey):
                 CachedForeignKeyDescriptor(self))
 
 
-class ObjectIDArrayField(models.Field):
+class ObjectIDArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     ObjectIDArrayField maps to PostgreSQL CHAR[] type
     """
-    __metaclass__ = models.SubfieldBase
-
     def db_type(self, connection):
         return "CHAR(24)[]"
 
