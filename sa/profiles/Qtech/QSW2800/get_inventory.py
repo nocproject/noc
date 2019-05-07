@@ -8,7 +8,7 @@
 
 # Python modules
 import re
-import datetime
+from datetime import datetime
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -66,7 +66,7 @@ class Script(BaseScript):
                     "description": ""
                 }
                 try:
-                    mfg_date = datetime.datetime.strptime(t.group("mfg_date"), "%b %d %Y")
+                    mfg_date = datetime.strptime(t.group("mfg_date"), "%b %d %Y")
                     data["mfg_date"] = mfg_date.strftime("%Y-%m-%d")
                 except ValueError:
                     pass
