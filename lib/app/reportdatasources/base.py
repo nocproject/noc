@@ -126,14 +126,15 @@ class BaseReportColumn(object):
                 # row_id more than sync_id, go to next sync_id
                 while self._current_id and row_id > self._current_id:
                     # fill row unknown_value
-                    self._current_id = self.safe_next()
                     yield self.unknown_value
+                    self._current_id = self.safe_next()
                 if row_id == self._current_id:
                     # Match sync_id and row_id = set value
                     self._value = row_value
                 else:
-                    # Step over current sync_id, set  unknown_value
-                    self._value = self.unknown_value
+                    # Step over current sync_id, set unknown_value
+                    # self._value = self.unknown_value
+                    continue
             yield self._value  # return current value
             self._current_id = self.safe_next()  # Next sync_id
         self._end_series = True
