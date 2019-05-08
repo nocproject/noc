@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -89,9 +89,9 @@ class Script(BaseScript):
                 else:
                     # CISCO-ENTITY-MIB::entPhysicalModelName
                     p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1"])
-                    # WS-C4500X-32 return '  '
-                    if p is None or p.strip() == "":
-                        # Found in WS-C4500X-32
+                    # WS-C4500X-32 return '  ', WS-C4900M return 'MIDPLANE'
+                    if p is None or p.strip() in ["", "MIDPLANE"]:
+                        # Found in WS-C4500X-32 and WS-C4900M
                         p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1000"])
                     if p:
                         if p.startswith("CISCO"):
@@ -142,9 +142,9 @@ class Script(BaseScript):
                         else:
                             # CISCO-ENTITY-MIB::entPhysicalModelName
                             p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1"])
-                            # WS-C4500X-32 return '  '
-                            if p is None or p.strip() == "":
-                                # Found in WS-C4500X-32
+                            # WS-C4500X-32 return '  ', WS-C4900M return 'MIDPLANE'
+                            if p is None or p.strip() in ["", "MIDPLANE"]:
+                                # Found in WS-C4500X-32 and WS-C4900M
                                 p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1000"])
                             if p:
                                 if p.startswith("CISCO"):
