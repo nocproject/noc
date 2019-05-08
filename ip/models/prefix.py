@@ -657,9 +657,9 @@ class Prefix(models.Model):
             if not size:
                 return 100.0
             n_ips = Address.objects.filter(prefix=self).count()
-            if self.effective_prefix_special_address == "X":
+            if n_ips and size > 2 and self.effective_prefix_special_address == "X":
                 # Exclude special addresses
-                n_ips -= len(IPv4(self.prefix).special_addresses)
+                size -= len(IPv4(self.prefix).special_addresses)
             n_pfx = sum(
                 IPv4(p).size
                 for p in Prefix.objects.filter(parent=self).only("prefix").values_list("prefix", flat=True)
@@ -726,8 +726,8 @@ class Prefix(models.Model):
             if self.effective_prefix_special_address == "X":
                 n_pfx = Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
                     where=["prefix <<= %s"], params=[str(self.prefix)]).count()
-                n_ips -= len(IPv4(self.prefix).special_addresses) * n_pfx
-            return float(n_ips) * 100.0 / float(size)
+                size -= len(IPv4(self.prefix).special_addresses) * n_pfx
+            return float(n_ips) * 100.0 / float(size) if n_ips else 0.0
         else:
             return None
 
