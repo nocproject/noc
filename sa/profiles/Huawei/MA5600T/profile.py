@@ -71,6 +71,34 @@ class Profile(BaseProfile):
         r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
         r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)",
         re.MULTILINE)
+    rx_splitter = re.compile(r"\s*\-+\n")
+
+    @staticmethod
+    def get_board_type(name):
+        if "GP" in name or "XGB" in name:
+            return "GPON"
+        elif "ETH" in name or "X2C" in name or "GIC" in name or "X1C" in name:
+            return "Ethernet"
+        elif "CU" in name:
+            return "Control"
+        return "unknown"
+
+    def get_board(self, script):
+        r = []
+        slots = 0
+        v = script.cli("display board 0", cached=True)
+        _, header, body, _ = self.rx_splitter.split(v)
+        for line in body.splitlines():
+            try:
+                num, board = line.split(None, 1)
+            except ValueError:
+                num, board = line.strip(), None
+            if board:
+                name, status = board.split(None, 2)[:2]
+                board_type = self.get_board_type(name)
+                r += [{"num": num, "name": name, "status": status, "type": board_type}]
+            slots += 1
+        return slots, r
 
     def get_slots_n(self, script):
         """
