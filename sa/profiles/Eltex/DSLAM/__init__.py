@@ -3,7 +3,7 @@
 # Vendor: Eltex
 # OS:     DSLAM
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
@@ -21,9 +21,9 @@ class Profile(BaseProfile):
     ]
     pattern_prompt = r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)> "
     pattern_syntax_error = r"Command not found"
-    pattern_operation_error = r"ERROR: Can't stat show result"
-#    command_disable_pager = "terminal datadump"
-#    command_super = "enable"
+    pattern_operation_error = r"ERROR: Can't stat show result|ALARM: Board temperature mount to limit"
+    # command_disable_pager = "terminal datadump"
+    # command_super = "enable"
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
@@ -32,7 +32,7 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     command_save_config = "save"
 
-    rx_header = re.compile("^\-+$")
+    rx_header = re.compile(r"^\-+$")
 
     def iter_items(self, s):
         def iter_lines(s):
@@ -45,7 +45,7 @@ class Profile(BaseProfile):
             ll = len(lines) - 1
             while i <= ll:
                 line = lines[i]
-                line = ''.join('%-8s' % item for item in line.split('\t'))
+                line = line.expandtabs()
                 yield line.split()
                 i += 1
         d = []
