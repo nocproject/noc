@@ -100,6 +100,12 @@ def parse_table(s, allow_wrap=False, allow_extend=False, expand_columns=False,
                             r[-1][i] += "%s%s" % (n_row_delim, x)
                         else:
                             r[-1][i] += x
+                elif not line.count(" "):
+                    # for table
+                    #  -------     -------------------------------------------------------------
+                    #     CIST     2-10,35-58,83-106,131-154,179-202,227-250,275-298,323-346,371-394,419-442,
+                    # 467-910,912-2100,2112-3410,3412-4094
+                    r[-1][-1] += line
                 else:
                     r += [row]
             else:

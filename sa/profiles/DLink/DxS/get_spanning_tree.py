@@ -241,7 +241,7 @@ class Script(BaseScript):
                     "revision": int(match.group("revision"))
                 }
             }
-            for i in parse_table(match.group("instances"), allow_wrap=True, n_row_delim=","):
+            for i in parse_table(match.group("instances"), allow_wrap=True, n_row_delim=",", max_width=100):
                 if i[0] == "CIST":
                     inst_id = 0
                 else:
