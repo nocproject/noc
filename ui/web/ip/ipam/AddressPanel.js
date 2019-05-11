@@ -9,6 +9,7 @@ console.debug("Defining NOC.ip.ipam.AddressPanel");
 Ext.define("NOC.ip.ipam.AddressPanel", {
     extend: "NOC.core.FormPanel",
     requires: [
+        "NOC.sa.administrativedomain.LookupField",
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",
         "NOC.sa.managedobject.LookupField",
@@ -133,6 +134,13 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "displayfield",
                     fieldLabel: __("Source"),
                     allowBlank: true
+                },
+                {
+                    text: __("Adm. Domain"),
+                    dataIndex: "administrative_domain",
+                    renderer: NOC.render.Lookup("administrative_domain"),
+                    allowBlank: true,
+                    width: 100
                 },
                 {
                     name: "direct_permissions",

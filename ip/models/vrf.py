@@ -28,6 +28,7 @@ from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.state import State
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
@@ -130,7 +131,11 @@ class VRF(models.Model):
         null=False, blank=False,
         default="M"
     )
-    direct_permissions = JSONField()
+    administrative_domain = models.ForeignKey(
+        AdministrativeDomain, verbose_name="Administrative domain",
+        on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="adm_domain_set")
+    direct_permissions = JSONField(blank=True, null=True)
 
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"

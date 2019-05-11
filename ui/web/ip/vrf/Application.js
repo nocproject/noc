@@ -9,6 +9,7 @@ console.debug("Defining NOC.ip.vrf.Application");
 Ext.define("NOC.ip.vrf.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.sa.administrativedomain.LookupField",
         "NOC.ip.vrf.Model",
         "NOC.ip.vrfgroup.LookupField",
         "NOC.vc.vpnprofile.LookupField",
@@ -174,6 +175,13 @@ Ext.define("NOC.ip.vrf.Application", {
                     startDay: 1,
                     fieldLabel: __("Allocated till"),
                     allowBlank: true
+                },
+                {
+                    text: __("Adm. Domain"),
+                    dataIndex: "administrative_domain",
+                    renderer: NOC.render.Lookup("administrative_domain"),
+                    allowBlank: true,
+                    width: 100
                 },
                 {
                     name: "direct_permissions",

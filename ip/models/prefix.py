@@ -24,8 +24,7 @@ from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
 from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey, JSONField
 from noc.lib.app.site import site
-from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
-                                ValidationError)
+from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix, ValidationError)
 from noc.lib.db import SQL
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
@@ -34,6 +33,7 @@ from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_delete_check
 from noc.wf.models.state import State
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
@@ -173,7 +173,11 @@ class Prefix(models.Model):
         null=False, blank=False,
         default="M"
     )
-    direct_permissions = JSONField()
+    administrative_domain = models.ForeignKey(
+        AdministrativeDomain, verbose_name="Administrative domain",
+        on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="adm_domain_set")
+    direct_permissions = JSONField(blank=True, null=True)
 
     csv_ignored_fields = ["parent"]
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
