@@ -85,10 +85,7 @@ class IPAMApplication(ExtApplication):
         # Display grouped VRFs
         q_afi = Q(afi_ipv4=True) | Q(afi_ipv6=True)
         groups = []
-        if not query:
-            ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).order_by("name"))
-        else:
-            ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).filter(q).order_by("name"))
+        ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).filter(q).order_by("name"))
         if ungroupped:
             # Add Ungroupped virtual group
             groups += [(

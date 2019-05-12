@@ -34,6 +34,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.wf.models.state import State
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.useraccess import UserAccess
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
@@ -817,6 +818,9 @@ class Prefix(models.Model):
         """
         groups = user.groups.values_list("id", flat=True)
         extra = {"where": ["prefix >>= %s"], "params": [str(prefix)]}
+        ads = tuple(UserAccess.get_domains(user))
+        extra["where"] += ["administrative_domain_id ISNULL %s" %
+                           ("" if not ads else "OR administrative_domain_id IN %s" % str(ads))]
         if groups:
             where_q = "(perm -> 0 @> %s OR perm -> 1 <@ %s)"
             extra["params"] += [str(user.id), str(list(groups))]
@@ -864,7 +868,9 @@ class Prefix(models.Model):
         if user.is_superuser:
             return Q()  # No restrictions
         groups = list(user.groups.values_list("id", flat=True))
-        q = "EXISTS(SELECT 1 FROM jsonb_array_elements(direct_permissions) perm "\
+        ads = tuple(UserAccess.get_domains(user))
+        q = "(administrative_domain_id ISNULL %s" % "" if not ads else "OR administrative_domain_id IN %s" % str(ads),
+        q += " AND EXISTS(SELECT 1 FROM jsonb_array_elements(direct_permissions) perm "\
             "WHERE (perm -> 0 @> '%s' OR perm -> 1 <@ '%s'))" % (str(user.id), str(groups))
         if include_vrf:
             vrf_ids = list(VRF.objects.filter(VRF.read_Q(user, include_prefix=False)).values_list("id", flat=True))

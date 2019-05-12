@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.vrf.Application");
 Ext.define("NOC.ip.vrf.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.sa.administrativedomain.LookupField",
+        "NOC.sa.administrativedomain.TreeCombo",
         "NOC.ip.vrf.Model",
         "NOC.ip.vrfgroup.LookupField",
         "NOC.vc.vpnprofile.LookupField",
@@ -112,6 +112,16 @@ Ext.define("NOC.ip.vrf.Application", {
                     fieldLabel: __("VRF Group"),
                     allowBlank: true
                 },
+               Ext.create('NOC.sa.administrativedomain.TreeCombo', {
+                    name: "administrative_domain",
+                    fieldLabel: __("Adm. Domain"),
+                    allowBlank: true,
+                    emptyText: __("Select adm domain..."),
+                    labelAlign: "left",
+                    labelWidth: 100,
+                    listWidth: 1,
+                    margin: '0 0 5'
+                }),
                 {
                     name: "description",
                     xtype: "textarea",
@@ -175,13 +185,6 @@ Ext.define("NOC.ip.vrf.Application", {
                     startDay: 1,
                     fieldLabel: __("Allocated till"),
                     allowBlank: true
-                },
-                {
-                    text: __("Adm. Domain"),
-                    dataIndex: "administrative_domain",
-                    renderer: NOC.render.Lookup("administrative_domain"),
-                    allowBlank: true,
-                    width: 100
                 },
                 {
                     name: "direct_permissions",

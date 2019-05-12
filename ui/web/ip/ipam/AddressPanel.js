@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.ipam.AddressPanel");
 Ext.define("NOC.ip.ipam.AddressPanel", {
     extend: "NOC.core.FormPanel",
     requires: [
-        "NOC.sa.administrativedomain.LookupField",
+        "NOC.sa.administrativedomain.TreeCombo",
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",
         "NOC.sa.managedobject.LookupField",
@@ -57,6 +57,16 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     allowBlank: false,
                     uiStyle: "large"
                 },
+               Ext.create('NOC.sa.administrativedomain.TreeCombo', {
+                    name: "administrative_domain",
+                    fieldLabel: __("Adm. Domain"),
+                    allowBlank: true,
+                    emptyText: __("Select adm domain..."),
+                    labelAlign: "left",
+                    labelWidth: 100,
+                    listWidth: 1,
+                    margin: '0 0 5'
+                }),
                 {
                     name: "fqdn",
                     xtype: "textfield",

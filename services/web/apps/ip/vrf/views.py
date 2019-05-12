@@ -89,13 +89,13 @@ class VRFApplication(ExtModelApplication):
         r["direct_permissions"] = []
         if o.direct_permissions:
             for user, group, perm in o.direct_permissions:
-                user = User.objects.get(id=user)
-                group = Group.objects.get(id=group)
+                user = User.objects.filter(id=user)
+                group = Group.objects.filter(id=group)
                 r["direct_permissions"] += [{
-                    "user": user.id,
-                    "user__label": user.username,
-                    "group": group.id,
-                    "group__label": group.name,
+                    "user": user[0].id if user else None,
+                    "user__label": user[0].username if user else "",
+                    "group": group[0].id if group else None,
+                    "group__label": group[0].name if group else "",
                     "permission": perm
                 }]
         return r

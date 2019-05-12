@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.ipam.PrefixPanel");
 Ext.define("NOC.ip.ipam.PrefixPanel", {
     extend: "NOC.core.FormPanel",
     requires: [
-        "NOC.sa.administrativedomain.LookupField",
+        "NOC.sa.administrativedomain.TreeCombo",
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.peer.as.LookupField",
@@ -51,6 +51,16 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     allowBlank: true,
                     readOnly: true
                 },
+               Ext.create('NOC.sa.administrativedomain.TreeCombo', {
+                    name: "administrative_domain",
+                    fieldLabel: __("Adm. Domain"),
+                    allowBlank: true,
+                    emptyText: __("Select adm domain..."),
+                    labelAlign: "left",
+                    labelWidth: 100,
+                    listWidth: 1,
+                    margin: '0 0 5'
+                }),
                 {
                     name: "prefix",
                     xtype: "combobox",
@@ -158,13 +168,6 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     ],
                     labelWidth: 180,
                     uiStyle: "medium"
-                },
-                {
-                    text: __("Adm. Domain"),
-                    dataIndex: "administrative_domain",
-                    renderer: NOC.render.Lookup("administrative_domain"),
-                    allowBlank: true,
-                    width: 100
                 },
                 {
                     name: "direct_permissions",

@@ -96,7 +96,12 @@ Ext.define("NOC.ip.vrf.Model", {
         },
         {
             name: "administrative_domain",
-            type: "int"
+            type: "string"
+        },
+        {
+            name: "administrative_domain__label",
+            type: "string",
+            persist: false
         },
         {
             name: "direct_permissions",

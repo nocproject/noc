@@ -29,6 +29,7 @@ from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.state import State
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.useraccess import UserAccess
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
@@ -277,9 +278,12 @@ class VRF(models.Model):
         from .prefix import Prefix
         if user.is_superuser:
             return Q()  # No restrictions
+        ads = tuple(UserAccess.get_domains(user))
         groups = list(user.groups.values_list("id", flat=True))
         q = "EXISTS(SELECT 1 FROM jsonb_array_elements(direct_permissions) perm " \
-            "WHERE (perm -> 0 @> '%s' OR perm -> 1 <@ '%s'))" % (str(user.id), str(groups))
+            "WHERE (administrative_domain_id isnull %s) AND (perm -> 0 @> '%s' OR perm -> 1 <@ '%s'))" % (
+                "" if not ads else "OR administrative_domain_id IN %s" % str(ads),
+                str(user.id), str(groups))
         if include_prefix:
             vrf_ids = set(Prefix.objects.filter(Prefix.read_Q(user)).values_list("vrf_id", flat=True))
             if vrf_ids:
@@ -288,8 +292,13 @@ class VRF(models.Model):
 
     def has_access(self, user, include_prefix=True):
         from .prefix import Prefix
+        # filter(administrative_domain__in=UserAccess.get_domains(user)
         if user.is_superuser:
             return True
+        ads = UserAccess.get_domains(user)
+        if self.administrative_domain and self.administrative_domain not in ads:
+            # Default deny
+            return False
         groups = set(user.groups.values_list("id", flat=True))
         r = [perm for p_user, p_group, perm in self.get_permission() if p_user == user.id or p_group in groups]
         if include_prefix:
