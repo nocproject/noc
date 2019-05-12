@@ -818,9 +818,6 @@ class Prefix(models.Model):
         """
         groups = user.groups.values_list("id", flat=True)
         extra = {"where": ["prefix >>= %s"], "params": [str(prefix)]}
-        ads = tuple(UserAccess.get_domains(user))
-        extra["where"] += ["administrative_domain_id ISNULL %s" %
-                           ("" if not ads else "OR administrative_domain_id IN %s" % str(ads))]
         if groups:
             where_q = "(perm -> 0 @> %s OR perm -> 1 <@ %s)"
             extra["params"] += [str(user.id), str(list(groups))]
@@ -833,6 +830,10 @@ class Prefix(models.Model):
         extra["where"] += ["EXISTS(SELECT 1 "
                            "FROM jsonb_array_elements(direct_permissions) perm "
                            "WHERE %s)" % where_q]
+        ads = tuple(UserAccess.get_domains(user))
+        extra["where"] += ["NOT EXISTS(SELECT 1 FROM ip_prefix WHERE administrative_domain_id IS NOT NULL ) %s" %
+                           ("" if not ads else
+                            "OR EXISTS(SELECT 1 FROM ip_prefix WHERE administrative_domain_id IN %s)" % str(ads))]
         return Prefix.objects.filter(vrf=vrf, afi=afi).extra(**extra)
 
     @classmethod
@@ -858,8 +859,11 @@ class Prefix(models.Model):
             else:
                 prefix += "/128"
         # Check VRF permission
-        if vrf.has_access(user, include_prefix=False):
+        vrf_access = vrf.has_access(user, include_prefix=False)
+        if vrf_access:
             return True
+        elif not vrf_access and vrf.administrative_domain:
+            return False
         r = Prefix.access_Q(user, vrf, afi, prefix, permission)
         return r.exists()
 
@@ -868,15 +872,32 @@ class Prefix(models.Model):
         if user.is_superuser:
             return Q()  # No restrictions
         groups = list(user.groups.values_list("id", flat=True))
-        ads = tuple(UserAccess.get_domains(user))
-        q = "(administrative_domain_id ISNULL %s" % "" if not ads else "OR administrative_domain_id IN %s" % str(ads),
-        q += " AND EXISTS(SELECT 1 FROM jsonb_array_elements(direct_permissions) perm "\
+        q = "EXISTS(SELECT 1 FROM jsonb_array_elements(direct_permissions) perm "\
             "WHERE (perm -> 0 @> '%s' OR perm -> 1 <@ '%s'))" % (str(user.id), str(groups))
         if include_vrf:
             vrf_ids = list(VRF.objects.filter(VRF.read_Q(user, include_prefix=False)).values_list("id", flat=True))
             if vrf_ids:
                 q += " OR vrf_id = ANY(ARRAY%s)" % str(vrf_ids)
-        return SQL(q)
+        c = connection.cursor()
+        c.execute("""
+                    SELECT vrf_id, afi, min(prefix)
+                    FROM %s
+                    WHERE administrative_domain_id IS NOT NULL
+                    GROUP BY vrf_id, afi
+                """ % Prefix._meta.db_table)
+        ads_prefix_map = {(vrf, afi): IP.prefix(prefix=prefix) for vrf, afi, prefix in c.fetchall()}
+        stmt = []
+        for p in Prefix.objects.filter(SQL(q)):
+            pp = IP.prefix(p.prefix)
+            if (p.vrf.id, p.afi) in ads_prefix_map and pp < ads_prefix_map[(p.vrf.id, p.afi)]:
+                pp = ads_prefix_map[(p.vrf.id, p.afi)]
+            stmt += ["(%s = %d AND %s = '%s' AND %s <<= '%s')" % (
+                "ip_prefix.vrf_id", p.vrf.id,
+                "ip_prefix.afi", p.afi,
+                "ip_prefix.prefix", pp
+            )]
+
+        return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))
 
 
 # Avoid circular references
