@@ -66,6 +66,12 @@ Ext.define("NOC.inv.reportifacestatus.Application", {
                     "(for Selector and Administrative Domain filter)"),
                 value: true,
                 allowBlank: false
+            },
+            {
+                name: "enable_autowidth",
+                xtype: "checkboxfield",
+                boxLabel: __("Enable Excel column autowidth"),
+                allowBlank: false
             }
         ],
         storeData: [
@@ -78,7 +84,9 @@ Ext.define("NOC.inv.reportifacestatus.Application", {
             ["object_port_status", __("Port status"), true],
             ["object_link_status", __("Link status"), true],
             ["object_port_speed", __("Port speed"), true],
-            ["object_port_duplex", __("Port duplex"), true]
+            ["object_port_duplex", __("Port duplex"), true],
+            ["object_port_untagged_vlan", __("Port untagged vlan"), false],
+            ["object_port_tagged_vlans", __("Port tagged vlans"), false]
         ]
     }
 });
