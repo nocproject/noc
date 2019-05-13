@@ -38,6 +38,18 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
+def get_column_width(name):
+    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
+                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
+        return 8
+    elif name.startswith("ADM_PATH"):
+        return excel_column_format["ADMIN_DOMAIN"]
+    elif name in excel_column_format:
+        return excel_column_format[name]
+    return 15
+
+
 class ReportAlarmObjects(object):
     """MO fields report"""
     def __init__(self, mo_ids):
@@ -103,7 +115,7 @@ class ReportAlarmDetailApplication(ExtApplication):
     def api_report(self, request, from_date, to_date, o_format,
                    min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
                    segment=None, administrative_domain=None, selector=None,
-                   ex_selector=None, columns=None, source="both"):
+                   ex_selector=None, columns=None, source="both", enable_autowidth=False):
         def row(row, container_path, segment_path):
             def qe(v):
                 if v is None:
@@ -381,11 +393,22 @@ class ReportAlarmDetailApplication(ExtApplication):
         elif o_format == "xlsx":
             response = StringIO.StringIO()
             wb = xlsxwriter.Workbook(response)
+            cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Alarms")
+            max_column_data_length = {}
             for rn, x in enumerate(r):
                 for cn, c in enumerate(x):
-                    ws.write(rn, cn, c)
+                    if rn and (r[0][cn] not in max_column_data_length
+                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                        max_column_data_length[r[0][cn]] = len(str(c))
+                    ws.write(rn, cn, c, cf1)
             ws.autofilter(0, 0, rn, cn)
+            for cn, c in enumerate(r[0]):
+                # Set column width
+                width = get_column_width(c)
+                if enable_autowidth and width < max_column_data_length[c]:
+                    width = max_column_data_length[c]
+                ws.set_column(cn, cn, width=width)
             wb.close()
             response.seek(0)
             response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
