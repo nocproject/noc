@@ -9,6 +9,8 @@ console.debug("Defining NOC.fm.alarm.view.grids.Active");
 Ext.define("NOC.fm.alarm.view.grids.Active", {
     extend: "NOC.fm.alarm.view.grids.Grid",
     alias: "widget.fm.grid.active",
+    stateful: true,
+    stateId: 'fm.grid.activeGrid',
     viewModel: {
         type: "fm.alarm.sidebar"
     },
