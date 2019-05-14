@@ -354,6 +354,7 @@ class ReportObjectDetailApplication(ExtApplication):
                     ws.write(rn, cn, c, cf1)
             # for
             ws.autofilter(0, 0, rn, cn)
+            ws.freeze_panes(1, 0)
             for cn, c in enumerate(r[0]):
                 # Set column width
                 width = get_column_width(c)
