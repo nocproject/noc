@@ -11,7 +11,8 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         "NOC.core.ReportControl",
         "NOC.inv.networksegment.TreeCombo",
         "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.sa.managedobjectselector.LookupField"
+        "NOC.sa.managedobjectselector.LookupField",
+        "NOC.fm.alarm.view.grids.Tagfield"
     ],
 
     items: {
@@ -136,6 +137,15 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 xtype: "checkboxfield",
                 boxLabel: __("Enable Excel column autowidth"),
                 allowBlank: false
+            },
+            {
+                name: "subscribers",
+                xtype: "fm.alarm.tagfield",
+                url: "/crm/subscriberprofile/lookup/",
+                fieldLabel: __("Subscribers that Sum"),
+                allowBlank: true,
+                uiStyle: undefined,
+                width: "45%"
             }
         ],
         storeData: [
