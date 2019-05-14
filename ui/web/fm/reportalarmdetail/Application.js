@@ -130,6 +130,12 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 allowBlank: true,
                 value: 0,
                 uiStyle: "small"
+            },
+            {
+                name: "enable_autowidth",
+                xtype: "checkboxfield",
+                boxLabel: __("Enable Excel column autowidth"),
+                allowBlank: false
             }
         ],
         storeData: [
