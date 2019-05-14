@@ -355,6 +355,8 @@ class Script(BaseScript):
                 for cap, oid in six.iteritems(self.CHECK_SNMP_GET):
                     if self.check_snmp_get(oid, version=snmp_version):
                         caps[cap] = True
+            else:
+                caps["SNMP"] = False
         else:
             caps["SNMP"] = False
             for v in self.SNMP_CAPS:
