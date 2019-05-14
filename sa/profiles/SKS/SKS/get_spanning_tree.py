@@ -73,6 +73,7 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_port2 = re.compile(
         r"^\s*Port \d+ \((?P<interface>\S+)\) of RSTP is (?P<state>\S+)\s*\n"
+        r"(^\s*Spanning tree on this port is disabled\s*\n)?"
         r"^\s*Edge port\(\S+\), Link type is .+\n"
         r"^\s*Port Identifier (?P<port_id>\S+), Port role (?P<role>\S+)\s*\n"
         r"^\s*Port path cost \d+, Port priority (?P<priority>\d+)\s*\n"
