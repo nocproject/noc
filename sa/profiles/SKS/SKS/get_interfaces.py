@@ -53,7 +53,11 @@ class Script(BaseScript):
         r"^\s+Hardware is (?P<hardware>\S+)"
         r"(, [Aa]ddress is (?P<mac>\S+)\s*\(.+\))?\s*\n"
         r"(^\s+Interface address is (?P<ip>\S+)\s*\n)?"
-        r"^\s+MTU (?P<mtu>\d+) bytes", re.MULTILINE)
+        r"^\s+MTU (?P<mtu>\d+) bytes.+\n"
+        r"(^\s+Encapsulation .+\n)?"
+        r"(^\s+Members in this Aggregator: (?P<agg_list>.+)\n)?",
+        re.MULTILINE
+    )
 
     IFTYPES = {
         "100BASE-TX": "physical",
@@ -64,6 +68,7 @@ class Script(BaseScript):
         "Giga-Combo-FX": "physical",
         "10Giga-FX": "physical",
         "EtherSVI": "SVI",
+        "PortAggregator": "aggregated",
         "Null": "null"
     }
 
@@ -233,6 +238,13 @@ class Script(BaseScript):
                     else:
                         # Need more examples
                         raise self.NotSupportedError()
+            if iface["type"] == "aggregated" and match.group("agg_list"):
+                for i in match.group("agg_list").split():
+                    ifname = self.profile.convert_interface_name(i)
+                    for agg_iface in interfaces:
+                        if agg_iface["name"] == ifname:
+                            agg_iface["aggregated_interface"] = iface["name"]
+                            break
             if iface["name"].startswith("VLAN"):
                 sub["vlan_ids"] = [iface["name"][4:]]
             if match.group("descr"):
