@@ -25,6 +25,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter
+from noc.lib.text import list_to_ranges
 
 logger = logging.getLogger(__name__)
 
@@ -67,9 +68,9 @@ class ReportInterfaceStatus(object):
             match["profile"] = {
                 "$nin": def_prof
             }
-
+        lookup = {"from": "noc.subinterfaces", "localField": "_id", "foreignField": "interface", "as": "subs"}
         result = Interface._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED). \
-            aggregate([{"$match": match}])
+            aggregate([{"$match": match}, {"$lookup": lookup}])
         return result
 
     def __getitem__(self, item):
@@ -202,6 +203,10 @@ class ReportInterfaceStatusApplication(ExtApplication):
         rld = ReportInterfaceStatus(mos_id, zero, def_profile, interface_profile)
 
         for i in rld.out:
+            untag, tagged = "", ""
+            if i["subs"]:
+                untag = i["subs"][0].get("untagged_vlan", "")
+                tagged = list_to_ranges(i["subs"][0].get("tagged_vlans", []))
             r += [translate_row(row([
                 mo[i['managed_object']]['name'],
                 mo[i['managed_object']]['address'],
@@ -214,8 +219,8 @@ class ReportInterfaceStatusApplication(ExtApplication):
                 "UP" if "oper_status" in i and i['oper_status'] is True else "Down",
                 humanize_speed(i['in_speed']) if "in_speed" in i else "-",
                 DUPLEX.get(i['full_duplex']) if "full_duplex" in i and "in_speed" in i else "-",
-                "",
-                ""
+                untag,
+                tagged
             ]), cmap)]
 
         filename = "interface_status_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
@@ -241,6 +246,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
                         max_column_data_length[r[0][cn]] = len(str(c))
                     ws.write(rn, cn, c, cf1)
             ws.autofilter(0, 0, rn, cn)
+            ws.freeze_panes(1, 0)
             for cn, c in enumerate(r[0]):
                 # Set column width
                 width = get_column_width(c)
