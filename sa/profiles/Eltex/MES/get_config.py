@@ -56,5 +56,4 @@ class Script(BaseScript):
             config = self.cli("show startup-config")
         else:
             config = self.cli("show running-config", cached=True)
-        config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)
