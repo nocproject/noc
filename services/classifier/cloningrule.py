@@ -14,8 +14,8 @@ import six
 from noc.services.classifier.exception import InvalidPatternException
 
 
-@six.python_2_unicode_compatible
 class CloningRule(object):
+    @six.python_2_unicode_compatible
     class Pattern(object):
         def __init__(self, key_re, value_re):
             self.key_re = key_re
