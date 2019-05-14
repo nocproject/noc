@@ -47,6 +47,12 @@ Ext.define("NOC.inv.reportlinkdetail.Application", {
                 labelAlign: "left",
                 width: 500,
                 allowBlank: true
+            },
+            {
+                name: "enable_autowidth",
+                xtype: "checkboxfield",
+                boxLabel: __("Enable Excel column autowidth"),
+                allowBlank: false
             }
         ],
         storeData: [
