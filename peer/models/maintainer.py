@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Peer module models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.core.crypto import md5crypt
@@ -24,6 +25,7 @@ from .person import Person
     ("peer.Organisation", "mnt_ref")
 ])
 @on_save
+@six.python_2_unicode_compatible
 class Maintainer(models.Model):
     class Meta(object):
         verbose_name = "Maintainer"
@@ -40,7 +42,7 @@ class Maintainer(models.Model):
     extra = models.TextField("extra", blank=True, null=True)
     rpsl = GridVCSField("rpsl_maintainer")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.maintainer
 
     def get_rpsl(self):

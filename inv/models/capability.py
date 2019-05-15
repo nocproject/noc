@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Capability model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import os
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
 import cachetools
@@ -27,6 +28,7 @@ id_lock = Lock()
     ("pm.MetricType", "required_capability")
 ])
 @category
+@six.python_2_unicode_compatible
 class Capability(Document):
     meta = {
         "collection": "noc.inv.capabilities",
@@ -45,7 +47,7 @@ class Capability(Document):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

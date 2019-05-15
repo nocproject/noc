@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # CloneClassificationRule management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine import fields
 # NOC modules
@@ -16,6 +17,7 @@ from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 
 
+@six.python_2_unicode_compatible
 class CloneClassificationRule(Document):
     """
     Classification rules cloning
@@ -38,7 +40,7 @@ class CloneClassificationRule(Document):
     rewrite_from = fields.StringField()
     rewrite_to = fields.StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def to_json(self):

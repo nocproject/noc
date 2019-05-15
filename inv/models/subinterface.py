@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # SubInterface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
+# Third-party modules
+import six
 # NOC modules
 from noc.config import config
 from noc.lib.nosql import (Document, PlainReferenceField,
@@ -44,6 +46,7 @@ TUNNEL_TYPES = (
 
 
 @datastream
+@six.python_2_unicode_compatible
 class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",
@@ -96,7 +99,7 @@ class SubInterface(Document):
     tunnel_remote_address = StringField(required=False)
     project = ForeignKeyField(Project)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
 
     def iter_changed_datastream(self):

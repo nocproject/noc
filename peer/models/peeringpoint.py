@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # PeeringPoint model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.main.models.notificationgroup import NotificationGroup
@@ -23,8 +24,9 @@ from .asn import AS
     ("peer.Peer", "peering_point"),
     ("peer.PrefixListCache", "peering_point")
 ])
+@six.python_2_unicode_compatible
 class PeeringPoint(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Peering Point"
         verbose_name_plural = "Peering Points"
         db_table = "peer_peeringpoint"
@@ -48,7 +50,7 @@ class PeeringPoint(models.Model):
         verbose_name="Prefix List Notification Group",
         null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.location:
             return u" %s (%s)" % (self.hostname, self.location)
         else:
@@ -58,8 +60,20 @@ class PeeringPoint(models.Model):
         from noc.cm.models.prefixlist import PrefixList
 
         peers_pl = set()
-        peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if p.import_filter_name.strip()])
-        peers_pl.update([p.export_filter_name for p in self.peer_set.filter(export_filter_name__isnull=False) if p.export_filter_name.strip()])
+        peers_pl.update(
+            [
+                p.import_filter_name
+                for p in self.peer_set.filter(import_filter_name__isnull=False)
+                if p.import_filter_name.strip()
+            ]
+        )
+        peers_pl.update(
+            [
+                p.export_filter_name
+                for p in self.peer_set.filter(export_filter_name__isnull=False)
+                if p.export_filter_name.strip()
+            ]
+        )
         h = self.hostname + "/"
         l_h = len(h)
         for p in PrefixList.objects.filter(repo_path__startswith=h):

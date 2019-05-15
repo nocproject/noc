@@ -10,6 +10,7 @@
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from django.db import models
 import cachetools
 # NOC modules
@@ -36,11 +37,12 @@ id_lock = Lock()
     ("vc.VPN", "project"),
     ("vc.VLAN", "project")
 ])
+@six.python_2_unicode_compatible
 class Project(models.Model):
     """
     Projects are used to track investment projects expenses and profits
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Project"
         verbose_name_plural = "Projects"
         app_label = "project"
@@ -52,7 +54,7 @@ class Project(models.Model):
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
     @classmethod

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # VRF model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
@@ -44,6 +45,7 @@ id_lock = Lock()
     ("sa.ManagedObjectSelector", "filter_vrf"),
     ("vc.VCBindFilter", "vrf"),
 ])
+@six.python_2_unicode_compatible
 class VRF(models.Model):
     """
     VRF
@@ -123,7 +125,7 @@ class VRF(models.Model):
     IPv4_ROOT = "0.0.0.0/0"
     IPv6_ROOT = "::/0"
 
-    def __unicode__(self):
+    def __str__(self):
         if self.rd == self.GLOBAL_RD:
             return u"global"
         else:

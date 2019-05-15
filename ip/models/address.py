@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Address model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
@@ -34,6 +35,7 @@ from .addressprofile import AddressProfile
 @on_delete_check(check=[
     ("ip.Address", "ipv6_transition")
 ])
+@six.python_2_unicode_compatible
 class Address(models.Model):
     class Meta(object):
         verbose_name = _("Address")
@@ -132,7 +134,7 @@ class Address(models.Model):
 
     csv_ignored_fields = ["prefix"]
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
 
     def iter_changed_datastream(self):

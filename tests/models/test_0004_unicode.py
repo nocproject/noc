@@ -25,3 +25,27 @@ def test_model_unicode(model):
 def test_document_unicode(model):
     for o in model.objects.all():
         assert isinstance(unicode(o), six.string_types)
+
+
+@pytest.mark.parametrize("model", get_models())
+def test_model_str(model):
+    for o in model.objects.all():
+        assert str(o)
+
+
+@pytest.mark.parametrize("model", get_documents())
+def test_document_str(model):
+    for o in model.objects.all():
+        assert isinstance(str(o), six.string_types)
+
+
+@pytest.mark.parametrize("model", get_models())
+def test_model_str_and_unicode(model):
+    for o in model.objects.all():
+        assert str(o) == unicode(o).encode("utf-8")
+
+
+@pytest.mark.parametrize("model", get_documents())
+def test_document_str_and_unicode(model):
+    for o in model.objects.all():
+        assert str(o) == unicode(o).encode("utf-8")

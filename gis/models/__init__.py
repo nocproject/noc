@@ -2,18 +2,21 @@
 # ---------------------------------------------------------------------
 # GIS module database models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import inspect
+# Third-party modules
+import six
 # NOC modules
 from noc.lib import nosql
+from .layer import Layer
 
-from layer import Layer
 
-
+@six.python_2_unicode_compatible
 class FontSet(nosql.Document):
     meta = {
         "collection": "noc.gis.fontsets",
@@ -25,10 +28,11 @@ class FontSet(nosql.Document):
     description = nosql.StringField(required=False)
     fonts = nosql.ListField(nosql.StringField())
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
+@six.python_2_unicode_compatible
 class Rule(nosql.EmbeddedDocument):
     meta = {
         "strict": False,
@@ -39,7 +43,7 @@ class Rule(nosql.EmbeddedDocument):
     rule_filter = nosql.StringField(required=False)
     symbolizers = nosql.ListField(nosql.DictField())
 
-    def __unicode__(self):
+    def __str__(self):
         return unicode(id(self))
 
     def __eq__(self, other):
@@ -51,6 +55,7 @@ class Rule(nosql.EmbeddedDocument):
         )
 
 
+@six.python_2_unicode_compatible
 class Style(nosql.Document):
     meta = {
         "collection": "noc.gis.styles",
@@ -61,10 +66,11 @@ class Style(nosql.Document):
     is_builtin = nosql.BooleanField(default=True)
     rules = nosql.ListField(nosql.EmbeddedDocumentField(Rule))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
+@six.python_2_unicode_compatible
 class _Layer(nosql.Document):
     meta = {
         "collection": "noc.gis.layers",
@@ -78,10 +84,11 @@ class _Layer(nosql.Document):
     styles = nosql.ListField(nosql.StringField())
     datasource = nosql.DictField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
+@six.python_2_unicode_compatible
 class Map(nosql.Document):
     meta = {
         "collection": "noc.gis.maps",
@@ -94,7 +101,7 @@ class Map(nosql.Document):
     # srs = nosql.ForeignKeyField(SRS)
     layers = nosql.ListField(nosql.StringField())
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -105,12 +112,13 @@ class Map(nosql.Document):
         """
         r = []
         for ln in self.layers:
-            l = Layer.objects.filter(name=ln).first()
-            if l and l.is_active:
-                r += [l]
+            lo = Layer.objects.filter(name=ln).first()
+            if lo and lo.is_active:
+                r += [lo]
         return r
 
 
+@six.python_2_unicode_compatible
 class Area(nosql.Document):
     meta = {
         "strict": False,
@@ -127,10 +135,11 @@ class Area(nosql.Document):
     NE = nosql.GeoPointField()
     description = nosql.StringField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
+@six.python_2_unicode_compatible
 class TileCache(nosql.Document):
     meta = {
         "collection": "noc.gis.tilecache",
@@ -147,10 +156,11 @@ class TileCache(nosql.Document):
     last_updated = nosql.DateTimeField()
     data = nosql.BinaryField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s/%s/%s/%s" % (self.map, self.zoom, self.x, self.y)
 
 
+@six.python_2_unicode_compatible
 class Overlay(nosql.Document):
     meta = {
         "collection": "noc.gis.overlays",
@@ -167,7 +177,7 @@ class Overlay(nosql.Document):
 
     _overlay_cache = {}  # name -> Overlay
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_overlay(self):

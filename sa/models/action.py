@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Action
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ from noc.core.ip import IP
 id_lock = threading.Lock()
 
 
+@six.python_2_unicode_compatible
 class ActionParameter(EmbeddedDocument):
     name = StringField()
     type = StringField(
@@ -43,7 +44,7 @@ class ActionParameter(EmbeddedDocument):
     is_required = BooleanField(default=True)
     default = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -59,6 +60,7 @@ class ActionParameter(EmbeddedDocument):
         return r
 
 
+@six.python_2_unicode_compatible
 class Action(Document):
     meta = {
         "collection": "noc.actions",
@@ -77,8 +79,8 @@ class Action(Document):
     params = ListField(EmbeddedDocumentField(ActionParameter))
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
-    
-    def __unicode__(self):
+
+    def __str__(self):
         return self.name
 
     @classmethod
@@ -164,7 +166,7 @@ class Action(Document):
     def clean_args(self, obj, **kwargs):
         args = {}
         for p in self.params:
-            if not p.name in kwargs and p.is_required and not p.default:
+            if p.name not in kwargs and p.is_required and not p.default:
                 raise ValueError(
                     "Required parameter '%s' is missed" % p.name
                 )

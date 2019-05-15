@@ -9,6 +9,7 @@
 # Python modules
 import os
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, DictField,
                                 ListField, UUIDField, ObjectIdField)
@@ -24,6 +25,7 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(check=[
     ("inv.ConnectionType", "extend")
 ])
+@six.python_2_unicode_compatible
 class ConnectionType(Document):
     """
     Equipment vendor
@@ -68,7 +70,7 @@ class ConnectionType(Document):
     }
     category = ObjectIdField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property

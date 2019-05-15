@@ -2,17 +2,19 @@
 # ---------------------------------------------------------------------
 # Outage report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField
 
 
+@six.python_2_unicode_compatible
 class Outage(Document):
     meta = {
         "collection": "noc.fm.outages",
@@ -25,7 +27,7 @@ class Outage(Document):
     start = DateTimeField()
     stop = DateTimeField()  # None for active outages
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%d" % self.object
 
     @property

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Supplier
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, BooleanField, LongField
 import cachetools
@@ -32,6 +33,7 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("phone.PhoneRange", "supplier")
 ])
+@six.python_2_unicode_compatible
 class Supplier(Document):
     meta = {
         "collection": "noc.suppliers",
@@ -60,7 +62,7 @@ class Supplier(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # Link model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
 import datetime
+# Third-party modules
+import six
 # NOC modules
 from noc.config import config
 from noc.lib.nosql import (Document, PlainReferenceListField,
@@ -21,6 +23,7 @@ from noc.core.datastream.decorator import datastream
 @on_delete
 @on_save
 @datastream
+@six.python_2_unicode_compatible
 class Link(Document):
     """
     Network links.
@@ -76,7 +79,7 @@ class Link(Document):
     # L3 path cost
     l3_cost = IntField(default=1)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.interfaces:
             return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
         else:

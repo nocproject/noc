@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # FailedEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import datetime
 import time
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, StringField, EmbeddedDocumentField, ListField
 # NOC modules
@@ -19,6 +20,7 @@ from noc.lib.nosql import ForeignKeyField, RawDictField
 from .eventlog import EventLog
 
 
+@six.python_2_unicode_compatible
 class FailedEvent(Document):
     """
     Events that caused noc-classifier traceback
@@ -39,7 +41,7 @@ class FailedEvent(Document):
     traceback = StringField()
     log = ListField(EmbeddedDocumentField(EventLog))
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % self.id
 
     def mark_as_new(self, message=None):

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Map Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import datetime
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField,
                                 ListField, FloatField,
@@ -22,24 +23,27 @@ LC_SMOOTH = "smooth"
 LC_ROUNDED = "rounded"
 
 
+@six.python_2_unicode_compatible
 class NodeSettings(EmbeddedDocument):
     type = StringField()
     id = StringField()
     x = FloatField()
     y = FloatField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.type, self.id)
 
 
+@six.python_2_unicode_compatible
 class VertexPosition(EmbeddedDocument):
     x = FloatField()
     y = FloatField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"(%s, %s)" % (self.x, self.y)
 
 
+@six.python_2_unicode_compatible
 class LinkSettings(EmbeddedDocument):
     type = StringField()
     id = StringField()
@@ -52,10 +56,11 @@ class LinkSettings(EmbeddedDocument):
     )
     vertices = ListField(EmbeddedDocumentField(VertexPosition))
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.type, self.id)
 
 
+@six.python_2_unicode_compatible
 class MapSettings(Document):
     meta = {
         "collection": "noc.mapsettings",
@@ -76,7 +81,7 @@ class MapSettings(Document):
     nodes = ListField(EmbeddedDocumentField(NodeSettings))
     links = ListField(EmbeddedDocumentField(LinkSettings))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.segment
 
     def get_nodes(self):

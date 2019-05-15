@@ -12,6 +12,7 @@ import re
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField)
@@ -34,6 +35,7 @@ class NumberCategoryRule(EmbeddedDocument):
 @on_delete_check(check=[
     ("phone.PhoneNumber", "category")
 ])
+@six.python_2_unicode_compatible
 class NumberCategory(Document):
     meta = {
         "collection": "noc.numbercategories",
@@ -50,7 +52,7 @@ class NumberCategory(Document):
     _id_cache = cachetools.TTLCache(100, ttl=60)
     _rule_cache = cachetools.TTLCache(100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import datetime
 # Third-party modules
+import six
 from django.template import Template as DjangoTemplate
 from django.template import Context
 from mongoengine.document import Document
@@ -35,6 +36,7 @@ from .alarmlog import AlarmLog
 
 
 @datastream
+@six.python_2_unicode_compatible
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",
@@ -114,7 +116,7 @@ class ActiveAlarm(Document):
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % self.id
 
     def iter_changed_datastream(self):

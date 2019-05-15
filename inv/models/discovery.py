@@ -1,6 +1,13 @@
-# !/usr/bin/env python
 # -*- coding: utf-8 -*-
-__author__ = 'boris'
+# ---------------------------------------------------------------------
+# Discovery
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.nosql import (Document, StringField, ListField,
                            ForeignKeyField, DictField, DateTimeField,
@@ -8,6 +15,7 @@ from noc.lib.nosql import (Document, StringField, ListField,
 from noc.sa.models.managedobject import ManagedObject
 
 
+@six.python_2_unicode_compatible
 class Discovery(Document):
     meta = {
         "collection": "noc.schedules.inv.discovery",
@@ -30,5 +38,5 @@ class Discovery(Document):
     faults = IntField(db_field='f')
     log = ListField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.managed_object, self.job_class)

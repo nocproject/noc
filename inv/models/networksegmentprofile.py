@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Network Segment Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import operator
 import cachetools
 from threading import Lock
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField,
@@ -61,6 +62,7 @@ class SegmentTopologySettings(EmbeddedDocument):
     ("inv.NetworkSegmentProfile", "autocreated_profile")
 ])
 @on_save
+@six.python_2_unicode_compatible
 class NetworkSegmentProfile(Document):
     meta = {
         "collection": "noc.networksegmentprofiles",
@@ -112,7 +114,7 @@ class NetworkSegmentProfile(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

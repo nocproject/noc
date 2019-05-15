@@ -2,24 +2,26 @@
 # ---------------------------------------------------------------------
 # TimePatternTerm database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from .timepattern import TimePattern
 from noc.lib.timepattern import TimePattern as TP
 
 
+@six.python_2_unicode_compatible
 class TimePatternTerm(models.Model):
     """
     Time pattern terms
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Time Pattern Term"
         verbose_name_plural = "Time Pattern Terms"
         db_table = "main_timepatternterm"
@@ -30,7 +32,7 @@ class TimePatternTerm(models.Model):
                                      verbose_name="Time Pattern")
     term = models.CharField("Term", max_length=256)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.time_pattern.name, self.term)
 
     @classmethod

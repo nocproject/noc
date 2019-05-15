@@ -2,18 +2,20 @@
 # ----------------------------------------------------------------------
 # Community Model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from .communitytype import CommunityType
 
 
+@six.python_2_unicode_compatible
 class Community(models.Model):
     class Meta(object):
         verbose_name = "Community"
@@ -25,5 +27,5 @@ class Community(models.Model):
     type = models.ForeignKey(CommunityType, verbose_name="Type")
     description = models.CharField("Description", max_length=64)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.community

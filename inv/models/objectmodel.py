@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ from noc.core.model.decorator import on_delete_check, on_save
 id_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class ObjectModelConnection(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -54,7 +55,7 @@ class ObjectModelConnection(EmbeddedDocument):
     protocols = ListField(StringField(), required=False)
     internal_name = StringField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __eq__(self, other):
@@ -96,6 +97,7 @@ class ObjectModelConnection(EmbeddedDocument):
     ("inv.Object", "model")
 ])
 @on_save
+@six.python_2_unicode_compatible
 class ObjectModel(Document):
     """
     Equipment vendor
@@ -131,7 +133,7 @@ class ObjectModel(Document):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

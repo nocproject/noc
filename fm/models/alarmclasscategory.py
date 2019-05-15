@@ -2,14 +2,17 @@
 # ---------------------------------------------------------------------
 # FM module database models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 import noc.lib.nosql as nosql
 
 
+@six.python_2_unicode_compatible
 class AlarmClassCategory(nosql.Document):
     meta = {
         "collection": "noc.alartmclasscategories",  # @todo: Fix bug
@@ -19,7 +22,7 @@ class AlarmClassCategory(nosql.Document):
     name = nosql.StringField()
     parent = nosql.ObjectIdField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):

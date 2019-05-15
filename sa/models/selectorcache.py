@@ -3,7 +3,7 @@
 # SelectorCache
 # Updated by sa.refresh_selector_cache job
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import operator
 from threading import Lock
 import re
 # Third-party modules
+import six
 from pymongo import ReadPreference, UpdateOne, InsertOne, DeleteOne, WriteConcern
 from pymongo.errors import BulkWriteError
 from mongoengine.document import Document
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 q_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class SelectorCache(Document):
     meta = {
         "collection": "noc.cache.selector",
@@ -40,7 +42,7 @@ class SelectorCache(Document):
 
     q_cache = cachetools.TTLCache(maxsize=1, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.object, self.selector)
 
     @classmethod
@@ -101,10 +103,9 @@ class SelectorCache(Document):
                 continue
             if s.filter_pool and object.pool.id != s.filter_pool.id:
                 continue
-            if (
-                s.filter_administrative_domain and
-                object.administrative_domain.id not in AdministrativeDomain.get_nested_ids(s.filter_administrative_domain.id)
-            ):
+            if (s.filter_administrative_domain and
+                object.administrative_domain.id not in AdministrativeDomain.get_nested_ids(
+                        s.filter_administrative_domain.id)):
                 continue
             if s.filter_name:
                 try:

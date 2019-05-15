@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ActiveEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import datetime
 import time
 from threading import Lock
 # Django modules
+import six
 from django.template import Template, Context
 # Third-party modules
 from mongoengine.document import Document
@@ -29,6 +30,7 @@ from .eventclass import EventClass
 id_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class ActiveEvent(Document):
     """
     Event in the Active state
@@ -62,7 +64,7 @@ class ActiveEvent(Document):
     alarms = ListField(ObjectIdField())
     expires = DateTimeField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % self.id
 
     @classmethod

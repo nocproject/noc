@@ -6,10 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
 
 
+@six.python_2_unicode_compatible
 class APIToken(Document):
     meta = {
         "collection": "apitokens",
@@ -26,5 +28,5 @@ class APIToken(Document):
     user = IntField()
     token = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.type, self.user)
