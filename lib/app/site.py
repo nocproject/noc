@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Site implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,6 +40,7 @@ class ProxyNode(object):
 HTTP_METHODS = {"GET", "POST", "PUT", "DELETE"}
 
 
+@six.python_2_unicode_compatible
 class URL(object):
     """
     URL Data wrapper
@@ -62,10 +63,10 @@ class URL(object):
     def __repr__(self):
         return "<URL %s>" % unicode(self)
 
-    def __unicode__(self):
+    def __str__(self):
         s = self.url
         if self.name:
-            s += ", name='%s'" % self.name
+            s += u", name='%s'" % self.name
         return s
 
 
