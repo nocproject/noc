@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-__author__ = 'FeNikS'
-
 # ---------------------------------------------------------------------
 # SUMAVISION.EMR.get_config
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+# __author__ = 'FeNikS'
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -48,7 +47,7 @@ class Script(BaseScript):
     name = "Sumavision.EMR.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute(self, **kwargs):
         try:
             host = self.access_profile.address
             login = self.access_profile.user
