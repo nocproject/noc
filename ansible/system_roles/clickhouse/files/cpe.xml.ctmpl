@@ -22,7 +22,7 @@
                     <type>UInt64</type>
                 </attribute>
                 <attribute>
-                    <name>global_id</name>
+                    <name>cpe_id</name>
                     <type>String</type>
                 </attribute>
             </key>
