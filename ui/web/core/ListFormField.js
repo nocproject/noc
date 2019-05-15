@@ -140,11 +140,7 @@ Ext.define("NOC.core.ListFormField", {
         me.createForm(undefined, index);
     },
     onDeleteRecord: function() {
-        var me = this;
-        // remove by itemId
-        me.panel.remove(me.currentSelection);
-        me.currentSelection = undefined;
-        me.disableButtons(true);
+        this.deleteRecord();
     },
     onCloneRecord: function() {
         var me = this;
@@ -223,5 +219,12 @@ Ext.define("NOC.core.ListFormField", {
     selected: function(panel) {
         panel.setBodyStyle("border-left-width", "6px");
         panel.setBodyStyle("margin-left", "0px")
+    },
+    deleteRecord: function() {
+        var me = this;
+        // remove by itemId
+        me.panel.remove(me.currentSelection);
+        me.currentSelection = undefined;
+        me.disableButtons(true);
     }
 });

@@ -52,7 +52,7 @@ class CreoleParser(BaseParser):
         with mw_lock:
             if not cls.macro_wrapper:
                 cls.macro_wrapper = MacroWrapper()
-                for mn in macro_loader.iter_macros():
-                    mc = macro_loader.get_macro(mn)
+                for mn in macro_loader:
+                    mc = macro_loader[mn]
                     setattr(cls.macro_wrapper, mn, mc.expand)
             return cls.macro_wrapper
