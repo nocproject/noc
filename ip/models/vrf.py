@@ -296,7 +296,7 @@ class VRF(models.Model):
         if user.is_superuser:
             return True
         ads = UserAccess.get_domains(user)
-        if self.administrative_domain and self.administrative_domain not in ads:
+        if self.administrative_domain and self.administrative_domain.id not in ads:
             # Default deny
             return False
         groups = set(user.groups.values_list("id", flat=True))

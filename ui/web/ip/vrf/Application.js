@@ -213,7 +213,8 @@ Ext.define("NOC.ip.vrf.Application", {
                                 store: [
                                     ["can_view", "can_view"],
                                     ["can_change", "can_change"],
-                                    ["can_create", "can_create"]
+                                    ["can_create", "can_create"],
+                                    ["can_delete", "can_delete"]
                                 ]
                             },
                             width: 150

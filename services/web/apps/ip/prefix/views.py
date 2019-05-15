@@ -34,10 +34,12 @@ class PrefixApplication(ExtModelApplication):
 
     def can_create(self, user, obj):
         # return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
-        return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_create")
+        return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_create") or \
+               Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_delete")
 
     def can_update(self, user, obj):
-        return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_change")
+        return obj.can_changed(user)
+        # return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_change")
 
     def can_delete(self, user, obj):
         return Prefix.has_access(user, obj.vrf, obj.afi, obj.prefix, "can_delete")
