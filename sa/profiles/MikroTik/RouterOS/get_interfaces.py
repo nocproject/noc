@@ -256,7 +256,7 @@ class Script(BaseScript):
                         # Try to find in already created subinterfaces
                         for sub in i["subinterfaces"]:
                             if sub["name"] == p:
-                                if "tagged_vlans" in sub:
+                                if "tagged_vlans" in sub and vlan_id not in sub["tagged_vlans"]:
                                     sub["tagged_vlans"] += [vlan_id]
                                 else:
                                     sub["tagged_vlans"] = [vlan_id]
