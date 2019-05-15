@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Caps check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sla.models.slaprobe import SLAProbe
@@ -72,7 +70,7 @@ class SLACheck(DiscoveryCheck):
             })
             del new_probes[group, p.name]
         # Add remaining probes
-        for group, name in six.iterkeys(new_probes):
+        for group, name in new_probes:
             self.logger.info("[%s|%s] Creating probe", group, name)
             new_data = new_probes.get((group, name))
             probe = SLAProbe(

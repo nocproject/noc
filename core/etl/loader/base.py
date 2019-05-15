@@ -111,7 +111,7 @@ class BaseLoader(object):
             import mongoengine.errors
             unique_fields = [
                 f.name
-                for f in self.model._fields.itervalues()
+                for f in six.itervalues(self.model._fields)
                 if f.unique and f.name not in self.ignore_unique]
             self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
@@ -407,8 +407,7 @@ class BaseLoader(object):
                 "remote_system": v["remote_system"],
                 "remote_id": v["remote_id"]
             }
-            # for fn, nv in zip(self.fields[1:], row[1:]):
-            for fn, nv in v.iteritems():
+            for fn, nv in six.iteritems(v):
                 if fn in vv:
                     continue
                 if getattr(o, fn) != nv:
@@ -647,12 +646,12 @@ class BaseLoader(object):
             # Document
             required_fields = [
                 f.name
-                for f in self.model._fields.itervalues()
+                for f in six.itervalues(self.model._fields)
                 if f.required or f.unique
             ]
             unique_fields = [
                 f.name
-                for f in self.model._fields.itervalues()
+                for f in six.itervalues(self.model._fields)
                 if f.unique
             ]
         else:

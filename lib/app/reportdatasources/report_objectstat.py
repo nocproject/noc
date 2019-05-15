@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # BaseReportDatasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import six
 from collections import defaultdict
 # Third-party modules
 import cachetools
@@ -115,15 +114,15 @@ class CapabilitiesIsolator(IsolatorClass):
         # Has links, index - link count
         d = self.f_has_links(3, index)
         if index == "0":
-            return self.default_set - set(d.iterkeys())
+            return self.default_set - set(d)
         elif index == "1":
-            return set(d.iterkeys())
+            return set(d)
         elif index == "2":
-            return set(dd for dd in six.iterkeys(d) if d[dd] == 1)
+            return set(dd for dd in d if d[dd] == 1)
         elif index == "3":
-            return set(dd for dd in six.iterkeys(d) if d[dd] == 2)
+            return set(dd for dd in d if d[dd] == 2)
         elif index == "4":
-            return set(dd for dd in six.iterkeys(d) if d[dd] >= 3)
+            return set(dd for dd in d if d[dd] >= 3)
 
     def _4_has(self, index):
         # Set has physical ifaces.

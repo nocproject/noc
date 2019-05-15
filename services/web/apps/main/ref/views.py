@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.ref application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,9 @@
 import os
 import re
 import operator
-# Django modules
-from django.db import models
 # Third-party modules
+import six
+from django.db import models
 from mongoengine.base.common import _document_registry
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -118,7 +118,7 @@ class RefAppplication(ExtApplication):
                 "id": c._get_collection_name(),
                 "label": "%s.%s" % (c.__module__.split(".")[1], n),
                 "collection": c._get_collection_name()
-            } for n, c in _document_registry.iteritems()
+            } for n, c in six.iteritems(_document_registry)
             if c._get_collection_name()]
         return sorted(r, key=lambda x: x["label"])
 

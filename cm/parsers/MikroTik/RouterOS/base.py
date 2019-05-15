@@ -61,7 +61,7 @@ class RouterOSParser(BasePyParser):
             return super(RouterOSParser, self).get_interface_fact(name)
         else:
             default_name = name[2]
-            for i in self.interface_facts.itervalues():
+            for i in six.itervalues(self.interface_facts):
                 if getattr(i, "default_name") == default_name:
                     self.current_interface = i
                     return i

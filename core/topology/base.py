@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  BaseTopology class
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2018 The NOC Project
+#  Copyright (C) 2007-2019 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -206,7 +206,7 @@ class BaseTopology(object):
         """
         maxv = np.array([0, 0])
         minv = np.array([0, 0])
-        for p in pos.itervalues():
+        for p in six.itervalues(pos):
             maxv = np.maximum(maxv, p)
             minv = np.minimum(minv, p)
         # Dimensions
