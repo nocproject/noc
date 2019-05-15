@@ -19,13 +19,11 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_ecfg = re.compile(
-        r"""
-        Port\s(?P<name>\d+)\n
-        Port\sState:\s+(?P<admin_status>\w+)\n
-        Port\sSpeed/Duplex:\s+(?P<speed>.*)\n
-        Port\sLink:\s+(?P<oper_status>.*)\n
-        (?:Port\sPoE:\s+(?P<poe>.*))?
-        """,
+        r"Port\s+(?P<name>\d+)\n"
+        r"Port\sState:[\s\t]+(?P<admin_status>\w+)\n"
+        r"Port\sSpeed/Duplex:[\s\t]+(?P<speed>.*)\n"
+        r"Port\sLink:[\s\t]+(?P<oper_status>.*)\n"
+        r"(?:Port\sPoE:[\s\t]+(?P<poe>.*))?",
         re.MULTILINE | re.VERBOSE
     )
     rx_vlans = re.compile(
@@ -66,7 +64,7 @@ class Script(BaseScript):
             r = match.groupdict()
         return r
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         v = self.cli("show vlans")
         vlans = []
         for section in v.split("\n\n"):
@@ -80,6 +78,8 @@ class Script(BaseScript):
             if not section:
                 continue
             name, cfg = self.parse_section(section)
+            if not name:
+                continue
             untag = ""
             tagged = []
             for i in vlans:
@@ -95,10 +95,11 @@ class Script(BaseScript):
                 "subinterfaces": [{
                     "name": name,
                     "enabled_afi": ["BRIDGE"],
-                    "tagged_vlans": tagged,
-                    "untagged_vlan": untag,
+                    "tagged_vlans": tagged
                 }]
             }
+            if untag:
+                i["subinterfaces"][0]["untagged_vlan"] = untag
             ifaces += [i]
         # @todo: show vlan
         return [{"interfaces": ifaces}]
