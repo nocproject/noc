@@ -132,14 +132,14 @@ class CPClient(object):
                 auth=auth,
                 verify=True
             )
-        except Exception, why:
-            logger.error("JSON-RPC Error: %s", why)
-            raise self.Error(str(why))
+        except Exception as e:
+            logger.error("JSON-RPC Error: %s", e)
+            raise self.Error(str(e))
         try:
             response = req.json()
             logger.debug("JSON-RPC RESPONSE: %s", response)
-        except ValueError, why:
-            logger.error("Invalid JSON-RPC response: %s", why)
+        except ValueError as e:
+            logger.error("Invalid JSON-RPC response: %s", e)
             raise self.Error("Invalid response")
         if response.get("error"):
             logger.error("JSON-RPC error: %s", response["error"])

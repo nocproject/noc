@@ -2,16 +2,17 @@
 # ----------------------------------------------------------------------
 # Loader loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import inspect
 import threading
 # NOC modules
-from base import BaseLoader
+from .base import BaseLoader
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,8 @@ class LoaderLoader(object):
                             loader = o
                             break
                         logger.error("Loader not found: %s", name)
-                except Exception, why:
-                    logger.error("Failed to load loader %s: %s", name, why)
+                except Exception as e:
+                    logger.error("Failed to load loader %s: %s", name, e)
                     loader = None
                 self.loaders[name] = loader
             return loader

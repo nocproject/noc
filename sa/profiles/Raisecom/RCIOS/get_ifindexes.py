@@ -26,10 +26,10 @@ class Script(BaseScript):
                 for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
                     try:
                         v = self.profile.convert_interface_name(name.split()[1].strip())
-                    except InterfaceTypeError, why:
+                    except InterfaceTypeError as e:
                         self.logger.debug(
                             "Ignoring unknown interface %s: %s",
-                            name, why
+                            name, e
                         )
                         unknown_interfaces += [name]
                         continue
