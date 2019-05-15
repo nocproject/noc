@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ResourceGroup model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 import threading
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
@@ -49,6 +50,7 @@ id_lock = threading.Lock()
     ("phone.PhoneNumber", "static_client_groups"),
     ("phone.PhoneNumber", "effective_client_groups")
 ])
+@six.python_2_unicode_compatible
 class ResourceGroup(Document):
     """
     Technology
@@ -80,7 +82,7 @@ class ResourceGroup(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.name, self.technology.name)
 
     @classmethod

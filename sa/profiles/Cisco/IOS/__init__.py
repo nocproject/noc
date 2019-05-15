@@ -82,8 +82,8 @@ class Profile(BaseProfile):
             }
         },
         "is_cat4000": {
-            "version": {
-                "$regex": r"SG|\d\d\.\d\d\.\d\d\.E|EWA"
+            "platform": {
+                "$regex": r"^WS-C4[059]\d\d"
             }
         },
         "is_small_cat": {

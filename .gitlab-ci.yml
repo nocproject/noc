@@ -221,7 +221,7 @@ Build nginx image:
       --no-cache
       --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
       -t ${CONTAINER_NAME}
-      -f Dockerfile.static .
+      -f .docker/Dockerfile.static .
     - docker push ${CONTAINER_NAME}
     - docker rmi ${CONTAINER_NAME}
   tags:
@@ -241,7 +241,7 @@ Build dev image:
       --no-cache
       --build-arg IMAGE=$CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
       -t ${CONTAINER_NAME}
-      -f Dockerfile.dev .
+      -f .docker/Dockerfile.dev .
     - docker push ${CONTAINER_NAME}
     - docker rmi ${CONTAINER_NAME}
   tags:

@@ -2,19 +2,23 @@
 # ---------------------------------------------------------------------
 # Covered Buildings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField, IntField)
+from mongoengine.fields import (StringField, IntField)
 # NOC modules
-from coverage import Coverage
+from .coverage import Coverage
 from noc.gis.models.building import Building
 from noc.lib.nosql import PlainReferenceField
 
 
+@six.python_2_unicode_compatible
 class CoveredBuilding(Document):
     meta = {
         "collection": "noc.coveredbuildings",
@@ -33,7 +37,7 @@ class CoveredBuilding(Document):
     # Covered homes
     homes = IntField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (
             self.coverage.name,
             self.building.primary_address.display_ru()

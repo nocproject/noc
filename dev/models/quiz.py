@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Quiz model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, EmbeddedDocumentField,
                                 ListField, UUIDField, IntField, DateTimeField)
@@ -65,6 +66,7 @@ class QuizQuestion(EmbeddedDocument):
 @on_delete_check(check=[
     ("dev.Spec", "quiz")
 ])
+@six.python_2_unicode_compatible
 class Quiz(Document):
     meta = {
         "collection": "quiz",
@@ -86,7 +88,7 @@ class Quiz(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

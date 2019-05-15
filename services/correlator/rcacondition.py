@@ -2,16 +2,19 @@
 # ---------------------------------------------------------------------
 # RCACondition
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012, The NOC Project
+# Copyright (C) 2007-2019, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.nosql import ObjectId
 
 
+@six.python_2_unicode_compatible
 class RCACondition(object):
     def __init__(self, alarm_class, condition):
         self.name = "%s::%s" % (alarm_class.name, condition.name)
@@ -54,7 +57,7 @@ class RCACondition(object):
             "eval"
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_context(self, alarm):

@@ -8,9 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+import six
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.lib.text import parse_kv
+from noc.core.mib import mib
+
+SNMP_UNKNOWN_VALUE = 2147483647
 
 
 class Script(GetMetricsScript):
@@ -27,18 +31,17 @@ class Script(GetMetricsScript):
 
     @metrics(
         ["Interface | DOM | RxPower", "Interface | DOM | TxPower",
-         "Interface | DOM | Voltage", "Interface | DOM | Bias Current"
-         "Interface | DOM | Temperature",
+         "Interface | DOM | Voltage", "Interface | DOM | Bias Current", "Interface | DOM | Temperature",
          "Interface | Errors | BIP | In", "Interface | Errors | BIP | Out"],
-        # has_capability="Network | PON | OLT",
+        has_capability="Network | PON | OLT",
         access="C",  # CLI version
         volatile=False
     )
-    def collect_dom_metrics(self, metrics):
+    def collect_dom_metrics_cli(self, metrics):
         super(Script, self).collect_dom_metrics(metrics)
-        self.collect_cpe_metrics(metrics)
+        self.collect_cpe_metricscli(metrics)
 
-    def collect_cpe_metrics(self, metrics):
+    def collect_cpe_metrics_cli(self, metrics):
         # ifaces = set(m.path[-1].split("/")[:2] for m in metrics)
         onts = self.scripts.get_cpe_status()  # Getting ONT List
         self.cli("config")
@@ -113,3 +116,91 @@ class Script(GetMetricsScript):
 
         self.cli("quit")
         self.cli("quit")
+
+    @metrics(
+        ["Interface | DOM | RxPower", "Interface | DOM | TxPower",
+         "Interface | DOM | Voltage", "Interface | DOM | Bias Current", "Interface | DOM | Temperature",
+         "Interface | Errors | BIP | In", "Interface | Errors | BIP | Out"],
+        has_capability="Network | PON | OLT",
+        access="S",  # CLI version
+        volatile=False
+    )
+    def collect_dom_metrics_snmp(self, metrics):
+        super(Script, self).collect_dom_metrics(metrics)
+        self.collect_cpe_metrics_snmp(metrics)
+
+    def collect_cpe_metrics_snmp(self, metrics):
+        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))}
+        global_id_map = {}
+        for ont_index, ont_serial in self.snmp.get_tables(
+                [mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"]]
+        ):
+            global_id_map[ont_index] = ont_serial.encode("hex").upper()
+        for ont_index, ont_temp_c, ont_current_ma, ont_optical_tx_dbm, ont_optical_rx_dbm, \
+            ont_voltage_v, optical_rx_dbm_cpe in self.snmp.get_tables([
+                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmTemperature"],
+                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmBiasCurrent"],
+                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmTxPower"],
+                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmRxPower"],
+                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmVoltage"],
+                mib["HUAWEI-XPON-MIB::hwGponOntOpticalDdmOltRxOntPower"]],
+                bulk=False):
+            ifindex, ont_id = ont_index.split(".")
+            ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
+            ipath = [global_id_map[ont_index], "", "", "0"]
+            mpath = ["", "", "", names[int(ifindex)]]
+            if ont_temp_c != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | DOM | Temperature", mpath),
+                                metric="Interface | DOM | Temperature",
+                                path=ipath,
+                                value=float(ont_temp_c),
+                                multi=True)
+            if ont_current_ma != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | DOM | Bias Current", mpath),
+                                metric="Interface | DOM | Bias Current",
+                                path=ipath,
+                                value=float(ont_current_ma),
+                                multi=True)
+            if ont_voltage_v != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | DOM | Voltage", mpath),
+                                metric="Interface | DOM | Voltage",
+                                path=ipath,
+                                value=float(ont_voltage_v),
+                                multi=True)
+            if ont_optical_tx_dbm != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | DOM | TxPower", mpath),
+                                metric="Interface | DOM | TxPower",
+                                path=ipath,
+                                value=float(ont_optical_tx_dbm) / 100.0,
+                                multi=True)
+            if ont_optical_rx_dbm != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | DOM | RxPower", mpath),
+                                metric="Interface | DOM | RxPower",
+                                path=ipath,
+                                value=float(ont_optical_rx_dbm) / 100.0,
+                                multi=True)
+            if optical_rx_dbm_cpe != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | DOM | RxPower", mpath),
+                                metric="Interface | DOM | RxPower",
+                                path=["", "", "", names[int(ifindex)], ont_id],
+                                value=float(optical_rx_dbm_cpe) / 100.0,
+                                multi=True)
+        for ont_index, ont_optical_errors_bip_out, ont_optical_errors_bip_in in self.snmp.get_tables([
+            mib["HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticUpFrameBipErrCnt"],
+            mib["HUAWEI-XPON-MIB::hwGponOntTrafficFlowStatisticDnFramesBipErrCnt"]
+        ], bulk=False):
+            ifindex, ont_id = ont_index.split(".")
+            ipath = [global_id_map[ont_index], "", "", "0"]
+            mpath = ["", "", "", names[int(ifindex)]]
+            if ont_optical_errors_bip_out != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | Errors | BIP | Out", mpath),
+                                metric="Interface | Errors | BIP | Out",
+                                path=ipath,
+                                value=int(ont_optical_errors_bip_out),
+                                multi=True)
+            if ont_optical_errors_bip_in != SNMP_UNKNOWN_VALUE:
+                self.set_metric(id=("Interface | Errors | BIP | In", mpath),
+                                metric="Interface | Errors | BIP | In",
+                                path=ipath,
+                                value=int(ont_optical_errors_bip_in),
+                                multi=True)

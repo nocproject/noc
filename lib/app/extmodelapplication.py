@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+from collections import defaultdict
 from functools import reduce
 # Third-party modules
 from django.http import HttpResponse
@@ -50,6 +51,7 @@ class ExtModelApplication(ExtApplication):
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id"}
     SECRET_MASK = "********"
+    file_fields_mask = None
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -394,6 +396,30 @@ class ExtModelApplication(ExtApplication):
         else:
             return pdata, {}
 
+    def update_file(self, files, o, file_attrs=None):
+        """
+        Proccessed uploaded file
+        :param files:
+        :param o:
+        :param file_attrs:
+        :return:
+        """
+        return True
+
+    def split_file(self, pdata):
+        """
+        Split post data to (fields, file_fields) data
+        """
+        if self.file_fields_mask:
+            fdata = defaultdict(dict)
+            for f in pdata.keys():
+                match = self.file_fields_mask.match(f)
+                if match:
+                    fdata[match.group("findex")][match.group("fname")] = pdata[f]
+                    del pdata[f]
+            return pdata, fdata
+        return pdata, {}
+
     def extra_query(self, q, order):
         new_order = []
         extra_select = {}
@@ -456,12 +482,17 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
-        attrs, m2m_attrs = self.split_mtm(
-            self.deserialize(request.raw_post_data))
+        if request.META.get("CONTENT_TYPE") == 'application/json':
+            attrs, m2m_attrs = self.split_mtm(
+                self.deserialize(request.raw_post_data))
+        else:
+            attrs, m2m_attrs = self.split_mtm(
+                self.deserialize_form(request))
+        attrs, file_attrs = self.split_file(attrs)
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data if not request._read_started else request, e)
             return self.render_json(
                 {
                     "success": False,
@@ -511,6 +542,9 @@ class ExtModelApplication(ExtApplication):
                 o.save()
                 if m2m_attrs:
                     self.update_m2ms(o, m2m_attrs)
+                if file_attrs:
+                    # Save uploaded file
+                    self.update_file(request.FILES, o, file_attrs)
             except IntegrityError as e:
                 return self.render_json(
                     {
@@ -544,12 +578,17 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
-        attrs, m2m_attrs = self.split_mtm(
-            self.deserialize(request.raw_post_data))
+        if request.META.get("CONTENT_TYPE") == 'application/json':
+            attrs, m2m_attrs = self.split_mtm(
+                self.deserialize(request.raw_post_data))
+        else:
+            attrs, m2m_attrs = self.split_mtm(
+                self.deserialize_form(request))
+        attrs, file_attrs = self.split_file(attrs)
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
+            self.logger.info("Bad request: %r (%s)", request.raw_post_data if not request._read_started else request, e)
             return self.render_json(
                 {
                     "success": False,
@@ -605,6 +644,9 @@ class ExtModelApplication(ExtApplication):
             o.save()
             if m2m_attrs:
                 self.update_m2ms(o, m2m_attrs)
+            if file_attrs:
+                # Save uploaded file
+                self.update_file(request.FILES, o, file_attrs)
         except IntegrityError:
             return self.render_json(
                 {

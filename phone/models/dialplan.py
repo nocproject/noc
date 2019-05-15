@@ -2,17 +2,20 @@
 # ---------------------------------------------------------------------
 # DialPlan model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField
 import cachetools
+# NOC modules
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -22,6 +25,7 @@ id_lock = Lock()
     ("phone.PhoneRange", "dialplan"),
     ("phone.PhoneNumber", "dialplan")
 ])
+@six.python_2_unicode_compatible
 class DialPlan(Document):
     meta = {
         "collection": "noc.dialplans",
@@ -36,7 +40,7 @@ class DialPlan(Document):
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod
@@ -51,7 +55,7 @@ class DialPlan(Document):
         :param number:
         :return:
         """
-        from numbercategory import NumberCategory
+        from .numbercategory import NumberCategory
 
         for dialplan, rx, category in NumberCategory.get_rules():
             if dialplan != self:

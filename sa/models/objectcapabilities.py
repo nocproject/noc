@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Object Capabilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (ListField, StringField, ReferenceField,
                                 DynamicField, EmbeddedDocumentField)
@@ -24,18 +25,20 @@ from noc.core.datastream.decorator import datastream
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class CapsItem(EmbeddedDocument):
     capability = ReferenceField(Capability)
     value = DynamicField()
     # Source name like "caps", "interface", "manual"
     source = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.capability.name
 
 
 @on_save
 @datastream
+@six.python_2_unicode_compatible
 class ObjectCapabilities(Document):
     meta = {
         "collection": "noc.sa.objectcapabilities",
@@ -45,7 +48,7 @@ class ObjectCapabilities(Document):
     object = ForeignKeyField(ManagedObject, primary_key=True)
     caps = ListField(EmbeddedDocumentField(CapsItem))
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s caps" % self.object.name
 
     def on_save(self):

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # VCFilter model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,11 +25,12 @@ id_lock = Lock()
     ("vc.VCBindFilter", "vc_filter"),
     ("vc.VCDomainProvisioningConfig", "vc_filter"),
 ])
+@six.python_2_unicode_compatible
 class VCFilter(models.Model):
     """
     VC Filter
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "VC Filter"
         verbose_name_plural = "VC Filters"
         db_table = "vc_vcfilter"
@@ -50,7 +51,7 @@ class VCFilter(models.Model):
         except VCFilter.DoesNotExist:
             return None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):

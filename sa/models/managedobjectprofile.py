@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
@@ -59,9 +60,10 @@ id_lock = Lock()
     ("sa.ManagedObjectSelector", "filter_object_profile"),
     ("inv.FirmwarePolicy", "object_profile")
 ])
+@six.python_2_unicode_compatible
 class ManagedObjectProfile(models.Model):
 
-    class Meta:
+    class Meta(object):
         verbose_name = _("Managed Object Profile")
         verbose_name_plural = _("Managed Object Profiles")
         db_table = "sa_managedobjectprofile"
@@ -692,7 +694,7 @@ class ManagedObjectProfile(models.Model):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

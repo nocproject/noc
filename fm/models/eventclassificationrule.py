@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import os
 # Third-party modules
+import six
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
 # NOC modules
@@ -20,6 +21,7 @@ from noc.lib.escape import json_escape as jq
 from noc.lib.text import quote_safe_path
 
 
+@six.python_2_unicode_compatible
 class EventClassificationRuleVar(EmbeddedDocument):
     meta = {
         "strict": False
@@ -27,7 +29,7 @@ class EventClassificationRuleVar(EmbeddedDocument):
     name = fields.StringField(required=True)
     value = fields.StringField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __eq__(self, other):
@@ -35,6 +37,7 @@ class EventClassificationRuleVar(EmbeddedDocument):
                 self.value == other.value)
 
 
+@six.python_2_unicode_compatible
 class EventClassificationRuleCategory(Document):
     meta = {
         "collection": "noc.eventclassificationrulecategories",
@@ -44,7 +47,7 @@ class EventClassificationRuleCategory(Document):
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -60,6 +63,7 @@ class EventClassificationRuleCategory(Document):
         super(EventClassificationRuleCategory, self).save(*args, **kwargs)
 
 
+@six.python_2_unicode_compatible
 class EventClassificationPattern(EmbeddedDocument):
     meta = {
         "strict": False
@@ -67,13 +71,14 @@ class EventClassificationPattern(EmbeddedDocument):
     key_re = fields.StringField(required=True)
     value_re = fields.StringField(required=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"'%s' : '%s'" % (self.key_re, self.value_re)
 
     def __eq__(self, other):
         return self.key_re == other.key_re and self.value_re == other.value_re
 
 
+@six.python_2_unicode_compatible
 class EventClassificationRule(Document):
     """
     Classification rules
@@ -99,7 +104,7 @@ class EventClassificationRule(Document):
     #
     category = fields.ObjectIdField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):

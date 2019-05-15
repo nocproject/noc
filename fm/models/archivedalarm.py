@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ArchivedAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import datetime
 # Third-party modules
+import six
 from django.template import Template, Context
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedDocumentField,
@@ -27,6 +28,7 @@ from .alarmseverity import AlarmSeverity
 
 
 @datastream
+@six.python_2_unicode_compatible
 class ArchivedAlarm(Document):
     meta = {
         "collection": "noc.alarms.archived",
@@ -92,7 +94,7 @@ class ArchivedAlarm(Document):
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % self.id
 
     def iter_changed_datastream(self):

@@ -9,7 +9,7 @@
 import logging
 import datetime
 import csv
-import tempfile
+import StringIO
 # Third-party modules
 from django.http import HttpResponse
 from pymongo import ReadPreference
@@ -25,8 +25,21 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter
+from noc.lib.text import list_to_ranges
 
 logger = logging.getLogger(__name__)
+
+
+def get_column_width(name):
+    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
+                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
+        return 8
+    elif name.startswith("ADM_PATH"):
+        return excel_column_format["ADMIN_DOMAIN"]
+    elif name in excel_column_format:
+        return excel_column_format[name]
+    return 15
 
 
 class ReportInterfaceStatus(object):
@@ -55,9 +68,9 @@ class ReportInterfaceStatus(object):
             match["profile"] = {
                 "$nin": def_prof
             }
-
+        lookup = {"from": "noc.subinterfaces", "localField": "_id", "foreignField": "interface", "as": "subs"}
         result = Interface._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED). \
-            aggregate([{"$match": match}])
+            aggregate([{"$match": match}, {"$lookup": lookup}])
         return result
 
     def __getitem__(self, item):
@@ -78,7 +91,8 @@ class ReportInterfaceStatusApplication(ExtApplication):
               "columns": StringParameter(required=False),
               "o_format": StringParameter(choices=["csv", "xlsx"])})
     def api_report(self, request, o_format, administrative_domain=None, selector=None,
-                   interface_profile=None, zero=None, def_profile=None, columns=None):
+                   interface_profile=None, zero=None, def_profile=None, columns=None,
+                   enable_autowidth=False):
 
         def humanize_speed(speed):
             if not speed:
@@ -119,7 +133,9 @@ class ReportInterfaceStatusApplication(ExtApplication):
             "object_port_status",
             "object_link_status",
             "object_port_speed",
-            "object_port_duplex"
+            "object_port_duplex",
+            "object_port_untagged_vlan",
+            "object_port_tagged_vlans"
         ]
 
         header_row = [
@@ -132,7 +148,10 @@ class ReportInterfaceStatusApplication(ExtApplication):
             "PORT_STATUS",
             "LINK_STATUS",
             "PORT_SPEED",
-            "PORT_DUPLEX"
+            "PORT_DUPLEX",
+            "PORT_UNTAGGED_VLAN",
+            "PORT_TAGGED_VLANS"
+
         ]
 
         if columns:
@@ -184,6 +203,10 @@ class ReportInterfaceStatusApplication(ExtApplication):
         rld = ReportInterfaceStatus(mos_id, zero, def_profile, interface_profile)
 
         for i in rld.out:
+            untag, tagged = "", ""
+            if i["subs"]:
+                untag = i["subs"][0].get("untagged_vlan", "")
+                tagged = list_to_ranges(i["subs"][0].get("tagged_vlans", []))
             r += [translate_row(row([
                 mo[i['managed_object']]['name'],
                 mo[i['managed_object']]['address'],
@@ -195,7 +218,9 @@ class ReportInterfaceStatusApplication(ExtApplication):
                 "UP" if i['admin_status'] is True else "Down",
                 "UP" if "oper_status" in i and i['oper_status'] is True else "Down",
                 humanize_speed(i['in_speed']) if "in_speed" in i else "-",
-                DUPLEX.get(i['full_duplex']) if "full_duplex" in i and "in_speed" in i else "-"
+                DUPLEX.get(i['full_duplex']) if "full_duplex" in i and "in_speed" in i else "-",
+                untag,
+                tagged
             ]), cmap)]
 
         filename = "interface_status_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
@@ -207,18 +232,33 @@ class ReportInterfaceStatusApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            with tempfile.NamedTemporaryFile(mode="wb") as f:
-                wb = xlsxwriter.Workbook(f.name)
-                ws = wb.add_worksheet("Objects")
-                for rn, x in enumerate(r):
-                    for cn, c in enumerate(x):
-                        ws.write(rn, cn, c)
-                ws.autofilter(0, 0, rn, cn)
-                wb.close()
-                response = HttpResponse(
-                    content_type="application/x-ms-excel")
-                response[
-                    "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
-                with open(f.name) as ff:
-                    response.write(ff.read())
-                return response
+            # with tempfile.NamedTemporaryFile(mode="wb") as f:
+            #     wb = xlsxwriter.Workbook(f.name)
+            response = StringIO.StringIO()
+            wb = xlsxwriter.Workbook(response)
+            cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+            ws = wb.add_worksheet("Objects")
+            max_column_data_length = {}
+            for rn, x in enumerate(r):
+                for cn, c in enumerate(x):
+                    if rn and (r[0][cn] not in max_column_data_length
+                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                        max_column_data_length[r[0][cn]] = len(str(c))
+                    ws.write(rn, cn, c, cf1)
+            ws.autofilter(0, 0, rn, cn)
+            ws.freeze_panes(1, 0)
+            for cn, c in enumerate(r[0]):
+                # Set column width
+                width = get_column_width(c)
+                if enable_autowidth and width < max_column_data_length[c]:
+                    width = max_column_data_length[c]
+                ws.set_column(cn, cn, width=width)
+            wb.close()
+            response.seek(0)
+            response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
+            # response = HttpResponse(
+            #     content_type="application/x-ms-excel")
+            response[
+                "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
+            response.close()
+            return response

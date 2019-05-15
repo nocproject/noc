@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObjectSelector
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -55,8 +55,9 @@ id_lock = Lock()
     ("sa.UserAccess", "selector"),
     ("vc.VCDomainProvisioningConfig", "selector"),
 ])
+@six.python_2_unicode_compatible
 class ManagedObjectSelector(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Managed Object Selector")
         verbose_name_plural = _("Managed Object Selectors")
         db_table = "sa_managedobjectselector"
@@ -109,7 +110,7 @@ class ManagedObjectSelector(models.Model):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod
@@ -367,8 +368,9 @@ class ManagedObjectSelector(models.Model):
         return list(objects)
 
 
+@six.python_2_unicode_compatible
 class ManagedObjectSelectorByAttribute(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Managed Object Selector by Attribute")
         db_table = "sa_managedobjectselectorbyattribute"
         app_label = "sa"
@@ -380,7 +382,7 @@ class ManagedObjectSelectorByAttribute(models.Model):
     value_re = models.CharField(_("Filter by value (REGEXP)"),
                                 max_length=256, validators=[check_re])
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
 

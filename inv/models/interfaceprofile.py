@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, LongField,
                                 ReferenceField, ListField,
@@ -51,6 +52,7 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     ("inv.SubInterface", "profile")
     # ("sa.ServiceProfile", "")
 ])
+@six.python_2_unicode_compatible
 class InterfaceProfile(Document):
     """
     Interface SLA profile and settings
@@ -126,7 +128,7 @@ class InterfaceProfile(Document):
 
     DEFAULT_PROFILE_NAME = "default"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

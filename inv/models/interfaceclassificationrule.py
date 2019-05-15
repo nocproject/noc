@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # Interface Classification Rules models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 import re
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
                            ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
@@ -20,6 +22,7 @@ from noc.vc.models.vcfilter import VCFilter
 from .interfaceprofile import InterfaceProfile
 
 
+@six.python_2_unicode_compatible
 class InterfaceClassificationMatch(EmbeddedDocument):
     # Field name
     field = StringField(choices=[
@@ -43,7 +46,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
     vc_filter = ForeignKeyField(VCFilter, required=False)
     description = StringField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.prefix_table:
             v = self.prefix_table.name
         elif self.vc_filter:
@@ -93,7 +96,9 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         v = IP.prefix(self.value)
         r = [
             "def %s(iface):" % f_name,
-            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]" % {"afi": v.afi},
+            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]" % {
+                "afi": v.afi
+            },
             "    a = sum(a, [])",
         ]
         if "/" in self.value:
@@ -132,7 +137,8 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
-            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())" % vlan
+            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())" %
+            vlan
         ]
         return "\n".join(r)
 
@@ -156,7 +162,8 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
-            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())" % vlan
+            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())" %
+            vlan
         ]
         return "\n".join(r)
 
@@ -175,6 +182,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         return "\n".join(r)
 
 
+@six.python_2_unicode_compatible
 class InterfaceClassificationRule(Document):
     meta = {
         "collection": "noc.inv.interfaceclassificationrules",
@@ -192,7 +200,7 @@ class InterfaceClassificationRule(Document):
     profile = PlainReferenceField(InterfaceProfile,
                                   default=InterfaceProfile.get_default_profile)
 
-    def __unicode__(self):
+    def __str__(self):
         r = [unicode(x) for x in self.match]
         return "%s -> %s" % (", ".join(r), self.profile.name)
 

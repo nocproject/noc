@@ -245,7 +245,9 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     values = {
                         "vrf": data.vrf,
                         "vrf__label": data.vrf__label,
-                        "afi": data.afi
+                        "afi": data.afi,
+                        "prefix_discovery_policy": "P",
+                        "address_discovery_policy": "P"
                     };
                 if(prefix) {
                     values.prefix = prefix

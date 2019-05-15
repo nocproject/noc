@@ -11,6 +11,7 @@ import time
 import urllib
 import urllib2
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.core.model.decorator import on_delete_check
@@ -34,6 +35,7 @@ except ImportError:
     ("peer.AS", "rir"),
     ("peer.Maintainer", "rir")
 ])
+@six.python_2_unicode_compatible
 class RIR(models.Model):
     """
     Regional internet registries
@@ -48,7 +50,7 @@ class RIR(models.Model):
     name = models.CharField("Name", max_length=64, unique=True)
     whois = models.CharField("Whois", max_length=64, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     # Update RIR's database API and returns report

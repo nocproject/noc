@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # Prefix Table models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django Modules
+# Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC Modules
@@ -19,8 +20,9 @@ from noc.core.model.decorator import on_delete_check
     # ("inv.InterfaceClassificationMatch", "prefix_table"),
     ("sa.ManagedObjectSelector", "filter_prefix")
 ])
+@six.python_2_unicode_compatible
 class PrefixTable(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Prefix Table")
         verbose_name_plural = _("Prefix Tables")
         db_table = "main_prefixtable"
@@ -28,10 +30,9 @@ class PrefixTable(models.Model):
         ordering = ["name"]
 
     name = models.CharField(_("Name"), max_length=128, unique=True)
-    description = models.TextField(_("Description"),
-        null=True, blank=True)
+    description = models.TextField(_("Description"), null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def match(self, prefix):
@@ -55,21 +56,20 @@ class PrefixTable(models.Model):
         return self.match(other)
 
 
+@six.python_2_unicode_compatible
 class PrefixTablePrefix(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Prefix")
         verbose_name_plural = _("Prefixes")
         db_table = "main_prefixtableprefix"
         unique_together = [("table", "afi", "prefix")]
         ordering = ["table", "afi", "prefix"]
 
-    table = models.ForeignKey(PrefixTable,
-        verbose_name=_("Prefix Table"))
-    afi = models.CharField(_("Address Family"), max_length=1,
-            choices=[("4", _("IPv4")), ("6", _("IPv6"))])
+    table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"))
+    afi = models.CharField(_("Address Family"), max_length=1, choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = CIDRField(_("Prefix"))
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (self.table.name, self.prefix)
 
     def save(self, *args, **kwargs):

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ActionCommands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import os
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField,
                                 BooleanField, ListField, IntField,
@@ -22,11 +23,12 @@ from noc.lib.prettyjson import to_json
 from .action import Action
 
 
+@six.python_2_unicode_compatible
 class PlatformMatch(EmbeddedDocument):
     platform_re = StringField()
     version_re = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s - %s" % (self.platform_re, self.version_re)
 
     @property
@@ -37,6 +39,7 @@ class PlatformMatch(EmbeddedDocument):
         }
 
 
+@six.python_2_unicode_compatible
 class ActionCommands(Document):
     meta = {
         "collection": "noc.actioncommands",
@@ -60,7 +63,7 @@ class ActionCommands(Document):
     preference = IntField(default=1000)
     timeout = IntField(default=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_json_path(self):

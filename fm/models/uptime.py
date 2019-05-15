@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Uptime report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import datetime
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
 # NOC modules
@@ -19,6 +20,7 @@ from noc.lib.dateutils import total_seconds
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class Uptime(Document):
     meta = {
         "collection": "noc.fm.uptimes",
@@ -36,7 +38,7 @@ class Uptime(Document):
     WRAP = datetime.timedelta(seconds=FWRAP)
     WPREC = 0.1  # Wrap precision
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%d" % self.object
 
     @classmethod

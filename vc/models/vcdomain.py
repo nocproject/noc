@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from builtins import range, object
 from django.db import models
 # NOC modules
@@ -31,6 +32,7 @@ from noc.core.model.decorator import on_delete_check
 ], ignore=[
     ("inv.MACDB", "vc_domain")
 ])
+@six.python_2_unicode_compatible
 class VCDomain(models.Model):
     """
     Virtual circuit domain, allows to separate unique VC spaces
@@ -53,7 +55,7 @@ class VCDomain(models.Model):
         verbose_name="Style",
         blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def on_save(self):

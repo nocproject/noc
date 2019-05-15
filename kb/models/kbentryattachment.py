@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # KBEntryAttachment model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 from django.db.models import Q
 # NOC modules
@@ -14,11 +15,12 @@ from noc.main.models.databasestorage import database_storage
 from noc.kb.models.kbentry import KBEntry
 
 
+@six.python_2_unicode_compatible
 class KBEntryAttachment(models.Model):
     """
     Attachments
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "KB Entry Attachment"
         verbose_name_plural = "KB Entry Attachments"
         app_label = "kb"
@@ -33,7 +35,7 @@ class KBEntryAttachment(models.Model):
     file = models.FileField("File", upload_to=KBEntry.upload_to,
                             storage=database_storage)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%d: %s" % (self.kb_entry.id, self.name)
 
     def delete(self):

@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Policy Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, ListField,
                                 EmbeddedDocumentField, BooleanField)
@@ -16,14 +17,16 @@ from mongoengine.fields import (StringField, ReferenceField, ListField,
 from .validationpolicy import ValidationPolicy
 
 
+@six.python_2_unicode_compatible
 class ValidationPolicyItem(EmbeddedDocument):
     policy = ReferenceField(ValidationPolicy)
     is_active = BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.policy.name
 
 
+@six.python_2_unicode_compatible
 class ValidationPolicySettings(Document):
     meta = {
         "collection": "noc.validationpolicysettings",
@@ -35,5 +38,5 @@ class ValidationPolicySettings(Document):
     object_id = StringField()
     policies = ListField(EmbeddedDocumentField(ValidationPolicyItem))
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.model_id, self.object_id)

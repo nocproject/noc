@@ -2,22 +2,25 @@
 # ---------------------------------------------------------------------
 # ArchivedEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine import document, fields
-# Django modules
 from django.template import Template, Context
 # NOC modules
-from eventlog import EventLog
-from eventclass import EventClass
+from .eventlog import EventLog
+from .eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib import nosql
 from noc.lib.dateutils import total_seconds
 
 
+@six.python_2_unicode_compatible
 class ArchivedEvent(document.Document):
     """
     """
@@ -40,7 +43,7 @@ class ArchivedEvent(document.Document):
     log = fields.ListField(nosql.EmbeddedDocumentField(EventLog))
     alarms = fields.ListField(nosql.ObjectIdField())
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % self.id
 
     @property

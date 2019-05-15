@@ -2,18 +2,20 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
+import datetime
 import difflib
 # Third-party modules
-from core.model.fields import AutoCompleteTagsField
+import six
 from django.db import models
 # NOC modules
 from noc.lib.app.site import site
+from noc.core.model.fields import TagsField
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers.loader import loader
 from noc.core.model.decorator import on_delete_check
@@ -28,6 +30,7 @@ from noc.core.model.decorator import on_delete_check
         ("kb.KBEntryAttachment", "kb_entry")
     ]
 )
+@six.python_2_unicode_compatible
 class KBEntry(models.Model):
     """
     KB Entry
@@ -44,10 +47,10 @@ class KBEntry(models.Model):
     language = models.ForeignKey(Language, verbose_name="Language",
                                  limit_choices_to={"is_active": True})
     markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=loader.choices)
-    tags = AutoCompleteTagsField("Tags", null=True, blank=True)
+                                       choices=[(x, x) for x in loader])
+    tags = TagsField("Tags", null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.id:
             return u"KB%d: %s" % (self.id, self.subject)
         else:
@@ -56,12 +59,30 @@ class KBEntry(models.Model):
     def get_absolute_url(self):
         return site.reverse("kb:view:view", self.id)
 
+    def save(self, force_insert=False, force_update=False, using=None):
+        """
+        save model, compute body's diff and save event history
+        """
+        from noc.core.middleware.tls import get_user
+        from noc.kb.models.kbentryhistory import KBEntryHistory
+
+        user = get_user()
+        if self.id:
+            old_body = KBEntry.objects.get(id=self.id).body
+        else:
+            old_body = ""
+        super(KBEntry, self).save()
+        if old_body != self.body:
+            diff = "\n".join(difflib.unified_diff(self.body.splitlines(), old_body.splitlines()))
+            KBEntryHistory(kb_entry=self, user=user, diff=diff,
+                           timestamp=datetime.datetime.now().replace(microsecond=0)).save()
+
     @property
     def parser(self):
         """
         Wiki parser class
         """
-        return loader.get_parser(self.markup_language)
+        return loader[self.markup_language]
 
     @property
     def html(self):
@@ -75,13 +96,14 @@ class KBEntry(models.Model):
         """
         Returns latest KBEntryHistory record
         """
+        from .kbentryhistory import KBEntryHistory
         d = KBEntryHistory.objects.filter(kb_entry=self).order_by("-timestamp")[:1]
         if d:
             return d[0]
         return None
 
     @classmethod
-    def last_modified(self, num=20):
+    def last_modified(cls, num=20):
         """
         Returns a list of last modified KB Entries
         """
@@ -112,7 +134,7 @@ class KBEntry(models.Model):
         return self.kbentrypreviewlog_set.count()
 
     @classmethod
-    def most_popular(self, num=20):
+    def most_popular(cls, num=20):
         """
         Returns most popular articles
         """
@@ -149,51 +171,6 @@ class KBEntry(models.Model):
     def has_visible_attachments(self):
         return self.kbentryattachment_set.filter(is_hidden=False).exists()
 
-    def save(self, user=None, timestamp=None):
-        """
-        save model, compute body's diff and save event history
-        """
-        if self.id:
-            old_body = KBEntry.objects.get(id=self.id).body
-        else:
-            old_body = ""
-        super(KBEntry, self).save()
-        if old_body != self.body:
-            diff = "\n".join(difflib.unified_diff(self.body.splitlines(),
-                                                  old_body.splitlines()))
-            KBEntryHistory(kb_entry=self, user=user, diff=diff,
-                           timestamp=timestamp).save()
 
-    def is_bookmarked(self, user=None):
-        """
-        Check has KBEntry any bookmarks
-        """
-        from .kbuserbookmark import KBUserBookmark
-        from .kbglobalbookmark import KBGlobalBookmark
-        # Check Global bookmarks
-        if KBGlobalBookmark.objects.filter(kb_entry=self).count() > 0:
-            return True
-        return (user and
-                KBUserBookmark.objects.filter(kb_entry=self,
-                                              user=user).exists())
-
-    def set_user_bookmark(self, user):
-        """
-        Set user bookmark
-        """
-        from .kbuserbookmark import KBUserBookmark
-        if not KBUserBookmark.objects.filter(kb_entry=self,
-                                             user=user).exists():
-            KBUserBookmark(kb_entry=self, user=user).save()
-
-    def unset_user_bookmark(self, user):
-        """
-        Uset user bookmark
-        """
-        from .kbuserbookmark import KBUserBookmark
-        for b in KBUserBookmark.objects.filter(kb_entry=self, user=user):
-            b.delete()
-
-
-# Avoid circular references
-from .kbentryhistory import KBEntryHistory
+# No delete, fixed 'KBEntry' object has no attribute 'kbentryattachment_set'
+from .kbentryattachment import KBEntryAttachment  # noqa

@@ -113,6 +113,7 @@ logger = logging.getLogger(__name__)
     ("ip.Address", "managed_object"),
     ("sa.Service", "managed_object")
 ])
+@six.python_2_unicode_compatible
 class ManagedObject(Model):
     """
     Managed Object
@@ -601,7 +602,7 @@ class ManagedObject(Model):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod
@@ -1778,6 +1779,7 @@ class ManagedObject(Model):
 
 
 @on_save
+@six.python_2_unicode_compatible
 class ManagedObjectAttribute(Model):
     class Meta(object):
         verbose_name = "Managed Object Attribute"
@@ -1797,7 +1799,7 @@ class ManagedObjectAttribute(Model):
         blank=True, null=True
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.managed_object, self.key)
 
     def on_save(self):

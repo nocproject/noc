@@ -95,6 +95,9 @@ class ExtApplication(Application):
     def deserialize(self, data):
         return ujson.loads(data)
 
+    def deserialize_form(self, request):
+        return dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.POST.lists())
+
     def response(self, content="", status=200):
         if not isinstance(content, six.string_types):
             return HttpResponse(ujson.dumps(content),

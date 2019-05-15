@@ -10,7 +10,7 @@
 import logging
 import datetime
 import csv
-import tempfile
+import StringIO
 # Third-party modules
 from django.http import HttpResponse
 from pymongo import ReadPreference
@@ -28,6 +28,19 @@ from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
 
 logger = logging.getLogger(__name__)
+
+
+def get_column_width(name):
+    excel_column_format = {"ID": 6, "OBJECT1_NAME": 38, "OBJECT2_NAME": 38,
+                           "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
+                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
+        return 8
+    elif name.startswith("ADM_PATH"):
+        return excel_column_format["ADMIN_DOMAIN"]
+    elif name in excel_column_format:
+        return excel_column_format[name]
+    return 15
 
 
 class ReportLinksDetail(object):
@@ -79,7 +92,8 @@ class ReportLinkDetailApplication(ExtApplication):
               "o_format": StringParameter(choices=["csv", "xlsx"])})
     def api_report(self, request, o_format, is_managed=None,
                    administrative_domain=None, selector=None, pool=None,
-                   segment=None, avail_status=False, columns=None, ids=None):
+                   segment=None, avail_status=False, columns=None, ids=None,
+                   enable_autowidth=False):
         def row(row):
             def qe(v):
                 if v is None:
@@ -197,18 +211,35 @@ class ReportLinkDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            with tempfile.NamedTemporaryFile(mode="wb") as f:
-                wb = xlsxwriter.Workbook(f.name)
-                ws = wb.add_worksheet("Objects")
-                for rn, x in enumerate(r):
-                    for cn, c in enumerate(x):
-                        ws.write(rn, cn, c)
-                ws.autofilter(0, 0, rn, cn)
-                wb.close()
-                response = HttpResponse(
-                    content_type="application/x-ms-excel")
-                response[
-                    "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
-                with open(f.name) as ff:
-                    response.write(ff.read())
-                return response
+            # with tempfile.NamedTemporaryFile(mode="wb") as f:
+            #    wb = xlsxwriter.Workbook(f.name)
+            response = StringIO.StringIO()
+            wb = xlsxwriter.Workbook(response)
+            cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+            ws = wb.add_worksheet("Objects")
+            max_column_data_length = {}
+            for rn, x in enumerate(r):
+                for cn, c in enumerate(x):
+                    if rn and (r[0][cn] not in max_column_data_length
+                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                        max_column_data_length[r[0][cn]] = len(str(c))
+                    ws.write(rn, cn, c, cf1)
+            # for
+            ws.autofilter(0, 0, rn, cn)
+            ws.freeze_panes(1, 0)
+            for cn, c in enumerate(r[0]):
+                # Set column width
+                width = get_column_width(c)
+                if enable_autowidth and width < max_column_data_length[c]:
+                    width = max_column_data_length[c]
+                ws.set_column(cn, cn, width=width)
+            wb.close()
+            response.seek(0)
+            response = HttpResponse(response.getvalue(),
+                                    content_type="application/vnd.ms-excel")
+            # response = HttpResponse(
+            #     content_type="application/x-ms-excel")
+            response[
+                "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
+            response.close()
+            return response

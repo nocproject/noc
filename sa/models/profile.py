@@ -12,6 +12,7 @@ import os
 import threading
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
 import cachetools
@@ -34,6 +35,7 @@ id_lock = threading.Lock()
     ("dev.Spec", "profile"),
     ("peer.PeeringPoint", "profile")
 ])
+@six.python_2_unicode_compatible
 class Profile(Document):
     meta = {
         "collection": "noc.profiles",
@@ -53,7 +55,7 @@ class Profile(Document):
     _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _name_cache = cachetools.TTLCache(1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

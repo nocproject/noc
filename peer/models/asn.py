@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AS model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from django.db import models
 import cachetools
 # NOC modules
@@ -36,6 +37,7 @@ id_lock = Lock()
     ("ip.Prefix", "asn")
 ])
 @on_save
+@six.python_2_unicode_compatible
 class AS(models.Model):
     class Meta(object):
         verbose_name = "AS"
@@ -92,7 +94,7 @@ class AS(models.Model):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _asn_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"AS%d (%s)" % (self.asn, self.description)
 
     @classmethod

@@ -21,16 +21,14 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_interfaces"
     interface = IGetInterfaces
 
-    rx_iface_sep = re.compile(r"^(?:\s)?(\S+) current state\s*:\s*",
-                              re.MULTILINE)
+    rx_iface_sep = re.compile(r"^(?:\s)?(\S+) current state\s*:\s*", re.MULTILINE)
     rx_line_proto = re.compile(
         r"Line protocol current state :\s*(?P<o_state>UP|DOWN)",
-        re.IGNORECASE
-    )
-    rx_pvid = re.compile("PVID : (?P<pvid>\d+)")
-    rx_mtu = re.compile("The Maximum Transmit Unit is (?P<mtu>\d+)( bytes)?")
+        re.IGNORECASE)
+    rx_pvid = re.compile(r"PVID\s+:\s+(?P<pvid>\d+)")
+    rx_mtu = re.compile(r"The Maximum Transmit Unit is (?P<mtu>\d+)( bytes)?")
     rx_mac = re.compile(
-        "Hardware [Aa]ddress(?::| is) (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
+        r"Hardware [Aa]ddress(?::| is) (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
     )
     rx_ipv4 = re.compile(
         r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})",
@@ -291,8 +289,10 @@ class Script(BaseScript):
                         continue
                 # Static vlans
                 match = self.rx_pvid.search(line)
-                if match and ("untagged_vlan" not in sub):
+                if match and "untagged_vlan" not in sub:
                     sub["untagged_vlan"] = int(match.group("pvid"))
+                    if 'BRIDGE' not in sub["enabled_afi"]:
+                        sub["enabled_afi"] += ['BRIDGE']
                     continue
                 # Static vlans
                 if line.startswith("Encapsulation "):

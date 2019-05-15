@@ -12,6 +12,7 @@ import logging
 from functools import reduce
 import threading
 # Third-party modules
+import six
 from django.db import models, connection
 from django.db.models import signals as django_signals
 from mongoengine.base.common import _document_registry
@@ -25,11 +26,12 @@ logger = logging.getLogger(__name__)
 id_lock = threading.Lock()
 
 
+@six.python_2_unicode_compatible
 class CustomField(models.Model):
     """
     Custom field description
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Custom Field"
         verbose_name_plural = "Custom Fields"
         db_table = "main_customfield"
@@ -72,7 +74,7 @@ class CustomField(models.Model):
     _installed = set()
     _table_fields = None
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s.%s" % (self.table, self.name)
 
     @property
@@ -427,14 +429,16 @@ class CustomField(models.Model):
         Returns django-compatible choices
         """
         c = connection.cursor()
-        c.execute("""
+        c.execute(
+            """
             SELECT DISTINCT \"%(col)s\"
             FROM %(table)s
             WHERE \"%(col)s\" IS NOT NULL AND \"%(col)s\" != ''
             ORDER BY \"%(col)s\"""" % {
-            "col": self.db_column,
-            "table": self.table
-        })
+                "col": self.db_column,
+                "table": self.table
+            }
+        )
         return [(x, x) for x, in c.fetchall()]
 
     @classmethod

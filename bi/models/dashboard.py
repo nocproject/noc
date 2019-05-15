@@ -2,13 +2,14 @@
 # ----------------------------------------------------------------------
 # Dashboard storage
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField, ListField,
                                 IntField, BinaryField, EmbeddedDocumentField)
@@ -32,6 +33,7 @@ class DashboardAccess(EmbeddedDocument):
     ])
 
 
+@six.python_2_unicode_compatible
 class Dashboard(Document):
     meta = {
         "collection": "noc.dashboards",
@@ -59,7 +61,7 @@ class Dashboard(Document):
     #
     access = ListField(EmbeddedDocumentField(DashboardAccess))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_user_access(self, user):
@@ -74,7 +76,7 @@ class Dashboard(Document):
             if ar.group and ar.group in groups:
                 level = max(level, ar.level)
             if level == DAL_ADMIN:
-                    return level
+                return level
         return level
 
     def save(self, force_insert=False, validate=True, clean=True,

@@ -22,6 +22,7 @@ from noc.lib.escape import fm_unescape
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
 
+@six.python_2_unicode_compatible
 class Rule(object):
     """
     In-memory rule representation
@@ -125,7 +126,7 @@ class Rule(object):
         self.to_drop = self.event_class.action == "D"
         self.compile(c1, c2, c3, c4)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __repr__(self):

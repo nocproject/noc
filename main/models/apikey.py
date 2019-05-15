@@ -9,6 +9,7 @@
 # Python modules
 import datetime
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, DateTimeField, ListField,
                                 EmbeddedDocumentField)
@@ -16,27 +17,30 @@ from mongoengine.fields import (StringField, BooleanField, DateTimeField, ListFi
 from noc.core.acl import match
 
 
+@six.python_2_unicode_compatible
 class APIAccess(EmbeddedDocument):
     # Api name
     api = StringField()
     # Additional API role, * for wildcard
     role = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.api, self.role)
 
 
+@six.python_2_unicode_compatible
 class APIAccessACL(EmbeddedDocument):
     prefix = StringField()
     is_active = BooleanField(default=True)
     description = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         if self.is_active:
             return self.prefix
         return "%s (inactive)" % self.prefix
 
 
+@six.python_2_unicode_compatible
 class APIKey(Document):
     meta = {
         "collection": "apikeys",
@@ -55,7 +59,7 @@ class APIKey(Document):
     # Address restrictions
     acl = ListField(EmbeddedDocumentField(APIAccessACL))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

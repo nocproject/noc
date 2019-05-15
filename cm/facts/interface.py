@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # Interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 import logging
+# Third-party modules
+import six
 # NOC modules
 from .base import BaseFact
 from noc.inv.models.interface import Interface as DBInterface
@@ -16,6 +18,7 @@ from noc.inv.models.interface import Interface as DBInterface
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class Interface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "speed", "duplex",
              "[protocols]", "profile", "type", "mac", "default_name",
@@ -41,8 +44,8 @@ class Interface(BaseFact):
         self.default_name = default_name
         self.aggregated_interface = aggregated_interface
 
-    def __unicode__(self):
-        return "Interface %s" % self.name
+    def __str__(self):
+        return u"Interface %s" % self.name
 
     @property
     def description(self):

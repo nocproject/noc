@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # UserAccess model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 from functools import reduce
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
@@ -20,8 +21,9 @@ from .groupaccess import GroupAccess
 from .administrativedomain import AdministrativeDomain
 
 
+@six.python_2_unicode_compatible
 class UserAccess(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("User Access")
         verbose_name_plural = _("User Access")
         db_table = "sa_useraccess"
@@ -40,7 +42,7 @@ class UserAccess(models.Model):
         null=True, blank=True
     )
 
-    def __unicode__(self):
+    def __str__(self):
         r = [u"user=%s" % self.user.username]
         if self.selector:
             r += [u"selector=%s" % self.selector.name]

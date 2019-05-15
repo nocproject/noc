@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Template model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ import six
 from .template import Template
 
 
+@six.python_2_unicode_compatible
 class SystemTemplate(models.Model):
     class Meta(object):
         app_label = "main"
@@ -28,7 +29,7 @@ class SystemTemplate(models.Model):
     description = models.TextField("Description", null=True, blank=True)
     template = models.ForeignKey(Template, verbose_name="Template")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def render_subject(self, LANG=None, **kwargs):

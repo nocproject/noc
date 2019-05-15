@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # AdministrativeDomain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
@@ -39,11 +40,12 @@ id_lock = Lock()
     ("phone.PhoneNumber", "administrative_domain"),
     ("phone.PhoneRange", "administrative_domain")
 ])
+@six.python_2_unicode_compatible
 class AdministrativeDomain(models.Model):
     """
     Administrative Domain
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("Administrative Domain")
         verbose_name_plural = _("Administrative Domains")
         db_table = "sa_administrativedomain"
@@ -75,7 +77,7 @@ class AdministrativeDomain(models.Model):
     _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

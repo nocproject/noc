@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # ConnectionRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField,
                                 ListField, EmbeddedDocumentField)
@@ -18,6 +19,7 @@ from noc.lib.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 
 
+@six.python_2_unicode_compatible
 class Context(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -27,7 +29,7 @@ class Context(EmbeddedDocument):
     scope = StringField()
     reset_scopes = ListField(StringField())
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s, %s" % (self.type, self.scope)
 
     def __eq__(self, other):
@@ -47,6 +49,7 @@ class Context(EmbeddedDocument):
         return r
 
 
+@six.python_2_unicode_compatible
 class Rule(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -59,7 +62,7 @@ class Rule(EmbeddedDocument):
     target_number = StringField()
     target_connection = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s -(%s)-> %s %s:%s" % (
             self.match_type, self.match_connection, self.scope,
             self.target_type, self.target_number,
@@ -90,6 +93,7 @@ class Rule(EmbeddedDocument):
 @on_delete_check(check=[
     ("inv.ObjectModel", "connection_rule")
 ])
+@six.python_2_unicode_compatible
 class ConnectionRule(Document):
     """
     Equipment vendor
@@ -109,7 +113,7 @@ class ConnectionRule(Document):
     rules = ListField(EmbeddedDocumentField(Rule))
     uuid = UUIDField(binary=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property

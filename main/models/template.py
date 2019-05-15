@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from django.db import models
 from django.core.exceptions import ValidationError
 import jinja2
@@ -42,8 +43,9 @@ def template_validator(value):
     ("sa.ManagedObjectProfile", "config_download_template"),
     ("vc.VPNProfile", "name_template")
 ])
+@six.python_2_unicode_compatible
 class Template(models.Model):
-    class Meta:
+    class Meta(object):
         app_label = "main"
         db_table = "main_template"
         verbose_name = "Template"
@@ -57,7 +59,7 @@ class Template(models.Model):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

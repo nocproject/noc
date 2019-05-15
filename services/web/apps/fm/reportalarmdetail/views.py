@@ -34,8 +34,21 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
+from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+
+
+def get_column_width(name):
+    excel_column_format = {"ID": 6, "OBJECT_NAME": 38, "OBJECT_STATUS": 10, "OBJECT_PROFILE": 17,
+                           "OBJECT_PLATFORM": 25, "AVAIL": 6, "ADMIN_DOMAIN": 25, "PHYS_INTERFACE_COUNT": 5}
+    if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
+        return 8
+    elif name.startswith("ADM_PATH"):
+        return excel_column_format["ADMIN_DOMAIN"]
+    elif name in excel_column_format:
+        return excel_column_format[name]
+    return 15
 
 
 class ReportAlarmObjects(object):
@@ -84,6 +97,9 @@ class ReportAlarmDetailApplication(ExtApplication):
     SEGMENT_PATH_DEPTH = 7
     CONTAINER_PATH_DEPTH = 7
 
+    # Exclude ports profile
+    default_subscribers_profile = set(SubscriberProfile.objects.filter(display_order__gte=90).scalar("id"))
+
     @view("^download/$", method=["GET"], access="launch", api=True,
           validate={
               "from_date": StringParameter(required=True),
@@ -97,13 +113,16 @@ class ReportAlarmDetailApplication(ExtApplication):
               "administrative_domain": StringParameter(required=False),
               "selector": StringParameter(required=False),
               "ex_selector": StringParameter(required=False),
+              "alarm_class": StringParameter(required=False),
+              "subscribers": StringParameter(required=False),
               "columns": StringParameter(required=False),
               "o_format": StringParameter(choices=["csv", "xlsx"])}
           )
     def api_report(self, request, from_date, to_date, o_format,
                    min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
                    segment=None, administrative_domain=None, selector=None,
-                   ex_selector=None, columns=None, source="both"):
+                   ex_selector=None, columns=None, source="both",
+                   alarm_class=None, subscribers=None, enable_autowidth=False):
         def row(row, container_path, segment_path):
             def qe(v):
                 if v is None:
@@ -189,7 +208,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                     continue
         else:
             cmap = list(range(len(cols)))
-
+        subscribers_profile = self.default_subscribers_profile
+        if subscribers:
+            subscribers_profile = set(SubscriberProfile.objects.filter(id__in=subscribers.split(",")).scalar("id"))
         r = [translate_row(header_row, cmap)]
         fd = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
         match = {"timestamp": {"$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"),
@@ -272,7 +293,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                 if min_objects and total_objects < min_objects:
                     continue
                 total_subscribers = sum(
-                    ss["summary"] for ss in a["total_subscribers"])
+                    ss["summary"] for ss in a["total_subscribers"]
+                    if subscribers_profile and ss["profile"] in subscribers_profile)
                 if min_subscribers and total_subscribers < min_subscribers:
                     continue
                 if "segment_" in columns.split(",") or "container_" in columns.split(","):
@@ -329,7 +351,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                 if min_objects and total_objects < min_objects:
                     continue
                 total_subscribers = sum(
-                    ss["summary"] for ss in a["total_subscribers"])
+                    ss["summary"] for ss in a["total_subscribers"]
+                    if subscribers_profile and ss["profile"] in subscribers_profile)
                 if min_subscribers and total_subscribers < min_subscribers:
                     continue
                 if "segment_" in columns.split(",") or "container_" in columns.split(","):
@@ -381,11 +404,23 @@ class ReportAlarmDetailApplication(ExtApplication):
         elif o_format == "xlsx":
             response = StringIO.StringIO()
             wb = xlsxwriter.Workbook(response)
+            cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Alarms")
+            max_column_data_length = {}
             for rn, x in enumerate(r):
                 for cn, c in enumerate(x):
-                    ws.write(rn, cn, c)
+                    if rn and (r[0][cn] not in max_column_data_length
+                               or len(str(c)) > max_column_data_length[r[0][cn]]):
+                        max_column_data_length[r[0][cn]] = len(str(c))
+                    ws.write(rn, cn, c, cf1)
             ws.autofilter(0, 0, rn, cn)
+            ws.freeze_panes(1, 0)
+            for cn, c in enumerate(r[0]):
+                # Set column width
+                width = get_column_width(c)
+                if enable_autowidth and width < max_column_data_length[c]:
+                    width = max_column_data_length[c]
+                ws.set_column(cn, cn, width=width)
             wb.close()
             response.seek(0)
             response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")

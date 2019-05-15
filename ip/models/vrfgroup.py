@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # VRFGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
@@ -18,11 +19,12 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(check=[
     ("ip.VRF", "vrf_group")
 ])
+@six.python_2_unicode_compatible
 class VRFGroup(models.Model):
     """
     Group of VRFs with common properties
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("VRF Group")
         verbose_name_plural = _("VRF Groups")
         db_table = "ip_vrfgroup"
@@ -45,7 +47,7 @@ class VRFGroup(models.Model):
         _("Description"), blank=True, null=True)
     tags = TagsField(_("Tags"), null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return unicode(self.name)
 
     def get_absolute_url(self):

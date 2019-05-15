@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MetricScope model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField, ListField, EmbeddedDocumentField, UUIDField,
@@ -24,13 +25,14 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class KeyField(EmbeddedDocument):
     # Table field name
     field_name = StringField()
     # Model reference, i.e. sa.ManagedObject
     model = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.field_name
 
     def to_json(self):
@@ -44,13 +46,14 @@ class KeyField(EmbeddedDocument):
         return "UInt64"
 
 
+@six.python_2_unicode_compatible
 class PathItem(EmbeddedDocument):
     name = StringField()
     is_required = BooleanField()
     # Default value, when empty
     default_value = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def to_json(self):
@@ -66,6 +69,7 @@ class PathItem(EmbeddedDocument):
 @on_delete_check(check=[
     ("pm.MetricType", "scope")
 ])
+@six.python_2_unicode_compatible
 class MetricScope(Document):
     meta = {
         "collection": "noc.metricscopes",
@@ -85,7 +89,7 @@ class MetricScope(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

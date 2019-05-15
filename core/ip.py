@@ -19,6 +19,7 @@ B16 = 0xffff
 B32 = 0xffffffff
 
 
+@six.python_2_unicode_compatible
 class IP(object):
     """Base class for IP prefix"""
     afi = None
@@ -40,10 +41,6 @@ class IP(object):
 
     def __str__(self):
         """Returns string containing prefix"""
-        return self.prefix
-
-    def __unicode__(self):
-        """Returns unicode containing prefix"""
         return self.prefix
 
     def __len__(self):

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import datetime
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField,
                                 ReferenceField, ListField, LongField)
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
 @on_delete_check(clean=[
     ("phone.PhoneNumber", "service")
 ])
+@six.python_2_unicode_compatible
 class Service(Document):
     meta = {
         "collection": "noc.services",
@@ -48,17 +50,17 @@ class Service(Document):
     ts = DateTimeField(default=datetime.datetime.now)
     # Logical state of service
     logical_status = StringField(
-            choices=[
-                ("P", "Planned"),
-                ("p", "Provisioning"),
-                ("T", "Testing"),
-                ("R", "Ready"),
-                ("S", "Suspended"),
-                ("r", "Removing"),
-                ("C", "Closed"),
-                ("U", "Unknown")
-            ],
-            default="U"
+        choices=[
+            ("P", "Planned"),
+            ("p", "Provisioning"),
+            ("T", "Testing"),
+            ("R", "Ready"),
+            ("S", "Suspended"),
+            ("r", "Removing"),
+            ("C", "Closed"),
+            ("U", "Unknown")
+        ],
+        default="U"
     )
     logical_status_start = DateTimeField()
     # Parent service
@@ -96,7 +98,7 @@ class Service(Document):
     #
     tags = ListField(StringField())
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.id) if self.id else "new service"
 
     def on_delete(self):

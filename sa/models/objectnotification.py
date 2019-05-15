@@ -2,12 +2,14 @@
 # ----------------------------------------------------------------------
 # ObjectNotification
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Django modules
+# Python modules
 from __future__ import absolute_import
+# Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
@@ -16,8 +18,9 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.lib.template import render_message
 
 
+@six.python_2_unicode_compatible
 class ObjectNotification(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Managed Object Notification")
         db_table = "sa_objectnotification"
         app_label = "sa"
@@ -41,7 +44,7 @@ class ObjectNotification(models.Model):
     script_failed = models.BooleanField(_("Script failed"))
     config_policy_violation = models.BooleanField(_("Config policy violation"))
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s, %s" % (self.selector, self.notification_group)
 
     @classmethod

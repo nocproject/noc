@@ -2,23 +2,26 @@
 # ----------------------------------------------------------------------
 # CloningRule
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
+# Third-party modules
+import six
 # NOC modules
 from noc.services.classifier.exception import InvalidPatternException
 
 
 class CloningRule(object):
+    @six.python_2_unicode_compatible
     class Pattern(object):
         def __init__(self, key_re, value_re):
             self.key_re = key_re
             self.value_re = value_re
 
-        def __unicode__(self):
+        def __str__(self):
             return u"%s : %s" % (self.key_re, self.value_re)
 
     def __init__(self, rule):

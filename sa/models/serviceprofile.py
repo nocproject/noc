@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Service Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, IntField,
@@ -28,6 +29,7 @@ id_lock = Lock()
 
 @bi_sync
 @on_save
+@six.python_2_unicode_compatible
 class ServiceProfile(Document):
     meta = {
         "collection": "noc.serviceprofiles",
@@ -62,7 +64,7 @@ class ServiceProfile(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

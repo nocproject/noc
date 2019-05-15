@@ -10,6 +10,8 @@
 from __future__ import absolute_import
 from noc.lib.validators import is_int
 
+BASE_PATH = "/api/card/view/kb"
+
 
 class BaseParser(object):
     """
@@ -41,30 +43,31 @@ class BaseParser(object):
 
     @classmethod
     def convert_link(cls, kb_entry, link, text=None):
+        print(kb_entry, link, text)
         if text is None:
             text = link
         if link.startswith("KB") and is_int(link[2:]):
-            return u"<a href='/kb/view/%s/'>%s</a>" % (link[2:], text)
+            return u"<a href='%s/%s/'>%s</a>" % (BASE_PATH, link[2:], text)
         elif link.startswith("TT"):
             return link[2:]
         elif link.startswith("attach:"):
             if text == link:
                 text = link[7:]
             link = link[7:]
-            return u"<a href='/kb/view/%d/attachment/%s/'>%s</a>" % (
-                kb_entry.id, link, text
+            return u"<a href='%s/%d/attachment/%s/'>%s</a>" % (
+                BASE_PATH, kb_entry.id, link, text
             )
         elif link.startswith("attachment:"):
             if text == link:
                 text = link[11:]
             link = link[11:]
-            return u"<a href='/kb/%d/attachment/%s/'>%s</a>" % (
+            return u"<a href='/kb/kbentry/%d/attachment/%s/'>%s</a>" % (
                 kb_entry.id, link, text
             )
         else:
             try:
                 le = kb_entry.__class__.objects.get(subject=link)
-                return u"<a href='/kb/view/%s/'>%s</a>" % (le.id, text)
+                return u"<a href='%s/%s/'>%s</a>" % (BASE_PATH, le.id, text)
             except kb_entry.__class__.DoesNotExist:
                 return u"<a href='%s'>%s</a>" % (link, text)
 
@@ -77,4 +80,4 @@ class BaseParser(object):
             href = href[7:]
         elif href.startswith("attachment:"):
             href = href[11:]
-        return "/kb/view/%d/attachment/%s/" % (kb_entry.id, href)
+        return "/kb/kbentry/%d/attachment/%s/" % (kb_entry.id, href)

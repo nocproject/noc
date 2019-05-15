@@ -2,15 +2,19 @@
 # ---------------------------------------------------------------------
 # StaticRoute fact
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 from __future__ import absolute_import
+# Third-party modules
+import six
+# NOC modules
 from .base import BaseFact
 
 
+@six.python_2_unicode_compatible
 class StaticRoute(BaseFact):
     ATTRS = ["prefix", "afi", "vrf", "interface", "next_hop",
              "description", "tag", "distance", "discard"]
@@ -30,11 +34,11 @@ class StaticRoute(BaseFact):
         self.distance = distance
         self.discard = discard
 
-    def __unicode__(self):
+    def __str__(self):
         if self.vrf:
-            return "StaticRoute %s:%s" % (self.vrf, self.prefix)
+            return u"StaticRoute %s:%s" % (self.vrf, self.prefix)
         else:
-            return "StaticRoute %s" % self.prefix
+            return u"StaticRoute %s" % self.prefix
 
     @property
     def prefix(self):

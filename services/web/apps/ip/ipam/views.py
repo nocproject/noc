@@ -88,12 +88,14 @@ class IPAMApplication(ExtApplication):
         groups = []
         if not query:
             ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).order_by("name"))
-            if ungroupped:
-                # Add Ungroupped virtual group
-                groups += [(
-                    VRFGroup(name="Ungroupped"),
-                    ungroupped
-                )]
+        else:
+            ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).filter(q).order_by("name"))
+        if ungroupped:
+            # Add Ungroupped virtual group
+            groups += [(
+                VRFGroup(name="Ungroupped"),
+                ungroupped
+            )]
         for vg in VRFGroup.objects.all().order_by("name"):
             vrfs = list(vg.vrf_set.filter(q_afi).filter(q).order_by("name"))
             if len(vrfs):

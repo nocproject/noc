@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # KBEntryTemplate model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import re
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.lib.app.site import site
@@ -18,11 +19,12 @@ from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers.loader import loader
 
 
+@six.python_2_unicode_compatible
 class KBEntryTemplate(models.Model):
     """
     KB Entry Template
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "KB Entry Template"
         verbose_name_plural = "KB Entry Templates"
         app_label = "kb"
@@ -35,12 +37,12 @@ class KBEntryTemplate(models.Model):
     language = models.ForeignKey(Language, verbose_name="Language",
                                  limit_choices_to={"is_active": True})
     markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=loader.choices)
+                                       choices=[(x, x) for x in loader])
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
     rx_template_var = re.compile("{{([^}]+)}}", re.MULTILINE)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):

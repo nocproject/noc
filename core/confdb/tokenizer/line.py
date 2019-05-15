@@ -111,7 +111,7 @@ class LineTokenizer(BaseTokenizer):
             while start < llen:
                 qi = line.find(self.string_quote, start)
                 if qi == -1:
-                    qi = llen
+                    qi = llen + 1
                 if in_string:
                     yield line[start:qi]
                     in_string = False

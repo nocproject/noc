@@ -2,13 +2,14 @@
 # ----------------------------------------------------------------------
 # Workflow Migration model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField,
                                 ReferenceField, ListField,
@@ -24,6 +25,7 @@ class MigrationItem(EmbeddedDocument):
     description = StringField()
 
 
+@six.python_2_unicode_compatible
 class WFMigration(Document):
     meta = {
         "collection": "wfmigrations",
@@ -34,7 +36,7 @@ class WFMigration(Document):
     description = StringField()
     migrations = ListField(EmbeddedDocumentField(MigrationItem))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_translation_map(self, target_wf):

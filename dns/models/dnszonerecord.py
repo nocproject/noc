@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # DNSZoneRecord model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
@@ -18,11 +19,12 @@ from .dnszone import DNSZone
 
 
 @datastream
+@six.python_2_unicode_compatible
 class DNSZoneRecord(models.Model):
     """
     Zone RRs
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("DNS Zone Record")
         verbose_name_plural = _("DNS Zone Records")
         db_table = "dns_dnszonerecord"
@@ -36,7 +38,7 @@ class DNSZoneRecord(models.Model):
     content = models.CharField(_("Content"), max_length=65536)
     tags = TagsField(_("Tags"), null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (
             self.zone.name,
             " ".join([x for x in (self.name, self.type, self.content) if x])

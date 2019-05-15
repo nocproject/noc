@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # PeerGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.core.model.decorator import on_delete_check
@@ -15,8 +16,9 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(check=[
     ("peer.Peer", "peer_group")
 ])
+@six.python_2_unicode_compatible
 class PeerGroup(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Peer Group"
         verbose_name_plural = "Peer Groups"
         db_table = "peer_peergroup"
@@ -34,5 +36,5 @@ class PeerGroup(models.Model):
     export_med = models.IntegerField(
         "Export MED", blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return unicode(self.name)

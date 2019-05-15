@@ -12,6 +12,7 @@ import operator
 from threading import Lock
 from collections import defaultdict
 # Third-party modules
+import six
 from django.db import models, connection
 from django.contrib.auth.models import User
 import cachetools
@@ -44,6 +45,7 @@ id_lock = Lock()
     ("ip.Prefix", "ipv6_transition"),
     ("ip.Address", "prefix")
 ])
+@six.python_2_unicode_compatible
 class Prefix(models.Model):
     """
     Allocated prefix
@@ -161,7 +163,7 @@ class Prefix(models.Model):
     csv_ignored_fields = ["parent"]
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
 
     @classmethod
@@ -657,9 +659,9 @@ class Prefix(models.Model):
             if not size:
                 return 100.0
             n_ips = Address.objects.filter(prefix=self).count()
-            if self.effective_prefix_special_address == "X":
+            if n_ips and size > 2 and self.effective_prefix_special_address == "X":
                 # Exclude special addresses
-                n_ips -= len(IPv4(self.prefix).special_addresses)
+                size -= len(IPv4(self.prefix).special_addresses)
             n_pfx = sum(
                 IPv4(p).size
                 for p in Prefix.objects.filter(parent=self).only("prefix").values_list("prefix", flat=True)
@@ -726,8 +728,8 @@ class Prefix(models.Model):
             if self.effective_prefix_special_address == "X":
                 n_pfx = Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
                     where=["prefix <<= %s"], params=[str(self.prefix)]).count()
-                n_ips -= len(IPv4(self.prefix).special_addresses) * n_pfx
-            return float(n_ips) * 100.0 / float(size)
+                size -= len(IPv4(self.prefix).special_addresses) * n_pfx
+            return float(n_ips) * 100.0 / float(size) if n_ips else 0.0
         else:
             return None
 

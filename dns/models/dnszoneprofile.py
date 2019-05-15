@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DNSZoneProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
@@ -28,6 +29,7 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("dns.DNSZone", "profile")
 ])
+@six.python_2_unicode_compatible
 class DNSZoneProfile(models.Model):
     """
     DNS Zone profile is a set of common parameters, shared between zones.
@@ -44,7 +46,7 @@ class DNSZoneProfile(models.Model):
     :param notification_group:
     :param description:
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("DNS Zone Profile")
         verbose_name_plural = _("DNS Zone Profiles")
         db_table = "dns_dnszoneprofile"
@@ -72,7 +74,7 @@ class DNSZoneProfile(models.Model):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

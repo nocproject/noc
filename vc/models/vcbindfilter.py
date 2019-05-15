@@ -2,22 +2,26 @@
 # ---------------------------------------------------------------------
 # VCBindFilter model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
+import six
 from django.db import models, connection
 # NOC modules
-from vcdomain import VCDomain
-from vcfilter import VCFilter
-from vc import VC
+from .vcdomain import VCDomain
+from .vcfilter import VCFilter
+from .vc import VC
 from noc.ip.models.afi import AFI_CHOICES
 from noc.core.model.fields import CIDRField
 
 
+@six.python_2_unicode_compatible
 class VCBindFilter(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "VC Bind Filter"
         verbose_name_plural = "VC Bind Filters"
         db_table = "vc_vcbindfilter"
@@ -30,9 +34,9 @@ class VCBindFilter(models.Model):
     prefix = CIDRField("Prefix")
     vc_filter = models.ForeignKey(VCFilter, verbose_name="VC Filter")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s %s %s" % (
-        self.vc_domain, self.vrf, self.prefix, self.vc_filter)
+            self.vc_domain, self.vrf, self.prefix, self.vc_filter)
 
     @classmethod
     def get_vcs(cls, vrf, afi, prefix):

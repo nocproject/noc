@@ -11,6 +11,7 @@ import os
 import logging
 import uuid
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (UUIDField, DateTimeField, StringField)
 import mongoengine.signals
@@ -22,6 +23,7 @@ from noc.support.cp import CPClient
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class Crashinfo(Document):
     meta = {
         "collection": "noc.crashinfo",
@@ -60,7 +62,7 @@ class Crashinfo(Document):
 
     NEW_ROOT = "local/cp/crashinfo/new"
 
-    def __unicode__(self):
+    def __str__(self):
         return unicode(self.uuid)
 
     @classmethod
@@ -81,7 +83,7 @@ class Crashinfo(Document):
             try:
                 with open(os.path.join(cls.NEW_ROOT, f)) as f:
                     ci = ujson.loads(f.read())
-            except Exception, why:
+            except Exception as why:
                 logger.error(
                     "Unable to load and decode crashinfo %s: %s",
                     u, why
@@ -108,7 +110,7 @@ class Crashinfo(Document):
             try:
                 with open(path) as f:
                     return ujson.loads(f.read())
-            except Exception, why:
+            except Exception as why:
                 logger.error(
                     "Unable to load and decode crashinfo %s: %s",
                     self.uuid, why
@@ -130,7 +132,7 @@ class Crashinfo(Document):
             logger.debug("Removing file %s", path)
             try:
                 os.unlink(path)
-            except OSError, why:
+            except OSError as why:
                 logger.error("Cannot remove file %s: %s", path, why)
 
     def report(self):
