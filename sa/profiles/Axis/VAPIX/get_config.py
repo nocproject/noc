@@ -16,5 +16,5 @@ class Script(BaseScript):
     cache = True
     interface = IGetConfig
 
-    def execute(self):
+    def execute(self, **kwargs):
         return self.profile.get_list(self)
