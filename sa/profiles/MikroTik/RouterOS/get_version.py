@@ -35,7 +35,7 @@ class Script(BaseScript):
         r"^\s+current-firmware: (?P<q>\"?)(?P<boot>\S+?)(?P=q)\s*\n", re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("/system resource print")
         version = self.rx_ver.search(v).group("version")
         if " " in version:

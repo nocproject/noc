@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "MikroTik.RouterOS.get_inventory"
     interface = IGetInventory
 
-    def execute(self):
+    def execute_cli(self):
         v = self.scripts.get_version()
         platform = v["platform"]
         if platform not in ["x86", "CHR"]:

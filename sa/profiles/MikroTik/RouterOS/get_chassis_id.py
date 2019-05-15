@@ -15,7 +15,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def execute(self):
+    def execute_cli(self):
         macs = []
         macs += [d["mac-address"] for n, f, d in self.cli_detail(
             "/interface ethernet print detail without-paging", cached=True)]
