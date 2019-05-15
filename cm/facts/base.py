@@ -2,14 +2,17 @@
 # ---------------------------------------------------------------------
 # Common system settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import print_function
+# Third-party modules
+import six
 
 
+@six.python_2_unicode_compatible
 class BaseFact(object):
     ATTRS = []
     ID = []
@@ -48,7 +51,7 @@ class BaseFact(object):
         for a in self.iter_attrs():
             yield a, getattr(self, a)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.cls
 
     @property
