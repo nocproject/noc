@@ -1,94 +1,101 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# KBEntry Manager
+# kb.kbentry application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-import re
-from django.contrib import admin
-from django import forms
-from django.shortcuts import get_object_or_404
-from noc.lib.app.modelapplication import ModelApplication,HasPerm
-from noc.kb.models.kbentry import KBEntry
-from noc.kb.models.kbentryattachment import KBEntryAttachment
-from noc.kb.models.kbentrytemplate import KBEntryTemplate
-#
-# Inline Admin for Attachments
-#
-class KBEntryAttachmentForm(forms.ModelForm):
-    class Meta:
-        model=KBEntryAttachment
-#
-# Entry attacment admin
-#
-class KBEntryAttachmentAdmin(admin.TabularInline):
-    form=KBEntryAttachmentForm
-    model=KBEntryAttachment
-    extra=3
-#
-# Admin for Entries
-#
-class KBEntryAdmin(admin.ModelAdmin):
-    list_display=["id","subject"]
-    search_fields=["id","subject"]
-    inlines=[KBEntryAttachmentAdmin]
-    def save_model(self, request, obj, form, change):
-        obj.save(user=request.user)
 
-#
-# KBEntry application
-#
-class KBEntryApplication(ModelApplication):
-    model=KBEntry
-    model_admin=KBEntryAdmin
-    menu="Setup | Entries"
-    #
-    rx_template_var=re.compile("{{([^}]+)}}",re.MULTILINE)
-    #
-    #
-    #
-    def view_change(self,request,object_id,form_url="",extra_context=None):
-        def response_change(*args):
-            self.message_user(request,"KB%s was changed successfully"%object_id)
-            return self.response_redirect("kb:view:view",object_id)
-        self.admin.response_change=response_change
-        return self.admin.change_view(request,object_id,form_url,self.get_context(extra_context))
-    view_change.url=r"^(\d+)/$"
-    view_change.url_name="change"
-    view_change.access=HasPerm("change")
-    #
-    # Display the list of templates
-    #
-    def view_template_index(self,request):
-        templates=KBEntryTemplate.objects.order_by("name")
-        return self.render(request,"template_index.html", {"templates":templates})
-    view_template_index.url=r"^from_template/$"
-    view_template_index.menu="New from Template"
-    view_template_index.access=HasPerm("add")
-    #
-    # Create new entry from template
-    #
-    def view_from_template(self,request,template_id):
-        def expand(template,vars):
-            return self.rx_template_var.sub(lambda x:vars[x.group(1)],template)
-        template=get_object_or_404(KBEntryTemplate,id=int(template_id))
-        var_list=template.var_list
-        if var_list and not request.POST:
-            return self.render(request,"template_form.html", {"template":template,"vars":var_list})
-        subject=template.subject
-        body=template.body
-        if var_list and request.POST:
-            vars={}
-            for v in var_list:
-                vars[v]=request.POST.get(v,"(((UNDEFINED)))")
-            subject=expand(subject,vars)
-            body=expand(body,vars)
-        kbe=KBEntry(subject=subject,body=body,language=template.language,markup_language=template.markup_language)
-        kbe.save(user=request.user)
-        kbe.tags=template.tags
-        kbe.save(user=request.user)
-        return self.response_redirect_to_object(kbe)
-    view_from_template.url=r"^from_template/(?P<template_id>\d+)/$"
-    view_from_template.url_name="from_template"
-    view_from_template.access=HasPerm("add")
+# Python modules
+import re
+# Third-party modules
+from django.http import HttpResponse
+import mimetypes
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.kb.models.kbentry import KBEntry
+from noc.kb.models.kbentryhistory import KBEntryHistory
+from noc.kb.models.kbentryattachment import KBEntryAttachment
+from noc.core.translation import ugettext as _
+
+
+class KBEntryApplication(ExtModelApplication):
+    """
+    AdministrativeDomain application
+    """
+    title = _("Entries")
+    menu = [_("Setup"), _("Entries")]
+    model = KBEntry
+    file_fields_mask = re.compile(r"^(?P<fname>description|is_hidden)(?P<findex>\d+)")
+
+    def instance_to_dict(self, o, fields=None):
+        r = super(KBEntryApplication, self).instance_to_dict(o, fields=fields)
+        r["attachments"] = [{
+            "name": x.name, "size": x.size, "mtime": self.to_json(x.mtime), "description": x.description}
+            for x in KBEntryAttachment.objects.filter(kb_entry=o, is_hidden=False).order_by("name")]
+        return r
+
+    @view(r"^(?P<id>\d+)/history/$", access="read", api=True)
+    def api_get_entry_history(self, request, id):
+        o = self.get_object_or_404(KBEntry, id=id)
+        return {"data": [{"timestamp": self.to_json(h.timestamp), "user": str(h.user), "diff": h.diff} for h in
+                         KBEntryHistory.objects.filter(kb_entry=o).order_by("-timestamp")]}
+
+    @view(r"^(?P<id>\d+)/html/$", access="read", api=True)
+    def api_get_entry_html(self, request, id):
+        o = self.get_object_or_404(KBEntry, id=id)
+        return self.render_plain_text(o.html)
+
+    @view(r"^most_popular/$", access="read", api=True)
+    def api_get_most_popular(self, request):
+        return KBEntry.most_popular()
+
+    @view(r"^(?P<id>\d+)/attachments/$", access="read", api=True, method=["GET"])
+    def api_list_attachments(self, request, id):
+        o = self.get_object_or_404(KBEntry, id=id)
+        return [{"name": x.name, "size": x.size, "mtime": self.to_json(x.mtime), "description": x.description}
+                for x in KBEntryAttachment.objects.filter(kb_entry=o, is_hidden=False).order_by("name")]
+
+    @view(r"^(?P<id>\d+)/attachment/(?P<name>.+)/$", access="read", api=True, method=["GET"])
+    def api_get_attachment(self, request, id, name):
+        o = self.get_object_or_404(KBEntry, id=id)
+        attach = self.get_object_or_404(KBEntryAttachment, kb_entry=o, name=name)
+        file_mime = mimetypes.guess_type(attach.file.name)
+        response = HttpResponse(attach.file, content_type=file_mime or "application/octet-stream")
+        response["Content-Disposition"] = "attachment; filename=\"%s\"" % attach.file.name
+        return response
+
+    @view(r"^(?P<id>\d+)/attachment/(?P<name>.+)/$", access="delete", api=True, method=["DELETE"])
+    def api_delete_attachment(self, request, id, name):
+        o = self.get_object_or_404(KBEntry, id=id)
+        attach = self.get_object_or_404(KBEntryAttachment, kb_entry=o, name=name)
+        attach.delete()
+        return self.response({"result": "Delete succesful"}, status=self.OK)
+
+    @view(r"^(?P<id>\d+)/attach/$", access="write", api=True, method=["POST"])
+    def api_post_set_attachment(self, request, id):
+        o = self.get_object_or_404(KBEntry, id=id)
+        attach = KBEntryAttachment(kb_entry=o, name="uploaded_file1", description="", file=request.FILES["file"])
+        attach.save()
+        return self.response({"result": "Upload succesful"}, status=self.OK)
+
+    def update_file(self, files, o, attrs=None):
+        left = {}  # name -> data
+        for f in files:
+            left[f] = files[f]
+        # errors = {}
+        # failed = False
+        for name in left:
+            f = left[name]
+            attr = attrs.get(name[4:], {})
+            attach = KBEntryAttachment.objects.filter(kb_entry=o, name=name)
+            # @todo update attributes
+            if not attach:
+                attach = KBEntryAttachment(kb_entry=o, name=f.name, description=attr.get("description", ""),
+                                           is_hidden=attr.get("is_hidden") == "true", file=f)
+                attach.save()
+        return True
+
+    @view(r"^(?P<id>\d+)/?$", access="update", api=True, method=["POST"])
+    def api_post_update(self, request, id):
+        return self.api_update(request, id)

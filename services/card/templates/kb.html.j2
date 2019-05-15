@@ -1,0 +1,32 @@
+<body>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">
+            <b>{{ config.brand }} |</b> {{ config.installation_name }}: Knowledge Base
+        </li>
+    </ol>
+</nav>
+
+<table class="table table-condensed table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Subject</th>
+            <th>Views</th>
+            <th>Modified</th>
+            <th>Modified by</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in object.objects.all()  %}
+            <tr>
+                <td align="right"><a href='/api/card/view/kb/{{ o.id  }}/'>KB{{ o.id }}</a></td>
+                <td>{{ o.subject }}</td>
+                <td>{{ o.preview_count }}</td>
+                <td>{{ o.last_history.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                <td>{{ o.last_history.user }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>

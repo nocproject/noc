@@ -67,7 +67,7 @@ class SearchMacro(BaseMacro):
         if "title" in args:
             out += ["<tr><th>%s</th></tr>" % args["title"]]
         for a in q:
-            link = "/kb/view/%d/" % a.id
+            link = "/api/card/view/kb/%d/" % a.id
             out += ["<tr>"]
             for f in display_list:
                 if f == "id":
