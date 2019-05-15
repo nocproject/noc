@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,8 @@
 from __future__ import absolute_import
 import bisect
 import logging
+# Third-party modules
+import six
 # NOC modules
 from .base import BaseFact
 from noc.inv.models.subinterface import SubInterface as DBSubInterface
@@ -17,6 +19,7 @@ from noc.inv.models.subinterface import SubInterface as DBSubInterface
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class SubInterface(BaseFact):
     ATTRS = ["name", "description", "admin_status", "profile",
              "[vlan_ids]",
@@ -75,8 +78,8 @@ class SubInterface(BaseFact):
         self.traffic_control_multicast = traffic_control_multicast
         self.traffic_control_unicast = traffic_control_unicast
 
-    def __unicode__(self):
-        return "SubInterface %s" % self.name
+    def __str__(self):
+        return u"SubInterface %s" % self.name
 
     @property
     def description(self):

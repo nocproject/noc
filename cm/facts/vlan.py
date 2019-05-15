@@ -2,15 +2,19 @@
 # ---------------------------------------------------------------------
 # VLAN
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Third-party modules
 from __future__ import absolute_import
+# Third-party modules
+import six
+# NOC modules
 from .base import BaseFact
 
 
+@six.python_2_unicode_compatible
 class VLAN(BaseFact):
     ATTRS = ["id", "name"]
     ID = ["id"]
@@ -20,10 +24,10 @@ class VLAN(BaseFact):
         self.id = id
         self.name = name
 
-    def __unicode__(self):
-        r = "VLAN %d" % self.id
+    def __str__(self):
+        r = u"VLAN %d" % self.id
         if self.name and self.name != str(self.id):
-            r += " (%s)" % self.name
+            r += u" (%s)" % self.name
         return r
 
     @property
