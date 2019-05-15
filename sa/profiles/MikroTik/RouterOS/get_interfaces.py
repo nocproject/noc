@@ -123,7 +123,7 @@ class Script(BaseScript):
                     ifaces[r["name"]]["subinterfaces"] += [self.si]
         time.sleep(1)
         # Refine ethernet parameters
-        for n, f, r in self.cli_detail("/interface ethernet print detail without-paging"):
+        for n, f, r in self.cli_detail("/interface ethernet print detail without-paging", cached=True):
             iface = ifaces[r["name"]]
             ifaces[r["name"]]["mac"] = r["mac-address"]
         # Attach `vlan` subinterfaces to parent
