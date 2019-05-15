@@ -177,7 +177,7 @@ class SelectorCache(Document):
                     "vc_domain": vcdomain
                 })]
         # Delete stale records
-        for sdata in old.itervalues():
+        for sdata in six.itervalues(old):
             logging.debug(
                 "[%s] Remove from selector %s",
                 object.name, sdata["_id"]

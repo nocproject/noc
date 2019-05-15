@@ -1187,7 +1187,7 @@ class EmbeddedDocumentParameter(Parameter):
                 return None
         if not isinstance(value, dict):
             self.raise_error(value, "Value must be list dict")
-        for k, v in self.document._fields.iteritems():
+        for k, v in six.iteritems(self.document._fields):
             if k in value and value[k] is not None:
                 p = DocFieldMap.get(v.__class__.__name__)
                 if p:

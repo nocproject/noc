@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # inv.reportdiscovery
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
@@ -77,7 +78,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 {"_id": 1, "managed_object": 1}
             )
         )
-        for mo in (mos_set - set(problems) - set(if_mo.itervalues())):
+        for mo in (mos_set - set(problems) - set(six.itervalues(if_mo))):
             problems[mo] = _("No interfaces")
         # Get all managed objects without links
         linked_mos = set()

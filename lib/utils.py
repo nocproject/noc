@@ -2,16 +2,19 @@
 # ---------------------------------------------------------------------
 # Various utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Third-party modules
+import six
 
 def deep_copy(t):
     """
     Returns copy of dict *t*, follows nested dict structures
     """
     r = {}
-    for k, v in t.iteritems():
+    for k, v in six.iteritems(t):
         if isinstance(v, dict):
             r[k] = deep_copy(v)
         else:
@@ -25,7 +28,7 @@ def deep_merge(t, d):
     and returns merged dict. Values from *d* override values from *t*
     """
     def _merge(x, y):
-        for k, v in y.iteritems():
+        for k, v in six.iteritems(y):
             if isinstance(v, dict):
                 x[k] = x.get(k, {})
                 _merge(x[k], v)

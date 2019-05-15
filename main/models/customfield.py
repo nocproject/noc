@@ -268,9 +268,9 @@ class CustomField(models.Model):
 
     def document_class(self):
         """
-        Return appropriative document class
+        Return appropriate document class
         """
-        for dc in _document_registry.itervalues():
+        for dc in six.itervalues(_document_registry):
             if dc._get_collection_name() == self.table:
                 return dc
         return None

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Clickhouse field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -364,9 +364,10 @@ class NestedField(ArrayField):
             self._map_fields = self.field_type._fields_order[::]
             self._map_fields.remove(self.index_field)
             self._map_fields += [self.index_field]
-        return [{k: self.field_type._fields[k].to_python(v.strip("'")) for k, v in
-                 dict(zip(self._map_fields, v.split(":"))).iteritems()}
-                for v in value.split(",")]
+        return [{
+            k: self.field_type._fields[k].to_python(v.strip("'"))
+            for k, v in set(zip(self._map_fields, v.split(":")))
+        } for v in value.split(",")]
 
     def get_select_sql(self):
         if not self.index_field:
