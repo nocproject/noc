@@ -35,7 +35,7 @@ class Script(BaseScript):
             d[t].append(self.xml_2_dict(x, False))
         return d
 
-    def execute(self):
+    def execute(self, **kwargs):
         c = ""
         v = self.http.get("/ISAPI/Streaming/channels", json=False, cached=True, use_basic=True)
         root = ElementTree.fromstring(v)
