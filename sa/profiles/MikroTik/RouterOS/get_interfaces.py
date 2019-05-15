@@ -208,7 +208,7 @@ class Script(BaseScript):
             pass
         # Vlans on bridge
         try:
-            v = self.cli_detail("interface bridge vlan print detail without-paging", cached=True)
+            v = self.cli_detail("/interface bridge vlan print detail without-paging", cached=True)
             for n, f, d in v:
                 if "X" in f or "D" in f:
                     continue

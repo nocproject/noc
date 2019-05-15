@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 # NOC modules
@@ -37,7 +37,7 @@ class Script(BaseScript):
     )
 
     def execute(self):
-        v = self.cli("system resource print")
+        v = self.cli("/system resource print")
         version = self.rx_ver.search(v).group("version")
         if " " in version:
             version = version.split(" ", 1)[0]
@@ -55,7 +55,7 @@ class Script(BaseScript):
             "attributes": {}
         }
         if "x86" not in platform and "CHR" not in platform:
-            v = self.cli("system routerboard print")
+            v = self.cli("/system routerboard print")
             match = self.rx_serial.search(v)
             if match:
                 r["attributes"]["Serial Number"] = match.group("serial")
