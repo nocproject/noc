@@ -11,6 +11,7 @@ import os
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField)
@@ -26,6 +27,7 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("inv.Object", "layer")
 ])
+@six.python_2_unicode_compatible
 class Layer(Document):
     meta = {
         "collection": "noc.layers",
@@ -50,10 +52,8 @@ class Layer(Document):
     # Point symbolizer
     point_radius = IntField(default=5)
     point_graphic = StringField(
-        choices=[(x, x) for x in
-            ("circle", "triangle", "cross", "x", "square", "star",
-             "diamond", "antenna", "flag")
-        ], default="circle"
+        choices=[(x, x) for x in ("circle", "triangle", "cross", "x", "square", "star", "diamond", "antenna", "flag")],
+        default="circle"
     )
     # Line symbolizer
     stroke_dashstyle = StringField(choices=[(x, x) for x in (
@@ -65,7 +65,7 @@ class Layer(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

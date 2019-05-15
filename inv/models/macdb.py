@@ -2,23 +2,27 @@
 # ---------------------------------------------------------------------
 # MAC Database
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.nosql import (Document, StringField, ForeignKeyField,
                            PlainReferenceField, DateTimeField,
                            IntField)
-from interface import Interface
+from .interface import Interface
 from noc.sa.models.managedobject import ManagedObject
 from noc.vc.models.vcdomain import VCDomain
-from maclog import MACLog
+from .maclog import MACLog
 from noc.core.mac import MAC
 
 
+@six.python_2_unicode_compatible
 class MACDB(Document):
     """
     Customer MAC address database
@@ -37,7 +41,7 @@ class MACDB(Document):
     interface = PlainReferenceField(Interface)
     last_changed = DateTimeField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.mac
 
     def save(self):
@@ -56,6 +60,8 @@ class MACDB(Document):
         Returns True if database been changed
         :param cls:
         :param mac:
+        :param vc_domain
+        :param vlan
         :param interface:
         :param timestamp:
         :return:

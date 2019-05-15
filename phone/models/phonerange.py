@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PhoneRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from threading import Lock
 import operator
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ListField, ObjectIdField
 from mongoengine.queryset import Q
@@ -45,6 +46,7 @@ id_lock = Lock()
     ("phone.PhoneNumber", "phone_range"),
     ("phone.PhoneRange", "parent")
 ])
+@six.python_2_unicode_compatible
 class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",
@@ -80,7 +82,7 @@ class PhoneRange(Document):
     _id_cache = cachetools.TTLCache(100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

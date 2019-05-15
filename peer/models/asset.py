@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # ASSet model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 # NOC module
 from noc.project.models.project import Project
@@ -17,8 +18,9 @@ from noc.core.model.decorator import on_save
 
 
 @on_save
+@six.python_2_unicode_compatible
 class ASSet(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "ASSet"
         verbose_name_plural = "ASSets"
         db_table = "peer_asset"
@@ -35,7 +37,7 @@ class ASSet(models.Model):
     tags = TagsField("Tags", null=True, blank=True)
     rpsl = GridVCSField("rpsl_asset")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property

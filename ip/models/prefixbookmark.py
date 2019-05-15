@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # PrefixBookmark model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 from operator import attrgetter
-# Django modules
+# Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
@@ -18,11 +19,12 @@ from django.contrib.auth.models import User
 from .prefix import Prefix
 
 
+@six.python_2_unicode_compatible
 class PrefixBookmark(models.Model):
     """
     User Bookmarks
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("Prefix Bookmark")
         verbose_name_plural = _("Prefix Bookmarks")
         db_table = "ip_prefixbookmark"
@@ -32,7 +34,7 @@ class PrefixBookmark(models.Model):
     user = models.ForeignKey(User, verbose_name="User")
     prefix = models.ForeignKey(Prefix, verbose_name="Prefix")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Bookmark at %s for %s" % (
             self.prefix, self.user.username)
 

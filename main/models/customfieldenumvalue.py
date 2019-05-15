@@ -2,23 +2,25 @@
 # ---------------------------------------------------------------------
 # CustomFieldEnumValue model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from .customfieldenumgroup import CustomFieldEnumGroup
 
 
+@six.python_2_unicode_compatible
 class CustomFieldEnumValue(models.Model):
     """
     Enumeration groups values
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Enum Group Value"
         verbose_name_plural = "Enum Group Values"
         db_table = "main_customfieldenumvalue"
@@ -34,6 +36,6 @@ class CustomFieldEnumValue(models.Model):
     key = models.CharField("Key", max_length=256)
     value = models.CharField("Value", max_length=256)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s@%s:%s" % (
             self.enum_group.name, self.key, self.value)

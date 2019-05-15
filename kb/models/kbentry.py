@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import difflib
 # Third-party modules
+import six
 from core.model.fields import AutoCompleteTagsField
 from django.db import models
 # NOC modules
@@ -28,6 +29,7 @@ from noc.core.model.decorator import on_delete_check
         ("kb.KBEntryAttachment", "kb_entry")
     ]
 )
+@six.python_2_unicode_compatible
 class KBEntry(models.Model):
     """
     KB Entry
@@ -47,7 +49,7 @@ class KBEntry(models.Model):
                                        choices=loader.choices)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.id:
             return u"KB%d: %s" % (self.id, self.subject)
         else:

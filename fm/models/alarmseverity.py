@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmSeverity model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from threading import Lock
 import operator
 from itertools import izip
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, UUIDField)
 import cachetools
@@ -27,6 +28,7 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("fm.AlarmClass", "default_severity")
 ])
+@six.python_2_unicode_compatible
 class AlarmSeverity(Document):
     """
     Alarm severities
@@ -53,7 +55,7 @@ class AlarmSeverity(Document):
     _order_cache = {}
     _weight_cache = {}
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

@@ -6,7 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField
 # NOC modules
@@ -18,6 +21,7 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(ignore=[
     ("inv.SubInterface", "forwarding_instance")
 ])
+@six.python_2_unicode_compatible
 class ForwardingInstance(Document):
     """
     Non-default forwarding instances
@@ -37,7 +41,7 @@ class ForwardingInstance(Document):
     # VRF/VPLS
     rd = StringField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.managed_object.name,
                             self.name if self.name else "default")
 
@@ -51,6 +55,6 @@ class ForwardingInstance(Document):
     @property
     def subinterface_set(self):
         # Avoid circular references
-        from subinterface import SubInterface
+        from .subinterface import SubInterface
 
         return SubInterface.objects.filter(forwarding_instance=self.id)

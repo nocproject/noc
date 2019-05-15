@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # DNSServer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
@@ -16,6 +17,7 @@ from noc.core.datastream.decorator import datastream
 
 
 @datastream
+@six.python_2_unicode_compatible
 class DNSServer(models.Model):
     """
     DNS Server is an database object representing real DNS server.
@@ -24,7 +26,7 @@ class DNSServer(models.Model):
     :param ip: Server's IP address
     :param description: Optional description
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("DNS Server")
         verbose_name_plural = _("DNS Servers")
         db_table = "dns_dnsserver"
@@ -38,7 +40,7 @@ class DNSServer(models.Model):
         blank=True, null=True
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def iter_changed_datastream(self):

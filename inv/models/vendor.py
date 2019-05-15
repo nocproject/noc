@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Vendor model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ id_lock = threading.Lock()
     ("inv.ObjectModel", "vendor"), ("inv.Platform", "vendor"), ("inv.Firmware", "vendor"),
     ("sa.ManagedObject", "vendor"), ("sa.ManagedObjectSelector", "filter_vendor")
 ])
+@six.python_2_unicode_compatible
 class Vendor(Document):
     """
     Equipment vendor
@@ -60,7 +61,7 @@ class Vendor(Document):
     _code_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

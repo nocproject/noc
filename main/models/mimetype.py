@@ -2,23 +2,25 @@
 # ---------------------------------------------------------------------
 # Database models for main module
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.lib.validators import check_extension, check_mimetype
 
 
+@six.python_2_unicode_compatible
 class MIMEType(models.Model):
     """
     MIME Type mapping
     """
-    class Meta:
+    class Meta(object):
         app_label = "main"
         db_table = "main_mimetype"
         verbose_name = "MIME Type"
@@ -30,7 +32,7 @@ class MIMEType(models.Model):
     mime_type = models.CharField("MIME Type", max_length=63,
                                  validators=[check_mimetype])
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s -> %s" % (self.extension, self.mime_type)
 
     @classmethod

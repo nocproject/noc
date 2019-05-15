@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Pool model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import threading
 import time
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, LongField
 import cachetools
@@ -27,6 +28,7 @@ id_lock = threading.Lock()
     ("sa.ManagedObjectSelector", "filter_pool")
     # ("fm.EscalationItem", "administrative_domain")
 ])
+@six.python_2_unicode_compatible
 class Pool(Document):
     meta = {
         "collection": "noc.pools",
@@ -47,7 +49,7 @@ class Pool(Document):
     reschedule_lock = threading.Lock()
     reschedule_ts = {}  # pool id -> timestamp
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

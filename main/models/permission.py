@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Permission database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import print_function
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from django.db.models import Model, CharField, ManyToManyField
 from django.contrib.auth.models import User, Group
 import cachetools
@@ -19,6 +20,7 @@ perm_lock = Lock()
 id_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class Permission(Model):
     """
     Permissions.
@@ -26,7 +28,7 @@ class Permission(Model):
     Populated by manage.py sync-perm
     @todo: Check name format
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Permission"
         verbose_name_plural = "Permissions"
         db_table = "main_permission"
@@ -46,7 +48,7 @@ class Permission(Model):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

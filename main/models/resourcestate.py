@@ -6,8 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
+import six
 from django.db import models
+# NOC modules
 from noc.core.model.decorator import on_delete_check
 
 
@@ -16,8 +18,9 @@ from noc.core.model.decorator import on_delete_check
     ("vc.VC", "state"),
     ("main.ResourceState", "step_to")
 ])
+@six.python_2_unicode_compatible
 class ResourceState(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Resource State"
         verbose_name_plural = "Resource States"
         ordering = ["name"]
@@ -38,7 +41,7 @@ class ResourceState(models.Model):
     # resource's allocated_till field expired
     step_to = models.ForeignKey("self", blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # State transition
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import operator
 import logging
 from exceptions import ImportError
 # Third-party modules
+import six
 from builtins import str
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, LongField,
@@ -30,12 +31,13 @@ logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class TransitionVertex(EmbeddedDocument):
     # vertex coordinates
     x = IntField(default=0)
     y = IntField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s, %s" % (self.x, self.y)
 
     def __eq__(self, other):
@@ -43,6 +45,7 @@ class TransitionVertex(EmbeddedDocument):
 
 
 @bi_sync
+@six.python_2_unicode_compatible
 class Transition(Document):
     meta = {
         "collection": "transitions",
@@ -81,7 +84,7 @@ class Transition(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s -> %s [%s]" % (self.workflow.name, self.from_state.name,
                                        self.to_state.name, self.label)
 

@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import datetime
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, DateTimeField, ReferenceField)
@@ -52,6 +53,7 @@ logger = logging.getLogger(__name__)
     ("inv.SubInterface", "interface"),
     ("inv.MACDB", "interface")
 ])
+@six.python_2_unicode_compatible
 class Interface(Document):
     """
     Interfaces
@@ -105,7 +107,7 @@ class Interface(Document):
 
     PROFILE_LINK = "profile"
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
 
     def iter_changed_datastream(self):

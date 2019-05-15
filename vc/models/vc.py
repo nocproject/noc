@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # VC model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,9 +11,9 @@ from __future__ import absolute_import
 import re
 import operator
 from threading import Lock
-# Django modules
-from django.db import models
 # Third-party modules
+import six
+from django.db import models
 from mongoengine.queryset import Q as MEQ
 import cachetools
 # NOC modules
@@ -39,11 +39,12 @@ id_lock = Lock()
     ("ip.Prefix", "vc")
 ])
 @full_text_search
+@six.python_2_unicode_compatible
 class VC(models.Model):
     """
     Virtual circuit
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "VC"
         verbose_name_plural = "VCs"
         unique_together = [("vc_domain", "l1", "l2"), ("vc_domain", "name")]
@@ -71,7 +72,7 @@ class VC(models.Model):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         s = u"%s %d" % (self.vc_domain, self.l1)
         if self.l2:
             s += u"/%d" % self.l2

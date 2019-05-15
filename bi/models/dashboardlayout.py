@@ -2,17 +2,20 @@
 # ----------------------------------------------------------------------
 # Dashboard Layout
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 ListField, EmbeddedDocumentField)
+# NOC modules
 from noc.lib.prettyjson import to_json
 
 
+@six.python_2_unicode_compatible
 class DashboardCell(EmbeddedDocument):
     name = StringField()
     # Row number
@@ -28,7 +31,7 @@ class DashboardCell(EmbeddedDocument):
     # Large devices (Desktop, > 1200px)
     lg = IntField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def to_json(self, *args, **kwargs):
@@ -43,6 +46,7 @@ class DashboardCell(EmbeddedDocument):
         }
 
 
+@six.python_2_unicode_compatible
 class DashboardLayout(Document):
     meta = {
         "collection": "noc.dashboardlayouts",
@@ -57,7 +61,7 @@ class DashboardLayout(Document):
     # @todo: Add preview
     cells = ListField(EmbeddedDocumentField(DashboardCell))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def to_json(self):

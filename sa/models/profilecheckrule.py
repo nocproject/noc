@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # ProfileCheckRule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
                                 IntField)
@@ -21,6 +22,7 @@ from noc.lib.text import quote_safe_path
 
 
 @category
+@six.python_2_unicode_compatible
 class ProfileCheckRule(Document):
     meta = {
         "collection": "noc.profilecheckrules",
@@ -63,7 +65,7 @@ class ProfileCheckRule(Document):
     #
     category = ObjectIdField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property

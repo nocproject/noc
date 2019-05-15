@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Person models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.core.gridvcs.manager import GridVCSField
@@ -18,6 +19,7 @@ from .rir import RIR
 
 
 @on_save
+@six.python_2_unicode_compatible
 class Person(models.Model):
     class Meta(object):
         verbose_name = "Person"
@@ -42,7 +44,7 @@ class Person(models.Model):
     extra = models.TextField("extra", blank=True, null=True)
     rpsl = GridVCSField("rpsl_person")
 
-    def __unicode__(self):
+    def __str__(self):
         return u" %s (%s)" % (self.nic_hdl, self.person)
 
     def get_rpsl(self):

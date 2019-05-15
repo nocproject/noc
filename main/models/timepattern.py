@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
+import six
 import cachetools
 from django.db import models
 # NOC modules
@@ -31,6 +32,7 @@ id_lock = Lock()
     ("sa.ManagedObject", "time_pattern"),
     ("main.UserProfileContact", "time_pattern")
 ])
+@six.python_2_unicode_compatible
 class TimePattern(models.Model):
     """
     Time Patterns
@@ -46,7 +48,7 @@ class TimePattern(models.Model):
 
     _code_cache = cachetools.TTLCache(1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

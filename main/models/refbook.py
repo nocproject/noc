@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import datetime
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.main.refbooks.downloaders import downloader_registry
@@ -23,6 +24,7 @@ downloader_registry.register_all()
     ("main.RefBookField", "ref_book"),
     ("main.RefBookData", "ref_book")
 ])
+@six.python_2_unicode_compatible
 class RefBook(models.Model):
     """
     Reference Books
@@ -56,7 +58,7 @@ class RefBook(models.Model):
         "Refresh Interval (days)",
         default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def add_record(self, data):

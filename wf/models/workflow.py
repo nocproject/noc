@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Workflow model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from threading import Lock
 import operator
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField,
                                 ReferenceField, LongField)
@@ -38,6 +39,7 @@ id_lock = Lock()
     ("vc.VPNProfile", "workflow"),
     ("vc.VLANProfile", "workflow")
 ])
+@six.python_2_unicode_compatible
 class Workflow(Document):
     meta = {
         "collection": "workflows",
@@ -59,7 +61,7 @@ class Workflow(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

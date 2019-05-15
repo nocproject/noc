@@ -2,15 +2,20 @@
 # ---------------------------------------------------------------------
 # MIBData model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
+import six
 # NOC modules
 import noc.lib.nosql as nosql
-from mib import MIB
+from .mib import MIB
 
 
+@six.python_2_unicode_compatible
 class MIBData(nosql.Document):
     meta = {
         "collection": "noc.mibdata",
@@ -25,5 +30,5 @@ class MIBData(nosql.Document):
     syntax = nosql.DictField(required=False)
     aliases = nosql.ListField(nosql.StringField(), default=[])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

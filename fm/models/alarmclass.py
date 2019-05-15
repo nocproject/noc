@@ -13,6 +13,7 @@ import os
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, EmbeddedDocumentField, BooleanField,
                                 ListField, IntField, FloatField, LongField, ObjectIdField)
@@ -41,6 +42,7 @@ handlers_lock = Lock()
     ("fm.AlarmClassConfig", "alarm_class"),
     ("fm.ArchivedAlarm", "alarm_class")
 ])
+@six.python_2_unicode_compatible
 class AlarmClass(Document):
     """
     Alarm class
@@ -120,7 +122,7 @@ class AlarmClass(Document):
     _handlers_cache = {}
     _clear_handlers_cache = {}
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

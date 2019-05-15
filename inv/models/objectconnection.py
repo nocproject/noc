@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # ObjectConnection model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DictField,
                                 ListField, EmbeddedDocumentField,
@@ -18,6 +19,7 @@ from noc.lib.nosql import PlainReferenceField
 from noc.gis.models.layer import Layer
 
 
+@six.python_2_unicode_compatible
 class ObjectConnectionItem(EmbeddedDocument):
     _meta = {
         "strict": False,
@@ -28,10 +30,11 @@ class ObjectConnectionItem(EmbeddedDocument):
     # Connection name
     name = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (unicode(self.object), self.name)
 
 
+@six.python_2_unicode_compatible
 class ObjectConnection(Document):
     """
     Inventory object connections
@@ -51,7 +54,7 @@ class ObjectConnection(Document):
     layer = ReferenceField(Layer)
     line = LineStringField(auto_index=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"<%s>" % ", ".join(unicode(c) for c in self.connection)
 
     def clean(self):

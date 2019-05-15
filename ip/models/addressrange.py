@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # AddressRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
@@ -23,6 +24,7 @@ from .vrf import VRF
 
 
 @datastream
+@six.python_2_unicode_compatible
 class AddressRange(models.Model):
     class Meta(object):
         verbose_name = _("Address Range")
@@ -74,7 +76,7 @@ class AddressRange(models.Model):
         null=True, blank=True,
         help_text=_("VRF temporary allocated till the date"))
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s (IPv%s): %s -- %s" % (
             self.vrf.name,
             self.afi,

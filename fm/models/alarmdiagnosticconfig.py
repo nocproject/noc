@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AlarmDiagnosticConfig model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from threading import Lock
 from collections import defaultdict
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
 import cachetools
@@ -36,6 +37,7 @@ logger = logging.getLogger(__name__)
 PERIODIC_JOB_MAX_RUNS = 5
 
 
+@six.python_2_unicode_compatible
 class AlarmDiagnosticConfig(Document):
     meta = {
         "collection": "noc.alarmdiagnosticconfig",
@@ -77,7 +79,7 @@ class AlarmDiagnosticConfig(Document):
 
     _ac_cache = cachetools.TTLCache(1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

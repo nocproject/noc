@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,6 +42,7 @@ id_lock = Lock()
     ("inv.CoveredObject", "object"),
     ("inv.Object", "container")
 ])
+@six.python_2_unicode_compatible
 class Object(Document):
     """
     Inventory object
@@ -81,7 +82,7 @@ class Object(Document):
         "conduits"
     ]
 
-    def __unicode__(self):
+    def __str__(self):
         return unicode(self.name or self.id)
 
     @classmethod

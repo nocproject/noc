@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # PrefixAccess model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from functools import reduce
 from collections import defaultdict
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
@@ -23,6 +24,7 @@ from .afi import AFI_CHOICES
 from .vrf import VRF
 
 
+@six.python_2_unicode_compatible
 class PrefixAccess(models.Model):
     class Meta(object):
         verbose_name = _("Prefix Access")
@@ -42,7 +44,7 @@ class PrefixAccess(models.Model):
     can_view = models.BooleanField(_("Can View"), default=False)
     can_change = models.BooleanField(_("Can Change"), default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         perms = []
         if self.can_view:
             perms += ["View"]
@@ -136,8 +138,8 @@ class PrefixAccess(models.Model):
         Returns django Q with read restrictions.
         Q can be applied to prefix
         :param user:
-        :param vrf:
-        :param afi:
+        :param field:
+        :param table:
         :return:
         """
         if user.is_superuser:

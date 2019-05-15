@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Full-text search index
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,9 @@
 import logging
 import datetime
 import re
-# Django modules
-from django.db.models import signals as django_signals
 # Third-party modules
+import six
+from django.db.models import signals as django_signals
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, DateTimeField
 from models import get_object, get_model_id
@@ -20,6 +20,7 @@ from models import get_object, get_model_id
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class TextIndex(Document):
     meta = {
         "collection": "noc.textindex",
@@ -59,7 +60,7 @@ class TextIndex(Document):
 
     rx_phrases = re.compile(r"(\d+(?:[-_.:]\d+)+)")
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.model, self.object)
 
     def get_object(self):
