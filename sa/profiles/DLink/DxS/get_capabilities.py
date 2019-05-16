@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,8 +11,6 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
-from noc.sa.profiles.DLink.DxS import DES3x2x
-from noc.sa.profiles.DLink.DxS import DES30xx
 
 
 class Script(BaseScript):
@@ -50,7 +48,7 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         # Spanning Tree Enabled/Disabled : Enabled
-        if self.match_version(DES3x2x) or self.match_version(DES30xx):
+        if self.is_des30xx or self.is_des3x2x:
             cmd = self.cli("show stp\nq")
         else:
             cmd = self.cli("show stp", cached=True)

@@ -56,12 +56,29 @@ class Profile(BaseProfile):
         },
         # IF-MIB::ifPhysAddress return equal values, but
         # LLDP-MIB::lldpLocPortId return different values
-        "is_bad_ifmib_snmp": {
+        "is_bad_ifmib_snmp": {"platform": {"$regex": r"^DES-3200-\d\dF*/C1"}},
+        "is_des1210": {"platform": {"$regex": r"^DES-1210"}},
+        "is_des30xx": {"platform": {"$regex": r"^DES-30(?:10|16|18|26)"}},
+        "is_des3028": {"platform": {"$regex": r"^DES-3028"}},
+        "is_des3x2x": {"platform": {"$regex": r"^DES-3(?:226|250|326|3350|3352)"}},
+        "is_des3200": {"platform": {"$regex": r"^DES-3200"}},
+        "is_des3500": {"platform": {"$regex": r"^DES-35(?:26|50)"}},
+        "is_dgs1100": {"platform": {"$regex": r"^DGS-1100"}},
+        "is_dgs1100_06": {"platform": {"$regex": r"^DGS-1100-06"}},
+        "is_dgs1210": {"platform": {"$regex": r"^DGS-1210"}},
+        "is_dgs30xx": {"platform": {"$regex": r"^DGS-30(?:24|48)"}},
+        "is_dgs3120": {"platform": {"$regex": r"^DGS-3120"}},
+        "is_dgs3400": {"platform": {"$regex": r"^DGS-34(?:26|27|50)"}},
+        "is_dgs3420": {"platform": {"$regex": r"^DGS-3420"}},
+        "is_dgs3600": {"platform": {"$regex": r"^DGS-36(?:12|27|50)"}},
+        "is_dgs3620": {"platform": {"$regex": r"^DGS-3620"}},
+        "is_dxs_l2": {
             "platform": {
-                "$regex": r"^DES-3200-\d\dF*/C1"
+                "$regex": r"^(?:DES-(?:1100|12|30|32|35|3810)|DGS-(?:1100|12|15|30|32|37))"
             }
         }
     }
+
     #
     # Version comparison
     # Version format:
@@ -119,7 +136,7 @@ class Profile(BaseProfile):
         """
         Ports in CLI like 1:1-24,2:1-24
         """
-        platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100', "DGS-3420")
+        platforms_with_stacked_ports = ("DGS-3120", "DGS-3420")
         match = self.rx_interface_name.match(s.strip())
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
@@ -404,20 +421,6 @@ class Profile(BaseProfile):
         return config
 
 
-def DES30xx(v):
-    """
-    DES-30xx-series
-    :param v:
-    :return:
-    """
-    return (
-        v["platform"].startswith("DES-3010") or
-        v["platform"].startswith("DES-3016") or
-        v["platform"].startswith("DES-3018") or
-        v["platform"].startswith("DES-3026")
-    )
-
-
 def DES3028(v):
     """
     DES-3028-series
@@ -425,20 +428,6 @@ def DES3028(v):
     :return:
     """
     return v["platform"].startswith("DES-3028")
-
-
-def DES3x2x(v):
-    """
-    DES-3x2x-series
-    :param v:
-    :return:
-    """
-    return (
-        v["platform"].startswith("DES-3226") or
-        v["platform"].startswith("DES-3250") or
-        v["platform"].startswith("DES-3326") or
-        v["platform"].startswith("DES-3350")
-    )
 
 
 def DES3500(v):
@@ -507,26 +496,6 @@ def DGS3620(v):
     :return:
     """
     return v["platform"].startswith("DGS-3620")
-
-
-def DxS_L2(v):
-    if (
-        v["platform"].startswith("DES-1100") or
-        v["platform"].startswith("DES-12") or
-        v["platform"].startswith("DES-30") or
-        v["platform"].startswith("DES-32") or
-        v["platform"].startswith("DES-35") or
-        v["platform"].startswith("DES-3810") or
-        v["platform"].startswith("DGS-1100") or
-        v["platform"].startswith("DGS-12") or
-        v["platform"].startswith("DGS-15") or
-        v["platform"].startswith("DGS-30") or
-        v["platform"].startswith("DGS-32") or
-        v["platform"].startswith("DGS-37")
-    ):
-        return True
-    else:
-        return False
 
 
 def get_platform(platform, hw_revision):

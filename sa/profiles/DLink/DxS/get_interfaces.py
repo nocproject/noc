@@ -13,9 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.lib.validators import is_int
-from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
-from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3620
 from noc.core.mib import mib
 from noc.core.mac import MAC
@@ -284,7 +282,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         ipif_found = False
-        if self.match_version(DxS_L2):
+        if self.is_dxs_l2:
             L2_Switch = True
         else:
             L2_Switch = False
@@ -677,7 +675,7 @@ class Script(BaseScript):
             interfaces += [i]
             ipif_found = True
 
-        if self.match_version(DGS3420) or self.match_version(DGS3620):
+        if self.is_dgs3420 or self.id_sgs3620:
             match = self.rx_ipmgmt.search(ipif)
             if match:
                 admin_status = match.group("admin_state") == "Enabled"
