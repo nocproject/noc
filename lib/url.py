@@ -8,7 +8,8 @@
 
 # Python modules
 import re
-import urllib
+# Third-party modules
+from six.moves.urllib.parse import unquote as urllib_unquote
 
 rx_url = re.compile(r"^(?P<scheme>[^:]+)://(?:(?P<user>[^:]+):(?P<password>[^@]+)@)(?P<host>[^/:]+)(?::(?P<port>\d+))?(?P<path>.*)$")
 
@@ -24,8 +25,8 @@ class URL(object):
         if not match:
             raise InvalidURLException
         self.scheme = match.group("scheme")
-        self.user = urllib.unquote(match.group("user"))
-        self.password = urllib.unquote(match.group("password"))
+        self.user = urllib_unquote(match.group("user"))
+        self.password = urllib_unquote(match.group("password"))
         self.host = match.group("host")
         if match.group("port"):
             self.port = int(match.group("port"))

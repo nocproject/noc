@@ -11,20 +11,20 @@ from __future__ import absolute_import
 import re
 import glob
 import os
-import urllib
 import hashlib
 import logging
 import json
 from collections import defaultdict
 import operator
 # Third-party modules
+import six
+from six.moves.urllib.parse import urlencode
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
 from django.conf.urls import patterns
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
-import six
 import ujson
 # NOC modules
 from noc.config import config
@@ -478,11 +478,10 @@ class Site(object):
             kw = kwargs.copy()
             query = ""
             if "QUERY" in kw:
-                query = "?" + urllib.urlencode(kw["QUERY"])
+                query = "?%s" % urlencode(kw["QUERY"])
                 del kw["QUERY"]
             return reverse(url, args=args, kwargs=kw) + query
-        else:
-            return url
+        return url
 
     def sort_menu(self):
         """

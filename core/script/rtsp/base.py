@@ -12,10 +12,10 @@ import socket
 import datetime
 import os
 # Third-party modules
+from six.moves.urllib.request import parse_http_list, parse_keqv_list
 import tornado.ioloop
 import tornado.iostream
 import tornado.gen
-import urllib2
 import hashlib
 # NOC modules
 from noc.config import config
@@ -259,8 +259,8 @@ class RTSPBase(object):
                     if h not in headers:
                         headers[h] = {}
                     auth, line = v.split(None, 1)
-                    items = urllib2.parse_http_list(line)
-                    headers[h][auth] = urllib2.parse_keqv_list(items)
+                    items = parse_http_list(line)
+                    headers[h][auth] = parse_keqv_list(items)
                     continue
                 headers[h] = v.strip()
         return int(code), msg, headers

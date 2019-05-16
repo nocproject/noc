@@ -140,22 +140,20 @@ def urlopen(url, auto_deflate=False):
     """
     urlopen wrapper
     """
-    import urllib2
+    from future.moves.urllib.request import urlopen, Request
     from noc.core.http.proxy import setup_urllib_proxies
 
     setup_urllib_proxies()
 
     if url.startswith("http://") or url.startswith("https://"):
-        r = urllib2.Request(
-            url, headers={"User-Agent": "NOC/%s" % version.version})
+        r = Request(url, headers={"User-Agent": "NOC/%s" % version.version})
     else:
         r = url
     if auto_deflate and url.endswith(".gz"):
-        u = urllib2.urlopen(r)
+        u = urlopen(r)
         f = six.StringIO(u.read())
         return gzip.GzipFile(fileobj=f)
-    else:
-        return urllib2.urlopen(r)
+    return urlopen(r)
 
 
 def search_path(file):

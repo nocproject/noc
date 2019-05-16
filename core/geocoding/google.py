@@ -2,14 +2,14 @@
 # ----------------------------------------------------------------------
 # Google geocoder
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
-import urllib
 # Third-party modules
+from six.moves.urllib.parse import quote as urllib_quote
 import ujson
 # NOC modules
 from .base import (BaseGeocoder, GeoCoderError, GeoCoderResult)
@@ -37,11 +37,11 @@ class GoogleGeocoder(BaseGeocoder):
             # &bounds=34.172684,-118.604794|34.236144,-118.500938
             # bounds = ("34.172684,-118.604794", "34.236144,-118.500938")
             url += ["&bounds=%s|%s" % bounds]
-        url += ["&address=%s" % urllib.quote(query)]
+        url += ["&address=%s" % urllib_quote(query)]
         if self.key:
-            url += ["&key=%s" % urllib.quote(self.key)]
+            url += ["&key=%s" % urllib_quote(self.key)]
         if self.language:
-            url += ["&language=%s" % urllib.quote(self.language)]
+            url += ["&language=%s" % urllib_quote(self.language)]
         code, response = self.get("".join(url))
         if code != 200:
             raise GeoCoderError("%s: %s" % (code, response))
