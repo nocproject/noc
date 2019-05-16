@@ -234,6 +234,9 @@ class ArrayField(BaseField):
     def get_db_type(self):
         return "Array(%s)" % self.field_type.get_db_type()
 
+    def get_displayed_type(self):
+        return "Array(%s)" % self.field_type.get_db_type()
+
     def to_python(self, value):
         if not value or value == "[]":
             return []
@@ -351,6 +354,9 @@ class NestedField(ArrayField):
         return "\t".join(out)
 
     def get_db_type(self):
+        return "Nested (\n%s \n)" % self.field_type.get_create_sql()
+
+    def get_displayed_type(self):
         return "Nested (\n%s \n)" % self.field_type.get_create_sql()
 
     @staticmethod
