@@ -231,6 +231,7 @@ _MODELS = {
     "fm.Reboot": "noc.fm.models.reboot.Reboot",
     "fm.SyntaxAlias": "noc.fm.models.syntaxalias.SyntaxAlias",
     "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
+    "fm.Uptime": "noc.fm.models.uptime.Uptime",
     # pm models
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
