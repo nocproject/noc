@@ -469,7 +469,8 @@ class Prefix(models.Model):
         :return:
         """
         return Prefix.has_access(
-            user, self.vrf, self.afi, self.prefix, "can_change")
+            user, self.vrf, self.afi, self.prefix, "can_change") or Prefix.has_access(
+            user, self.vrf, self.afi, self.prefix, "can_create")
 
     def has_bookmark(self, user):
         """
@@ -831,7 +832,7 @@ class Prefix(models.Model):
                            "FROM jsonb_array_elements(direct_permissions) perm "
                            "WHERE %s)" % where_q]
         ads = tuple(UserAccess.get_domains(user))
-        extra["where"] += ["NOT EXISTS(SELECT 1 FROM ip_prefix WHERE administrative_domain_id IS NOT NULL ) %s" %
+        extra["where"] += ["(NOT EXISTS(SELECT 1 FROM ip_prefix WHERE administrative_domain_id IS NOT NULL ) %s)" %
                            ("" if not ads else
                             "OR EXISTS(SELECT 1 FROM ip_prefix WHERE administrative_domain_id IN %s)" % str(ads))]
         return Prefix.objects.filter(vrf=vrf, afi=afi).extra(**extra)
@@ -860,10 +861,12 @@ class Prefix(models.Model):
                 prefix += "/128"
         # Check VRF permission
         vrf_access = vrf.has_access(user, include_prefix=False)
-        if vrf_access:
+        if vrf_access and not permission:
             return True
-        elif not vrf_access and vrf.administrative_domain:
-            return False
+        elif vrf_access and permission and permission in vrf_access:
+            return True
+        # elif not vrf_access and vrf.administrative_domain:
+        #    return False
         r = Prefix.access_Q(user, vrf, afi, prefix, permission)
         return r.exists()
 
@@ -896,7 +899,8 @@ class Prefix(models.Model):
                 "ip_prefix.afi", p.afi,
                 "ip_prefix.prefix", pp
             )]
-
+        if not stmt:
+            return SQL("0 = 1")  # False
         return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))
 
 
