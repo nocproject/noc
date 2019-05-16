@@ -313,8 +313,9 @@ class Engine(object):
                 if f:  # Descent deeper
                     for wctx in not_match(f, c, rest):
                         yield wctx
-                else:
-                    yield c  # There is rest and token not found
+                elif not any(True for x in rest if isinstance(x, Var)):
+                    # There is rest and token not found and no unbound variables left in rest
+                    yield c
             elif not f:
                 yield c  # Last token mismatch
 
