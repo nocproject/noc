@@ -8,9 +8,10 @@
 
 # Python modules
 import logging
-import urllib2
 import socket
 from collections import defaultdict
+# Third-party modules
+from six.moves.urllib.error import URLError
 # NOC modules
 from noc.config import config
 from noc.core.fileutils import urlopen
@@ -126,7 +127,7 @@ class WhoisCacheLoader(object):
         logger.info("Loading %s", url)
         try:
             f = self.urlopen(url)
-        except urllib2.URLError as e:
+        except URLError as e:
             logger.error("Failed to download %s: %s" % (url, e))
             self.status = False
             return 0

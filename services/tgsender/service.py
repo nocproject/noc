@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # tgsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,8 @@ import re
 import datetime
 import json
 import time
-import urllib
+# Third-party modules
+from six.moves.urllib.parse import urlencode
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.http.client import fetch_sync
@@ -64,7 +65,7 @@ class TgSenderService(Service):
         }
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
-            get = self.url + '/sendMessage?' + urllib.urlencode(sendMessage)
+            get = self.url + '/sendMessage?' + urlencode(sendMessage)
             self.logger.info("HTTP GET %s", get)
             code, header, body = fetch_sync(
                 get,
