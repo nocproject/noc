@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 from collections import defaultdict
-from StringIO import StringIO
 import xml.etree.ElementTree as ElementTree
+# Third-party modules
+from six import StringIO
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError

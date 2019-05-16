@@ -9,10 +9,10 @@
 # Python modules
 import datetime
 import csv
-import StringIO
 import xlsxwriter
 import bson
 # Third-party modules
+from six import StringIO
 from django.http import HttpResponse
 from django.db import connection
 from pymongo import ReadPreference
@@ -402,7 +402,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            response = StringIO.StringIO()
+            response = StringIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Alarms")
