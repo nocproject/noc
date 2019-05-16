@@ -7,14 +7,15 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import logging
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
 # NOC modules
-from reboot import Reboot
 from noc.lib.dateutils import total_seconds
+from .reboot import Reboot
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,9 @@ logger = logging.getLogger(__name__)
 class Uptime(Document):
     meta = {
         "collection": "noc.fm.uptimes",
-        "indexes": ["object", ("object", "stop")]
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": [("object", "stop")]
     }
 
     object = IntField()
