@@ -18,6 +18,8 @@ CONF1 = [
     ["interfaces", "Fa 0/3", "description", "Third interface"]
 ]
 
+EMPTY_CONF = []
+
 
 @pytest.mark.parametrize("conf,query,output", [
     # Match incomplete
@@ -36,10 +38,14 @@ CONF1 = [
     (CONF1, "NotMatch('interfaces', x, 'description', y)", []),
     #
     # Match placeholder
-    (CONF1, "NotMatch('interfaces', _x, 'admin-status')", [{}, {}, {}])
+    (CONF1, "NotMatch('interfaces', _x, 'admin-status')", [{}, {}, {}]),
+    # Empty config, bound
+    (EMPTY_CONF, "NotMatch('interfaces', 'Fa0/1', 'admin-status')", [{}]),
+    # Empty config, unbound
+    (EMPTY_CONF, "NotMatch('interfaces', x, 'admin-status')", [])
 ])
 def test_match(conf, query, output):
     db = ConfDB()
-    db.insert_bulk(CONF1)
+    db.insert_bulk(conf)
     e = Engine().with_db(db)
     assert list(e.query(query)) == output
