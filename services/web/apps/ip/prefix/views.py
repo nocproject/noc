@@ -46,7 +46,7 @@ class PrefixApplication(ExtModelApplication):
 
     def queryset(self, request, query=None):
         qs = super(PrefixApplication, self).queryset(request, query=query)
-        return qs.filter(Prefix.read_Q(request.user))
+        return qs.filter(Prefix.read_Q(request.user, include_vrf=True))
 
     def clean(self, data):
         if data.get("direct_permissions"):
