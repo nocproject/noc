@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Basic MO discovery job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ import operator
 import bson
 import cachetools
 import six
-from six.moves import StringIO
+from six import StringIO
 from pymongo import UpdateOne
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
