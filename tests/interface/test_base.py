@@ -72,14 +72,24 @@ def test_unicode_parameter_error(raw, config):
         assert UnicodeParameter(**config).clean(raw)
 
 
-def test_re_string_parameter():
-    assert REStringParameter("ex+p").clean("exp") == "exp"
-    assert REStringParameter("ex+p").clean("exxp") == "exxp"
-    assert REStringParameter("ex+p").clean("regexp 1") == "regexp 1"
+@pytest.mark.parametrize("raw,config,expected", [
+    ("exp", {"regexp": "ex+p"}, "exp"),
+    ("exxp", {"regexp": "ex+p"}, "exxp"),
+    ("regexp 1", {"regexp": "ex+p"}, "regexp 1"),
+    ("regexp 1", {"regexp": "ex+p", "default": "exxp"}, "regexp 1"),
+    (None, {"regexp": "ex+p", "default": "exxp"}, "exxp")
+
+])
+def test_re_string_parameter(raw, config, expected):
+    assert REStringParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("ex", {"regexp": "ex+p"})
+])
+def test_re_string_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        assert REStringParameter("ex+p").clean("ex")
-    assert REStringParameter("ex+p", default="exxp").clean("regexp 1") == "regexp 1"
-    assert REStringParameter("ex+p", default="exxp").clean(None) == "exxp"
+        assert REStringParameter(**config).clean(raw)
 
 
 @pytest.mark.parametrize("raw,config,expected", [
