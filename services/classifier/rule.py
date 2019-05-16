@@ -248,7 +248,7 @@ class Rule(object):
         cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
         self.code = "\n".join(cc)
         code = compile(self.code, "<string>", "exec")
-        exec code in {"rule": self, "new": new, "logging": logging, "fm_unescape": fm_unescape}
+        six.exec_(code, {"rule": self, "new": new, "logging": logging, "fm_unescape": fm_unescape})
 
     def clone(self, rules):
         """
