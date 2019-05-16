@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -675,7 +675,7 @@ class Script(BaseScript):
             interfaces += [i]
             ipif_found = True
 
-        if self.is_dgs3420 or self.id_sgs3620:
+        if self.is_dgs3420 or self.is_dgs3620:
             match = self.rx_ipmgmt.search(ipif)
             if match:
                 admin_status = match.group("admin_state") == "Enabled"
