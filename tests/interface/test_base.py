@@ -32,26 +32,44 @@ def test_none_parameter():
         NoneParameter().clean("None")
 
 
-def test_string_parameter():
-    assert StringParameter().clean("Test") == "Test"
-    assert StringParameter().clean(10) == "10"
-    assert StringParameter().clean(None) == "None"
-    assert StringParameter(default="test").clean("no test") == "no test"
-    assert StringParameter(default="test").clean(None) == "test"
-    assert StringParameter(choices=["1", "2"]).clean("1") == "1"
-    with pytest.raises(InterfaceTypeError):
-        assert StringParameter(choices=["1", "2"]).clean("3")
+@pytest.mark.parametrize("raw,config,expected", [
+    ("Test", {}, "Test"),
+    (10, {}, "10"),
+    (None, {}, "None"),
+    ("no test", {"default": "test"}, "no test"),
+    (None, {"default": "test"}, "test"),
+    ("1", {"choices": ["1", "2"]}, "1")
+])
+def test_string_parameter(raw, config, expected):
+    assert StringParameter(**config).clean(raw) == expected
 
 
-def test_unicode_parameter():
-    assert UnicodeParameter().clean(u"Test") == u"Test"
-    assert UnicodeParameter().clean(10) == u"10"
-    assert UnicodeParameter().clean(None) == u"None"
-    assert UnicodeParameter(default=u"test").clean(u"no test") == u"no test"
-    assert UnicodeParameter(default=u"test").clean(None) == u"test"
-    assert UnicodeParameter(choices=[u"1", u"2"]).clean(u"1") == u"1"
+@pytest.mark.parametrize("raw,config", [
+    ("3", {"choices": ["1", "2"]})
+])
+def test_string_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        assert UnicodeParameter(choices=[u"1", u"2"]).clean(u"3")
+        assert StringParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    (u"Test", {}, u"Test"),
+    (10, {}, u"10"),
+    (None, {}, u"None"),
+    (u"no test", {"default": u"test"}, u"no test"),
+    (None, {"default": u"test"}, u"test"),
+    (u"1", {"choices": [u"1", u"2"]}, u"1")
+])
+def test_unicode_parameter(raw, config, expected):
+    assert UnicodeParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    (u"3", {"choices": [u"1", u"2"]})
+])
+def test_unicode_parameter_error(raw, config):
+    with pytest.raises(InterfaceTypeError):
+        assert UnicodeParameter(**config).clean(raw)
 
 
 def test_re_string_parameter():
@@ -64,66 +82,108 @@ def test_re_string_parameter():
     assert REStringParameter("ex+p", default="exxp").clean(None) == "exxp"
 
 
-def test_re_parameter():
-    assert REParameter().clean(".+?") == ".+?"
-    with pytest.raises(InterfaceTypeError):
-        assert REParameter().clean("+")
+@pytest.mark.parametrize("raw,config,expected", [
+    (".+?", {}, ".+?")
+])
+def test_re_parameter(raw, config, expected):
+    assert REParameter(**config).clean(raw) == expected
 
 
-def test_pyexp_parameter():
-    assert PyExpParameter().clean("(a + 3) * 7") == "(a + 3) * 7"
+@pytest.mark.parametrize("raw,config", [
+    ("+", {})
+])
+def test_re_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        assert PyExpParameter().clean("a =!= b")
+        assert REParameter(**config).clean(raw)
 
 
-def test_boolean_parameter():
-    assert BooleanParameter().clean(True) is True
-    assert BooleanParameter().clean(False) is False
-    assert BooleanParameter().clean("True") is True
-    assert BooleanParameter().clean("yes") is True
-    assert BooleanParameter().clean(1) is True
-    assert BooleanParameter().clean(0) is False
-    with pytest.raises(InterfaceTypeError):
-        assert BooleanParameter().clean([])
-    assert BooleanParameter(default=False).clean(None) is False
-    assert BooleanParameter(default=True).clean(None) is True
+@pytest.mark.parametrize("raw,config,expected", [
+    ("(a + 3) * 7", {}, "(a + 3) * 7")
+])
+def test_pyexp_parameter(raw, config, expected):
+    assert PyExpParameter(**config).clean(raw) == expected
 
 
-def test_int_parameter():
-    assert IntParameter().clean(1) == 1
-    assert IntParameter().clean("1") == 1
+@pytest.mark.parametrize("raw,config", [
+    ("a =!= b", {})
+])
+def test_pyexp_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IntParameter().clean("not a number")
-    with pytest.raises(InterfaceTypeError):
-        IntParameter(min_value=10).clean(5)
-    with pytest.raises(InterfaceTypeError):
-        IntParameter(max_value=7).clean(10)
-    assert IntParameter(max_value=10, default=7).clean(5) == 5
-    assert IntParameter(max_value=10, default=7).clean(None) == 7
-    with pytest.raises(InterfaceTypeError):
-        IntParameter(max_value=10, default=15)
-    with pytest.raises(InterfaceTypeError):
-        IntParameter().clean(None)
+        assert PyExpParameter(**config).clean(raw)
 
 
-def test_float_parameter():
-    assert FloatParameter().clean(1.2) == 1.2
-    assert FloatParameter().clean("1.2") == 1.2
-    with pytest.raises(InterfaceTypeError):
-        FloatParameter().clean("not a number")
-    with pytest.raises(InterfaceTypeError):
-        FloatParameter(min_value=10).clean(5)
-    with pytest.raises(InterfaceTypeError):
-        FloatParameter(max_value=7).clean(10)
-    assert FloatParameter(max_value=10, default=7).clean(5) == 5
-    assert FloatParameter(max_value=10, default=7).clean(None) == 7
-    with pytest.raises(InterfaceTypeError):
-        assert FloatParameter(max_value=10, default=15)
+@pytest.mark.parametrize("raw,config,expected", [
+    (True, {}, True),
+    (False, {}, False),
+    ("True", {}, True),
+    ("yes", {}, True),
+    (1, {}, True),
+    (0, {}, False),
+    (None, {"default": False}, False),
+    (None, {"default": True}, True)
+
+])
+def test_boolean_parameter(raw, config, expected):
+    assert BooleanParameter(**config).clean(raw) == expected
 
 
-def test_list_parmeter():
-    assert ListParameter().clean("123") == ["1", "2", "3"]
-    assert ListParameter().clean(["1", "2", "3"]) == ["1", "2", "3"]
+@pytest.mark.parametrize("raw,config", [
+    ([], {})
+])
+def test_boolean_parameter_error(raw, config):
+    with pytest.raises(InterfaceTypeError):
+        assert BooleanParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    (1, {}, 1),
+    ("1", {}, 1),
+    (5, {"max_value": 10, "default": 7}, 5),
+    (None, {"max_value": 10, "default": 7}, 7)
+])
+def test_int_parameter(raw, config, expected):
+    assert IntParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("not a number", {}),
+    (5, {"min_value": 10}),
+    (10, {"max_value": 7}),
+    (15, {"max_value": 10}),
+    (None, {})
+])
+def test_int_parameter_error(raw, config):
+    with pytest.raises(InterfaceTypeError):
+        assert IntParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    (1.2, {}, 1.2),
+    ("1.2", {}, 1.2),
+    (5.2, {"max_value": 10.2, "default": 7.2}, 5.2),
+    (None, {"max_value": 10.2, "default": 7.2}, 7.2)
+])
+def test_float_parameter(raw, config, expected):
+    assert FloatParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("not a number", {}),
+    (5.2, {"min_value": 10.2}),
+    (10.2, {"max_value": 7.2}),
+    (15.2, {"max_value": 10.2})
+])
+def test_float_parameter_error(raw, config):
+    with pytest.raises(InterfaceTypeError):
+        assert FloatParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("123", {}, ["1", "2", "3"]),
+    (["1", "2", "3"], {}, ["1", "2", "3"])
+])
+def test_list_parmeter(raw, config, expected):
+    assert ListParameter(**config).clean(raw) == expected
 
 
 def test_instanceof_parameter():
@@ -175,42 +235,59 @@ def subclass_of_parameter():
     assert SubclassOfParameter(cls="C", required=False).clean(None)
 
 
-def test_listof_parameter():
-    assert ListOfParameter(element=IntParameter()).clean([1, 2, 3]) == [1, 2, 3]
-    assert ListOfParameter(element=IntParameter()).clean([1, 2, "3"]) == [1, 2, 3]
+@pytest.mark.parametrize("raw,config,expected", [
+    ([1, 2, 3], {"element": IntParameter()}, [1, 2, 3]),
+    ([1, 2, "3"], {"element": IntParameter()}, [1, 2, 3]),
+    ([1, 2, 3, "x"], {"element": StringParameter()}, ["1", "2", "3", "x"]),
+    (None, {"element": StringParameter(), "default": []}, []),
+    (None, {"element": StringParameter(), "default": [1, 2, 3]}, ["1", "2", "3"]),
+    ([("a", 1), ("b", "2")], {"element": [StringParameter(), IntParameter()]}, [["a", 1], ["b", 2]])
+])
+def test_listof_parameter(raw, config, expected):
+    assert ListOfParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ([1, 2, "x"], {"element": IntParameter()}),
+    ([("a", 1), ("b", "x")], {"element": [StringParameter(), IntParameter()]})
+])
+def test_listof_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        ListOfParameter(element=IntParameter()).clean([1, 2, "x"])
-    assert ListOfParameter(element=StringParameter()).clean([1, 2, 3, "x"]) == ["1", "2", "3", "x"]
-    assert ListOfParameter(element=StringParameter(), default=[]).clean(None) == []
-    assert ListOfParameter(element=StringParameter(), default=[1, 2, 3]).clean(None) == ["1", "2",
-                                                                                         "3"]
-    assert ListOfParameter(element=[StringParameter(), IntParameter()]).clean(
-        [("a", 1), ("b", "2")]) == [["a", 1], ["b", 2]]
+        assert ListOfParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    (["1", "2", "3"], {}, ["1", "2", "3"]),
+    (["1", 2, "3"], {}, ["1", "2", "3"])
+])
+def test_stringlist_parameter(raw, config, expected):
+    assert StringListParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ({"i": 10, "s": "ten"}, {"attrs": {"i": IntParameter(), "s": StringParameter()}}, {"i": 10, "s": "ten"})
+])
+def test_dict_parameter(raw, config, expected):
+    assert DictParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ({"i": "10", "x": "ten"}, {"attrs": {"i": IntParameter(), "s": StringParameter()}})
+])
+def test_dict_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        assert ListOfParameter(element=[StringParameter(), IntParameter()]).clean(
-            [("a", 1), ("b", "x")])
+        assert DictParameter(**config).clean(raw)
 
 
-def test_stringlist_parameter():
-    assert StringListParameter().clean(["1", "2", "3"]) == ["1", "2", "3"]
-    assert StringListParameter().clean(["1", 2, "3"]) == ["1", "2", "3"]
-
-
-def test_dict_parameter():
-    assert DictParameter(attrs={"i": IntParameter(), "s": StringParameter()}).clean(
-        {"i": 10, "s": "ten"}) == {"i": 10, "s": "ten"}
-    with pytest.raises(InterfaceTypeError):
-        DictParameter(attrs={"i": IntParameter(), "s": StringParameter()}).clean(
-            {"i": "10", "x": "ten"})
-
-
-def test_dictlist_parameter():
-    assert DictListParameter().clean([{"1": 2}, {"2": 3, "4": 1}]) == [{"1": 2}, {"2": 3, "4": 1}]
-    assert DictListParameter(attrs={"i": IntParameter(), "s": StringParameter()}).clean(
-        [{"i": 10, "s": "ten"}, {"i": "5", "s": "five"}]) == [{"i": 10, "s": "ten"},
-                                                              {"i": 5, "s": "five"}]
-    assert DictListParameter(attrs={"i": IntParameter(), "s": StringParameter()},
-                             convert=True).clean({"i": "10", "s": "ten"}) == [{"i": 10, "s": "ten"}]
+@pytest.mark.parametrize("raw,config,expected", [
+    ([{"1": 2}, {"2": 3, "4": 1}], {}, [{"1": 2}, {"2": 3, "4": 1}]),
+    ([{"i": 10, "s": "ten"}, {"i": "5", "s": "five"}],
+     {"attrs": {"i": IntParameter(), "s": StringParameter()}}, [{"i": 10, "s": "ten"}, {"i": 5, "s": "five"}]),
+    ({"i": "10", "s": "ten"}, {"attrs": {"i": IntParameter(), "s": StringParameter()}, "convert": True},
+     [{"i": 10, "s": "ten"}])
+])
+def test_dictlist_parameter(raw, config, expected):
+    assert DictListParameter(**config).clean(raw) == expected
 
 
 def test_datetime_parameter():
@@ -218,144 +295,253 @@ def test_datetime_parameter():
     assert DateTimeParameter().clean(now) == now.isoformat()
 
 
-def test_ipv4_parameter():
-    assert IPv4Parameter().clean("192.168.0.1") == "192.168.0.1"
+@pytest.mark.parametrize("raw,config,expected", [
+    ("192.168.0.1", {}, "192.168.0.1")
+])
+def test_ipv4_parameter(raw, config, expected):
+    assert IPv4Parameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("192.168.0.256", {})
+])
+def test_ipv4_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv4Parameter().clean("192.168.0.256")
+        assert IPv4Parameter(**config).clean(raw)
 
 
-def test_ipv4prefix_parameter():
-    assert IPv4PrefixParameter().clean("192.168.0.0/16") == "192.168.0.0/16"
+@pytest.mark.parametrize("raw,config,expected", [
+    ("192.168.0.0/16", {}, "192.168.0.0/16")
+])
+def test_ipv4prefix_parameter(raw, config, expected):
+    assert IPv4PrefixParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("192.168.0.256", {}),
+    ("192.168.0.0/33", {}),
+    ("192.168.0.0/-5", {})
+])
+def test_ipv4prefix_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv4PrefixParameter().clean("192.168.0.256")
+        assert IPv4PrefixParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("::", {}, "::"),
+    ("::1", {}, "::1"),
+    ("2001:db8::1", {}, "2001:db8::1"),
+    ("2001:db8::", {}, "2001:db8::"),
+    ("::ffff:192.168.0.1", {}, "::ffff:192.168.0.1"),
+    ("0:00:0:0:0::1", {}, "::1"),
+    ("::ffff:c0a8:1", {}, "::ffff:192.168.0.1"),
+    ("2001:db8:0:7:0:0:0:1", {}, "2001:db8:0:7::1")
+])
+def test_ipv6_parameter(raw, config, expected):
+    assert IPv6Parameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("g::", {})
+])
+def test_ipv6_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv4PrefixParameter().clean("192.168.0.0/33")
+        assert IPv6Parameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("::/128", {}, "::/128"),
+    ("2001:db8::/32", {}, "2001:db8::/32")
+])
+def test_ipv6prefix_parameter(raw, config, expected):
+    assert IPv6PrefixParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("2001:db8::/129", {}),
+    ("2001:db8::/g", {}),
+    ("2001:db8::", {})
+])
+def test_ipv6prefix_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv4PrefixParameter().clean("192.168.0.0/-5")
+        assert IPv6PrefixParameter(**config).clean(raw)
 
 
-def test_ipv6_parameter():
-    assert IPv6Parameter().clean("::") == "::"
-    assert IPv6Parameter().clean("::1") == "::1"
-    assert IPv6Parameter().clean("2001:db8::1") == "2001:db8::1"
-    assert IPv6Parameter().clean("2001:db8::") == "2001:db8::"
-    assert IPv6Parameter().clean("::ffff:192.168.0.1") == "::ffff:192.168.0.1"
+@pytest.mark.parametrize("raw,config,expected", [
+    ("192.168.0.1", {}, "192.168.0.1"),
+    ("2001:db8::", {}, "2001:db8::")
+])
+def test_ip_parameter(raw, config, expected):
+    assert IPParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("192.168.0.0/24", {}, "192.168.0.0/24"),
+    ("2001:db8::/32", {}, "2001:db8::/32")
+])
+def test_prefix_parameter(raw, config, expected):
+    assert PrefixParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    (10, {}, 10)
+])
+def test_vlanid_parameter(raw, config, expected):
+    assert VLANIDParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    (5000, {}),
+    (0, {})
+])
+def test_vlanid_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv6Parameter().clean("g::")
-    assert IPv6Parameter().clean("0:00:0:0:0::1") == "::1"
-    assert IPv6Parameter().clean("::ffff:c0a8:1") == "::ffff:192.168.0.1"
-    assert IPv6Parameter().clean("2001:db8:0:7:0:0:0:1") == "2001:db8:0:7::1"
+        assert VLANIDParameter(**config).clean(raw)
 
 
-def test_ipv6prefix_parameter():
-    assert IPv6PrefixParameter().clean("::/128") == "::/128"
-    assert IPv6PrefixParameter().clean("2001:db8::/32") == "2001:db8::/32"
+@pytest.mark.parametrize("raw,config,expected", [
+    (10, {}, [10]),
+    ([10], {}, [10]),
+    ([10, "20"], {}, [10, 20]),
+    ([10, 0], {}, [10, 0])
+])
+def test_vlanstack_parameter(raw, config, expected):
+    assert VLANStackParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    (["1", "2", "3"], {}, [1, 2, 3]),
+    ([1, 2, 3], {}, [1, 2, 3]),
+])
+def test_vlanidlist_parameter(raw, config, expected):
+    assert VLANIDListParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("1,2,5-10", {}, "1-2,5-10"),
+    ("", {}, ""),
+
+])
+def test_vlanidmap_parameter(raw, config, expected):
+    assert VLANIDMapParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("1234.5678.9ABC", {}, "12:34:56:78:9A:BC"),
+    ("1234.5678.9abc", {}, "12:34:56:78:9A:BC"),
+    ("0112.3456.789a.bc", {}, "12:34:56:78:9A:BC"),
+    ("12:34:56:78:9A:BC", {}, "12:34:56:78:9A:BC"),
+    ("12-34-56-78-9A-BC", {}, "12:34:56:78:9A:BC"),
+    ("0:13:46:50:87:5", {}, "00:13:46:50:87:05"),
+    ("123456-789abc", {}, "12:34:56:78:9A:BC"),
+    ("aabb-ccdd-eeff", {}, "AA:BB:CC:DD:EE:FF"),
+    ("aabbccddeeff", {}, "AA:BB:CC:DD:EE:FF"),
+    ("AA:BB:CC:DD:EE:FF", {}, "AA:BB:CC:DD:EE:FF"),
+    ("\xa8\xf9K\x80\xb4\xc0", {}, "A8:F9:4B:80:B4:C0")
+])
+def test_macaddress_parameter(raw, config, expected):
+    assert MACAddressParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("1234.5678.9abc.def0", {}),
+    ("12-34-56-78-9A-BC-DE", {}),
+    ("AB-CD-EF-GH-HJ-KL", {}),
+    ("\\xa8\\xf9K\\x80\\xb4\\xc0", {"accept_bin": False})
+])
+def test_macaddress_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv6PrefixParameter().clean("2001:db8::/129")
+        assert MACAddressParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("1.3.6.1.2.1.1.1.0", {}, "1.3.6.1.2.1.1.1.0"),
+    (None, {"default": "1.3.6.1.2.1.1.1.0"}, "1.3.6.1.2.1.1.1.0")
+])
+def test_oid_parameter(raw, config, expected):
+    assert OIDParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("1.3.6.1.2.1.1.X.0", {})
+])
+def test_oid_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv6PrefixParameter().clean("2001:db8::/g")
+        assert OIDParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ("100:4294967295", {}, "100:4294967295"),
+    ("10.10.10.10:10", {}, "10.10.10.10:10"),
+    ("100000:500", {}, "100000:500"),
+    ("100000L:100", {}, "100000:100")
+])
+def test_rd_parameter(raw, config, expected):
+    assert RDParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    ([180, 90], {}, [180, 90]),
+    ([75.5, "90"], {}, [75.5, 90]),
+    ("[180, 85.5]", {}, [180, 85.5])
+])
+def test_geopoint_parameter(raw, config, expected):
+    assert GeoPointParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ([1], {})
+])
+def test_geopoint_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        IPv6PrefixParameter().clean("2001:db8::")
+        assert GeoPointParameter(**config).clean(raw)
 
 
-def test_ip_parameter():
-    assert IPParameter().clean("192.168.0.1") == "192.168.0.1"
-    assert IPParameter().clean("2001:db8::") == "2001:db8::"
+@pytest.mark.parametrize("raw,config,expected", [
+    ([1, 2, "tags"], {}, [u"1", u"2", u"tags"]),
+    ([1, 2, "tags "], {}, [u"1", u"2", u"tags"]),
+    ("1,2,tags", {}, [u"1", u"2", u"tags"]),
+    ("1 , 2,  tags", {}, [u"1", u"2", u"tags"])
+])
+def test_tags_parameter(raw, config, expected):
+    assert TagsParameter(**config).clean(raw) == expected
 
 
-def test_prefix_parameter():
-    assert PrefixParameter().clean("192.168.0.0/24") == "192.168.0.0/24"
-    assert PrefixParameter().clean("2001:db8::/32") == "2001:db8::/32"
-
-
-def test_vlanid_parameter():
-    assert VLANIDParameter().clean(10) == 10
+@pytest.mark.parametrize("raw,config", [
+    (1, {})
+])
+def test_tags_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        VLANIDParameter().clean(5000)
+        assert TagsParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config,expected", [
+    (None, {"default": 0xff}, 0xff),
+    ("#ff0000", {}, 0xff0000)
+])
+def test_color_parameter(raw, config, expected):
+    assert ColorParameter(**config).clean(raw) == expected
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("#ff00000", {}),
+    ("#ff000x", {})
+])
+def test_color_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        VLANIDParameter().clean(0)
+        assert ColorParameter(**config).clean(raw)
 
 
-def test_vlanstack_parameter():
-    assert VLANStackParameter().clean(10) == [10]
-    assert VLANStackParameter().clean([10]) == [10]
-    assert VLANStackParameter().clean([10, "20"]) == [10, 20]
-    assert VLANStackParameter().clean([10, 0]) == [10, 0]
+@pytest.mark.parametrize("raw,config,expected", [
+    ("5b2d0cba4575cf01ead6aa89", {}, "5b2d0cba4575cf01ead6aa89")
+])
+def test_object_id_parameter(raw, config, expected):
+    assert ObjectIdParameter(**config).clean(raw) == expected
 
 
-def test_vlanidlist_parameter():
-    assert VLANIDListParameter().clean(["1", "2", "3"]) == [1, 2, 3]
-    assert VLANIDListParameter().clean([1, 2, 3]) == [1, 2, 3]
-
-
-def test_vlanidmap_parameter():
-    assert VLANIDMapParameter().clean("1,2,5-10") == "1-2,5-10"
-    assert VLANIDMapParameter().clean("") == ""
-
-
-def test_macaddress_parameter():
-    assert MACAddressParameter().clean("1234.5678.9ABC") == "12:34:56:78:9A:BC"
-    assert MACAddressParameter().clean("1234.5678.9abc") == "12:34:56:78:9A:BC"
-    assert MACAddressParameter().clean("0112.3456.789a.bc") == "12:34:56:78:9A:BC"
+@pytest.mark.parametrize("raw,config", [
+    ("5b2d0cba4575cf01ead6aa8x", {})
+])
+def test_object_id_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        MACAddressParameter().clean("1234.5678.9abc.def0")
-    assert MACAddressParameter().clean("12:34:56:78:9A:BC") == "12:34:56:78:9A:BC"
-    assert MACAddressParameter().clean("12-34-56-78-9A-BC") == "12:34:56:78:9A:BC"
-    assert MACAddressParameter().clean("0:13:46:50:87:5") == "00:13:46:50:87:05"
-    assert MACAddressParameter().clean("123456-789abc") == "12:34:56:78:9A:BC"
-    with pytest.raises(InterfaceTypeError):
-        MACAddressParameter().clean("12-34-56-78-9A-BC-DE")
-    with pytest.raises(InterfaceTypeError):
-        MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL")
-    assert MACAddressParameter().clean("aabb-ccdd-eeff") == "AA:BB:CC:DD:EE:FF"
-    assert MACAddressParameter().clean("aabbccddeeff") == "AA:BB:CC:DD:EE:FF"
-    assert MACAddressParameter().clean("AABBCCDDEEFF") == "AA:BB:CC:DD:EE:FF"
-    assert MACAddressParameter().clean("\xa8\xf9K\x80\xb4\xc0") == "A8:F9:4B:80:B4:C0"
-    with pytest.raises(InterfaceTypeError):
-        MACAddressParameter(accept_bin=False).clean("\\xa8\\xf9K\\x80\\xb4\\xc0")
-
-
-def test_oid_parameter():
-    assert OIDParameter().clean("1.3.6.1.2.1.1.1.0") == "1.3.6.1.2.1.1.1.0"
-    assert OIDParameter(default="1.3.6.1.2.1.1.1.0").clean(None) == "1.3.6.1.2.1.1.1.0"
-    with pytest.raises(InterfaceTypeError):
-        OIDParameter().clean("1.3.6.1.2.1.1.X.0")
-
-
-def test_rd_parameter():
-    assert RDParameter().clean("100:4294967295") == "100:4294967295"
-    assert RDParameter().clean("10.10.10.10:10") == "10.10.10.10:10"
-    assert RDParameter().clean("100000:500") == "100000:500"
-    assert RDParameter().clean("100000L:100") == "100000:100"
-
-
-def test_geopoint_parameter():
-    assert GeoPointParameter().clean([180, 90]) == [180, 90]
-    assert GeoPointParameter().clean([75.5, "90"]) == [75.5, 90]
-    assert GeoPointParameter().clean("[180, 85.5]") == [180, 85.5]
-    with pytest.raises(InterfaceTypeError):
-        GeoPointParameter().clean([1])
-
-
-def test_tags_parameter():
-    assert TagsParameter().clean([1, 2, "tags"]) == [u"1", u"2", u"tags"]
-    assert TagsParameter().clean([1, 2, "tags "]) == [u"1", u"2", u"tags"]
-    assert TagsParameter().clean("1,2,tags") == [u"1", u"2", u"tags"]
-    assert TagsParameter().clean("1 , 2,  tags") == [u"1", u"2", u"tags"]
-    with pytest.raises(InterfaceTypeError):
-        TagsParameter().clean(1)
-
-
-def test_color_parameter():
-    assert ColorParameter(default=0xff).clean(None) == 0xff
-    assert ColorParameter().clean("#ff0000") == 0xff0000
-    with pytest.raises(InterfaceTypeError):
-        ColorParameter().clean("#ff00000")
-    with pytest.raises(InterfaceTypeError):
-        ColorParameter().clean("#ff000x")
-
-
-def test_object_id_parameter():
-    assert ObjectIdParameter().clean("5b2d0cba4575cf01ead6aa89") == "5b2d0cba4575cf01ead6aa89"
-    with pytest.raises(InterfaceTypeError):
-        ObjectIdParameter().clean("5b2d0cba4575cf01ead6aa8x")
+        assert ObjectIdParameter(**config).clean(raw)
