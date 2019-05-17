@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # User Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,13 +20,17 @@ from noc.core.translation import ugettext as _
 
 
 class UserChangeForm(forms.ModelForm):
-    username = forms.RegexField(label=_("Username"), max_length=75, regex=r"^[\w.@+-]+$",
+    username = forms.RegexField(
+        label=_("Username"), max_length=75, regex=r"^[\w.@+-]+$",
         help_text=_("Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"),
-        error_message=_("This value must contain only letters, digits and @/./+/-/_."))
-    password = ReadOnlyPasswordHashField(label=_("Password"),
-            help_text=_("Raw passwords are not stored, so there is no way to see "
-                        "this user's password, but you can change the password "
-                        "using <a href=\"password/\">this form</a>."))
+        error_message=_("This value must contain only letters, digits and @/./+/-/_.")
+    )
+    password = ReadOnlyPasswordHashField(
+        label=_("Password"),
+        help_text=_("Raw passwords are not stored, so there is no way to see "
+                    "this user's password, but you can change the password "
+                    "using <a href=\"password/\">this form</a>.")
+    )
     noc_user_permissions = forms.CharField(label="User Access", widget=AccessWidget, required=False)
 
     class Meta:
@@ -60,7 +64,7 @@ class UserAdmin(DjangoUserAdmin):
         (_('Groups'), {'fields': ('groups',)}),
         (_('Access'), {'fields': ('noc_user_permissions',), "classes": ["collapse"]}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        )
+    )
     list_display = ('username', 'email', 'first_name', 'last_name', "is_active", "is_superuser")
     list_filter = ('is_superuser', 'is_active')
     filter_horizontal = ("groups",)
@@ -73,7 +77,8 @@ class UserApplication(ModelApplication):
     glyph = "user"
     menu = [_("Setup"), _("Users")]
     icon = "icon_user"
-    title = "Users"
+    title = _("Users")
+    app_alias = "auth"
 
     @view(url=r"^(\d+)/password/$", method=["GET", "POST"], access="change")
     def view_change_password(self, request, object_id):
@@ -89,24 +94,26 @@ class UserApplication(ModelApplication):
         if request.POST:
             form = self.admin.change_password_form(user, request.POST)
             if form.is_valid():
-                new_user = form.save()
+                form.save()
                 self.message_user(request, "Password changed")
                 return self.response_redirect("main:user:change", object_id)
         else:
             form = self.admin.change_password_form(user)
-        return self.render(request, "change_password.html",
-            form=form, original=user)
+        return self.render(
+            request, "change_password.html",
+            form=form, original=user
+        )
 
     def has_delete_permission(self, request, obj=None):
         """Disable 'Delete' button"""
         return False
 
     @view(url=r"^add/legacy/$", url_name="admin:auth_user_add",
-        access="add")
+          access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")
 
     @view(url=r"^legacy/$", url_name="admin:auth_user_changelist",
-        access=True)
+          access=True)
     def view_legacy_changelist(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")

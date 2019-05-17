@@ -169,7 +169,7 @@ class ModelApplication(Application):
             self.message_user(request, "Integrity Error: %s" % e)
             return self.response_redirect("..")
 
-    @view(url=r"^(\d+)/$", url_name="change", access=HasPerm("change"))
+    @view(url=r"^(\d+)/$", url_name="admin:%s_%s_change", access=HasPerm("change"))
     def view_change(self, request, object_id, extra_context=None):
         """Display change form"""
         return self.admin.change_view(

@@ -129,6 +129,8 @@ class Application(six.with_metaclass(ApplicationBase, object)):
     Form = NOCForm  # Shortcut for form class
     config = settings.config  # @fixme remove
 
+    app_alias = None  # Django 1.5 application aliases
+
     TZ = get_current_timezone()
 
     def __init__(self, site):

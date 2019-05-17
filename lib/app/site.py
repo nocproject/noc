@@ -372,7 +372,7 @@ class Site(object):
             u_name = u.name
             if u_name and u_name.startswith("admin:"):
                 if "%" in u_name:
-                    u_name = u_name % (app.module, app.app)
+                    u_name = u_name % (app.app_alias or app.module, app.app)
                 url = "^../%s/%s/%s" % (app.module, app.app, u.url[1:])
                 self.admin_patterns += [
                     RegexURLPattern(url, sv, name=u_name.split(":", 1)[1])

@@ -7,7 +7,7 @@
         <tr><td>Download list of allocated IP addresses in CSV format</td></tr>
         <tr>
             <td>
-                <form method="POST" action="{% url ip:tools:download_ip vrf.id afi prefix.prefix %}" id="download_ip">{% csrf_token %}
+                <form method="POST" action="{% url 'ip:tools:download_ip' vrf.id afi prefix.prefix %}" id="download_ip">{% csrf_token %}
                     <input type="submit" value="Download IP addresses">
                 </form>
             </td>
@@ -22,7 +22,7 @@
         <tr>
             <td>
                 <div id="content-main">
-                    <form method="POST" action="{% url ip:tools:upload_axfr vrf.id afi prefix.prefix %}">{% csrf_token %}
+                    <form method="POST" action="{% url 'ip:tools:upload_axfr' vrf.id afi prefix.prefix %}">{% csrf_token %}
                         <div>
                             {% with upload_ips_axfr_form as form %}
                                 {% include "includes/noc_fieldset.html" %}
@@ -30,6 +30,7 @@
                             <div class="submit-row" >
                                 <input type="submit" value="Start zone transfer" class="default" name="_save" />
                             </div>
+                        </div>
                     </form>
                 </div>
             </td>

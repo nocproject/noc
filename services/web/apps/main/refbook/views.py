@@ -6,8 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.views.generic import list_detail
+# Third-party modules
+from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
 # NOC modules
 from noc.lib.app.application import Application, view
@@ -15,6 +15,25 @@ from noc.main.models.permission import Permission
 from noc.main.models.refbook import RefBook
 from noc.main.models.refbookdata import RefBookData
 from noc.core.translation import ugettext as _
+
+
+class RefBookList(ListView):
+    paginate_by = 100
+
+    def get(self, request, *args, **kwargs):
+        self._queryset = request._gv_queryset
+        self._ctx = request._gv_ctx
+        return super(RefBookList, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self._queryset
+
+    def get_context_data(self, *args, **kwargs):
+        self._ctx.update(super(ListView, self).get_context_data(*args, **kwargs))
+        return self._ctx
+
+    def get_template_names(self):
+        return self._ctx["app"].get_template_path("view.html")
 
 
 class RefBookAppplication(Application):
@@ -42,7 +61,7 @@ class RefBookAppplication(Application):
         can_edit = (not rb.is_builtin and Permission.has_perm(request.user, "main.change_refbookdata"))
         queryset = rb.refbookdata_set.all()
         # Search
-        if (request.GET and "query" in request.GET and request.GET["query"]):
+        if request.GET and "query" in request.GET and request.GET["query"]:
             query = request.GET["query"]
             # Build query clause
             w = []
@@ -53,19 +72,19 @@ class RefBookAppplication(Application):
                     continue
                 w += x["where"]
                 p += x["params"]
-            w = " OR ".join(["(%s)" % x for x in w])
+            w = " OR ".join(["(%s)" % xx for xx in w])
             queryset = queryset.extra(where=["(%s)" % w], params=p)
         else:
             query = ""
-            # Use generic view for final result
-        return list_detail.object_list(
-            request,
-            queryset=queryset,
-            template_name=self.get_template_path("view.html")[0],
-            extra_context={"rb": rb, "can_edit": can_edit,
-                           "query": query},
-            paginate_by=100,
-        )
+        # Use generic view for final result
+        request._gv_queryset = queryset
+        request._gv_ctx = {
+            "rb": rb,
+            "can_edit": can_edit,
+            "query": query,
+            "app": self
+        }
+        return RefBookList().get(request)
 
     @view(url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/$", url_name="item", access="view")
     def view_item(self, request, refbook_id, record_id):
@@ -99,8 +118,7 @@ class RefBookAppplication(Application):
             if not can_edit:
                 return self.response_forbidden("Read-only refbook")
             # Retrieve record data
-            fns = [int(k[6:]) for k in request.POST.keys() if
-                   k.startswith("field_")]
+            fns = [int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
             data = ["" for i in range(max(fns) + 1)]
             for i in fns:
                 data[i] = request.POST["field_%d" % i]
@@ -144,8 +162,7 @@ class RefBookAppplication(Application):
             if not can_edit:
                 return self.response_forbidden("Read-only refbook")
             # Retrieve record data
-            fns = [int(k[6:]) for k in request.POST.keys() if
-                   k.startswith("field_")]
+            fns = [int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
             data = ["" for i in range(max(fns) + 1)]
             for i in fns:
                 data[i] = request.POST["field_%d" % i]
