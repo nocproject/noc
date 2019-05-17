@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.sa.profiles.DLink.DxS import get_platform
+from noc.sa.profiles.DLink.DxS.profile import get_platform
 from noc.core.mib import mib
 
 
@@ -33,13 +33,13 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_fwt = re.compile(
         r"(?:Firmware Type|System [Ff]irmware [Vv]ersion)\s+:\s*"
-        r"(?P<fwt>\S+)\s*\n", re.MULTILINE | re.DOTALL)
+        r"(?P<fwt>\S+)\s*\n", re.MULTILINE)
     rx_ser = re.compile(
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE)
     rx_platform = re.compile(
-        "^(?:D-Link )?(?P<platform>\S+)(\s+(?P<version>\d+\.\d+.B\d+))?")
-    rx_motd = re.compile("(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
+        r"^(?:D-Link )?(?P<platform>\S+)(\s+(?P<version>\d+\.\d+.B\d+))?")
+    rx_motd = re.compile(r"(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
 
     def execute_snmp(self):
         """

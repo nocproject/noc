@@ -5,17 +5,16 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.sa.profiles.DLink.DxS import DES3200
-from noc.sa.profiles.DLink.DxS import DES3500
-from noc.sa.profiles.DLink.DxS import DGS3120
-from noc.sa.profiles.DLink.DxS import DGS3400
-from noc.sa.profiles.DLink.DxS import DGS3420
-from noc.sa.profiles.DLink.DxS import DGS3600
-from noc.sa.profiles.DLink.DxS import DGS3620
+from noc.sa.profiles.DLink.DxS.profile import DES3200
+from noc.sa.profiles.DLink.DxS.profile import DES3500
+from noc.sa.profiles.DLink.DxS.profile import DGS3120
+from noc.sa.profiles.DLink.DxS.profile import DGS3400
+from noc.sa.profiles.DLink.DxS.profile import DGS3420
+from noc.sa.profiles.DLink.DxS.profile import DGS3600
+from noc.sa.profiles.DLink.DxS.profile import DGS3620
 import re
 import six
 

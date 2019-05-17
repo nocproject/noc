@@ -13,8 +13,8 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.lib.validators import is_int
-from noc.sa.profiles.DLink.DxS import DGS3120
-from noc.sa.profiles.DLink.DxS import DGS3620
+from noc.sa.profiles.DLink.DxS.profile import DGS3120
+from noc.sa.profiles.DLink.DxS.profile import DGS3620
 from noc.core.mib import mib
 from noc.core.mac import MAC
 
