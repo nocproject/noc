@@ -9,7 +9,7 @@
 
 # NOC modules
 from noc.core.service.ui import UIService
-from api.bi import BIAPI
+from noc.services.bi.api.bi import BIAPI
 from noc.core.service.authapi import AuthAPIRequestHandler
 from noc.config import config
 

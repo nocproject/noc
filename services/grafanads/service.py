@@ -9,8 +9,8 @@
 
 # NOC modules
 from noc.core.service.ui import UIService
-from check import CheckHandler
-from annotations import AnnotationsHandler
+from noc.services.grafanads.check import CheckHandler
+from noc.services.grafanads.annotations import AnnotationsHandler
 
 
 class GrafanaDSService(UIService):
