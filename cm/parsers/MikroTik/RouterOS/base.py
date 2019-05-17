@@ -36,7 +36,10 @@ class RouterOSParser(BasePyParser):
         return self.rx_continue.sub(" ", config)
 
     def create_parser(self):
-        LBRACKET, RBRACKET, EQ, QUOTE, SLASH = map(Suppress, "[]=\"/")
+        LBRACKET = Suppress,("[")
+        RBRACKET = Suppress,("]")
+        EQ = Suppress,("=")
+        SLASH = Suppress("/")
         KEY = Word(alphanums + "-")
         VALUE = Word(alphanums + "-/.:_+") | QuotedString("\"")
         FIND = LBRACKET + Group(Literal("find") + Literal("default-name") + EQ + VALUE) + RBRACKET
