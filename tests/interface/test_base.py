@@ -26,10 +26,19 @@ from noc.sa.interfaces.base import (
 )
 
 
-def test_none_parameter():
-    assert NoneParameter().clean(None) is None
+@pytest.mark.parametrize("raw,config", [
+    (None, {})
+])
+def test_none_parameter(raw, config):
+    assert NoneParameter(**config).clean(raw) is None
+
+
+@pytest.mark.parametrize("raw,config", [
+    ("None", {})
+])
+def test_none_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        NoneParameter().clean("None")
+        assert NoneParameter(**config).clean(raw)
 
 
 @pytest.mark.parametrize("raw,config,expected", [
@@ -196,53 +205,68 @@ def test_list_parmeter(raw, config, expected):
     assert ListParameter(**config).clean(raw) == expected
 
 
-def test_instanceof_parameter():
-    class C(object):
-        pass
+class C(object):
+    pass
 
-    class X(object):
-        pass
 
-    class CC(C):
-        pass
+class X(object):
+    pass
 
-    c = C()
-    cc = CC()
-    x = X()
-    assert InstanceOfParameter(cls=C).clean(c) == c
-    assert InstanceOfParameter(cls=C).clean(cc) == cc
+
+class CC(C):
+    pass
+
+
+@pytest.mark.parametrize("raw,config", [
+    (C(), {"cls": C}),
+    (CC(), {"cls": C}),
+    (C(), {"cls": "C"})
+])
+def test_instanceof_parameter(raw, config):
+    assert InstanceOfParameter(**config).clean(raw) == raw
+
+
+@pytest.mark.parametrize("raw,config", [
+    (X(), {"cls": C}),
+    (1, {"cls": C}),
+    (1, {"cls": "C"})
+])
+def test_instanceof_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        InstanceOfParameter(cls=C).clean(x)
+        assert InstanceOfParameter(**config).clean(raw) and "Ok"
+
+
+class C(object):
+    pass
+
+
+class C1(C):
+    pass
+
+
+class C2(C1):
+    pass
+
+
+class C3(C1):
+    pass
+
+
+@pytest.mark.parametrize("raw,config", [
+    (C2, {"cls": C}),
+    (C2, {"cls": "C"}),
+])
+def test_subclassof_parameter(raw, config):
+    assert SubclassOfParameter(**config).clean(raw)
+
+
+@pytest.mark.parametrize("raw,config", [
+    (1, {"cls": C}),
+    (C3, {"cls": C2})
+])
+def test_subclassof_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        InstanceOfParameter(cls=C).clean(1)
-
-    assert InstanceOfParameter(cls="C").clean(c) == c
-    with pytest.raises(InterfaceTypeError):
-        InstanceOfParameter(cls="C").clean(1) and "Ok"
-
-
-def subclass_of_parameter():
-    class C(object):
-        pass
-
-    class C1(C):
-        pass
-
-    class C2(C1):
-        pass
-
-    class C3(C1):
-        pass
-
-    assert SubclassOfParameter(cls=C).clean(C2) is True
-    with pytest.raises(InterfaceTypeError):
-        SubclassOfParameter(cls=C).clean(1)
-    assert SubclassOfParameter(cls="C").clean(C2) is True
-    with pytest.raises(InterfaceTypeError):
-        SubclassOfParameter(cls=C).clean(1)
-    with pytest.raises(InterfaceTypeError):
-        SubclassOfParameter(cls=C2).clean(C3)
-    assert SubclassOfParameter(cls="C", required=False).clean(None)
+        assert SubclassOfParameter(**config).clean(raw)
 
 
 @pytest.mark.parametrize("raw,config,expected", [
