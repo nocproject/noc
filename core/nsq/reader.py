@@ -7,10 +7,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import urlparse
 import logging
 # Third-party modules
-from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode, urlsplit, parse_qs, urlunsplit
 import tornado.gen
 from nsq.reader import Reader as BaseReader, _utf8_params
 import ujson
@@ -32,15 +31,15 @@ class Reader(BaseReader):
         if "://" not in endpoint:
             endpoint = "http://" + endpoint
 
-        scheme, netloc, path, query, fragment = urlparse.urlsplit(endpoint)
+        scheme, netloc, path, query, fragment = urlsplit(endpoint)
 
         if not path or path == "/":
             path = "/lookup"
 
-        params = urlparse.parse_qs(query)
+        params = parse_qs(query)
         params["topic"] = self.topic
         query = urlencode(_utf8_params(params), doseq=1)
-        lookupd_url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+        lookupd_url = urlunsplit((scheme, netloc, path, query, fragment))
 
         code, headers, body = yield fetch(
             lookupd_url,
