@@ -15,8 +15,6 @@ _service = None
 def set_service(svc):
     global _service
 
-    if _service:
-        print "@@@@ STUB SERVICE IS ALREADY ACTIVATED"
     _service = svc
 
 

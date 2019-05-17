@@ -256,7 +256,6 @@ class FIASParser(AddressParser):
                 return None, None
             match = self.rx_letter.match(s)
             if not match:
-                print r
                 raise ValueError("Invalid number: '%s'" % s)
             n, ll = match.groups()
             if not n:

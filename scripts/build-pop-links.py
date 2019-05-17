@@ -2,10 +2,12 @@
 # ----------------------------------------------------------------------
 # Rebuild inter-pop links
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import print_function
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
@@ -38,13 +40,13 @@ def get_pop(o):
 
 
 def load_managed_objects():
-    print "Load managed objects"
+    print("Load managed objects")
     for o in Object.objects.filter(data__management__managed_object__exists=True):
         mo_pop[o.get_data("management", "managed_object")] = get_pop(o)
 
 
 def build_links():
-    print "Building links"
+    print("Building links")
     links = {}
     for l in Link.objects.all():
         mos = set()
@@ -68,7 +70,7 @@ def build_links():
 
 
 def gen_db_links():
-    print "Loading DB links"
+    print("Loading DB links")
     for oc in ObjectConnection.objects.filter(type="pop_link"):
         pops = [c.object for c in oc.connection]
         pop1, pop2 = pops
@@ -84,17 +86,17 @@ def update_links():
         if (pop1, pop2) in links:
             if links[pop1, pop2]["level"] != level:
                 level = links[pop1, pop2]["level"]
-                print "Updating %s - %s level to %d" % (pop1, pop2, level)
+                print("Updating %s - %s level to %d" % (pop1, pop2, level))
                 oc.data["level"] = level
                 oc.save()
             del links[pop1, pop2]
         else:
-            print "Unlinking %s - %s" % (pop1, pop2)
+            print("Unlinking %s - %s" % (pop1, pop2))
             oc.delete()
     # New links
     for pop1, pop2 in links:
         level = links[pop1, pop2]["level"]
-        print "Linking %s - %s (level %d)" % (pop1, pop2, level)
+        print("Linking %s - %s (level %d)" % (pop1, pop2, level))
         pop1.connect_genderless("links", pop2, "links",
                                 {"level": level}, type="pop_link")
 

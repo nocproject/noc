@@ -62,7 +62,7 @@ site-specific customizations.  If this import fails with an
 ImportError exception, it is silently ignored.
 
 """
-
+from __future__ import print_function
 import sys
 import os
 try:

@@ -34,16 +34,21 @@ class BaseParser(object):
     def check(cls, text):
         """Check syntax"""
         cls.to_html(text)
-    #
-    # Convert extracted link to URL
-    # Following link types are supported:
-    #   KB<n> - Link to Knowledge Base article <n>
-    #   TT<n> - Link to Trouble Ticket <n>
-    #   attach:<name> - Link to attachment <name>
 
     @classmethod
     def convert_link(cls, kb_entry, link, text=None):
-        print(kb_entry, link, text)
+        """
+        Convert extracted link to URL
+        Following link types are supported:
+        KB<n> - Link to Knowledge Base article <n>
+        TT<n> - Link to Trouble Ticket <n>
+        attach:<name> - Link to attachment <name>
+
+        :param kb_entry:
+        :param link:
+        :param text:
+        :return:
+        """
         if text is None:
             text = link
         if link.startswith("KB") and is_int(link[2:]):

@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import logging
 from optparse import OptionParser
 import sys
@@ -89,13 +90,13 @@ def main():
         data = "".join(data)
     else:
         data = sys.stdin.read()
-    print cp.create_paste(
+    print(cp.create_paste(
         subject=options.subject,
         data=data,
         syntax=None,
         ttl=parse_ttl(options.expire),
         public=bool(options.public)
-    )["url"]
+    )["url"])
 
 
 if __name__ == "__main__":
