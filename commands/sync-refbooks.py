@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # Load and syncronize built-in refbooks
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import print_function
+import os
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.main.refbooks.refbooks import RefBook
 from noc.main.models.refbook import RefBook as RB
-import os
 
 
 class Command(BaseCommand):
@@ -50,7 +52,7 @@ class Command(BaseCommand):
                 del loaded_refbooks[name]
         # Delete stale refbooks
         for rb in loaded_refbooks.values():
-            print "DELETE REFBOOK ", rb.name
+            self.print("DELETE REFBOOK: %s" % rb.name)
             rb.delete()
 
 

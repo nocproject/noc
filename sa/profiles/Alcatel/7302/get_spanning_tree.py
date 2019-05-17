@@ -3,13 +3,15 @@
 # Alcatel.7302.get_spanning_tree
 # Author: scanbox@gmail.com
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-import re
 
 
 class Script(BaseScript):
@@ -53,7 +55,6 @@ class Script(BaseScript):
             elif "stp port parameters" in e:
                 # Port parameter block
                 kv = dict(self.k_v_re.findall(e))
-                print kv
                 instance["interfaces"] += [{
                     "interface": "ethernet:%d" % (int(kv["port"]) + 1),
                     "port_id": "%d.%s" % (int(kv["designated-port"].split(":")[0], 16),

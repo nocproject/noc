@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Missed MIBs Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,16 +25,20 @@ class ReportMissedMIBs(SimpleReport):
         c = EventClass.objects.filter(name="Unknown | SNMP Trap").first()
         # Переделать на agregate Функция считает число OID'ов в переменных аварий
         # и проверяет их на опознанность
-        pipeline = [{"$match": {"event_class": c.id}},
-                    {"$project": {"vars": 1}},
-                    {"$group": {"_id": "$vars.trap_oid", "count": {"$sum": 1}}}]
+        pipeline = [
+            {"$match": {"event_class": c.id}},
+            {"$project": {"vars": 1}},
+            {"$group": {"_id": "$vars.trap_oid", "count": {"$sum": 1}}}
+        ]
         oids = ActiveEvent._get_collection().aggregate(pipeline)
         d = [(e["_id"], MIB.get_name(e["_id"]), e["count"]) for e in oids]
-        print d
-        data = [(o, n, c) for o, n, c in d
-                if self.rx_unclassified.search(n)]
-        return self.from_dataset(title=self.title,
-                                 columns=["OID", "Name",
-                                          TableColumn("Count", format="integer",
-                                                      align="right", total="sum")],
-                                 data=data)
+        data = [(o, n, c) for o, n, c in d if self.rx_unclassified.search(n)]
+        return self.from_dataset(
+            title=self.title,
+            columns=[
+                "OID",
+                "Name",
+                TableColumn("Count", format="integer", align="right", total="sum")
+            ],
+            data=data
+        )

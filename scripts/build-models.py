@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 from collections import defaultdict
 # Third-party modules
 import six
@@ -57,7 +58,7 @@ def build():
             out += ["    \"%s\": \"%s\"," % (alias, path)]
     out[-1] = out[-1][:-1]  # Remove last comma
     out += ["}"]
-    print "\n".join(out)
+    print("\n".join(out))
 
 
 if __name__ == "__main__":
