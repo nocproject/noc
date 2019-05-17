@@ -45,6 +45,13 @@ class ProfileChecker(object):
         self.snmp_community = snmp_community
         self.calling_service = calling_service
         self.snmp_version = snmp_version or [SNMP_v2c]
+        self.ignoring_snmp = False
+        if self.snmp_version is None:
+            self.logger.error("SNMP is not supported. Ignoring")
+            self.ignoring_snmp = True
+        if not self.snmp_community:
+            self.logger.error("No SNMP credentials. Ignoring")
+            self.ignoring_snmp = True
 
     def find_profile(self, method, param, result):
         """
@@ -127,6 +134,8 @@ class ProfileChecker(object):
         self.logger.info("Compiling \"Profile Check rules\"")
         d = {}  # preference -> (method, param) -> [rule, ..]
         for r in ProfileCheckRule.objects.all().order_by("preference"):
+            if "snmp" in r.method and self.ignoring_snmp:
+                continue
             if "snmp" in r.method and r.param.startswith("."):
                 self.logger.error("Bad SNMP in ruleset \"%s\", Skipping..." % r.name)
                 continue
@@ -173,12 +182,6 @@ class ProfileChecker(object):
         """
         Perform SNMP v2c GET. Param is OID or symbolic name
         """
-        if self.snmp_version is None:
-            self.logger.error("SNMP is not supported. Ignoring")
-            raise NOCError(msg="No SNMP support")
-        if not self.snmp_community:
-            self.logger.error("No SNMP credentials. Ignoring")
-            raise NOCError(msg="No SNMP credentials")
         try:
             param = mib[param]
         except KeyError:
