@@ -9,7 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 # NOC modules
-from base import AlarmPlugin
+from .base import AlarmPlugin
 
 
 class ThresholdsPlugin(AlarmPlugin):
