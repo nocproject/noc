@@ -2,14 +2,16 @@
 # ----------------------------------------------------------------------
 # Loader chain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import cachetools
 # NOC modules
-from loader import loader as loader_loader
+from .loader import loader as loader_loader
 
 
 class LoaderChain(object):

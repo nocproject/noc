@@ -2,17 +2,18 @@
 # ----------------------------------------------------------------------
 # ORACLE Data Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 # Third-party modules
 from concurrent.futures import as_completed
 # NOC modules
-from sql import SQLExtractor
 from noc.core.threadpool import ThreadPoolExecutor
+from .sql import SQLExtractor
 
 
 class ORACLEExtractor(SQLExtractor):

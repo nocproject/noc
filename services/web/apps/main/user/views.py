@@ -6,7 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
@@ -15,8 +17,8 @@ from django.shortcuts import get_object_or_404
 # NOC modules
 from noc.lib.app.modelapplication import ModelApplication, view
 from noc.main.models.permission import Permission
-from widgets import AccessWidget
 from noc.core.translation import ugettext as _
+from .widgets import AccessWidget
 
 
 class UserChangeForm(forms.ModelForm):

@@ -6,14 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, DictField, BooleanField
 from mongoengine.signals import post_save
 # NOC modules
-from street import Street
-from building import Building
 from noc.lib.nosql import PlainReferenceField
+from .street import Street
+from .building import Building
 
 
 class Address(Document):

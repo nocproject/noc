@@ -6,13 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
-from alarmclass import AlarmClass
+from .alarmclass import AlarmClass
 
 
 @six.python_2_unicode_compatible

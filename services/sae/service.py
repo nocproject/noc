@@ -13,7 +13,7 @@ import threading
 # NOC modules
 from noc.core.service.base import Service
 from noc.main.models.pool import Pool
-from api.sae import SAEAPI
+from noc.services.sae.api.sae import SAEAPI
 from noc.config import config
 
 # Third-party modules

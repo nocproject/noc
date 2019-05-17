@@ -6,9 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import tornado.web
-from auth import AuthRequestHandler
+# NOC modules
+from .auth import AuthRequestHandler
 
 
 class LogoutRequestHandler(tornado.web.RequestHandler):

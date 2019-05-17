@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from __future__ import absolute_import
 from six.moves.urllib.parse import quote as urllib_quote
 import requests
 # NOC modules
-from base import Geocoder
+from .base import Geocoder
 
 
 class Nominatim(Geocoder):

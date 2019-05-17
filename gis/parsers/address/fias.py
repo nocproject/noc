@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # Parse and load FIAS data
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 from collections import namedtuple
 import re
@@ -18,9 +19,9 @@ from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.street import Street
 from noc.gis.models.address import Address
-from base import AddressParser
 from noc.lib.nosql import get_db
 from noc.gis.utils.addr.ru import normalize_division
+from .base import AddressParser
 
 
 class FIASParser(AddressParser):

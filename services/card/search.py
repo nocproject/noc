@@ -2,16 +2,18 @@
 # ----------------------------------------------------------------------
 # Card search
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import tornado.web
 import ujson
 # NOC modules
-from card import CardRequestHandler
 from noc.sa.models.useraccess import UserAccess
+from .card import CardRequestHandler
 
 
 class SearchRequestHandler(CardRequestHandler):

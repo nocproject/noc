@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # Parse OSM XML and return address to coodinates bindings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from xml.parsers.expat import ParserCreate
 # NOC modules
-from base import GeocodingParser
+from .base import GeocodingParser
 
 
 class OSMXMLParser(GeocodingParser):

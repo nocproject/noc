@@ -7,7 +7,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from base import BaseExtractor
+from __future__ import absolute_import
+# NOC modules
+from .base import BaseExtractor
 
 
 class SQLExtractor(BaseExtractor):
