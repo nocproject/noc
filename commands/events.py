@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Reclassify events
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,8 +12,8 @@ import re
 import datetime
 import time
 import hashlib
-from htmlentitydefs import name2codepoint
 # Third-party modules
+from six.moves.html_entities import name2codepoint
 from bson import ObjectId
 from pymongo import DeleteMany
 from pymongo.errors import DocumentTooLarge
