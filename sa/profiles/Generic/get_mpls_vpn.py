@@ -39,7 +39,7 @@ class Script(BaseScript):
                 "status": vrf_oper,
                 "vpn_id": "",
                 "name": vrf_name,
-                "rd": filter(lambda x: x in string.printable, vrf_rd),
+                "rd": [x for x in vrf_rd if x in string.printable],
                 "rt_export": [],
                 "rt_import": [],
                 "description": vrf_descr,
@@ -54,7 +54,7 @@ class Script(BaseScript):
             mib["MPLS-L3VPN-STD-MIB::mplsL3VpnVrfRTDescr"]
         ]):
             # rt_type: import(1), export(2), both(3)
-            vrf_rt = filter(lambda x: x in string.printable, vrf_rt)
+            vrf_rt = [x for x in vrf_rt if x in string.printable]
             conf_id, rt_index, rt_type = conf_id.rsplit(".", 2)
             if rt_type in self.VRF_TYPE_MAP["rt_export"]:
                 r[conf_id]["rt_export"] += [vrf_rt]

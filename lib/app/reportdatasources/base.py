@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BaseReportDatasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ def stream_next(stream):
 
 def merge(iterators):
     """Make a lazy sorted iterator that merges lazy sorted iterators."""
-    streams = map(iterator_to_stream, map(iter, iterators))
+    streams = [iterator_to_stream(g) for g in [iter(y) for y in iterators]]
     heapq.heapify(streams)
     while streams:
         stream = heapq.heappop(streams)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IBM.NOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -72,7 +72,7 @@ class Script(BaseScript):
                             if vlans2 != "":
                                 vlans2 = vlans2.strip()
                                 vlans3 = vlans2.split(" ")
-                                vlans = map(int, vlans3)
+                                vlans = [int(x) for x in vlans3]
                         a_stat = match3.group("admin_status").lower() == "enabled"
                 sub = {
                     "name": ifname,

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # BI API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -440,8 +440,8 @@ class BIAPI(API):
         result = model.query(query, self.handler.current_user)
         tree = {}
         for row in result["result"]:
-            names = reversed(map(lambda x: x[1:-1], row[0][1:-1].split(",")))
-            ids = reversed(map(lambda x: str(x), row[1][1:-1].split(",")))
+            names = reversed([x[1:-1] for x in row[0][1:-1].split(",")])
+            ids = reversed([str(x) for x in row[1][1:-1].split(",")])
             parent_id = None
             for id, text in zip(ids, names):
                 searched = search_parent(tree, parent_id)
