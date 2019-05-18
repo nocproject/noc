@@ -8,13 +8,13 @@
 
 # Python modules
 import logging
+import os
 # Third-party modules
 import six
+from six.moves.configparser import RawConfigParser
 import requests
 import ujson
 # Python modules
-import os
-import ConfigParser
 from noc.core.version import version
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class CPClient(object):
     def load_config(self):
         if os.path.exists(self.CONFIG):
             logger.debug("Loading config %s", self.CONFIG)
-            config = ConfigParser.RawConfigParser()
+            config = RawConfigParser()
             config.read(self.CONFIG)
             # Read account settings
             if config.has_section("account"):
