@@ -9,6 +9,8 @@ console.debug("Defining NOC.fm.alarm.view.grids.main.Recent");
 Ext.define("NOC.fm.alarm.view.grids.Recent", {
     extend: "NOC.fm.alarm.view.grids.Grid",
     alias: "widget.fm.alarm.recent",
+    stateful: true,
+    stateId: 'fm.grid.recentGrid',
     requires: [
         "NOC.fm.alarm.store.Alarm",
         "NOC.fm.alarm.view.grids.SidebarModel",

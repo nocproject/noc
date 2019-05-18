@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 from threading import Lock
 import operator
@@ -17,7 +18,7 @@ from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, UUIDField)
 import cachetools
 # NOC modules
-from error import ModelDataError
+from .error import ModelDataError
 from noc.lib.utils import deep_copy
 from noc.lib.escape import json_escape as q
 from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
@@ -38,6 +39,7 @@ T_MAP = {
 A_TYPE = ["str", "int", "float", "bool", "objectid", "ref", "strlist"]
 
 
+@six.python_2_unicode_compatible
 class ModelInterfaceAttr(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -51,7 +53,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
     # default
     # ref
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __eq__(self, v):
@@ -89,6 +91,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
             return False
 
 
+@six.python_2_unicode_compatible
 class ModelInterface(Document):
     """
     Equipment vendor
@@ -107,7 +110,7 @@ class ModelInterface(Document):
 
     _id_cache = cachetools.TTLCache(1000, 10)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_attr(self, name):

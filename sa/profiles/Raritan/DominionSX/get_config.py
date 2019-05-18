@@ -7,8 +7,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import urlparse
 import os
+# Third-party modules
+from six.moves.urllib.parse import urlparse
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
@@ -18,10 +19,10 @@ class Script(BaseScript):
     name = "Raritan.DominionSX.get_config"
     interface = IGetConfig
 
-    def execute(self):
+    def execute(self, **kwargs):
         self.cli("maintenance")
         with self.servers.ftp() as ftp:
-            p = urlparse.urlparse(ftp.get_url(self.access_profile.address))
+            p = urlparse(ftp.get_url(self.access_profile.address))
             path, file = os.path.split(p.path)
             self.cli("backup ip %s login anonymous password anonymous path %s file %s" % (p.netloc, path, file))
             config = ftp.get_data()

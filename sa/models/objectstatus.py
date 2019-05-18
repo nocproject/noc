@@ -3,18 +3,21 @@
 # ObjectStatus
 # Updated by SAE according to ping check changes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
+# NOC modules
 from noc.fm.models.outage import Outage
 
 
+@six.python_2_unicode_compatible
 class ObjectStatus(Document):
     meta = {
         "collection": "noc.cache.object_status",
@@ -30,7 +33,7 @@ class ObjectStatus(Document):
     # Last update
     last = DateTimeField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.object, self.status)
 
     @classmethod

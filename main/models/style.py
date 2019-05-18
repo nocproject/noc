@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Style model model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from django.db import models
 import cachetools
 # NOC models
@@ -42,11 +43,12 @@ id_lock = Lock()
         ("vc.VLANProfile", "style")
     ]
 )
+@six.python_2_unicode_compatible
 class Style(models.Model):
     """
     CSS Style
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Style"
         verbose_name_plural = "Styles"
         ordering = ["name"]
@@ -64,7 +66,7 @@ class Style(models.Model):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

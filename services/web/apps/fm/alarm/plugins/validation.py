@@ -2,16 +2,18 @@
 # ---------------------------------------------------------------------
 # ValidationPlugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.template import Template, Context
 # NOC modules
-from base import AlarmPlugin
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.errortype import ErrorType
+from .base import AlarmPlugin
 
 
 class ValidationPlugin(AlarmPlugin):

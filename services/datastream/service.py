@@ -3,16 +3,16 @@
 # ----------------------------------------------------------------------
 # datastream service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import threading
-import Queue
 import time
 import random
 # Third-party modules
+from six.moves.queue import Queue, Empty as QueueEmpty
 import tornado.gen
 import tornado.locks
 import tornado.ioloop
@@ -75,7 +75,7 @@ class DataStreamService(Service):
             else:
                 waiter = self.sleep_waiter
             self.logger.info("Starting %s waiter thread", ds.name)
-            queue = Queue.Queue()
+            queue = Queue()
             self.ds_queue[ds.name] = queue
             thread = threading.Thread(
                 target=waiter, args=(ds.get_collection(), queue), name="waiter-%s" % ds.name
@@ -118,7 +118,7 @@ class DataStreamService(Service):
         while True:
             try:
                 cb = queue.get(block=False)
-            except Queue.Empty:
+            except QueueEmpty:
                 break
             cb()
 

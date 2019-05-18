@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import logging
 from optparse import OptionParser
 import sys
@@ -30,8 +31,8 @@ def handle_upgrade(status, log, quiet=False):
             log = f.read()
     try:
         cp.upgrade(status, log)
-    except CPClient.Error, why:
-        die("RPC Error: %s" % why, quiet)
+    except CPClient.Error as e:
+        die("RPC Error: %s" % e, quiet)
 
 
 def parse_ttl(ttl):
@@ -89,13 +90,13 @@ def main():
         data = "".join(data)
     else:
         data = sys.stdin.read()
-    print cp.create_paste(
+    print(cp.create_paste(
         subject=options.subject,
         data=data,
         syntax=None,
         ttl=parse_ttl(options.expire),
         public=bool(options.public)
-    )["url"]
+    )["url"])
 
 
 if __name__ == "__main__":

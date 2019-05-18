@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -56,7 +58,7 @@ class Script(BaseScript):
             for i in interfaces:
                 r[i["ifindex"]] = {"interface": i["interface"]}
         else:
-            for ifindex, name in self.get_iftable("IF-MIB::ifName").iteritems():
+            for ifindex, name in six.iteritems(self.get_iftable("IF-MIB::ifName")):
                 try:
                     v = self.profile.convert_interface_name(name)
                 except InterfaceTypeError as why:

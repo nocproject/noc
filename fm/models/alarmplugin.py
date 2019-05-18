@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # AlarmPlugin model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from mongoengine import fields
-from mongoengine.document import EmbeddedDocument, Document
+from mongoengine.document import EmbeddedDocument
 
 
+@six.python_2_unicode_compatible
 class AlarmPlugin(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -20,5 +22,5 @@ class AlarmPlugin(EmbeddedDocument):
     name = fields.StringField()
     config = fields.DictField(default={})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

@@ -2,15 +2,19 @@
 # ---------------------------------------------------------------------
 # Configuration Error
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 from __future__ import absolute_import
+# Third-party modules
+import six
+# NOC modules
 from .base import BaseFact
 
 
+@six.python_2_unicode_compatible
 class Error(BaseFact):
     ATTRS = ["type", "obj", "msg", "rule"]
     ID = ["type", "obj", "msg"]
@@ -22,11 +26,11 @@ class Error(BaseFact):
         self.msg = msg
         self.rule = rule
 
-    def __unicode__(self):
+    def __str__(self):
         if self.obj:
-            return "Error %s: %s" % (self.type, unicode(self.obj))
+            return u"Error %s: %s" % (self.type, self.obj)
         else:
-            return "Error %s" % self.type
+            return u"Error %s" % self.type
 
     @property
     def obj(self):

@@ -8,9 +8,11 @@
 
 # Python modules
 import time
-import urllib
-import urllib2
 # Third-party modules
+import six
+from six.moves.urllib.parse import urlencode
+from six.moves.urllib.request import urlopen
+from six.moves.urllib.error import URLError
 from django.db import models
 # NOC modules
 from noc.core.model.decorator import on_delete_check
@@ -34,6 +36,7 @@ except ImportError:
     ("peer.AS", "rir"),
     ("peer.Maintainer", "rir")
 ])
+@six.python_2_unicode_compatible
 class RIR(models.Model):
     """
     Regional internet registries
@@ -48,16 +51,27 @@ class RIR(models.Model):
     name = models.CharField("Name", max_length=64, unique=True)
     whois = models.CharField("Whois", max_length=64, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
-    # Update RIR's database API and returns report
     def update_rir_db(self, data, maintainer=None):
+        """
+        Update RIR's database API and returns report
+
+        :param data:
+        :param maintainer:
+        :return:
+        """
         rir = "RIPE" if self.name == "RIPE NCC" else self.name
         return getattr(self, "update_rir_db_%s" % rir)(data, maintainer)
 
-    # RIPE NCC Update API
     def update_rir_db_RIPE(self, data, maintainer):
+        """
+        RIPE NCC Update API
+        :param data:
+        :param maintainer:
+        :return:
+        """
         data = [x for x in data.split("\n") if x]  # Strip empty lines
         if maintainer.password:
             data += ["password: %s" % maintainer.password]
@@ -67,9 +81,11 @@ class RIR(models.Model):
         data += ["source: RIPE"]
         data = "\n".join(data)
         try:
-            f = urllib2.urlopen(url=RIPE_SYNCUPDATES_URL,
-                                data=urllib.urlencode({"DATA": data}))
+            f = urlopen(
+                url=RIPE_SYNCUPDATES_URL,
+                data=urlencode({"DATA": data})
+            )
             data = f.read()
-        except urllib2.URLError as why:
+        except URLError as why:
             data = "Update failed: %s" % why
         return data

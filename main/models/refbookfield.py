@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # RefBookField
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,16 +10,18 @@
 from __future__ import absolute_import
 import re
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from .refbook import RefBook
 
 
+@six.python_2_unicode_compatible
 class RefBookField(models.Model):
     """
     Refbook fields
     """
-    class Meta:
+    class Meta(object):
         app_label = "main"
         verbose_name = "Ref Book Field"
         verbose_name_plural = "Ref Book Fields"
@@ -43,7 +45,7 @@ class RefBookField(models.Model):
     rx_mac_3_octets = re.compile("^([0-9A-F]{6}|[0-9A-F]{12})$",
                                  re.IGNORECASE)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.ref_book, self.name)
 
     # Return **kwargs for extra

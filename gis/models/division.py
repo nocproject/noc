@@ -6,7 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, BooleanField,
                                 DateTimeField, IntField, ListField)
@@ -16,10 +19,11 @@ from noc.core.model.decorator import on_delete_check
 
 
 @on_delete_check(check=[
-    ("gis.Street", "parent"), 
-    ("gis.Division", "parent"), 
+    ("gis.Street", "parent"),
+    ("gis.Division", "parent"),
     ("gis.Building", "adm_division")
 ])
+@six.python_2_unicode_compatible
 class Division(Document):
     meta = {
         "collection": "noc.divisions",
@@ -50,7 +54,7 @@ class Division(Document):
     #
     tags = ListField(StringField())
 
-    def __unicode__(self):
+    def __str__(self):
         if self.short_name:
             return self.short_name
         else:
@@ -64,7 +68,7 @@ class Division(Document):
         return Division.objects.filter(parent__exists=False, type=type)
 
     def get_buildings(self):
-        from building import Building
+        from .building import Building
         return Building.objects.filter(adm_division=self.id).order_by("sort_order")
 
     @classmethod

@@ -9,9 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import hashlib
-import urllib2
 import os
-from urlparse import urlparse
+# Third-party modules
+from six.moves.urllib.parse import urlparse
+from six.moves.urllib.request import parse_http_list, parse_keqv_list
 # NOC modules
 from .base import BaseMiddleware
 from noc.core.http.client import fetch_sync
@@ -120,7 +121,7 @@ class DigestAuthMiddeware(BaseMiddleware):
             validate_cert=False
         )
         if "WWW-Authenticate" in resp_headers and resp_headers["WWW-Authenticate"].startswith("Digest"):
-            items = urllib2.parse_http_list(resp_headers["WWW-Authenticate"][7:])
-            digest_response = urllib2.parse_keqv_list(items)
+            items = parse_http_list(resp_headers["WWW-Authenticate"][7:])
+            digest_response = parse_keqv_list(items)
             headers["Authorization"] = self.build_digest_header(url, self.method, digest_response)
         return url, body, headers

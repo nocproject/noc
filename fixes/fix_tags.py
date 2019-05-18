@@ -2,10 +2,13 @@
 # ---------------------------------------------------------------------
 # Rebuild Tag Cloud
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import print_function
+# Third-party modules
 from pymongo import UpdateOne, DeleteOne
 from pymongo.errors import BulkWriteError
 # NOC modules

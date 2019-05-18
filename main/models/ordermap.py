@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # OrderMap model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 
 # model -> label field
@@ -17,11 +18,12 @@ ORDER_MAP_MODELS = {
 }
 
 
+@six.python_2_unicode_compatible
 class OrderMap(models.Model):
     """
     Custom field description
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Order Map"
         verbose_name_plural = "Order Map"
         db_table = "main_ordermap"
@@ -32,7 +34,7 @@ class OrderMap(models.Model):
     ref_id = models.CharField("ID", max_length=24)
     name = models.CharField("Name", max_length=256)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.model, self.ref_id)
 
     @staticmethod
@@ -48,7 +50,10 @@ class OrderMap(models.Model):
         ]
         c = connection.cursor()
         c.execute("DELETE FROM main_ordermap WHERE model = %s", [model])
-        c.execute("INSERT INTO main_ordermap(model, ref_id, name) VALUES " + ",".join(c.mogrify("(%s,%s,%s)", d) for d in data))
+        c.execute(
+            "INSERT INTO main_ordermap(model, ref_id, name) VALUES " +
+            ",".join(c.mogrify("(%s,%s,%s)", d) for d in data)
+        )
 
     @staticmethod
     def update_models():

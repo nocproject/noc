@@ -2,14 +2,17 @@
 # ---------------------------------------------------------------------
 # AlarmClassVar model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 import noc.lib.nosql as nosql
 
 
+@six.python_2_unicode_compatible
 class AlarmClassVar(nosql.EmbeddedDocument):
     meta = {
         "strict": False,
@@ -19,7 +22,7 @@ class AlarmClassVar(nosql.EmbeddedDocument):
     description = nosql.StringField(required=False)
     default = nosql.StringField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __eq__(self, other):

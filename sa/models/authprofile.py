@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # AuthProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from django.db import models
 import cachetools
 # NOC modules
@@ -31,8 +32,9 @@ id_lock = Lock()
     ("sa.ManagedObject", "auth_profile"),
     ("sa.ManagedObjectProfile", "cpe_auth_profile")
 ])
+@six.python_2_unicode_compatible
 class AuthProfile(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Auth Profile"
         verbose_name_plural = "Auth Profiles"
         db_table = "sa_authprofile"
@@ -71,7 +73,7 @@ class AuthProfile(models.Model):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod
@@ -112,8 +114,9 @@ class AuthProfile(models.Model):
                 yield s.user, s.password, s.super_password
 
 
+@six.python_2_unicode_compatible
 class AuthProfileSuggestSNMP(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Auth Profile Suggest SNMP"
         verbose_name_plural = "Auth Profile Suggest SNMP"
         db_table = "sa_authprofilesuggestsnmp"
@@ -125,12 +128,13 @@ class AuthProfileSuggestSNMP(models.Model):
     snmp_rw = models.CharField(
         "RW Community", blank=True, null=True, max_length=64)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.auth_profile.name
 
 
+@six.python_2_unicode_compatible
 class AuthProfileSuggestCLI(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Auth Profile Suggest CLI"
         verbose_name_plural = "Auth Profile Suggest CLI"
         db_table = "sa_authprofilesuggestcli"
@@ -144,5 +148,5 @@ class AuthProfileSuggestCLI(models.Model):
     super_password = models.CharField(
         "Super Password", max_length=32, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.auth_profile.name

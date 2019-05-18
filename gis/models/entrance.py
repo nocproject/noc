@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # Entrance object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, IntField, BooleanField
+from mongoengine.fields import StringField, IntField
 
 
+@six.python_2_unicode_compatible
 class Entrance(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -25,5 +27,5 @@ class Entrance(EmbeddedDocument):
     last_home = StringField()
     # @todo: Managing company
 
-    def __unicode__(self):
+    def __str__(self):
         return self.number

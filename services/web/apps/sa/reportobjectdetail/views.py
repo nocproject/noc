@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,8 +10,8 @@
 import logging
 import datetime
 import csv
-import StringIO
 # Third-party modules
+from six import StringIO
 import xlsxwriter
 from django.http import HttpResponse
 # NOC modules
@@ -339,9 +339,7 @@ class ReportObjectDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            # with tempfile.NamedTemporaryFile(mode="wb") as f:
-            #    wb = xlsxwriter.Workbook(f.name)
-            response = StringIO.StringIO()
+            response = StringIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             ws = wb.add_worksheet("Objects")
@@ -354,6 +352,7 @@ class ReportObjectDetailApplication(ExtApplication):
                     ws.write(rn, cn, c, cf1)
             # for
             ws.autofilter(0, 0, rn, cn)
+            ws.freeze_panes(1, 0)
             for cn, c in enumerate(r[0]):
                 # Set column width
                 width = get_column_width(c)

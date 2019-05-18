@@ -7,8 +7,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 from collections import defaultdict
 # Third-party modules
+import six
 from mongoengine.base.common import _document_registry
 from mongoengine.document import Document
 from django.db.models import get_models
@@ -32,7 +34,7 @@ def build():
     site.autodiscover()
     models = defaultdict(list)  # Module -> [(alias, path)]
     # Enumerate documents
-    for c in _document_registry.itervalues():
+    for c in six.itervalues(_document_registry):
         if issubclass(c, Document):
             add(c)
     # Enumerate models
@@ -56,7 +58,7 @@ def build():
             out += ["    \"%s\": \"%s\"," % (alias, path)]
     out[-1] = out[-1][:-1]  # Remove last comma
     out += ["}"]
-    print "\n".join(out)
+    print("\n".join(out))
 
 
 if __name__ == "__main__":

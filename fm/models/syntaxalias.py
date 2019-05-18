@@ -2,17 +2,19 @@
 # ---------------------------------------------------------------------
 # SyntaxAlias model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, DictField)
 # NOC modules
 from noc.lib.prettyjson import to_json
 
 
+@six.python_2_unicode_compatible
 class SyntaxAlias(Document):
     meta = {
         "collection": "noc.syntaxaliases",
@@ -27,7 +29,7 @@ class SyntaxAlias(Document):
     # Lookup cache
     cache = None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

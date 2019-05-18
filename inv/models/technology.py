@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Technology
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import os
 import operator
 import threading
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, BooleanField, LongField
 import cachetools
@@ -27,6 +28,7 @@ id_lock = threading.Lock()
 @on_delete_check(check=[
     ("inv.ResourceGroup", "technology")
 ])
+@six.python_2_unicode_compatible
 class Technology(Document):
     """
     Technology
@@ -57,7 +59,7 @@ class Technology(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

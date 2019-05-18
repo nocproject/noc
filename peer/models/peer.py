@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 # Peer modules
 from noc.project.models.project import Project
@@ -20,6 +21,7 @@ from .peeringpoint import PeeringPoint
 
 
 @on_save
+@six.python_2_unicode_compatible
 class Peer(models.Model):
     """
     BGP Peering session
@@ -79,7 +81,7 @@ class Peer(models.Model):
 
     rpsl = GridVCSField("rpsl_peer")
 
-    def __unicode__(self):
+    def __str__(self):
         return u" %s (%s@%s)" % (self.remote_asn, self.remote_ip,
                                  self.peering_point.hostname)
 

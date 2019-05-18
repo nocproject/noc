@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField
 from fs import open_fs
@@ -26,6 +27,7 @@ id_lock = Lock()
     ("sa.ManagedObjectProfile", "beef_storage"),
     ("sa.ManagedObjectProfile", "config_download_storage")
 ])
+@six.python_2_unicode_compatible
 class ExtStorage(Document):
     meta = {
         "collection": "extstorages",
@@ -51,7 +53,7 @@ class ExtStorage(Document):
 
     Error = FSError
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # OSM Nominatim geocoder
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import urllib
 # Third-party modules
+from __future__ import absolute_import
+from six.moves.urllib.parse import quote as urllib_quote
 import requests
 # NOC modules
-from base import Geocoder
+from .base import Geocoder
 
 
 class Nominatim(Geocoder):
@@ -19,7 +19,7 @@ class Nominatim(Geocoder):
 
     def forward(self, s):
         url = "http://nominatim.openstreetmap.org/search?q="
-        url += urllib.quote(s) + "&format=json&addressdetails=1"
+        url += urllib_quote(s) + "&format=json&addressdetails=1"
         r = requests.get(url)
         d = r.json()
         if d:

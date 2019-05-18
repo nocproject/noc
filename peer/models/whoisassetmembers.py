@@ -7,10 +7,12 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 
 
+@six.python_2_unicode_compatible
 class WhoisASSetMembers(Document):
     """
     as-set -> members lookup
@@ -24,7 +26,7 @@ class WhoisASSetMembers(Document):
     as_set = StringField(primary_key=True)
     members = ListField(StringField())
 
-    def __unicode__(self):
+    def __str__(self):
         return self.as_set
 
     @classmethod

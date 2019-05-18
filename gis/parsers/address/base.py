@@ -2,12 +2,12 @@
 # ---------------------------------------------------------------------
 # Parse and load address data
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
+from __future__ import print_function
 import gzip
 import os
 # Third-party modules
@@ -26,10 +26,10 @@ class AddressParser(object):
         self.opts = opts
 
     def info(self, msg):
-        print "[%s] %s" % (self.name, msg)
+        print("[%s] %s" % (self.name, msg))
 
     def error(self, msg):
-        print "[%s: ERROR] %s" % (self.name, msg)
+        print("[%s: ERROR] %s" % (self.name, msg))
 
     def get_top(self):
         rf = Division.objects.filter(type="A", name=self.TOP_NAME).first()

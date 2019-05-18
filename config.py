@@ -11,8 +11,9 @@ import logging
 import os
 import socket
 import sys
-import urllib
 from collections import namedtuple
+# Third-party modules
+from six.moves.urllib.parse import quote as urllib_quote
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
@@ -653,8 +654,8 @@ class Config(BaseConfig):
                 self._mongo_connection_args["maxIdleTimeMS"] = self.mongo.max_idle_time * 1000
             url = ["mongodb://"]
             if has_credentials:
-                url += ["%s:%s@" % (urllib.quote(self.mongo.user),
-                                    urllib.quote(self.mongo.password))]
+                url += ["%s:%s@" % (urllib_quote(self.mongo.user),
+                                    urllib_quote(self.mongo.password))]
             url += [",".join(str(h) for h in hosts)]
             url += ["/%s" % self.mongo.db]
             self._mongo_connection_args["host"] = "".join(url)

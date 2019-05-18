@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Site implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,20 +11,20 @@ from __future__ import absolute_import
 import re
 import glob
 import os
-import urllib
 import hashlib
 import logging
 import json
 from collections import defaultdict
 import operator
 # Third-party modules
+import six
+from six.moves.urllib.parse import urlencode
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
 from django.conf.urls import patterns
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
-import six
 import ujson
 # NOC modules
 from noc.config import config
@@ -40,6 +40,7 @@ class ProxyNode(object):
 HTTP_METHODS = {"GET", "POST", "PUT", "DELETE"}
 
 
+@six.python_2_unicode_compatible
 class URL(object):
     """
     URL Data wrapper
@@ -62,10 +63,10 @@ class URL(object):
     def __repr__(self):
         return "<URL %s>" % unicode(self)
 
-    def __unicode__(self):
+    def __str__(self):
         s = self.url
         if self.name:
-            s += ", name='%s'" % self.name
+            s += u", name='%s'" % self.name
         return s
 
 
@@ -238,8 +239,7 @@ class Site(object):
                             sc[stmt] += 1
                             tsc += 1
                             app_logger.debug("SQL %(sql)s %(time)ss" % q)
-                    x = ", ".join("%s: %d" % (k, cv)
-                                  for k, cv in sc.iteritems())
+                    x = ", ".join("%s: %d" % (k, cv) for k, cv in six.iteritems(sc))
                     if x:
                         x = " (%s)" % x
                     app_logger.debug("SQL statements: %d%s" % (tsc, x))
@@ -372,7 +372,7 @@ class Site(object):
             u_name = u.name
             if u_name and u_name.startswith("admin:"):
                 if "%" in u_name:
-                    u_name = u_name % (app.module, app.app)
+                    u_name = u_name % (app.app_alias or app.module, app.app)
                 url = "^../%s/%s/%s" % (app.module, app.app, u.url[1:])
                 self.admin_patterns += [
                     RegexURLPattern(url, sv, name=u_name.split(":", 1)[1])
@@ -478,11 +478,10 @@ class Site(object):
             kw = kwargs.copy()
             query = ""
             if "QUERY" in kw:
-                query = "?" + urllib.urlencode(kw["QUERY"])
+                query = "?%s" % urlencode(kw["QUERY"])
                 del kw["QUERY"]
             return reverse(url, args=args, kwargs=kw) + query
-        else:
-            return url
+        return url
 
     def sort_menu(self):
         """

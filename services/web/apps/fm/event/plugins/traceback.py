@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # TracebackPlugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import EventPlugin
+from .base import EventPlugin
 
 
 class TracebackPlugin(EventPlugin):

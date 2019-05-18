@@ -9,7 +9,6 @@
 # Python modules
 from __future__ import absolute_import
 import socket
-import urlparse
 import threading
 import ssl
 import logging
@@ -17,11 +16,12 @@ import zlib
 import time
 import struct
 # Third-party modules
+import six
+from six.moves.urllib.parse import urlparse
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
 import cachetools
-import six
 import ujson
 # NOC modules
 from noc.core.perf import metrics
@@ -135,7 +135,7 @@ def fetch(url, method="GET",
     metrics["httpclient_requests", ("method", method.lower())] += 1
     # Detect proxy when necessary
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
-    u = urlparse.urlparse(str(url))
+    u = urlparse(str(url))
     use_tls = u.scheme == "https"
     if ":" in u.netloc:
         host, port = u.netloc.rsplit(":")

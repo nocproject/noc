@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ASProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 import cachetools
@@ -24,6 +25,7 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("peer.AS", "profile")
 ])
+@six.python_2_unicode_compatible
 class ASProfile(Document):
     meta = {
         "collection": "asprofiles",
@@ -40,7 +42,7 @@ class ASProfile(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

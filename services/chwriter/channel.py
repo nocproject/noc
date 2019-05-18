@@ -7,8 +7,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import urllib
+# Third-party modules
+from six.moves.urllib.parse import quote as urllib_quote
 # NOC modules
 from noc.config import config
 from noc.core.backport.time import perf_counter
@@ -33,7 +33,7 @@ class Channel(object):
             # Nested fields are not possible
             parts = tuple(fields.split("."))
         self.sql = "INSERT INTO %s(%s) FORMAT TabSeparated" % (parts[0], ",".join(parts[1:]))
-        self.encoded_sql = urllib.quote(self.sql.encode('utf8'))
+        self.encoded_sql = urllib_quote(self.sql.encode('utf8'))
         self.n = 0
         self.data = []
         self.last_updated = perf_counter()

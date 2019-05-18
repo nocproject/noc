@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # BaseDatasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ class BaseDataSource(object):
         if "\n" in s or "\\" in s or s.count("\t") >= len(row):
             metrics["error", ("type", "rogue_chars")] += 1
             self.logger.error("Rogue chars in row %s", row)
-            row = map(lambda x: ch_escape(x) if isinstance(x, six.string_types) else x, list(row))
+            row = [ch_escape(x) if isinstance(x, six.string_types) else x for x in list(row)]
         return row
 
     def get(self):

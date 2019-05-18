@@ -8,7 +8,8 @@
 
 # Python modules
 import datetime
-# Django modules
+# Third-party modules
+import six
 from django.db import models
 from django.contrib.auth.models import User
 # NOC modules
@@ -40,6 +41,7 @@ class UserProfileManager(models.Manager):
 @on_delete_check(check=[
     ("main.UserProfileContact", "user_profile")
 ])
+@six.python_2_unicode_compatible
 class UserProfile(models.Model):
     """
     User profile
@@ -65,7 +67,7 @@ class UserProfile(models.Model):
 
     objects = UserProfileManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s's Profile" % self.user.username
 
     def save(self, **kwargs):

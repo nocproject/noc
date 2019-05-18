@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Firmware
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import threading
 import operator
 import uuid
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
 from mongoengine.errors import NotUniqueError
@@ -35,6 +36,7 @@ id_lock = threading.Lock()
     ("sa.ManagedObjectSelector", "filter_version"),
     ("inv.FirmwarePolicy", "firmware")
 ])
+@six.python_2_unicode_compatible
 class Firmware(Document):
     meta = {
         "collection": "noc.firmwares",
@@ -69,7 +71,7 @@ class Firmware(Document):
     _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.full_name if self.full_name else self.version
 
     def clean(self):

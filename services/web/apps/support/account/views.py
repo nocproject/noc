@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # support.account application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,8 +44,8 @@ class AccountApplication(ExtApplication):
             self.response_forbidden()
         try:
             c.attach_account(name, password)
-        except CPClient.Error, why:
-            return {"status": False, "message": str(why)}
+        except CPClient.Error as e:
+            return {"status": False, "message": str(e)}
         return {"status": True, "message": "Ok"}
 
     @view(url="^account/$", method=["POST"], access="launch", api=True,
@@ -69,16 +69,16 @@ class AccountApplication(ExtApplication):
                 c.update_account(name, email, country=country,
                                  language=language, org=org,
                                  industries=industries)
-            except CPClient.Error, why:
-                return {"status": False, "message": str(why)}
+            except CPClient.Error as e:
+                return {"status": False, "message": str(e)}
         else:
             # Create account
             try:
                 c.create_account(name, email, password, org=org,
                                  country=country, language=language,
                                  industries=industries)
-            except CPClient.Error, why:
-                return {"status": False, "message": str(why)}
+            except CPClient.Error as e:
+                return {"status": False, "message": str(e)}
         return {"status": True, "message": "Account saved"}
 
     @view(url="^account/change_password/$", method=["POST"],
@@ -111,12 +111,12 @@ class AccountApplication(ExtApplication):
         if c.has_system():
             try:
                 c.update_system(name, type, description=description)
-            except CPClient.Error, why:
-                return {"status": False, "message": str(why)}
+            except CPClient.Error as e:
+                return {"status": False, "message": str(e)}
         else:
             # Create account
             try:
                 c.create_system(name, type, description=description)
-            except CPClient.Error, why:
-                return {"status": False, "message": str(why)}
+            except CPClient.Error as e:
+                return {"status": False, "message": str(e)}
         return {"status": True, "message": "System saved"}

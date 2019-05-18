@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.ref application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,9 @@
 import os
 import re
 import operator
-# Django modules
-from django.db import models
 # Third-party modules
+import six
+from django.db import models
 from mongoengine.base.common import _document_registry
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -24,6 +24,7 @@ from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
+from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
 from noc.core.window import wf_choices
 from noc.models import iter_model_id
 
@@ -117,7 +118,7 @@ class RefAppplication(ExtApplication):
                 "id": c._get_collection_name(),
                 "label": "%s.%s" % (c.__module__.split(".")[1], n),
                 "collection": c._get_collection_name()
-            } for n, c in _document_registry.iteritems()
+            } for n, c in six.iteritems(_document_registry)
             if c._get_collection_name()]
         return sorted(r, key=lambda x: x["label"])
 
@@ -216,6 +217,9 @@ class RefAppplication(ExtApplication):
 
     def build_modelid(self):
         return [{"id": x, "label": x} for x in sorted(iter_model_id())]
+
+    def build_kbparser(self):
+        return sorted([{"id": x, "label": x} for x in sorted(kbparser_loader)])
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):

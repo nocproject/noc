@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # ./noc nri
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -65,7 +66,7 @@ class Command(BaseCommand):
                     elif rn == self.PORT_ERROR:
                         status = "Failed to convert to remote name"
                     else:
-                        print(ln, rn, i.get("nri_name"))
+                        self.print(ln, rn, i.get("nri_name"))
                         status = "Failed to convert to local name"
                     r += [(i["name"], rn, i.get("nri_name", "--"), status)]
                 r = [("Local", "Remote", "Interface NRI", "Status")] + sorted(r, key=lambda x: split_alnum(x[0]))

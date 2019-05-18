@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
@@ -34,6 +35,7 @@ id_lock = Lock()
     ("sa.ManagedObjectProfile", "address_profile_neighbor"),
     ("sa.ManagedObjectProfile", "address_profile_confdb")
 ])
+@six.python_2_unicode_compatible
 class AddressProfile(Document):
     meta = {
         "collection": "addressprofiles",
@@ -71,7 +73,7 @@ class AddressProfile(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

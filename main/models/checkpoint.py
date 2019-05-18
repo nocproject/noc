@@ -2,22 +2,24 @@
 # ----------------------------------------------------------------------
 # Checkpoint model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
 # Third-party modules
+import six
 from django.db import models
 from django.contrib.auth.models import User
 
 
+@six.python_2_unicode_compatible
 class Checkpoint(models.Model):
     """
     Checkpoint is a marked moment in time
     """
-    class Meta:
+    class Meta(object):
         app_label = "main"
         db_table = "main_checkpoint"
         verbose_name = "Checkpoint"
@@ -28,7 +30,7 @@ class Checkpoint(models.Model):
     comment = models.CharField("Comment", max_length=256)
     private = models.BooleanField("Private", default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.user:
             return u"%s[%s]: %s" % (self.timestamp, self.user.username,
                                     self.comment)

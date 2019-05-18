@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ThresholdProfile model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, ListField, EmbeddedDocumentField, FloatField
 import cachetools
@@ -25,6 +26,7 @@ from noc.core.window import get_window_function
 id_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class ThresholdConfig(EmbeddedDocument):
     # Open condition
     op = StringField(choices=["<", "<=", ">=", ">"])
@@ -43,7 +45,7 @@ class ThresholdConfig(EmbeddedDocument):
     #
     template = ForeignKeyField(Template)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s" % (self.op, self.value)
 
     def is_open_match(self, value):
@@ -78,6 +80,7 @@ class ThresholdConfig(EmbeddedDocument):
 
 
 # @todo: on_delete_check
+@six.python_2_unicode_compatible
 class ThresholdProfile(Document):
     meta = {
         "collection": "thresholdprofiles",
@@ -114,7 +117,7 @@ class ThresholdProfile(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

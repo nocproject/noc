@@ -2,12 +2,14 @@
 # ----------------------------------------------------------------------
 # L3 Link model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
@@ -17,6 +19,7 @@ from noc.core.model.decorator import on_delete, on_save
 
 @on_delete
 @on_save
+@six.python_2_unicode_compatible
 class L3Link(Document):
     """
     Network L3 links.
@@ -41,7 +44,7 @@ class L3Link(Document):
     # L3 path cost
     l3_cost = IntField(default=1)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"(%s)" % ", ".join([unicode(i) for i in self.subinterfaces])
 
     def clean(self):

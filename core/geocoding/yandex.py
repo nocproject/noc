@@ -2,14 +2,14 @@
 # ----------------------------------------------------------------------
 # Yandex geocoder
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
-import urllib
 # Third-party modules
+from six.moves.urllib.parse import quote as urllib_quote
 import ujson
 # NOC modules
 from .base import (BaseGeocoder, GeoCoderError, GeoCoderLimitExceeded,
@@ -36,14 +36,14 @@ class YandexGeocoder(BaseGeocoder):
             # "&rspn=1&bbox=127.56,49.96~141.05,56.09"
             url += ["&rspn=1",
                     "&bbox=%s~%s" % bounds]
-        url += ["&geocode=%s" % urllib.quote(query)]
+        url += ["&geocode=%s" % urllib_quote(query)]
         if self.key:
             url += [
-                "&key=%s" % urllib.quote(self.key)
+                "&key=%s" % urllib_quote(self.key)
             ]
         if self.apikey:
             url += [
-                "&apikey=%s" % urllib.quote(self.apikey)
+                "&apikey=%s" % urllib_quote(self.apikey)
             ]
         code, response = self.get("".join(url))
         if code == 429:

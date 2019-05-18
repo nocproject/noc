@@ -2,16 +2,16 @@
 # ----------------------------------------------------------------------
 # Clickhouse connection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
-import urllib
 import random
 # Third-party modules
 import six
+from six.moves.urllib.parse import quote as urllib_quote
 # NOC modules
 from noc.core.http.client import fetch_sync
 from noc.config import config
@@ -51,7 +51,7 @@ class ClickhouseClient(object):
             if args:
                 sql = sql % tuple(q(v) for v in args)
             if post:
-                qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
+                qs += ["query=%s" % urllib_quote(sql.encode('utf8'))]
             else:
                 post = sql.encode('utf8')
         url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))

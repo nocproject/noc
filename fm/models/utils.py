@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import six
 from bson import ObjectId
@@ -68,8 +70,8 @@ def get_severity(alarms):
 
 
 # NOC modules
-from activeevent import ActiveEvent
-from archivedevent import ArchivedEvent
-from failedevent import FailedEvent
-from activealarm import ActiveAlarm
-from archivedalarm import ArchivedAlarm
+from .activeevent import ActiveEvent
+from .archivedevent import ArchivedEvent
+from .failedevent import FailedEvent
+from .activealarm import ActiveAlarm
+from .archivedalarm import ArchivedAlarm

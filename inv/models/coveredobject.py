@@ -2,19 +2,23 @@
 # ---------------------------------------------------------------------
 # Covered Objects
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (IntField)
 # NOC modules
-from coverage import Coverage
+from .coverage import Coverage
 from noc.inv.models.object import Object
 from noc.lib.nosql import PlainReferenceField
 
 
+@six.python_2_unicode_compatible
 class CoveredObject(Document):
     meta = {
         "collection": "noc.coveredobjects",
@@ -30,7 +34,7 @@ class CoveredObject(Document):
 
     object = PlainReferenceField(Object)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (
             self.coverage.name,
             self.object.name or self.object.id

@@ -2,11 +2,14 @@
 # ---------------------------------------------------------------------
 # CSV Export/Import application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+import csv
+# Third-party modules
+from six import StringIO
 from django import forms
 from django.contrib import admin
 from django.db import models
@@ -16,9 +19,6 @@ from noc.core.translation import ugettext as _
 from noc.lib.app.application import Application, view
 from noc.core.csvutils import csv_export, csv_import, get_model_fields, IR_FAIL, IR_SKIP, IR_UPDATE
 from noc.models import get_model, get_model_id
-# Modules for parsing CSV
-import csv
-import StringIO
 
 
 class CSVApplication(Application):
@@ -111,7 +111,7 @@ class CSVApplication(Application):
                                 forbidden_row.append(row['address'])
                     forbidden_ip = list(set(forbidden_row))
 
-                    new_csv_file = StringIO.StringIO()
+                    new_csv_file = StringIO()
                     dict_writer = csv.DictWriter(new_csv_file, keys)
                     dict_writer.writeheader()
                     dict_writer.writerows(accepted_row)

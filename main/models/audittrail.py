@@ -2,17 +2,17 @@
 # ---------------------------------------------------------------------
 # AuditTrail model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
 import datetime
-# Django modules
+# Third-party modules
+import six
 from django.db.models import signals as django_signals
 from django.utils.encoding import smart_unicode
-# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField,
                                 ListField, EmbeddedDocumentField)
@@ -24,6 +24,7 @@ from noc.lib.utils import get_model_id
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class FieldChange(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -33,7 +34,7 @@ class FieldChange(EmbeddedDocument):
     old = StringField(required=False)
     new = StringField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.field
 
 

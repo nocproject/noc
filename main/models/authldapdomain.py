@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AuthLDAPDomain model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
 from django.contrib.auth.models import Group
@@ -21,6 +22,7 @@ from noc.core.model.decorator import on_save
 id_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class AuthLDAPServer(EmbeddedDocument):
     name = StringField()
     is_active = BooleanField()
@@ -28,7 +30,7 @@ class AuthLDAPServer(EmbeddedDocument):
     port = IntField()
     use_tls = BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name or self.address
 
 
@@ -40,6 +42,7 @@ class AuthLDAPGroup(EmbeddedDocument):
 
 
 @on_save
+@six.python_2_unicode_compatible
 class AuthLDAPDomain(Document):
     meta = {
         "collection": "noc.authldapdomain"
@@ -124,7 +127,7 @@ class AuthLDAPDomain(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

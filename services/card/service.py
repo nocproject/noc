@@ -9,8 +9,8 @@
 
 # NOC modules
 from noc.core.service.ui import UIService
-from card import CardRequestHandler
-from search import SearchRequestHandler
+from noc.services.card.card import CardRequestHandler
+from noc.services.card.search import SearchRequestHandler
 from noc.config import config
 
 

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Discovery id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import operator
 from threading import Lock
 import bisect
 # Third-party modules
+import six
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField, LongField,
@@ -30,6 +31,7 @@ from noc.core.model.decorator import on_delete
 mac_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class MACRange(EmbeddedDocument):
     meta = {
         "strict": False,
@@ -38,11 +40,12 @@ class MACRange(EmbeddedDocument):
     first_mac = StringField()
     last_mac = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s - %s" % (self.first_mac, self.last_mac)
 
 
 @on_delete
+@six.python_2_unicode_compatible
 class DiscoveryID(Document):
     """
     Managed Object's discovery identity
@@ -66,7 +69,7 @@ class DiscoveryID(Document):
     _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
     _udld_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.object.name
 
     @staticmethod

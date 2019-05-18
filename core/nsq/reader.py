@@ -2,15 +2,14 @@
 # ----------------------------------------------------------------------
 # Customized NSQ reader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import urlparse
-import urllib
 import logging
 # Third-party modules
+from six.moves.urllib.parse import urlencode, urlsplit, parse_qs, urlunsplit
 import tornado.gen
 from nsq.reader import Reader as BaseReader, _utf8_params
 import ujson
@@ -32,15 +31,15 @@ class Reader(BaseReader):
         if "://" not in endpoint:
             endpoint = "http://" + endpoint
 
-        scheme, netloc, path, query, fragment = urlparse.urlsplit(endpoint)
+        scheme, netloc, path, query, fragment = urlsplit(endpoint)
 
         if not path or path == "/":
             path = "/lookup"
 
-        params = urlparse.parse_qs(query)
+        params = parse_qs(query)
         params["topic"] = self.topic
-        query = urllib.urlencode(_utf8_params(params), doseq=1)
-        lookupd_url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+        query = urlencode(_utf8_params(params), doseq=1)
+        lookupd_url = urlunsplit((scheme, netloc, path, query, fragment))
 
         code, headers, body = yield fetch(
             lookupd_url,

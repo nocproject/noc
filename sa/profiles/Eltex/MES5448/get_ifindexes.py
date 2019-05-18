@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES5448.get_ifindexes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,10 +26,10 @@ class Script(BaseScript):
                 for oid, name in self.snmp.getnext(mib["IF-MIB::ifName"]):
                     try:
                         v = self.profile.convert_interface_name(name)
-                    except InterfaceTypeError, why:
+                    except InterfaceTypeError as e:
                         self.logger.debug(
                             "Ignoring unknown interface %s: %s",
-                            name, why
+                            name, e
                         )
                         unknown_interfaces += [name]
                         continue

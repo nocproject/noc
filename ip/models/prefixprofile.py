@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField, BooleanField
 import cachetools
@@ -35,6 +36,7 @@ id_lock = Lock()
     ("vc.VPNProfile", "default_prefix_profile"),
     ("peer.ASProfile", "prefix_profile_whois_route")
 ])
+@six.python_2_unicode_compatible
 class PrefixProfile(Document):
     meta = {
         "collection": "prefixprofiles",
@@ -98,7 +100,7 @@ class PrefixProfile(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

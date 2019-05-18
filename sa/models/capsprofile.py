@@ -10,6 +10,7 @@
 import threading
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 import cachetools
@@ -22,6 +23,7 @@ id_lock = threading.Lock()
 @on_delete_check(check=[
     ("sa.ManagedObjectProfile", "caps_profile")
 ])
+@six.python_2_unicode_compatible
 class CapsProfile(Document):
     meta = {
         "collection": "capsprofiles",
@@ -144,7 +146,7 @@ class CapsProfile(Document):
 
     DEFAULT_PROFILE_NAME = "default"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

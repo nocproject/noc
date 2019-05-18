@@ -7,6 +7,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from __future__ import print_function
+# NOC modules
 from noc.fm.models.outage import Outage
 
 

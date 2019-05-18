@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # MAC Vendor
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
 # Third-party modules
+import six
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne, InsertOne, DeleteOne
 # NOC modules
@@ -17,6 +18,7 @@ from noc.lib.nosql import Document, StringField
 logger = logging.getLogger(__name__)
 
 
+@six.python_2_unicode_compatible
 class MACVendor(Document):
     """
     IEEE OUI database
@@ -32,6 +34,9 @@ class MACVendor(Document):
     vendor = StringField()
 
     DOWNLOAD_URL = "http://standards-oui.ieee.org/oui.txt"
+
+    def __str__(self):
+        return self.oui
 
     @classmethod
     def get_vendor(cls, mac):
@@ -70,7 +75,7 @@ class MACVendor(Document):
         # Compare
         collection = MACVendor._get_collection()
         bulk = []
-        for oui, vendor in new.iteritems():
+        for oui, vendor in six.iteritems(new):
             if oui in old:
                 if vendor != old[oui]:
                     logger.info("[%s] %s -> %s", oui, old[oui], vendor)

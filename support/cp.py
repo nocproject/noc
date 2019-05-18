@@ -8,13 +8,13 @@
 
 # Python modules
 import logging
+import os
 # Third-party modules
 import six
+from six.moves.configparser import RawConfigParser
 import requests
 import ujson
 # Python modules
-import os
-import ConfigParser
 from noc.core.version import version
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class CPClient(object):
     def load_config(self):
         if os.path.exists(self.CONFIG):
             logger.debug("Loading config %s", self.CONFIG)
-            config = ConfigParser.RawConfigParser()
+            config = RawConfigParser()
             config.read(self.CONFIG)
             # Read account settings
             if config.has_section("account"):
@@ -132,14 +132,14 @@ class CPClient(object):
                 auth=auth,
                 verify=True
             )
-        except Exception, why:
-            logger.error("JSON-RPC Error: %s", why)
-            raise self.Error(str(why))
+        except Exception as e:
+            logger.error("JSON-RPC Error: %s", e)
+            raise self.Error(str(e))
         try:
             response = req.json()
             logger.debug("JSON-RPC RESPONSE: %s", response)
-        except ValueError, why:
-            logger.error("Invalid JSON-RPC response: %s", why)
+        except ValueError as e:
+            logger.error("Invalid JSON-RPC response: %s", e)
             raise self.Error("Invalid response")
         if response.get("error"):
             logger.error("JSON-RPC error: %s", response["error"])

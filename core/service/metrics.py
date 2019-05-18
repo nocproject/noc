@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Prometeus metrics endpoint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,10 @@ import six
 import tornado.web
 from noc.config import config
 
-TR = string.maketrans(".-\"", "___")
+if hasattr(string, "maketrans"):
+    TR = string.maketrans(".-\"", "___")
+else:
+    TR = str.maketrans(".-\"", "___")
 
 
 class MetricsHandler(tornado.web.RequestHandler):

@@ -12,6 +12,7 @@ import operator
 from threading import Lock
 from collections import defaultdict
 # Third-party modules
+import six
 from django.db import models, connection
 from django.contrib.auth.models import User
 import cachetools
@@ -44,6 +45,7 @@ id_lock = Lock()
     ("ip.Prefix", "ipv6_transition"),
     ("ip.Address", "prefix")
 ])
+@six.python_2_unicode_compatible
 class Prefix(models.Model):
     """
     Allocated prefix
@@ -161,7 +163,7 @@ class Prefix(models.Model):
     csv_ignored_fields = ["parent"]
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
 
     @classmethod
@@ -708,7 +710,7 @@ class Prefix(models.Model):
             if p.id in has_address and size > 2:  # Not /31 or /32
                 if p.effective_prefix_special_address == "X":
                     size -= 2  # Exclude broadcast and network
-                p._address_usage_cache = float(address_usage[p.id]) * 100.0 / float(size)
+            p._address_usage_cache = float(address_usage[p.id]) * 100.0 / float(size)
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     @property

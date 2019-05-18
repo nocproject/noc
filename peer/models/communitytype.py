@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 # NOC models
 from noc.core.model.decorator import on_delete_check
@@ -15,6 +16,7 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(check=[
     ("peer.Community", "type")
 ])
+@six.python_2_unicode_compatible
 class CommunityType(models.Model):
     class Meta(object):
         verbose_name = "Community Type"
@@ -24,5 +26,5 @@ class CommunityType(models.Model):
 
     name = models.CharField("Description", max_length=32, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

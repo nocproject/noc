@@ -2,14 +2,17 @@
 # ---------------------------------------------------------------------
 # Favorites model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.nosql import Document, IntField, StringField, ListField
 
 
+@six.python_2_unicode_compatible
 class Tag(Document):
     meta = {
         "collection": "noc.tags",
@@ -22,7 +25,7 @@ class Tag(Document):
     models = ListField(StringField())
     count = IntField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tag
 
     @classmethod

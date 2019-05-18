@@ -2,18 +2,22 @@
 # ---------------------------------------------------------------------
 # AlarmClassConfig model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
-from alarmclass import AlarmClass
+from .alarmclass import AlarmClass
 
 
+@six.python_2_unicode_compatible
 class AlarmClassConfig(Document):
     """
     Alarm class
@@ -30,5 +34,5 @@ class AlarmClassConfig(Document):
     control_time1 = IntField(required=False)
     control_timeN = IntField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.alarm_class.name

@@ -1,0 +1,47 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page">
+            <a href='/api/card/view/kb/0/'><b>{{ config.brand }} |</b> {{ config.installation_name }}: Knowledge Base</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            KB{{ object.id }}
+        </li>
+    </ol>
+</nav>
+
+<h4>{{ object.subject }}</h4>
+
+{{ object.html }}
+
+{% if object.has_visible_attachments %}
+<table class="table table-condensed table-hover">
+<tbody>
+
+    <tr>
+        <th scope="row">{{ _("Attachments") }}</th>
+        <td>
+            <table class="table">
+                <thead>
+                    <th>{{ _("Name") }}</th>
+                    <th>{{ _("Description") }}</th>
+                    <th>{{ _("Size") }}</th>
+                    <th>{{ _("Last Changed") }}</th>
+
+                </thead>
+                <tbody>
+                    {% for a in object.visible_attachments %}
+                        <tr>
+                            <td><a href="/kb/kbentry/{{ object.id }}/attachment/{{ a.name }}/">{{ a["name"] }}</a></td>
+                            <td>{{ a["description"] }}</td>
+                            <td>{{ a["size"] }}</td>
+                            <td>{{ a["mtime"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+
+</tbody>
+</table>
+{% endif %}

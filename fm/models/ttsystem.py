@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # TTSystem
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from threading import Lock
 import datetime
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ListField, IntField, ReferenceField,
                                 DateTimeField, BooleanField)
@@ -31,6 +32,7 @@ DEFAULT_TTSYSTEM_SHARD = "default"
     ("sa.ManagedObject", "tt_system"),
     ("sa.ManagedObjectSelector", "filter_tt_system")
 ])
+@six.python_2_unicode_compatible
 class TTSystem(Document):
     meta = {
         "collection": "noc.ttsystem",
@@ -65,7 +67,7 @@ class TTSystem(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

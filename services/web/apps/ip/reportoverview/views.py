@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # ip.reportoverview
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from django.db import connection
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
@@ -173,6 +175,7 @@ class VRFNode(Node):
         return "<b>VRF %s</b><br/>RD: %s" % (self.vrf.name, self.vrf.rd)
 
 
+@six.python_2_unicode_compatible
 class PrefixNode(Node):
 
     show_vrf = False
@@ -187,7 +190,7 @@ class PrefixNode(Node):
         super(PrefixNode, self).__init__(app)
         self.update_usage()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.prefix
 
     def __repr__(self):

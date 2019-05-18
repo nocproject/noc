@@ -2,21 +2,20 @@
 # ---------------------------------------------------------------------
 # KBEntryTemplate Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app.modelapplication import ModelApplication
+
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.kb.models.kbentrytemplate import KBEntryTemplate
-#
-# KBEntryTemplate admin
-#
-class KBEntryTemplateAdmin(admin.ModelAdmin):
-    list_display=["name","subject"]
-#
-# KBEntryTemplate application
-#
-class KBEntryTemplateApplication(ModelApplication):
-    model=KBEntryTemplate
-    model_admin=KBEntryTemplateAdmin
-    menu="Setup | Templates"
+from noc.core.translation import ugettext as _
+
+
+class KBEntryApplication(ExtModelApplication):
+    """
+    AdministrativeDomain application
+    """
+    title = _("Templates")
+    menu = [_("Setup"), _("Templates")]
+    model = KBEntryTemplate

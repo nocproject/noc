@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Validation engine
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -412,14 +412,14 @@ class Engine(object):
         Search facts for match. Returns a list of matching facts
         """
         q = self.compile_query(**kwargs)
-        return [f for f in self.facts.itervalues() if q(f)]
+        return [f for f in six.itervalues(self.facts) if q(f)]
 
     def find_one(self, **kwargs):
         """
         Search for first matching fact. Returns fact or None
         """
         q = self.compile_query(**kwargs)
-        for f in self.facts.itervalues():
+        for f in six.itervalues(self.facts):
             if q(f):
                 return f
         return None

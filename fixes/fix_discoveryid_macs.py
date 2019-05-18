@@ -2,10 +2,12 @@
 # ----------------------------------------------------------------------
 # Fix MAC index
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# NOC modules
+from __future__ import print_function
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,8 @@ import datetime
 import logging
 import operator
 from threading import Lock
-# Django modules
+# Third-party modules
+import six
 from django.db import models
 from django.contrib.auth.models import User
 import cachetools
@@ -54,11 +55,12 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
     ("vc.VCDomainProvisioningConfig", "notification_group"),
     ("peer.PeeringPoint", "prefix_list_notification_group")
 ])
+@six.python_2_unicode_compatible
 class NotificationGroup(models.Model):
     """
     Notification Groups
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Notification Group"
         verbose_name_plural = "Notification Groups"
         app_label = "main"
@@ -71,7 +73,7 @@ class NotificationGroup(models.Model):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod
@@ -225,8 +227,9 @@ class NotificationGroup(models.Model):
             )
 
 
+@six.python_2_unicode_compatible
 class NotificationGroupUser(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Notification Group User"
         verbose_name_plural = "Notification Group Users"
         app_label = "main"
@@ -239,14 +242,15 @@ class NotificationGroupUser(models.Model):
         TimePattern, verbose_name="Time Pattern")
     user = models.ForeignKey(User, verbose_name="User")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s: %s" % (
             self.notification_group.name,
             self.time_pattern.name, self.user.username)
 
 
+@six.python_2_unicode_compatible
 class NotificationGroupOther(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Notification Group Other"
         verbose_name_plural = "Notification Group Others"
         app_label = "main"
@@ -262,7 +266,7 @@ class NotificationGroupOther(models.Model):
         "Method", max_length=16, choices=NOTIFICATION_METHOD_CHOICES)
     params = models.CharField("Params", max_length=256)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s: %s: %s" % (
             self.notification_group.name,
             self.time_pattern.name, self.notification_method,

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Clickhouse field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -234,6 +234,9 @@ class ArrayField(BaseField):
     def get_db_type(self):
         return "Array(%s)" % self.field_type.get_db_type()
 
+    def get_displayed_type(self):
+        return "Array(%s)" % self.field_type.get_db_type()
+
     def to_python(self, value):
         if not value or value == "[]":
             return []
@@ -353,6 +356,9 @@ class NestedField(ArrayField):
     def get_db_type(self):
         return "Nested (\n%s \n)" % self.field_type.get_create_sql()
 
+    def get_displayed_type(self):
+        return "Nested (\n%s \n)" % self.field_type.get_create_sql()
+
     @staticmethod
     def get_create_nested_sql(name, type):
         return "`%s` Array(%s)" % (name, type)
@@ -364,9 +370,10 @@ class NestedField(ArrayField):
             self._map_fields = self.field_type._fields_order[::]
             self._map_fields.remove(self.index_field)
             self._map_fields += [self.index_field]
-        return [{k: self.field_type._fields[k].to_python(v.strip("'")) for k, v in
-                 dict(zip(self._map_fields, v.split(":"))).iteritems()}
-                for v in value.split(",")]
+        return [{
+            k: self.field_type._fields[k].to_python(v.strip("'"))
+            for k, v in set(zip(self._map_fields, v.split(":")))
+        } for v in value.split(",")]
 
     def get_select_sql(self):
         if not self.index_field:

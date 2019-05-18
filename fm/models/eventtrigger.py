@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # EventTrigger
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -15,6 +16,7 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 
 
+@six.python_2_unicode_compatible
 class EventTrigger(models.Model):
     class Meta(object):
         db_table = "fm_eventtrigger"
@@ -44,5 +46,5 @@ class EventTrigger(models.Model):
     handler = models.CharField("Handler",
                                max_length=128, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s <<<%s>>>" % (self.event_class_re, self.condition)

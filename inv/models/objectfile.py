@@ -2,21 +2,23 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
+from __future__ import absolute_import
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ObjectIdField, FileField,
                                 DateTimeField, IntField)
 from mongoengine import signals
 # NOC modules
-from object import Object
+from .object import Object
 
 
+@six.python_2_unicode_compatible
 class ObjectFile(Document):
     """
     Inventory object
@@ -36,7 +38,7 @@ class ObjectFile(Document):
     size = IntField()
     mime_type = StringField()
 
-    def __unicode__(self):
+    def __str__(self):
         return unicode(self.name or self.id)
 
     def delete_file(self):

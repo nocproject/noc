@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # VPN
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
@@ -50,6 +51,7 @@ class RouteTargetItem(EmbeddedDocument):
     ("vc.VLAN", "vpn")
 ])
 @workflow
+@six.python_2_unicode_compatible
 class VPN(Document):
     meta = {
         "collection": "vpns",
@@ -79,7 +81,7 @@ class VPN(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

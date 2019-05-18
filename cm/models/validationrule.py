@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Validation Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import logging
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, DictField,
                                 ListField, EmbeddedDocumentField)
@@ -33,22 +34,25 @@ ACTIONS = [
 ]
 
 
+@six.python_2_unicode_compatible
 class SelectorItem(EmbeddedDocument):
     selector = ForeignKeyField(ManagedObjectSelector)
     action = StringField(choices=ACTIONS)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.action, self.selector.name)
 
 
+@six.python_2_unicode_compatible
 class ObjectItem(EmbeddedDocument):
     object = ForeignKeyField(ManagedObject)
     action = StringField(choices=ACTIONS)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s: %s" % (self.action, self.object.name)
 
 
+@six.python_2_unicode_compatible
 class ValidationRule(Document):
     meta = {
         "collection": "noc.validationrules",
@@ -64,7 +68,7 @@ class ValidationRule(Document):
     handler = StringField()
     config = DictField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def is_applicable_for(self, object):
@@ -95,7 +99,7 @@ class ValidationRule(Document):
 
     @classmethod
     def on_delete(cls, sender, document, **kwargs):
-        from validationpolicy import ValidationPolicy
+        from noc.cm.models.validationpolicy import ValidationPolicy
         logger.info("Deleting rule %s", document.name)
         for vp in ValidationPolicy.objects.filter(rules__rule=document):
             logger.info("Removing rule %s from policy %s",

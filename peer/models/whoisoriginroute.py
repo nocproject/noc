@@ -2,16 +2,17 @@
 # ---------------------------------------------------------------------
 # WhoisOriginRoute model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
 # Third-party modules
+import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 
 
+@six.python_2_unicode_compatible
 class WhoisOriginRoute(Document):
     """
     origin -> route
@@ -25,7 +26,7 @@ class WhoisOriginRoute(Document):
     origin = StringField(primary_key=True)
     routes = ListField(StringField())
 
-    def __unicode__(self):
+    def __str__(self):
         return self.as_set
 
     @classmethod

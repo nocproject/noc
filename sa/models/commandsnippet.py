@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import re
 import shlex
 # Django modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
@@ -21,6 +22,7 @@ from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 
 
+@six.python_2_unicode_compatible
 class CommandSnippet(models.Model):
     """
     Command snippet
@@ -48,7 +50,7 @@ class CommandSnippet(models.Model):
     #
     tags = TagsField(_("Tags"), null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):

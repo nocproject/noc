@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # EventClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import os
 from threading import Lock
 import operator
 # Third-party modules
+import six
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
 import cachetools
@@ -28,6 +29,7 @@ id_lock = Lock()
 handlers_lock = Lock()
 
 
+@six.python_2_unicode_compatible
 class EventClassVar(EmbeddedDocument):
     meta = {
         "strict": False
@@ -46,7 +48,7 @@ class EventClassVar(EmbeddedDocument):
     )
     required = fields.BooleanField(required=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __eq__(self, other):
@@ -56,6 +58,7 @@ class EventClassVar(EmbeddedDocument):
                 self.required == other.required)
 
 
+@six.python_2_unicode_compatible
 class EventDispositionRule(EmbeddedDocument):
     meta = {
         "strict": False
@@ -121,7 +124,7 @@ class EventDispositionRule(EmbeddedDocument):
     # Stop event disposition if True or continue with next rule
     stop_disposition = fields.BooleanField(required=False, default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.action, self.alarm_class.name)
 
     def __eq__(self, other):
@@ -139,6 +142,7 @@ class EventDispositionRule(EmbeddedDocument):
         return True
 
 
+@six.python_2_unicode_compatible
 class EventSuppressionRule(EmbeddedDocument):
     meta = {
         "strict": False
@@ -150,7 +154,7 @@ class EventSuppressionRule(EmbeddedDocument):
     window = fields.IntField(required=True, default=3600)
     suppress = fields.BooleanField(required=True, default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __eq__(self, other):
@@ -164,6 +168,7 @@ class EventSuppressionRule(EmbeddedDocument):
         )
 
 
+@six.python_2_unicode_compatible
 class EventPlugin(EmbeddedDocument):
     meta = {
         "strict": False
@@ -172,10 +177,11 @@ class EventPlugin(EmbeddedDocument):
     name = fields.StringField()
     config = fields.DictField(default={})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
+@six.python_2_unicode_compatible
 class EventClassCategory(nosql.Document):
     meta = {
         "collection": "noc.eventclasscategories",
@@ -185,7 +191,7 @@ class EventClassCategory(nosql.Document):
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -206,6 +212,7 @@ class EventClassCategory(nosql.Document):
     ("fm.ArchivedEvent", "event_class"),
     ("fm.ActiveEvent", "event_class")
 ])
+@six.python_2_unicode_compatible
 class EventClass(Document):
     """
     Event class
@@ -267,7 +274,7 @@ class EventClass(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _handlers_cache = {}
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

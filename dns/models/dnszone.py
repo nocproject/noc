@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DNSZone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ ZONE_REVERSE_IPV6 = "6"
 @on_delete_check(check=[
     ("dns.DNSZoneRecord", "zone")
 ])
+@six.python_2_unicode_compatible
 class DNSZone(models.Model):
     """
     DNS Zone
@@ -92,7 +93,7 @@ class DNSZone(models.Model):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @classmethod

@@ -6,9 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import AlarmPlugin
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
+from .base import AlarmPlugin
 
 
 class DiagnosticPlugin(AlarmPlugin):
