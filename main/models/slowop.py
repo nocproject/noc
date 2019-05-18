@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Slow operations registry
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,9 +10,9 @@
 import datetime
 import logging
 import concurrent.futures
-import cPickle
 import time
 # Third-party modules
+from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, FloatField, StringField
 # NOC modules
@@ -61,10 +61,10 @@ class SlowOp(Document):
                     f.result()
                 except Exception:
                     error_report()
-                so.pickled_result = cPickle.dumps(f.exception())
+                so.pickled_result = dumps(f.exception(), HIGHEST_PROTOCOL)
             else:
                 so.status = cls.STATUS_COMPLETE
-                so.pickled_result = cPickle.dumps(f.result())
+                so.pickled_result = dumps(f.result(), HIGHEST_PROTOCOL)
             so.duration = time.time() - t0
             so.save()
 
@@ -94,4 +94,4 @@ class SlowOp(Document):
         return self.status in (self.STATUS_COMPLETE, self.STATUS_FAILED)
 
     def result(self):
-        return cPickle.loads(str(self.pickled_result))
+        return loads(str(self.pickled_result))
