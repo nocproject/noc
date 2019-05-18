@@ -10,10 +10,10 @@
 import os
 import logging
 import threading
-import Queue
 import time
 import datetime
 # Third-party modules
+from six.moves.queue import Queue
 import mapnik2
 # NOC modules
 from noc.config import config
@@ -175,7 +175,7 @@ class TileTask(object):
         xml = str(map_to_xml(self.map))
         # Initializing workers
         self.log("Initializing %d workers" % self.nworkers)
-        queue = Queue.Queue(self.nworkers * 2)
+        queue = Queue(self.nworkers * 2)
         workers = []
         for i in range(self.nworkers):
             w = TileWorker(self.map, i, queue, xml)
