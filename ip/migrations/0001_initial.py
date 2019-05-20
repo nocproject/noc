@@ -22,7 +22,7 @@ class Migration(object):
             'ip_vrfgroup', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("VRF Group", unique=True, max_length=64)),
-                ('unique_addresses', models.BooleanField("Unique addresses in group"))
+                ('unique_addresses', models.BooleanField("Unique addresses in group", default=False))
             )
         )
 

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -153,7 +153,7 @@ class MapApplication(ExtApplication):
           access="write", api=True)
     def api_save(self, request, id):
         self.get_object_or_404(NetworkSegment, id=id)
-        data = self.deserialize(request.raw_post_data)
+        data = self.deserialize(request.body)
         data["id"] = id
         MapSettings.load_json(data, request.user.username)
         return {

@@ -44,7 +44,7 @@ class CSVApplication(Application):
                     if not model:
                         return self.response_not_found("Invalid model")
                     return self.render_plain_text(
-                        csv_export(model), mimetype="text/csv; encoding=utf-8"
+                        csv_export(model), content_type="text/csv; encoding=utf-8"
                     )
                 else:
                     return self.response_redirect(
@@ -163,7 +163,7 @@ class CSVApplication(Application):
 # Admin actions to export selected objects as CSV
 #
 def admin_csv_export(modeladmin, request, queryset):
-    return HttpResponse(csv_export(modeladmin.model, queryset), mimetype="text/csv; encoding=utf-8")
+    return HttpResponse(csv_export(modeladmin.model, queryset), content_type="text/csv; encoding=utf-8")
 
 
 admin_csv_export.short_description = "Export selected %(verbose_name_plural)s to CSV"

@@ -366,7 +366,7 @@ class ModelInline(object):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json({
                 "status": False,
@@ -434,7 +434,7 @@ class ModelInline(object):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json({
                 "status": False,

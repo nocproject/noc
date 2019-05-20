@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.style application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,4 +45,4 @@ class StyleApplication(ExtModelApplication):
     @view(url=r"^css/$", method=["GET"], access=True)
     def view_css(self, request):
         text = "\n\n".join([s.css for s in Style.objects.all()])
-        return self.render_plain_text(text, mimetype="text/css")
+        return self.render_plain_text(text, content_type="text/css")

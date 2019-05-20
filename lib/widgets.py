@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Form widgets
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ def lookup(request, func):
         q = request.GET["query"]
         if len(q) > 2:  # Ignore requests shorter than 3 letters
             result = list(func(q))
-    return HttpResponse("\n".join(result), mimetype='text/plain')
+    return HttpResponse("\n".join(result), content_type='text/plain')
 
 
 def tags_list(o):

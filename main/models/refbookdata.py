@@ -21,8 +21,8 @@ class RBDManader(models.Manager):
     Ref Book Data Manager
     """
     # Order by first field
-    def get_query_set(self):
-        return super(RBDManader, self).get_query_set().extra(order_by=["main_refbookdata.value[1]"])
+    def get_queryset(self):
+        return super(RBDManader, self).get_queryset().extra(order_by=["main_refbookdata.value[1]"])
 
 
 @six.python_2_unicode_compatible

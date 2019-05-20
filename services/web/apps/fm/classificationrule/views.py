@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.classificationrule application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
 
     @view(url="^test/$", method=["POST"], access="test", api=True)
     def api_test(self, request):
-        q = self.deserialize(request.raw_post_data)
+        q = self.deserialize(request.body)
         errors = []
         patterns = []
         result = False
