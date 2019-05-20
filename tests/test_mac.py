@@ -75,7 +75,7 @@ def test_mac_shift():
 
 
 def test_long():
-    assert long(MAC("AA:BB:CC:DD:EE:FF")) == 0xAABBCCDDEEFF
+    assert int(MAC("AA:BB:CC:DD:EE:FF")) == 0xAABBCCDDEEFF
 
 
 def test_int():

@@ -145,8 +145,8 @@ class IP(object):
             raise StopIteration
         s = IP.prefix(self.prefix.split("/")[0] + "/%d" % mask)
         maxmask = 32 if self.afi == "4" else 128
-        dist = long(2 ** (maxmask - mask))
-        for i in range(long(2 ** (mask - self.mask))):
+        dist = 2 ** (maxmask - mask)
+        for i in range(2 ** (mask - self.mask)):
             yield s
             s += dist
 

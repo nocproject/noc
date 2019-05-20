@@ -9,6 +9,7 @@
 # Python modules
 from functools import reduce
 # Third-party modules
+import six
 from mongoengine.fields import StringField, IntField, BooleanField, GeoPointField
 from mongoengine.queryset import Q
 from mongoengine.errors import NotUniqueError
@@ -260,7 +261,11 @@ class DocInline(object):
                         v = str(v.id)
                     else:
                         v = str(v)
-                elif type(v) not in (str, unicode, int, long, bool):
+                elif (
+                    not isinstance(v, six.integer_types) and
+                    not isinstance(v, six.string_types) and
+                    not isinstance(v, bool)
+                ):
                     if hasattr(v, "id"):
                         v = v.id
                     else:

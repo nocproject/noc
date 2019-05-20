@@ -14,6 +14,7 @@ import os
 import re
 import hashlib
 # Third-party modules
+import six
 from django.http import HttpResponse
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
@@ -284,7 +285,8 @@ class ExtDocApplication(ExtApplication):
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
-                elif type(v) not in (str, unicode, int, long, bool, dict):
+                elif (isinstance(v, six.string_types) or isinstance(v, six.integer_types) or
+                      isinstance(v, (bool, dict))):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
