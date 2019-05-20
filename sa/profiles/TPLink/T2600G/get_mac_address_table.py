@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+# Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
