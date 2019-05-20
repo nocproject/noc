@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Data type validators
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import re
@@ -88,7 +88,7 @@ def is_asn(v):
     False
     """
     try:
-        v = long(v)
+        v = int(v)
         return v > 0
     except ValueError:
         return False

@@ -32,7 +32,7 @@ class PrettyJSON(object):
             return indent("\"%s\"" % json_escape(o), i)
         elif isinstance(o, bool):
             return indent("true" if o else "false", i)
-        elif isinstance(o, (int, long)):
+        elif isinstance(o, six.integer_types):
             return indent("%d" % o, i)
         elif isinstance(o, float):
             return indent(str(o), i)

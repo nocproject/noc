@@ -9,6 +9,7 @@
 # Python modules
 from functools import reduce
 # Third-party modules
+import six
 from django.db.models.fields import CharField, BooleanField, IntegerField, FloatField, related
 from django.db.models import Q
 from django.db.utils import IntegrityError
@@ -284,7 +285,10 @@ class ModelInline(object):
                 r[f.name] = getattr(o, f.name)
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
-                if v is not None and not isinstance(v, (str, unicode, int, long, bool, list)):
+                if (
+                    v is not None and not isinstance(v, six.string_types) and
+                    not isinstance(v, six.integer_types) and not isinstance(v, (bool, list))
+                ):
                     v = unicode(v)
                 r[f.name] = v
             else:

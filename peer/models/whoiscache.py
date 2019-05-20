@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # WhoisCache
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -131,5 +131,5 @@ class WhoisCache(object):
         for p in cls.resolve_as_set_prefixes(as_set, optimize=True):
             m = int(p.split("/")[1])
             if m <= mask:
-                n += long(2 * (mask - m))
+                n += 2 * (mask - m)
         return n

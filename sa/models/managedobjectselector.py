@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
+import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
@@ -343,7 +344,7 @@ class ManagedObjectSelector(models.Model):
         """
         from .managedobject import ManagedObject
 
-        if type(s) in (int, long, str, unicode):
+        if isinstance(s, six.integer_types) or isinstance(s, six.string_types):
             s = [s]
         if not isinstance(s, list):
             raise ValueError("list required")

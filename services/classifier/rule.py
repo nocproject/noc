@@ -257,7 +257,7 @@ class Rule(object):
         pass
 
     def fixup_int_to_ip(self, v):
-        v = long(v)
+        v = int(v)
         return "%d.%d.%d.%d" % (
             v & 0xFF000000 >> 24,
             v & 0x00FF0000 >> 16,

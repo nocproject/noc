@@ -37,7 +37,7 @@ def set_pdu(community, varbinds, request_id=None, version=SNMP_v2c):
             v = e.encode_null()
         elif isinstance(value, six.string_types):
             v = e.encode_octet_string(value)
-        elif isinstance(value, (int, long)):
+        elif isinstance(value, six.integer_types):
             v = e.encode_int(value)
         else:
             raise ValueError("Unknown varbind type")
