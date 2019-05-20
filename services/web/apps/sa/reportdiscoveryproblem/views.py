@@ -2,14 +2,12 @@
 # ---------------------------------------------------------------------
 # Failed Scripts Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import six
-from itertools import ifilterfalse
 # Third-party modules
+import six
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
@@ -185,8 +183,7 @@ class ReportFilterApplication(SimpleReport):
 
         for discovery in rdp:
             mo = ManagedObject.get_by_id(discovery["key"])
-            for method in ifilterfalse(lambda x: x in exclude_method,
-                                       discovery["job"][0]["problems"]):
+            for method in [x for x in discovery["job"][0]["problems"] if x not in exclude_method]:
                 problem = discovery["job"][0]["problems"][method]
                 if filter_none_objects and not problem:
                     continue

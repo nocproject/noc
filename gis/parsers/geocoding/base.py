@@ -9,6 +9,8 @@
 # Python modules
 from __future__ import print_function
 import itertools
+# Thirs-party modules
+from six.moves import zip
 
 
 class GeocodingParser(object):
@@ -32,7 +34,7 @@ class GeocodingParser(object):
         Cy = 0.0
         a, b = itertools.tee(points)
         next(b, None)
-        for (xi, yi), (xii, yii) in itertools.izip(a, b):
+        for (xi, yi), (xii, yii) in zip(a, b):
             d = xi * yii - xii * yi
             A += d
             Cx += (xi + xii) * d

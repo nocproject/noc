@@ -9,11 +9,11 @@
 # Python modules
 from threading import Lock
 import operator
-from itertools import izip
 # Third-party modules
 import six
+from six.moves import zip
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, IntField, UUIDField)
+from mongoengine.fields import StringField, IntField, UUIDField
 import cachetools
 # NOC modules
 from noc.main.models.style import Style
@@ -82,9 +82,9 @@ class AlarmSeverity(Document):
         sevs = cls.get_ordered()
         weights = [(s.min_weight or 0) for s in sevs]
         severities = [s.severity for s in sevs]
-        dw = [float(w1 - w0) for w0, w1 in izip(weights, weights[1:])]
-        ds = [float(s1 - s0) for s0, s1 in izip(severities, severities[1:])]
-        alpha = [(s / w if w else 0) for s, w in izip(ds, dw)]
+        dw = [float(w1 - w0) for w0, w1 in zip(weights, weights[1:])]
+        ds = [float(s1 - s0) for s0, s1 in zip(severities, severities[1:])]
+        alpha = [(s / w if w else 0) for s, w in zip(ds, dw)]
         alpha += [alpha[-1]]
         return severities, weights, alpha
 

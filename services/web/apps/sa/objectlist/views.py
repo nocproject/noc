@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python module
-import itertools
 import bson
 # Third-party modules
 from django.db.models import Q as d_Q
@@ -93,7 +92,7 @@ class ObjectListApplication(ExtApplication):
         mq = None
         c_in = []
         c_nin = []
-        for cc in itertools.ifilter(lambda part: part.startswith("caps"), nq.keys()):
+        for cc in [part for part in nq if part.startswith("caps")]:
             """
             Caps: caps0=CapsID,caps1=CapsID:true....
             cq - caps query
