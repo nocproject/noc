@@ -10,10 +10,10 @@
 # Python modules
 import re
 import numpy as np
-from itertools import izip, dropwhile
+from itertools import dropwhile
 from collections import defaultdict
 # Third-party modules
-from six.moves import zip_longest
+from six.moves import zip_longest, zip
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -155,7 +155,7 @@ class Profile(BaseProfile):
         # if set(self.rx_ver.search(x).groups()) and self.rx_ver.search(y):
         if any(a) and any(b):
             r = list(dropwhile(lambda s: s == 0,
-                               [(int(a) > int(b)) - (int(a) < int(b)) for a, b in izip(a, b)   # noqa
+                               [(int(a) > int(b)) - (int(a) < int(b)) for a, b in zip(a, b)   # noqa
                                 if a is not None and b is not None]))
             return r[0] if r else 0
         else:
