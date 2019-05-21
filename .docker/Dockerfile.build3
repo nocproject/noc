@@ -27,7 +27,6 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev \
     libmemcached-dev \
     libressl-dev \
-    libssh2-dev \
     musl-dev \
     postgresql-dev \
     python3-dev \
@@ -35,6 +34,7 @@ RUN apk add --no-cache --virtual .build-deps \
 RUN pip3 install --no-cache --upgrade -r /opt/noc/requirements/docker3.txt \
     && pip3 install --no-cache --upgrade -r /opt/noc/requirements/test.txt
 
+RUN pip3 install cython
+
 COPY . /opt/noc
-RUN apk add --update --no-cache cython cython-dev \
-    && /usr/bin/cythonize -i speedup/*.pyx
+RUN /usr/bin/cythonize -i speedup/*.pyx
