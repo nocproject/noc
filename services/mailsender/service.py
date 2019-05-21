@@ -74,6 +74,8 @@ class MailSenderService(Service):
         for a in attachments:
             part = MIMEBase("application", "octet-stream")
             part.set_payload(a["data"])
+            if "transfer-encoding" in a:
+                part.add_header("Content-Transfer-Encoding", a["transfer-encoding"])
             part.add_header(
                 "Content-Disposition",
                 "attachment",
