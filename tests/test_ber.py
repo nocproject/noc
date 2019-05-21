@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # noc.core.snmp.ber tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,27 +12,40 @@ import pytest
 from noc.core.snmp.ber import BEREncoder, BERDecoder
 
 
-def test_decode_int():
+@pytest.mark.parametrize("raw, value", [
+    ("", 0),
+    ("\x00", 0),
+    ("\x01", 1),
+    ("\x7f", 127),
+    ("\x00\x80", 128),
+    ("\x01\x00", 256),
+    ("\x80", -128),
+    ("\xff\x7f", -129)
+])
+def test_decode_int(raw, value):
     decoder = BERDecoder()
-    assert decoder.parse_int("") == 0
-    assert decoder.parse_int("\x00") == 0
-    assert decoder.parse_int("\x01") == 1
-    assert decoder.parse_int("\x7f") == 127
-    assert decoder.parse_int("\x00\x80") == 128
-    assert decoder.parse_int("\x01\x00") == 256
-    assert decoder.parse_int("\x80") == -128
-    assert decoder.parse_int("\xff\x7f")
+    assert decoder.parse_int(raw) == value
 
 
-def test_decode_real():
+@pytest.mark.parametrize("raw, value", [
+    ("@", float("+inf")),
+    ("A", float("-inf")),
+    ("\x031E+0", float("1")),
+    ("\x0315E-1", float("1.5"))
+])
+def test_decode_real(raw, value):
     decoder = BERDecoder()
-    assert decoder.parse_real("@") == float("+inf")
-    assert decoder.parse_real("A") == float("-inf")
-    # Failed
-    # assert decoder.parse_real("B") == float("nan")
-    # assert decoder.parse_real("C") == float("-0")
-    assert decoder.parse_real("\x031E+0") == float("1")
-    assert decoder.parse_real("\x0315E-1") == float("1.5")
+    assert decoder.parse_real(raw) == value
+
+
+@pytest.mark.parametrize("raw, value", [
+    ("B", float("nan")),
+    ("C", float("-0"))
+])
+def test_decode_real_error(raw, value):
+    decoder = BERDecoder()
+    with pytest.raises(StandardError):
+        assert decoder.parse_real(raw) == value
 
 
 @pytest.mark.xfail()
@@ -40,11 +53,14 @@ def test_decode_p_bitstring():
     raise NotImplementedError()
 
 
-def test_decode_p_octetstring():
+@pytest.mark.parametrize("raw, value", [
+    ("test", "test"),
+    ("public", "public"),
+    ("", "")
+])
+def test_decode_p_octetstring(raw, value):
     decoder = BERDecoder()
-    assert decoder.parse_p_octetstring("test") == "test"
-    assert decoder.parse_p_octetstring("public") == "public"
-    assert decoder.parse_p_octetstring("") == ""
+    assert decoder.parse_p_octetstring(raw) == value
 
 
 @pytest.mark.xfail()
@@ -62,9 +78,12 @@ def test_decode_c_t61_string():
     raise NotImplementedError()
 
 
-def test_decode_null():
+@pytest.mark.parametrize("raw", [
+    "\x00"
+])
+def test_decode_null(raw):
     decoder = BERDecoder()
-    assert decoder.parse_null("\x00") is None
+    assert decoder.parse_null(raw) is None
 
 
 @pytest.mark.xfail()
@@ -72,9 +91,12 @@ def test_decode_a_ipaddress():
     raise NotImplementedError()
 
 
-def test_decode_p_oid():
+@pytest.mark.parametrize("raw, value", [
+    ("+\x06\x01\x02\x01\x01\x05\x00", "1.3.6.1.2.1.1.5.0")
+])
+def test_decode_p_oid(raw, value):
     decoder = BERDecoder()
-    assert decoder.parse_p_oid("+\x06\x01\x02\x01\x01\x05\x00") == "1.3.6.1.2.1.1.5.0"
+    assert decoder.parse_p_oid(raw) == value
 
 
 @pytest.mark.xfail()
@@ -135,11 +157,14 @@ def test_encode_tlv():
     raise NotImplementedError()
 
 
-def test_encode_octet_string():
+@pytest.mark.parametrize("raw, value", [
+    ("test", "\x04\x04test"),
+    ("public", "\x04\x06public"),
+    ("", "\x04\x00")
+])
+def test_encode_octet_string(raw, value):
     encoder = BEREncoder()
-    assert encoder.encode_octet_string("test") == "\x04\x04test"
-    assert encoder.encode_octet_string("public") == "\x04\x06public"
-    assert encoder.encode_octet_string("") == "\x04\x00"
+    assert encoder.encode_octet_string(raw) == value
 
 
 @pytest.mark.xfail()
@@ -168,19 +193,25 @@ def test_encode_int(value, raw):
     assert encoder.encode_int(value) == raw
 
 
-def test_encode_real():
+@pytest.mark.parametrize("raw, value", [
+    (float("+inf"), "\t\x01@"),
+    (float("-inf"), "\t\x01A"),
+    (float("nan"), "\t\x01B"),
+    (float("-0"), "\t\x01C"),
+    (float("1"), "\t\x080x031E+0"),
+    (float("1.5"), "\t\t0x0315E-1")
+])
+def test_encode_real(raw, value):
     encoder = BEREncoder()
-    assert encoder.encode_real(float("+inf")) == "\t\x01@"
-    assert encoder.encode_real(float("-inf")) == "\t\x01A"
-    assert encoder.encode_real(float("nan")) == "\t\x01B"
-    assert encoder.encode_real(float("-0")) == "\t\x01C"
-    assert encoder.encode_real(float("1")) == "\t\x080x031E+0"
-    assert encoder.encode_real(float("1.5")) == "\t\t0x0315E-1"
+    assert encoder.encode_real(raw) == value
 
 
-def test_encode_null():
+@pytest.mark.parametrize("value", [
+    "\x05\x00"
+])
+def test_encode_null(value):
     encoder = BEREncoder()
-    assert encoder.encode_null() == "\x05\x00"
+    assert encoder.encode_null() == value
 
 
 @pytest.mark.parametrize("oid,raw", [
