@@ -24,18 +24,18 @@ class UserProfileManager(models.Manager):
     User Profile Manager
     Leave only current user's profile
     """
-    def get_query_set(self):
+    def get_queryset(self):
         s = super(UserProfileManager, self)
         user = get_user()
         if user:
             # Create profile when necessary
             try:
-                s.get_query_set().get(user=user)
+                s.get_queryset().get(user=user)
             except UserProfile.DoesNotExist:
                 UserProfile(user=user).save()
-            return s.get_query_set().filter(user=user)
+            return s.get_queryset().filter(user=user)
         else:
-            return s.get_query_set()
+            return s.get_queryset()
 
 
 @on_delete_check(check=[

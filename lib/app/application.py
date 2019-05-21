@@ -323,11 +323,11 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         return HttpResponse(data, content_type=content_type)
 
     @staticmethod
-    def render_plain_text(text, mimetype="text/plain"):
+    def render_plain_text(text, content_type="text/plain"):
         """
         Render plain/text response
         """
-        return HttpResponse(text, mimetype=mimetype)
+        return HttpResponse(text, content_type=content_type)
 
     @staticmethod
     def render_json(obj, status=200):
@@ -335,7 +335,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         Create serialized JSON-encoded response
         """
         return HttpResponse(ujson.dumps(obj),
-                            mimetype="text/json", status=status)
+                            content_type="text/json", status=status)
 
     def render_success(self, request, subject=None, text=None):
         """

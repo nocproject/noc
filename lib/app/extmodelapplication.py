@@ -487,7 +487,7 @@ class ExtModelApplication(ExtApplication):
     def api_create(self, request):
         if request.META.get("CONTENT_TYPE") == 'application/json':
             attrs, m2m_attrs = self.split_mtm(
-                self.deserialize(request.raw_post_data))
+                self.deserialize(request.body))
         else:
             attrs, m2m_attrs = self.split_mtm(
                 self.deserialize_form(request))
@@ -495,7 +495,7 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data if not request._read_started else request, e)
+            self.logger.info("Bad request: %r (%s)", request.body if not request._read_started else request, e)
             return self.render_json(
                 {
                     "success": False,
@@ -583,7 +583,7 @@ class ExtModelApplication(ExtApplication):
     def api_update(self, request, id):
         if request.META.get("CONTENT_TYPE") == 'application/json':
             attrs, m2m_attrs = self.split_mtm(
-                self.deserialize(request.raw_post_data))
+                self.deserialize(request.body))
         else:
             attrs, m2m_attrs = self.split_mtm(
                 self.deserialize_form(request))
@@ -591,7 +591,7 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(attrs)
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data if not request._read_started else request, e)
+            self.logger.info("Bad request: %r (%s)", request.body if not request._read_started else request, e)
             return self.render_json(
                 {
                     "success": False,
@@ -697,11 +697,11 @@ class ExtModelApplication(ExtApplication):
             "ids": ListOfParameter(element=ModelParameter(self.model),
                                    convert=True)
         })
-        rv = self.deserialize(request.raw_post_data)
+        rv = self.deserialize(request.body)
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
+            self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.render_json({
                 "status": False,
                 "message": "Bad request",

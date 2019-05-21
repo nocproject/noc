@@ -185,7 +185,7 @@ class Site(object):
                             if ct and ("text/json" in ct or
                                        "application/json" in ct):
                                 try:
-                                    g = ujson.loads(request.raw_post_data)
+                                    g = ujson.loads(request.body)
                                 except ValueError as e:
                                     logger.error("Unable to decode JSON: %s", e)
                                     errors = "Unable to decode JSON: %s" % e
@@ -209,7 +209,7 @@ class Site(object):
                         })
                         status = 200 if ext_format else 400  # OK or BAD_REQUEST
                         return HttpResponse(r, status=status,
-                                            mimetype="text/json; charset=utf-8")
+                                            content_type="text/json; charset=utf-8")
                 # Log API call
                 if to_log_api_call:
                     a = {}
@@ -217,7 +217,7 @@ class Site(object):
                         ct = request.META.get("CONTENT_TYPE")
                         if ct and ("text/json" in ct or
                                    "application/json" in ct):
-                            a = json.loads(request.raw_post_data)
+                            a = json.loads(request.body)
                         else:
                             a = dict((k, v[0] if len(v) == 1 else v)
                                      for k, v in request.POST.lists())
@@ -252,14 +252,14 @@ class Site(object):
                 r = HttpResponse(
                     content=error_report(logger=app_logger),
                     status=500,
-                    mimetype="text/plain; charset=utf-8"
+                    content_type="text/plain; charset=utf-8"
                 )
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
                     r = HttpResponse(
                         json.dumps(r),
-                        mimetype="text/json; charset=utf-8"
+                        content_type="text/json; charset=utf-8"
                     )
                 except Exception:
                     error_report(logger=app_logger)

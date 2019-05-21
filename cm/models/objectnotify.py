@@ -29,8 +29,8 @@ class ObjectNotify(models.Model):
     administrative_domain = models.ForeignKey(AdministrativeDomain,
                                               verbose_name="Administrative Domain",
                                               blank=True, null=True)
-    notify_immediately = models.BooleanField("Notify Immediately")
-    notify_delayed = models.BooleanField("Notify Delayed")
+    notify_immediately = models.BooleanField("Notify Immediately", default=False)
+    notify_delayed = models.BooleanField("Notify Delayed", default=False)
     notification_group = models.ForeignKey(NotificationGroup,
                                            verbose_name="Notification Group")
 

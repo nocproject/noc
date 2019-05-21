@@ -12,19 +12,5 @@ from django.db.backends.postgresql_psycopg2.base import \
 
 
 class DatabaseWrapper(PGDatabaseWrapper):
-    def _enter_transaction_management(self, managed):
-        """
-        Switch the isolation level when needing transaction support, so that
-        the same transaction is visible across all the queries.
-        """
-        pass
-
-    def _leave_transaction_management(self, managed):
-        """
-        If the normal operating mode is "autocommit", switch back to that when
-        leaving transaction management.
-        """
-        pass
-
-    def _commit(self):
-        pass
+    def _savepoint_allowed(self):
+        return False

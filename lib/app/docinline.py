@@ -325,7 +325,7 @@ class DocInline(object):
     def api_create(self, request, parent):
         parent = self.app.get_object_or_404(self.parent_model, id=ObjectId(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json(
                 {
@@ -334,15 +334,6 @@ class DocInline(object):
                     "traceback": str(e)
                 },
                 status=self.app.BAD_REQUEST
-            )
-        except InterfaceTypeError as e:
-            return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                },
-                status=self.BAD_REQUEST
             )
         try:
             # Exclude callable values from query
@@ -399,7 +390,7 @@ class DocInline(object):
     def api_update(self, request, parent, id):
         parent = self.app.get_object_or_404(self.parent_model, id=ObjectId(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json(
                 {

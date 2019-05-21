@@ -352,7 +352,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        r = ujson.loads(request.raw_post_data).get("names", [])
+        r = ujson.loads(request.body).get("names", [])
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
@@ -375,7 +375,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        r = ujson.loads(request.raw_post_data).get("names", [])
+        r = ujson.loads(request.body).get("names", [])
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
@@ -531,7 +531,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=int(id))
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        d = ujson.loads(request.raw_post_data)
+        d = ujson.loads(request.body)
         if "id" in d:
             i = self.get_object_or_404(Interface, id=d["id"])
             if i.managed_object.id != o.id:
@@ -671,7 +671,7 @@ class ManagedObjectApplication(ExtModelApplication):
             c = request.GET["cleanup"].strip().lower()
             cleanup = c not in ("no", "false", "0")
         cdb = o.get_confdb(cleanup=cleanup)
-        return self.render_plain_text(cdb.dump("json"), mimetype="text/json")
+        return self.render_plain_text(cdb.dump("json"), content_type="text/json")
 
     @view(
         url=r"^(?P<id>\d+)/confdb/$", method=["POST"],
@@ -765,7 +765,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return {
                 "error": "Script not found: %s" % name
             }
-        params = self.deserialize(request.raw_post_data)
+        params = self.deserialize(request.body)
         try:
             result = o.scripts[name](**params)
         except Exception as e:
@@ -788,7 +788,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return {
                 "error": "Script not found: commands"
             }
-        params = self.deserialize(request.raw_post_data)
+        params = self.deserialize(request.body)
         try:
             result = o.scripts.commands(**params)
         except Exception as e:
@@ -864,7 +864,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         a = self.get_object_or_404(Action, name=action)
         # @todo: Check access
-        body = request.raw_post_data
+        body = request.body
         if body:
             args = ujson.loads(body)
         else:
