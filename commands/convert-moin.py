@@ -4,7 +4,7 @@
 # USAGE:
 # python manage.py convert-moin [--encoding=charset] [--language=lang] [--tags=<taglist>] <path to moin data/ >
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,9 +16,8 @@ import re
 import stat
 import datetime
 import sys
-import types
 import gc
-# Django modules
+# Third-party modules
 from django.contrib.auth.models import User
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -74,7 +73,7 @@ class Command(BaseCommand):
     #
 
     def out(self, s):
-        if isinstance(s, types.UnicodeType):
+        if isinstance(s, unicode):
             sys.stdout.write(s.encode("utf-8"))
         else:
             sys.stdout.write(unicode(s, self.encoding).encode("utf-8"))
