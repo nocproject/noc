@@ -74,7 +74,7 @@ class DNSZone(models.Model):
         Project, verbose_name="Project",
         null=True, blank=True, related_name="dnszone_set")
     # @todo: Rename to is_provisioned
-    is_auto_generated = models.BooleanField(_("Auto generated?"))
+    is_auto_generated = models.BooleanField(_("Auto generated?"), default=False)
     serial = models.IntegerField(_("Serial"), default=0)
     profile = models.ForeignKey(DNSZoneProfile,
                                 verbose_name=_("Profile"))

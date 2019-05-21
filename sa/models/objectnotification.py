@@ -32,17 +32,17 @@ class ObjectNotification(models.Model):
         NotificationGroup,
         verbose_name=_("Notification Group"))
     # Events
-    config_changed = models.BooleanField(_("Config changed"))
-    alarm_risen = models.BooleanField(_("Alarm risen"))
-    alarm_reopened = models.BooleanField(_("Alarm reopened"))
-    alarm_cleared = models.BooleanField(_("Alarm cleared"))
-    alarm_commented = models.BooleanField(_("Alarm commented"))
-    new = models.BooleanField(_("New"))
-    deleted = models.BooleanField(_("Deleted"))
-    version_changed = models.BooleanField(_("Version changed"))
-    interface_changed = models.BooleanField(_("Interface changed"))
-    script_failed = models.BooleanField(_("Script failed"))
-    config_policy_violation = models.BooleanField(_("Config policy violation"))
+    config_changed = models.BooleanField(_("Config changed"), default=False)
+    alarm_risen = models.BooleanField(_("Alarm risen"), default=False)
+    alarm_reopened = models.BooleanField(_("Alarm reopened"), default=False)
+    alarm_cleared = models.BooleanField(_("Alarm cleared"), default=False)
+    alarm_commented = models.BooleanField(_("Alarm commented"), default=False)
+    new = models.BooleanField(_("New"), default=False)
+    deleted = models.BooleanField(_("Deleted"), default=False)
+    version_changed = models.BooleanField(_("Version changed"), default=False)
+    interface_changed = models.BooleanField(_("Interface changed"), default=False)
+    script_failed = models.BooleanField(_("Script failed"), default=False)
+    config_policy_violation = models.BooleanField(_("Config policy violation"), default=False)
 
     def __str__(self):
         return u"%s, %s" % (self.selector, self.notification_group)
