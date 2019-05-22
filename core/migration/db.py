@@ -116,7 +116,7 @@ class DB(object):
         )
         self.execute(sql)
 
-    def mock_model(self, model_name, db_table, db_tablespace="",
+    def mock_model(self, model_name, db_table,
                    pk_field_name="id", pk_field_type=AutoField,
                    pk_field_args=None, pk_field_kwargs=None):
         pk_field_args = pk_field_args or []
@@ -125,7 +125,7 @@ class DB(object):
         class MockOptions(object):
             def __init__(self):
                 self.db_table = db_table
-                self.db_tablespace = db_tablespace
+                self.db_tablespace = ""
                 self.object_name = model_name
                 self.module_name = model_name.lower()
 
