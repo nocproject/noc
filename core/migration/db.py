@@ -45,11 +45,11 @@ class DB(object):
         self.execute_deferred_sql()
 
     def delete_table(self, table_name, cascade=True):
-        params = [self.quote_name(table_name)]
+        tn = self.quote_name(table_name)
         if cascade:
-            self.execute("DROP TABLE %s CASCADE;", params)
+            self.execute("DROP TABLE %s CASCADE;" % tn)
         else:
-            self.execute("DROP TABLE %s;", params)
+            self.execute("DROP TABLE %s;" % tn)
 
     def add_column(self, table_name, name, field):
         sql = "ALTER TABLE %s ADD COLUMN %s;" % (
