@@ -13,8 +13,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("main", "0017_initial_userprofilecontacts"),)
+    depends_on = [("main", "0017_initial_userprofilecontacts")]
 
     def migrate(self):
         NotificationGroup = self.db.mock_model(

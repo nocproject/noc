@@ -12,10 +12,10 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
 
-    depends_on = (
+    depends_on = [
         ("dns", "0034_finish_tag_migration"), ("ip", "0024_finish_tag_migration"),
         ("peer", "0037_finish_tag_migration"), ("sa", "0063_finish_tag_migration"), ("vc", "0022_finish_tag_migration")
-    )
+    ]
 
     def migrate(self):
         c = self.mongo_db.noc.tags

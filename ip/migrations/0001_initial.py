@@ -13,8 +13,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("peer", "0001_initial"),)
+    depends_on = [("peer", "0001_initial")]
 
     def migrate(self):
 

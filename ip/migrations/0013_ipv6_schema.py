@@ -14,7 +14,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-    depends_on = (("main", "0027_style"),)
+    depends_on = [("main", "0027_style")]
 
     def migrate(self):
         AFI_CHOICES = [("4", "IPv4"), ("6", "IPv6")]

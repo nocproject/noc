@@ -13,8 +13,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("main", "0022_pyrule_is_builtin"),)
+    depends_on = [("main", "0022_pyrule_is_builtin")]
 
     def migrate(self):
         PyRule = self.db.mock_model(model_name="PyRule", db_table="main_pyrule")

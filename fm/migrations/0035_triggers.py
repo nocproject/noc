@@ -13,8 +13,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("main", "0037_template"),)
+    depends_on = [("main", "0037_template")]
 
     def migrate(self):
         Template = self.db.mock_model(

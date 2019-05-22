@@ -13,7 +13,9 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-    depends_on = (("project", "0001_initial"),)
+    depends_on = [
+        ("project", "0001_initial")
+    ]
 
     def migrate(self):
         # Create .project

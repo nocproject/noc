@@ -6,14 +6,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("sa", "0008_copy_objects"),)
+    depends_on = [("sa", "0008_copy_objects")]
 
     def migrate(self):
         self.db.execute("DROP INDEX cm_config_managed_object_id")
