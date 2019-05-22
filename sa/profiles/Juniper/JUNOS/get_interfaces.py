@@ -216,7 +216,7 @@ class Script(BaseScript):
             # Get description
             match = self.rx_phy_description.search(phy)
             if match and match.group("description") != "-=unused=-":
-                iface["description"] = match.group("description")
+                iface["description"] = match.group("description").decode("ascii", "ignore")
             # Get ifindex
             match = self.rx_phy_ifindex.search(phy)
             if match:
@@ -254,7 +254,7 @@ class Script(BaseScript):
                 # Get description
                 match = self.rx_phy_description.search(s)
                 if match:
-                    si["description"] = match.group("description")
+                    si["description"] = match.group("description").decode("ascii", "ignore")
                 # Get vlans
                 vlan_ids = []
                 match = self.rx_flags_vlan.search(s)
