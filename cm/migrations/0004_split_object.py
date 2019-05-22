@@ -19,10 +19,7 @@ class Migration(BaseMigration):
     def migrate(self):
         Activator = self.db.mock_model(
             model_name="Activator",
-            db_table="sa_activator",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_activator"
         )
 
         # Model "Config"
@@ -50,17 +47,11 @@ class Migration(BaseMigration):
         # Mock Models
         Config = self.db.mock_model(
             model_name="Config",
-            db_table="cm_config",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="cm_config"
         )
         ObjectCategory = self.db.mock_model(
             model_name="ObjectCategory",
-            db_table="cm_objectcategory",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="cm_objectcategory"
         )
 
         # M2M field "Config.categories"
@@ -87,17 +78,11 @@ class Migration(BaseMigration):
         # Mock Models
         PrefixList = self.db.mock_model(
             model_name="PrefixList",
-            db_table="cm_prefixlist",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="cm_prefixlist"
         )
         ObjectCategory = self.db.mock_model(
             model_name="ObjectCategory",
-            db_table="cm_objectcategory",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="cm_objectcategory"
         )
 
         # M2M field "PrefixList.categories"
@@ -123,12 +108,11 @@ class Migration(BaseMigration):
         )
         # Mock Models
         DNS = self.db.mock_model(
-            model_name="DNS", db_table="cm_dns", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
+            model_name="DNS", db_table="cm_dns", pk_field_name="id", pk_field_type=models.AutoField
         )
         ObjectCategory = self.db.mock_model(
             model_name="ObjectCategory",
             db_table="cm_objectcategory",
-            db_tablespace="",
             pk_field_name="id",
             pk_field_type=models.AutoField
         )

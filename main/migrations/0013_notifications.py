@@ -27,24 +27,15 @@ class Migration(BaseMigration):
         # Mock Models
         NotificationGroup = self.db.mock_model(
             model_name='NotificationGroup',
-            db_table='main_notificationgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_notificationgroup'
         )
         TimePattern = self.db.mock_model(
             model_name='TimePattern',
-            db_table='main_timepattern',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_timepattern'
         )
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
 
         # Model 'NotificationGroupUser'
@@ -63,17 +54,11 @@ class Migration(BaseMigration):
         # Mock Models
         NotificationGroup = self.db.mock_model(
             model_name='NotificationGroup',
-            db_table='main_notificationgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_notificationgroup'
         )
         TimePattern = self.db.mock_model(
             model_name='TimePattern',
-            db_table='main_timepattern',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_timepattern'
         )
 
         # Model 'NotificationGroupOther'

@@ -17,10 +17,7 @@ class Migration(BaseMigration):
         # Mock Models
         AuthProfile = self.db.mock_model(
             model_name="AuthProfile",
-            db_table="sa_authprofile",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_authprofile"
         )
         #
         self.db.create_table(

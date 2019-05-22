@@ -19,17 +19,11 @@ class Migration(BaseMigration):
         # Mock Models
         KBEntry = self.db.mock_model(
             model_name="KBEntry",
-            db_table="kb_kbentry",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbentry"
         )
         User = self.db.mock_model(
             model_name="User",
-            db_table="auth_user",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="auth_user"
         )
 
         # Model "KBEntryPreviewLog"

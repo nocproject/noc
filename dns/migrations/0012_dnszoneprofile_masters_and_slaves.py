@@ -17,17 +17,11 @@ class Migration(BaseMigration):
         # Mock Models
         DNSZoneProfile = self.db.mock_model(
             model_name='DNSZoneProfile',
-            db_table='dns_dnszoneprofile',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='dns_dnszoneprofile'
         )
         DNSServer = self.db.mock_model(
             model_name='DNSServer',
-            db_table='dns_dnsserver',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='dns_dnsserver'
         )
 
         # M2M field 'DNSZoneProfile.masters'
@@ -41,17 +35,11 @@ class Migration(BaseMigration):
         # Mock Models
         DNSZoneProfile = self.db.mock_model(
             model_name='DNSZoneProfile',
-            db_table='dns_dnszoneprofile',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='dns_dnszoneprofile'
         )
         DNSServer = self.db.mock_model(
             model_name='DNSServer',
-            db_table='dns_dnsserver',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='dns_dnsserver'
         )
 
         # M2M field 'DNSZoneProfile.slaves'

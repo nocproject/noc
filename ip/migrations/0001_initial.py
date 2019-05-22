@@ -29,10 +29,7 @@ class Migration(BaseMigration):
         # Mock Models
         VRFGroup = self.db.mock_model(
             model_name='VRFGroup',
-            db_table='ip_vrfgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='ip_vrfgroup'
         )
 
         # Model 'VRF'
@@ -49,13 +46,10 @@ class Migration(BaseMigration):
         # Mock Models
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
         VRF = self.db.mock_model(
-            model_name='VRF', db_table='ip_vrf', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='VRF', db_table='ip_vrf'
         )
 
         # Model 'IPv4BlockAccess'
@@ -71,17 +65,14 @@ class Migration(BaseMigration):
 
         # Mock Models
         VRF = self.db.mock_model(
-            model_name='VRF', db_table='ip_vrf', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='VRF', db_table='ip_vrf'
         )
         AS = self.db.mock_model(
-            model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='AS', db_table='peer_as'
         )
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
 
         # Model 'IPv4Block'
@@ -99,14 +90,11 @@ class Migration(BaseMigration):
 
         # Mock Models
         VRF = self.db.mock_model(
-            model_name='VRF', db_table='ip_vrf', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='VRF', db_table='ip_vrf'
         )
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
 
         # Model 'IPv4Address'

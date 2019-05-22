@@ -14,7 +14,6 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-
         # Model 'DNSZoneProfile'
         self.db.create_table(
             'dns_dnszoneprofile', (
@@ -34,10 +33,7 @@ class Migration(BaseMigration):
         # Mock Models
         DNSZoneProfile = self.db.mock_model(
             model_name='DNSZoneProfile',
-            db_table='dns_dnszoneprofile',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='dns_dnszoneprofile'
         )
 
         # Model 'DNSZone'
@@ -62,17 +58,11 @@ class Migration(BaseMigration):
         # Mock Models
         DNSZone = self.db.mock_model(
             model_name='DNSZone',
-            db_table='dns_dnszone',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='dns_dnszone'
         )
         DNSZoneRecordType = self.db.mock_model(
             model_name='DNSZoneRecordType',
-            db_table='dns_dnszonerecordtype',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='dns_dnszonerecordtype'
         )
 
         # Model 'DNSZoneRecord'

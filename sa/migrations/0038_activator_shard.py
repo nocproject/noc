@@ -19,10 +19,7 @@ class Migration(BaseMigration):
     def migrate(self):
         Shard = self.db.mock_model(
             model_name="Shard",
-            db_table="main_shard",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_shard"
         )
 
         self.db.add_column("sa_activator", "shard", models.ForeignKey(Shard, verbose_name="Shard", null=True, blank=True))

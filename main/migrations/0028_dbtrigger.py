@@ -16,10 +16,7 @@ class Migration(BaseMigration):
     def migrate(self):
         PyRule = self.db.mock_model(
             model_name='PyRule',
-            db_table='main_pyrule',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_pyrule'
         )
         self.db.create_table(
             'main_dbtrigger', (

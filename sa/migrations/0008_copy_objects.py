@@ -38,10 +38,7 @@ class Migration(BaseMigration):
         #
         ManagedObject = self.db.mock_model(
             model_name='ManagedObject',
-            db_table='sa_managedobject',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobject'
         )
         self.db.add_column("cm_config", "managed_object", models.ForeignKey(ManagedObject, null=True))
 
@@ -81,17 +78,11 @@ class Migration(BaseMigration):
         # Migrate ObjectNotify
         ObjectGroup = self.db.mock_model(
             model_name='ObjectGroup',
-            db_table='sa_objectgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_objectgroup'
         )
         AdministrativeDomain = self.db.mock_model(
             model_name='AdministrativeDomain',
-            db_table='sa_administrativedomain',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_administrativedomain'
         )
 
         self.db.add_column(

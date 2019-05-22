@@ -17,10 +17,7 @@ class Migration(BaseMigration):
         # Mock models
         ManagedObjectSelector = self.db.mock_model(
             model_name="ManagedObjectSelector",
-            db_table="sa_managedobjectselector",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobjectselector"
         )
 
         # Model "ReduceTask"

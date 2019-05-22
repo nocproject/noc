@@ -15,10 +15,7 @@ class Migration(BaseMigration):
     def migrate(self):
         Activator = self.db.mock_model(
             model_name='Activator',
-            db_table='sa_activator',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_activator'
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_activator",

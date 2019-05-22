@@ -17,17 +17,11 @@ class Migration(BaseMigration):
         # Mock Models
         ManagedObjectSelector = self.db.mock_model(
             model_name="ManagedObjectSelector",
-            db_table="sa_managedobjectselector",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobjectselector"
         )
         NotificationGroup = self.db.mock_model(
             model_name="NotificationGroup",
-            db_table="main_notificationgroup",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_notificationgroup"
         )
         # Model "Activator"
         self.db.create_table(

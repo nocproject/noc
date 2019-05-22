@@ -18,14 +18,11 @@ class Migration(BaseMigration):
     def migrate(self):
         AFI_CHOICES = [("4", "IPv4"), ("6", "IPv6")]
         VRF = self.db.mock_model(
-            model_name="VRF", db_table="ip_vrf", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
+            model_name="VRF", db_table="ip_vrf"
         )
         TerminationGroup = self.db.mock_model(
             model_name="TerminationGroup",
-            db_table="sa_terminationgroup",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_terminationgroup"
         )
         # Adding model "IPv4AddressRange"
         self.db.create_table(

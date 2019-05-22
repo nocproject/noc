@@ -21,10 +21,7 @@ class Migration(BaseMigration):
         # Mock Models
         RefBook = self.db.mock_model(
             model_name='RefBook',
-            db_table='main_refbook',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_refbook'
         )
 
         # Model 'RefBookData'

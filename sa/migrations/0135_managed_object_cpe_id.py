@@ -21,5 +21,5 @@ class Migration(BaseMigration):
             "sa_managedobject", "global_cpe_id",
             models.CharField("Global CPE ID", max_length=128, null=True, blank=True)
         )
-        self.db.create_index("sa_managedobject", ["local_cpe_id"], unique=False, db_tablespace="")
-        self.db.create_index("sa_managedobject", ["global_cpe_id"], unique=True, db_tablespace="")
+        self.db.create_index("sa_managedobject", ["local_cpe_id"], unique=False)
+        self.db.create_index("sa_managedobject", ["global_cpe_id"], unique=True)

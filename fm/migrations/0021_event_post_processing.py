@@ -17,24 +17,15 @@ class Migration(BaseMigration):
         # Mock Models
         EventClass = self.db.mock_model(
             model_name='EventClass',
-            db_table='fm_eventclass',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventclass'
         )
         EventPriority = self.db.mock_model(
             model_name='EventPriority',
-            db_table='fm_eventpriority',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventpriority'
         )
         EventCategory = self.db.mock_model(
             model_name='EventCategory',
-            db_table='fm_eventcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventcategory'
         )
 
         # Model 'EventPostProcessingRule'
@@ -66,10 +57,7 @@ class Migration(BaseMigration):
         # Mock Models
         EventPostProcessingRule = self.db.mock_model(
             model_name='EventPostProcessingRule',
-            db_table='fm_eventpostprocessingrule',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventpostprocessingrule'
         )
 
         # Model 'EventPostProcessingRE'

@@ -21,10 +21,7 @@ class Migration(BaseMigration):
         # Create .project
         Project = self.db.mock_model(
             model_name="Project",
-            db_table="project_project",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="project_project"
         )
         for t in ("peer_as", "peer_peer"):
             self.db.add_column(t, "project", models.ForeignKey(Project, verbose_name="Project", null=True, blank=True))

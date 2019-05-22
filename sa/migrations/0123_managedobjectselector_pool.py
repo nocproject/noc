@@ -16,4 +16,4 @@ class Migration(BaseMigration):
 
     def migrate(self):
         self.db.add_column("sa_managedobjectselector", "filter_pool", DocumentReferenceField("self", null=True, blank=True))
-        self.db.create_index("sa_managedobjectselector", ["filter_pool"], unique=False, db_tablespace="")
+        self.db.create_index("sa_managedobjectselector", ["filter_pool"], unique=False)

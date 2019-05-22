@@ -33,17 +33,11 @@ class Migration(BaseMigration):
         # Mock Models
         AdministrativeDomain = self.db.mock_model(
             model_name='AdministrativeDomain',
-            db_table='sa_administrativedomain',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_administrativedomain'
         )
         Activator = self.db.mock_model(
             model_name='Activator',
-            db_table='sa_activator',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_activator'
         )
         self.db.create_table(
             'sa_managedobject', (
@@ -68,17 +62,11 @@ class Migration(BaseMigration):
         # Mock Models
         ManagedObject = self.db.mock_model(
             model_name='ManagedObject',
-            db_table='sa_managedobject',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobject'
         )
         ObjectGroup = self.db.mock_model(
             model_name='ObjectGroup',
-            db_table='sa_objectgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_objectgroup'
         )
 
         # M2M field 'ManagedObject.groups'
@@ -93,24 +81,15 @@ class Migration(BaseMigration):
         # Mock Models
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
         AdministrativeDomain = self.db.mock_model(
             model_name='AdministrativeDomain',
-            db_table='sa_administrativedomain',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_administrativedomain'
         )
         ObjectGroup = self.db.mock_model(
             model_name='ObjectGroup',
-            db_table='sa_objectgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_objectgroup'
         )
 
         # Model 'UserAccess'

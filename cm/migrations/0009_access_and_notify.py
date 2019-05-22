@@ -31,10 +31,7 @@ class Migration(BaseMigration):
 
         ObjectLocation = self.db.mock_model(
             model_name='ObjectLocation',
-            db_table='cm_objectlocation',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectlocation'
         )
 
         self.db.execute("INSERT INTO cm_objectlocation(name,description) values(%s,%s)", ["default", "default location"])
@@ -48,24 +45,15 @@ class Migration(BaseMigration):
         # Mock Models
         ObjectCategory = self.db.mock_model(
             model_name='ObjectCategory',
-            db_table='cm_objectcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectcategory'
         )
         ObjectLocation = self.db.mock_model(
             model_name='ObjectLocation',
-            db_table='cm_objectlocation',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectlocation'
         )
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
 
         # Model 'ObjectAccess'
@@ -82,17 +70,11 @@ class Migration(BaseMigration):
         # Mock Models
         ObjectCategory = self.db.mock_model(
             model_name='ObjectCategory',
-            db_table='cm_objectcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectcategory'
         )
         ObjectLocation = self.db.mock_model(
             model_name='ObjectLocation',
-            db_table='cm_objectlocation',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectlocation'
         )
 
         # Model 'ObjectNotify'

@@ -19,10 +19,7 @@ class Migration(BaseMigration):
         # Create .state
         Project = self.db.mock_model(
             model_name="Project",
-            db_table="project_project",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="project_project"
         )
         for t in ["ip_vrf", "ip_prefix", "ip_address"]:
             self.db.add_column(t, "project", models.ForeignKey(Project, verbose_name="Project", null=True, blank=True))

@@ -18,42 +18,27 @@ class Migration(BaseMigration):
     def migrate(self):
         Template = self.db.mock_model(
             model_name="Template",
-            db_table="main_template",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_template"
         )
 
         TimePattern = self.db.mock_model(
             model_name="TimePattern",
-            db_table="main_timepattern",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_timepattern"
         )
 
         ManagedObjectSelector = self.db.mock_model(
             model_name="ManagedObjectSelector",
-            db_table="sa_managedobjectselector",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobjectselector"
         )
 
         NotificationGroup = self.db.mock_model(
             model_name="NotificationGroup",
-            db_table="main_notificationgroup",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_notificationgroup"
         )
 
         PyRule = self.db.mock_model(
             model_name="PyRule",
-            db_table="main_pyrule",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_pyrule"
         )
 
         self.db.create_table(

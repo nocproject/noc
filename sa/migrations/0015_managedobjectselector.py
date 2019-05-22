@@ -16,10 +16,7 @@ class Migration(BaseMigration):
         # Mock Models
         AdministrativeDomain = self.db.mock_model(
             model_name='AdministrativeDomain',
-            db_table='sa_administrativedomain',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_administrativedomain'
         )
 
         # Model 'ManagedObjectSelector'
@@ -60,17 +57,11 @@ class Migration(BaseMigration):
         # Mock Models
         ManagedObjectSelector = self.db.mock_model(
             model_name='ManagedObjectSelector',
-            db_table='sa_managedobjectselector',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobjectselector'
         )
         ObjectGroup = self.db.mock_model(
             model_name='ObjectGroup',
-            db_table='sa_objectgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_objectgroup'
         )
 
         # M2M field 'ManagedObjectSelector.filter_groups'
@@ -84,10 +75,7 @@ class Migration(BaseMigration):
         # Mock Models
         ManagedObjectSelector = self.db.mock_model(
             model_name='ManagedObjectSelector',
-            db_table='sa_managedobjectselector',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobjectselector'
         )
         self.db.create_table(
             'sa_managedobjectselector_sources', (

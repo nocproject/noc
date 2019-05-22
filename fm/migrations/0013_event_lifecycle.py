@@ -16,10 +16,7 @@ class Migration(BaseMigration):
     def migrate(self):
         Event = self.db.mock_model(
             model_name='Event',
-            db_table='fm_event',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_event'
         )
         self.db.add_column("fm_event", "status", models.CharField("Status", max_length=1, default="U"))
         self.db.add_column("fm_event", "active_till", models.DateTimeField("Active Till", blank=True, null=True))

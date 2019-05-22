@@ -29,14 +29,12 @@ class Migration(BaseMigration):
         )
         # Mock Models
         RPSL = self.db.mock_model(
-            model_name='RPSL', db_table='cm_rpsl', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='RPSL',
+            db_table='cm_rpsl'
         )
         ObjectCategory = self.db.mock_model(
             model_name='ObjectCategory',
-            db_table='cm_objectcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectcategory'
         )
 
         # M2M field 'RPSL.categories'

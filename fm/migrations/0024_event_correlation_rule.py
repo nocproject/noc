@@ -38,17 +38,11 @@ class Migration(BaseMigration):
         # Mock Models
         EventCorrelationRule = self.db.mock_model(
             model_name='EventCorrelationRule',
-            db_table='fm_eventcorrelationrule',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventcorrelationrule'
         )
         EventClass = self.db.mock_model(
             model_name='EventClass',
-            db_table='fm_eventclass',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventclass'
         )
 
         # Model 'EventCorrelationMatchedClass'
@@ -64,10 +58,7 @@ class Migration(BaseMigration):
         # Mock Models
         EventCorrelationRule = self.db.mock_model(
             model_name='EventCorrelationRule',
-            db_table='fm_eventcorrelationrule',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventcorrelationrule'
         )
 
         # Model 'EventCorrelationMatchedVar'

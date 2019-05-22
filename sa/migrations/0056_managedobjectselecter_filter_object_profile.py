@@ -16,10 +16,7 @@ class Migration(BaseMigration):
     def migrate(self):
         ManagedObjectProfile = self.db.mock_model(
             model_name='ManagedObjectProfile',
-            db_table='sa_managedobjectprofile',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobjectprofile'
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_object_profile",

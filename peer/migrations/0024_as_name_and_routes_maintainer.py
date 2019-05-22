@@ -17,10 +17,7 @@ class Migration(BaseMigration):
         self.db.add_column("peer_as", "as_name", models.CharField("AS Name", max_length=64, null=True, blank=True))
         Maintainer = self.db.mock_model(
             model_name='Maintainer',
-            db_table='peer_maintainer',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_maintainer'
         )
         self.db.add_column(
             "peer_as", "routes_maintainer",

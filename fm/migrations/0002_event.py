@@ -35,17 +35,11 @@ class Migration(BaseMigration):
         # Mock Models
         EventPriority = self.db.mock_model(
             model_name='EventPriority',
-            db_table='fm_eventpriority',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventpriority'
         )
         EventCategory = self.db.mock_model(
             model_name='EventCategory',
-            db_table='fm_eventcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventcategory'
         )
 
         # Model 'EventClass'
@@ -64,10 +58,7 @@ class Migration(BaseMigration):
         # Mock Models
         EventClass = self.db.mock_model(
             model_name='EventClass',
-            db_table='fm_eventclass',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventclass'
         )
 
         # Model 'EventClassificationRule'
@@ -83,10 +74,7 @@ class Migration(BaseMigration):
         # Mock Models
         EventClassificationRule = self.db.mock_model(
             model_name='EventClassificationRule',
-            db_table='fm_eventclassificationrule',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventclassificationrule'
         )
 
         # Model 'EventClassificationRE'
@@ -102,17 +90,11 @@ class Migration(BaseMigration):
         # Mock Models
         ManagedObject = self.db.mock_model(
             model_name='ManagedObject',
-            db_table='sa_managedobject',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobject'
         )
         Event = self.db.mock_model(
             model_name='Event',
-            db_table='fm_event',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_event'
         )
 
         # Model 'Event'
@@ -133,10 +115,7 @@ class Migration(BaseMigration):
         # Mock Models
         Event = self.db.mock_model(
             model_name='Event',
-            db_table='fm_event',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_event'
         )
 
         # Model 'EventData'

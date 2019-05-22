@@ -18,10 +18,7 @@ class Migration(BaseMigration):
         # Mock Models
         Language = self.db.mock_model(
             model_name="Language",
-            db_table="main_language",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_language"
         )
 
         # Model "KBEntryTemplate"
@@ -37,17 +34,11 @@ class Migration(BaseMigration):
         # Mock Models
         KBEntryTemplate = self.db.mock_model(
             model_name="KBEntryTemplate",
-            db_table="kb_kbentrytemplate",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbentrytemplate"
         )
         KBCategory = self.db.mock_model(
             model_name="KBCategory",
-            db_table="kb_kbcategory",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbcategory"
         )
 
         # M2M field "KBEntryTemplate.categories"

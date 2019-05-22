@@ -21,10 +21,7 @@ class Migration(BaseMigration):
         # Style
         Style = self.db.mock_model(
             model_name="Style",
-            db_table="main_style",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_style"
         )
         # VRF Group
         self.db.add_column(
@@ -36,41 +33,36 @@ class Migration(BaseMigration):
                 default="V"
             )
         )
-        self.db.alter_column(
-            "ip_vrfgroup", "description", models.TextField("Description", blank=True, null=True, default="V")
-        )
+        self.db.execute("ALTER TABLE ip_vrfgroup ALTER COLUMN description TYPE TEXT")
+        self.db.execute("ALTER TABLE ip_vrfgroup ALTER COLUMN description DROP NOT NULL")
+        self.db.execute("ALTER TABLE ip_vrfgroup ALTER COLUMN description SET DEFAULT 'V'")
         self.db.add_column("ip_vrfgroup", "tags", AutoCompleteTagsField("Tags", null=True, blank=True))
         # VRF
         self.db.add_column("ip_vrf", "is_active", models.BooleanField("Is Active", default=True))
         self.db.add_column("ip_vrf", "afi_ipv4", models.BooleanField("IPv4", default=True))
         self.db.add_column("ip_vrf", "afi_ipv6", models.BooleanField("IPv6", default=False))
-        self.db.alter_column("ip_vrf", "description",
-                             models.TextField("Description", blank=True, null=True, default="V"))
+        self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description TYPE TEXT")
+        self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description DROP NOT NULL")
+        self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description SET DEFAULT 'V'")
         self.db.add_column("ip_vrf", "style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True))
         self.db.add_column("ip_vrf", "allocated_till", models.DateField("Allocated till", null=True, blank=True))
         # Prefix
         VRF = self.db.mock_model(
-            model_name="VRF", db_table="ip_vrf", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
+            model_name="VRF", db_table="ip_vrf"
         )
         AS = self.db.mock_model(
-            model_name="AS", db_table="peer_as", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
+            model_name="AS", db_table="peer_as"
         )
         VC = self.db.mock_model(
-            model_name="VC", db_table="vc_vc", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
+            model_name="VC", db_table="vc_vc"
         )
         ManagedObject = self.db.mock_model(
             model_name="ManagedObject",
-            db_table="sa_managedobject",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobject"
         )
         Prefix = self.db.mock_model(
             model_name="Prefix",
-            db_table="ip_prefix",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="ip_prefix"
         )
 
         self.db.create_table(
@@ -120,10 +112,7 @@ class Migration(BaseMigration):
         # PrefixAccess
         User = self.db.mock_model(
             model_name="User",
-            db_table="auth_user",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="auth_user"
         )
         self.db.create_table(
             "ip_prefixaccess", (

@@ -27,10 +27,7 @@ class Migration(BaseMigration):
 
         TimeSeries = self.db.mock_model(
             model_name='TimeSeries',
-            db_table='pm_timeseries',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='pm_timeseries'
         )
         # Adding model 'TimeSeriesData'
         self.db.create_table(
@@ -53,10 +50,7 @@ class Migration(BaseMigration):
 
         Chart = self.db.mock_model(
             model_name='Chart',
-            db_table='pm_chart',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='pm_chart'
         )
         #
         self.db.create_table(

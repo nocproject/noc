@@ -16,17 +16,11 @@ class Migration(BaseMigration):
     def migrate(self):
         IPv4Block = self.db.mock_model(
             model_name='IPv4Block',
-            db_table='ip_ipv4block',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='ip_ipv4block'
         )
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
         # Adding model 'IPv4BlockBookmark'
         self.db.create_table(

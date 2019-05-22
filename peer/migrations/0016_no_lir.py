@@ -16,10 +16,7 @@ class Migration(BaseMigration):
     def migrate(self):
         Maintainer = self.db.mock_model(
             model_name='Maintainer',
-            db_table='peer_maintainer',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_maintainer'
         )
 
         rir_id = self.db.execute("SELECT id FROM peer_rir LIMIT 1")[0][0]
