@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 from __future__ import print_function
 # Third-party modules
@@ -14,13 +13,13 @@ from bson.binary import Binary
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         phash = {}
-        db = get_db()
+        db = self.mongo_db
         metrics = db.noc.ts.metrics
         bulk = []
         for m in metrics.find({}).sort("name", 1):
@@ -40,5 +39,4 @@ class Migration(object):
                 print(("Bulk write error: '%s'", e.details))
                 print("Stopping check")
 
-    def backwards(self):
-        pass
+

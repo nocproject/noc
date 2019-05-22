@@ -5,31 +5,28 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         tg_ids = [
-            x[0] for x in db.execute(
+            x[0] for x in self.db.execute(
                 "SELECT DISTINCT termination_group_id "
                 "FROM sa_managedobject "
                 "WHERE termination_group_id IS NOT NULL"
             )
         ]
         st_ids = [
-            x[0] for x in db.execute(
+            x[0] for x in self.db.execute(
                 "SELECT DISTINCT service_terminator_id "
                 "FROM sa_managedobject "
                 "WHERE service_terminator_id IS NOT NULL"
             )
         ]
-        mdb = get_db()
+        mdb = self.mongo_db
         rg_map = dict(
             (x["_legacy_id"], str(x["_id"]))
             for x in mdb.resourcegroups.find({
@@ -43,7 +40,7 @@ class Migration(object):
         )
         # Append to resource groups AS clients
         for tg_id in tg_ids:
-            db.execute(
+            self.db.execute(
                 "UPDATE sa_managedobject "
                 "SET "
                 "  static_client_groups = array_cat(static_client_groups, ARRAY[%s]::CHAR(24)[]), "
@@ -52,7 +49,7 @@ class Migration(object):
             )
         # Append to resource groups AS services
         for tg_id in st_ids:
-            db.execute(
+            self.db.execute(
                 "UPDATE sa_managedobject "
                 "SET "
                 "  static_service_groups = array_cat(static_service_groups, ARRAY[%s]::CHAR(24)[]), "
@@ -60,8 +57,5 @@ class Migration(object):
                 "WHERE service_terminator_id = %s", [rg_map[tg_id], rg_map[tg_id], tg_id]
             )
         # Finally remove columns
-        db.drop_column("sa_managedobject", "termination_group_id")
-        db.drop_column("sa_managedobject", "service_terminator_id")
-
-    def backwards(self):
-        pass
+        self.db.delete_column("sa_managedobject", "termination_group_id")
+        self.db.delete_column("sa_managedobject", "service_terminator_id")

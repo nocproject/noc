@@ -5,20 +5,20 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
 # NOC modules
 from noc.core.script.scheme import SCHEME_CHOICES
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
+
     depends_on = (("sa", "0005_activator"),)
 
-    def forwards(self):
-        Activator = db.mock_model(
+    def migrate(self):
+        Activator = self.db.mock_model(
             model_name="Activator",
             db_table="sa_activator",
             db_tablespace="",
@@ -27,7 +27,7 @@ class Migration(object):
         )
 
         # Model "Config"
-        db.create_table(
+        self.db.create_table(
             "cm_config", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)),
@@ -49,14 +49,14 @@ class Migration(object):
             )
         )
         # Mock Models
-        Config = db.mock_model(
+        Config = self.db.mock_model(
             model_name="Config",
             db_table="cm_config",
             db_tablespace="",
             pk_field_name="id",
             pk_field_type=models.AutoField
         )
-        ObjectCategory = db.mock_model(
+        ObjectCategory = self.db.mock_model(
             model_name="ObjectCategory",
             db_table="cm_objectcategory",
             db_tablespace="",
@@ -65,7 +65,7 @@ class Migration(object):
         )
 
         # M2M field "Config.categories"
-        db.create_table(
+        self.db.create_table(
             "cm_config_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("config", models.ForeignKey(Config, null=False)),
@@ -73,7 +73,7 @@ class Migration(object):
             )
         )
         # Model "PrefixList"
-        db.create_table(
+        self.db.create_table(
             "cm_prefixlist", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)),
@@ -86,14 +86,14 @@ class Migration(object):
             )
         )
         # Mock Models
-        PrefixList = db.mock_model(
+        PrefixList = self.db.mock_model(
             model_name="PrefixList",
             db_table="cm_prefixlist",
             db_tablespace="",
             pk_field_name="id",
             pk_field_type=models.AutoField
         )
-        ObjectCategory = db.mock_model(
+        ObjectCategory = self.db.mock_model(
             model_name="ObjectCategory",
             db_table="cm_objectcategory",
             db_tablespace="",
@@ -102,7 +102,7 @@ class Migration(object):
         )
 
         # M2M field "PrefixList.categories"
-        db.create_table(
+        self.db.create_table(
             "cm_prefixlist_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("prefixlist", models.ForeignKey(PrefixList, null=False)),
@@ -110,7 +110,7 @@ class Migration(object):
             )
         )
         # Model "DNS"
-        db.create_table(
+        self.db.create_table(
             "cm_dns", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("repo_path", models.CharField("Repo Path", max_length=128, unique=True)),
@@ -123,10 +123,10 @@ class Migration(object):
             )
         )
         # Mock Models
-        DNS = db.mock_model(
+        DNS = self.db.mock_model(
             model_name="DNS", db_table="cm_dns", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
         )
-        ObjectCategory = db.mock_model(
+        ObjectCategory = self.db.mock_model(
             model_name="ObjectCategory",
             db_table="cm_objectcategory",
             db_tablespace="",
@@ -135,21 +135,10 @@ class Migration(object):
         )
 
         # M2M field "DNS.categories"
-        db.create_table(
+        self.db.create_table(
             "cm_dns_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("dns", models.ForeignKey(DNS, null=False)),
                 ("objectcategory", models.ForeignKey(ObjectCategory, null=False))
             )
         )
-
-        db.send_create_signal("cm", ["Config", "PrefixList", "DNS"])
-
-    def backwards(self):
-        db.delete_table("cm_config_categories")
-        db.delete_table("cm_prefixlist_categories")
-        db.delete_table("cm_dns_categories")
-
-        db.delete_table("cm_dns")
-        db.delete_table("cm_prefixlist")
-        db.delete_table("cm_config")

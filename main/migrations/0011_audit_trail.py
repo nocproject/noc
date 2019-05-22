@@ -5,18 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-
+class Migration(BaseMigration):
+    def migrate(self):
         # Mock Models
-        User = db.mock_model(
+        User = self.db.mock_model(
             model_name='User',
             db_table='auth_user',
             db_tablespace='',
@@ -25,7 +24,7 @@ class Migration(object):
         )
 
         # Model 'AuditTrail'
-        db.create_table(
+        self.db.create_table(
             'main_audittrail', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('user', models.ForeignKey(User, verbose_name=User)),
@@ -39,8 +38,3 @@ class Migration(object):
                 ), ('subject', models.CharField("Subject", max_length=256)), ('body', models.TextField("Body"))
             )
         )
-
-        db.send_create_signal('main', ['AuditTrail'])
-
-    def backwards(self):
-        db.delete_table('main_audittrail')

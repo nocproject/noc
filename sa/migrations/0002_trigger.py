@@ -5,22 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        if db.execute("SELECT COUNT(*) FROM pg_language WHERE lanname='plpgsql'")[0][0] == 0:
-            db.execute("CREATE LANGUAGE plpgsql")
-        db.execute(CREATE_F)
-        db.execute(CREATE_T)
-
-    def backwards(self):
-        db.execute(DROP_T)
-        db.execute(DROP_F)
+class Migration(BaseMigration):
+    def migrate(self):
+        if self.db.execute("SELECT COUNT(*) FROM pg_language WHERE lanname='plpgsql'")[0][0] == 0:
+            self.db.execute("CREATE LANGUAGE plpgsql")
+        self.db.execute(CREATE_F)
+        self.db.execute(CREATE_T)
 
 
 CREATE_F = """
@@ -39,12 +34,4 @@ CREATE_T = """
 CREATE TRIGGER t_sa_task_insert
 AFTER INSERT ON sa_task
 FOR EACH STATEMENT EXECUTE PROCEDURE f_sa_task_insert();
-"""
-
-DROP_T = """
-DROP TRIGGER IF EXISTS t_sa_task_insert ON sa_task;
-"""
-
-DROP_F = """
-DROP FUNCTION f_sa_task_insert();
 """

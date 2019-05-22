@@ -5,23 +5,21 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 import bson
-from south.db import db
 from pymongo import InsertOne
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
-from noc.lib.nosql import get_db
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("inv", "0017_initial_technologies")]
 
-    def forwards(self):
+    def migrate(self):
         # Get existing termination groups
-        tg_data = db.execute("SELECT id, name, description, remote_system, remote_id, tags FROM sa_terminationgroup")
+        tg_data = self.db.execute("SELECT id, name, description, remote_system, remote_id, tags FROM sa_terminationgroup")
         if not tg_data:
             return  # Nothing to convert
         bulk = []
@@ -59,7 +57,4 @@ class Migration(object):
                 )
             ]
         # Apply groups
-        get_db().resourcegroups.bulk_write(bulk)
-
-    def backwards(self):
-        pass
+        self.mongo_db.resourcegroups.bulk_write(bulk)

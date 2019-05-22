@@ -5,10 +5,9 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 # Values:
 #   (QueryType,Command,ArgRequired)
@@ -30,25 +29,23 @@ DEFAULT = {
 }
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         qtype = {}
         for ppt in DEFAULT:
-            if db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [ppt])[0][0] == 0:
-                db.execute("INSERT INTO peer_peeringpointtype(name) VALUES(%s)", [ppt])
-            ppt_id = db.execute("SELECT id FROM peer_peeringpointtype WHERE name=%s", [ppt])[0][0]
+            if self.db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [ppt])[0][0] == 0:
+                self.db.execute("INSERT INTO peer_peeringpointtype(name) VALUES(%s)", [ppt])
+            ppt_id = self.db.execute("SELECT id FROM peer_peeringpointtype WHERE name=%s", [ppt])[0][0]
             for k, v in DEFAULT[ppt]:
                 if k not in qtype:
-                    db.execute("INSERT INTO peer_lgquerytype(name) VALUES(%s)", [k])
-                    qtype[k] = db.execute("SELECT id FROM peer_lgquerytype WHERE name=%s", [k])[0][0]
+                    self.db.execute("INSERT INTO peer_lgquerytype(name) VALUES(%s)", [k])
+                    qtype[k] = self.db.execute("SELECT id FROM peer_lgquerytype WHERE name=%s", [k])[0][0]
                 q = qtype[k]
-                if db.execute("""SELECT COUNT(*) FROM peer_lgquerycommand
+                if self.db.execute("""SELECT COUNT(*) FROM peer_lgquerycommand
                                 WHERE peering_point_type_id=%s
                                 AND query_type_id=%s""", [ppt_id, q])[0][0] == 0:
-                    db.execute(
+                    self.db.execute(
                         """INSERT INTO peer_lgquerycommand(peering_point_type_id,query_type_id,command)
                         VALUES(%s,%s,%s)""", [ppt_id, q, v]
                     )
 
-    def backwards(self):
-        pass

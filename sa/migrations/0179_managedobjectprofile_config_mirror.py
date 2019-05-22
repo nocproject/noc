@@ -5,18 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
 
 
-class Migration(object):
-    def forwards(self):
-        Template = db.mock_model(
+class Migration(BaseMigration):
+    def migrate(self):
+        Template = self.db.mock_model(
             model_name='Template',
             db_table='main_template',
             db_tablespace='',
@@ -24,15 +23,15 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
 
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "config_mirror_storage",
             DocumentReferenceField("main.ExtStorage", null=True, blank=True)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "config_mirror_template",
             models.ForeignKey(Template, verbose_name="Config Mirror Template", blank=True, null=True)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "config_mirror_policy",
             models.CharField(
                 "Config Mirror Policy",
@@ -41,7 +40,7 @@ class Migration(object):
                 default="C"
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "config_validation_policy",
             models.CharField(
                 "Config Validation Policy",
@@ -50,6 +49,3 @@ class Migration(object):
                 default="C"
             )
         )
-
-    def backwards(self):
-        pass

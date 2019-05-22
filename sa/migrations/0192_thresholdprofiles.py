@@ -5,33 +5,32 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import itertools
 import operator
 # Third-party modules
 import bson
 import psycopg2
-from south.db import db
-from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 import cachetools
+from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.lib.nosql import get_db
 
 
-class Migration(object):
+class Migration(BaseMigration):
     _ac_cache = cachetools.TTLCache(maxsize=5, ttl=60)
 
-    def forwards(self):
+    def migrate(self):
         # Convert pickled field ty BYTEA
-        db.execute("ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA USING metrics::bytea")
+        self.db.execute("ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA USING metrics::bytea")
         #
         current = itertools.count()
-        mdb = get_db()
+        mdb = self.mongo_db
         # Migrate profiles
         tp_coll = mdb["thresholdprofiles"]
-        settings = db.execute("SELECT id, name, metrics FROM sa_managedobjectprofile")
+        settings = self.db.execute("SELECT id, name, metrics FROM sa_managedobjectprofile")
         for p_id, name, p_metrics in settings:
             if not p_metrics:
                 continue
@@ -103,10 +102,7 @@ class Migration(object):
                 metric["threshold_profile"] = str(tp_id)
             # Store back
             wb_metrics = psycopg2.Binary(dumps(metrics, HIGHEST_PROTOCOL))
-            db.execute("UPDATE sa_managedobjectprofile SET metrics=%s WHERE id=%s", [wb_metrics, p_id])
-
-    def backwards(self):
-        pass
+            self.db.execute("UPDATE sa_managedobjectprofile SET metrics=%s WHERE id=%s", [wb_metrics, p_id])
 
     @staticmethod
     def has_thresholds(metric):

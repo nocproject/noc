@@ -5,17 +5,13 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.delete_column("sa_activator", "ip")
-        db.delete_column("sa_activator", "to_ip")
-        db.execute("ALTER TABLE sa_activator ALTER prefix_table_id SET NOT NULL")
-
-    def backwards(self):
-        pass
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_column("sa_activator", "ip")
+        self.db.delete_column("sa_activator", "to_ip")
+        self.db.execute("ALTER TABLE sa_activator ALTER prefix_table_id SET NOT NULL")

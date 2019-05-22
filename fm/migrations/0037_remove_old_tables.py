@@ -5,31 +5,27 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.delete_table("fm_eventrepeat")
-        db.delete_table("fm_eventlog")
-        db.delete_table("fm_eventdata")
-        db.delete_table("fm_event")
-        db.delete_table("fm_mibdata")
-        db.delete_table("fm_mibdependency")
-        db.delete_table("fm_mib")
-        db.delete_table("fm_eventpriority")
-        db.delete_table("fm_eventpostprocessingre")
-        db.delete_table("fm_eventpostprocessingrule")
-        db.delete_table("fm_eventcorrelationmatchedvar")
-        db.delete_table("fm_eventcorrelationmatchedclass")
-        db.delete_table("fm_eventclassificationre")
-        db.delete_table("fm_eventclassificationrule")
-        db.delete_table("fm_eventclassvar")
-        db.delete_table("fm_eventclass")
-        db.delete_table("fm_eventcategory")
-
-    def backwards(self):
-        pass
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_table("fm_eventrepeat")
+        self.db.delete_table("fm_eventlog")
+        self.db.delete_table("fm_eventdata")
+        self.db.delete_table("fm_event")
+        self.db.delete_table("fm_mibdata")
+        self.db.delete_table("fm_mibdependency")
+        self.db.delete_table("fm_mib")
+        self.db.delete_table("fm_eventpriority")
+        self.db.delete_table("fm_eventpostprocessingre")
+        self.db.delete_table("fm_eventpostprocessingrule")
+        self.db.delete_table("fm_eventcorrelationmatchedvar")
+        self.db.delete_table("fm_eventcorrelationmatchedclass")
+        self.db.delete_table("fm_eventclassificationre")
+        self.db.delete_table("fm_eventclassificationrule")
+        self.db.delete_table("fm_eventclassvar")
+        self.db.delete_table("fm_eventclass")
+        self.db.delete_table("fm_eventcategory")

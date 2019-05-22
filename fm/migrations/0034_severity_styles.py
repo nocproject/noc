@@ -5,14 +5,13 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Create styles for alarm severities
         for name, font, background, description in [
             ("FM INFO", 12255232, 14480371, "Alarm severity INFO"),
@@ -21,11 +20,8 @@ class Migration(object):
             ("FM MAJOR", 12255232, 16772829, "Alarm severity MAJOR"),
             ("FM CRITICAL", 12255232, 16768460, "Alarm severity CRITICAL"),
         ]:
-            if db.execute("SELECT COUNT(*) FROM main_style WHERE name = %s", [name])[0][0] == 0:
-                db.execute(
+            if self.db.execute("SELECT COUNT(*) FROM main_style WHERE name = %s", [name])[0][0] == 0:
+                self.db.execute(
                     "INSERT INTO main_style(name, font_color, background_color, description) VALUES (%s, %s, %s, %s)",
                     [name, font, background, description]
                 )
-
-    def backwards(self):
-        db.execute("DELETE FROM main_style WHERE name LIKE 'FM %%'")

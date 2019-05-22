@@ -5,19 +5,19 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.delete_table('fm_eventcorrelationrule')
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_table('fm_eventcorrelationrule')
 
         # Model 'EventCorrelationRule'
-        db.create_table(
+        self.db.create_table(
             'fm_eventcorrelationrule', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=64, unique=True)),
@@ -36,14 +36,14 @@ class Migration(object):
         )
 
         # Mock Models
-        EventCorrelationRule = db.mock_model(
+        EventCorrelationRule = self.db.mock_model(
             model_name='EventCorrelationRule',
             db_table='fm_eventcorrelationrule',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        EventClass = db.mock_model(
+        EventClass = self.db.mock_model(
             model_name='EventClass',
             db_table='fm_eventclass',
             db_tablespace='',
@@ -52,17 +52,17 @@ class Migration(object):
         )
 
         # Model 'EventCorrelationMatchedClass'
-        db.create_table(
+        self.db.create_table(
             'fm_eventcorrelationmatchedclass', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('rule', models.ForeignKey(EventCorrelationRule, verbose_name="Rule")),
                 ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class"))
             )
         )
-        db.create_index('fm_eventcorrelationmatchedclass', ['rule_id', 'event_class_id'], unique=True, db_tablespace='')
+        self.db.create_index('fm_eventcorrelationmatchedclass', ['rule_id', 'event_class_id'], unique=True)
 
         # Mock Models
-        EventCorrelationRule = db.mock_model(
+        EventCorrelationRule = self.db.mock_model(
             model_name='EventCorrelationRule',
             db_table='fm_eventcorrelationrule',
             db_tablespace='',
@@ -71,20 +71,11 @@ class Migration(object):
         )
 
         # Model 'EventCorrelationMatchedVar'
-        db.create_table(
+        self.db.create_table(
             'fm_eventcorrelationmatchedvar', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('rule', models.ForeignKey(EventCorrelationRule, verbose_name="Rule")),
                 ('var', models.CharField("Variable Name", max_length=256))
             )
         )
-        db.create_index('fm_eventcorrelationmatchedvar', ['rule_id', 'var'], unique=True, db_tablespace='')
-
-        db.send_create_signal(
-            'fm', ['EventCorrelationRule', 'EventCorrelationMatchedClass', 'EventCorrelationMatchedVar']
-        )
-
-    def backwards(self):
-        db.delete_table('fm_eventcorrelationmatchedvar')
-        db.delete_table('fm_eventcorrelationmatchedclass')
-        db.delete_table('fm_eventcorrelationrule')
+        self.db.create_index('fm_eventcorrelationmatchedvar', ['rule_id', 'var'], unique=True)

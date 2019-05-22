@@ -5,20 +5,19 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from pymongo import UpdateMany
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("sa", "0184_managedobject_migrate_termination_groups")]
 
-    def forwards(self):
+    def migrate(self):
         # Get migrated termination groups, created by 0184 migration
-        db = get_db()
+        db = self.mongo_db
         rg_map = dict(
             (x["_legacy_id"], x["_id"])
             for x in db.resourcegroups.find({
@@ -55,6 +54,3 @@ class Migration(object):
                 ]
             if bulk:
                 coll.bulk_write(bulk)
-
-    def backwards(self):
-        pass

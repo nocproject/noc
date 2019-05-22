@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("main", "0055_default_pool")]
 
-    def forwards(self):
-        db.add_column(
+    def migrate(self):
+        self.db.add_column(
             "sa_managedobject", "trap_source_type",
             models.CharField(
                 max_length=1,
@@ -29,7 +29,7 @@ class Migration(object):
                 blank=False
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject", "syslog_source_type",
             models.CharField(
                 max_length=1,
@@ -42,12 +42,9 @@ class Migration(object):
                 blank=False
             )
         )
-        db.add_column("sa_managedobject", "syslog_source_ip", models.IPAddressField("Syslog Source IP", null=True))
-        db.execute(
+        self.db.add_column("sa_managedobject", "syslog_source_ip", models.IPAddressField("Syslog Source IP", null=True))
+        self.db.execute(
             """UPDATE sa_managedobject
                 SET trap_source_type='s', syslog_source_ip=trap_source_ip, syslog_source_type='s'
                 WHERE trap_source_ip IS NOT NULL"""
         )
-
-    def backwards(self):
-        pass

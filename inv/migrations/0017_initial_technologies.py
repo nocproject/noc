@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 from uuid import UUID
 # Third-party modules
@@ -14,11 +13,11 @@ import bson
 from bson.int64 import Int64
 from pymongo import UpdateOne
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         bulk = [
             UpdateOne(
                 {
@@ -144,7 +143,4 @@ class Migration(object):
                 upsert=True
             )
         ]
-        get_db().technologies.bulk_write(bulk)
-
-    def backwards(self):
-        pass
+        self.mongo_db.technologies.bulk_write(bulk)

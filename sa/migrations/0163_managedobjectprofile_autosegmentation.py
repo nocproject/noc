@@ -5,17 +5,16 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
-# NOC modules
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.add_column(
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.add_column(
             "sa_managedobjectprofile",
             "autosegmentation_policy",
             models.CharField(
@@ -43,15 +42,10 @@ class Migration(object):
                 default="d"
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "autosegmentation_level_limit", models.IntegerField("Level", default=999)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "autosegmentation_segment_name",
             models.CharField(max_length=255, default="{{object.name}}")
         )
-
-    def backwards(self):
-        db.delete_column("sa_managedobjectprofile", "autosegmentation_policy")
-        db.delete_column("sa_managedobjectprofile", "autosegmentation_level_limit")
-        db.delete_column("sa_managedobjectprofile", "autosegmentation_segment_name")

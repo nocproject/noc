@@ -5,13 +5,12 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
 
     CREATE_CLASSIFY_EVENT = """
     CREATE OR REPLACE
@@ -55,8 +54,5 @@ class Migration(object):
     DROP_CLASSIFY_EVENT = """
         DROP FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])"""
 
-    def forwards(self):
-        db.execute(self.CREATE_CLASSIFY_EVENT)
-
-    def backwards(self):
-        db.execute(self.DROP_CLASSIFY_EVENT)
+    def migrate(self):
+        self.db.execute(self.CREATE_CLASSIFY_EVENT)

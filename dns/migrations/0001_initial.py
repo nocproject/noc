@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
 
         # Model 'DNSZoneProfile'
-        db.create_table(
+        self.db.create_table(
             'dns_dnszoneprofile', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -32,7 +32,7 @@ class Migration(object):
         )
 
         # Mock Models
-        DNSZoneProfile = db.mock_model(
+        DNSZoneProfile = self.db.mock_model(
             model_name='DNSZoneProfile',
             db_table='dns_dnszoneprofile',
             db_tablespace='',
@@ -41,7 +41,7 @@ class Migration(object):
         )
 
         # Model 'DNSZone'
-        db.create_table(
+        self.db.create_table(
             'dns_dnszone', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Domain", max_length=64, unique=True)),
@@ -52,7 +52,7 @@ class Migration(object):
             )
         )
         # Model 'DNSZoneRecordType'
-        db.create_table(
+        self.db.create_table(
             'dns_dnszonerecordtype', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('type', models.CharField("Type", max_length=16, unique=True)),
@@ -60,14 +60,14 @@ class Migration(object):
         )
 
         # Mock Models
-        DNSZone = db.mock_model(
+        DNSZone = self.db.mock_model(
             model_name='DNSZone',
             db_table='dns_dnszone',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        DNSZoneRecordType = db.mock_model(
+        DNSZoneRecordType = self.db.mock_model(
             model_name='DNSZoneRecordType',
             db_table='dns_dnszonerecordtype',
             db_tablespace='',
@@ -76,7 +76,7 @@ class Migration(object):
         )
 
         # Model 'DNSZoneRecord'
-        db.create_table(
+        self.db.create_table(
             'dns_dnszonerecord', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('zone', models.ForeignKey(DNSZone, verbose_name="Zone")),
@@ -85,11 +85,3 @@ class Migration(object):
                 ('right', models.CharField("Right", max_length=64))
             )
         )
-
-        db.send_create_signal('dns', ['DNSZoneProfile', 'DNSZone', 'DNSZoneRecordType', 'DNSZoneRecord'])
-
-    def backwards(self):
-        db.delete_table('dns_dnszonerecord')
-        db.delete_table('dns_dnszonerecordtype')
-        db.delete_table('dns_dnszone')
-        db.delete_table('dns_dnszoneprofile')

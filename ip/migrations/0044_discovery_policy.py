@@ -5,17 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.drop_column("ip_prefix", "enable_ip_discovery")
-        db.add_column(
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_column("ip_prefix", "enable_ip_discovery")
+        self.db.add_column(
             "ip_prefix", "prefix_discovery_policy",
             models.CharField(
                 "Prefix Discovery Policy",
@@ -26,7 +26,7 @@ class Migration(object):
                 null=False
             )
         )
-        db.add_column(
+        self.db.add_column(
             "ip_prefix", "address_discovery_policy",
             models.CharField(
                 "Address Discovery Policy",
@@ -37,6 +37,3 @@ class Migration(object):
                 null=False
             )
         )
-
-    def backwards(self):
-        pass

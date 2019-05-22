@@ -5,20 +5,15 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.create_unique('fm_eventarchivationrule', ['event_class_id', 'action'])
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.create_index('fm_eventarchivationrule', ['event_class_id', 'action'], unique=True)
         try:
-            db.delete_unique('fm_eventarchivationrule', ['event_class_id'])
+            self.db.create_index('fm_eventarchivationrule', ['event_class_id'], unique=True)
         except Exception:
             pass
-
-    def backwards(self):
-        db.delete_unique('fm_eventarchivationrule', ['event_class_id', 'action'])
-        db.create_unique('fm_eventarchivationrule', ['event_class_id'])

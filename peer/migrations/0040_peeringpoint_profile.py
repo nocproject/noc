@@ -5,29 +5,26 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
 # NOC modules
-from noc.lib.nosql import get_db
 from noc.core.model.fields import DocumentReferenceField
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("sa", "0150_managed_object_profile")]
 
-    def forwards(self):
+    def migrate(self):
         # Get profile record mappings
-        pcoll = get_db()["noc.profiles"]
+        pcoll = self.mongo_db["noc.profiles"]
         pmap = {}  # name -> id
         for d in pcoll.find({}, {"_id": 1, "name": 1}):
             pmap[d["name"]] = str(d["_id"])
         # Create .profile column
-        db.add_column("peer_peeringpoint", "profile", DocumentReferenceField("sa.Profile", null=True, blank=True))
+        self.db.add_column("peer_peeringpoint", "profile", DocumentReferenceField("sa.Profile", null=True, blank=True))
         # Update profiles
-        for p, in list(db.execute("SELECT DISTINCT profile_name FROM peer_peeringpoint")):
-            db.execute(
+        for p, in list(self.db.execute("SELECT DISTINCT profile_name FROM peer_peeringpoint")):
+            self.db.execute(
                 """
             UPDATE peer_peeringpoint
             SET profile = %s
@@ -35,9 +32,6 @@ class Migration(object):
             """, [pmap[p], p]
             )
         # Set profile as not null
-        db.execute("ALTER TABLE peer_peeringpoint ALTER profile SET NOT NULL")
+        self.db.execute("ALTER TABLE peer_peeringpoint ALTER profile SET NOT NULL")
         # Drop legacy profile_name
-        db.delete_column("peer_peeringpoint", "profile_name")
-
-    def backwards(self):
-        pass
+        self.db.delete_column("peer_peeringpoint", "profile_name")

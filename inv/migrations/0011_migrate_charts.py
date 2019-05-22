@@ -5,27 +5,25 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import datetime
 import logging
 # Third-party applications
-from south.db import db
 from bson import ObjectId
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 logger = logging.getLogger(__name__)
 
 
-class Migration(object):
-    def forwards(self):
-        mdb = get_db()
+class Migration(BaseMigration):
+    def migrate(self):
+        mdb = self.mongo_db
         segments = mdb.noc.networksegments
         cstate = mdb.noc.inv.networkchartstate
         msettings = mdb.noc.mapsettings
-        for cid, name, description, selector_id in db.execute(
+        for cid, name, description, selector_id in self.db.execute(
                 "SELECT id, name, description, selector_id FROM inv_networkchart"):
             logger.info("Migrating chart '%s'", name)
             # Create segment
@@ -65,8 +63,5 @@ class Migration(object):
                     }
                 )
         #
-        db.drop_table("inv_networkchart")
+        self.db.delete_table("inv_networkchart")
         cstate.drop()
-
-    def backwards(self):
-        pass

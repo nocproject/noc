@@ -5,18 +5,15 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.delete_table("peer_prefixlistcache")
-        db.delete_table("peer_whoiscache")
-        db.delete_table("peer_whoislookup")
-        db.delete_table("peer_whoisdatabase")
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_table("peer_prefixlistcache")
+        self.db.delete_table("peer_whoiscache")
+        self.db.delete_table("peer_whoislookup")
+        self.db.delete_table("peer_whoisdatabase")
 
-    def backwards(self):
-        pass

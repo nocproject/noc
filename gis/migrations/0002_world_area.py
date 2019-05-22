@@ -7,12 +7,12 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        areas = get_db().noc.gis.areas
+class Migration(BaseMigration):
+    def migrate(self):
+        areas = self.mongo_db.noc.gis.areas
         if not areas.count_documents({"name": "World"}):
             areas.insert_one(
                 {
@@ -24,6 +24,3 @@ class Migration(object):
                     "NE": [179.999999, 89.999999]
                 }
             )
-
-    def backwards(self):
-        pass

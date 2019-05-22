@@ -5,16 +5,16 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        ManagedObject = db.mock_model(
+class Migration(BaseMigration):
+    def migrate(self):
+        ManagedObject = self.db.mock_model(
             model_name="ManagedObject",
             db_table="sa_managedobject",
             db_tablespace="",
@@ -22,12 +22,8 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
 
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject", "controller",
             models.ForeignKey(ManagedObject, verbose_name="Controller", blank=True, null=True)
         )
-        db.add_column("sa_managedobject", "last_seen", models.DateTimeField("Last Seen", blank=True, null=True))
-
-    def backwards(self):
-        db.delete_column("sa_managedobject", "controller_id")
-        db.delete_column("sa_managedobject", "last_seen")
+        self.db.add_column("sa_managedobject", "last_seen", models.DateTimeField("Last Seen", blank=True, null=True))

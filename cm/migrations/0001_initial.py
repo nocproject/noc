@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
 
         # Model 'ObjectCategory'
-        db.create_table(
+        self.db.create_table(
             'cm_objectcategory', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=64, unique=True)),
@@ -24,7 +24,7 @@ class Migration(object):
             )
         )
         # Model 'Object'
-        db.create_table(
+        self.db.create_table(
             'cm_object', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('handler_class_name', models.CharField("Object Type", max_length=64)),
@@ -40,14 +40,14 @@ class Migration(object):
             )
         )
         # Mock Models
-        Object = db.mock_model(
+        Object = self.db.mock_model(
             model_name='Object',
             db_table='cm_object',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        ObjectCategory = db.mock_model(
+        ObjectCategory = self.db.mock_model(
             model_name='ObjectCategory',
             db_table='cm_objectcategory',
             db_tablespace='',
@@ -56,18 +56,11 @@ class Migration(object):
         )
 
         # M2M field 'Object.categories'
-        db.create_table(
+        self.db.create_table(
             'cm_object_categories', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('object', models.ForeignKey(Object, null=False)),
                 ('objectcategory', models.ForeignKey(ObjectCategory, null=False))
             )
         )
-        db.create_index('cm_object', ['handler_class_name', 'repo_path'], unique=True, db_tablespace='')
-
-        db.send_create_signal('cm', ['ObjectCategory', 'Object'])
-
-    def backwards(self):
-        db.delete_table('cm_object_categories')
-        db.delete_table('cm_object')
-        db.delete_table('cm_objectcategory')
+        self.db.create_index('cm_object', ['handler_class_name', 'repo_path'], unique=True)
