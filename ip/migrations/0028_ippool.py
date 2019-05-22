@@ -13,8 +13,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("sa", "0082_termination_group"),)
+    depends_on = [("sa", "0082_termination_group")]
 
     def migrate(self):
         AFI_CHOICES = [("4", "IPv4"), ("6", "IPv6")]

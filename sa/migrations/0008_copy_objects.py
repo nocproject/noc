@@ -14,10 +14,10 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-    depends_on = (
+    depends_on = [
         ('cm', '0009_access_and_notify'),
         ('cm', '0010_trap_source_ip'),
-    )
+    ]
 
     def migrate(self):
         def qget(map, key):

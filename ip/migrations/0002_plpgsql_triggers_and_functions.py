@@ -11,7 +11,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-    depends_on = (("sa", "0002_trigger"),)
+    depends_on = [("sa", "0002_trigger")]
 
     def migrate(self):
         if not self.has_column("ip_ipv4block", "prefix_cidr"):

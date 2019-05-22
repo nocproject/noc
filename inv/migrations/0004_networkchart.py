@@ -13,8 +13,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (('sa', '0056_managedobjectselecter_filter_object_profile'),)
+    depends_on = [('sa', '0056_managedobjectselecter_filter_object_profile')]
 
     def migrate(self):
         ManagedObjectSelector = self.db.mock_model(

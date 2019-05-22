@@ -14,7 +14,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-    depends_on = (("sa", "0007_managed_object"),)
+    depends_on = [("sa", "0007_managed_object")]
 
     def migrate(self):
         ManagedObject = self.db.mock_model(

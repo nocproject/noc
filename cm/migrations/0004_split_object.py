@@ -14,8 +14,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("sa", "0005_activator"),)
+    depends_on = [("sa", "0005_activator")]
 
     def migrate(self):
         Activator = self.db.mock_model(

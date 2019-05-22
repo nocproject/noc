@@ -11,8 +11,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("peer", "0017_default_maintainer"),)
+    depends_on = [("peer", "0017_default_maintainer")]
 
     def migrate(self):
         if self.db.execute("SELECT COUNT(*) FROM ip_vrfgroup")[0][0] == 0:

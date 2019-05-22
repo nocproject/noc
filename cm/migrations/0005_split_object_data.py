@@ -11,8 +11,7 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
-    depends_on = (("sa", "0006_default_activator"),)
+    depends_on = [("sa", "0006_default_activator")]
 
     def migrate(self):
         a_id = self.db.execute("SELECT id FROM sa_activator LIMIT 1")[0][0]
