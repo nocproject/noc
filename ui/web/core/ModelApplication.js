@@ -1199,6 +1199,7 @@ Ext.define("NOC.core.ModelApplication", {
     },
     //
     resetInlines: function(defaults) {
+        // preload default values
         var me = this;
         Ext.each(me.inlineStores, function(istore) {
             var value = [];
@@ -1206,7 +1207,7 @@ Ext.define("NOC.core.ModelApplication", {
                 value = this[istore.rootProperty];
             }
             istore.loadData(value);
-        }, defaults);
+        }, defaults || {});
     },
     // Load inline stores
     loadInlines: function() {
