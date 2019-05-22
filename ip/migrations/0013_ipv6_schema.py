@@ -33,13 +33,17 @@ class Migration(BaseMigration):
                 default="V"
             )
         )
-        self.db.execute("ALTER TABLE ip_vrfgroup ALTER description TEXT NULL SET DEFAULT 'V'")
+        self.db.execute("ALTER TABLE ip_vrfgroup ALTER COLUMN description TYPE TEXT")
+        self.db.execute("ALTER TABLE ip_vrfgroup ALTER COLUMN description DROP NOT NULL")
+        self.db.execute("ALTER TABLE ip_vrfgroup ALTER COLUMN description SET DEFAULT 'V'")
         self.db.add_column("ip_vrfgroup", "tags", AutoCompleteTagsField("Tags", null=True, blank=True))
         # VRF
         self.db.add_column("ip_vrf", "is_active", models.BooleanField("Is Active", default=True))
         self.db.add_column("ip_vrf", "afi_ipv4", models.BooleanField("IPv4", default=True))
         self.db.add_column("ip_vrf", "afi_ipv6", models.BooleanField("IPv6", default=False))
-        self.db.execute("ALTER TABLE ip_vrfgroup ALTER description TEXT NULL SET DEFAULT 'V'")
+        self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description TYPE TEXT")
+        self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description DROP NOT NULL")
+        self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description SET DEFAULT 'V'")
         self.db.add_column("ip_vrf", "style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True))
         self.db.add_column("ip_vrf", "allocated_till", models.DateField("Allocated till", null=True, blank=True))
         # Prefix
