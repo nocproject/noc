@@ -16,10 +16,7 @@ class Migration(BaseMigration):
     def migrate(self):
         ManagedObject = self.db.mock_model(
             model_name="ManagedObject",
-            db_table="sa_managedobject",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobject"
         )
 
         self.db.add_column(

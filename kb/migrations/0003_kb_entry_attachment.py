@@ -18,10 +18,7 @@ class Migration(BaseMigration):
         # Mock Models
         KBEntry = self.db.mock_model(
             model_name="KBEntry",
-            db_table="kb_kbentry",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbentry"
         )
 
         # Model "KBEntryAttachment"
@@ -34,4 +31,4 @@ class Migration(BaseMigration):
                 ("is_hidden", models.BooleanField("Is Hidden", default=False)), ("file", models.FileField("File"))
             )
         )
-        self.db.create_index("kb_kbentryattachment", ["kb_entry_id", "name"], unique=True, db_tablespace="")
+        self.db.create_index("kb_kbentryattachment", ["kb_entry_id", "name"], unique=True)

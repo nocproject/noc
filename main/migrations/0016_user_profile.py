@@ -16,24 +16,15 @@ class Migration(BaseMigration):
     def migrate(self):
         TimePattern = self.db.mock_model(
             model_name='TimePattern',
-            db_table='main_timepattern',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_timepattern'
         )
         Language = self.db.mock_model(
             model_name='Language',
-            db_table='main_language',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_language'
         )
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
         # Adding model 'UserProfile'
         self.db.create_table(
@@ -48,10 +39,7 @@ class Migration(BaseMigration):
         )
         UserProfile = self.db.mock_model(
             model_name='UserProfile',
-            db_table='main_userprofile',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_userprofile'
         )
 
         # Adding model 'UserProfileContact'

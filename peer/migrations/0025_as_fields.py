@@ -21,24 +21,18 @@ class Migration(BaseMigration):
         rx_remarks = re.compile(r"^remarks:\s*")
 
         RIR = self.db.mock_model(
-            model_name='RIR', db_table='peer_rir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='RIR', db_table='peer_rir'
         )
         AS = self.db.mock_model(
-            model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='AS', db_table='peer_as'
         )
         Person = self.db.mock_model(
             model_name='Person',
-            db_table='peer_person',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_person'
         )
         Maintainer = self.db.mock_model(
             model_name='Maintainer',
-            db_table='peer_maintainer',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_maintainer'
         )
 
         self.db.create_table(
@@ -54,10 +48,7 @@ class Migration(BaseMigration):
 
         Organisation = self.db.mock_model(
             model_name='Organisation',
-            db_table='peer_organisation',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_organisation'
         )
 
         self.db.add_column("peer_as", "rir", models.ForeignKey(RIR, null=True, blank=True))

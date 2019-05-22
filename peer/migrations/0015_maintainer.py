@@ -25,7 +25,7 @@ class Migration(BaseMigration):
 
         # Mock Models
         RIR = self.db.mock_model(
-            model_name='RIR', db_table='peer_rir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='RIR', db_table='peer_rir'
         )
 
         # Model 'Person'
@@ -42,7 +42,7 @@ class Migration(BaseMigration):
 
         # Mock Models
         RIR = self.db.mock_model(
-            model_name='RIR', db_table='peer_rir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='RIR', db_table='peer_rir'
         )
 
         # Model 'Maintainer'
@@ -58,17 +58,11 @@ class Migration(BaseMigration):
         # Mock Models
         Maintainer = self.db.mock_model(
             model_name='Maintainer',
-            db_table='peer_maintainer',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_maintainer'
         )
         Person = self.db.mock_model(
             model_name='Person',
-            db_table='peer_person',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_person'
         )
 
         # M2M field 'Maintainer.admins'

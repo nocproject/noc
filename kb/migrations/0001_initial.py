@@ -31,10 +31,7 @@ class Migration(BaseMigration):
         # Mock Models
         Language = self.db.mock_model(
             model_name="Language",
-            db_table="main_language",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_language"
         )
 
         # Model "KBEntry"
@@ -49,17 +46,11 @@ class Migration(BaseMigration):
         # Mock Models
         KBEntry = self.db.mock_model(
             model_name="KBEntry",
-            db_table="kb_kbentry",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbentry"
         )
         KBCategory = self.db.mock_model(
             model_name="KBCategory",
-            db_table="kb_kbcategory",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbcategory"
         )
 
         # M2M field "KBEntry.categories"
@@ -74,17 +65,11 @@ class Migration(BaseMigration):
         # Mock Models
         KBEntry = self.db.mock_model(
             model_name="KBEntry",
-            db_table="kb_kbentry",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbentry"
         )
         User = self.db.mock_model(
             model_name="User",
-            db_table="auth_user",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="auth_user"
         )
 
         # Model "KBEntryHistory"

@@ -15,7 +15,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         AS = self.db.mock_model(
-            model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='AS', db_table='peer_as'
         )
         if self.db.execute("SELECT COUNT(*) FROM peer_peeringpoint")[0][0] > 0:
             self.db.add_column(

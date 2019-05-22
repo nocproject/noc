@@ -16,9 +16,6 @@ class Migration(BaseMigration):
     def migrate(self):
         TimePattern = self.db.mock_model(
             model_name="TimePattern",
-            db_table="main_timepattern",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_timepattern"
         )
         self.db.add_column("sa_managedobject", "time_pattern", models.ForeignKey(TimePattern, null=True, blank=True))

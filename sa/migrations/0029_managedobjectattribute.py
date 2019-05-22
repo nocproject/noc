@@ -15,10 +15,7 @@ class Migration(BaseMigration):
     def migrate(self):
         ManagedObject = self.db.mock_model(
             model_name="ManagedObject",
-            db_table="sa_managedobject",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobject"
         )
 
         # Model "MapTask"
@@ -30,4 +27,4 @@ class Migration(BaseMigration):
                 ("value", models.CharField("Value", max_length=4096, blank=True, null=True))
             )
         )
-        self.db.create_index("sa_managedobjectattribute", ["managed_object_id", "key"], unique=True, db_tablespace="")
+        self.db.create_index("sa_managedobjectattribute", ["managed_object_id", "key"], unique=True)

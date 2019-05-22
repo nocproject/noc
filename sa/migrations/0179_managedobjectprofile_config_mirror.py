@@ -17,10 +17,7 @@ class Migration(BaseMigration):
     def migrate(self):
         Template = self.db.mock_model(
             model_name='Template',
-            db_table='main_template',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_template'
         )
 
         self.db.add_column(

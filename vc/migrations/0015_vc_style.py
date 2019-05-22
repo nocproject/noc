@@ -19,10 +19,7 @@ class Migration(BaseMigration):
     def migrate(self):
         Style = self.db.mock_model(
             model_name="Style",
-            db_table="main_style",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_style"
         )
         self.db.add_column("vc_vcdomain", "style",
                            models.ForeignKey(Style, verbose_name="Style", null=True, blank=True))

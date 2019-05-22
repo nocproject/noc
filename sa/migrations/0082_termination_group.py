@@ -25,10 +25,7 @@ class Migration(BaseMigration):
         )
         TerminationGroup = self.db.mock_model(
             model_name="TerminationGroup",
-            db_table="sa_terminationgroup",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_terminationgroup"
         )
         # Alter sa_managedobject
         self.db.add_column(

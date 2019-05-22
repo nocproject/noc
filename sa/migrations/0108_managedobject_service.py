@@ -16,4 +16,4 @@ class Migration(BaseMigration):
 
     def migrate(self):
         self.db.add_column("sa_managedobject", "service", DocumentReferenceField("self", null=True, blank=True))
-        self.db.create_index("sa_managedobject", ["service"], unique=False, db_tablespace="")
+        self.db.create_index("sa_managedobject", ["service"], unique=False)

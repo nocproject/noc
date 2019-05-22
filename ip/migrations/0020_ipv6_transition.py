@@ -16,18 +16,12 @@ class Migration(BaseMigration):
     def migrate(self):
         Prefix = self.db.mock_model(
             model_name="Prefix",
-            db_table="ip_prefix",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="ip_prefix"
         )
 
         Address = self.db.mock_model(
             model_name="Address",
-            db_table="ip_address",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="ip_address"
         )
 
         self.db.add_column("ip_prefix", "ipv6_transition", models.OneToOneField(Prefix, null=True, blank=True))

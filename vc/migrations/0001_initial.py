@@ -26,10 +26,7 @@ class Migration(BaseMigration):
         # Mock Models
         VCDomain = self.db.mock_model(
             model_name='VCDomain',
-            db_table='vc_vcdomain',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='vc_vcdomain'
         )
 
         # Model 'VC'

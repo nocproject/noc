@@ -25,10 +25,7 @@ class Migration(BaseMigration):
 
         PrefixTable = self.db.mock_model(
             model_name="PrefixTable",
-            db_table="main_prefixtable",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_prefixtable"
         )
 
         self.db.create_table(

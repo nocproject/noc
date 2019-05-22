@@ -16,10 +16,7 @@ class Migration(BaseMigration):
     def migrate(self):
         NotificationGroup = self.db.mock_model(
             model_name="NotificationGroup",
-            db_table="main_notificationgroup",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_notificationgroup"
         )
         self.db.add_column(
             "dns_dnszoneprofile", "notification_group", models.ForeignKey(NotificationGroup, blank=True, null=True)

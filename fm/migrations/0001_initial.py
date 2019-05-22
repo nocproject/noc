@@ -27,7 +27,7 @@ class Migration(BaseMigration):
 
         # Mock Models
         MIB = self.db.mock_model(
-            model_name='MIB', db_table='fm_mib', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='MIB', db_table='fm_mib'
         )
 
         # Model 'MIBData'

@@ -15,7 +15,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         VRF = self.db.mock_model(
-            model_name='VRF', db_table='ip_vrf', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+            model_name='VRF', db_table='ip_vrf'
         )
         # Adding model 'IPv4AddressRange'
         self.db.create_table(

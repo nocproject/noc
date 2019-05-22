@@ -17,10 +17,7 @@ class Migration(BaseMigration):
     def migrate(self):
         AdministrativeDomain = self.db.mock_model(
             model_name="AdministrativeDomain",
-            db_table="sa_administrativedomain",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_administrativedomain"
         )
         self.db.add_column("sa_administrativedomain", "tags", TagsField("Tags", null=True, blank=True))
         self.db.add_column(

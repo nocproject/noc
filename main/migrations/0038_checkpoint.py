@@ -16,10 +16,7 @@ class Migration(BaseMigration):
     def migrate(self):
         User = self.db.mock_model(
             model_name="User",
-            db_table="auth_user",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="auth_user"
         )
 
         self.db.create_table(

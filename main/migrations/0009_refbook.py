@@ -18,10 +18,7 @@ class Migration(BaseMigration):
         # Mock Models
         Language = self.db.mock_model(
             model_name='Language',
-            db_table='main_language',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_language'
         )
 
         # Model 'RefBook'
@@ -44,10 +41,7 @@ class Migration(BaseMigration):
         # Mock Models
         RefBook = self.db.mock_model(
             model_name='RefBook',
-            db_table='main_refbook',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_refbook'
         )
 
         # Model 'RefBookField'
@@ -69,17 +63,11 @@ class Migration(BaseMigration):
         # Mock Models
         RefBook = self.db.mock_model(
             model_name='RefBook',
-            db_table='main_refbook',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_refbook'
         )
         RefBookField = self.db.mock_model(
             model_name='RefBookField',
-            db_table='main_refbookfield',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_refbookfield'
         )
 
         # Model 'RefBookData'

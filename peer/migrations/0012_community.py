@@ -25,10 +25,7 @@ class Migration(BaseMigration):
         # Mock Models
         CommunityType = self.db.mock_model(
             model_name='CommunityType',
-            db_table='peer_communitytype',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_communitytype'
         )
 
         # Model 'Community'

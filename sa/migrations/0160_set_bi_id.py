@@ -56,4 +56,4 @@ class Migration(BaseMigration):
         # Alter bi_id fields and create indexes
         for table in MODELS:
             self.db.execute("ALTER TABLE %s ALTER bi_id SET NOT NULL" % table)
-            self.db.create_index(table, ["bi_id"], unique=True, db_tablespace="")
+            self.db.create_index(table, ["bi_id"], unique=True)

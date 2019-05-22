@@ -23,10 +23,7 @@ class Migration(BaseMigration):
         )
         WhoisDatabase = self.db.mock_model(
             model_name='WhoisDatabase',
-            db_table='peer_whoisdatabase',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_whoisdatabase'
         )
 
         # Adding model 'WhoisLookup'
@@ -42,10 +39,7 @@ class Migration(BaseMigration):
         )
         WhoisLookup = self.db.mock_model(
             model_name='WhoisLookup',
-            db_table='peer_whoislookup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_whoislookup'
         )
 
         # Adding model 'WhoisCache'

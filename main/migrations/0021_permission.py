@@ -23,19 +23,13 @@ class Migration(BaseMigration):
         )
         Permission = self.db.mock_model(
             model_name='Permission',
-            db_table='main_permission',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='main_permission'
         )
 
         # Adding ManyToManyField 'Permission.groups'
         Group = self.db.mock_model(
             model_name='Group',
-            db_table='auth_group',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_group'
         )
         self.db.create_table(
             'main_permission_groups', (
@@ -48,10 +42,7 @@ class Migration(BaseMigration):
         # Adding ManyToManyField 'Permission.users'
         User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
         self.db.create_table(
             'main_permission_users', (
