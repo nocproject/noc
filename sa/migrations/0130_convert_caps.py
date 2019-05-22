@@ -5,14 +5,13 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         def convert(doc):
             def convert_caps(ci):
                 return {
@@ -23,7 +22,7 @@ class Migration(object):
 
             return {"_id": doc["object"], "caps": [convert_caps(c) for c in doc["caps"]]}
 
-        db = get_db()
+        db = self.mongo_db
         caps = db["noc.sa.objectcapabilities"]
         if not caps.count_documents({}):
             return
@@ -41,6 +40,3 @@ class Migration(object):
             chunk, data = data[:CHUNK], data[CHUNK:]
             new_caps.insert(chunk)
         # old_caps.drop()
-
-    def backwards(self):
-        pass

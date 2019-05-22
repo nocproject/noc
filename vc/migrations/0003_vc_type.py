@@ -5,11 +5,11 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 vc_checks = {
     "q": ("802.1Q VLAN", 1, (1, 4095), None),
@@ -21,14 +21,14 @@ vc_checks = {
 }
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Save old VCs
-        vc_data = db.execute("SELECT vc_domain_id,type,l1,l2,description FROM vc_vc ORDER by id")
+        vc_data = self.db.execute("SELECT vc_domain_id,type,l1,l2,description FROM vc_vc ORDER by id")
         # Delete old VC table
-        db.delete_table("vc_vc")
+        self.db.delete_table("vc_vc")
         # Model 'VCType'
-        db.create_table(
+        self.db.create_table(
             'vc_vctype', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -40,14 +40,14 @@ class Migration(object):
         )
 
         # Mock Models
-        VCDomain = db.mock_model(
+        VCDomain = self.db.mock_model(
             model_name='VCDomain',
             db_table='vc_vcdomain',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        VCType = db.mock_model(
+        VCType = self.db.mock_model(
             model_name='VCType',
             db_table='vc_vctype',
             db_tablespace='',
@@ -56,7 +56,7 @@ class Migration(object):
         )
 
         # Model 'VC'
-        db.create_table(
+        self.db.create_table(
             'vc_vc', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain")),
@@ -65,28 +65,23 @@ class Migration(object):
                 ('description', models.CharField("Description", max_length=256))
             )
         )
-        db.create_index('vc_vc', ['vc_domain_id', 'type_id', 'l1', 'l2'], unique=True, db_tablespace='')
+        self.db.create_index('vc_vc', ['vc_domain_id', 'type_id', 'l1', 'l2'], unique=True)
 
-        db.send_create_signal('vc', ['VCType', 'VC'])
         # Fill in VC types
         vc_map = {}  # letter -> id
         for vt, d in vc_checks.items():
             name, min_labels, l1, l2 = d
             if l2 is None:
                 l2 = (0, 0)
-            db.execute(
+            self.db.execute(
                 """INSERT INTO vc_vctype(name,min_labels,label1_min,label1_max,label2_min,label2_max)
                 VALUES(%s,%s,%s,%s,%s,%s)""", [name, min_labels, l1[0], l1[1], l2[0], l2[1]]
             )
-            vct_id = db.execute("SELECT id FROM vc_vctype WHERE name=%s", [name])[0][0]
+            vct_id = self.db.execute("SELECT id FROM vc_vctype WHERE name=%s", [name])[0][0]
             vc_map[vt] = vct_id
         # Return saved VC data
         for vc_domain_id, type, l1, l2, description in vc_data:
-            db.execute(
+            self.db.execute(
                 "INSERT INTO vc_vc(vc_domain_id,type_id,l1,l2,description) VALUES(%s,%s,%s,%s,%s)",
                 [vc_domain_id, vc_map[type], l1, l2, description]
             )
-
-    def backwards(self):
-        db.delete_table('vc_vc')
-        db.delete_table('vc_vctype')

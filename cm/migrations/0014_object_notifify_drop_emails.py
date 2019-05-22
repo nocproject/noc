@@ -5,17 +5,12 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
-from django.db import models
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.drop_column("cm_objectnotify", "emails")
-        db.execute("ALTER TABLE cm_objectnotify ALTER COLUMN notification_group_id SET NOT NULL")
-
-    def backwards(self):
-        db.add_column("cm_objectnotify", "emails", models.CharField("Emails", max_length=128))
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_column("cm_objectnotify", "emails")
+        self.db.execute("ALTER TABLE cm_objectnotify ALTER COLUMN notification_group_id SET NOT NULL")

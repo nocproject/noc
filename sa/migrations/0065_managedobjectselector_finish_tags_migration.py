@@ -5,18 +5,14 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Drop old tags
-        db.drop_column("sa_managedobjectselector", "filter_tags")
+        self.db.delete_column("sa_managedobjectselector", "filter_tags")
         # Rename new tags
-        db.rename_column("sa_managedobjectselector", "tmp_filter_tags", "filter_tags")
-
-    def backwards(self):
-        pass
+        self.db.rename_column("sa_managedobjectselector", "tmp_filter_tags", "filter_tags")

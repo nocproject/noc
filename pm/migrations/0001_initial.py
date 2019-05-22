@@ -5,27 +5,27 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = (("main", "0001_initial"),)
 
-    def forwards(self):
+    def migrate(self):
         # Adding model 'TimeSeries'
-        db.create_table(
+        self.db.create_table(
             'pm_timeseries', (
                 ('id', models.AutoField(primary_key=True)),
                 ('name', models.CharField("Name", unique=True, max_length=128)),
                 ('is_enabled', models.BooleanField("Is Enabled?", default=True)),
             )
         )
-        db.send_create_signal('pm', ['TimeSeries'])
-        TimeSeries = db.mock_model(
+
+        TimeSeries = self.db.mock_model(
             model_name='TimeSeries',
             db_table='pm_timeseries',
             db_tablespace='',
@@ -33,7 +33,7 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
         # Adding model 'TimeSeriesData'
-        db.create_table(
+        self.db.create_table(
             'pm_timeseriesdata', (
                 ('id', models.AutoField(primary_key=True)),
                 ('time_series', models.ForeignKey(TimeSeries, verbose_name="Time Series")),
@@ -41,17 +41,17 @@ class Migration(object):
                 ('value', models.FloatField("Value", null=True, blank=True)),
             )
         )
-        db.create_index('pm_timeseriesdata', ['timestamp'], unique=False, db_tablespace='')
-        db.send_create_signal('pm', ['TimeSeriesData'])
+        self.db.create_index('pm_timeseriesdata', ['timestamp'], unique=False)
+
         #
-        db.create_table(
+        self.db.create_table(
             'pm_chart', (
                 ('id', models.AutoField(primary_key=True)),
                 ('name', models.CharField("Name", unique=True, max_length=128)),
             )
         )
-        db.send_create_signal('pm', ['Chart'])
-        Chart = db.mock_model(
+
+        Chart = self.db.mock_model(
             model_name='Chart',
             db_table='pm_chart',
             db_tablespace='',
@@ -59,7 +59,7 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
         #
-        db.create_table(
+        self.db.create_table(
             'pm_chart_time_series', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('chart', models.ForeignKey(Chart, null=False)),
@@ -67,18 +67,7 @@ class Migration(object):
             )
         )
         #
-        db.execute(SP_CREATE)
-
-    def backwards(self):
-        db.execute(SP_DROP)
-        # Deleting ManyToMany field
-        db.delete_table("pm_chart_time_series")
-        # Deleting model 'Chart'
-        db.delete_table("pm_chart")
-        # Deleting model 'TimeSeriesData'
-        db.delete_table('pm_timeseriesdata')
-        # Deleting model 'TimeSeries'
-        db.delete_table('pm_timeseries')
+        self.db.execute(SP_CREATE)
 
 
 SP_CREATE = """

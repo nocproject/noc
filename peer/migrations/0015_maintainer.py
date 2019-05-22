@@ -5,17 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# Third-party models
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Model 'RIR'
-        db.create_table(
+        self.db.create_table(
             'peer_rir', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("name", max_length=64, unique=True)),
@@ -24,12 +24,12 @@ class Migration(object):
         )
 
         # Mock Models
-        RIR = db.mock_model(
+        RIR = self.db.mock_model(
             model_name='RIR', db_table='peer_rir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
         )
 
         # Model 'Person'
-        db.create_table(
+        self.db.create_table(
             'peer_person', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('nic_hdl', models.CharField("nic-hdl", max_length=64, unique=True)),
@@ -41,12 +41,12 @@ class Migration(object):
         )
 
         # Mock Models
-        RIR = db.mock_model(
+        RIR = self.db.mock_model(
             model_name='RIR', db_table='peer_rir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
         )
 
         # Model 'Maintainer'
-        db.create_table(
+        self.db.create_table(
             'peer_maintainer', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('maintainer', models.CharField("mntner", max_length=64, unique=True)),
@@ -56,14 +56,14 @@ class Migration(object):
             )
         )
         # Mock Models
-        Maintainer = db.mock_model(
+        Maintainer = self.db.mock_model(
             model_name='Maintainer',
             db_table='peer_maintainer',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        Person = db.mock_model(
+        Person = self.db.mock_model(
             model_name='Person',
             db_table='peer_person',
             db_tablespace='',
@@ -72,7 +72,7 @@ class Migration(object):
         )
 
         # M2M field 'Maintainer.admins'
-        db.create_table(
+        self.db.create_table(
             'peer_maintainer_admins', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('maintainer', models.ForeignKey(Maintainer, null=False)),
@@ -80,13 +80,8 @@ class Migration(object):
             )
         )
 
-        db.send_create_signal('peer', ['RIR', 'Person', 'Maintainer'])
         for rir, whois in [("ARIN", "whois.arin.net"), ("RIPE NCC", "whois.ripe.net"), ("APNIC", "whois.apnic.net"),
                            ("LACNIC", "whois.lacnic.net"), ("AfriNIC", "whois.afrinic.net")]:
-            db.execute("INSERT INTO peer_rir(name,whois) VALUES(%s,%s)", [rir, whois])
+            self.db.execute("INSERT INTO peer_rir(name,whois) VALUES(%s,%s)", [rir, whois])
 
-    def backwards(self):
-        db.delete_table('peer_maintainer_admins')
-        db.delete_table('peer_maintainer')
-        db.delete_table('peer_person')
-        db.delete_table('peer_rir')
+

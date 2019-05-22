@@ -5,14 +5,13 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         def process_event(event_id, alarm_id):
             e = None
             for c in (active_events, archived_events):
@@ -37,7 +36,7 @@ class Migration(object):
             del doc["events"]
             collection.save(doc)
 
-        db = get_db()
+        db = self.mongo_db
         active_alarms = db.noc.alarms.active
         archived_alarms = db.noc.alarms.archive
         active_events = db.noc.events.active
@@ -46,6 +45,3 @@ class Migration(object):
         for ac in (active_alarms, archived_alarms):
             for doc in ac.find():
                 process_alarm(ac, doc)
-
-    def backwards(self):
-        pass

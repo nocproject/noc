@@ -5,23 +5,22 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import bson
 # Third-party modules
 from pymongo import UpdateOne
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
-from noc.lib.nosql import get_db
 
 MONGO_CHUNK = 500
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Update mongodb collections
-        mdb = get_db()
+        mdb = self.mongo_db
         for coll_name in ("noc.subscribers", "noc.suppliers", "noc.subscriberprofiles", "noc.supplierprofiles"):
             coll = mdb[coll_name]
             updates = []

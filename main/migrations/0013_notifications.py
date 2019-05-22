@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
 
         # Model 'NotificationGroup'
-        db.create_table(
+        self.db.create_table(
             'main_notificationgroup', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=64, unique=True)),
@@ -25,21 +25,21 @@ class Migration(object):
         )
 
         # Mock Models
-        NotificationGroup = db.mock_model(
+        NotificationGroup = self.db.mock_model(
             model_name='NotificationGroup',
             db_table='main_notificationgroup',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        TimePattern = db.mock_model(
+        TimePattern = self.db.mock_model(
             model_name='TimePattern',
             db_table='main_timepattern',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        User = db.mock_model(
+        User = self.db.mock_model(
             model_name='User',
             db_table='auth_user',
             db_tablespace='',
@@ -48,7 +48,7 @@ class Migration(object):
         )
 
         # Model 'NotificationGroupUser'
-        db.create_table(
+        self.db.create_table(
             'main_notificationgroupuser', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('notification_group', models.ForeignKey(NotificationGroup, verbose_name="Notification Group")),
@@ -56,21 +56,19 @@ class Migration(object):
                 ('user', models.ForeignKey(User, verbose_name=User))
             )
         )
-        db.create_index(
-            'main_notificationgroupuser', ['notification_group_id', 'time_pattern_id', 'user_id'],
-            unique=True,
-            db_tablespace=''
+        self.db.create_index(
+            'main_notificationgroupuser', ['notification_group_id', 'time_pattern_id', 'user_id'], unique=True
         )
 
         # Mock Models
-        NotificationGroup = db.mock_model(
+        NotificationGroup = self.db.mock_model(
             model_name='NotificationGroup',
             db_table='main_notificationgroup',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        TimePattern = db.mock_model(
+        TimePattern = self.db.mock_model(
             model_name='TimePattern',
             db_table='main_timepattern',
             db_tablespace='',
@@ -79,7 +77,7 @@ class Migration(object):
         )
 
         # Model 'NotificationGroupOther'
-        db.create_table(
+        self.db.create_table(
             'main_notificationgroupother', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('notification_group', models.ForeignKey(NotificationGroup, verbose_name="Notification Group")),
@@ -88,15 +86,14 @@ class Migration(object):
                 ('params', models.CharField("Params", max_length=256))
             )
         )
-        db.create_index(
+        self.db.create_index(
             'main_notificationgroupother',
             ['notification_group_id', 'time_pattern_id', 'notification_method', 'params'],
-            unique=True,
-            db_tablespace=''
+            unique=True
         )
 
         # Model 'Notification'
-        db.create_table(
+        self.db.create_table(
             'main_notification', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('timestamp', models.DateTimeField("Timestamp", auto_now=True, auto_now_add=True)),
@@ -107,13 +104,3 @@ class Migration(object):
                 ('actual_till', models.DateTimeField("Actual Till", null=True, blank=True))
             )
         )
-
-        db.send_create_signal(
-            'main', ['NotificationGroup', 'NotificationGroupUser', 'NotificationGroupOther', 'Notification']
-        )
-
-    def backwards(self):
-        db.delete_table('main_notification')
-        db.delete_table('main_notificationgroupother')
-        db.delete_table('main_notificationgroupuser')
-        db.delete_table('main_notificationgroup')

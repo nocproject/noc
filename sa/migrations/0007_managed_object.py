@@ -1,21 +1,20 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # managed object
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Model 'AdministrativeDomain'
-        db.create_table(
+        self.db.create_table(
             'sa_administrativedomain', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -23,7 +22,7 @@ class Migration(object):
             )
         )
         # Model 'ObjectGroup'
-        db.create_table(
+        self.db.create_table(
             'sa_objectgroup', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -32,23 +31,21 @@ class Migration(object):
         )
 
         # Mock Models
-        AdministrativeDomain = db.mock_model(
+        AdministrativeDomain = self.db.mock_model(
             model_name='AdministrativeDomain',
             db_table='sa_administrativedomain',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        Activator = db.mock_model(
+        Activator = self.db.mock_model(
             model_name='Activator',
             db_table='sa_activator',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-
-        # Model 'ManagedObject'
-        db.create_table(
+        self.db.create_table(
             'sa_managedobject', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=64, unique=True)),
@@ -69,14 +66,14 @@ class Migration(object):
             )
         )
         # Mock Models
-        ManagedObject = db.mock_model(
+        ManagedObject = self.db.mock_model(
             model_name='ManagedObject',
             db_table='sa_managedobject',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        ObjectGroup = db.mock_model(
+        ObjectGroup = self.db.mock_model(
             model_name='ObjectGroup',
             db_table='sa_objectgroup',
             db_tablespace='',
@@ -85,7 +82,7 @@ class Migration(object):
         )
 
         # M2M field 'ManagedObject.groups'
-        db.create_table(
+        self.db.create_table(
             'sa_managedobject_groups', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('managedobject', models.ForeignKey(ManagedObject, null=False)),
@@ -94,21 +91,21 @@ class Migration(object):
         )
 
         # Mock Models
-        User = db.mock_model(
+        User = self.db.mock_model(
             model_name='User',
             db_table='auth_user',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        AdministrativeDomain = db.mock_model(
+        AdministrativeDomain = self.db.mock_model(
             model_name='AdministrativeDomain',
             db_table='sa_administrativedomain',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        ObjectGroup = db.mock_model(
+        ObjectGroup = self.db.mock_model(
             model_name='ObjectGroup',
             db_table='sa_objectgroup',
             db_tablespace='',
@@ -117,7 +114,7 @@ class Migration(object):
         )
 
         # Model 'UserAccess'
-        db.create_table(
+        self.db.create_table(
             'sa_useraccess', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('user', models.ForeignKey(User, verbose_name=User)),
@@ -130,12 +127,3 @@ class Migration(object):
                 ('group', models.ForeignKey(ObjectGroup, verbose_name="Group", blank=True, null=True)),
             )
         )
-
-        db.send_create_signal('sa', ['AdministrativeDomain', 'ObjectGroup', 'ManagedObject', 'UserAccess'])
-
-    def backwards(self):
-        db.delete_table('sa_managedobject_groups')
-        db.delete_table('sa_useraccess')
-        db.delete_table('sa_managedobject')
-        db.delete_table('sa_objectgroup')
-        db.delete_table('sa_administrativedomain')

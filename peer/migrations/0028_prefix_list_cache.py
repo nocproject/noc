@@ -5,20 +5,19 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
 # NOC modules
 from noc.core.model.fields import InetArrayField
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Adding model 'PrefixListCache'
-        PeeringPoint = db.mock_model(model_name="PeeringPoint", db_table="peer_peeringpoint")
-        db.create_table(
+        PeeringPoint = self.db.mock_model(model_name="PeeringPoint", db_table="peer_peeringpoint")
+        self.db.create_table(
             'peer_prefixlistcache', (
                 ('id', models.AutoField(primary_key=True)),
                 ('peering_point', models.ForeignKey(PeeringPoint, verbose_name="Peering Point")),
@@ -29,8 +28,3 @@ class Migration(object):
                 ('pushed', models.DateTimeField("Pushed", null=True, blank=True)),
             )
         )
-        db.send_create_signal('peer', ['PrefixListCache'])
-
-    def backwards(self):
-        # Deleting model 'PrefixListCache'
-        db.delete_table('peer_prefixlistcache')

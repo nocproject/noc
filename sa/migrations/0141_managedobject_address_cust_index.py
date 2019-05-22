@@ -5,14 +5,13 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         func = """create or replace function cast_test_to_inet(varchar) returns inet as $$
         declare
              i inet;
@@ -25,16 +24,12 @@ class Migration(object):
         $$ language plpgsql immutable strict"""
 
         # Check index exists
-        i = db.execute(
+        i = self.db.execute(
             """SELECT * FROM pg_indexes
                           WHERE tablename='sa_managedobject' AND indexname='x_managedobject_addressprefix'"""
         )
         if i:
-            db.execute("DROP INDEX %s" % "x_managedobject_addressprefix")
+            self.db.execute("DROP INDEX %s" % "x_managedobject_addressprefix")
 
-        db.execute(func)
-        db.execute("CREATE INDEX x_managedobject_addressprefix ON sa_managedobject (cast_test_to_inet(address))")
-
-    def backwards(self):
-        db.execute("DROP INDEX %s" % "x_managedobject_addressprefix")
-        db.execute("DROP FUNCTION cast_test_to_inet")
+        self.db.execute(func)
+        self.db.execute("CREATE INDEX x_managedobject_addressprefix ON sa_managedobject (cast_test_to_inet(address))")

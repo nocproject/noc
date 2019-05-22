@@ -5,38 +5,37 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # ManagedObjectProfile
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "enable_box_discovery_address_confdb", models.BooleanField(default=False)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "enable_box_discovery_prefix_confdb", models.BooleanField(default=False)
         )
-        db.add_column("sa_managedobjectprofile", "enable_box_discovery_vpn_confdb", models.BooleanField(default=False))
-        db.add_column(
+        self.db.add_column("sa_managedobjectprofile", "enable_box_discovery_vpn_confdb", models.BooleanField(default=False))
+        self.db.add_column(
             "sa_managedobjectprofile", "address_profile_confdb",
             DocumentReferenceField("ip.PrefixProfile", null=True, blank=True)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "prefix_profile_confdb",
             DocumentReferenceField("ip.PrefixProfile", null=True, blank=True)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "vpn_profile_confdb",
             DocumentReferenceField("vc.VPNProfile", null=True, blank=True)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "interface_discovery_policy",
             models.CharField(
                 "Interface Discovery Policy",
@@ -45,7 +44,7 @@ class Migration(object):
                 default="s"
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "caps_discovery_policy",
             models.CharField(
                 "Caps Discovery Policy",
@@ -54,7 +53,7 @@ class Migration(object):
                 default="s"
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "vlan_discovery_policy",
             models.CharField(
                 "VLAN Discovery Policy",
@@ -63,7 +62,7 @@ class Migration(object):
                 default="s"
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject", "interface_discovery_policy",
             models.CharField(
                 "Interface Discovery Policy",
@@ -75,7 +74,7 @@ class Migration(object):
                 default="P"
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject", "caps_discovery_policy",
             models.CharField(
                 "Caps Discovery Policy",
@@ -87,7 +86,7 @@ class Migration(object):
                 default="P"
             )
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject", "vlan_discovery_policy",
             models.CharField(
                 "VLAN Discovery Policy",
@@ -99,6 +98,3 @@ class Migration(object):
                 default="P"
             )
         )
-
-    def backwards(self):
-        pass

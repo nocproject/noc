@@ -5,20 +5,19 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Create plpgsql language when necessary
-        if db.execute("SELECT COUNT(*) FROM pg_language WHERE lanname='plpgsql'")[0][0] == 0:
-            db.execute("CREATE LANGUAGE plpgsql")
+        if self.db.execute("SELECT COUNT(*) FROM pg_language WHERE lanname='plpgsql'")[0][0] == 0:
+            self.db.execute("CREATE LANGUAGE plpgsql")
         # Create default admin user if no user exists
-        if db.execute("SELECT COUNT(*) FROM auth_user")[0][0] == 0:
-            db.execute(
+        if self.db.execute("SELECT COUNT(*) FROM auth_user")[0][0] == 0:
+            self.db.execute(
                 """
             INSERT INTO auth_user
             (username,first_name,last_name,email,password,is_staff,is_active,is_superuser,last_login,date_joined)
@@ -27,6 +26,3 @@ class Migration(object):
                     True, True, True
                 ]
             )
-
-    def backwards(self):
-        pass

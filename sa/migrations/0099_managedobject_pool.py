@@ -5,20 +5,15 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
-# NOC models
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("main", "0055_default_pool")]
 
-    def forwards(self):
-        db.add_column("sa_managedobject", "pool", DocumentReferenceField("self", null=True, blank=True))
-        db.create_index("sa_managedobject", ["pool"], unique=False, db_tablespace="")
-
-    def backwards(self):
-        db.delete_column("sa_managedobject", "pool")
+    def migrate(self):
+        self.db.add_column("sa_managedobject", "pool", DocumentReferenceField("self", null=True, blank=True))
+        self.db.create_index("sa_managedobject", ["pool"], unique=False, db_tablespace="")

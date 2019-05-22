@@ -5,17 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # ResourceState
-        ResourceState = db.mock_model(
+        ResourceState = self.db.mock_model(
             model_name="ResourceState",
             db_table="main_resourcestate",
             db_tablespace="",
@@ -23,7 +23,7 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
 
-        db.create_table(
+        self.db.create_table(
             "main_resourcestate", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=32, unique=True)),
@@ -34,7 +34,3 @@ class Migration(object):
                 ("step_to", models.ForeignKey(ResourceState, blank=True, null=True))
             )
         )
-        db.send_create_signal("main", ["ResourceState"])
-
-    def backwards(self):
-        db.delete_table("main_resourcestate")

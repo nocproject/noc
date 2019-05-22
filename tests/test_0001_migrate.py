@@ -17,6 +17,7 @@ def test_database_migrations(database):
     :param database:
     :return:
     """
-    from django.core.management import call_command
+    from south.management.commands.migrate import Command
 
-    call_command("migrate", no_initial_data=True, noinput=True, ignore_ghosts=True)
+    cmd = Command()
+    cmd.execute(no_initial_data=True, noinput=True, ignore_ghosts=True)

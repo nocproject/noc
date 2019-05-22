@@ -5,33 +5,33 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 from __future__ import print_function
 import json
 # Third-party modules
+import bson
 from pymongo.errors import BulkWriteError
 from pymongo import InsertOne
-from south.db import db
 # NOC modules
-from noc.lib.nosql import get_db, ObjectId
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        if db.execute("""
+class Migration(BaseMigration):
+    def migrate(self):
+        if self.db.execute("""
                 select count(*) from pg_class where relname='gis_geodata'
                 """)[0][0] == 0:
             return  # No PostGIS
-        c = get_db().noc.geodata
+        c = self.mongo_db.noc.geodata
         bulk = []
-        for layer, label, object, data in db.execute("""
+        for layer, label, object, data in self.db.execute("""
             SELECT layer, label, object, ST_AsGeoJSON(data)
             FROM gis_geodata
         """):
             data = json.loads(data)
-            bulk += [InsertOne({"layer": ObjectId(layer), "object": ObjectId(object), "label": label, "data": data})]
+            bulk += [InsertOne({"layer": bson.ObjectId(layer), "object": bson.ObjectId(object),
+                                "label": label, "data": data})]
         if bulk:
             print("Commiting changes to database")
             try:
@@ -40,8 +40,3 @@ class Migration(object):
             except BulkWriteError as e:
                 print(("Bulk write error: '%s'", e.details))
                 print("Stopping check")
-        # Leave table for further analisys
-        # db.drop_table("gis_geodata")
-
-    def backwards(self):
-        pass

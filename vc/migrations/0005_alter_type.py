@@ -5,16 +5,12 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.drop_column("vc_vc", "type_id")
-        db.execute("ALTER TABLE vc_vcdomain ALTER COLUMN type_id SET NOT NULL")
-
-    def backwards(self):
-        pass
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_column("vc_vc", "type_id")
+        self.db.execute("ALTER TABLE vc_vcdomain ALTER COLUMN type_id SET NOT NULL")

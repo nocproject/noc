@@ -5,17 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Profile settings
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "event_processing_policy",
             models.CharField(
                 "Event Processing Policy",
@@ -25,7 +25,7 @@ class Migration(object):
             )
         )
         # Object settings
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject", "event_processing_policy",
             models.CharField(
                 "Event Processing Policy",
@@ -34,7 +34,3 @@ class Migration(object):
                 default="P"
             )
         )
-
-    def backwards(self):
-        db.delete_column("sa_managedobjectprofile", "event_processing_policy")
-        db.delete_column("sa_managedobject", "event_processing_policy")

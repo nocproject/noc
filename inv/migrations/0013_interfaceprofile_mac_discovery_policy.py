@@ -7,12 +7,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db = get_db()
+class Migration(BaseMigration):
+    def migrate(self):
+        db = self.mongo_db
         coll = db["noc.interface_profiles"]
         for d in list(coll.find({}, {"_id": 1, "mac_discovery": 1})):
             coll.update_many(
@@ -27,6 +27,3 @@ class Migration(object):
                     }
                 }
             )
-
-    def backwards(self):
-        pass

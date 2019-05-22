@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
 
         # Model 'TaskSchedule'
-        db.create_table(
+        self.db.create_table(
             'sa_taskschedule', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('periodic_name', models.CharField("Periodic Task", max_length=64)),
@@ -29,8 +29,3 @@ class Migration(object):
                 ('retries_left', models.PositiveIntegerField("Retries Left", default=1))
             )
         )
-
-        db.send_create_signal('sa', ['TaskSchedule'])
-
-    def backwards(self):
-        db.delete_table('sa_taskschedule')

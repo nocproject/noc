@@ -5,16 +5,16 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        Prefix = db.mock_model(
+class Migration(BaseMigration):
+    def migrate(self):
+        Prefix = self.db.mock_model(
             model_name="Prefix",
             db_table="ip_prefix",
             db_tablespace="",
@@ -22,7 +22,7 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
 
-        Address = db.mock_model(
+        Address = self.db.mock_model(
             model_name="Address",
             db_table="ip_address",
             db_tablespace="",
@@ -30,9 +30,5 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
 
-        db.add_column("ip_prefix", "ipv6_transition", models.OneToOneField(Prefix, null=True, blank=True))
-        db.add_column("ip_address", "ipv6_transition", models.OneToOneField(Address, null=True, blank=True))
-
-    def backwards(self):
-        db.drop_column("ip_prefix", "ipv6_transition_id")
-        db.drop_column("ip_address", "ipv6_transition_id")
+        self.db.add_column("ip_prefix", "ipv6_transition", models.OneToOneField(Prefix, null=True, blank=True))
+        self.db.add_column("ip_address", "ipv6_transition", models.OneToOneField(Address, null=True, blank=True))

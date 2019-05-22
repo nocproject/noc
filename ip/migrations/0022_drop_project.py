@@ -5,15 +5,14 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     def migrate_project(self, table):
-        r = db.execute(
+        r = self.db.execute(
             """
             SELECT COUNT(*)
             FROM %s
@@ -21,7 +20,7 @@ class Migration(object):
         )[0][0]
         if r:
             # Create custom field
-            db.execute(
+            self.db.execute(
                 """
             INSERT INTO main_customfield("table", name, is_active,
                 label, "type", max_length, is_indexed)
@@ -30,17 +29,14 @@ class Migration(object):
             )
 
             # Move data
-            db.execute("""
+            self.db.execute("""
                 ALTER TABLE %s RENAME project TO cust_project
             """ % table)
         else:
             # Drop column
-            db.drop_column(table, "project")
+            self.db.delete_column(table, "project")
 
-    def forwards(self):
+    def migrate(self):
         self.migrate_project("ip_vrf")
         self.migrate_project("ip_prefix")
         self.migrate_project("ip_address")
-
-    def backwards(self):
-        pass

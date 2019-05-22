@@ -5,24 +5,23 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Adding model 'WhoisDatabase'
-        db.create_table(
+        self.db.create_table(
             'peer_whoisdatabase', (
                 ('id', models.AutoField(primary_key=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
             )
         )
-        db.send_create_signal('peer', ['WhoisDatabase'])
-        WhoisDatabase = db.mock_model(
+        WhoisDatabase = self.db.mock_model(
             model_name='WhoisDatabase',
             db_table='peer_whoisdatabase',
             db_tablespace='',
@@ -31,7 +30,7 @@ class Migration(object):
         )
 
         # Adding model 'WhoisLookup'
-        db.create_table(
+        self.db.create_table(
             'peer_whoislookup', (
                 ('id', models.AutoField(primary_key=True)),
                 ('whois_database', models.ForeignKey(WhoisDatabase, verbose_name='Whois Database')),
@@ -41,8 +40,7 @@ class Migration(object):
                 ('value', models.CharField("Value", max_length=32)),
             )
         )
-        db.send_create_signal('peer', ['WhoisLookup'])
-        WhoisLookup = db.mock_model(
+        WhoisLookup = self.db.mock_model(
             model_name='WhoisLookup',
             db_table='peer_whoislookup',
             db_tablespace='',
@@ -51,7 +49,7 @@ class Migration(object):
         )
 
         # Adding model 'WhoisCache'
-        db.create_table(
+        self.db.create_table(
             'peer_whoiscache', (
                 ('id', models.AutoField(primary_key=True)),
                 ('lookup', models.ForeignKey(WhoisLookup, verbose_name="Whois Lookup")),
@@ -59,20 +57,9 @@ class Migration(object):
                 ('value', models.TextField("Value")),
             )
         )
-        db.send_create_signal('peer', ['WhoisCache'])
 
         # Creating unique_together for [lookup, key] on WhoisCache.
-        db.create_unique('peer_whoiscache', ['lookup_id', 'key'])
+        self.db.create_index('peer_whoiscache', ['lookup_id', 'key'], unique=True)
 
         # Creating unique_together for [object, key, value] on WhoisLookup.
-        db.create_unique('peer_whoislookup', ['whois_database_id', 'url', 'key', 'value'])
-
-    def backwards(self):
-        # Deleting model 'WhoisLookup'
-        db.delete_table('peer_whoislookup')
-
-        # Deleting model 'WhoisDatabase'
-        db.delete_table('peer_whoisdatabase')
-
-        # Deleting model 'WhoisCache'
-        db.delete_table('peer_whoiscache')
+        self.db.create_index('peer_whoislookup', ['whois_database_id', 'url', 'key', 'value'], unique=True)

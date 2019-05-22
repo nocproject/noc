@@ -5,38 +5,34 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        ManagedObjectProfile = db.mock_model(
+class Migration(BaseMigration):
+    def migrate(self):
+        ManagedObjectProfile = self.db.mock_model(
             model_name="ManagedObjectProfile",
             db_table="sa_managedobjectprofile",
             db_tablespace="",
             pk_field_name="id",
             pk_field_type=models.AutoField
         )
-        AuthProfile = db.mock_model(
+        AuthProfile = self.db.mock_model(
             model_name="AuthProfile",
             db_table="sa_authprofile",
             db_tablespace="",
             pk_field_name="id",
             pk_field_type=models.AutoField
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "cpe_profile",
             models.ForeignKey(ManagedObjectProfile, verbose_name="Object Profile", blank=True, null=True)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectprofile", "cpe_auth_profile",
             models.ForeignKey(AuthProfile, verbose_name="Object Profile", blank=True, null=True)
         )
-
-    def backwards(self):
-        db.delete_column("sa_managedobjectprofile", "cpe_profile_id")
-        db.delete_column("sa_managedobjectprofile", "cpe_auth_profile_id")

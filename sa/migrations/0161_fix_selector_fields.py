@@ -5,28 +5,24 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.execute(
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.execute(
             """
           ALTER TABLE sa_managedobjectselector
           ALTER filter_profile TYPE CHAR(24)
             USING SUBSTRING("filter_profile", 1, 24)
         """
         )
-        db.execute(
+        self.db.execute(
             """
           ALTER TABLE sa_managedobjectselector
           ALTER filter_name TYPE VARCHAR(256)
             USING TRIM(TRAILING ' ' FROM "filter_name")
         """
         )
-
-    def backwards(self):
-        pass

@@ -5,25 +5,25 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("sa", "0015_managedobjectselector")]
 
-    def forwards(self):
-        VCDomain = db.mock_model(
+    def migrate(self):
+        VCDomain = self.db.mock_model(
             model_name='VCDomain',
             db_table='vc_vcdomain',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        ManagedObjectSelector = db.mock_model(
+        ManagedObjectSelector = self.db.mock_model(
             model_name='ManagedObjectSelector',
             db_table='sa_managedobjectselector',
             db_tablespace='',
@@ -32,7 +32,7 @@ class Migration(object):
         )
 
         # Adding model 'VCDomainProvisioningConfig'
-        db.create_table(
+        self.db.create_table(
             'vc_vcdomainprovisioningconfig', (
                 ('id', models.AutoField(primary_key=True)),
                 ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain")),
@@ -41,17 +41,9 @@ class Migration(object):
                 ('value', models.CharField("Value", max_length=256)),
             )
         )
-        db.send_create_signal('vc', ['VCDomainProvisioningConfig'])
 
         # Creating unique_together for [vc_domain, selector, key] on VCDomainProvisioningConfig.
-        db.create_unique('vc_vcdomainprovisioningconfig', ['vc_domain_id', 'selector_id', 'key'])
+        self.db.create_index('vc_vcdomainprovisioningconfig', ['vc_domain_id', 'selector_id', 'key'], unique=True)
 
-        db.add_column("vc_vcdomain", "enable_provisioning", models.BooleanField("Enable Provisioning", default=False))
-
-    def backwards(self):
-
-        # Deleting model 'VCDomainProvisioningConfig'
-        db.delete_table('vc_vcdomainprovisioningconfig')
-
-        # Deleting unique_together for [vc_domain, selector, key] on VCDomainProvisioningConfig.
-        db.delete_unique('vc_vcdomainprovisioningconfig', ['vc_domain_id', 'selector_id', 'key'])
+        self.db.add_column("vc_vcdomain", "enable_provisioning",
+                           models.BooleanField("Enable Provisioning", default=False))

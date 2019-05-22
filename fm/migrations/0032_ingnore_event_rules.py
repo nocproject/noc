@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
 
         # Adding model 'IgnoreEvents'
-        db.create_table(
+        self.db.create_table(
             'fm_ignoreeventrules', (
                 ('id', models.AutoField(primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=64)),
@@ -26,8 +26,3 @@ class Migration(object):
                 ('description', models.TextField(null=True, blank=True)),
             )
         )
-        db.send_create_signal('fm', ['IgnoreEventRules'])
-
-    def backwards(self):
-        # Deleting model 'IgnoreEvents'
-        db.delete_table('fm_ignoreeventrules')

@@ -5,20 +5,15 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
-# NOC models
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("inv", "0010_default_segment")]
 
-    def forwards(self):
-        db.add_column("sa_managedobject", "segment", DocumentReferenceField("self", null=True, blank=True))
-        db.create_index("sa_managedobject", ["segment"], unique=False, db_tablespace="")
-
-    def backwards(self):
-        db.delete_column("sa_managedobject", "segment")
+    def migrate(self):
+        self.db.add_column("sa_managedobject", "segment", DocumentReferenceField("self", null=True, blank=True))
+        self.db.create_index("sa_managedobject", ["segment"], unique=False, db_tablespace="")

@@ -5,15 +5,14 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db = get_db()
+class Migration(BaseMigration):
+    def migrate(self):
+        db = self.mongo_db
         # Get root model id
         rm = db["noc.objectmodels"].find_one({"name": "Root"})
         if not rm:
@@ -27,6 +26,3 @@ class Migration(object):
         c.update_many({"container": rc["_id"]}, {"$set": {"container": None}})
         # Remove root container
         c.delete_one({"_id": rc["_id"]})
-
-    def backwards(self):
-        pass

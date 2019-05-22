@@ -5,22 +5,21 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
 # NOC modules
 from noc.core.model.fields import AutoCompleteTagsField, CIDRField, INETField, MACField
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = (("main", "0027_style"),)
 
-    def forwards(self):
+    def migrate(self):
         AFI_CHOICES = [("4", "IPv4"), ("6", "IPv6")]
         # Style
-        Style = db.mock_model(
+        Style = self.db.mock_model(
             model_name="Style",
             db_table="main_style",
             db_tablespace="",
@@ -28,7 +27,7 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
         # VRF Group
-        db.add_column(
+        self.db.add_column(
             "ip_vrfgroup", "address_constraint",
             models.CharField(
                 "Address Constraint",
@@ -37,35 +36,36 @@ class Migration(object):
                 default="V"
             )
         )
-        db.alter_column(
+        self.db.alter_column(
             "ip_vrfgroup", "description", models.TextField("Description", blank=True, null=True, default="V")
         )
-        db.add_column("ip_vrfgroup", "tags", AutoCompleteTagsField("Tags", null=True, blank=True))
+        self.db.add_column("ip_vrfgroup", "tags", AutoCompleteTagsField("Tags", null=True, blank=True))
         # VRF
-        db.add_column("ip_vrf", "is_active", models.BooleanField("Is Active", default=True))
-        db.add_column("ip_vrf", "afi_ipv4", models.BooleanField("IPv4", default=True))
-        db.add_column("ip_vrf", "afi_ipv6", models.BooleanField("IPv6", default=False))
-        db.alter_column("ip_vrf", "description", models.TextField("Description", blank=True, null=True, default="V"))
-        db.add_column("ip_vrf", "style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True))
-        db.add_column("ip_vrf", "allocated_till", models.DateField("Allocated till", null=True, blank=True))
+        self.db.add_column("ip_vrf", "is_active", models.BooleanField("Is Active", default=True))
+        self.db.add_column("ip_vrf", "afi_ipv4", models.BooleanField("IPv4", default=True))
+        self.db.add_column("ip_vrf", "afi_ipv6", models.BooleanField("IPv6", default=False))
+        self.db.alter_column("ip_vrf", "description",
+                             models.TextField("Description", blank=True, null=True, default="V"))
+        self.db.add_column("ip_vrf", "style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True))
+        self.db.add_column("ip_vrf", "allocated_till", models.DateField("Allocated till", null=True, blank=True))
         # Prefix
-        VRF = db.mock_model(
+        VRF = self.db.mock_model(
             model_name="VRF", db_table="ip_vrf", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
         )
-        AS = db.mock_model(
+        AS = self.db.mock_model(
             model_name="AS", db_table="peer_as", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
         )
-        VC = db.mock_model(
+        VC = self.db.mock_model(
             model_name="VC", db_table="vc_vc", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField
         )
-        ManagedObject = db.mock_model(
+        ManagedObject = self.db.mock_model(
             model_name="ManagedObject",
             db_table="sa_managedobject",
             db_tablespace="",
             pk_field_name="id",
             pk_field_type=models.AutoField
         )
-        Prefix = db.mock_model(
+        Prefix = self.db.mock_model(
             model_name="Prefix",
             db_table="ip_prefix",
             db_tablespace="",
@@ -73,7 +73,7 @@ class Migration(object):
             pk_field_type=models.AutoField
         )
 
-        db.create_table(
+        self.db.create_table(
             "ip_prefix", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)), (
                     "parent",
@@ -91,9 +91,9 @@ class Migration(object):
                 ("allocated_till", models.DateField("Allocated till", null=True, blank=True))
             )
         )
-        db.create_index("ip_prefix", ["vrf_id", "afi", "prefix"], unique=True, db_tablespace="")
+        self.db.create_index("ip_prefix", ["vrf_id", "afi", "prefix"], unique=True)
         # Address
-        db.create_table(
+        self.db.create_table(
             "ip_address", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("prefix", models.ForeignKey(Prefix, verbose_name="Prefix")),
@@ -116,16 +116,16 @@ class Migration(object):
                 ("allocated_till", models.DateField("Allocated till", null=True, blank=True)),
             )
         )
-        db.create_index("ip_address", ["prefix_id", "vrf_id", "afi", "address"], unique=True, db_tablespace="")
+        self.db.create_index("ip_address", ["prefix_id", "vrf_id", "afi", "address"], unique=True)
         # PrefixAccess
-        User = db.mock_model(
+        User = self.db.mock_model(
             model_name="User",
             db_table="auth_user",
             db_tablespace="",
             pk_field_name="id",
             pk_field_type=models.AutoField
         )
-        db.create_table(
+        self.db.create_table(
             "ip_prefixaccess", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("user", models.ForeignKey(User, verbose_name="User")),
@@ -136,9 +136,9 @@ class Migration(object):
                 ("can_change", models.BooleanField("Can Change", default=False)),
             )
         )
-        db.create_index("ip_prefixaccess", ["user_id", "vrf_id", "afi", "prefix"], unique=True, db_tablespace="")
+        self.db.create_index("ip_prefixaccess", ["user_id", "vrf_id", "afi", "prefix"], unique=True)
         # AddressRange
-        db.create_table(
+        self.db.create_table(
             "ip_addressrange", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=64, unique=True)),
@@ -167,21 +167,14 @@ class Migration(object):
                 ("allocated_till", models.DateField("Allocated till", null=True, blank=True)),
             )
         )
-        db.create_index(
-            "ip_addressrange", ["vrf_id", "afi", "from_address", "to_address"], unique=True, db_tablespace=""
-        )
+        self.db.create_index("ip_addressrange", ["vrf_id", "afi", "from_address", "to_address"], unique=True)
 
         # PrefixBookmark
-        db.create_table(
+        self.db.create_table(
             "ip_prefixbookmark", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("user", models.ForeignKey(User, verbose_name="User")),
                 ("prefix", models.ForeignKey(Prefix, verbose_name="Prefix"))
             )
         )
-        db.create_index("ip_prefixbookmark", ["user_id", "prefix_id"], unique=True, db_tablespace="")
-
-        db.send_create_signal("ip", ["Prefix", "Address", "PrefixBookmark"])
-
-    def backwards(self):
-        pass
+        self.db.create_index("ip_prefixbookmark", ["user_id", "prefix_id"], unique=True)

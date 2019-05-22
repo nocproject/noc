@@ -5,24 +5,19 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
 
 
-class Migration(object):
-    def forwards(self):
-        db.add_column(
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.add_column(
             "sa_managedobjectselector", "filter_service_group",
             DocumentReferenceField("inv.ResourceGroup", null=True, blank=True)
         )
-        db.add_column(
+        self.db.add_column(
             "sa_managedobjectselector", "filter_client_group",
             DocumentReferenceField("inv.ResourceGroup", null=True, blank=True)
         )
-
-    def backwards(self):
-        pass

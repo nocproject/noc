@@ -5,19 +5,19 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 EVENT_STATUS_CHOICES = [("U", "Unclassified"), ("A", "Active"), ("C", "Closed")]
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Mock Models
-        Event = db.mock_model(
+        Event = self.db.mock_model(
             model_name='Event',
             db_table='fm_event',
             db_tablespace='',
@@ -26,7 +26,7 @@ class Migration(object):
         )
 
         # Model 'EventLog'
-        db.create_table(
+        self.db.create_table(
             'fm_eventlog', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('event', models.ForeignKey(Event, verbose_name=Event)),
@@ -36,7 +36,3 @@ class Migration(object):
                 ('message', models.TextField("Message"))
             )
         )
-        db.send_create_signal('fm', ['EventLog'])
-
-    def backwards(self):
-        db.delete_table('fm_eventlog')

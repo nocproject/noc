@@ -5,21 +5,20 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 from __future__ import print_function
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
 # NOC modules
-from noc.lib.nosql import get_db
 from noc.lib.dateutils import total_seconds
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db = get_db()
+class Migration(BaseMigration):
+    def migrate(self):
+        db = self.mongo_db
         bulk = []
         for d in db.noc.fm.uptimes.find({}):
             bulk += [
@@ -37,6 +36,3 @@ class Migration(object):
             except BulkWriteError as e:
                 print(("Bulk write error: '%s'", e.details))
                 print("Stopping check")
-
-    def backwards(self):
-        pass

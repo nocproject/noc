@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
 
         # Model 'Task'
-        db.create_table(
+        self.db.create_table(
             'sa_task', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('task_id', models.IntegerField("Task", unique=True)),
@@ -34,8 +34,3 @@ class Migration(object):
                 ), ('out', models.TextField("Out"))
             )
         )
-
-        db.send_create_signal('sa', ['Task'])
-
-    def backwards(self):
-        db.delete_table('sa_task')

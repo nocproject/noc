@@ -5,31 +5,27 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        NotificationGroup = db.mock_model(
+class Migration(BaseMigration):
+    def migrate(self):
+        NotificationGroup = self.db.mock_model(
             model_name='NotificationGroup',
             db_table='main_notificationgroup',
             db_tablespace='',
             pk_field_name='id',
             pk_field_type=models.AutoField
         )
-        db.add_column(
+        self.db.add_column(
             "peer_peeringpoint", "enable_prefix_list_provisioning",
             models.BooleanField("Enable Prefix-List Provisioning", default=False)
         )
-        db.add_column(
+        self.db.add_column(
             "peer_peeringpoint", "prefix_list_notification_group",
             models.ForeignKey(NotificationGroup, verbose_name="Prefix List Notification Group", null=True, blank=True)
         )
-
-    def backwards(self):
-        db.delete_column("peer_peeringpoint", "enable_prefix_list_provisioning")
-        db.delete_column("peer_peeringpoint", "prefix_list_notification_group")
