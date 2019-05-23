@@ -17,6 +17,7 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_fqdn"
     interface = IGetFQDN
+    always_prefer = "S"
 
     rx_hostname = re.compile(r"^hostname (?P<hostname>\S+)$", re.MULTILINE)
 
@@ -25,7 +26,7 @@ class Script(BaseScript):
             fqnd = self.snmp.get(mib["SNMPv2-MIB::sysName.0"])
             return fqnd
         except self.snmp.TimeOutError:
-            raise self.NotSupportedError
+            raise NotImplementedError()
 
     def execute_cli(self):
         fqdn = ""
