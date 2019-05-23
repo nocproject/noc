@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # maintenance.maintenance application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.managedobject import ManagedObject
 from noc.core.translation import ugettext as _
 
 
@@ -21,6 +22,25 @@ class MaintenanceApplication(ExtDocApplication):
     model = Maintenance
     query_condition = "icontains"
     query_fields = ["subject"]
+
+    def queryset(self, request, query=None):
+        """
+        Filter records for lookup
+        """
+        if query and self.query_fields:
+            q = self.model.objects.filter(self.get_Q(request, query))
+            if q:
+                return q
+            sq = ManagedObject.get_search_Q(query)
+            if sq:
+                obj = ManagedObject.objects.filter(sq)
+            else:
+                obj = ManagedObject.objects.filter(name__contains=query)
+            if obj:
+                mos = obj.values_list("id", flat=True)
+                return Maintenance.objects.filter(affected_objects__object__in=mos)
+        else:
+            return self.model.objects.all()
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
