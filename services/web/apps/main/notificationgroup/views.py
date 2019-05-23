@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # main.notificationgroup application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models import (NotificationGroup, NotificationGroupUser,
-                             NotificationGroupOther)
+from noc.main.models.notificationgroup import (NotificationGroup, NotificationGroupUser,
+                                               NotificationGroupOther)
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     UnicodeParameter)

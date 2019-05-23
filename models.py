@@ -131,13 +131,12 @@ _MODELS = {
     "project.Project": "noc.project.models.project.Project",
     # gis models
     "gis.Address": "noc.gis.models.address.Address",
-    "gis.Area": "noc.gis.models.Area",
+    "gis.Area": "noc.gis.models.area.Area",
     "gis.Building": "noc.gis.models.building.Building",
     "gis.Division": "noc.gis.models.division.Division",
     "gis.Layer": "noc.gis.models.layer.Layer",
     "gis.LayerUserSettings": "noc.gis.models.layerusersettings.LayerUserSettings",
-    "gis.Map": "noc.gis.models.Map",
-    "gis.Overlay": "noc.gis.models.Overlay",
+    "gis.Overlay": "noc.gis.models.overlay.Overlay",
     "gis.Street": "noc.gis.models.street.Street",
     # inv models
     "inv.AllocationGroup": "noc.inv.models.allocationgroup.AllocationGroup",

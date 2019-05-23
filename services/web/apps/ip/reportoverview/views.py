@@ -12,7 +12,7 @@ from django.db import connection
 import six
 # NOC modules
 from noc.lib.app.reportapplication import ReportApplication
-from noc.main.models import CustomField
+from noc.main.models.customfield import CustomField
 from noc.ip.models.vrfgroup import VRFGroup
 from noc.ip.models.prefix import Prefix
 from noc.core.ip import IP

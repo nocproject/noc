@@ -3,13 +3,13 @@
 # Areas overlay -
 # Displays area bounds
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.gis.overlays.base import *
-from noc.gis.models import Area
+from noc.gis.overlays.base import OverlayHandler
+from noc.gis.models.area import Area
 
 
 class AreasOverlay(OverlayHandler):
