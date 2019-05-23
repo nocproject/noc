@@ -32,12 +32,11 @@ DATABASES = {
         "PASSWORD": config.pg.password,
         "HOST": config.pg.addresses[0].host,
         "PORT": config.pg.addresses[0].port,
-        "AUTOCOMMIT": False,
+        "AUTOCOMMIT": True,
         "TEST_NAME": "test_" + config.pg.db,
         "OPTIONS": {
             "autocommit": True,
-            "connect_timeout": config.pg.connect_timeout,
-            "isolation_level": 0  # Autocommit
+            "connect_timeout": config.pg.connect_timeout
         }
     }
 }

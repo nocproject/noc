@@ -8,7 +8,9 @@
 
 # NOC modules
 from noc.core.migration.runner import MigrationRunner
+from noc.core.setup import setup
 
 if __name__ == "__main__":
+    setup()
     runner = MigrationRunner()
     runner.migrate()
