@@ -12,8 +12,6 @@ import os
 import sys
 import subprocess
 import tempfile
-# NOC modules
-from noc.core.fileutils import urlopen
 
 GET_PIP_DISTRIBUTION = "https://bootstrap.pypa.io/get-pip.py"
 
@@ -56,10 +54,8 @@ def fix_pip():
     Get last PIP version via get-pip
     """
     # Fetch get-pip
-    response = urlopen(GET_PIP_DISTRIBUTION)
     with tempfile.NamedTemporaryFile() as script:
-        script.write(response.read())
-        script.flush()
+        subprocess.check_call(["curl", "-o", script.name, GET_PIP_DISTRIBUTION])
         subprocess.check_call([sys.executable, script.name])
 
 
