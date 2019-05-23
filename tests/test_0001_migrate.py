@@ -14,6 +14,7 @@ import cachetools
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.migration.loader import loader
+from noc.core.migration.runner import MigrationRunner
 
 
 @cachetools.cached({})
@@ -102,7 +103,5 @@ def test_database_migrations(database):
     :param database:
     :return:
     """
-    from south.management.commands.migrate import Command
-
-    cmd = Command()
-    cmd.execute(no_initial_data=True, noinput=True, ignore_ghosts=True)
+    runner = MigrationRunner()
+    runner.migrate()

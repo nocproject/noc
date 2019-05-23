@@ -16,7 +16,7 @@ from pymongo import InsertOne
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
-logger = logging.getLogger("south")
+logger = logging.getLogger("migration")
 
 
 class Migration(BaseMigration):

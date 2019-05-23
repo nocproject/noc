@@ -52,17 +52,3 @@ class BaseMigration(object):
         :return:
         """
         pass
-
-    def forwards(self):
-        """
-        South-compatible method
-        :return:
-        """
-        self.migrate()
-
-    def backwards(self):
-        """
-        South-compatible method
-        :return:
-        """
-        pass
