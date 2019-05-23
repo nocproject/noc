@@ -15,15 +15,18 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         "NOC.inv.networksegment.LookupField",
         "NOC.main.timepattern.LookupField",
         "NOC.maintenance.maintenance.DirectObjectsModel",
-        "NOC.maintenance.maintenance.DirectSegmentsModel"
+        "NOC.maintenance.maintenance.DirectSegmentsModel",
+        'NOC.core.filter.Filter'
     ],
     model: "NOC.maintenance.maintenance.Model",
+    search: true,
     initComponent: function() {
         var me = this;
 
         me.ITEM_OBJECTS = me.registerItem(
             "NOC.maintenance.maintenance.ObjectsPanel"
         );
+
 
         me.cardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
