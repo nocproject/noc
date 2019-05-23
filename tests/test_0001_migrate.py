@@ -105,3 +105,15 @@ def test_database_migrations(database):
     """
     runner = MigrationRunner()
     runner.migrate()
+
+
+def test_migration_history():
+    """
+    Test all migrations are in `migrations` collection
+    :return:
+    """
+    runner = MigrationRunner()
+    applied = runner.get_history()
+    all_migrations = get_migration_names_set()
+    assert all_migrations == applied
+
