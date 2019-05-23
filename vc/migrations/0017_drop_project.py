@@ -38,5 +38,3 @@ class Migration(BaseMigration):
 
     def migrate(self):
         self.migrate_project("vc_vc")
-
-

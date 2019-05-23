@@ -25,4 +25,3 @@ class Migration(BaseMigration):
         for t in TYPES:
             if self.db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [t])[0][0] == 0:
                 self.db.execute("INSERT INTO peer_peeringpointtype(name) VALUES(%s)", [t])
-

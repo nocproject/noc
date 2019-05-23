@@ -26,5 +26,3 @@ class Migration(BaseMigration):
             "peer_peeringpoint", "provision_rcmd",
             models.CharField("Provisioning URL", max_length=128, blank=True, null=True)
         )
-
-

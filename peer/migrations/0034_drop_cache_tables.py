@@ -16,4 +16,3 @@ class Migration(BaseMigration):
         self.db.delete_table("peer_whoiscache")
         self.db.delete_table("peer_whoislookup")
         self.db.delete_table("peer_whoisdatabase")
-

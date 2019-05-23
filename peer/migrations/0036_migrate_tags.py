@@ -27,5 +27,3 @@ class Migration(BaseMigration):
             WHERE tags != ''
             """ % m
             )
-
-

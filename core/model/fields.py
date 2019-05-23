@@ -9,7 +9,6 @@
 # Third-party modules
 import psycopg2
 from django.db import models
-from south.modelsinspector import add_introspection_rules
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
 import six
 from bson import ObjectId
@@ -402,5 +401,4 @@ class ObjectIDArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         return "{ %s }" % ", ".join(str(x) for x in value)
 
 
-add_introspection_rules([], ["^noc\.core\.model\.fields\."])
 from django.contrib.admin.widgets import AdminTextInputWidget

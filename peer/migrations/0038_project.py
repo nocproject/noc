@@ -25,5 +25,3 @@ class Migration(BaseMigration):
         )
         for t in ("peer_as", "peer_peer"):
             self.db.add_column(t, "project", models.ForeignKey(Project, verbose_name="Project", null=True, blank=True))
-
-

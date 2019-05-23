@@ -41,10 +41,6 @@ DATABASES = {
         }
     }
 }
-
-SOUTH_DATABASE_ADAPTERS = {
-    "default": "south.db.postgresql_psycopg2"
-}
 ATOMIC_REQUESTS = False
 
 TIME_ZONE = config.timezone
@@ -116,7 +112,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",  # Required by django auth
     "django.contrib.sites",
     "django.contrib.admin",
-    "south",
     # NOC modules
     "noc.main",
     "noc.dev",

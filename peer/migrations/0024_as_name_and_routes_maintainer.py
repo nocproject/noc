@@ -25,4 +25,3 @@ class Migration(BaseMigration):
                 Maintainer, verbose_name="Routes Maintainer", null=True, blank=True, related_name="routes_maintainer"
             )
         )
-
