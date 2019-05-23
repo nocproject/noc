@@ -538,7 +538,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         """
         Add custom fields to django form class
         """
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         fields = []
         for f in CustomField.table_fields(table):
             if f.is_hidden:
@@ -582,7 +582,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         :param table: table
         :return:
         """
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         for f in CustomField.table_fields(table):
             n = str(f.name)
             if n in v:
@@ -597,7 +597,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         :param table: table
         :return:
         """
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         for f in CustomField.table_fields(table):
             n = str(f.name)
             if n not in v:

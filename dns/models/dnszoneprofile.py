@@ -17,7 +17,7 @@ from django.db import models
 import cachetools
 # NOC modules
 from noc.config import config
-from noc.main.models import NotificationGroup
+from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
 from .dnsserver import DNSServer

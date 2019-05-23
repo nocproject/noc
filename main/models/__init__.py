@@ -11,13 +11,7 @@
 from __future__ import absolute_import
 from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
-from .customfield import CustomField
-from .resourcestate import ResourceState
-from .notificationgroup import NotificationGroup, NotificationGroupUser, NotificationGroupOther
 from .userprofile import UserProfile  # Cannot be moved, as referred from settings.py
-from .systemnotification import SystemNotification
-from .systemtemplate import SystemTemplate
-from .tag import Tag
 #
 # Monkeypatch to change User.username.max_length
 #

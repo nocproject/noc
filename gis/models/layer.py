@@ -13,8 +13,7 @@ import operator
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, UUIDField, IntField,
-                                BooleanField)
+from mongoengine.fields import StringField, UUIDField, IntField, BooleanField
 import cachetools
 # NOC modules
 from noc.lib.prettyjson import to_json

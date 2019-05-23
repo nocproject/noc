@@ -138,7 +138,7 @@ class DocInline(object):
         assert self.parent_rel
 
     def get_custom_fields(self):
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_Q(self, request, query):

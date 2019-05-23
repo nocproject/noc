@@ -15,7 +15,7 @@ from django.db import models
 from .vcdomain import VCDomain
 from .vcfilter import VCFilter
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.main.models import NotificationGroup
+from noc.main.models.notificationgroup import NotificationGroup
 
 
 @six.python_2_unicode_compatible
