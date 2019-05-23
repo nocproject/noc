@@ -39,7 +39,7 @@ class MigrationRunner(object):
             self.hist_coll.insert_one({
                 "name": name,
                 "ts": ts,
-                "delta": delta.total_seconds()
+                "duration": delta.total_seconds()
             })
         self.logger.info("Done")
 
