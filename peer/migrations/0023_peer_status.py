@@ -20,4 +20,3 @@ class Migration(BaseMigration):
                 "Status", max_length=1, default="A", choices=[("P", "Planned"), ("A", "Active"), ("S", "Shutdown")]
             )
         )
-

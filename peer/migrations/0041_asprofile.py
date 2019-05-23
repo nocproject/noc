@@ -25,5 +25,3 @@ class Migration(BaseMigration):
         self.db.execute("UPDATE peer_as SET profile = %s", [P_ID])
         # Set profile not null
         self.db.execute("ALTER TABLE peer_as ALTER profile SET NOT NULL")
-
-

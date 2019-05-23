@@ -48,8 +48,10 @@ class Migration(BaseMigration):
             # Set up notification
             self.db.execute(
                 """
-            INSERT INTO sa_objectnotification(selector_id, notification_group_id, config_changed)
-            VALUES(%s, %s, %s)
+            INSERT INTO sa_objectnotification(selector_id, notification_group_id, config_changed, alarm_risen,
+            alarm_cleared, alarm_commented, new, deleted, version_changed, interface_changed,
+            script_failed, config_policy_violation)
+            VALUES(%s, %s, %s, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
             """, [selector, group, True]
             )
         # Remove legacy settings

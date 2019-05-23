@@ -36,5 +36,3 @@ class Migration(BaseMigration):
         self.db.execute("ALTER TABLE peer_as ALTER maintainer_id SET NOT NULL")
         self.db.delete_column("peer_as", "lir_id")
         self.db.delete_table("peer_lir")
-
-

@@ -14,5 +14,3 @@ class Migration(BaseMigration):
     def migrate(self):
         self.db.delete_table('peer_lgquerycommand')
         self.db.delete_table('peer_lgquerytype')
-
-

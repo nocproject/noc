@@ -75,7 +75,7 @@ class Migration(BaseMigration):
             u = uuid.uuid4()
             pv = bson.ObjectId(profile)
             vv = bson.ObjectId(vendor)
-            fcoll.update(
+            fcoll.update_one(
                 {
                     "profile": pv,
                     "vendor": vv,

@@ -48,4 +48,3 @@ class Migration(BaseMigration):
                         """INSERT INTO peer_lgquerycommand(peering_point_type_id,query_type_id,command)
                         VALUES(%s,%s,%s)""", [ppt_id, q, v]
                     )
-

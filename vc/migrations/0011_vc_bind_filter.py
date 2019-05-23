@@ -35,4 +35,3 @@ class Migration(BaseMigration):
         self.db.add_column(
             'vc_vcdomain', 'enable_vc_bind_filter', models.BooleanField("Enable VC Bind filter", default=False)
         )
-

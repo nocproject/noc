@@ -77,5 +77,3 @@ class Migration(BaseMigration):
         for rir, whois in [("ARIN", "whois.arin.net"), ("RIPE NCC", "whois.ripe.net"), ("APNIC", "whois.apnic.net"),
                            ("LACNIC", "whois.lacnic.net"), ("AfriNIC", "whois.afrinic.net")]:
             self.db.execute("INSERT INTO peer_rir(name,whois) VALUES(%s,%s)", [rir, whois])
-
-

@@ -42,5 +42,4 @@ class Migration(BaseMigration):
             )
         )
         self.db.create_index(
-            'peer_lgquerycommand', ['peering_point_type_id', 'query_type_id'], unique=True        )
-
+            'peer_lgquerycommand', ['peering_point_type_id', 'query_type_id'], unique=True)

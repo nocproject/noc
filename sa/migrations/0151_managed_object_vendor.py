@@ -44,14 +44,15 @@ class Migration(BaseMigration):
         # Update inventory vendors records
         inventory_vendors = {}
         for v in pcoll.find():
-            if "code" in v:
+            if v.get("code"):
                 inventory_vendors[v["code"][0] if isinstance(v["code"], list) else v["code"]] = v["_id"]
                 continue
             if v["name"] in OLD_VENDOR_MAP:
                 vc = OLD_VENDOR_MAP[v["name"]]
             else:
                 vc = v["name"].split(" ")[0]
-            inventory_vendors[vc.upper()] = v["_id"]
+            vc = vc.upper()
+            inventory_vendors[vc] = v["_id"]
             u = uuid.uuid4()
             pcoll.update_one({
                 "_id": v["_id"]
@@ -61,7 +62,6 @@ class Migration(BaseMigration):
                     "uuid": u
                 }
             })
-
         # Create vendors records
         for v in vendors:
             u = uuid.uuid4()
