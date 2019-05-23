@@ -18,6 +18,7 @@ class Script(BaseScript):
     name = "Qtech.QSW2800.get_version"
     interface = IGetVersion
     cache = True
+    always_prefer = "S"
 
     rx_ver = re.compile(
         r"^\s*(?:Device: )?(?P<platform>\S+)(?: Device|, sysLocation\:|).*\n"
@@ -41,6 +42,7 @@ class Script(BaseScript):
         "1.3.6.1.4.1.6339.1.1.1.48": "QSW-2800",
         "1.3.6.1.4.1.6339.1.1.1.49": "QSW-2800",
         "1.3.6.1.4.1.6339.1.1.1.228": "QSW-3450-28T-AC",
+        "1.3.6.1.4.1.6339.1.1.1.3": "QSW-3470-28T-AC",
         "1.3.6.1.4.1.6339.1.1.1.244": "S5750E-28X-SI-24F-D",
         "1.3.6.1.4.1.6339.1.1.2.40": "QSW-8300-52F",
         "1.3.6.1.4.1.6339.1.1.2.59": "QSW-8200-28F-AC-DC",
@@ -93,7 +95,8 @@ class Script(BaseScript):
             oid = oid[1:]
         platform = self.qtech_platforms.get(oid)
         if platform is None:
-            raise self.NotSupportedError("Unknown platform OID: %s" % oid)
+            self.logger.info("Unknown platform OID: %s" % oid)
+            raise NotImplementedError("Unknown platform OID: %s" % oid)
         return platform
 
     def execute_snmp(self, **kwargs):
