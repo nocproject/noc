@@ -65,6 +65,8 @@ class ProfileLoader(BaseLoader):
                                     )
                                 profile.initialize()
                                 break
+                        if profile:
+                            break
                 self.profiles[name] = profile
             return profile
 
