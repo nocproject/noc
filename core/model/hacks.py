@@ -2,12 +2,12 @@
 # ----------------------------------------------------------------------
 # Various django hacks
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from django.db.models.fields.related import pending_lookups
+from django.apps import apps
 # NOC modules
 from noc.models import get_model
 
@@ -20,5 +20,5 @@ def ensure_pending_models():
 
     :return:
     """
-    for m in list(pending_lookups):
-        get_model(".".join(m))  # Ensure model loading
+    for app, model in apps._pending_lookups:
+        get_model("%s.%s" % (app, model))  # Ensure model loading
