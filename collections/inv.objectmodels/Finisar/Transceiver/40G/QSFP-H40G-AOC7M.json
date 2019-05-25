@@ -1,0 +1,40 @@
+{
+    "name": "Finisar | Transceiver | 40G | QSFP-H40G-AOC7M",
+    "$collection": "inv.objectmodels",
+    "uuid": "344b5af6-44ca-4322-ad48-61f99afb7628",
+    "vendor__code": "FINISAR",
+    "description": "Finisar QSFP+ 40 Gigabit Ethernet Active Optical Cable (AOC) 7m",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["QSFP-H40G-AOC7M"],
+            "part_no": ["QSFP-H40G-AOC7M", "FCBN410QE2C07-C2"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

@@ -1,25 +1,25 @@
 {
-    "name": "Juniper | Transceiver | 1G | SFP LX10",
+    "name": "Avago | Transceiver | 10G | 10Gbase-SR",
     "$collection": "inv.objectmodels",
-    "uuid": "b5deb0b0-75ba-4ba7-afd7-791959f3a62c",
-    "vendor__code": "JUNIPER",
-    "description": "Juniper SFP LX transceiver",
+    "uuid": "c288e7d5-a7cb-4450-b5e2-1a611bd6f137",
+    "vendor__code": "AVAGO",
+    "description": "Avago SFP+ SR transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
-            "description": "SFP Connector",
+            "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP"
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [">10GBASESR"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,14 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1000BASELX-1310"],
+            "protocols": ["<10GBASESR"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["SFP-LX10"],
-            "part_no": ["740-011614", "740-009029", "740-011783"]
+            "part_no": ["SFBR-709SMZ-CS1"]
         }
     }
 }
