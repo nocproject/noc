@@ -17,6 +17,8 @@ MONGO_CHUNK = 500
 
 
 class Migration(BaseMigration):
+    depends_on = [("sa", "0151_managed_object_vendor"), ("sa", "0152_managed_object_platform")]
+
     def migrate(self):
         # Update mongodb collections
         mdb = self.mongo_db
