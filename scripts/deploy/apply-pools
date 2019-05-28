@@ -12,6 +12,7 @@ import yaml
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.config import config
+import noc.lib.nosql
 
 CONFIG = config.path.legacy_config
 
