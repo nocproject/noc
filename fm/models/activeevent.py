@@ -11,17 +11,15 @@ from __future__ import absolute_import
 import datetime
 import time
 from threading import Lock
-# Django modules
+# Third-party modules
 import six
 from django.template import Template, Context
-# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 DictField, ObjectIdField)
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.dateutils import total_seconds
 from noc.core.cache.decorator import cachedmethod
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
 from .eventlog import EventLog
@@ -179,7 +177,7 @@ class ActiveEvent(Document):
         """
         Logged event duration in seconds
         """
-        return total_seconds(self.timestamp - self.start_timestamp)
+        return (self.timestamp - self.start_timestamp).total_seconds()
 
     def get_template_vars(self):
         """

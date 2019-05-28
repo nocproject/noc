@@ -17,7 +17,6 @@ from .eventlog import EventLog
 from .eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib import nosql
-from noc.lib.dateutils import total_seconds
 
 
 @six.python_2_unicode_compatible
@@ -51,7 +50,7 @@ class ArchivedEvent(document.Document):
         """
         Logged event duration in seconds
         """
-        return total_seconds(self.timestamp - self.start_timestamp)
+        return (self.timestamp - self.start_timestamp).total_seconds()
 
     def get_template_vars(self):
         """

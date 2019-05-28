@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # fm.reportavailability
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 from collections import defaultdict
-# Django modules
+# Third-party modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 # NOC modules
@@ -20,7 +20,6 @@ from noc.lib.nosql import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
 from pymongo import ReadPreference
 from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
@@ -91,9 +90,8 @@ class ReportAvailabilityApplication(SimpleReport):
         for o in Outage.objects.filter(q, read_preference=ReadPreference.SECONDARY_PREFERRED):
             start = max(o.start, b)
             stop = o.stop if o.stop else now
-            outages[o.object] += total_seconds(stop - start)
-        td = total_seconds(d)
-        # Normalize to percents
+            outages[o.object] += (stop - start).total_seconds()
+        td = d.total_seconds()        # Normalize to percents
         return dict((o, (td - outages[o]) * 100.0 / td) for o in outages)
 
     @staticmethod
@@ -102,15 +100,15 @@ class ReportAvailabilityApplication(SimpleReport):
         b = start_date
         d = stop_date
         outages = defaultdict(list)
-        td = total_seconds(d - b)
+        td = (d - b).total_seconds()
         # q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
         q = (Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)) & Q(start__lt=d)
         for o in Outage.objects.filter(q):
             start = max(o.start, b)
             stop = o.stop if (o.stop and o.stop < d) else d
-            if total_seconds(stop - start) == td and skip_zero_avail:
+            if (stop - start).total_seconds() == td and skip_zero_avail:
                 continue
-            outages[o.object] += [total_seconds(stop - start)]
+            outages[o.object] += [(stop - start).total_seconds()]
         # Normalize to percents
         return dict((o, ((td - sum(outages[o])) * 100.0 / td, int(sum(outages[o])), len(outages[o]))) for o in outages)
 
