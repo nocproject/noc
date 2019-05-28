@@ -49,10 +49,10 @@ class Script(BaseScript):
             }
         hw = self.rx_hw.search(v)
         boot = self.rx_boot.search(v)
-        if snmp_sn:
-            r["attributes"] = {}
-            r["attributes"]["Serial Number"] = snmp_sn
-        if hw or boot:
+        if hw or boot or snmp_sn:
+            r.update({"attributes": {}})
+            if snmp_sn:
+                r["attributes"].update({"Serial Number": snmp_sn})
             if hw:
                 r["attributes"].update({"HW version": hw.group("hardware")})
             if boot:
