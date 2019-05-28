@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -30,6 +31,7 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.cli("display version")
+        snmp_sn = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
         match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver1.search(v)
@@ -47,8 +49,10 @@ class Script(BaseScript):
             }
         hw = self.rx_hw.search(v)
         boot = self.rx_boot.search(v)
+        if snmp_sn:
+            r["attributes"] = {}
+            r["attributes"]["Serial Number"] = snmp_sn
         if hw or boot:
-            r.update({"attributes": {}})
             if hw:
                 r["attributes"].update({"HW version": hw.group("hardware")})
             if boot:
