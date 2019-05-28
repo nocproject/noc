@@ -20,5 +20,5 @@ class Script(BaseScript):
         if policy == "s":
             config = self.cli("show startup-config")
         else:
-            config = self.cli("show running-config", cached=True)
+            config = self.cli("show running-config")
         return self.cleaned_config(config)
