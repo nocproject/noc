@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | OID | EnterpriseID",
+    "$collection": "inv.capabilities",
+    "uuid": "75d6e2e4-0787-4bbc-aa1d-01e293a72be8",
+    "description": "Enterprise SNMP index value",
+    "type": "int",
+    "card_template": null
+}
