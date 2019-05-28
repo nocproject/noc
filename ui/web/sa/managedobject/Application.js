@@ -380,10 +380,23 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     allowBlank: true
                                 },
                                 {
+                                    // xtype: "fieldcontainer",
+                                    // fieldLabel: __("Tags"),
+                                    // layout: "hbox",
+                                    // items: [
+                                    //     {
                                     name: "tags",
-                                    xtype: "tagsfield",
                                     fieldLabel: __("Tags"),
+                                    xtype: "tagsfield",
                                     allowBlank: true
+                                },
+                                {
+                                    xtype: "button",
+                                    glyph: NOC.glyph.clipboard,
+                                    tooltip: __("Copy tags to clipboard"),
+                                    handler: me.toClipboard
+                                    // }
+                                    // ]
                                 }
                             ]
                         }
@@ -1754,5 +1767,27 @@ Ext.define("NOC.sa.managedobject.Application", {
             r = me.store.getAt(rowIndex),
             id = r.get("group");
         window.open("/api/card/view/resourcegroup/" + id + "/", "_blank");
+    },
+    toClipboard: function(btn) {
+        var selectElementText = function(tags) {
+                var range = document.createRange(),
+                    selection = window.getSelection();
+                range.selectNode(tags);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            },
+            copySelectionText = function() {
+                var copysuccess; // var to check whether execCommand successfully executed
+                try {
+                    copysuccess = document.execCommand("copy") // run command to copy selected text to clipboard
+                } catch(e) {
+                    copysuccess = false
+                }
+                return copysuccess
+            },
+            tags = btn.prev().el.query(".x-tagfield-list");
+        selectElementText(tags[0]);
+        document.execCommand("copy");
+        // console.log(btn.prev().getValue());
     }
 });
