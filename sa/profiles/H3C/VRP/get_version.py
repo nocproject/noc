@@ -23,7 +23,7 @@ class Script(BaseScript):
     rx_ver = re.compile(r"^.*?Switch\s(?P<platform>.+?)\sSoftware\s\Version"
                         r"\s3Com\sOS\sV(?P<version>.+?)$",
                         re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_ver1 = re.compile(r"Comware\sSoftware,\s\Version\s(?P<version>.+?),"
+    rx_ver1 = re.compile(r"^\s*Comware\sSoftware,\s\Version\s(?P<version>.+?),"
                          r"\sRelease\s(?P<release>.+?)$.+?(H3C )?(?P<platform>\S+) uptime is",
                          re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_hw = re.compile(r"Hardware Version is (?P<hardware>\S+)")
