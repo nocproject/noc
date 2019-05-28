@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Extreme.Summit.get_mac_address_table
+# Extreme.Summit200.get_mac_address_table
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
-    name = "Extreme.Summit.get_mac_address_table"
+    name = "Extreme.Summit200.get_mac_address_table"
     interface = IGetMACAddressTable
 
     rx_line = re.compile(

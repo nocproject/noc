@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Extreme.Summit.get_version
+# Extreme.Summit200.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "Extreme.Summit.get_version"
+    name = "Extreme.Summit200.get_version"
     cache = True
     interface = IGetVersion
 

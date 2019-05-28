@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Extreme.Summit.get_chassis_id
+# Extreme.Summit200.get_chassis_id
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
-    name = "Extreme.Summit.get_chassis_id"
+    name = "Extreme.Summit200.get_chassis_id"
     interface = IGetChassisID
     cache = True
 
