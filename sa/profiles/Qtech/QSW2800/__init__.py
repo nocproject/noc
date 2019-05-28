@@ -58,6 +58,11 @@ class Profile(BaseProfile):
              "caps": {
                 "$in": ["Qtech | OID | Memory Usage 11"]
                     }
+        },
+        "is_support_mac_version": {
+            "$or": [
+                {"version": {"$gte": "6.3.100.12"}},
+                {"version": {"$lte": "6.0"}}]
         }
     }
 

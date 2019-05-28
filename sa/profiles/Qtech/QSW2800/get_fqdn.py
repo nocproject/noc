@@ -29,12 +29,8 @@ class Script(BaseScript):
             raise NotImplementedError()
 
     def execute_cli(self):
-        fqdn = ""
-        try:
-            v = self.cli("show startup-config | i hostname", cached=True)
-        except self.CLISyntaxError:
-            v = self.cli("show startup-config", cached=True)
-        match = self.rx_hostname.search(v)
-        if match:
-            fqdn = match.group("hostname")
+        # Getting pattern prompt
+        v = self.get_cli_stream()
+        pattern = v.patterns["prompt"].pattern
+        fqdn = pattern.split("(?")[0][1:].replace("\\", "")
         return fqdn
