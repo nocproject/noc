@@ -1,16 +1,26 @@
 {
   "$metric": "Memory | Usage",
   "$type": "match",
-  "$match": [{
-    "$match": "is_new_metric",
-    "$type": "oid",
-    "oid": "1.3.6.1.4.1.27514.100.1.11.11.0"
-   },{
-    "$type": "oid",
-    "oid": [
-      "1.3.6.1.4.1.27514.100.1.11.7.0",
-      "1.3.6.1.4.1.27514.100.1.11.6.0"
-    ],
-  "scale": "percent"
-  }]
+  "$matchers": {
+    "is_new_metric": {
+      "caps": "Qtech | OID | Memory Usage 11"
+    }
+  },
+  "$match": [
+    {
+      "$match": "is_new_metric",
+      "$type": "enterprise",
+      "oid": "1.3.6.1.4.1.{{ enterprise }}.100.1.11.11.0",
+      "type": "gauge",
+      "scale": 1
+    },
+    {
+      "$type": "enterprise",
+      "oid": [
+        "1.3.6.1.4.1.{{ enterprise }}.100.1.11.7.0",
+        "1.3.6.1.4.1.{{ enterprise }}.100.1.11.6.0"
+      ],
+      "scale": "percent"
+    }
+  ]
 }
