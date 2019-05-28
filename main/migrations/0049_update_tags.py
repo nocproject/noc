@@ -27,4 +27,4 @@ class Migration(BaseMigration):
                     FROM %s
                     GROUP BY 1
                     """ % m):
-                c.update({"tag": tag}, {"$addToSet": {"models": m}, "$inc": {"count": int(count)}}, upsert=True)
+                c.update_many({"tag": tag}, {"$addToSet": {"models": m}, "$inc": {"count": int(count)}}, upsert=True)
