@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -32,7 +31,7 @@ class Script(BaseScript):
             v = round(mw2dbm(v), 2)
         return v
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         cmd = "show fiber-ports optical-transceiver detailed"
         if interface is not None:
             cmd += " interface %s" % interface
@@ -50,9 +49,11 @@ class Script(BaseScript):
                 "optical_rx_dbm": self.parse_value(match, "rxpw"),
                 "optical_tx_dbm": self.parse_value(match, "txpw")
             }
-            if (i["temp_c"] is None) and (i["voltage_v"] is None) \
-            and (i["current_ma"] is None) and (i["optical_rx_dbm"] is None) \
-            and (i["optical_tx_dbm"] is None):
+            if (
+                i["temp_c"] is None and i["voltage_v"] is None and
+                i["current_ma"] is None and i["optical_rx_dbm"] is None and
+                i["optical_tx_dbm"] is None
+            ):
                 continue
             r += [i]
         return r
