@@ -1,0 +1,13 @@
+{
+    "name": "Extreme | Summit200 | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "3decd6d3-e52c-4697-93f0-fb142cf63c59",
+    "description": "Examples:\nSNMPv2-MIB::sysDescr.0 = Summit200-24 - Version 7.8e.3 (Build 5) by Release_Master 03/15/10 12:04:15",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Summit\\d+",
+    "action": "match",
+    "profile__name": "Extreme.Summit200"
+}
