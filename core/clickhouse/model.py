@@ -37,6 +37,7 @@ class ModelBase(type):
             description=getattr(cls.Meta, "description", None),
             sample=getattr(cls.Meta, "sample", False),
             tags=getattr(cls.Meta, "tags", None),
+            managed=getattr(cls.Meta, "managed", True),
         )
         for k in attrs:
             if isinstance(attrs[k], BaseField):
@@ -55,12 +56,13 @@ class ModelBase(type):
 
 class ModelMeta(object):
     def __init__(self, engine=None, db_table=None, description=None,
-                 sample=False, tags=None):
+                 sample=False, tags=None, managed=True):
         self.engine = engine
         self.db_table = db_table
         self.description = description
         self.sample = sample
         self.tags = tags
+        self.managed = managed
 
 
 class Model(six.with_metaclass(ModelBase)):
@@ -70,6 +72,7 @@ class Model(six.with_metaclass(ModelBase)):
         description = None
         sample = False
         tags = None
+        managed = True
 
     def __init__(self, **kwargs):
         self.values = kwargs
@@ -180,6 +183,8 @@ class Model(six.with_metaclass(ModelBase)):
             return c
 
         changed = False
+        if not cls._meta.managed:
+            return False
         ch = connect or connection()
         if not ch.has_table(cls._get_raw_db_table()):
             # Create new table
