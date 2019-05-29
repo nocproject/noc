@@ -259,10 +259,14 @@ class ReferenceField(BaseField):
         self.is_self_reference = dict_type == self.SELF_REFERENCE
         self.dict_type = dict_type
         self.model = model
+        if self.low_cardinality:
+            self.db_type = "String"
 
     def to_tsv(self, value):
         if value is None:
             return str(self.default_value)
+        elif self.low_cardinality:
+            return str(value)
         else:
             return str(value.bi_id)
 
