@@ -7,14 +7,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Polygon.IOS"
     pattern_more = [
-        (r"^ --More--", "\n"),
-        (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
+        (r"^ --More--", " "),
+        (r"(?:\?|interfaces)\s*\[confirm\]", " ")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
@@ -28,3 +29,7 @@ class Profile(BaseProfile):
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {
+        "line_comment": "!"
+    }
