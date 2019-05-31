@@ -19,9 +19,7 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(r"^(?P<mac>\S+)\s(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)")
-    ignored_interfaces = (
-        "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop"
-    )
+    ignored_interfaces = ("router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop")
 
     def is_ignored_interface(self, i):
         if i.lower() in self.ignored_interfaces:
@@ -30,7 +28,7 @@ class Script(BaseScript):
             return True
         return False
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         def qn(s):
             s = s.strip()
             if s.startswith("Eth VLAN "):

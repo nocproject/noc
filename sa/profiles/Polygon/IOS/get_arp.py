@@ -20,7 +20,7 @@ class Script(BaseScript):
 
     rx_line = re.compile(r"^(?P<ip>\d\S+)\s+(?:\S+)\s+(?P<mac>\S+)\s(?P<interface>\S+)")
 
-    def execute(self, vrf=None):
+    def execute_cli(self, vrf=None):
         if vrf:
             s = self.cli("show ip arp vrf %s" % vrf)
         else:

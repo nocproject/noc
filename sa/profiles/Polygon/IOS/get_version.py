@@ -21,13 +21,16 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^(?P<platform>\S+\s\S+)\n.+,\s(?:Version:)?\s(?P<version>\S+\s\S+).+\n.+\n.+\n(?:System image file is)"
-        r"?\s(?P<image><.+>)", re.MULTILINE | re.DOTALL)
+        r"?\s(?P<image><.+>)", re.MULTILINE)
+    rx_bootrom = re.compile(r"(?:[Bb]ootrom\s[Vv]ersion\s:)\s\s(?P<bootrom>\S+)")
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
+        match1 = self.re_search(self.rx_bootrom, v)
         platform = match.group("platform")
-        s = self.snmp.get(mib["1.3.6.1.4.1.14885.1001.6004.1.3.1.11.0.0.1"])
+        bootrom = match1.group("bootrom")
+        s = self.snmp.get(mib["1.3.6.1.4.1.14885.1001.6004.1.3.1.11.0.0.1"]) if self.has_snmp() else None
         r = {
             "vendor": "Polygon",
             "platform": platform,
@@ -36,6 +39,8 @@ class Script(BaseScript):
                 "image": match.group("image"),
             }
         }
+        if bootrom:
+            r["attributes"]["Boot PROM"] = bootrom
         if s:
             r["attributes"]["Serial Number"] = s
         return r
