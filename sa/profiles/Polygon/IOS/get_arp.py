@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Polygon.IOS.get_arp
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2019 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+#---------------------------------------------------------------------
+# Polygon.IOS.get_arp
+#----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+#----------------------------------------------------------------------
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
+
 
 class Script(BaseScript):
     name = "Polygon.IOS.get_arp"

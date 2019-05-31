@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Polygon.IOS.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2019 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
-## Python modules
+#---------------------------------------------------------------------
+# Polygon.IOS.get_version
+#----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+#----------------------------------------------------------------------
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.mib import mib
@@ -21,7 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^Attika (?P<platform>\S+)\n.+,\s(?:Version:)?\s(?P<version>\S+\s\S+).+\n.+\n.+\n(?:System image file is)"
+        r"^(?P<platform>\S+\s\S+)\n.+,\s(?:Version:)?\s(?P<version>\S+\s\S+).+\n.+\n.+\n(?:System image file is)"
         r"?\s(?P<image><.+>)", re.MULTILINE | re.DOTALL)
 
     def execute(self):

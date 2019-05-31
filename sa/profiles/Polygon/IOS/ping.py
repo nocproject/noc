@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2019 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IPing
+# ---------------------------------------------------------------------
+# Polygon.IOS.ping
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# Python modules
 import re
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.iping import IPing
 
 
-class Script(noc.sa.script.Script):
+class Script(BaseScript):
     name = "Polygon.IOS.ping"
-    implements = [IPing]
+    interface = IPing
+
     rx_result = re.compile(
         r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
         r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"
