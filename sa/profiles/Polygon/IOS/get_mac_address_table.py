@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # Polygon.IOS.get_mac_address_table
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
@@ -19,7 +19,6 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(r"^(?P<mac>\S+)\s(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)")
-    rx_line2 = re.compile(r"^(?P<mac>\S+)\s(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)")  # Catalyst 3500XL
     ignored_interfaces = (
         "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop"
     )
@@ -56,12 +55,10 @@ class Script(BaseScript):
                 # Not supported at all
                 raise self.NotSupportedError()
         r = []
-        for l in macs.splitlines():
-            if l.startswith("Multicast Entries"):
-                break  # Additional section on 4500
-            l = l.strip()
+        for line in macs.splitlines():
+            line = line.strip()
 
-            match = self.rx_line.match(l)
+            match = self.rx_line.match(line)
             if match:
                 mac = match.group("mac")
                 if mac.startswith("3333."):

@@ -16,4 +16,3 @@ class Profile(BaseProfile):
         (r"^ --More--", "\n"),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
     ]
-
