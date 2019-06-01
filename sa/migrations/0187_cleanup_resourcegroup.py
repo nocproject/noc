@@ -5,19 +5,15 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("phone", "0002_migrate_termination_groups")]
 
-    def forwards(self):
-        db = get_db()
+    def migrate(self):
+        db = self.mongo_db
         coll = db["resourcegroups"]
         coll.update_many({"_legacy_id": {"$exists": True}}, {"$unset": {"_legacy_id": ""}})
-
-    def backwards(self):
-        pass

@@ -9,18 +9,18 @@
 # Third-party modules
 import bson
 import bson.int64
-from south.db import db
 # NOC modules
-from noc.lib.nosql import get_db
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.bi.decorator import bi_hash
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("wf", "0001_default_wf")]
 
-    def forwards(self):
-        mdb = get_db()
+    def migrate(self):
+        mdb = self.mongo_db
         # Get default prefix profile
         coll = mdb["prefixprofiles"]
         d = coll.find_one({"name": "default"})
@@ -42,7 +42,7 @@ class Migration(object):
         ]
         # Convert styles
         style_profiles = {None: default_id}
-        for style_id, in db.execute("SELECT DISTINCT style_id FROM ip_vrf"):
+        for style_id, in self.db.execute("SELECT DISTINCT style_id FROM ip_vrf"):
             if not style_id:
                 continue
             p_id = bson.ObjectId()
@@ -61,18 +61,15 @@ class Migration(object):
         # Insert profiles to database
         coll.insert_many(profiles)
         # Create Prefix.profile field
-        db.add_column("ip_vrf", "profile", DocumentReferenceField("vc.VPNProfile", null=True, blank=True))
+        self.db.add_column("ip_vrf", "profile", DocumentReferenceField("vc.VPNProfile", null=True, blank=True))
         # Migrate profile styles
         for style_id in style_profiles:
             if style_id:
                 cond = "style_id = %s" % style_id
             else:
                 cond = "style_id IS NULL"
-            db.execute("UPDATE ip_vrf SET profile = %%s WHERE %s" % cond, [str(style_profiles[style_id])])
+            self.db.execute("UPDATE ip_vrf SET profile = %%s WHERE %s" % cond, [str(style_profiles[style_id])])
         # Make Prefix.profile not nullable
-        db.execute("ALTER TABLE ip_vrf ALTER profile SET NOT NULL")
+        self.db.execute("ALTER TABLE ip_vrf ALTER profile SET NOT NULL")
         # Drop Prefix.style
-        db.drop_column("ip_vrf", "style_id")
-
-    def backwards(self):
-        pass
+        self.db.delete_column("ip_vrf", "style_id")

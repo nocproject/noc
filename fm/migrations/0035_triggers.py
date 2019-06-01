@@ -5,58 +5,43 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    depends_on = (("main", "0037_template"),)
+class Migration(BaseMigration):
+    depends_on = [("main", "0037_template")]
 
-    def forwards(self):
-        Template = db.mock_model(
+    def migrate(self):
+        Template = self.db.mock_model(
             model_name="Template",
-            db_table="main_template",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_template"
         )
 
-        TimePattern = db.mock_model(
+        TimePattern = self.db.mock_model(
             model_name="TimePattern",
-            db_table="main_timepattern",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_timepattern"
         )
 
-        ManagedObjectSelector = db.mock_model(
+        ManagedObjectSelector = self.db.mock_model(
             model_name="ManagedObjectSelector",
-            db_table="sa_managedobjectselector",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobjectselector"
         )
 
-        NotificationGroup = db.mock_model(
+        NotificationGroup = self.db.mock_model(
             model_name="NotificationGroup",
-            db_table="main_notificationgroup",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_notificationgroup"
         )
 
-        PyRule = db.mock_model(
+        PyRule = self.db.mock_model(
             model_name="PyRule",
-            db_table="main_pyrule",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_pyrule"
         )
 
-        db.create_table(
+        self.db.create_table(
             "fm_eventtrigger", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=64, unique=True)),
@@ -76,7 +61,7 @@ class Migration(object):
             )
         )
 
-        db.create_table(
+        self.db.create_table(
             "fm_alarmtrigger", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=64, unique=True)),
@@ -95,9 +80,3 @@ class Migration(object):
                 ("pyrule", models.ForeignKey(PyRule, verbose_name="pyRule", null=True, blank=True))
             )
         )
-
-        db.send_create_signal("main", ["EventTrigger", "AlarmTrigger"])
-
-    def backwards(self):
-        db.delete_table("fm_eventtrigger")
-        db.delete_table("fm_alarmtrigger")

@@ -5,21 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    depends_on = (("sa", "0003_task_schedule"),)
+class Migration(BaseMigration):
 
-    def forwards(self):
-        db.execute(
+    depends_on = [
+        ("sa", "0003_task_schedule")
+    ]
+
+    def migrate(self):
+        self.db.execute(
             "UPDATE sa_taskschedule SET periodic_name='main.cleanup' WHERE periodic_name='main.cleanup_sessions'"
-        )
-
-    def backwards(self):
-        db.execute(
-            "UPDATE sa_taskschedule SET periodic_name='main.cleanup_sessions' WHERE periodic_name='main.cleanup'"
         )

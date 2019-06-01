@@ -5,17 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Model 'LIR'
-        db.create_table(
+        self.db.create_table(
             'peer_lir', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("LIR name", unique=True, max_length=64))
@@ -23,12 +23,12 @@ class Migration(object):
         )
 
         # Mock Models
-        LIR = db.mock_model(
-            model_name='LIR', db_table='peer_lir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+        LIR = self.db.mock_model(
+            model_name='LIR', db_table='peer_lir'
         )
 
         # Model 'AS'
-        db.create_table(
+        self.db.create_table(
             'peer_as', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('lir', models.ForeignKey(LIR, verbose_name=LIR)), ('asn', models.IntegerField("ASN", unique=True)),
@@ -38,7 +38,7 @@ class Migration(object):
             )
         )
         # Model 'ASSet'
-        db.create_table(
+        self.db.create_table(
             'peer_asset', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -49,7 +49,7 @@ class Migration(object):
             )
         )
         # Model 'PeeringPointType'
-        db.create_table(
+        self.db.create_table(
             'peer_peeringpointtype', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True))
@@ -57,16 +57,13 @@ class Migration(object):
         )
 
         # Mock Models
-        PeeringPointType = db.mock_model(
+        PeeringPointType = self.db.mock_model(
             model_name='PeeringPointType',
-            db_table='peer_peeringpointtype',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_peeringpointtype'
         )
 
         # Model 'PeeringPoint'
-        db.create_table(
+        self.db.create_table(
             'peer_peeringpoint', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('hostname', models.CharField("FQDN", max_length=64, unique=True)),
@@ -76,7 +73,7 @@ class Migration(object):
             )
         )
         # Model 'PeerGroup'
-        db.create_table(
+        self.db.create_table(
             'peer_peergroup', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -87,26 +84,20 @@ class Migration(object):
         )
 
         # Mock Models
-        PeerGroup = db.mock_model(
+        PeerGroup = self.db.mock_model(
             model_name='PeerGroup',
-            db_table='peer_peergroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_peergroup'
         )
-        PeeringPoint = db.mock_model(
+        PeeringPoint = self.db.mock_model(
             model_name='PeeringPoint',
-            db_table='peer_peeringpoint',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_peeringpoint'
         )
-        AS = db.mock_model(
-            model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+        AS = self.db.mock_model(
+            model_name='AS', db_table='peer_as'
         )
 
         # Model 'Peer'
-        db.create_table(
+        self.db.create_table(
             'peer_peer', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('peer_group', models.ForeignKey(PeerGroup, verbose_name="Peer Group")),
@@ -123,14 +114,3 @@ class Migration(object):
                 ('max_prefixes', models.IntegerField("Max. Prefixes", default=100))
             )
         )
-
-        db.send_create_signal('peer', ['LIR', 'AS', 'ASSet', 'PeeringPointType', 'PeeringPoint', 'PeerGroup', 'Peer'])
-
-    def backwards(self):
-        db.delete_table('peer_peer')
-        db.delete_table('peer_peergroup')
-        db.delete_table('peer_peeringpoint')
-        db.delete_table('peer_peeringpointtype')
-        db.delete_table('peer_asset')
-        db.delete_table('peer_as')
-        db.delete_table('peer_lir')

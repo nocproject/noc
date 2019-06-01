@@ -5,20 +5,16 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("main", "0033_shard")]
 
-    def forwards(self):
-        db.delete_column("sa_managedobjectselector", "filter_activator_id")
-        db.drop_table("sa_activator")
-        db.drop_table("sa_collector")
-        db.drop_table("main_shard")
-
-    def backwards(self):
-        pass
+    def migrate(self):
+        self.db.delete_column("sa_managedobjectselector", "filter_activator_id")
+        self.db.delete_table("sa_activator")
+        self.db.delete_table("sa_collector")
+        self.db.delete_table("main_shard")

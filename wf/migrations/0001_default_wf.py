@@ -9,12 +9,12 @@
 # Third-party modules
 import bson
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db = get_db()
+class Migration(BaseMigration):
+    def migrate(self):
+        db = self.mongo_db
         # Workflow
         db["workflows"].insert_many(
             [
@@ -22,13 +22,13 @@ class Migration(object):
                     "_id": bson.ObjectId("5a01d980b6f529000100d37a"),
                     "name": "Default Resource",
                     "is_active": True,
-                    "bi_id": long(1099501303790147280),
+                    "bi_id": 1099501303790147280,
                     "description": "Default resource workflow with external provisioning"
                 }, {
                     "_id": bson.ObjectId("5a1d078e1bb627000151a17d"),
                     "name": "Default",
                     "is_active": True,
-                    "bi_id": long(4397582378950796294),
+                    "bi_id": 4397582378950796294,
                     "description": "Default workflow with Ready state"
                 }
             ]
@@ -47,7 +47,7 @@ class Migration(object):
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(5784899502721162850),
+                    "bi_id": 5784899502721162850,
                     "description": "Resource is free and can be used"
                 }, {
                     "_id": bson.ObjectId("5a17f6c51bb6270001bd0333"),
@@ -60,7 +60,7 @@ class Migration(object):
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(346135885535479406),
+                    "bi_id": 346135885535479406,
                     "description": "Resource is temporary reserved/booked. \
                                     It must be approved explicitly during TTL to became used"
                 }, {
@@ -74,7 +74,7 @@ class Migration(object):
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(5541827829820576149),
+                    "bi_id": 5541827829820576149,
                     "description": "Cooldown stage for released resources to prevent reuse collisions"
                 }, {
                     "_id": bson.ObjectId("5a17f78d1bb6270001bd0346"),
@@ -87,7 +87,7 @@ class Migration(object):
                     "update_expired": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(6326503631568495692),
+                    "bi_id": 6326503631568495692,
                     "description": "Resource is in productive usage"
                 }, {
                     "_id": bson.ObjectId("5a17f7d21bb6270001bd034f"),
@@ -100,7 +100,7 @@ class Migration(object):
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(6239532707574720775),
+                    "bi_id": 6239532707574720775,
                     "description": "Resource reservation is approved. \
                                     Resource will became ready when it will be discovered"
                 }, {
@@ -114,7 +114,7 @@ class Migration(object):
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(8871888520366972039),
+                    "bi_id": 8871888520366972039,
                     "description": "Resource is temporary suspended/blocked for organisational reasons"
                 }, {
                     "_id": bson.ObjectId("5a1d07b41bb627000151a18b"),
@@ -127,7 +127,7 @@ class Migration(object):
                     "update_expired": False,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(6481686024283854615),
+                    "bi_id": 6481686024283854615,
                     "description": "Resource is in productive usage"
                 }
             ]
@@ -146,7 +146,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(8800448533721856912)
+                    "bi_id": 8800448533721856912
                 }, {
                     "_id": bson.ObjectId("5a18140b1bb6270001c7031c"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -158,7 +158,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(7126984897086158544)
+                    "bi_id": 7126984897086158544
                 }, {
                     "_id": bson.ObjectId("5a18146a1bb6270001c70332"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -170,7 +170,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(6910421850576189953)
+                    "bi_id": 6910421850576189953
                 }, {
                     "_id": bson.ObjectId("5a18152d1bb6270001c70352"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -182,7 +182,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(1894890040029769162)
+                    "bi_id": 1894890040029769162
                 }, {
                     "_id": bson.ObjectId("5a1815701bb6270001c70373"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -194,7 +194,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(2205967151884564606)
+                    "bi_id": 2205967151884564606
                 }, {
                     "_id": bson.ObjectId("5a18161e1bb6270001028cd0"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -206,7 +206,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(1854285483372474455)
+                    "bi_id": 1854285483372474455
                 }, {
                     "_id": bson.ObjectId("5a1816591bb6270001028cf6"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -218,7 +218,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(81389710212083104)
+                    "bi_id": 81389710212083104
                 }, {
                     "_id": bson.ObjectId("5a1816c81bb6270001028d45"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -230,7 +230,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(2244054006097306867)
+                    "bi_id": 2244054006097306867
                 }, {
                     "_id": bson.ObjectId("5a1816dd1bb6270001028d5f"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -242,7 +242,7 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(2585664142032130717)
+                    "bi_id": 2585664142032130717
                 }, {
                     "_id": bson.ObjectId("5a1817071bb6270001028d7e"),
                     "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
@@ -254,10 +254,8 @@ class Migration(object):
                     "enable_manual": True,
                     "on_enter_handlers": [],
                     "on_leave_handlers": [],
-                    "bi_id": long(8194239664781898089)
+                    "bi_id": 8194239664781898089
                 }
             ]
         )
 
-    def backwards(self):
-        pass

@@ -5,28 +5,26 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# NOC modules
+
+# Python modules
 import uuid
 # Third-party modules
 import bson
-from south.db import db
 from django.db import models
-# Third-party modules
+# NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
-from noc.lib.nosql import get_db
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         #
         # Platform and version
         #
-        pcoll = get_db()["noc.platforms"]
-        fcoll = get_db()["noc.firmwares"]
+        pcoll = self.mongo_db["noc.platforms"]
+        fcoll = self.mongo_db["noc.firmwares"]
 
-        data = db.execute(
+        data = self.db.execute(
             """
           SELECT
             DISTINCT
@@ -77,7 +75,7 @@ class Migration(object):
             u = uuid.uuid4()
             pv = bson.ObjectId(profile)
             vv = bson.ObjectId(vendor)
-            fcoll.update(
+            fcoll.update_one(
                 {
                     "profile": pv,
                     "vendor": vv,
@@ -103,13 +101,13 @@ class Migration(object):
         for d in fcoll.find({}, {"_id": 1, "profile": 1, "version": 1}):
             fmap[str(d["profile"]), d["version"]] = str(d["_id"])
         # Create .platform field
-        db.add_column("sa_managedobject", "platform", DocumentReferenceField("inv.Platform", null=True, blank=True))
+        self.db.add_column("sa_managedobject", "platform", DocumentReferenceField("inv.Platform", null=True, blank=True))
         # Create .version field
-        db.add_column("sa_managedobject", "version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
+        self.db.add_column("sa_managedobject", "version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
         # Create .next_version field
-        db.add_column("sa_managedobject", "next_version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
+        self.db.add_column("sa_managedobject", "next_version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
         # Create software_image field
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject", "software_image",
             models.CharField("Software Image", max_length=255, null=True, blank=True)
         )
@@ -119,7 +117,7 @@ class Migration(object):
             vendor = vendor.strip() if vendor else None
             if not platform or not vendor:
                 continue
-            db.execute(
+            self.db.execute(
                 """
                 UPDATE sa_managedobject
                 SET
@@ -143,9 +141,9 @@ class Migration(object):
             """, [pmap[vendor, platform], fmap[profile, version], profile, vendor, platform, version]
             )
         # Fill software_image field
-        images = db.execute("SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key='image'")
+        images = self.db.execute("SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key='image'")
         for img, in images:
-            db.execute(
+            self.db.execute(
                 """
             UPDATE sa_managedobject
             SET software_image = %s
@@ -160,12 +158,9 @@ class Migration(object):
             """, [img, img]
             )
         # Remove old data
-        db.execute(
+        self.db.execute(
             """
           DELETE FROM sa_managedobjectattribute
           WHERE key IN ('vendor', 'platform', 'version', 'image')
         """
         )
-
-    def backwards(self):
-        pass

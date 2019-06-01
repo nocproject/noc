@@ -5,26 +5,24 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+
+    def migrate(self):
         # Mock Models
-        Language = db.mock_model(
+        Language = self.db.mock_model(
             model_name="Language",
-            db_table="main_language",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_language"
         )
 
         # Model "KBEntryTemplate"
-        db.create_table(
+        self.db.create_table(
             "kb_kbentrytemplate", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=128, unique=True)),
@@ -34,33 +32,20 @@ class Migration(object):
             )
         )
         # Mock Models
-        KBEntryTemplate = db.mock_model(
+        KBEntryTemplate = self.db.mock_model(
             model_name="KBEntryTemplate",
-            db_table="kb_kbentrytemplate",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbentrytemplate"
         )
-        KBCategory = db.mock_model(
+        KBCategory = self.db.mock_model(
             model_name="KBCategory",
-            db_table="kb_kbcategory",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="kb_kbcategory"
         )
 
         # M2M field "KBEntryTemplate.categories"
-        db.create_table(
+        self.db.create_table(
             "kb_kbentrytemplate_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("kbentrytemplate", models.ForeignKey(KBEntryTemplate, null=False)),
                 ("kbcategory", models.ForeignKey(KBCategory, null=False))
             )
         )
-
-        db.send_create_signal("kb", ["KBEntryTemplate"])
-
-    def backwards(self):
-        db.delete_table("kb_kbentrytemplate")
-
-        db.delete_table("kb_kbentrytemplate_categories")

@@ -302,7 +302,7 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        value = request.raw_post_data
+        value = request.body
         if not value:
             # Delete state
             UserState.objects.filter(user_id=uid, key=name).delete()

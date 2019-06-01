@@ -5,20 +5,20 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        VRF = db.mock_model(
-            model_name='VRF', db_table='ip_vrf', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField
+class Migration(BaseMigration):
+    def migrate(self):
+        VRF = self.db.mock_model(
+            model_name='VRF', db_table='ip_vrf'
         )
         # Adding model 'IPv4AddressRange'
-        db.create_table(
+        self.db.create_table(
             'ip_ipv4addressrange', (
                 ('id', models.AutoField(primary_key=True)),
                 ('vrf', models.ForeignKey(VRF, verbose_name="VRF")),
@@ -34,14 +34,6 @@ class Migration(object):
                 ),
             )
         )
-        db.send_create_signal('ip', ['IPv4AddressRange'])
 
         # Creating unique_together for [vrf, name] on IPv4AddressRange.
-        db.create_unique('ip_ipv4addressrange', ['vrf_id', 'name'])
-
-    def backwards(self):
-        # Deleting model 'IPv4AddressRange'
-        db.delete_table('ip_ipv4addressrange')
-
-        # Deleting unique_together for [vrf, name] on IPv4AddressRange.
-        db.delete_unique('ip_ipv4addressrange', ['vrf_id', 'name'])
+        self.db.create_index('ip_ipv4addressrange', ['vrf_id', 'name'], unique=True)

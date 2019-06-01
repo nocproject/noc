@@ -17,6 +17,7 @@ class Script(BaseScript):
     name = "Qtech.QSW2800.get_chassis_id"
     interface = IGetChassisID
     cache = True
+    always_prefer = "S"
 
     rx_mac = re.compile(
         r"^\s*\S+\s+MAC\s+(?P<mac>\S+)$",
@@ -26,29 +27,18 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE)
 
     def execute_cli(self):
-        r = []
-        v = self.scripts.get_version()
-        if v["version"].startswith("7") or self.match_version(version__gte="6.3.100.12"):
-            macs = []
+        macs = []
+        if self.is_support_mac_version:
             cmd = self.cli("show version")
             for match in self.rx_mac.finditer(cmd):
                 macs += [match.group("mac")]
-            macs.sort()
-            r = [{
-                "first_chassis_mac": f,
-                "last_chassis_mac": t
-            } for f, t in self.macs_to_ranges(macs)]
-        if not r:
+        if not macs:
             # If not SystemID in version command
-            vlan_cmd = self.cli("show mac-address-table static | i CPU")
-            match = self.rx_mac_old.match(vlan_cmd)
-            if match:
-                vlan_mac = match.group("mac")
-            iface_cmd = self.cli("show interface | i address is")
-            iface_match = iface_cmd.splitlines()[0].split()[-1]
-            return {
-                "first_chassis_mac": vlan_mac,
-                "last_chassis_mac": iface_match
-            }
+            cmd = self.cli("show mac-address-table static")
+            macs += self.rx_mac_old.findall(cmd)
+            # For old NOC. In new collected on interface discovery
+            # iface_cmd = self.cli("show interface | i address is")
+            # iface_match = iface_cmd.splitlines()[0].split()[-1]
 
-        return r
+        return [{"first_chassis_mac": f, "last_chassis_mac": t}
+                for f, t in self.macs_to_ranges(sorted(macs))]

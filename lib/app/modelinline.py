@@ -9,6 +9,7 @@
 # Python modules
 from functools import reduce
 # Third-party modules
+import six
 from django.db.models.fields import CharField, BooleanField, IntegerField, FloatField, related
 from django.db.models import Q
 from django.db.utils import IntegrityError
@@ -133,7 +134,7 @@ class ModelInline(object):
             del self.clean_fields[self.parent_rel]
 
     def get_custom_fields(self):
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_validator(self, field):
@@ -284,7 +285,10 @@ class ModelInline(object):
                 r[f.name] = getattr(o, f.name)
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
-                if v is not None and not isinstance(v, (str, unicode, int, long, bool, list)):
+                if (
+                    v is not None and not isinstance(v, six.string_types) and
+                    not isinstance(v, six.integer_types) and not isinstance(v, (bool, list))
+                ):
                     v = unicode(v)
                 r[f.name] = v
             else:
@@ -362,7 +366,7 @@ class ModelInline(object):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json({
                 "status": False,
@@ -430,7 +434,7 @@ class ModelInline(object):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json({
                 "status": False,

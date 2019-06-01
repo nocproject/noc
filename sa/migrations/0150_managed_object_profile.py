@@ -8,19 +8,17 @@
 
 # Python modules
 import uuid
-# Third-party modules
-from south.db import db
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
-from noc.lib.nosql import get_db
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Select profile names
-        profiles = set(r[0] for r in db.execute("SELECT DISTINCT profile_name FROM sa_managedobject"))
+        profiles = set(r[0] for r in self.db.execute("SELECT DISTINCT profile_name FROM sa_managedobject"))
         # Create profile records
-        pcoll = get_db()["noc.profiles"]
+        pcoll = self.mongo_db["noc.profiles"]
         for p in profiles:
             u = uuid.uuid4()
             pcoll.update_many({"name": p}, {"$set": {"name": p}, "$setOnInsert": {"uuid": u}}, upsert=True)
@@ -29,10 +27,10 @@ class Migration(object):
         for d in pcoll.find({}, {"_id": 1, "name": 1}):
             pmap[d["name"]] = str(d["_id"])
         # Create .profile field
-        db.add_column("sa_managedobject", "profile", DocumentReferenceField("inv.Profile", null=True, blank=True))
+        self.db.add_column("sa_managedobject", "profile", DocumentReferenceField("inv.Profile", null=True, blank=True))
         # Migrate profile data
         for p in profiles:
-            db.execute(
+            self.db.execute(
                 """
                 UPDATE sa_managedobject
                 SET profile = %s
@@ -40,9 +38,6 @@ class Migration(object):
             """, [pmap[p], p]
             )
         # Set profile as not null
-        db.execute("ALTER TABLE sa_managedobject ALTER profile SET NOT NULL")
+        self.db.execute("ALTER TABLE sa_managedobject ALTER profile SET NOT NULL")
         # Drop legacy profile_name
-        db.delete_column("sa_managedobject", "profile_name")
-
-    def backwards(self):
-        pass
+        self.db.delete_column("sa_managedobject", "profile_name")

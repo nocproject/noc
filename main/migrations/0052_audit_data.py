@@ -11,19 +11,19 @@ import logging
 import re
 import datetime
 # Third-party modules
-from south.db import db
 from pymongo.errors import BulkWriteError
 from pymongo import InsertOne
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.core.migration.base import BaseMigration
 
-logger = logging.getLogger("south")
+logger = logging.getLogger("migration")
 
 
-class Migration(object):
+class Migration(BaseMigration):
+
     rx_field = re.compile("^[a-zA-Z0-9_]+$")
 
-    def forwards(self):
+    def migrate(self):
         def q(s):
             if s is None:
                 return None
@@ -54,14 +54,14 @@ class Migration(object):
                 yield last.split(sep, 1)
 
         delta = datetime.timedelta(days=5 * 365)
-        user_cache = dict(db.execute("SELECT id, username FROM auth_user"))
-        collection = get_db()["noc.audittrail"]
-        left = db.execute("SELECT COUNT(*) FROM main_audittrail")[0][0]
+        user_cache = dict(self.db.execute("SELECT id, username FROM auth_user"))
+        collection = self.mongo_db["noc.audittrail"]
+        left = self.db.execute("SELECT COUNT(*) FROM main_audittrail")[0][0]
         logger.info("Migration audit trail")
         last_id = 0
         while True:
             bulk = []
-            for a_id, user_id, timestamp, model, db_table, op, subject, body in db.execute("""
+            for a_id, user_id, timestamp, model, db_table, op, subject, body in self.db.execute("""
                     SELECT id, user_id, "timestamp", model, db_table, operation, subject, body
                     FROM main_audittrail
                     WHERE id > %s
@@ -122,7 +122,4 @@ class Migration(object):
                     break
             else:
                 break
-        db.drop_table("main_audittrail")
-
-    def backwards(self):
-        pass
+        self.db.delete_table("main_audittrail")

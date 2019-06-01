@@ -5,22 +5,23 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 OBJECT_TYPES = ["config", "dns", "prefixlist", "rpsl"]
 OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES]
 
 
-class Migration(object):
-    def forwards(self):
-        db.delete_column("cm_objectcategory", "notify_immediately")
-        db.delete_column("cm_objectcategory", "notify_delayed")
+class Migration(BaseMigration):
+    def migrate(self):
 
-        db.create_table(
+        self.db.delete_column("cm_objectcategory", "notify_immediately")
+        self.db.delete_column("cm_objectcategory", "notify_delayed")
+
+        self.db.create_table(
             'cm_objectlocation', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=64, unique=True)),
@@ -28,47 +29,35 @@ class Migration(object):
             )
         )
 
-        ObjectLocation = db.mock_model(
+        ObjectLocation = self.db.mock_model(
             model_name='ObjectLocation',
-            db_table='cm_objectlocation',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectlocation'
         )
 
-        db.execute("INSERT INTO cm_objectlocation(name,description) values(%s,%s)", ["default", "default location"])
-        loc_id = db.execute("SELECT id FROM cm_objectlocation WHERE name=%s", ["default"])[0][0]
+        self.db.execute("INSERT INTO cm_objectlocation(name,description) values(%s,%s)", ["default", "default location"])
+        loc_id = self.db.execute("SELECT id FROM cm_objectlocation WHERE name=%s", ["default"])[0][0]
 
         for ot in OBJECT_TYPES:
-            db.add_column("cm_%s" % ot, "location", models.ForeignKey(ObjectLocation, null=True, blank=True))
-            db.execute("UPDATE cm_%s SET location_id=%%s" % ot, [loc_id])
-            db.execute("ALTER TABLE cm_%s ALTER location_id SET NOT NULL" % ot)
+            self.db.add_column("cm_%s" % ot, "location", models.ForeignKey(ObjectLocation, null=True, blank=True))
+            self.db.execute("UPDATE cm_%s SET location_id=%%s" % ot, [loc_id])
+            self.db.execute("ALTER TABLE cm_%s ALTER location_id SET NOT NULL" % ot)
 
         # Mock Models
-        ObjectCategory = db.mock_model(
+        ObjectCategory = self.db.mock_model(
             model_name='ObjectCategory',
-            db_table='cm_objectcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectcategory'
         )
-        ObjectLocation = db.mock_model(
+        ObjectLocation = self.db.mock_model(
             model_name='ObjectLocation',
-            db_table='cm_objectlocation',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectlocation'
         )
-        User = db.mock_model(
+        User = self.db.mock_model(
             model_name='User',
-            db_table='auth_user',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='auth_user'
         )
 
         # Model 'ObjectAccess'
-        db.create_table(
+        self.db.create_table(
             'cm_objectaccess', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('type', models.CharField("Type", max_length=16, choices=OBJECT_TYPE_CHOICES)),
@@ -79,23 +68,17 @@ class Migration(object):
         )
 
         # Mock Models
-        ObjectCategory = db.mock_model(
+        ObjectCategory = self.db.mock_model(
             model_name='ObjectCategory',
-            db_table='cm_objectcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectcategory'
         )
-        ObjectLocation = db.mock_model(
+        ObjectLocation = self.db.mock_model(
             model_name='ObjectLocation',
-            db_table='cm_objectlocation',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='cm_objectlocation'
         )
 
         # Model 'ObjectNotify'
-        db.create_table(
+        self.db.create_table(
             'cm_objectnotify', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('type', models.CharField("Type", max_length=16, choices=OBJECT_TYPE_CHOICES)),
@@ -106,16 +89,3 @@ class Migration(object):
                 ('notify_delayed', models.BooleanField("Notify Delayed")),
             )
         )
-
-        db.send_create_signal('cm', ['ObjectLocation', 'ObjectAccess', 'ObjectNotify'])
-
-    def backwards(self):
-        for ot in OBJECT_TYPES:
-            db.delete_column("cm_%s" % ot, "location_id")
-        db.delete_table('cm_objectnotify')
-        db.delete_table('cm_objectaccess')
-        db.add_column(
-            "cm_objectcategory", "notify_immediately", models.TextField("Notify Immediately", blank=True, null=True)
-        )
-        db.add_column("cm_objectcategory", "notify_delayed", models.TextField("Notify Delayed", blank=True, null=True))
-        db.delete_table('cm_objectlocation')

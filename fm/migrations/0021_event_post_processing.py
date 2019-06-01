@@ -5,41 +5,31 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-
+class Migration(BaseMigration):
+    def migrate(self):
         # Mock Models
-        EventClass = db.mock_model(
+        EventClass = self.db.mock_model(
             model_name='EventClass',
-            db_table='fm_eventclass',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventclass'
         )
-        EventPriority = db.mock_model(
+        EventPriority = self.db.mock_model(
             model_name='EventPriority',
-            db_table='fm_eventpriority',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventpriority'
         )
-        EventCategory = db.mock_model(
+        EventCategory = self.db.mock_model(
             model_name='EventCategory',
-            db_table='fm_eventcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventcategory'
         )
 
         # Model 'EventPostProcessingRule'
-        db.create_table(
+        self.db.create_table(
             'fm_eventpostprocessingrule', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class")),
@@ -65,16 +55,13 @@ class Migration(object):
         )
 
         # Mock Models
-        EventPostProcessingRule = db.mock_model(
+        EventPostProcessingRule = self.db.mock_model(
             model_name='EventPostProcessingRule',
-            db_table='fm_eventpostprocessingrule',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventpostprocessingrule'
         )
 
         # Model 'EventPostProcessingRE'
-        db.create_table(
+        self.db.create_table(
             'fm_eventpostprocessingre', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('rule', models.ForeignKey(EventPostProcessingRule, verbose_name="Event Post-Processing Rule")),
@@ -82,9 +69,3 @@ class Migration(object):
                 ('value_re', models.CharField("Value RE", max_length=256))
             )
         )
-
-        db.send_create_signal('fm', ['EventPostProcessingRule', 'EventPostProcessingRE'])
-
-    def backwards(self):
-        db.delete_table('fm_eventpostprocessingre')
-        db.delete_table('fm_eventpostprocessingrule')

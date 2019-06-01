@@ -5,34 +5,29 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
 # NOC modules
 from noc.core.model.fields import CIDRField
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.delete_column("ip_ipv4block", "prefix")
-        db.add_column("ip_ipv4block", "prefix", CIDRField("prefix", null=True))
-        db.execute("UPDATE ip_ipv4block SET prefix=prefix_cidr")
-        db.delete_column("ip_ipv4block", "prefix_cidr")
-        db.execute("ALTER TABLE ip_ipv4block ALTER prefix SET NOT NULL")
-        db.execute("DROP TRIGGER t_ip_ipv4block_modify ON ip_ipv4block")
-        db.execute("DROP FUNCTION f_trigger_ip_ipv4block()")
-        db.delete_column("ip_ipv4blockaccess", "prefix")
-        db.add_column("ip_ipv4blockaccess", "prefix", CIDRField("prefix", null=True))
-        db.execute("UPDATE ip_ipv4blockaccess SET prefix=prefix_cidr")
-        db.delete_column("ip_ipv4blockaccess", "prefix_cidr")
-        db.execute("ALTER TABLE ip_ipv4blockaccess ALTER prefix SET NOT NULL")
-        db.execute("DROP TRIGGER t_ip_ipv4blockaccess_modify ON ip_ipv4blockaccess")
-        db.execute("DROP FUNCTION f_trigger_ip_ipv4blockaccess()")
-        db.execute(RAW_SQL)
-
-    def backwards(self):
-        pass
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_column("ip_ipv4block", "prefix")
+        self.db.add_column("ip_ipv4block", "prefix", CIDRField("prefix", null=True))
+        self.db.execute("UPDATE ip_ipv4block SET prefix=prefix_cidr")
+        self.db.delete_column("ip_ipv4block", "prefix_cidr")
+        self.db.execute("ALTER TABLE ip_ipv4block ALTER prefix SET NOT NULL")
+        self.db.execute("DROP TRIGGER t_ip_ipv4block_modify ON ip_ipv4block")
+        self.db.execute("DROP FUNCTION f_trigger_ip_ipv4block()")
+        self.db.delete_column("ip_ipv4blockaccess", "prefix")
+        self.db.add_column("ip_ipv4blockaccess", "prefix", CIDRField("prefix", null=True))
+        self.db.execute("UPDATE ip_ipv4blockaccess SET prefix=prefix_cidr")
+        self.db.delete_column("ip_ipv4blockaccess", "prefix_cidr")
+        self.db.execute("ALTER TABLE ip_ipv4blockaccess ALTER prefix SET NOT NULL")
+        self.db.execute("DROP TRIGGER t_ip_ipv4blockaccess_modify ON ip_ipv4blockaccess")
+        self.db.execute("DROP FUNCTION f_trigger_ip_ipv4blockaccess()")
+        self.db.execute(RAW_SQL)
 
 
 RAW_SQL = """

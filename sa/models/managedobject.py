@@ -13,7 +13,6 @@ from collections import namedtuple
 import logging
 import os
 import re
-import itertools
 import operator
 from threading import Lock
 import datetime
@@ -70,7 +69,7 @@ from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 16
+MANAGEDOBJECT_CACHE_VERSION = 17
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -1836,12 +1835,11 @@ class ScriptsProxy(object):
         return script_loader.has_script(item)
 
     def __iter__(self):
-        return itertools.imap(
-            lambda y: y.split(".")[-1],
-            itertools.ifilter(
-                lambda x: x.startswith(self._object.profile.name + "."),
-                script_loader.iter_scripts()
-            )
+        prefix = self._object.profile.name + "."
+        return (
+            x.split(".")[-1]
+            for x in script_loader.iter_scripts()
+            if x.startswith(prefix)
         )
 
 

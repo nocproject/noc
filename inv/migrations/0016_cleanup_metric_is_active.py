@@ -5,16 +5,16 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from pymongo import UpdateOne
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         collections = [InterfaceProfile._get_collection()]
         for collection in collections:
             bulk = []
@@ -31,6 +31,3 @@ class Migration(object):
                 bulk += [UpdateOne({"_id": ip["_id"]}, {"$set": {"metrics": metrics}})]
             if bulk:
                 collection.bulk_write(bulk)
-
-    def backwards(self):
-        pass

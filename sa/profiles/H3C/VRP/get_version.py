@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -20,16 +21,17 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(r"^.*?Switch\s(?P<platform>.+?)\sSoftware\s\Version"
-        r"\s3Com\sOS\sV(?P<version>.+?)$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_ver1 = re.compile(r"^Comware\sSoftware,\s\Version\s(?P<version>.+?),"
-        r"\sRelease\s(?P<release>.+?)$.+?^(H3C )?(?P<platform>\S+) uptime is",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                        r"\s3Com\sOS\sV(?P<version>.+?)$",
+                        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver1 = re.compile(r"^\s*Comware\sSoftware,\s\Version\s(?P<version>.+?),"
+                         r"\sRelease\s(?P<release>.+?)$.+?(H3C )?(?P<platform>\S+) uptime is",
+                         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_hw = re.compile(r"Hardware Version is (?P<hardware>\S+)")
     rx_boot = re.compile(r"Bootrom Version is (?P<bootprom>\S+)")
 
     def execute(self):
         v = self.cli("display version")
+        snmp_sn = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
         match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver1.search(v)
@@ -37,7 +39,7 @@ class Script(BaseScript):
                 "vendor": "H3C",
                 "platform": match.group("platform"),
                 "version": match.group("version") + "." + \
-                    match.group("release")
+                           match.group("release")
             }
         else:
             r = {
@@ -47,8 +49,10 @@ class Script(BaseScript):
             }
         hw = self.rx_hw.search(v)
         boot = self.rx_boot.search(v)
-        if hw or boot:
+        if hw or boot or snmp_sn:
             r.update({"attributes": {}})
+            if snmp_sn:
+                r["attributes"].update({"Serial Number": snmp_sn})
             if hw:
                 r["attributes"].update({"HW version": hw.group("hardware")})
             if boot:

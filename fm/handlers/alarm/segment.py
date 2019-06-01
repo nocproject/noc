@@ -48,7 +48,7 @@ def check_segment_redundancy(alarm):
     u = mo.data.uplinks
     if len(u) < 2:
         return
-    seg_objects = [long(x) for x in seg.managed_objects.values_list("id", flat=True)]
+    seg_objects = list(seg.managed_objects.values_list("id", flat=True))
     alarms = [
         d["managed_object"]
         for d in ActiveAlarm._get_collection().find({

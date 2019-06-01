@@ -62,7 +62,8 @@ class Script(BaseScript):
         "86": "MES-2348B",
         "88": "MES-2308",
         "89": "MES-2308P",
-        "92": "MES-2324P"
+        "92": "MES-2324P",
+        "98": "MES-3508P"
     }
 
     def execute_snmp(self, **kwargs):
@@ -78,6 +79,12 @@ class Script(BaseScript):
                                      cached=True)
             serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.67108992",
                                    cached=True)
+            if not version:
+                # rndBrgVersion
+                version = self.snmp.get("1.3.6.1.4.1.89.2.4.0", cached=True)
+            if not serial:
+                # rlPhdUnitGenParamSerialNum
+                serial = self.snmp.get("1.3.6.1.4.1.89.53.14.1.5.1", cached=True)
             return {
                 "vendor": "Eltex",
                 "platform": platform,

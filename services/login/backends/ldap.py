@@ -150,7 +150,7 @@ class LdapBackend(BaseAuthBackend):
 
     @classmethod
     def split_user_domain(cls, user):
-        """
+        r"""
         Split domain from user name.
         Acceptable forms are
         DOMAIN\User

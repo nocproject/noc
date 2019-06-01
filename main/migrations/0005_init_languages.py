@@ -5,10 +5,9 @@
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 LANGUAGES = [
     ("Afar", "Afaraf"),
@@ -198,13 +197,10 @@ LANGUAGES = [
 ]
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         for lang, native in LANGUAGES:
-            db.execute(
+            self.db.execute(
                 "INSERT INTO main_language(name,native_name,is_active) VALUES(%s,%s,%s)",
                 [lang, native, lang == "English"]
             )
-
-    def backwards(self):
-        pass

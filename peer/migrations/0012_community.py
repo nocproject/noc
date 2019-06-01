@@ -5,17 +5,17 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party models
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Model 'CommunityType'
-        db.create_table(
+        self.db.create_table(
             'peer_communitytype', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Description", max_length=32, unique=True))
@@ -23,16 +23,13 @@ class Migration(object):
         )
 
         # Mock Models
-        CommunityType = db.mock_model(
+        CommunityType = self.db.mock_model(
             model_name='CommunityType',
-            db_table='peer_communitytype',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='peer_communitytype'
         )
 
         # Model 'Community'
-        db.create_table(
+        self.db.create_table(
             'peer_community', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('community', models.CharField("Community", max_length=20, unique=True)),
@@ -40,9 +37,3 @@ class Migration(object):
                 ('description', models.CharField("Description", max_length=64))
             )
         )
-
-        db.send_create_signal('peer', ['CommunityType', 'Community'])
-
-    def backwards(self):
-        db.delete_table('peer_community')
-        db.delete_table('peer_communitytype')

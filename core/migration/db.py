@@ -1,0 +1,229 @@
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# Migration db property
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2019 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
+import logging
+import datetime
+# Third-party modules
+import six
+from django.db.models import AutoField
+from django.db import connection
+from django.db.backends.util import truncate_name
+from django.core.management.color import no_style
+
+logger = logging.getLogger("migration")
+
+
+class DB(object):
+    """
+    PostgreSQL database migration operations
+    """
+    MAX_NAME_LENGTH = 63
+
+    def __init__(self):
+        self.deferred_sql = []
+
+    @staticmethod
+    def quote_name(name):
+        return connection.ops.quote_name(name)
+
+    def create_table(self, table_name, fields):
+        assert len(table_name) <= self.MAX_NAME_LENGTH, "Too long table name"
+        columns = [
+            self.column_sql(table_name, field_name, field)
+            for field_name, field in fields
+        ]
+        self.execute("CREATE TABLE %s (%s)" % (
+            self.quote_name(table_name),
+            ", ".join(col for col in columns if col)
+        ))
+        self.execute_deferred_sql()
+
+    def delete_table(self, table_name, cascade=True):
+        tn = self.quote_name(table_name)
+        if cascade:
+            self.execute("DROP TABLE %s CASCADE;" % tn)
+        else:
+            self.execute("DROP TABLE %s;" % tn)
+
+    def add_column(self, table_name, name, field):
+        sql = "ALTER TABLE %s ADD COLUMN %s;" % (
+            self.quote_name(table_name),
+            self.column_sql(table_name, name, field)
+        )
+        self.execute(sql)
+        self.execute_deferred_sql()
+
+    def delete_column(self, table_name, field_name):
+        sql = "ALTER TABLE %s DROP COLUMN %s CASCADE;" % (
+            self.quote_name(table_name),
+            self.quote_name(field_name)
+        )
+        self.execute(sql)
+
+    def rename_column(self, table_name, old, new):
+        if old == new:
+            return
+        sql = "ALTER TABLE %s RENAME COLUMN %s TO %s;" % (
+            self.quote_name(table_name),
+            self.quote_name(old),
+            self.quote_name(new)
+        )
+        self.execute(sql)
+
+    def execute(self, sql, params=None):
+        """
+        Executes the given SQL statement, with optional parameters
+        :param sql: SQL statement
+        :param params: List of positional parameters
+        :return:
+        """
+        params = params or []
+        logger.debug("[SQL] %s (%s)", sql, params)
+        cursor = connection.cursor()
+        cursor.execute(sql, params)
+        try:
+            return cursor.fetchall()
+        except Exception:
+            return []
+
+    def create_index(self, table_name, column_names, unique=False):
+        if not column_names:
+            return
+        # Generate index name
+        idx_table_name = table_name.replace("\"", "").replace(".", "_")
+        index_unique_name = ""
+
+        if len(column_names) > 1:
+            index_unique_name = "_%x" % abs(hash((table_name, ",".join(column_names))))
+
+        # If the index name is too long, truncate it
+        index_name = ("%s_%s%s" % (idx_table_name, column_names[0], index_unique_name)).replace("\"", "").replace(".", "_")
+        if len(index_name) > 63:
+            part = "_%s%s" % (column_names[0], index_unique_name)
+            index_name = "%s%s" % (idx_table_name[:self.MAX_NAME_LENGTH - len(part)], part)
+        #
+        sql = "CREATE %sINDEX %s ON %s (%s);" % (
+            "UNIQUE " if unique else "",
+            self.quote_name(index_name),
+            self.quote_name(table_name),
+            ",".join(self.quote_name(field) for field in column_names)
+        )
+        self.execute(sql)
+
+    def mock_model(self, model_name, db_table,
+                   pk_field_name="id", pk_field_type=AutoField,
+                   pk_field_args=None, pk_field_kwargs=None):
+        pk_field_args = pk_field_args or []
+        pk_field_kwargs = pk_field_kwargs or {}
+        
+        class MockOptions(object):
+            def __init__(self):
+                self.db_table = db_table
+                self.db_tablespace = ""
+                self.object_name = model_name
+                self.module_name = model_name.lower()
+
+                if pk_field_type == AutoField:
+                    pk_field_kwargs["primary_key"] = True
+
+                self.pk = pk_field_type(*pk_field_args, **pk_field_kwargs)
+                self.pk.set_attributes_from_name(pk_field_name)
+                self.abstract = False
+
+            def get_field_by_name(self, field_name):
+                # we only care about the pk field
+                return (self.pk, self.model, True, False)
+
+            def get_field(self, name):
+                # we only care about the pk field
+                return self.pk
+
+        class MockModel(object):
+            _meta = None
+
+        # We need to return an actual class object here, not an instance
+        MockModel._meta = MockOptions()
+        MockModel._meta.model = MockModel
+        return MockModel
+
+    def column_sql(self, table_name, field_name, field, with_name=True, field_prepared=False):
+        """
+        Create the SQL snippet for a column.
+        """
+        # If the field hasn't already been told its attribute name, do so.
+        if not field_prepared:
+            field.set_attributes_from_name(field_name)
+
+        sql = []
+        params = []
+        if with_name:
+            sql += [self.quote_name(field.column)]
+        sql += [field.db_type(connection)]
+        # NULL/NOT NULL
+        sql += ["NULL" if field.null else "NOT NULL"]
+        # PRIMARY KEY/UNIQUE
+        if field.primary_key:
+            sql += ["PRIMARY KEY"]
+        elif field.unique:
+            sql += ["UNIQUE"]
+        # DEFAULT
+        if field.has_default():
+            default = field.get_default()
+            if default is not None:
+                if callable(default):
+                    default = default()
+                if isinstance(default, six.string_types):
+                    default = "'%s'" % default.replace("'", "''")
+                elif isinstance(default, (datetime.date, datetime.time, datetime.datetime)):
+                    default = "'%s'" % default
+                if isinstance(default, six.string_types):
+                    default = default.replace("%", "%%")
+                sql += ["DEFAULT %s" % default]
+                params += [default]
+            elif (not field.null and field.blank) or (field.get_default() == ''):
+                if field.empty_strings_allowed and connection.features.interprets_empty_strings_as_nulls:
+                    sql += [" DEFAULT ''"]
+        # FOREIGN KEY
+        if field.rel:
+            self.deferred_sql += [
+                self.foreign_key_sql(
+                    table_name,
+                    field.column,
+                    field.rel.to._meta.db_table,
+                    field.rel.to._meta.get_field(field.rel.field_name).column
+                )
+            ]
+        # Indexes
+        model = self.mock_model("FakeModelForGISCreation", table_name)
+        self.deferred_sql += connection.creation.sql_indexes_for_field(model, field, no_style())
+        sql = " ".join(sql)
+        return sql % params
+
+    def foreign_key_sql(self, from_table_name, from_column_name, to_table_name, to_column_name):
+        """
+        Generates a full SQL statement to add a foreign key constraint
+        """
+        constraint_name = '%s_refs_%s_%x' % (from_column_name, to_column_name, abs(hash((from_table_name, to_table_name))))
+        return 'ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)%s;' % (
+            self.quote_name(from_table_name),
+            self.quote_name(truncate_name(constraint_name, connection.ops.max_name_length())),
+            self.quote_name(from_column_name),
+            self.quote_name(to_table_name),
+            self.quote_name(to_column_name),
+            connection.ops.deferrable_sql() # Django knows this
+        )
+
+    def execute_deferred_sql(self):
+        for sql in self.deferred_sql:
+            self.execute(sql)
+        self.deferred_sql = []
+
+
+# Singletone
+db = DB()

@@ -5,16 +5,13 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from noc.core.model.fields import TextArrayField
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.add_column("ip_ippool", "technologies", TextArrayField("Technologies", default=["IPoE"]))
-
-    def backwards(self):
-        db.drop_column("ip_ippool", "technologies")
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.add_column("ip_ippool", "technologies", TextArrayField("Technologies", default=["IPoE"]))

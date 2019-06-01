@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # objectmetrics API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ class ObjectMetricsAPI(NBIAPI):
             for row in data:
                 d = dict(zip(fields, row))
                 ts = d.pop("ts")
-                mo = long(d.pop("managed_object"))
+                mo = int(d.pop("managed_object"))
                 path = self.clear_path(d.pop("path"))
                 if table == S_INTERFACE:
                     iface = path[3]

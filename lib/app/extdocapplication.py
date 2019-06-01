@@ -14,6 +14,7 @@ import os
 import re
 import hashlib
 # Third-party modules
+import six
 from django.http import HttpResponse
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
@@ -284,7 +285,8 @@ class ExtDocApplication(ExtApplication):
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
-                elif type(v) not in (str, unicode, int, long, bool, dict):
+                elif (isinstance(v, six.string_types) or isinstance(v, six.integer_types) or
+                      isinstance(v, (bool, dict))):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
@@ -345,9 +347,9 @@ class ExtDocApplication(ExtApplication):
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
         try:
-            attrs = self.clean(self.deserialize(request.raw_post_data))
+            attrs = self.clean(self.deserialize(request.body))
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
+            self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.response(str(e), status=self.BAD_REQUEST)
 
         if self.pk in attrs:
@@ -402,9 +404,9 @@ class ExtDocApplication(ExtApplication):
           access="update", api=True)
     def api_update(self, request, id):
         try:
-            attrs = self.clean(self.deserialize(request.raw_post_data))
+            attrs = self.clean(self.deserialize(request.body))
         except ValueError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
+            self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.response(str(e), status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(**{self.pk: id})
@@ -506,11 +508,11 @@ class ExtDocApplication(ExtApplication):
                 convert=True
             )
         })
-        rv = self.deserialize(request.raw_post_data)
+        rv = self.deserialize(request.body)
         try:
             v = validator.clean(rv)
         except InterfaceTypeError as e:
-            self.logger.info("Bad request: %r (%s)", request.raw_post_data, e)
+            self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.render_json({
                 "status": False,
                 "message": "Bad request",

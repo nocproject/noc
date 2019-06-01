@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ExtApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -101,11 +101,11 @@ class ExtApplication(Application):
     def response(self, content="", status=200):
         if not isinstance(content, six.string_types):
             return HttpResponse(ujson.dumps(content),
-                                mimetype="text/json; charset=utf-8",
+                                content_type="text/json; charset=utf-8",
                                 status=status)
         else:
             return HttpResponse(content,
-                                mimetype="text/plain; charset=utf-8",
+                                content_type="text/plain; charset=utf-8",
                                 status=status)
 
     def fav_convert(self, item):

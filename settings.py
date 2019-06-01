@@ -26,22 +26,22 @@ ALLOWED_HOSTS = ["*"]
 DATABASES = {
     "default": {
         "ENGINE": "noc.core.model.db",
+        #"ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": config.pg.db,
         "USER": config.pg.user,
         "PASSWORD": config.pg.password,
         "HOST": config.pg.addresses[0].host,
         "PORT": config.pg.addresses[0].port,
+        "AUTOCOMMIT": False,
         "TEST_NAME": "test_" + config.pg.db,
         "OPTIONS": {
             "autocommit": True,
-            "connect_timeout": config.pg.connect_timeout
+            "connect_timeout": config.pg.connect_timeout,
+            "isolation_level": 0  # Autocommit
         }
     }
 }
-
-SOUTH_DATABASE_ADAPTERS = {
-    "default": "south.db.postgresql_psycopg2"
-}
+ATOMIC_REQUESTS = False
 
 TIME_ZONE = config.timezone
 LANGUAGE_CODE = config.language_code
@@ -112,7 +112,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",  # Required by django auth
     "django.contrib.sites",
     "django.contrib.admin",
-    "south",
     # NOC modules
     "noc.main",
     "noc.dev",

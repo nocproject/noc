@@ -5,18 +5,18 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
 
         # Model 'EventPriority'
-        db.create_table(
+        self.db.create_table(
             'fm_eventpriority', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -25,7 +25,7 @@ class Migration(object):
             )
         )
         # Model 'EventCategory'
-        db.create_table(
+        self.db.create_table(
             'fm_eventcategory', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=32, unique=True)),
@@ -33,23 +33,17 @@ class Migration(object):
             )
         )
         # Mock Models
-        EventPriority = db.mock_model(
+        EventPriority = self.db.mock_model(
             model_name='EventPriority',
-            db_table='fm_eventpriority',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventpriority'
         )
-        EventCategory = db.mock_model(
+        EventCategory = self.db.mock_model(
             model_name='EventCategory',
-            db_table='fm_eventcategory',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventcategory'
         )
 
         # Model 'EventClass'
-        db.create_table(
+        self.db.create_table(
             'fm_eventclass', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=64)),
@@ -62,16 +56,13 @@ class Migration(object):
             )
         )
         # Mock Models
-        EventClass = db.mock_model(
+        EventClass = self.db.mock_model(
             model_name='EventClass',
-            db_table='fm_eventclass',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventclass'
         )
 
         # Model 'EventClassificationRule'
-        db.create_table(
+        self.db.create_table(
             'fm_eventclassificationrule', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class")),
@@ -81,16 +72,13 @@ class Migration(object):
         )
 
         # Mock Models
-        EventClassificationRule = db.mock_model(
+        EventClassificationRule = self.db.mock_model(
             model_name='EventClassificationRule',
-            db_table='fm_eventclassificationrule',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_eventclassificationrule'
         )
 
         # Model 'EventClassificationRE'
-        db.create_table(
+        self.db.create_table(
             'fm_eventclassificationre', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('rule', models.ForeignKey(EventClassificationRule, verbose_name="Event Classification Rule")),
@@ -100,23 +88,17 @@ class Migration(object):
         )
 
         # Mock Models
-        ManagedObject = db.mock_model(
+        ManagedObject = self.db.mock_model(
             model_name='ManagedObject',
-            db_table='sa_managedobject',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobject'
         )
-        Event = db.mock_model(
+        Event = self.db.mock_model(
             model_name='Event',
-            db_table='fm_event',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_event'
         )
 
         # Model 'Event'
-        db.create_table(
+        self.db.create_table(
             'fm_event', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('timestamp', models.DateTimeField("Timestamp")),
@@ -131,16 +113,13 @@ class Migration(object):
         )
 
         # Mock Models
-        Event = db.mock_model(
+        Event = self.db.mock_model(
             model_name='Event',
-            db_table='fm_event',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='fm_event'
         )
 
         # Model 'EventData'
-        db.create_table(
+        self.db.create_table(
             'fm_eventdata', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('event', models.ForeignKey(Event, verbose_name=Event)),
@@ -156,20 +135,4 @@ class Migration(object):
                 )
             )
         )
-        db.create_index('fm_eventdata', ['event_id', 'key', 'type'], unique=True, db_tablespace='')
-
-        db.send_create_signal(
-            'fm', [
-                'EventPriority', 'EventCategory', 'EventClass', 'EventClassificationRule', 'EventClassificationRE',
-                'Event', 'EventData'
-            ]
-        )
-
-    def backwards(self):
-        db.delete_table('fm_eventdata')
-        db.delete_table('fm_event')
-        db.delete_table('fm_eventclassificationre')
-        db.delete_table('fm_eventclassificationrule')
-        db.delete_table('fm_eventclass')
-        db.delete_table('fm_eventcategory')
-        db.delete_table('fm_eventpriority')
+        self.db.create_index('fm_eventdata', ['event_id', 'key', 'type'], unique=True)

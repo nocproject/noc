@@ -1054,7 +1054,7 @@ class RDParameter(Parameter):
         """
         try:
             left, right = value.split(":", 1)
-            right = long(right)
+            right = int(right)
         except ValueError:
             self.raise_error(value)
         if right < 0:
@@ -1221,7 +1221,7 @@ class ColorParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) in (int, long):
+        if isinstance(value, six.integer_types):
             return value
         if isinstance(value, six.string_types):
             if value.startswith("#"):

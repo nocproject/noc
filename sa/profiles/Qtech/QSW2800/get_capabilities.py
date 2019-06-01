@@ -15,8 +15,7 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_capabilities"
 
-    rx_iface = re.compile(
-        "^\s*(?P<ifname>Ethernet\d+/\d+)\s+is\s+(?:up|down)", re.MULTILINE)
+    rx_iface = re.compile(r"^\s*(?P<ifname>Ethernet\d+/\d+)\s+is\s+(?:up|down)", re.MULTILINE)
     rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
 
     @false_on_cli_error
@@ -24,7 +23,7 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        cmd = self.cli("show lldp")
+        cmd = self.cli("show lldp", cached=True)
         return "LLDP has been enabled globally" in cmd
 
     def has_lldp_snmp(self):
@@ -38,18 +37,27 @@ class Script(BaseScript):
         except self.snmp.TimeOutError:
             return False
 
-    def has_snmp_memory_oids(self):
+    def has_snmp_enterprises(self):
+        """
+        Check box oid 1.3.6.1.4.1.27514 or 1.3.6.1.4.1.6339
+        """
+        try:
+            x = self.snmp.get("1.3.6.1.2.1.1.2.0")
+            if x:
+                return int(x.split(".")[6])
+        except self.snmp.TimeOutError:
+            return False
+
+    def has_snmp_memory_oids(self, oid):
         """
         Check box has memory usage 1.3.6.1.4.1.27514.100.1.11.11.0 enabled on Qtech
         """
-        r = []
         try:
-            x = self.snmp.get("1.3.6.1.4.1.27514.100.1.11.11.0")
+            x = self.snmp.get("1.3.6.1.4.1." + str(oid) + ".100.1.11.11.0")
             if x > 0:
-                r += ["Qtech | OID | Memory Usage 11"]
+                return True
         except self.snmp.TimeOutError:
-            pass
-        return r
+            return False
 
     @false_on_cli_error
     def has_stp_cli(self):
@@ -65,7 +73,7 @@ class Script(BaseScript):
         """
         Check box has OAM enabled
         """
-        v = self.cli("show interface | include Ethernet")
+        v = self.cli("show interface", cached=True)
         for match in self.rx_iface.finditer(v):
             try:
                 cmd = self.cli("show ethernet-oam local interface %s" % match.group("ifname"))
@@ -99,9 +107,18 @@ class Script(BaseScript):
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
-        for m in self.has_snmp_memory_oids():
-            caps[m] = True
+        if self.has_snmp():
+            f = self.has_snmp_enterprises()
+            if f:
+                caps["SNMP | OID | EnterpriseID"] = f
+                m = self.has_snmp_memory_oids(f)
+                if m:
+                    caps["Qtech | OID | Memory Usage 11"] = True
 
     def execute_platform_snmp(self, caps):
-        for m in self.has_snmp_memory_oids():
-            caps[m] = True
+        f = self.has_snmp_enterprises()
+        if f:
+            caps["SNMP | OID | EnterpriseID"] = f
+            m = self.has_snmp_memory_oids(f)
+            if m:
+                caps["Qtech | OID | Memory Usage 11"] = True

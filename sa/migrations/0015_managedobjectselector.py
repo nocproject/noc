@@ -1,30 +1,26 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # managedobjectselector
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Mock Models
-        AdministrativeDomain = db.mock_model(
+        AdministrativeDomain = self.db.mock_model(
             model_name='AdministrativeDomain',
-            db_table='sa_administrativedomain',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_administrativedomain'
         )
 
         # Model 'ManagedObjectSelector'
-        db.create_table(
+        self.db.create_table(
             'sa_managedobjectselector', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=64, unique=True)),
@@ -59,23 +55,17 @@ class Migration(object):
             )
         )
         # Mock Models
-        ManagedObjectSelector = db.mock_model(
+        ManagedObjectSelector = self.db.mock_model(
             model_name='ManagedObjectSelector',
-            db_table='sa_managedobjectselector',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobjectselector'
         )
-        ObjectGroup = db.mock_model(
+        ObjectGroup = self.db.mock_model(
             model_name='ObjectGroup',
-            db_table='sa_objectgroup',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_objectgroup'
         )
 
         # M2M field 'ManagedObjectSelector.filter_groups'
-        db.create_table(
+        self.db.create_table(
             'sa_managedobjectselector_filter_groups', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False)),
@@ -83,26 +73,14 @@ class Migration(object):
             )
         )
         # Mock Models
-        ManagedObjectSelector = db.mock_model(
+        ManagedObjectSelector = self.db.mock_model(
             model_name='ManagedObjectSelector',
-            db_table='sa_managedobjectselector',
-            db_tablespace='',
-            pk_field_name='id',
-            pk_field_type=models.AutoField
+            db_table='sa_managedobjectselector'
         )
-
-        # M2M field 'ManagedObjectSelector.sources'
-        db.create_table(
+        self.db.create_table(
             'sa_managedobjectselector_sources', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('from_managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False)),
                 ('to_managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False))
             )
         )
-
-        db.send_create_signal('sa', ['ManagedObjectSelector'])
-
-    def backwards(self):
-        db.delete_table('sa_managedobjectselector_filter_groups')
-        db.delete_table('sa_managedobjectselector_sources')
-        db.delete_table('sa_managedobjectselector')

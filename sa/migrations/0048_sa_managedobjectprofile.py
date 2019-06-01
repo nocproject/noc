@@ -1,29 +1,25 @@
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # sa managedobjectprofile
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
-from south.db import db
 from django.db import models
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
+class Migration(BaseMigration):
     depends_on = [("main", "0027_style")]
 
-    def forwards(self):
-        Style = db.mock_model(
+    def migrate(self):
+        Style = self.db.mock_model(
             model_name="Style",
-            db_table="main_style",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_style"
         )
-        db.create_table(
+        self.db.create_table(
             'sa_managedobjectprofile',
             (
                 ('id', models.AutoField(primary_key=True)),
@@ -75,8 +71,3 @@ class Migration(object):
                 ('mac_discovery_max_interval', models.IntegerField("Max. MAC discovery interval", default=86400))
             )
         )
-        db.send_create_signal('sa', ['ManagedObjectProfile'])
-
-    def backwards(self):
-        # Deleting model 'ManagedObjectProfile'
-        db.delete_table('sa_managedobjectprofile')

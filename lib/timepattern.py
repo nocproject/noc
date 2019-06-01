@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Time Patterns DSL compiler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import types
 
 RC = re.compile
 # Day of weeks declarations
@@ -145,8 +144,8 @@ class TimePattern(object):
 
         if tp is None:
             return "True"
-        if type(tp) in (types.ListType, types.TupleType):
-            if len(tp) == 0:
+        if isinstance(tp, (list, tuple)):
+            if not tp:
                 return "True"
             return "(%s)" % (
                 " or ".join([cls.compile_to_python(p) for p in tp])
@@ -158,13 +157,13 @@ class TimePattern(object):
             day_pattern = tp
             time_pattern = ""
         dpl = " or ".join([
-                              compile_pattern(DAY_PATTERNS, x.strip())
-                              for x in day_pattern.split(",") if x
-                              ])
+            compile_pattern(DAY_PATTERNS, x.strip())
+            for x in day_pattern.split(",") if x
+        ])
         tpl = " or ".join([
-                              compile_pattern(TIME_PATTERNS, x.strip())
-                              for x in time_pattern.split(",") if x
-                              ])
+            compile_pattern(TIME_PATTERNS, x.strip())
+            for x in time_pattern.split(",") if x
+        ])
         x = " and ".join(["(%s)" % x for x in [dpl, tpl] if x])
         if not x:
             return "True"
@@ -172,10 +171,10 @@ class TimePattern(object):
             return x
 
 
-#
-# Enclosure for a list of time patterns
-#
 class TimePatternList(object):
+    """
+    Enclosure for a list of time patterns
+    """
     def __init__(self, patterns):
         self.patterns = patterns
 

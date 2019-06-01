@@ -9,7 +9,6 @@
 # Python modules
 import datetime
 import zlib
-import itertools
 import threading
 import operator
 from collections import defaultdict
@@ -544,9 +543,9 @@ class BIAPI(API):
             raise APIError("User have no permission to set permissions")
         access = []
         if acc_limit == "user":
-            access = list(itertools.ifilter(lambda x: x.user, d.access))
+            access = [x for x in d.access if x.user]
         elif acc_limit == "group":
-            access = list(itertools.ifilter(lambda x: x.group, d.access))
+            access = [x for x in d.access if x.group]
         if not items:
             # @todo Clear rights (protect Admin rights?)
             return True

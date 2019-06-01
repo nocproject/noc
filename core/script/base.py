@@ -16,6 +16,7 @@ from threading import Lock
 from functools import reduce
 # Third-party modules
 import six
+from six.moves import zip
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
@@ -1102,7 +1103,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         if offset:
             for _ in range(offset):
                 next(g)
-        return itertools.izip(g, g)
+        return zip(g, g)
 
     def to_reuse_cli_session(self):
         return self.reuse_cli_session

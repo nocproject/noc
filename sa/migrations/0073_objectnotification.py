@@ -5,32 +5,26 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Third-party modules
 from django.db import models
-from south.db import db
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         # Mock Models
-        ManagedObjectSelector = db.mock_model(
+        ManagedObjectSelector = self.db.mock_model(
             model_name="ManagedObjectSelector",
-            db_table="sa_managedobjectselector",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="sa_managedobjectselector"
         )
-        NotificationGroup = db.mock_model(
+        NotificationGroup = self.db.mock_model(
             model_name="NotificationGroup",
-            db_table="main_notificationgroup",
-            db_tablespace="",
-            pk_field_name="id",
-            pk_field_type=models.AutoField
+            db_table="main_notificationgroup"
         )
         # Model "Activator"
-        db.create_table(
+        self.db.create_table(
             "sa_objectnotification",
             (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
@@ -49,7 +43,3 @@ class Migration(object):
                 ("config_policy_violation", models.BooleanField("Config policy violation"))
             )
         )
-        db.send_create_signal("sa", ["ObjectNotification"])
-
-    def backwards(self):
-        db.delete_table("sa_objectnotification")

@@ -21,7 +21,7 @@ class ReportLOC(SimpleReport):
         def ppower(prefix):
             m = int(prefix.split("/")[1])
             if m <= powermask:
-                return long(2 * (powermask - m))
+                return 2 * (powermask - m)
             else:
                 return 0
 

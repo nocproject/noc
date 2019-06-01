@@ -69,7 +69,7 @@ class AttributeIsolator(IsolatorClass):
                  "model": AuthProfile}
     }
 
-    fields = [n.name for n in ManagedObject._meta._fields()]
+    fields = [n.name for n in ManagedObject._meta.fields]
 
     def default(self, num, index):
         return self.f_attribute(num, index)
@@ -85,7 +85,7 @@ class AttributeIsolator(IsolatorClass):
         if "0" in num:
             # Cross link
             num1, num2 = num.split("0", 1)
-            ff2 = [n.name for n in self.OP_ATTR_MAP[num]["model"]._meta._fields()][int(num2)]
+            ff2 = [n.name for n in self.OP_ATTR_MAP[num]["model"]._meta.fields][int(num2)]
             field = "%s__%s" % (self.fields[int(num1)], ff2)
         else:
             field = self.fields[int(num)]

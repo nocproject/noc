@@ -105,7 +105,7 @@ class VCFilter(models.Model):
         s = []
         if isinstance(name, six.string_types):
             name = "\"%s\"" % name.replace("\"", "\"\"")
-        elif type(name) in (int, long):
+        elif isinstance(name, six.integer_types):
             name = "%d" % name
         else:
             raise ValueError("Invalid type for 'name'")

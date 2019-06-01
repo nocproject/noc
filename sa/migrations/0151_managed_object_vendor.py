@@ -8,10 +8,9 @@
 
 # Third-party modules
 import uuid
-from south.db import db
 # NOC modules
+from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
-from noc.lib.nosql import get_db
 
 OLD_VENDOR_MAP = {
     "Alcatel-Lucent": "ALU",
@@ -32,27 +31,28 @@ OLD_VENDOR_MAP = {
 }
 
 
-class Migration(object):
-    def forwards(self):
+class Migration(BaseMigration):
+    def migrate(self):
         #
         # Vendor
         #
 
         # Select vendors
-        vendors = set(r[0] for r in db.execute(
+        vendors = set(r[0] for r in self.db.execute(
             "SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key = 'vendor'"))
-        pcoll = get_db()["noc.vendors"]
+        pcoll = self.mongo_db["noc.vendors"]
         # Update inventory vendors records
         inventory_vendors = {}
         for v in pcoll.find():
-            if "code" in v:
+            if v.get("code"):
                 inventory_vendors[v["code"][0] if isinstance(v["code"], list) else v["code"]] = v["_id"]
                 continue
             if v["name"] in OLD_VENDOR_MAP:
                 vc = OLD_VENDOR_MAP[v["name"]]
             else:
                 vc = v["name"].split(" ")[0]
-            inventory_vendors[vc.upper()] = v["_id"]
+            vc = vc.upper()
+            inventory_vendors[vc] = v["_id"]
             u = uuid.uuid4()
             pcoll.update_one({
                 "_id": v["_id"]
@@ -62,7 +62,6 @@ class Migration(object):
                     "uuid": u
                 }
             })
-
         # Create vendors records
         for v in vendors:
             u = uuid.uuid4()
@@ -85,7 +84,7 @@ class Migration(object):
         for d in pcoll.find({}, {"_id": 1, "code": 1}):
             vmap[d["code"]] = str(d["_id"])
         # Create .vendor field
-        db.add_column(
+        self.db.add_column(
             "sa_managedobject",
             "vendor",
             DocumentReferenceField(
@@ -94,7 +93,7 @@ class Migration(object):
         )
         # Migrate profile data
         for v in vendors:
-            db.execute("""
+            self.db.execute("""
                 UPDATE sa_managedobject
                 SET vendor = %s
                 WHERE
@@ -106,6 +105,3 @@ class Migration(object):
                       AND value = %s
                   )
             """, [vmap[v.upper()], v])
-
-    def backwards(self):
-        pass

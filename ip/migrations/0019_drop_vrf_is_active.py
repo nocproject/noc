@@ -5,16 +5,11 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-# Third-party modules
-from south.db import db
-from django.db import models
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
-class Migration(object):
-    def forwards(self):
-        db.drop_column("ip_vrf", "is_active")
-
-    def backwards(self):
-        db.create_column("ip_vrf", "is_active", models.BooleanField(default=True))
+class Migration(BaseMigration):
+    def migrate(self):
+        self.db.delete_column("ip_vrf", "is_active")

@@ -9,6 +9,7 @@
 # Python modules
 from functools import reduce
 # Third-party modules
+import six
 from mongoengine.fields import StringField, IntField, BooleanField, GeoPointField
 from mongoengine.queryset import Q
 from mongoengine.errors import NotUniqueError
@@ -137,7 +138,7 @@ class DocInline(object):
         assert self.parent_rel
 
     def get_custom_fields(self):
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_Q(self, request, query):
@@ -260,7 +261,11 @@ class DocInline(object):
                         v = str(v.id)
                     else:
                         v = str(v)
-                elif type(v) not in (str, unicode, int, long, bool):
+                elif (
+                    not isinstance(v, six.integer_types) and
+                    not isinstance(v, six.string_types) and
+                    not isinstance(v, bool)
+                ):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
@@ -320,7 +325,7 @@ class DocInline(object):
     def api_create(self, request, parent):
         parent = self.app.get_object_or_404(self.parent_model, id=ObjectId(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json(
                 {
@@ -329,15 +334,6 @@ class DocInline(object):
                     "traceback": str(e)
                 },
                 status=self.app.BAD_REQUEST
-            )
-        except InterfaceTypeError as e:
-            return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                },
-                status=self.BAD_REQUEST
             )
         try:
             # Exclude callable values from query
@@ -394,7 +390,7 @@ class DocInline(object):
     def api_update(self, request, parent, id):
         parent = self.app.get_object_or_404(self.parent_model, id=ObjectId(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
+            attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json(
                 {
