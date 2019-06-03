@@ -18,6 +18,7 @@ class Script(BaseScript):
     name = "Cisco.IOS.get_version"
     cache = True
     interface = IGetVersion
+    always_prefer = "S"
 
     rx_version = re.compile(
         r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali)\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE Software,\s)?"
@@ -30,6 +31,7 @@ class Script(BaseScript):
     rx_platform = re.compile(
         r"^cisco (?P<platform>\S+) \(\S+\) processor( \(revision.+?\))? with",
         re.IGNORECASE | re.MULTILINE)
+    rx_old_platform = re.compile(r"^(?P<platform>\S+) chassis")
     rx_invalid_platforms = re.compile(
         r"IOS[\-\s]XE|EGR|Catalyst( \S+)? L3 Switch|s\d+\S+")
     rx_item = re.compile(
@@ -90,14 +92,26 @@ class Script(BaseScript):
                     # CISCO-ENTITY-MIB::entPhysicalModelName
                     p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1"])
                     # WS-C4500X-32 return '  ', WS-C4900M return 'MIDPLANE'
-                    if p is None or p.strip() in ["", "MIDPLANE"]:
+                    if p is None or p.strip() in ["", "MIDPLANE"] or "\xff" in p:
                         # Found in WS-C4500X-32 and WS-C4900M
                         p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1000"])
+                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1000"])
+                        if p is None:
+                            # Found on C2600 series
+                            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1"])
+                            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
+                    else:
+                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
                     if p:
+                        p = p.strip()  # Cisco 3845 return 'CISCO3845         '
                         if p.startswith("CISCO"):
                             p = p[5:]
                         if p.endswith("-CHASSIS"):
                             p = p[:-8]
+                        # '2651XM chassis, Hw Serial#: 2297211811, Hw Revision: 0x301'
+                        match1 = self.rx_old_platform.search(p)
+                        if match1:
+                            p = match1.group("platform")
                         platform = p
             version = match.group("version")
             # WS-C4500X-32 do not have ',' in version string
@@ -117,61 +131,6 @@ class Script(BaseScript):
                 return r
 
     def execute_cli(self, **kwargs):
-        if self.has_snmp():
-            # Try to find other varians, like this
-            # https://wiki.opennms.org/wiki/Hardware_Inventory_Entity_MIB
-            platform = ""
-            try:
-                v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
-                if v:
-                    s = ""
-                    match = self.rx_snmp_ver.search(v)
-                    platform = match.group("platform")
-                    # inventory
-                    # p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
-                    p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1001"])
-                    if p and (p.startswith("WS-C") or p.startswith("ME-3")):
-                        platform = p
-                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1001"])
-                    else:
-                        # Found in WS-C3650-48TD
-                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1000"])
-                        if p and p.startswith("WS-C"):
-                            platform = p
-                            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1000"])
-                        else:
-                            # CISCO-ENTITY-MIB::entPhysicalModelName
-                            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1"])
-                            # WS-C4500X-32 return '  ', WS-C4900M return 'MIDPLANE'
-                            if p is None or p.strip() in ["", "MIDPLANE"]:
-                                # Found in WS-C4500X-32 and WS-C4900M
-                                p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1000"])
-                            if p:
-                                if p.startswith("CISCO"):
-                                    p = p[5:]
-                                if p.endswith("-CHASSIS"):
-                                    p = p[:-8]
-                                platform = p
-                    version = match.group("version")
-                    # WS-C4500X-32 do not have ',' in version string
-                    n = version.find(" RELEASE SOFTWARE")
-                    if n > 0:
-                        version = version[:n]
-                    if not self.rx_invalid_platforms.search(platform):
-                        r = {
-                            "vendor": "Cisco",
-                            "platform": self.clear_platform(platform),
-                            "version": version,
-                            "image": match.group("image"),
-                        }
-                        if s:
-                            r["attributes"] = {}
-                            r["attributes"]["Serial Number"] = s
-                        return r
-            except self.snmp.TimeOutError:
-                pass
-
-        # Fallback to CLI
         c = ""
         try:
             v = self.cli("show inventory raw")
