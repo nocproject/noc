@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | Transceiver | 1G | SFP LX10",
+    "name": "Qtech | Transceiver | 1G | QSC-SFP40GEW-1310",
     "$collection": "inv.objectmodels",
-    "uuid": "b5deb0b0-75ba-4ba7-afd7-791959f3a62c",
-    "vendor__code": "JUNIPER",
-    "description": "Juniper SFP LX transceiver",
+    "uuid": "593dd7f5-c572-4118-930c-f39642e90abf",
+    "vendor__code": "QTECH",
+    "description": "Qtech SFP, 1310nm, LC, 40km, LX transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,7 +19,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1000BASELX-1310"],
+            "protocols": [">1000BASELX-1550"],
             "type__name": "Optical | LC"
         },
         {
@@ -33,8 +33,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["SFP-LX10"],
-            "part_no": ["740-011614", "740-009029", "740-011783"]
+            "part_no": ["QSCSFP40GEW-LC"]
         }
     }
 }

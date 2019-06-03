@@ -1,9 +1,9 @@
 {
-    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-3-31SC",
+    "name": "Gateray | Transceiver | 10G | GR-SP10-W2740L-D",
     "$collection": "inv.objectmodels",
-    "uuid": "d6f5109c-4e0d-4e03-897d-8f896e007335",
-    "vendor__code": "CARELINK",
-    "description": "CareLink SFP WDM transceiver (1310 tx, 1550 rx) without ddm",
+    "uuid": "6ab63d08-972c-4b7d-ab53-d464e8260e71",
+    "vendor__code": "GATERAY",
+    "description": "GateRay SFP WDM transceiver 40km (1270 tx, 1330 rx) with ddm",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -11,7 +11,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -19,13 +19,13 @@
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "protocols": [">10GBASEER-1330", "<10GBASEER-1270"],
             "type__name": "Optical | SC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["CL-SFP-WDM-3-31S", "CL-SFP-WDM-3-31", "CLSFPWDM331SC"]
+            "part_no": ["GR-SP10-W2740L-D"]
         }
     }
 }

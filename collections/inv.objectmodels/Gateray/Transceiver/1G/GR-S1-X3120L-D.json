@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | Transceiver | 1G | SFP LX10",
+    "name": "Gateray | Transceiver | 1G | GR-S1-X3120L-D",
     "$collection": "inv.objectmodels",
-    "uuid": "b5deb0b0-75ba-4ba7-afd7-791959f3a62c",
-    "vendor__code": "JUNIPER",
-    "description": "Juniper SFP LX transceiver",
+    "uuid": "172bfa8c-03ac-48d3-b61d-2c4bc757a360",
+    "vendor__code": "GATERAY",
+    "description": "Gateray SFP, 1310nm, LC, 20km, LX transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -33,8 +33,7 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["SFP-LX10"],
-            "part_no": ["740-011614", "740-009029", "740-011783"]
+            "part_no": ["GR-S1-X3120L-D"]
         }
     }
 }

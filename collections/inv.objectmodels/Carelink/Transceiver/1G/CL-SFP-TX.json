@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | FCLF852xP2BTL",
+    "name": "Carelink | Transceiver | 1G | CL-SFP-TX",
     "$collection": "inv.objectmodels",
-    "uuid": "c34873ee-58dc-48ab-9090-d871047cb0c6",
-    "vendor__code": "FINISAR",
-    "description": "Finisar SFP TX transceiver",
+    "uuid": "23bee1cc-56ed-4df7-9e54-737fc8965c9b",
+    "vendor__code": "CARELINK",
+    "description": "Carelink SFP TX transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -11,7 +11,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "protocols": ["TransEth1G"],
+            "protocols": ["TransEth100M", "TransEth1G"],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -19,13 +19,13 @@
             "direction": "s",
             "gender": "f",
             "name": "port",
-            "protocols": ["1000BASETX"],
+            "protocols": ["100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["FCLF8520P2BTL", "FCLF8520P2BTL-J1", "FCLF8521P2BTL", "FCLF8521P2BTL-A5", "FCLF-8521-3", "GE-GB-P1RC"]
+            "part_no": ["CLSFPTX-100/1000"]
         }
     }
 }

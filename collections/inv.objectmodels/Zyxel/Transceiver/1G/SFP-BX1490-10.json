@@ -1,9 +1,9 @@
 {
-    "name": "MlaxLink | Transceiver | 1G | ML-30RLC",
+    "name": "Zyxel | Transceiver | 1G | SFP-BX1490-10",
     "$collection": "inv.objectmodels",
-    "uuid": "5803fd59-26ee-4ec4-90f6-fae4f9ed891a",
-    "vendor__code": "MLAXLINK",
-    "description": "MlaxLink SFP WDM transceiver, 1550 tx, 1310 rx, LC, 20km without dom",
+    "uuid": "278dc6c1-13b0-4ffd-9c66-8bf25427a82c",
+    "vendor__code": "ZYXEL",
+    "description": "Zyxel SFP BX-U 10km transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,17 +15,17 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RxTx LC Port",
+            "description": "TX/RX LC",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "name": "txrx",
+            "protocols": ["<1000BASELX-1490", ">1000BASELX-1310"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["ML-30RLC", "ML-30R"]
+            "part_no": ["SFP-BX1490-10"]
         }
     }
 }

@@ -1,7 +1,7 @@
 {
-    "name": "Finisar | Transceiver | 10G | FTLX8571D3BCL-C2",
+    "name": "Finisar | Transceiver | 10G | FTLX8574D3BCL-C3",
     "$collection": "inv.objectmodels",
-    "uuid": "496fae23-e37d-45d4-86ab-a3f66c32084b",
+    "uuid": "951b7cd7-8358-404b-b016-2a3fd33117c0",
     "vendor__code": "FINISAR",
     "description": "10GBASE-SR  850nm MMF / 300m SFP+ transceiver",
     "cr_context": "XCVR",
@@ -33,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLX8571D3BCL-C2", "FTLX8571D3BCL-J1"]
+            "part_no": ["FTLX8574D3BCL-C3"]
         }
     }
 }
