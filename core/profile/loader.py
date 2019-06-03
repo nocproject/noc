@@ -63,6 +63,8 @@ class ProfileLoader(BaseLoader):
                                         "__init__.py should be moved to profile.py", name)
                                 profile.initialize()
                                 break
+                        if profile:
+                            break
                 self.profiles[name] = profile
             return profile
 
