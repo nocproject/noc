@@ -2,15 +2,16 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
 from noc.lib.validators import is_ipv4, is_ipv6
-import re
 
 
 class Script(BaseScript):
@@ -22,8 +23,7 @@ class Script(BaseScript):
     rx_result2 = re.compile(
         r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss")
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+    def execute_cli(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         if is_ipv4(address):
             cmd = "ping ip %s" % address
         elif is_ipv6(address):
