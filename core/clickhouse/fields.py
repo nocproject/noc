@@ -12,6 +12,8 @@ import itertools
 from functools import partial
 import socket
 import struct
+# NOC modules
+from noc.config import config
 
 
 class BaseField(object):
@@ -22,7 +24,7 @@ class BaseField(object):
     db_type = None
     default_value = ""
 
-    def __init__(self, default=None, description=None):
+    def __init__(self, default=None, description=None, low_cardinality=False):
         """
 
         :param default: Default field value (if value not set)
@@ -33,6 +35,7 @@ class BaseField(object):
         self.default = default or self.default_value
         self.description = description
         self.is_agg = False
+        self.low_cardinality = config.clickhouse.enable_low_cardinality and low_cardinality
 
     def contribute_to_class(self, cls, name):
         """
@@ -61,6 +64,8 @@ class BaseField(object):
         Return Field type. Use it in create query
         :return:
         """
+        if self.low_cardinality:
+            return "LowCardinality(%s)" % self.db_type
         return self.db_type
 
     def get_displayed_type(self):
@@ -249,16 +254,19 @@ class ReferenceField(BaseField):
     default_value = 0
     SELF_REFERENCE = "self"
 
-    def __init__(self, dict_type, description=None, model=None):
-        super(ReferenceField, self).__init__()
+    def __init__(self, dict_type, description=None, model=None, low_cardinality=False):
+        super(ReferenceField, self).__init__(description=description, low_cardinality=low_cardinality)
         self.is_self_reference = dict_type == self.SELF_REFERENCE
         self.dict_type = dict_type
-        self.description = description
         self.model = model
+        if self.low_cardinality:
+            self.db_type = "String"
 
     def to_tsv(self, value):
         if value is None:
             return str(self.default_value)
+        elif self.low_cardinality:
+            return str(value)
         else:
             return str(value.bi_id)
 
