@@ -279,7 +279,7 @@ class ProfileChecker(object):
                 "activator",
                 pool=self.pool,
                 calling_service=self.calling_service
-            ).http_get(url, ignore_errors=True)
+            ).http_get(url, True)
         except RPCError as e:
             self.logger.error("RPC Error: %s", e)
             return None
