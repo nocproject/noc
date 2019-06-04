@@ -155,11 +155,11 @@ class ActivatorAPI(API):
 
     @api
     @tornado.gen.coroutine
-    def http_get(self, url, ingnore_errors=False):
+    def http_get(self, url, ignore_errors=False):
         """
         Perform HTTP/HTTPS get and return result
         :param url: Request URL
-        :param ingnore_errors:
+        :param ignore_errors: Ignore response error and return header and body
         :returns" Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
@@ -172,7 +172,7 @@ class ActivatorAPI(API):
         )
         if 200 <= code <= 299:
             raise tornado.gen.Return(body)
-        elif ingnore_errors:
+        elif ignore_errors:
             metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             raise tornado.gen.Return(str(header) + str(body))
