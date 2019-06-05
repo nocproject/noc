@@ -97,6 +97,10 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                     "subinterfaces": []
                 }
+                if "mac-address" in r:
+                    ifaces[r["name"]]["mac"] = r["mac-address"]
+                if "mac" in r:
+                    ifaces[r["name"]]["mac"] = r["mac"]
                 misc[r["name"]] = {"type": r["type"]}
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
@@ -122,10 +126,6 @@ class Script(BaseScript):
                         self.get_tunnel("GRE", "R", "IPv4", ifaces)
                     ifaces[r["name"]]["subinterfaces"] += [self.si]
         time.sleep(1)
-        # Refine ethernet parameters
-        for n, f, r in self.cli_detail("/interface ethernet print detail without-paging", cached=True):
-            iface = ifaces[r["name"]]
-            ifaces[r["name"]]["mac"] = r["mac-address"]
         # Attach `vlan` subinterfaces to parent
         for n, f, r in self.cli_detail("/interface vlan print detail without-paging"):
             if r["interface"] in ifaces:
