@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -19,20 +19,18 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_version_HP = re.compile(
-        r"^Comware Software, Version (?P<version>.+)$", re.MULTILINE)
-    rx_platform_HP = re.compile(
-        r"^HP (?P<platform>.*?) Switch", re.MULTILINE)
-    rx_devinfo = re.compile(
-        r"^Slot 1:\nDEVICE_NAME\s+:\s+(?P<platform>\S+)\s+.+?\n"
-        r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\n")
+    rx_version_HP = re.compile(r"^Comware Software, Version (?P<version>.+)$", re.MULTILINE)
+    rx_platform_HP = re.compile(r"^HP.*?\s(?P<platform>[A-Z,0-9a-z\-]+).*?.*?(Switch|uptime)", re.MULTILINE)
+    rx_devinfo = re.compile(r"^Slot 1:\nDEVICE_NAME\s+:\s+(?P<platform>[A-Z,0-9a-z\-]+)\s+.+?\n"
+                            r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\n")
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         platform = "Comware"
         version = "Unknown"
 
         v = self.cli("display version")
         match = self.rx_version_HP.search(v)
+        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.37"]) if self.has_snmp() else None
         if match:
             version = match.group("version")
         match = self.rx_platform_HP.search(v)
@@ -44,11 +42,19 @@ class Script(BaseScript):
                 match = self.rx_devinfo.search(v)
                 if match:
                     platform = match.group("platform")
-            except:
+                    s = match.group("serial")
+            except Exception:
                 pass
-
-        return {
+        r = {
             "vendor": "HP",
             "platform": platform,
-            "version": version
+            "version": version,
+            "attributes": {}
         }
+        if s:
+            r["attributes"]["Serial Number"] = s
+        else:
+            s1 = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"]) if self.has_snmp() else None
+            if s1:
+                r["attributes"]["Serial Number"] = s1
+        return r
