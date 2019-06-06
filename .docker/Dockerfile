@@ -19,6 +19,7 @@ RUN apk add --update --no-cache \
     py-pip \
     snappy \
     tzdata \
+    libmemcached \
     curl \
    && apk add --no-cache --virtual .build-deps \
         cyrus-sasl-dev \
