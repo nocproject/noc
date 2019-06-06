@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from mongoengine.fields import (
 import cachetools
 # NOC modules
 from .maintenancetype import MaintenanceType
+from mongoengine.errors import ValidationError
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
 from noc.lib.nosql import ForeignKeyField
@@ -83,6 +84,18 @@ class Maintenance(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Maintenance.objects.filter(id=id).first()
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        if self.direct_objects:
+            if any(o_elem.object is None for o_elem in self.direct_objects):
+                raise ValidationError("Object line is Empty")
+        if self.direct_segments:
+            for elem in self.direct_segments:
+                try:
+                    elem.segment = elem.segment
+                except Exception:
+                    raise ValidationError("Segment line is Empty")
+        super(Maintenance, self).save(force_insert, force_update)
 
     def on_save(self):
         self.update_affected_objects()
@@ -148,7 +161,7 @@ class Maintenance(Document):
             return so
 
         # Calculate affected objects
-        affected = set(o.object.id for o in self.direct_objects)
+        affected = set(o.object.id for o in self.direct_objects if o.object)
         for o in self.direct_segments:
             if o.segment:
                 affected |= get_segment_objects(o.segment)
