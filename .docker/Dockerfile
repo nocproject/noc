@@ -19,6 +19,7 @@ RUN apk add --update --no-cache \
     py-pip \
     snappy \
     tzdata \
+    libmemcached \
     curl \
    && apk add --no-cache --virtual .build-deps \
         cyrus-sasl-dev \
@@ -39,7 +40,8 @@ RUN apk add --update --no-cache \
     && python ./scripts/deploy/install-packages requirements/bi.json \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python -m py_compile \
     && /usr/bin/cythonize -i speedup/*.pyx \
-    && apk del -r .build-deps
+    && apk del -r .build-deps \
+    && adduser -h /opt/noc -s /bin/sh -S -D -H -u 1200
 
 
 EXPOSE 1200
