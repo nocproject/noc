@@ -40,7 +40,7 @@
              </attribute>
              <attribute>
                  <name>in_speed</name>
-                 <type>UInt32</type>
+                 <type>UInt64</type>
                  <null_value>Unknown</null_value>
                  <hierarchical>false</hierarchical>
              </attribute>
