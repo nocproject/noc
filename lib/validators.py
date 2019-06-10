@@ -7,6 +7,8 @@
 # ---------------------------------------------------------------------
 import re
 import uuid
+import struct
+import socket
 try:
     from django.forms import ValidationError
 # pragma: no cover
@@ -108,12 +110,14 @@ def is_ipv4(v):
     False
     >>> is_ipv4("192.168.a.250")
     False
+    >>> is_ipv4("11.24.0.09")
+    False
     """
     X = v.split(".")
     if len(X) != 4:
         return False
     try:
-        return len([x for x in X if 0 <= int(x) <= 255]) == 4
+        return len([x for x in X if 0 <= int(x) <= 255]) == 4 and bool(socket.inet_aton(v))
     except Exception:
         return False
 
