@@ -133,6 +133,8 @@ class Config(BaseConfig):
             "deflate",
             "gzip"
         ])
+        # Enable LowCardinality fileds
+        enable_low_cardinality = BooleanParameter(default=False)
         # Cluster name for sharded/replicated configuration
         # Matches appropriative <remote_servers> part
         cluster = StringParameter()
