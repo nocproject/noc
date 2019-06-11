@@ -1,7 +1,0 @@
-*~
-.*
-!.gitignore
-!.gitlab-ci.yml
-build/
-src/en/src
-
