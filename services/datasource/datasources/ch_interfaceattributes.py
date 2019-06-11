@@ -32,6 +32,7 @@ class CHInterfaceAttributesDataSource(BaseDataSource):
                 iface["name"],
                 iface.get("description", ""),
                 iface_prof[iface["profile"]][0],
-                iface.get("in_speed", 0) * 1000,  # iface speed in kbit/s convert to bit/s
+                abs(iface.get("in_speed", 0)) * 1000,  # iface speed in kbit/s convert to bit/s,
+                                                       # some vendors set speed -1 for iface down
                 iface_prof[iface["profile"]][1]
             )
