@@ -6,7 +6,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python collections
+# Python modules
+from ast import literal_eval
 from datetime import datetime
 import itertools
 from functools import partial
@@ -322,9 +323,8 @@ class AggregatedField(BaseField):
 class NestedField(ArrayField):
     db_type = "Nested"
 
-    def __init__(self, field_type, description=None, index_field=None, *args):
+    def __init__(self, field_type, description=None, *args):
         super(NestedField, self).__init__(field_type=field_type, description=description)
-        self.index_field = index_field
         # Skip field counters for nested fields
         for n in self.field_type._fields:
             next(self.FIELD_NUMBER)
@@ -372,23 +372,14 @@ class NestedField(ArrayField):
         return "`%s` Array(%s)" % (name, type)
 
     def to_python(self, value):
-        if value is None or not value or not self.index_field:
+        if not value or value == '[]':
             return []
-        if not hasattr(self, "_map_fields"):
-            self._map_fields = self.field_type._fields_order[::]
-            self._map_fields.remove(self.index_field)
-            self._map_fields += [self.index_field]
-        return [{
-            k: self.field_type._fields[k].to_python(v.strip("'"))
-            for k, v in set(zip(self._map_fields, v.split(":")))
-        } for v in value.split(",")]
+        value = literal_eval(value)
+        return [{k: self.field_type._fields[k].to_python(v.strip("'")) for k, v in
+                dict(zip(self.field_type._fields_order, v)).iteritems()} for v in value]
 
     def get_select_sql(self):
-        if not self.index_field:
-            raise BaseException("Index field not defined")
-        splitter = ",':',"
-        index_field = "%s.%s" % (self.name, self.index_field)
-        m = ["toString(%s.%s[indexOf(%s, x)])" % (self.name, x, index_field)
-             for x in self.field_type._fields_order if x != self.index_field]
-        r = ["arrayStringConcat(arrayMap(x -> concat(", splitter.join(m), ", ':', toString(x)), %s),',')" % index_field]
+        m = ["toString(%s.%s[x])" % (self.name, x) for x in self.field_type._fields_order]
+        r = ["arrayMap(x -> [%s], arrayEnumerate(%s.%s))" % (
+            ",".join(m), self.name, self.field_type._fields_order[0])]
         return "".join(r)
