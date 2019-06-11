@@ -66,6 +66,10 @@ Ext.define("NOC.inv.objectmodel.Model", {
         {
             name: "plugins",
             type: "auto"
+        },
+        {
+            name: "tags",
+            type: "auto"
         }
     ]
 });

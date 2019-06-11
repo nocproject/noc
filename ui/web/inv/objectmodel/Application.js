@@ -94,6 +94,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1
+                },
+                {
+                    text: __("Tags"),
+                    dataIndex: "tags",
+                    width: 100,
+                    renderer: NOC.render.Tags
                 }
             ],
             fields: [
@@ -226,6 +232,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         scope: me,
                         clone: me.onCloneConnection
                     }
+                },
+                {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Tags"),
+                    allowBlank: true
                 }
             ],
             formToolbar: [
