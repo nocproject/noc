@@ -21,9 +21,8 @@ else:
 
 class MetricsHandler(tornado.web.RequestHandler):
     """
-    Prometheus compatible metrics
+    Prometheus compatible metrics endpoint
     """
-
     def initialize(self, service):
         self.service = service
 
@@ -53,9 +52,13 @@ class MetricsHandler(tornado.web.RequestHandler):
                 for k in key[1:]:
                     local_labels.update({k[0]: k[1]})
             local_labels.update(labels)
-            out_labels = ",".join(['%s="%s"' % (i.lower(), local_labels[i]) for i in local_labels])
-            cleared_name = str(metric_name).translate(TR)
-            out += ["# TYPE %s untyped" % cleared_name.lower()]
-            out += ["%s{%s} %s" % (cleared_name.lower(), out_labels, mdata[key])]
+            cleared_name = str(metric_name).translate(TR).lower()
+            value = mdata[key]
+            if hasattr(value, "iter_prom_metrics"):
+                out += list(value.iter_prom_metrics(cleared_name, local_labels))
+            else:
+                out_labels = ",".join(['%s="%s"' % (i.lower(), local_labels[i]) for i in local_labels])
+                out += ["# TYPE %s untyped" % cleared_name]
+                out += ["%s{%s} %s" % (cleared_name, out_labels, value)]
         self.add_header("Content-Type", "text/plain; version=0.0.4")
         self.write("\n".join(out) + "\n")

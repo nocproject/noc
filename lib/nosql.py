@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MongoDB wrappers
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,28 +24,37 @@ from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 
-# Connect to the database
-RETRIES = config.mongo.retries
-TIMEOUT = config.mongo.timeout
 
-ca = config.mongo_connection_args.copy()
-if ca.get("password"):
-    ca["host"] = ca["host"].replace(":%s@" % ca["password"], ":********@")
-    ca["password"] = "********"
-for i in range(RETRIES):
-    try:
-        logger.info("Connecting to MongoDB %s", ca)
-        connect_args = config.mongo_connection_args
-        connect(**connect_args)
-        break
-    except mongoengine.connection.MongoEngineConnectionError as e:
-        logger.error("Cannot connect to mongodb: %s", e)
-        if i < RETRIES - 1:
-            logger.error("Waiting %d seconds", TIMEOUT)
-            time.sleep(TIMEOUT)
-        else:
-            logger.error("Cannot connect %d times. Exiting", RETRIES)
-            sys.exit(1)
+def auto_connect():
+    """
+    Connect to the mongo database
+    :return:
+    """
+    retries = config.mongo.retries
+    timeout = config.mongo.timeout
+
+    ca = config.mongo_connection_args.copy()
+    if ca.get("password"):
+        ca["host"] = ca["host"].replace(":%s@" % ca["password"], ":********@")
+        ca["password"] = "********"
+    for i in range(retries):
+        try:
+            logger.info("Connecting to MongoDB %s", ca)
+            connect_args = config.mongo_connection_args
+            connect(**connect_args)
+            break
+        except mongoengine.connection.MongoEngineConnectionError as e:
+            logger.error("Cannot connect to mongodb: %s", e)
+            if i < retries - 1:
+                logger.error("Waiting %d seconds", timeout)
+                time.sleep(timeout)
+            else:
+                logger.error("Cannot connect %d times. Exiting", retries)
+                sys.exit(1)
+
+
+# Legacy-behavior autoconnect
+auto_connect()
 
 # Shortcut to ObjectId
 try:

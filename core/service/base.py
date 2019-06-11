@@ -32,6 +32,7 @@ from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from noc.core.debug import excepthook, error_report, ErrorReport
 from noc.core.log import ErrorFormatter
 from noc.core.perf import metrics, apply_metrics
+from noc.core.hist import apply_hists
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
@@ -652,6 +653,7 @@ class Service(object):
             for x in self.executors:
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
+        apply_hists(r)
         return r
 
     def iter_rpc_retry_timeout(self):
