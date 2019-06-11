@@ -2,8 +2,10 @@
 stages:
   - lint
   - test
+  - Build docs
   - Build release container
   - Build additional release containers
+  - Upload docs
 
 flake8:
   stage: lint
@@ -194,6 +196,20 @@ Test python 3:
   allow_failure: true
   when: manual
 
+Build docs:
+  stage: Build docs
+  image: registry.getnoc.com/infrastructure/docs:master
+  script:
+    - cd docs/
+    - sphinx-build -a -E -b html src/en ../build/docs/en
+    - python ./scripts/build-go.py ../build/docs/en/objects.inv
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/docs/en
+    expire_in: 1 day
+
 Build release image:
   stage: Build release container
   before_script:
@@ -248,3 +264,15 @@ Build dev image:
     - shell
   only:
     - tags
+
+upload:
+  stage: Upload docs
+  image: registry.getnoc.com/infrastructure/s3helper:master
+  script:
+    - /tmp/mc -q cp -r build/docs/* cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG
+  tags:
+    - docker
+  only:
+    refs:
+      - master
+      - /^release-\d+\.\d+/
