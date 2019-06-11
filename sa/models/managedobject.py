@@ -1067,11 +1067,11 @@ class ManagedObject(Model):
                 handler = handler.get_handler()
                 data = handler(self, data)
             elif handler and not handler.allow_config_filter:
-                self.logger.warning("Handler is not allowed for config filter")
+                logger.warning("Handler is not allowed for config filter")
             else:
-                self.logger.info(
+                logger.info(
                     "[%s] Invalid config_filter_handler \"%s\", ignoring",
-                    self.config_filter_handler
+                    self.name, self.config_filter_handler
                 )
         # Pass data through config filter, if given
         if self.config_diff_filter_handler:
@@ -1080,11 +1080,11 @@ class ManagedObject(Model):
                 handler = handler.get_handler()
                 data = handler(self, data)
             elif handler and not handler.allow_config_diff_filter:
-                self.logger.warning("Handler is not allowed for config diff filter")
+                logger.warning("Handler is not allowed for config diff filter")
             else:
-                self.logger.info(
+                logger.info(
                     "[%s] Invalid config_diff_filter_handler \"%s\", ignoring",
-                    self.config_diff_filter_handler
+                    self.name, self.config_diff_filter_handler
                 )
         # Pass data through the validation filter, if given
         # @todo: Replace with config validation policy
@@ -1103,11 +1103,11 @@ class ManagedObject(Model):
                         }
                     )
             elif handler and not handler.allow_config_validation:
-                self.logger.warning("Handler is not allowed for config validation")
+                logger.warning("Handler is not allowed for config validation")
             else:
-                self.logger.info(
+                logger.info(
                     "[%s] Invalid config_validation_handler \"%s\", ignoring",
-                    self.config_validation_handler
+                    self.name, self.config_validation_handler
                 )
         # Calculate diff
         old_data = self.config.read()
@@ -1680,7 +1680,7 @@ class ManagedObject(Model):
             if handler and handler.allow_resolver:
                 return handler.get_handler()(fqdn)
             elif handler and not handler.allow_resolver:
-                self.logger.warning("Handler is not allowed for resolver")
+                logger.warning("Handler is not allowed for resolver")
                 return None
         import socket
         try:
