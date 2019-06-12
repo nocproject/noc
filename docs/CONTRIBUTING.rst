@@ -22,6 +22,6 @@ processes and practices for the NOC Documentation:
 Do not hesitate to open a ticket in our `GitLab`_ project
 or to contact the `documentation team`_ if you have any questions.
 
-.. _`GitLab`: https://code.getnoc.com/noc/docs
+.. _`GitLab`: https://code.getnoc.com/noc/noc
 .. _`documentation team`: http://t.me/nocdocs
 

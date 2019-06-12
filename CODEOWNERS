@@ -46,6 +46,10 @@ models/ @dv @aversant
 # Services
 /services/ @dv @aversant
 
+# Documentation
+/docs/ @dv
+/docs/src/en/ @dv
+
 # Codeowners itself
 CODEOWNERS @dv
 
