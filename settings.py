@@ -155,8 +155,8 @@ AUTH_USER_MODEL = "aaa.User"
 AUTH_PROFILE_MODULE = "main.UserProfile"
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
-# Set up by test runner
-TEST_FIXED_BEEF_BASE = None
+# Suppress deperecation warning. We don't use django's testing framework
+TEST_RUNNER = None
 
 # Disable SQL statement logging
 logging.getLogger("django.db.backends").setLevel(logging.ERROR)

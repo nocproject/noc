@@ -45,22 +45,22 @@ class MigrationRunner(object):
 
     def syncdb(self):
         """
-        Django syncdb call
+        Django syncdb/migrate call
         :return:
         """
-        self.logger.info("Syncdb")
-        from django.conf import settings
-        apps = settings.INSTALLED_APPS
-        # Leave only django's applications and noc.aaa (for User model)
-        settings.INSTALLED_APPS = [
-            x for x in settings.INSTALLED_APPS
-            if not x.startswith("noc.") or x == "noc.aaa"]
+        self.logger.info("Django migrations")
+        from django.apps import apps
+        # Leave only django's applications
+        apps.set_available_apps([
+            app.name for app in apps.get_app_configs()
+            if not app.name.startswith("noc.") or app.name == "noc.aaa"]
+        )
         # Run django's syncdb
-        from django.core.management.commands.syncdb import Command
+        from django.core.management.commands.migrate import Command
         try:
             Command().execute(interactive=False, load_initial_data=False, verbosity="1", database="default")
         finally:
-            settings.INSTALLED_APPS = apps
+            apps.unset_available_apps()
 
     def get_history(self):
         """
