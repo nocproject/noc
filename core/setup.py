@@ -10,4 +10,5 @@
 def setup():
     from django.conf import settings
     from django.apps import apps
-    apps.populate([x for x in settings.INSTALLED_APPS if not x.startswith("noc.")])
+    # apps.populate([x for x in settings.INSTALLED_APPS if not x.startswith("noc.")])
+    apps.populate(settings.INSTALLED_APPS)
