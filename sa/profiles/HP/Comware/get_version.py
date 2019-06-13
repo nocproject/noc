@@ -51,10 +51,10 @@ class Script(BaseScript):
             "version": version,
             "attributes": {}
         }
+        if not s and self.has_snmp():
+            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
+            if not s:
+                s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.2"])
         if s:
             r["attributes"]["Serial Number"] = s
-        else:
-            s1 = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"]) if self.has_snmp() else None
-            if s1:
-                r["attributes"]["Serial Number"] = s1
         return r
