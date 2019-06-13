@@ -1,0 +1,8 @@
+{
+    "name": "Polygon",
+    "uuid": "d09b4284-b8ce-4506-8ce2-68055492cbc1",
+    "full_name": "НПП «Полигон»",
+    "code": ["POLYGON"],
+    "site": "https://plgn.ru/",
+    "$collection": "inv.vendors"
+}
