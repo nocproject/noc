@@ -21,6 +21,7 @@ Ext.define("NOC.core.ModelApplication", {
     search: false,
     searchPlaceholder: undefined,
     searchTooltip: undefined,
+    recordReload: false,
     filters: null,
     gridToolbar: [],  // Additional grid toolbar buttons
     formToolbar: [],  // Additional form toolbar buttons
@@ -787,7 +788,22 @@ Ext.define("NOC.core.ModelApplication", {
         // Check permissions
         if(!me.hasPermission("read") && !me.hasPermission("update"))
             return;
-        me.editRecord(record);
+        if(me.recordReload) {
+            Ext.Ajax.request({
+                url: me.base_url + record.get(me.idField) + "/",
+                method: "GET",
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    me.editRecord(Ext.create(this.model, data));
+                },
+                failure: function() {
+                    NOC.error(__("Record reload error."));
+                }
+            });
+        } else {
+            me.editRecord(record);
+        }
     },
     // New record. Hide grid and open form
     newRecord: function(defaults) {

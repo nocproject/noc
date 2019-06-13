@@ -6,66 +6,93 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import threading
 # Third-party modules
-from django import forms
+from django.http import HttpResponse
 from django.contrib.auth.models import Group
-from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 # NOC modules
-from noc.lib.app.modelapplication import ModelApplication, view
-from noc.services.web.apps.main.user.widgets import AccessWidget
+from noc.lib.app.site import site
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models.permission import Permission
-from noc.core.translation import ugettext as _
+from noc.core.cache.decorator import cachedmethod
+
+apps_lock = threading.RLock()
 
 
-class GroupChangeForm(forms.ModelForm):
-    noc_group_permissions = forms.CharField(
-        label="Group Access",
-        widget=AccessWidget, required=False
-    )
+class GroupsApplication(ExtModelApplication):
+    """
+    Group application
+    """
 
-    class Meta(object):
-        model = Group
-
-    def __init__(self, *args, **kwargs):
-        super(GroupChangeForm, self).__init__(*args, **kwargs)
-        if "instance" in kwargs:
-            self.initial["noc_group_permissions"] = "group:%s" % self.initial["name"]
-        self.new_perms = set()
-        if args:
-            # Fetch posted permissions
-            self.new_perms = {p[5:] for p in args[0] if p.startswith("perm_")}
-
-    def save(self, commit=True):
-        model = super(GroupChangeForm, self).save(commit)
-        if not model.id:
-            model.save()
-        Permission.set_group_permissions(model, self.new_perms)
-        return model
-
-
-class GroupAdmin(admin.ModelAdmin):
-    fieldsets = (
-        (None, {"fields": ("name",)}),
-        (_("Access"), {"fields": ("noc_group_permissions",), "classes": ["collapse"]}),
-    )
-    search_fields = ("name",)
-    ordering = ("name",)
-    list_display = ("name",)
-    form = GroupChangeForm
-
-
-class GroupApplication(ModelApplication):
-    model = Group
-    model_admin = GroupAdmin
+    title = _("Groups")
     menu = [_("Setup"), _("Groups")]
     glyph = "users"
-    title = _("Groups")
-    app_alias = "auth"
+    model = Group
+    query_condition = "icontains"
+    query_fields = ["name"]
+    default_ordering = ["name"]
 
-    @view(url=r"^add/legacy/$", url_name="admin:auth_group_add", access="add")
-    def view_legacy_add(self, request, form_url="", extra_context=None):
-        return self.response_redirect("..")
+    @classmethod
+    @cachedmethod(
+        key="apps_permissions_list",
+        lock=lambda _: apps_lock
+    )
+    def apps_permissions_list(cls):
+        r = []
+        apps = site.apps.keys()
+        perms = Permission.objects.values_list("name", flat=True)
+        for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
+            mod = module[4:]
+            m = __import__("noc.services.web.apps.%s" % mod, {}, {}, "MODULE_NAME")
+            for app in [app for app in apps if app.startswith(mod + ".")]:
+                app_perms = sorted([p for p in perms if p.startswith(app.replace(".", ":") + ":")])
+                a = site.apps[app]
+                if app_perms:
+                    for p in app_perms:
+                        r += [{
+                            "module": m.MODULE_NAME, "title": str(a.title),
+                            "name": p, "status": False}]
+        return r
 
-    @view(url=r"^legacy/$", url_name="admin:auth_group_changelist", access=True)
-    def view_legacy_changelist(self, request, form_url="", extra_context=None):
-        return self.response_redirect("..")
+    @view(method=["GET"], url=r"^(?P<id>\d+)/?$", access="read", api=True)
+    def api_read(self, request, id):
+        """
+        Returns dict with object's fields and values
+        """
+        try:
+            o = self.queryset(request).get(**{self.pk: int(id)})
+        except self.model.DoesNotExist:
+            return HttpResponse("", status=self.NOT_FOUND)
+        only = request.GET.get(self.only_param)
+        if only:
+            only = only.split(",")
+        return self.response(self.instance_to_dict_get(o, fields=only),
+                             status=self.OK)
+
+    def instance_to_dict_get(self, o, fields=None):
+        r = super(GroupsApplication, self).instance_to_dict(o, fields)
+        r["permissions"] = self.apps_permissions_list()
+        current_perms = Permission.get_group_permissions(o)
+        if current_perms:
+            for p in r["permissions"]:
+                if p["name"] in current_perms:
+                    p["status"] = True
+        return r
+
+    def update_m2m(self, o, name, values):
+        if values is None:
+            return  # Do not touch
+        if name == "permissions":
+            Permission.set_group_permissions(group=o, perms=values)
+        else:
+            super(GroupsApplication, self).update_m2m(o, name, values)
+
+    @view(method=["GET"], url=r"^new_permissions/$", access="read", api=True)
+    def api_read_permission(self, request):
+        """
+        Returns dict available permissions
+        """
+        return self.response({"data": {"permissions": self.apps_permissions_list()}},
+                             status=self.OK)

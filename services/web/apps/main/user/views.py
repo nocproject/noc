@@ -8,114 +8,131 @@
 
 # Python modules
 from __future__ import absolute_import
+import re
 # Third-party modules
-from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.shortcuts import get_object_or_404
+from django.conf import settings
+from django.http import HttpResponse
 # NOC modules
-from noc.lib.app.modelapplication import ModelApplication, view
+from noc.lib.app.site import site
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models.permission import Permission
+from noc.sa.interfaces.base import StringParameter
 from noc.core.translation import ugettext as _
-from .widgets import AccessWidget
 
 
-class UserChangeForm(forms.ModelForm):
-    username = forms.RegexField(
-        label=_("Username"), max_length=75, regex=r"^[\w.@+-]+$",
-        help_text=_("Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"),
-        error_message=_("This value must contain only letters, digits and @/./+/-/_.")
-    )
-    password = ReadOnlyPasswordHashField(
-        label=_("Password"),
-        help_text=_("Raw passwords are not stored, so there is no way to see "
-                    "this user's password, but you can change the password "
-                    "using <a href=\"password/\">this form</a>.")
-    )
-    noc_user_permissions = forms.CharField(label="User Access", widget=AccessWidget, required=False)
+class UsernameParameter(StringParameter):
+    user_validate = re.compile(r"^[\w.@+-]+$")
 
-    class Meta:
-        model = User
-
-    def __init__(self, *args, **kwargs):
-        super(UserChangeForm, self).__init__(*args, **kwargs)
-        if "instance" in kwargs:
-            self.initial["noc_user_permissions"] = "user:" + self.initial["username"]
-        self.new_perms = set()
-        if args:
-            self.new_perms = {p[5:] for p in args[0] if p.startswith("perm_")}
-
-    def clean_password(self):
-        return self.initial["password"]
-
-    def save(self, commit=True):
-        model = super(UserChangeForm, self).save(commit)
-        model.is_staff = True
-        # if not model.id:
-        model.save()
-        Permission.set_user_permissions(model, self.new_perms)
-        return model
+    def clean(self, value):
+        r = super(UsernameParameter, self).clean(value)
+        match = self.user_validate.match(value)
+        if not match:
+            raise self.raise_error(value, msg="This value must contain only letters, digits and @/./+/-/_.")
+        return r
 
 
-class UserAdmin(DjangoUserAdmin):
-    fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (_('User category'), {'fields': ('is_active', 'is_superuser')}),
-        (_('Groups'), {'fields': ('groups',)}),
-        (_('Access'), {'fields': ('noc_user_permissions',), "classes": ["collapse"]}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-    )
-    list_display = ('username', 'email', 'first_name', 'last_name', "is_active", "is_superuser")
-    list_filter = ('is_superuser', 'is_active')
-    filter_horizontal = ("groups",)
-    form = UserChangeForm
-
-
-class UserApplication(ModelApplication):
+class UserApplication(ExtModelApplication):
     model = User
-    model_admin = UserAdmin
+
     glyph = "user"
     menu = [_("Setup"), _("Users")]
     icon = "icon_user"
     title = _("Users")
     app_alias = "auth"
+    query_condition = "icontains"
+    query_fields = ["username"]
+    default_ordering = ["username"]
 
-    @view(url=r"^(\d+)/password/$", method=["GET", "POST"], access="change")
-    def view_change_password(self, request, object_id):
+    clean_fields = {"username": UsernameParameter()}
+
+    @classmethod
+    def apps_permissions_list(cls):
+        r = []
+        apps = site.apps.keys()
+        perms = Permission.objects.values_list("name", flat=True)
+        for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
+            mod = module[4:]
+            m = __import__("noc.services.web.apps.%s" % mod, {}, {}, "MODULE_NAME")
+            for app in [app for app in apps if app.startswith(mod + ".")]:
+                app_perms = sorted([p for p in perms if p.startswith(app.replace(".", ":") + ":")])
+                a = site.apps[app]
+                if app_perms:
+                    for p in app_perms:
+                        r += [{
+                            "module": m.MODULE_NAME, "title": str(a.title),
+                            "name": p, "status": False}]
+        return r
+
+    @view(method=["GET"], url=r"^(?P<id>\d+)/?$", access="read", api=True)
+    def api_read(self, request, id):
+        """
+        Returns dict with object's fields and values
+        """
+        try:
+            o = self.queryset(request).get(**{self.pk: int(id)})
+        except self.model.DoesNotExist:
+            return HttpResponse("", status=self.NOT_FOUND)
+        only = request.GET.get(self.only_param)
+        if only:
+            only = only.split(",")
+        return self.response(self.instance_to_dict_get(o, fields=only), status=self.OK)
+
+    def instance_to_dict_get(self, o, fields=None):
+        r = super(UserApplication, self).instance_to_dict(o, fields)
+        del r["password"]
+        r["user_permissions"] = self.apps_permissions_list()
+        current_perms = Permission.get_user_permissions(o)
+        if current_perms:
+            for p in r["user_permissions"]:
+                if p["name"] in current_perms:
+                    p["status"] = True
+        return r
+
+    def clean_list_data(self, data):
+        """
+        Finally process list_data result. Override to enrich with
+        additional fields
+        :param data:
+        :return:
+        """
+        r = super(UserApplication, self).apply_bulk_fields(data=data)
+        for x in r:
+            del x["password"]
+        return r
+
+    def update_m2m(self, o, name, values):
+        if values is None:
+            return  # Do not touch
+        if name == "user_permissions":
+            Permission.set_user_permissions(user=o, perms=values)
+        else:
+            super(UserApplication, self).update_m2m(o, name, values)
+
+    @view(method=["GET"], url=r"^new_permissions/$", access="read", api=True)
+    def api_read_permission(self, request):
+        """
+        Returns dict available permissions
+        """
+        return self.response({"data": {"user_permissions": self.apps_permissions_list()}},
+                             status=self.OK)
+
+    @view(url=r"^(\d+)/password/$", method=["POST"], access="change",
+          validate={"password": StringParameter(required=True)})
+    def view_change_password(self, request, object_id, password):
         """
         Change user's password
         :param request:
         :param object_id:
+        :param password:
         :return:
         """
-        if not self.admin.has_change_permission(request):
-            return self.response_fobidden("Permission denied")
-        user = get_object_or_404(self.model, pk=object_id)
-        if request.POST:
-            form = self.admin.change_password_form(user, request.POST)
-            if form.is_valid():
-                form.save()
-                self.message_user(request, "Password changed")
-                return self.response_redirect("main:user:change", object_id)
-        else:
-            form = self.admin.change_password_form(user)
-        return self.render(
-            request, "change_password.html",
-            form=form, original=user
-        )
+        if not request.user.is_superuser:
+            return self.response_forbidden("Permission denied")
+        user = self.get_object_or_404(self.model, pk=object_id)
+        user.set_password(password)
+        return self.response({"result": "Password changed", "status": True}, self.OK)
 
-    def has_delete_permission(self, request, obj=None):
+    def can_delete(self, user, obj=None):
         """Disable 'Delete' button"""
         return False
-
-    @view(url=r"^add/legacy/$", url_name="admin:auth_user_add",
-          access="add")
-    def view_legacy_add(self, request, form_url="", extra_context=None):
-        return self.response_redirect("..")
-
-    @view(url=r"^legacy/$", url_name="admin:auth_user_changelist",
-          access=True)
-    def view_legacy_changelist(self, request, form_url="", extra_context=None):
-        return self.response_redirect("..")
