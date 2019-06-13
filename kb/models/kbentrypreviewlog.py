@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # KBEntryPreviewLog
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.contrib.auth.models import User
 from django.db import models
 # NOC modules
+from noc.aaa.models.user import User
 from noc.kb.models.kbentry import KBEntry
 
 

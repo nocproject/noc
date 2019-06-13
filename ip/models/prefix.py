@@ -14,9 +14,9 @@ from collections import defaultdict
 # Third-party modules
 import six
 from django.db import models, connection
-from django.contrib.auth.models import User
 import cachetools
 # NOC modules
+from noc.aaa.models.user import User
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC

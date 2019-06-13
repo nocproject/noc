@@ -9,7 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 # NOC modules
-from noc.main.models import User
+from noc.aaa.models.user import User
 from noc.core.translation import ugettext as _
 from .base import BaseAuthBackend
 

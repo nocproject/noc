@@ -11,7 +11,7 @@ from __future__ import print_function
 import random
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
-from noc.main.models import User
+from noc.aaa.models.user import User
 from noc.main.models.permission import Permission
 
 

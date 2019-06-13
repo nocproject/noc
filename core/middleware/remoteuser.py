@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # RemoteUser Middleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,9 +11,9 @@ from threading import Lock
 import operator
 # Third-party modules
 from django.utils.functional import SimpleLazyObject
-from django.contrib.auth.models import User
 import cachetools
 # NOC modules
+from noc.aaa.models.user import User
 from noc.core.perf import metrics
 from noc.core.debug import ErrorReport
 

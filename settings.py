@@ -108,6 +108,8 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = [
+    "noc.aaa",
+    #
     "django.contrib.auth",
     "django.contrib.contenttypes",  # Required by django auth
     "django.contrib.sites",
@@ -150,9 +152,8 @@ LOCALE_PATHS = ["locale"]
 
 # SOUTH_AUTO_FREEZE_APP = False
 
+AUTH_USER_MODEL = "aaa.User"
 AUTH_PROFILE_MODULE = "main.UserProfile"
-SKIP_SOUTH_TESTS = True
-SOUTH_TESTS_MIGRATE = True
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
 # Set up by test runner

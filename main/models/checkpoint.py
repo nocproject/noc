@@ -11,7 +11,8 @@ import datetime
 # Third-party modules
 import six
 from django.db import models
-from django.contrib.auth.models import User
+# NOC modules
+from noc.aaa.models.user import User
 
 
 @six.python_2_unicode_compatible

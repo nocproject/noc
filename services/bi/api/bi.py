@@ -17,12 +17,13 @@ import bson
 import ujson
 from mongoengine.queryset import Q
 import cachetools
+from django.contrib.auth.models import Group
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.loader import loader
 from noc.core.clickhouse.dictionary import Dictionary
-from noc.main.models import User, Group
+from noc.aaa.models.user import User
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO

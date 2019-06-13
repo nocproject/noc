@@ -2,14 +2,18 @@
 # ---------------------------------------------------------------------
 # User Access Widget
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Third-party modules
 from django import forms
 from django.conf import settings
 from django.utils.safestring import mark_safe
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+# NOC modules
 from noc.lib.app.site import site
+from noc.aaa.models.user import User
 from noc.main.models.permission import Permission
 
 

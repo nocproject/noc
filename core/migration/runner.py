@@ -51,8 +51,10 @@ class MigrationRunner(object):
         self.logger.info("Syncdb")
         from django.conf import settings
         apps = settings.INSTALLED_APPS
-        # Leave only django's applications
-        settings.INSTALLED_APPS = [x for x in settings.INSTALLED_APPS if not x.startswith("noc.")]
+        # Leave only django's applications and noc.aaa (for User model)
+        settings.INSTALLED_APPS = [
+            x for x in settings.INSTALLED_APPS
+            if not x.startswith("noc.") or x == "noc.aaa"]
         # Run django's syncdb
         from django.core.management.commands.syncdb import Command
         try:

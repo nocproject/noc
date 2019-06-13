@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Card handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ import cachetools
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
 from noc.core.debug import error_report
-from noc.main.models import User
+from noc.aaa.models.user import User
 from noc.config import config
 from noc.core.debug import ErrorReport
 from noc.core.perf import metrics

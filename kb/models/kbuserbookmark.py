@@ -8,9 +8,9 @@
 
 # Third-party modules
 import six
-from django.contrib.auth.models import User
 from django.db import models
 # NOC modules
+from noc.aaa.models.user import User
 from noc.kb.models.kbentry import KBEntry
 
 
