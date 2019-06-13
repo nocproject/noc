@@ -14,7 +14,7 @@ from threading import Lock
 import cachetools
 # NOC modules
 from .api import APIRequestHandler
-from noc.main.models import User
+from noc.aaa.models.user import User
 
 user_lock = Lock()
 

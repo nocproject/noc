@@ -13,7 +13,7 @@ from threading import Lock
 import cachetools
 import tornado.web
 # NOC modules
-from noc.main.models import User
+from noc.aaa.models.user import User
 
 user_lock = Lock()
 

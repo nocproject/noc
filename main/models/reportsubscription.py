@@ -15,7 +15,7 @@ import os
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, DateTimeField)
 # NOC modules
-from noc.main.models import User
+from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.app.site import site

@@ -19,7 +19,7 @@ from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedD
 from mongoengine.errors import SaveConditionError
 # NOC modules
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
-from noc.main.models import User
+from noc.aaa.models.user import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template

@@ -11,7 +11,7 @@ import logging
 # NOC modules
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
                            BooleanField, ListField)
-from noc.main.models import User
+from noc.aaa.models.user import User
 
 logger = logging.getLogger(__name__)
 

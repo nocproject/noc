@@ -17,9 +17,8 @@ import stat
 import datetime
 import sys
 import gc
-# Third-party modules
-from django.contrib.auth.models import User
 # NOC modules
+from noc.aaa.models.user import User
 from noc.core.management.base import BaseCommand
 from noc.main.models.language import Language
 from noc.main.models.databasestorage import database_storage

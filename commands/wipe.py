@@ -118,7 +118,7 @@ class Command(BaseCommand):
             :return: ManagedObject
             :rtype: ManagedObject
             """
-            from django.contrib.auth.models import User
+            from noc.aaa.models.user import User
 
             # Try to get object by id
             if is_int(u_id):

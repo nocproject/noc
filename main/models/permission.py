@@ -13,8 +13,10 @@ import operator
 # Third-party modules
 import six
 from django.db.models import Model, CharField, ManyToManyField
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 import cachetools
+# NOC modules
+from noc.aaa.models.user import User
 
 perm_lock = Lock()
 id_lock = Lock()

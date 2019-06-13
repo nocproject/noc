@@ -11,9 +11,9 @@ import datetime
 # Third-party modules
 import six
 from django.db import models
-from django.contrib.auth.models import User
 # NOC modules
 from noc import settings
+from noc.aaa.models.user import User
 from noc.core.middleware.tls import get_user
 from noc.core.model.decorator import on_delete_check
 

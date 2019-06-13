@@ -10,7 +10,6 @@
 from __future__ import absolute_import
 import re
 # Third-party modules
-from django.contrib.auth.models import User
 from django.conf import settings
 from django.http import HttpResponse
 # NOC modules
@@ -19,6 +18,7 @@ from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models.permission import Permission
 from noc.sa.interfaces.base import StringParameter
 from noc.core.translation import ugettext as _
+from noc.aaa.models.user import User
 
 
 class UsernameParameter(StringParameter):
@@ -43,8 +43,11 @@ class UserApplication(ExtModelApplication):
     query_condition = "icontains"
     query_fields = ["username"]
     default_ordering = ["username"]
-
-    clean_fields = {"username": UsernameParameter()}
+    clean_fields = {
+        "username": UsernameParameter(),
+        "first_name": StringParameter(default=""),
+        "last_name": StringParameter(default=""),
+        "email": StringParameter(default="")}
 
     @classmethod
     def apps_permissions_list(cls):
@@ -98,7 +101,8 @@ class UserApplication(ExtModelApplication):
         """
         r = super(UserApplication, self).apply_bulk_fields(data=data)
         for x in r:
-            del x["password"]
+            if "password" in x:
+                del x["password"]
         return r
 
     def update_m2m(self, o, name, values):

@@ -10,9 +10,9 @@
 from __future__ import absolute_import
 # Third-party modules
 from django.db import models
-from django.contrib.auth.models import User
 import six
 # NOC modules
+from noc.aaa.models.user import User
 from .template import Template
 
 

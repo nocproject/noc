@@ -80,6 +80,8 @@ def iter_model_id():
 _MCACHE = {}
 
 _MODELS = {
+    # aaa models
+    "aaa.User": "noc.aaa.models.user.User",
     # main models
     "main.APIKey": "noc.main.models.apikey.APIKey",
     "main.APIToken": "noc.main.models.apitoken.APIToken",
@@ -120,7 +122,6 @@ _MODELS = {
     "main.TextIndex": "noc.main.models.textindex.TextIndex",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
-    "main.User": "django.contrib.auth.models.User",
     "main.UserProfile": "noc.main.models.userprofile.UserProfile",
     "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
     "main.UserState": "noc.main.models.userstate.UserState",

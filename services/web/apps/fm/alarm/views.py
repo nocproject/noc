@@ -33,7 +33,7 @@ from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.selectorcache import SelectorCache
 from noc.gis.utils.addr.ru import normalize_division
-from noc.main.models import User
+from noc.aaa.models.user import User
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)

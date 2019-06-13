@@ -8,13 +8,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 from __future__ import absolute_import
-from django.contrib.auth.models import User, Group
-from django.core.validators import MaxLengthValidator
+from django.contrib.auth.models import Group
 from .userprofile import UserProfile  # Cannot be moved, as referred from settings.py
-#
-# Monkeypatch to change User.username.max_length
-#
-User._meta.get_field("username").max_length = User._meta.get_field("email").max_length
-User._meta.get_field("username").validators = [MaxLengthValidator(User._meta.get_field("username").max_length)]
-User._meta.ordering = ["username"]
+

@@ -20,7 +20,7 @@ import datetime
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
                               DateTimeField, BigIntegerField, SET_NULL)
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 import cachetools
 import six
 # NOC modules
@@ -30,6 +30,7 @@ from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
+from noc.aaa.models.user import User
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup

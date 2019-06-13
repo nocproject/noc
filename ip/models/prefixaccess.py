@@ -15,8 +15,8 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
 # NOC modules
+from noc.aaa.models.user import User
 from noc.core.model.fields import CIDRField
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
 from noc.lib.db import SQL
