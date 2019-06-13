@@ -178,7 +178,9 @@ Ext.define("NOC.core.ModelApplication", {
             tooltip: __("Save screen"),
             scope: me,
             handler: function() {
-                this.save(this.grid, "managed_objects.csv");
+                var date = "_" + Ext.Date.format(new Date(), "YmdHis"),
+                    filename = this.appId.replace(/\./g, "_") + date + ".csv";
+                this.save(this.grid, filename);
             }
         });
 
