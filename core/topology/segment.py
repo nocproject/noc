@@ -206,10 +206,11 @@ class SegmentTopology(BaseTopology):
                         n = max(n, len(p))
         return n
 
-    def get_object_uplinks(self):
+    def iter_uplinks(self):
         """
-        Returns a dict of <object id> -> [<uplink object id>, ...]
-        Shortest path first
+        Yields ObjectUplinks items for segment
+
+        :returns: ObjectUplinks items
         """
         def get_node_uplinks(node):
             ups = {}
@@ -220,6 +221,8 @@ class SegmentTopology(BaseTopology):
                     ups[p] = min(lp, ups.get(p, lp))
             # Shortest path first
             return sorted(ups, key=lambda x: ups[x])
+
+        from noc.sa.models.objectdata import ObjectUplinks
 
         uplinks = self.get_uplinks()
         # Get all cloud nodes
@@ -232,8 +235,10 @@ class SegmentTopology(BaseTopology):
         # Get all segment objects' nodes
         segment_objects = set(str(o) for o in self.segment_objects)  # Convert to string
         # Get objects uplinks
-        r = {}
+        obj_uplinks = {}
+        obj_downlinks = defaultdict(set)
         for o in segment_objects:
+            mo = int(o)
             ups = []
             for u in get_node_uplinks(o):
                 cu = cloud_uplinks.get(u)
@@ -242,8 +247,26 @@ class SegmentTopology(BaseTopology):
                     ups += cu
                 else:
                     ups += [int(u)]
-            r[int(o)] = ups
-        return r
+            obj_uplinks[mo] = ups
+            for u in ups:
+                obj_downlinks[u].add(mo)
+        # Calculate RCA neighbors and yield result
+        for mo in obj_uplinks:
+            # All uplinks
+            neighbors = set(obj_uplinks[mo])
+            # All downlinks
+            for dmo in obj_downlinks[mo]:
+                neighbors.add(dmo)
+                # And uplinks of neighbors
+                neighbors |= set(obj_uplinks[dmo])
+            # Not including object itself
+            if mo in neighbors:
+                neighbors.remove(mo)
+            yield ObjectUplinks(
+                object_id=mo,
+                uplinks=obj_uplinks[mo],
+                rca_neighbors=list(sorted(neighbors))
+            )
 
 
 def update_uplinks(segment_id):
@@ -257,5 +280,5 @@ def update_uplinks(segment_id):
 
     st = SegmentTopology(segment)
     ObjectData.update_uplinks(
-        st.get_object_uplinks()
+        st.iter_uplinks()
     )

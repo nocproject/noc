@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ManagedObjectData
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from threading import Lock
 import operator
 import logging
+from collections import namedtuple
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
@@ -18,6 +19,8 @@ from mongoengine.fields import IntField, ListField, ObjectIdField
 import cachetools
 import six
 
+
+ObjectUplinks = namedtuple("ObjectUplinks", ["object_id", "uplinks", "rca_neighbors"])
 id_lock = Lock()
 neighbor_lock = Lock()
 
@@ -32,6 +35,8 @@ class ObjectData(Document):
     object = IntField(primary_key=True)
     # Uplinks
     uplinks = ListField(IntField())
+    # RCA neighbors cache
+    rca_neighbors = ListField(IntField())
     # Paths
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
@@ -91,23 +96,26 @@ class ObjectData(Document):
         return uplinks
 
     @classmethod
-    def update_uplinks(cls, umap):
-        if not umap:
+    def update_uplinks(cls, uplinks):
+        """
+        Update ObjectUplinks in database
+        :param uplinks: Iterable of ObjectUplinks
+        :return:
+        """
+        bulk = [UpdateOne({
+            "_id": u.object_id
+        }, {
+            "$set": {
+                "uplinks": u.uplinks,
+                "rca_neighbors": u.rca_neighbors
+            }
+        }) for u in uplinks]
+        if not bulk:
             return
-        bulk = []
-        for o, uplinks in six.iteritems(umap):
-            bulk += [UpdateOne({
-                "_id": o
-            }, {
-                "$set": {
-                    "uplinks": uplinks
-                }
-            }, upsert=True)]
-        if bulk:
-            try:
-                ObjectData._get_collection().bulk_write(bulk, ordered=False)
-            except BulkWriteError as e:
-                logger.error("Bulk write error: '%s'", e.details)
+        try:
+            ObjectData._get_collection().bulk_write(bulk, ordered=False)
+        except BulkWriteError as e:
+            logger.error("Bulk write error: '%s'", e.details)
 
     @classmethod
     def refresh_path(cls, obj):

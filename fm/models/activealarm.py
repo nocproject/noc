@@ -52,7 +52,8 @@ class ActiveAlarm(Document):
             "adm_path",
             "segment_path",
             "container_path",
-            "uplinks"
+            "uplinks",
+            ("alarm_class", "rca_neighbors")
         ]
     }
     status = "A"
@@ -115,6 +116,8 @@ class ActiveAlarm(Document):
     container_path = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
+    # RCA neighbor cache, for topology_rca only
+    rca_neighbors = ListField(IntField())
 
     def __str__(self):
         return u"%s" % self.id
@@ -132,6 +135,7 @@ class ActiveAlarm(Document):
         self.segment_path = data.segment_path
         self.container_path = data.container_path
         self.uplinks = data.uplinks
+        self.rca_neighbors = data.rca_neighbors
 
     def safe_save(self, **kwargs):
         """
@@ -242,7 +246,8 @@ class ActiveAlarm(Document):
             adm_path=self.adm_path,
             segment_path=self.segment_path,
             container_path=self.container_path,
-            uplinks=self.uplinks
+            uplinks=self.uplinks,
+            rca_neighbors=self.rca_neighbors
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
