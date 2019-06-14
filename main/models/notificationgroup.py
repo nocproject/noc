@@ -17,6 +17,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.aaa.models.user import User
 from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
@@ -227,6 +228,7 @@ class NotificationGroup(models.Model):
             )
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class NotificationGroupUser(models.Model):
     class Meta(object):
@@ -248,6 +250,7 @@ class NotificationGroupUser(models.Model):
             self.time_pattern.name, self.user.username)
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class NotificationGroupOther(models.Model):
     class Meta(object):

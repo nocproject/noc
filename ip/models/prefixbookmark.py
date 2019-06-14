@@ -15,10 +15,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.aaa.models.user import User
 from .prefix import Prefix
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class PrefixBookmark(models.Model):
     """

@@ -17,12 +17,9 @@ import sys
 from pytest import main as pytest_main
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.setup import setup
 
 
 class Command(BaseCommand):
-    no_setup = True  # Disable setup() to not mangle with test database name
-
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # Run
@@ -76,7 +73,6 @@ class Command(BaseCommand):
             config.pg.db = db_name
             config.mongo.db = db_name
             config.clickhouse.db = db_name
-            setup()
             return pytest_main(args)
 
         # Run tests

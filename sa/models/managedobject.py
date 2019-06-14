@@ -24,12 +24,8 @@ from django.contrib.auth.models import Group
 import cachetools
 import six
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.config import config
-from .administrativedomain import AdministrativeDomain
-from .authprofile import AuthProfile
-from .managedobjectprofile import ManagedObjectProfile
-from .objectstatus import ObjectStatus
-from .objectdata import ObjectData
 from noc.aaa.models.user import User
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
@@ -68,9 +64,14 @@ from noc.core.datastream.decorator import datastream
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
+from .administrativedomain import AdministrativeDomain
+from .authprofile import AuthProfile
+from .managedobjectprofile import ManagedObjectProfile
+from .objectstatus import ObjectStatus
+from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 17
+MANAGEDOBJECT_CACHE_VERSION = 18
 
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
@@ -1778,6 +1779,7 @@ class ManagedObject(Model):
         return self.profile.get_profile().has_confdb_support(self)
 
 
+@tuck_up_pants
 @on_save
 @six.python_2_unicode_compatible
 class ManagedObjectAttribute(Model):

@@ -12,10 +12,12 @@ from __future__ import absolute_import
 from django.db import models
 import six
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.aaa.models.user import User
 from .template import Template
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class SystemTemplate(models.Model):
     class Meta(object):

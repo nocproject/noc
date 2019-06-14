@@ -17,11 +17,13 @@ from django.contrib.auth.models import Group
 import cachetools
 # NOC modules
 from noc.aaa.models.user import User
+from noc.core.model.hacks import tuck_up_pants
 
 perm_lock = Lock()
 id_lock = Lock()
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class Permission(Model):
     """

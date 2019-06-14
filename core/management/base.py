@@ -16,7 +16,6 @@ import six
 # NOC modules
 from noc.config import config
 from noc.core.tz import setup_timezone
-from noc.core.setup import setup
 
 
 class CommandError(Exception):
@@ -26,7 +25,6 @@ class CommandError(Exception):
 class BaseCommand(object):
     LOG_FORMAT = config.log_format
     help = ""  # Help text (shows ./noc help)
-    no_setup = False
 
     def __init__(self, stdout=sys.stdout, stderr=sys.stderr):
         self.verbose_level = 0
@@ -48,8 +46,6 @@ class BaseCommand(object):
         if __name__ == "__main__":
             Command().run()
         """
-        if not self.no_setup:
-            setup()
         try:
             setup_timezone()
         except ValueError as e:

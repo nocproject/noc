@@ -14,10 +14,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import Group
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from .managedobjectselector import ManagedObjectSelector
 from .administrativedomain import AdministrativeDomain
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class GroupAccess(models.Model):
     class Meta(object):

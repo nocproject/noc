@@ -16,12 +16,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.main.models.permission import Permission
-from .managedobjectselector import ManagedObjectSelector
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
+from .managedobjectselector import ManagedObjectSelector
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class CommandSnippet(models.Model):
     """

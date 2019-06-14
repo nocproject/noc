@@ -10,8 +10,11 @@
 import six
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxLengthValidator
+# NOC modules
+from noc.core.model.hacks import tuck_up_pants
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class User(AbstractUser):
     class Meta(AbstractUser.Meta):

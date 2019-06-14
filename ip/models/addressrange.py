@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.config import config
 from noc.core.model.fields import TagsField, CIDRField
 from noc.core.ip import IP
@@ -23,6 +24,7 @@ from .afi import AFI_CHOICES
 from .vrf import VRF
 
 
+@tuck_up_pants
 @datastream
 @six.python_2_unicode_compatible
 class AddressRange(models.Model):

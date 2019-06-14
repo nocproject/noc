@@ -2,15 +2,12 @@
 # ----------------------------------------------------------------------
 # Various model decorators
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from django.db.models import signals as django_signals
-from mongoengine import signals as mongo_signals
 # NOC modules
-from models import get_model
+from noc.models import get_model
 
 
 def is_document(klass):
@@ -65,11 +62,15 @@ def on_save(cls):
     """
     if hasattr(cls, "on_save"):
         if is_document(cls):
+            from mongoengine import signals as mongo_signals
+
             mongo_signals.post_save.connect(
                 _on_document_save_handler,
                 sender=cls
             )
         else:
+            from django.db.models import signals as django_signals
+
             django_signals.post_save.connect(
                 _on_model_save_handler,
                 sender=cls
@@ -100,11 +101,15 @@ def on_delete(cls):
     """
     if hasattr(cls, "on_delete"):
         if is_document(cls):
+            from mongoengine import signals as mongo_signals
+
             mongo_signals.pre_delete.connect(
                 _on_document_delete_handler,
                 sender=cls
             )
         else:
+            from django.db.models import signals as django_signals
+
             django_signals.pre_delete.connect(
                 _on_model_delete_handler,
                 sender=cls
@@ -129,6 +134,8 @@ def on_init(cls):
            print self.initial_data
            ...
     """
+    from django.db.models import signals as django_signals
+
     django_signals.post_init.connect(
         _on_init_handler,
         sender=cls
@@ -208,6 +215,8 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
     def decorator(cls):
         if cfg["check"] or cfg["clean"] or cfg["delete"]:
             if is_document(cls):
+                from mongoengine import signals as mongo_signals
+
                 mongo_signals.pre_delete.connect(
                     on_delete_handler,
                     sender=cls,
@@ -215,11 +224,16 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
                 )
                 setup["is_document"] = True
             else:
+                from django.db.models import signals as django_signals
                 django_signals.pre_delete.connect(
                     on_delete_handler,
                     sender=cls,
                     weak=False  # Cannot use weak reference due to lost of internal scope
                 )
+        if not is_document(cls):
+            from noc.core.model.hacks import tuck_up_pants
+            cls = tuck_up_pants(cls)
+
         cls._on_delete = cfg
         return cls
 

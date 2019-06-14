@@ -20,8 +20,7 @@ from psycopg2.extensions import adapt
 # Third-party modules
 import six
 # NOC modules
-from .administrativedomain import AdministrativeDomain
-from .managedobjectprofile import ManagedObjectProfile
+from noc.core.model.hacks import tuck_up_pants
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
@@ -35,6 +34,9 @@ from noc.lib.db import SQL, QTags
 from noc.core.model.decorator import on_delete, on_save, on_delete_check
 from noc.core.model.fields import DocumentReferenceField
 from .profile import Profile
+from .administrativedomain import AdministrativeDomain
+from .managedobjectprofile import ManagedObjectProfile
+
 
 id_lock = Lock()
 
@@ -369,6 +371,7 @@ class ManagedObjectSelector(models.Model):
         return list(objects)
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class ManagedObjectSelectorByAttribute(models.Model):
     class Meta(object):
