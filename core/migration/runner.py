@@ -51,16 +51,26 @@ class MigrationRunner(object):
         self.logger.info("Django migrations")
         from django.apps import apps
         # Leave only django's applications
-        apps.set_available_apps([
-            app.name for app in apps.get_app_configs()
-            if not app.name.startswith("noc.") or app.name == "noc.aaa"]
-        )
+        to_mask_apps = apps.apps_ready
+        if to_mask_apps:
+            # Should never be reached
+            installed_apps = [
+                app.name for app in apps.get_app_configs()
+                if not app.name.startswith("noc.") or app.name == "noc.aaa"]
+            apps.set_available_apps(installed_apps)
+        else:
+            from noc.settings import INSTALLED_APPS
+            installed_apps = [
+                app for app in INSTALLED_APPS
+                if not app.startswith("noc.") or app == "noc.aaa"]
+            apps.populate(installed_apps)
         # Run django's syncdb
         from django.core.management.commands.migrate import Command
         try:
             Command().execute(interactive=False, load_initial_data=False, verbosity="1", database="default")
         finally:
-            apps.unset_available_apps()
+            if to_mask_apps:
+                apps.unset_available_apps()
 
     def get_history(self):
         """
