@@ -209,6 +209,9 @@ Build docs:
     paths:
       - build/docs/en
     expire_in: 1 day
+  only:
+    changes:
+      - docs/**
 
 Build release image:
   stage: Build release container
