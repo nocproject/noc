@@ -1,0 +1,41 @@
+.. _alarm-class-network-impb-unauthenticated-ip-mac:
+
+=======================================
+Network | IMPB | Unauthenticated IP-MAC
+=======================================
+.. contents:: On this page
+    :local:
+    :backlinks: none
+    :depth: 1
+    :class: singlecol
+
+Symptoms
+--------
+Discard user connection attempts
+
+Probable Causes
+---------------
+.. todo::
+    Describe Network | IMPB | Unauthenticated IP-MAC probable causes
+
+Recommended Actions
+-------------------
+Check user IP and MAC, check IMPB entry, check topology
+
+Variables
+----------
+==================== ==================================================
+Name                 Description
+==================== ==================================================
+ip                   User IP
+mac                  User MAC
+interface            Affected interface
+description          Interface description
+==================== ==================================================
+
+Events
+------
+============= ======================================================================
+Closing Event :ref:`event-class-network-impb-recover-impb-stop-learning-state`
+Opening Event :ref:`event-class-network-impb-unauthenticated-ip-mac`
+============= ======================================================================

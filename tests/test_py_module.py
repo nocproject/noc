@@ -32,13 +32,16 @@ ALLOW_XFAIL = {
 
 @cachetools.cached(cache={})
 def get_files():
-    try:
-        data = subprocess.check_output(["git", "ls-tree", "HEAD", "-r", "--name-only"])
-        return data.splitlines()
-    except (OSError, subprocess.CalledProcessError):
-        # No git, emulate
-        data = subprocess.check_output(["find", ".", "-type", "f", "-print"])
-        return [p[2:] for p in data.splitlines()]
+    def _get_files():
+        try:
+            data = subprocess.check_output(["git", "ls-tree", "HEAD", "-r", "--name-only"])
+            return data.splitlines()
+        except (OSError, subprocess.CalledProcessError):
+            # No git, emulate
+            data = subprocess.check_output(["find", ".", "-type", "f", "-print"])
+            return [p[2:] for p in data.splitlines()]
+
+    return [x for x in _get_files() if not x.startswith("docs")]
 
 
 @cachetools.cached(cache={})
