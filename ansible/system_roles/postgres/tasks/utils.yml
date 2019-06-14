@@ -25,7 +25,7 @@
     monitoring_service_check_interval: "10s"
     monitoring_service_procstat_check: "False"
     monitoring_config:
-      address: "host={{ postgres_listen_address }} user={{ postgres_noc_user }} password={{ postgres_noc_password }} sslmode=disable database={{ postgres_noc_db }}" # noqa 204
+      address: "host={{ postgres_listen_address }} user={{ postgres_noc_user }} password={{ postgres_noc_password }} sslmode=disable database={{ postgres_noc_db }}"  # noqa 204
       ignored_databases: ["postgres", "template0", "template1"]
   when: has_svc_monitoring is defined
   tags:

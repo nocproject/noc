@@ -2,29 +2,4 @@
 galaxy_info:
   author: Grig Gheorghiu & Aleksey Shirokih
   description: Ansible role for installing and configuring consul-template
-  license: license (Apache)
-  min_ansible_version: 1.2
-  platforms:
-    - name: Ubuntu
-      versions:
-        - all
-     #  - lucid
-     #  - maverick
-     #  - natty
-     #  - oneiric
-     #  - precise
-     #  - quantal
-     #  - raring
-     #  - saucy
-     #  - trusty
-    - name: Debian
-      versions:
-        - all
-     #  - etch
-     #  - lenny
-     #  - squeeze
-     #  - wheezy
-    - name: EL
-      versions:
-        - 6
-        - 7
+  license: Apache
