@@ -35,3 +35,7 @@ User._meta.get_field("username").max_length = User._meta.get_field("email").max_
 User._meta.get_field("username").validators = [
     v for v in User._meta.get_field("username").validators if not isinstance(v, MaxLengthValidator)
 ] + [MaxLengthValidator(User._meta.get_field("username").max_length)]
+#
+from django.contrib.auth.models import Group, Permission
+tuck_up_pants(Group)
+tuck_up_pants(Permission)

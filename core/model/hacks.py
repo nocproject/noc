@@ -33,7 +33,11 @@ def tuck_up_pants(cls):
     """
     assert not hasattr(cls, "_on_delete")
     label = cls._meta.app_label
-    app_name = "noc.%s" % label
+    if label == "auth":
+        # Django legacy
+        app_name = "django.contrib.auth"
+    else:
+        app_name = "noc.%s" % label
     # Fake up apps.populate
     app_config = apps.app_configs.get(label)
     if not app_config:
