@@ -22,7 +22,7 @@ class MigrationRunner(object):
         self.logger = logging.getLogger("migration")
 
     def migrate(self):
-        self.syncdb()
+        self.django_migrate()
         self.logger.info("Migrating")
         applied = self.get_history()
         loader = MigrationLoader()
@@ -43,7 +43,7 @@ class MigrationRunner(object):
             })
         self.logger.info("Done")
 
-    def syncdb(self):
+    def django_migrate(self):
         """
         Django syncdb/migrate call
         :return:
@@ -52,8 +52,8 @@ class MigrationRunner(object):
         from django.apps import apps
         # Leave only django's applications
         to_mask_apps = apps.apps_ready
+        # Leave only django's applications before running migrate
         if to_mask_apps:
-            # Should never be reached
             installed_apps = [
                 app.name for app in apps.get_app_configs()
                 if not app.name.startswith("noc.") or app.name == "noc.aaa"]
@@ -64,7 +64,7 @@ class MigrationRunner(object):
                 app for app in INSTALLED_APPS
                 if not app.startswith("noc.") or app == "noc.aaa"]
             apps.populate(installed_apps)
-        # Run django's syncdb
+        # Run django's migrate
         from django.core.management.commands.migrate import Command
         try:
             Command().execute(interactive=False, load_initial_data=False, verbosity="1", database="default")
