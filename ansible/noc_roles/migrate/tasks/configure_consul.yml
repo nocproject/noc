@@ -9,7 +9,7 @@
   vars:
     consul_service_key: "noc/slots/discovery-{{ item }}/manifest"
     consul_service_internal_key: "Limit"
-    consul_service_value: "{{ hostvars | json_query(\"*.noc_services[] | [?name=='discovery'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}" # noqa 204
+    consul_service_value: "{{ hostvars | json_query(\"*.noc_services[] | [?name=='discovery'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}"  # noqa 204
     consul_service_token: None
   with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
   tags:
@@ -23,7 +23,7 @@
   vars:
     consul_service_key: "noc/slots/ping-{{ item }}/manifest"
     consul_service_internal_key: "Limit"
-    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='ping'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}" # noqa 204
+    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='ping'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}"  # noqa 204
     consul_service_token: None
   with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
   tags:

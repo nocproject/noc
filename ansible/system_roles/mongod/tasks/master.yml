@@ -47,7 +47,7 @@
     - config
 
 - name: Create database user
-  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js" # noqa 204
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"  # noqa 204
   when: user_status is changed
   tags:
     - skip_ansible_lint

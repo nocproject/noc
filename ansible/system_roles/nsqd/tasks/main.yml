@@ -87,7 +87,7 @@
     monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pattern
     monitoring_service_procstat_value: nsqd
-    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"] # noqa 204
+    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"]  # noqa 204
     monitoring_config:
       endpoints: ["http://{{ ansible_nodename }}:4151"]
   when: has_svc_monitoring is defined

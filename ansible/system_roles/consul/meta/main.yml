@@ -3,28 +3,3 @@ galaxy_info:
   author: Brian Shumate & Aleksey Shirokih
   description: Consul cluster role
   license: BSD
-  min_ansible_version: 1.2
-  platforms:
-    - name: Ubuntu
-      versions:
-        - all
-     #  - lucid
-     #  - maverick
-     #  - natty
-     #  - oneiric
-     #  - precise
-     #  - quantal
-     #  - raring
-     #  - saucy
-     #  - trusty
-    - name: Debian
-      versions:
-        - all
-     #  - etch
-     #  - lenny
-     #  - squeeze
-     #  - wheezy
-    - name: EL
-      versions:
-        - 6
-        - 7
