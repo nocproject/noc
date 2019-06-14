@@ -198,6 +198,7 @@ Test python 3:
 
 Build docs:
   stage: Build docs
+  environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
   script:
     - cd docs/
@@ -265,8 +266,9 @@ Build dev image:
   only:
     - tags
 
-upload:
+upload docs:
   stage: Upload docs
+  environment: docs
   image: registry.getnoc.com/infrastructure/s3helper:master
   script:
     - /tmp/mc -q cp -r build/docs/* cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG
