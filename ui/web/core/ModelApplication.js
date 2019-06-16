@@ -223,7 +223,7 @@ Ext.define("NOC.core.ModelApplication", {
                 itemId: "filters",
                 width: baseField.width + 13,
                 title: __("Filter"),
-                padding: 4,
+                bodyPadding: 4,
                 tools: [
                     {
                         type: "close",
