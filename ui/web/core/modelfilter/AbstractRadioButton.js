@@ -9,11 +9,19 @@ console.debug("Defining NOC.core.modelfilter.AbstractRadioButton");
 
 Ext.define("NOC.core.modelfilter.AbstractRadioButton", {
     extend: "NOC.core.modelfilter.Base",
-
+    layout: {
+        type: "hbox"
+    },
     initComponent: function() {
         var me = this;
         Ext.applyIf(me, {
             items: [
+                {
+                    xtype: "displayfield",
+                    fieldLabel: me.title,
+                    allowBlank: true,
+                    flex: 2
+                },
                 {
                     xtype: "button",
                     glyph: me.glyphYes,
