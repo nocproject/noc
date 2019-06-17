@@ -1,41 +1,27 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # RefBook Manager
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2010 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-from django.contrib import admin
-from noc.lib.app.modelapplication import ModelApplication
+
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.lib.app.modelinline import ModelInline
 from noc.main.models.refbookfield import RefBookField
 from noc.main.models.refbook import RefBook
 from noc.core.translation import ugettext as _
 
 
-class RefBookFieldAdmin(admin.TabularInline):
-    """
-    RefBook field inlines
-    """
-    extra = 3
-    model = RefBookField
-
-
-class RefBookAdmin(admin.ModelAdmin):
-    """
-    Admin for Ref Books
-    """
-    list_display = ["name", "is_builtin", "is_enabled"]
-    search_fields = ["name"]
-    list_filter = ["is_enabled", "is_builtin"]
-    inlines = [RefBookFieldAdmin]
-
-
-class RefBookApplication(ModelApplication):
+class RefBookAdminApplication(ExtModelApplication):
     """
     RefBook application
     """
     model = RefBook
-    model_admin = RefBookAdmin
+
+    title = _("Reference Books")
     menu = _("Setup") + " | " + _("Reference Books")
+    default_ordering = ["name"]
+
+    fields = ModelInline(RefBookField)
