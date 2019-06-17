@@ -24,12 +24,6 @@ def ensure_pending_models():
         get_model("%s.%s" % (app, model))  # Ensure model loading
 
 
-_django_apps = {
-    "auth": "django.contrib.auth",
-    "contenttypes": "django.contrib.contenttypes"
-}
-
-
 def tuck_up_pants(cls):
     """
     Decorator to implicit initialization of django models registry.
@@ -39,7 +33,7 @@ def tuck_up_pants(cls):
     """
     assert not hasattr(cls, "_on_delete")
     label = cls._meta.app_label
-    app_name = _django_apps.get(label, "noc.%s" % label)
+    app_name = "noc.%s" % label
     # Fake up apps.populate
     app_config = apps.app_configs.get(label)
     if not app_config:

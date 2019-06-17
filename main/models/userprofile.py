@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 # Third-party modules
 import six
@@ -78,9 +79,11 @@ class UserProfile(models.Model):
 
     @property
     def contacts(self):
+        from .userprofilecontact import UserProfileContact
+
         return [
             (c.time_pattern, c.notification_method, c.params)
-            for c in self.userprofilecontact_set.all()]
+            for c in UserProfileContact.objects.filter(user_profile=self)]
 
     @property
     def active_contacts(self):
@@ -93,7 +96,3 @@ class UserProfile(models.Model):
         return [
             (c.notification_method, c.params)
             for c in self.contacts if c.time_pattern.match(now)]
-
-# Avoid circular references
-# No delete, fixed 'UserProfile' object has no attribute 'userprofilecontact_set'
-from .userprofilecontact import UserProfileContact  # noqa

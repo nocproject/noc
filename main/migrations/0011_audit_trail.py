@@ -13,6 +13,10 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
+    depends_on = [
+        ("aaa", "0002_default_user")
+    ]
+
     def migrate(self):
         # Mock Models
         User = self.db.mock_model(

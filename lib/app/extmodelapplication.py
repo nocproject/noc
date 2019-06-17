@@ -31,7 +31,7 @@ from noc.lib.validators import is_int
 from noc.models import is_document
 from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
-from noc.main.models.permission import Permission
+from noc.aaa.models.permission import Permission
 from noc.core.middleware.tls import get_user
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter

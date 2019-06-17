@@ -15,7 +15,7 @@ from django.http import HttpResponse
 # NOC modules
 from noc.lib.app.site import site
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models.permission import Permission
+from noc.aaa.models.permission import Permission
 from noc.sa.interfaces.base import StringParameter
 from noc.core.translation import ugettext as _
 from noc.aaa.models.user import User

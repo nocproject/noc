@@ -13,9 +13,9 @@ import operator
 import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
-from django.contrib.auth.models import Group
 import cachetools
 # NOC modules
+from noc.aaa.models.group import Group
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save
 

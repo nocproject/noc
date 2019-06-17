@@ -13,10 +13,10 @@ import operator
 # Third-party modules
 import six
 from django.db.models import Model, CharField, ManyToManyField
-from django.contrib.auth.models import Group
 import cachetools
 # NOC modules
 from noc.aaa.models.user import User
+from noc.aaa.models.group import Group
 from noc.core.model.hacks import tuck_up_pants
 
 perm_lock = Lock()
@@ -36,7 +36,7 @@ class Permission(Model):
         verbose_name = "Permission"
         verbose_name_plural = "Permissions"
         db_table = "main_permission"
-        app_label = "main"
+        app_label = "aaa"
 
     # module:app:permission
     name = CharField("Name", max_length=128, unique=True)

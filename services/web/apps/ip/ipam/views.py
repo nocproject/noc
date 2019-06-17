@@ -25,7 +25,7 @@ from noc.ip.models.prefixbookmark import PrefixBookmark
 from noc.ip.models.vrf import VRF
 from noc.ip.models.vrfgroup import VRFGroup
 from noc.main.models.customfield import CustomField
-from noc.main.models.permission import Permission
+from noc.aaa.models.permission import Permission
 from noc.core.colors import get_colors
 
 

@@ -32,6 +32,9 @@ class DB(object):
     def quote_name(name):
         return connection.ops.quote_name(name)
 
+    def has_table(self, table_name):
+        return bool(self.execute("SELECT COUNT(*) FROM pg_class WHERE relname=%s", [table_name])[0][0])
+
     def create_table(self, table_name, fields):
         assert len(table_name) <= self.MAX_NAME_LENGTH, "Too long table name"
         columns = [

@@ -17,7 +17,7 @@ from noc.services.login.auth import AuthRequestHandler
 from noc.services.login.logout import LogoutRequestHandler
 from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
-from noc.main.models.apikey import APIKey
+from noc.aaa.models.apikey import APIKey
 from noc.core.perf import metrics
 from noc.config import config
 

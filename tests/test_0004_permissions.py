@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.main.models.permission import Permission
+from noc.aaa.models.permission import Permission
 from noc.core.service.loader import get_service
 from noc.lib.app.site import site
 

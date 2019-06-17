@@ -33,7 +33,6 @@ DATABASES = {
         "HOST": config.pg.addresses[0].host,
         "PORT": config.pg.addresses[0].port,
         "AUTOCOMMIT": True,
-        "TEST_NAME": "test_" + config.pg.db,
         "OPTIONS": {
             "autocommit": True,
             "connect_timeout": config.pg.connect_timeout
@@ -80,7 +79,6 @@ TEMPLATE_LOADERS = [
 ]
 #
 TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
@@ -108,12 +106,6 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = [
     "noc.aaa",
-    #
-    "django.contrib.auth",
-    "django.contrib.contenttypes",  # Required by django auth
-    "django.contrib.sites",
-    "django.contrib.admin",
-    # NOC modules
     "noc.main",
     "noc.dev",
     "noc.project",
@@ -148,14 +140,10 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = ["locale"]
-
-# SOUTH_AUTO_FREEZE_APP = False
-
-AUTH_USER_MODEL = "aaa.User"
 AUTH_PROFILE_MODULE = "main.UserProfile"
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
-# Suppress deperecation warning. We don't use django's testing framework
+# Suppress deprecation warning. We don't use django's testing framework
 TEST_RUNNER = None
 
 # Disable SQL statement logging

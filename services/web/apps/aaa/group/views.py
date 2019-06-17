@@ -9,13 +9,13 @@
 import threading
 # Third-party modules
 from django.http import HttpResponse
-from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 # NOC modules
 from noc.lib.app.site import site
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models.permission import Permission
+from noc.aaa.models.group import Group
+from noc.aaa.models.permission import Permission
 from noc.core.cache.decorator import cachedmethod
 
 apps_lock = threading.RLock()

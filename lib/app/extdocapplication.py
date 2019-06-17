@@ -30,7 +30,7 @@ from noc.sa.interfaces.base import (
     InterfaceTypeError, DocumentParameter,
     ObjectIdParameter)
 from noc.lib.validators import is_int, is_uuid
-from noc.main.models.permission import Permission
+from noc.aaa.models.permission import Permission
 from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag

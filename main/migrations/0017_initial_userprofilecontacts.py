@@ -17,7 +17,7 @@ class Migration(BaseMigration):
             self.db.execute("INSERT INTO main_timepattern(name,description) values(%s,%s)", ["Any", "Always match"])
         time_pattern_id = self.db.execute("SELECT id FROM main_timepattern WHERE name=%s", ["Any"])[0][0]
         # Fill contacts
-        for user_id, email in self.db.execute("SELECT  id,email FROM auth_user"):
+        for user_id, email in self.db.execute("SELECT id,email FROM auth_user"):
             # Create UserProfile when necessary
             if self.db.execute("SELECT COUNT(*) FROM main_userprofile WHERE user_id=%s", [user_id])[0][0] == 0:
                 self.db.execute("INSERT INTO main_userprofile(user_id) VALUES(%s)", [user_id])
