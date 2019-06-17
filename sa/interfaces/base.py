@@ -25,11 +25,7 @@ from noc.core.interface.parameter import ORParameter  # noqa
 
 class NoneParameter(Parameter):
     """
-    >>> NoneParameter().clean(None)
-    >>> NoneParameter().clean("None") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: NoneParameter: 'None'
+    Checks value is None
     """
 
     def __init__(self, required=True):
@@ -43,22 +39,7 @@ class NoneParameter(Parameter):
 
 class StringParameter(Parameter):
     """
-    >>> StringParameter().clean("Test")
-    'Test'
-    >>> StringParameter().clean(10)
-    '10'
-    >>> StringParameter().clean(None)
-    'None'
-    >>> StringParameter(default="test").clean("no test")
-    'no test'
-    >>> StringParameter(default="test").clean(None)
-    'test'
-    >>> StringParameter(choices=["1","2"]).clean("1")
-    '1'
-    >>> StringParameter(choices=["1","2"]).clean("3") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: StringParameter: '3'.
+    Check value is string
     """
 
     def __init__(self, required=True, default=None, choices=None):
@@ -79,6 +60,9 @@ class StringParameter(Parameter):
 
 
 class UnicodeParameter(StringParameter):
+    """
+    Check value is unicode
+    """
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -93,20 +77,7 @@ class UnicodeParameter(StringParameter):
 
 class REStringParameter(StringParameter):
     """
-    >>> REStringParameter("ex+p").clean("exp")
-    'exp'
-    >>> REStringParameter("ex+p").clean("exxp")
-    'exxp'
-    >>> REStringParameter("ex+p").clean("regexp 1")
-    'regexp 1'
-    >>> REStringParameter("ex+p").clean("ex") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: REStringParameter: 'ex'
-    >>> REStringParameter("ex+p",default="exxp").clean("regexp 1")
-    'regexp 1'
-    >>> REStringParameter("ex+p",default="exxp").clean(None)
-    'exxp'
+    Check value is string matching regular expression
     """
 
     def __init__(self, regexp, required=True, default=None):
@@ -124,13 +95,7 @@ class REStringParameter(StringParameter):
 
 class REParameter(StringParameter):
     """
-    Check Regular Expression
-    >>> REParameter().clean(".+?")
-    '.+?'
-    >>> REParameter().clean("+") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: REParameter: '+'
+    Check value is valid regular expression
     """
 
     def clean(self, value):
@@ -143,13 +108,7 @@ class REParameter(StringParameter):
 
 class PyExpParameter(StringParameter):
     """
-    Check python expression
-    >>> PyExpParameter().clean("(a + 3) * 7")
-    '(a + 3) * 7'
-    >>> PyExpParameter().clean("a =!= b") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: REParameter: 'a =!= b'
+    Check value is valid python expression
     """
 
     def clean(self, value):
@@ -162,26 +121,7 @@ class PyExpParameter(StringParameter):
 
 class BooleanParameter(Parameter):
     """
-    >>> BooleanParameter().clean(True)
-    True
-    >>> BooleanParameter().clean(False)
-    False
-    >>> BooleanParameter().clean("True")
-    True
-    >>> BooleanParameter().clean("yes")
-    True
-    >>> BooleanParameter().clean(1)
-    True
-    >>> BooleanParameter().clean(0)
-    False
-    >>> BooleanParameter().clean([]) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: BooleanParameter: [].
-    >>> BooleanParameter(default=False).clean(None)
-    False
-    >>> BooleanParameter(default=True).clean(None)
-    True
+    Check value is boolean
     """
 
     def clean(self, value):
@@ -201,35 +141,7 @@ class BooleanParameter(Parameter):
 
 class IntParameter(Parameter):
     """
-    >>> IntParameter().clean(1)
-    1
-    >>> IntParameter().clean("1")
-    1
-    >>> IntParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IntParameter: 'not a number'
-    >>> IntParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IntParameter: 5
-    >>> IntParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IntParameter: 10
-    >>> IntParameter(max_value=10, default=7).clean(5)
-    5
-    >>> IntParameter(max_value=10, default=7).clean(None)
-    7
-    >>> IntParameter(max_value=10, default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IntParameter: 15
-    >>> IntParameter().clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IntParameter: None
-    None
+    Check value is integer
     """
 
     def __init__(self, required=True, default=None, min_value=None, max_value=None):
@@ -253,30 +165,7 @@ class IntParameter(Parameter):
 
 class FloatParameter(Parameter):
     """
-    >>> FloatParameter().clean(1.2)
-    1.2
-    >>> FloatParameter().clean("1.2")
-    1.2
-    >>> FloatParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: FloatParameter: 'not a number'
-    >>> FloatParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: FloatParameter: 5
-    >>> FloatParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: FloatParameter: 10
-    >>> FloatParameter(max_value=10,default=7).clean(5)
-    5.0
-    >>> FloatParameter(max_value=10,default=7).clean(None)
-    7.0
-    >>> FloatParameter(max_value=10,default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: FloatParameter: 15
+    Check value is float
     """
 
     def __init__(self, required=True, default=None, min_value=None, max_value=None):
@@ -300,6 +189,9 @@ class FloatParameter(Parameter):
 
 
 class ListParameter(Parameter):
+    """
+    Check value is list
+    """
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -317,23 +209,7 @@ class ListParameter(Parameter):
 
 class InstanceOfParameter(Parameter):
     """
-    >>> class C: pass
-    >>> class X: pass
-    >>> class CC(C): pass
-    >>> InstanceOfParameter(cls=C).clean(C()) and "Ok"
-    'Ok'
-    >>> InstanceOfParameter(cls=C).clean(CC()) and "Ok"
-    'Ok'
-    >>> InstanceOfParameter(cls=C).clean(1) and "Ok" #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: InstanceOfParameter: 1
-    >>> InstanceOfParameter(cls="C").clean(C()) and "Ok"
-    'Ok'
-    >>> InstanceOfParameter(cls="C").clean(1) and "Ok" #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: InstanceOfParameter: 1
+    Check value is an instance of class
     """
 
     def __init__(self, cls, required=True, default=None):
@@ -366,27 +242,7 @@ class InstanceOfParameter(Parameter):
 
 class SubclassOfParameter(Parameter):
     """
-    >>> class C: pass
-    >>> class C1(C): pass
-    >>> class C2(C1): pass
-    >>> class C3(C1): pass
-    >>> SubclassOfParameter(cls=C).clean(C2) and "Ok"
-    'Ok'
-    >>> SubclassOfParameter(cls=C).clean(1) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: SubclassOfParameter: 1
-    >>> SubclassOfParameter(cls="C").clean(C2) and "Ok"
-    'Ok'
-    >>> SubclassOfParameter(cls=C).clean(1) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: SubclassOfParameter: 1
-    >>> SubclassOfParameter(cls=C2).clean(C3) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: SubclassOfParameter: <class base.C3>
-    >>> SubclassOfParameter(cls="C",required=False).clean(None)
+    Check value is subclass of given class
     """
 
     def __init__(self, cls, required=True, default=None):
@@ -430,26 +286,7 @@ class SubclassOfParameter(Parameter):
 
 class ListOfParameter(ListParameter):
     """
-    >>> ListOfParameter(element=IntParameter()).clean([1,2,3])
-    [1, 2, 3]
-    >>> ListOfParameter(element=IntParameter()).clean([1,2,"3"])
-    [1, 2, 3]
-    >>> ListOfParameter(element=IntParameter()).clean([1,2,"x"]) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: IntParameter: 'x'
-    >>> ListOfParameter(element=StringParameter()).clean([1,2,3,"x"])
-    ['1', '2', '3', 'x']
-    >>> ListOfParameter(element=StringParameter(),default=[]).clean(None)
-    []
-    >>> ListOfParameter(element=StringParameter(),default=[1,2,3]).clean(None)
-    ['1', '2', '3']
-    >>> ListOfParameter(element=[StringParameter(), IntParameter()]).clean([("a",1), ("b", "2")])
-    [['a', 1], ['b', 2]]
-    >>> ListOfParameter(element=[StringParameter(), IntParameter()]).clean([("a",1), ("b", "x")])   #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: IntParameter: 'x'
+    Check value is a list of given parameter type
     """
 
     def __init__(self, element, required=True, default=None, convert=False):
@@ -496,14 +333,7 @@ class ListOfParameter(ListParameter):
 
 class StringListParameter(ListOfParameter):
     """
-    >>> StringListParameter().clean(["1","2","3"])
-    ['1', '2', '3']
-    >>> StringListParameter().clean(["1",2,"3"])
-    ['1', '2', '3']
-    >>> StringListParameter(choices=["1", "2"]).clean(["1", "2", "3"]) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-      ...
-    ValueError: StringParameter: '3'
+    Check value is list of strings
     """
 
     def __init__(self, required=True, default=None, convert=False, choices=None):
@@ -517,12 +347,7 @@ class StringListParameter(ListOfParameter):
 
 class DictParameter(Parameter):
     """
-    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":10,"s":"ten"})
-    {'i': 10, 's': 'ten'}
-    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","x":"ten"}) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: DictParameter: {'i': '10', 'x': 'ten'}
+    Check value is a dict
     """
 
     def __init__(self, required=True, default=None, attrs=None, truncate=False):
@@ -606,12 +431,7 @@ class DictParameter(Parameter):
 
 class DictListParameter(ListOfParameter):
     """
-    >>> DictListParameter().clean([{"1": 2},{"2":3, "4":1}])
-    [{'1': 2}, {'2': 3, '4': 1}]
-    >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean([{"i":10,"s":"ten"},{"i":"5","s":"five"}])
-    [{'i': 10, 's': 'ten'}, {'i': 5, 's': 'five'}]
-    >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()},convert=True).clean({"i":"10","s":"ten"})
-    [{'i': 10, 's': 'ten'}]
+    Check value is a list of dicts of given structure
     """
 
     def __init__(self, required=True, default=None, attrs=None, convert=False):
@@ -686,12 +506,7 @@ class DateTimeShiftParameter(StringParameter):
 
 class IPv4Parameter(StringParameter):
     """
-    >>> IPv4Parameter().clean("192.168.0.1")
-    '192.168.0.1'
-    >>> IPv4Parameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IPvParameter: '192.168.0.256'
+    Check value is IPv4 address
     """
 
     def clean(self, value):
@@ -721,20 +536,7 @@ class IPv4Parameter(StringParameter):
 
 class IPv4PrefixParameter(StringParameter):
     """
-    >>> IPv4PrefixParameter().clean("192.168.0.0/16")
-    '192.168.0.0/16'
-    >>> IPv4PrefixParameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IPv4PrefixParameter: '192.168.0.256'
-    >>> IPv4PrefixParameter().clean("192.168.0.0/33") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IPv4PrefixParameter: '192.168.0.0/33'
-    >>> IPv4PrefixParameter().clean("192.168.0.0/-5") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: IPv4PrefixParameter: '192.168.0.0/-5'
+    Check value is IPv4 prefix
     """
 
     def clean(self, value):
@@ -761,31 +563,9 @@ class IPv4PrefixParameter(StringParameter):
         return v
 
 
-#
-# IPv6 Parameter
-#
 class IPv6Parameter(StringParameter):
     """
-    >>> IPv6Parameter().clean("::")
-    '::'
-    >>> IPv6Parameter().clean("::1")
-    '::1'
-    >>> IPv6Parameter().clean("2001:db8::1")
-    '2001:db8::1'
-    >>> IPv6Parameter().clean("2001:db8::")
-    '2001:db8::'
-    >>> IPv6Parameter().clean("::ffff:192.168.0.1")
-    '::ffff:192.168.0.1'
-    >>> IPv6Parameter().clean('g::')  #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: IPv6Parameter: 'g::'.
-    >>> IPv6Parameter().clean("0:00:0:0:0::1")
-    '::1'
-    >>> IPv6Parameter().clean("::ffff:c0a8:1")
-    '::ffff:192.168.0.1'
-    >>> IPv6Parameter().clean("2001:db8:0:7:0:0:0:1")
-    '2001:db8:0:7::1'
+    Check value is IPv6 address
     """
 
     def clean(self, value):
@@ -799,22 +579,7 @@ class IPv6Parameter(StringParameter):
 
 class IPv6PrefixParameter(StringParameter):
     """
-    >>> IPv6PrefixParameter().clean("::/128")
-    '::/128'
-    >>> IPv6PrefixParameter().clean("2001:db8::/32")
-    '2001:db8::/32'
-    >>> IPv6PrefixParameter().clean("2001:db8::/129") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: IPv6PrefixParameter: '2001:db8::/129'
-    >>> IPv6PrefixParameter().clean("2001:db8::/g") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: IPv6PrefixParameter: '2001:db8::/g'
-    >>> IPv6PrefixParameter().clean("2001:db8::") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    ValueError: IPv6PrefixParameter: '2001:db8::'
+    Check value is IPv6 prefix
     """
 
     def clean(self, value):
@@ -834,17 +599,11 @@ class IPv6PrefixParameter(StringParameter):
         return "%s/%d" % (n, m)
 
 
-#
-# IPv4/IPv6 parameter
-#
 class IPParameter(StringParameter):
+    """
+    Check value is IPv4 or IPv6 address
+    """
     def clean(self, value):
-        """
-        >>> IPParameter().clean("192.168.0.1")
-        '192.168.0.1'
-        >>> PrefixParameter().clean("2001:db8::/32")
-        '2001:db8::/32'
-        """
         if ":" in value:
             return IPv6Parameter().clean(value)
         else:
@@ -866,21 +625,9 @@ class PrefixParameter(StringParameter):
             return IPv4PrefixParameter().clean(value)
 
 
-#
-#
-#
 class VLANIDParameter(IntParameter):
     """
-    >>> VLANIDParameter().clean(10)
-    10
-    >>> VLANIDParameter().clean(5000) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: VLANIDParameter: 5000
-    >>> VLANIDParameter().clean(0) #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: VLANIDParameter: 0
+    Check value is VLAN ID
     """
 
     def __init__(self, required=True, default=None):
@@ -891,16 +638,8 @@ class VLANIDParameter(IntParameter):
 
 class VLANStackParameter(ListOfParameter):
     """
-    >>> VLANStackParameter().clean(10)
-    [10]
-    >>> VLANStackParameter().clean([10])
-    [10]
-    >>> VLANStackParameter().clean([10, "20"])
-    [10, 20]
-    >>> VLANStackParameter().clean([10, 0])
-    [10, 0]
+    Check value is a stack of of VLAN ID
     """
-
     def __init__(self, required=True, default=None):
         super(VLANStackParameter, self).__init__(
             element=IntParameter(), required=required, default=default, convert=True
@@ -915,15 +654,9 @@ class VLANStackParameter(ListOfParameter):
         return value
 
 
-#
-#
-#
 class VLANIDListParameter(ListOfParameter):
     """
-    >>> VLANIDListParameter().clean(["1","2","3"])
-    [1, 2, 3]
-    >>> VLANIDListParameter().clean([1,2,3])
-    [1, 2, 3]
+    Check value is a list of arbitrary vlans
     """
 
     def __init__(self, required=True, default=None):
@@ -933,13 +666,10 @@ class VLANIDListParameter(ListOfParameter):
 
 
 class VLANIDMapParameter(StringParameter):
+    """
+    Check value is vlan map/vc filter
+    """
     def clean(self, value):
-        """
-        >>> VLANIDMapParameter().clean("1,2,5-10")
-        '1-2,5-10'
-        >>> VLANIDMapParameter().clean("")
-        ''
-        """
         if isinstance(value, six.string_types) and not value.strip():
             return ""
         vp = VLANIDParameter()
@@ -951,44 +681,7 @@ class VLANIDMapParameter(StringParameter):
 
 class MACAddressParameter(StringParameter):
     """
-    >>> MACAddressParameter().clean("1234.5678.9ABC")
-    '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("1234.5678.9abc")
-    '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("0112.3456.789a.bc")
-    '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("1234.5678.9abc.def0") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: MACAddressParameter: '1234.5678.9ABC.DEF0'
-    >>> MACAddressParameter().clean("12:34:56:78:9A:BC")
-    '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("12-34-56-78-9A-BC")
-    '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("0:13:46:50:87:5")
-    '00:13:46:50:87:05'
-    >>> MACAddressParameter().clean("123456-789abc")
-    '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: MACAddressParameter: '12:34:56:78:9A:BC:DE'
-    >>> MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
-    >>> MACAddressParameter().clean("aabb-ccdd-eeff")
-    'AA:BB:CC:DD:EE:FF'
-    >>> MACAddressParameter().clean("aabbccddeeff")
-    'AA:BB:CC:DD:EE:FF'
-    >>> MACAddressParameter().clean("AABBCCDDEEFF")
-    'AA:BB:CC:DD:EE:FF'
-    >>> MACAddressParameter().clean("\\xa8\\xf9K\\x80\\xb4\\xc0")
-    'A8:F9:4B:80:B4:C0'
-    >>> MACAddressParameter(accept_bin=False).clean("\\xa8\\xf9K\\x80\\xb4\\xc0") #doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    ValueError: MACAddressParameter: '\xa8\xf9K\x80\xb4\xc0'.
+    Check value is MAC address
     """
 
     def __init__(self, required=True, default=None, accept_bin=True):

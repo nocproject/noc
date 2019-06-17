@@ -65,6 +65,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinxcontrib.mermaid",
     "sphinxcontrib.httpdomain",
+    "autoapi.extension",
 ]
 
 if HAS_NOC_SRC:
@@ -242,3 +243,8 @@ mermaid_output_format = os.environ.get("MERMAID_FORMAT", "raw")
 # The default is 'mmdc'; you may need to set this to a full path
 # if it's not in the executable search path.
 # mermaid_cmd = 'mmdc'
+
+# autoapi
+autoapi_type = "python"
+autoapi_dirs = ["/noc"]
+autoapi_root = "src"

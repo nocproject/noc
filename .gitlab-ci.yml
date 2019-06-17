@@ -275,8 +275,9 @@ Build docs:
   environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
   script:
+    - mkdir -p docs/src/en/src
+    - sphinx-build -a -E -b html docs/src/en build/docs/en
     - cd docs/
-    - sphinx-build -a -E -b html src/en ../build/docs/en
     - python ./scripts/build-go.py ../build/docs/en/objects.inv
   tags:
     - docker
