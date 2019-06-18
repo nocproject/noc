@@ -108,7 +108,7 @@ class Firmware(Document):
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_ensure_cache"),
-        key=lambda s, p, v, vv: "%s-%s-%s" % (p.id, v.id, vv),
+        key=lambda p, v, vv: "%s-%s-%s" % (p.id, v.id, vv),
         lock=lambda _: id_lock)
     def ensure_firmware(cls, profile, vendor, version):
         """

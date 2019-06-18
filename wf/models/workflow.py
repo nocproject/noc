@@ -24,6 +24,7 @@ from noc.main.models.remotesystem import RemoteSystem
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
+_default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
 
 
 @bi_sync
@@ -59,7 +60,6 @@ class Workflow(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
 
     def __str__(self):
         return self.name
@@ -74,7 +74,7 @@ class Workflow(Document):
     def get_by_bi_id(cls, id):
         return Workflow.objects.filter(bi_id=id).first()
 
-    @cachetools.cachedmethod(operator.attrgetter("_default_state_cache"), lock=lambda _: id_lock)
+    @cachetools.cached(_default_state_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_default_state(self):
         from .state import State
         return State.objects.filter(workflow=self.id, is_default=True).first()
@@ -89,3 +89,10 @@ class Workflow(Document):
                             self.name, s.name)
                 s.is_default = False
                 s.save()
+        # Invalidate caches
+        key = str(self.id)
+        if key in _default_state_cache:
+            try:
+                del _default_state_cache[key]
+            except KeyError:
+                pass

@@ -36,8 +36,9 @@ class SubscriberLoader(BaseLoader):
 
     _profile_cache = {}
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_profile_cache"))
-    def get_profile(self, name):
+    def get_profile(cls, name):
         return SubscriberProfile.objects.get(name=name)
 
     def clean(self, row):

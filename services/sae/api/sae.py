@@ -129,9 +129,7 @@ class SAEAPI(API):
         data["pool"] = pool
         raise tornado.gen.Return(data)
 
-    @cachedmethod(
-        key="cred-%s"
-    )
+    @cachedmethod(key="cred-%s")
     def get_object_data(self, object_id):
         """
         Worker to resolve credentials
