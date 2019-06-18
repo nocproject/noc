@@ -100,8 +100,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don"t forget to use absolute paths, not relative paths.
     ".",
-    "templates",
-    "django/contrib/admin/templates/"
+    "templates"
 )
 
 INSTALLED_APPS = [
