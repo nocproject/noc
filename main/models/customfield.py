@@ -263,9 +263,11 @@ class CustomField(models.Model):
 
     def model_class(self):
         """
-        Return appropriative Model class
+        Return appropriate Model class
         """
         a, m = self.table.split("_", 1)
+        if a == "auth":
+            a = "aaa"
         return models.get_model(a, m)
 
     def document_class(self):
