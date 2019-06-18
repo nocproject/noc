@@ -274,11 +274,13 @@ Build docs:
   stage: Build docs
   environment: docs
   image: registry.getnoc.com/infrastructure/docs:master
+  before_script:
+    - NOC_SRC_PATH=${CI_PROJECT_DIR}
   script:
+    - set -x
     - mkdir -p docs/src/en/src
-    - sphinx-build -a -E -b html docs/src/en build/docs/en
-    - cd docs/
-    - python ./scripts/build-go.py ../build/docs/en/objects.inv
+    - sphinx-build -a -E -j auto -b html docs/src/en build/docs/en
+    - python ./docs/scripts/build-go.py build/docs/en/objects.inv
   tags:
     - docker
   artifacts:

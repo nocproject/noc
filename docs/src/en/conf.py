@@ -20,6 +20,9 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+# Python modules
+import datetime
+import subprocess
 import os
 import sys
 
@@ -28,12 +31,8 @@ NOC_SRC_PATH = os.getenv("NOC_SRC_PATH")
 HAS_NOC_SRC = NOC_SRC_PATH and os.path.exists(NOC_SRC_PATH)
 
 if HAS_NOC_SRC:
+    NOC_SRC_PATH = os.path.abspath(NOC_SRC_PATH)
     sys.path.insert(0, os.path.dirname(NOC_SRC_PATH))
-
-# Python modules
-import datetime
-import subprocess
-import os
 
 
 def get_branch():
@@ -65,11 +64,13 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinxcontrib.mermaid",
     "sphinxcontrib.httpdomain",
-    "autoapi.extension",
 ]
-
 if HAS_NOC_SRC:
-    extensions += ["sphinx.ext.autodoc"]
+    # autoapi
+    extensions += ["autoapi.extension"]
+    autoapi_type = "python"
+    autoapi_dirs = [NOC_SRC_PATH]
+    autoapi_root = "src"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = [".templates"]
@@ -243,8 +244,3 @@ mermaid_output_format = os.environ.get("MERMAID_FORMAT", "raw")
 # The default is 'mmdc'; you may need to set this to a full path
 # if it's not in the executable search path.
 # mermaid_cmd = 'mmdc'
-
-# autoapi
-autoapi_type = "python"
-autoapi_dirs = ["/noc"]
-autoapi_root = "src"
