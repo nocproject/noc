@@ -2,14 +2,11 @@
 # ----------------------------------------------------------------------
 # ./noc apply-nri-links
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import operator
 # Third-party modules
-import cachetools
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
 # NOC modules
@@ -41,10 +38,10 @@ class Command(BaseCommand):
         self.stdout.write("Apply NRI links from %s\n" % ExtNRILink._meta["collection"])
         for l in ExtNRILink.objects.filter(link__exists=False):
             # Get objects
-            src_mo = self.get_mo(l.src_mo)
+            src_mo = ManagedObject.get_by_id(l.src_mo)
             if not src_mo or src_mo.profile.is_generic:
                 continue
-            dst_mo = self.get_mo(l.dst_mo)
+            dst_mo = ManagedObject.get_by_id(l.dst_mo)
             if not dst_mo or dst_mo.profile.is_generic:
                 continue
             #
@@ -148,13 +145,6 @@ class Command(BaseCommand):
                 self.stdout.write("Bulk write error: '%s'\n", e.details)
         else:
             self.stdout.write("Nothing changed\n")
-
-    @cachetools.cachedmethod(operator.attrgetter("mo_cache"))
-    def get_mo(self, mo_id):
-        try:
-            return ManagedObject.objects.get(id=int(mo_id))
-        except ManagedObject.DoesNotExist:
-            return None
 
     @staticmethod
     def get_port_mapper(mo):

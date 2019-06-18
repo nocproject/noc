@@ -132,6 +132,7 @@ class ObjectModel(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _model_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
 
     def __str__(self):
         return self.name
@@ -206,7 +207,7 @@ class ObjectModel(Document):
             return cls._get_model(vendor, part_no)
 
     @classmethod
-    @cachetools.ttl_cache(maxsize=10000, ttl=60)
+    @cachetools.cachedmethod(operator.attrgetter("_model_cache"), lock=lambda _: id_lock)
     def _get_model(cls, vendor, part_no):
         """
         Get ObjectModel by part part_no,

@@ -34,14 +34,13 @@ class IsolatorClass(object):
     """
     name = None
 
-    @cachetools.func.ttl_cache(maxsize=20, ttl=600)
+    @cachetools.cached(cachetools.TTLCache(maxsize=20, ttl=600))
     def get_stat(self, num, value):
         # print("%s a %s, %s" % (self.name, num, value))
         if hasattr(self, "_%s_%s" % (num, self.name)):
             a = getattr(self, "_%s_%s" % (num, self.name))
             return a(value)
-        else:
-            return self.default(num, value)
+        return self.default(num, value)
 
     def default(self, num, index):
         """

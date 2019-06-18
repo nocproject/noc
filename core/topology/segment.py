@@ -14,7 +14,7 @@ import itertools
 from collections import defaultdict
 # Third-party modules
 import networkx as nx
-from cachetools import cachedmethod
+import cachetools
 import six
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
@@ -48,7 +48,7 @@ class SegmentTopology(BaseTopology):
         else:
             return "downlink"
 
-    @cachedmethod(operator.attrgetter("_uplinks_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_uplinks_cache"))
     def get_uplinks(self):
         r = []
         for i in self.G.node:

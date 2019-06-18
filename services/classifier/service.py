@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Classifier service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from collections import defaultdict
 import operator
 import re
 # Third-party modules
-from cachetools import TTLCache, cachedmethod
+import cachetools
 import tornado.gen
 import tornado.ioloop
 import bson
@@ -96,7 +96,7 @@ class ClassifierService(Service):
     # SNMP OID pattern
     rx_oid = re.compile(r"^(\d+\.){6,}")
 
-    interface_cache = TTLCache(maxsize=10000, ttl=60)
+    interface_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
 
     def __init__(self):
         super(ClassifierService, self).__init__()
@@ -394,8 +394,9 @@ class ClassifierService(Service):
                     n_suppress = suppress
         return n_suppress, n_name, nearest
 
-    @cachedmethod(operator.attrgetter("interface_cache"))
-    def get_interface(self, managed_object_id, name):
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("interface_cache"))
+    def get_interface(cls, managed_object_id, name):
         """
         Get interface instance
         """

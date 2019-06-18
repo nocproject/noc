@@ -12,7 +12,7 @@ import operator
 import six
 from networkx import nx
 import numpy as np
-from cachetools import cachedmethod
+import cachetools
 # NOC modules
 from noc.core.stencil import stencil_registry
 from noc.lib.text import split_alnum
@@ -181,14 +181,14 @@ class BaseTopology(object):
                     break
         return sorted(dl_map, key=lambda x: split_alnum(dl_map[x]))
 
-    @cachedmethod(operator.attrgetter("_rings_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_rings_cache"))
     def get_rings(self):
         """
         Return list of all rings
         """
         return list(nx.cycle_basis(self.G))
 
-    @cachedmethod(operator.attrgetter("_isolated_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_isolated_cache"))
     def get_isolated(self):
         """
         Returns list of nodes without connections

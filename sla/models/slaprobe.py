@@ -26,6 +26,7 @@ from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
 
 id_lock = Lock()
+_target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
 @six.python_2_unicode_compatible
@@ -58,7 +59,6 @@ class SLAProbe(Document):
     tags = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
@@ -68,10 +68,9 @@ class SLAProbe(Document):
     def get_by_id(cls, id):
         return SLAProbe.objects.filter(id=id).first()
 
-    @cachetools.cachedmethod(operator.attrgetter("_target_cache"), lock=lambda _: id_lock)
+    @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_target(self):
         mo = ManagedObject.objects.filter(address=self.target)[:1]
         if mo:
             return mo[0]
-        else:
-            return None
+        return None
