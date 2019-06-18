@@ -9,10 +9,12 @@
 # Third-party modules
 from django.db import models
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.aaa.models.user import User
 from noc.kb.models.kbentry import KBEntry
 
 
+@tuck_up_pants
 class KBEntryHistory(models.Model):
     """
     Modification History

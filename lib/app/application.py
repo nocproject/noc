@@ -184,7 +184,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         """
         Return desktop launch information
         """
-        from noc.main.models.permission import Permission
+        from noc.aaa.models.permission import Permission
 
         user = request.user
         # Amount of characters to strip

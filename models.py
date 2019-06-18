@@ -81,9 +81,11 @@ _MCACHE = {}
 
 _MODELS = {
     # aaa models
+    "aaa.APIKey": "noc.aaa.models.apikey.APIKey",
+    "aaa.Group": "noc.aaa.models.group.Group",
+    "aaa.Permission": "noc.aaa.models.permission.Permission",
     "aaa.User": "noc.aaa.models.user.User",
     # main models
-    "main.APIKey": "noc.main.models.apikey.APIKey",
     "main.APIToken": "noc.main.models.apitoken.APIToken",
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
@@ -103,7 +105,6 @@ _MODELS = {
     "main.NotificationGroupOther": "noc.main.models.notificationgroup.NotificationGroupOther",
     "main.NotificationGroupUser": "noc.main.models.notificationgroup.NotificationGroupUser",
     "main.OrderMap": "noc.main.models.ordermap.OrderMap",
-    "main.Permission": "noc.main.models.permission.Permission",
     "main.Pool": "noc.main.models.pool.Pool",
     "main.PrefixTable": "noc.main.models.prefixtable.PrefixTable",
     "main.PyRule": "noc.main.models.pyrule.PyRule",

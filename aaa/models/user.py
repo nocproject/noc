@@ -6,29 +6,100 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
+import datetime
+from threading import Lock
+import operator
 # Third-party modules
+import cachetools
 import six
-from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxLengthValidator
+from django.db import models
+from django.core import validators
+from django.contrib.auth.hashers import check_password, make_password
+# NOC modules
+from noc.core.model.hacks import tuck_up_pants
+from noc.core.translation import ugettext as _
+from .group import Group
+
+id_lock = Lock()
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
-class User(AbstractUser):
-    class Meta(AbstractUser.Meta):
+class User(models.Model):
+    class Meta(object):
         verbose_name = "User"
         verbose_name_plural = "Users"
         app_label = "aaa"
-        # Point to django's auth_user table
+        # Point to django"s auth_user table
         db_table = "auth_user"
-        abstract = False
         ordering = ["username"]
+
+    username = models.CharField(
+        max_length=75,
+        unique=True,
+        help_text=_("Required. 30 characters or fewer. Letters, digits and "
+                    "@/./+/-/_ only."),
+        validators=[
+            validators.RegexValidator(r"^[\w.@+-]+$", _("Enter a valid username."), "invalid")
+        ])
+    first_name = models.CharField(max_length=75, blank=True)
+    last_name = models.CharField(max_length=75, blank=True)
+    email = models.EmailField(blank=True)
+    password = models.CharField(max_length=128)
+    is_active = models.BooleanField(
+        default=True,
+        help_text=_("Designates whether this user should be treated as "
+                    "active. Unselect this instead of deleting accounts."))
+    is_superuser = models.BooleanField(
+        default=False,
+        help_text=_(
+            "Designates that this user has all permissions without "
+            "explicitly assigning them."))
+    date_joined = models.DateTimeField(default=datetime.datetime.now)
+    groups = models.ManyToManyField(
+        Group,
+        blank=True,
+        help_text=_("The groups this user belongs to. A user will "
+                    "get all permissions granted to each of "
+                    "his/her group."),
+        related_name="user_set", related_query_name="user"
+    )
+
+    _id_cache=cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.username
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return User.objects.filter(id=id).first()
 
-# Enlarge username field size and replace validators
-User._meta.get_field("username").max_length = User._meta.get_field("email").max_length
-User._meta.get_field("username").validators = [
-    v for v in User._meta.get_field("username").validators if not isinstance(v, MaxLengthValidator)
-] + [MaxLengthValidator(User._meta.get_field("username").max_length)]
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_username(cls, name):
+        return User.objects.filter(username=name).first()
+
+    def is_authenticated(self):
+        """
+        Always return True. This is a way to tell if the user has been
+        authenticated in templates.
+        """
+        return True
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        """
+        Returns a boolean of whether the raw_password was correct. Handles
+        hashing formats behind the scenes.
+        """
+        def setter(raw_password):
+            self.set_password(raw_password)
+            self.save(update_fields=["password"])
+
+        return check_password(raw_password, self.password, setter)

@@ -10,9 +10,11 @@
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.kb.models.kbentry import KBEntry
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class KBGlobalBookmark(models.Model):
     """

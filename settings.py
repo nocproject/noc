@@ -32,12 +32,10 @@ DATABASES = {
         "PASSWORD": config.pg.password,
         "HOST": config.pg.addresses[0].host,
         "PORT": config.pg.addresses[0].port,
-        "AUTOCOMMIT": False,
-        "TEST_NAME": "test_" + config.pg.db,
+        "AUTOCOMMIT": True,
         "OPTIONS": {
             "autocommit": True,
-            "connect_timeout": config.pg.connect_timeout,
-            "isolation_level": 0  # Autocommit
+            "connect_timeout": config.pg.connect_timeout
         }
     }
 }
@@ -81,7 +79,6 @@ TEMPLATE_LOADERS = [
 ]
 #
 TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
@@ -103,18 +100,11 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don"t forget to use absolute paths, not relative paths.
     ".",
-    "templates",
-    "django/contrib/admin/templates/"
+    "templates"
 )
 
 INSTALLED_APPS = [
     "noc.aaa",
-    #
-    "django.contrib.auth",
-    "django.contrib.contenttypes",  # Required by django auth
-    "django.contrib.sites",
-    "django.contrib.admin",
-    # NOC modules
     "noc.main",
     "noc.dev",
     "noc.project",
@@ -141,7 +131,7 @@ INSTALLED_APPS = [
 FORCE_SCRIPT_NAME = ""
 
 # Available languages
-_ = lambda s: s # noqa. _ should be a lambda not a function
+_ = lambda s: s  # noqa. _ should be a lambda not a function
 LANGUAGES = [
     ("en", _("English")),
     ("ru", _("Russian")),
@@ -149,15 +139,11 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = ["locale"]
-
-# SOUTH_AUTO_FREEZE_APP = False
-
-AUTH_USER_MODEL = "aaa.User"
 AUTH_PROFILE_MODULE = "main.UserProfile"
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
-# Set up by test runner
-TEST_FIXED_BEEF_BASE = None
+# Suppress deprecation warning. We don't use django's testing framework
+TEST_RUNNER = None
 
 # Disable SQL statement logging
 logging.getLogger("django.db.backends").setLevel(logging.ERROR)

@@ -10,6 +10,7 @@
 import six
 from django.db import models
 # NOC module
+from noc.core.model.hacks import tuck_up_pants
 from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.lib.rpsl import rpsl_format
@@ -17,6 +18,7 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.core.model.decorator import on_save
 
 
+@tuck_up_pants
 @on_save
 @six.python_2_unicode_compatible
 class ASSet(models.Model):

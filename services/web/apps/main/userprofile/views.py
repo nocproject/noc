@@ -40,7 +40,7 @@ class UserProfileApplication(ExtApplication):
                     "notification_method": c.notification_method,
                     "params": c.params
                 }
-                for c in profile.userprofilecontact_set.all()
+                for c in UserProfileContact.objects.filter(user_profile=profile)
             ]
         except UserProfile.DoesNotExist:
             language = None
@@ -83,8 +83,7 @@ class UserProfileApplication(ExtApplication):
         profile.preferred_language = preferred_language
         profile.save()
         # Setup contacts
-        for c in profile.userprofilecontact_set.all():
-            c.delete()
+        UserProfileContact.objects.filter(user_profile=profile).delete()
         for c in contacts:
             UserProfileContact(
                 user_profile=profile,

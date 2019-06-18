@@ -12,10 +12,12 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
-from .timepattern import TimePattern
+from noc.core.model.hacks import tuck_up_pants
 from noc.lib.timepattern import TimePattern as TP
+from .timepattern import TimePattern
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class TimePatternTerm(models.Model):
     """

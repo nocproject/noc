@@ -22,7 +22,6 @@ class MigrationRunner(object):
         self.logger = logging.getLogger("migration")
 
     def migrate(self):
-        self.syncdb()
         self.logger.info("Migrating")
         applied = self.get_history()
         loader = MigrationLoader()
@@ -42,25 +41,6 @@ class MigrationRunner(object):
                 "duration": delta.total_seconds()
             })
         self.logger.info("Done")
-
-    def syncdb(self):
-        """
-        Django syncdb call
-        :return:
-        """
-        self.logger.info("Syncdb")
-        from django.conf import settings
-        apps = settings.INSTALLED_APPS
-        # Leave only django's applications and noc.aaa (for User model)
-        settings.INSTALLED_APPS = [
-            x for x in settings.INSTALLED_APPS
-            if not x.startswith("noc.") or x == "noc.aaa"]
-        # Run django's syncdb
-        from django.core.management.commands.syncdb import Command
-        try:
-            Command().execute(interactive=False, load_initial_data=False, verbosity="1", database="default")
-        finally:
-            settings.INSTALLED_APPS = apps
 
     def get_history(self):
         """

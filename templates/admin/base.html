@@ -1,4 +1,4 @@
-{% load admin_static %}{% load url from future %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
 <title>{% block title %}{% endblock %} | {{setup.installation_name}}</title>
@@ -9,7 +9,7 @@
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
 <META HTTP-EQUIV="Expires" CONTENT="0" />
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}/media/admin/css/base.css{% endblock %}" />
 <link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css" />
 <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />

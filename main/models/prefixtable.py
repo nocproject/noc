@@ -61,6 +61,7 @@ class PrefixTablePrefix(models.Model):
     class Meta(object):
         verbose_name = _("Prefix")
         verbose_name_plural = _("Prefixes")
+        app_label = "main"
         db_table = "main_prefixtableprefix"
         unique_together = [("table", "afi", "prefix")]
         ordering = ["table", "afi", "prefix"]
