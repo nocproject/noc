@@ -847,13 +847,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE status"),
                                             reference: "enableBoxDiscoveryCPEStatus",
-                                            colspan: 2
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_metrics",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Metrics"),
-                                            colspan: 2
+                                            colspan: 3
                                         }
                                     ]
                                 },
