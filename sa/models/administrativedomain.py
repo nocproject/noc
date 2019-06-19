@@ -23,8 +23,8 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.datastream.decorator import datastream
 
-
 id_lock = Lock()
+_path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 
 @bi_sync
@@ -74,7 +74,6 @@ class AdministrativeDomain(models.Model):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
@@ -86,8 +85,7 @@ class AdministrativeDomain(models.Model):
         ad = AdministrativeDomain.objects.filter(id=id)[:1]
         if ad:
             return ad[0]
-        else:
-            return None
+        return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
@@ -95,23 +93,21 @@ class AdministrativeDomain(models.Model):
         ad = AdministrativeDomain.objects.filter(bi_id=id)[:1]
         if ad:
             return ad[0]
-        else:
-            return None
+        return None
 
     def iter_changed_datastream(self):
         if config.datastream.enable_administrativedomain:
             yield "administrativedomain", self.id
 
-    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    @cachetools.cached(_path_cache, key=lambda s: s.id, lock=id_lock)
     def get_path(self):
         """
-        Returns list of parent segment ids
+        Returns list of parent administrative domain ids
         :return:
         """
         if self.parent:
             return self.parent.get_path() + [self.id]
-        else:
-            return [self.id]
+        return [self.id]
 
     def get_default_pool(self):
         if self.default_pool:

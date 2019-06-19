@@ -121,8 +121,9 @@ class LoginService(UIService):
             self.logger.info("Changed user credentials: %s", c)
         return r
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_apikey_cache"))
-    def get_api_access(self, key, ip):
+    def get_api_access(cls, key, ip):
         return APIKey.get_name_and_access_str(key, ip)
 
 

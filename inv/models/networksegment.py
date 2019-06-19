@@ -35,6 +35,7 @@ from noc.core.scheduler.job import Job
 from noc.vc.models.vcfilter import VCFilter
 
 id_lock = Lock()
+_path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
 class VLANTranslation(EmbeddedDocument):
@@ -159,7 +160,6 @@ class NetworkSegment(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _border_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _vlan_domains_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _vlan_domains_mo_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -179,7 +179,7 @@ class NetworkSegment(Document):
     def get_by_bi_id(cls, id):
         return NetworkSegment.objects.filter(bi_id=id).first()
 
-    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):
         """
         Returns list of parent segment ids
@@ -187,8 +187,7 @@ class NetworkSegment(Document):
         """
         if self.parent:
             return self.parent.get_path() + [self.id]
-        else:
-            return [self.id]
+        return [self.id]
 
     def clean(self):
         if self.id and "parent" in self._changed_fields and self.has_loop:
