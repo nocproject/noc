@@ -3,7 +3,7 @@
 # Vendor: Cisco
 # OS:     IOS XR
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.Cisco.IOSXR.base.BaseIOSXRParser"
 
     rx_interface_name = re.compile(
-        r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(?:/\d+)*(?:\.\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
+        r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(?:/\d+)*(?:\.\d+)?(?:\.ip\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
         re.IGNORECASE)
 
     matchers = {
@@ -44,6 +44,8 @@ class Profile(BaseProfile):
         MgmtEth0/1/CPU0/0
         GigabitEthernet0/2/0/0.1000
         Te0/0/1/3
+        Bundle-Ether1.5011035
+        Bundle-Ether1.10231016.ip18484
         """
         match = self.rx_interface_name.match(s)
         if not match:
