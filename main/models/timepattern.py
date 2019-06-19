@@ -46,13 +46,14 @@ class TimePattern(models.Model):
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", null=True, blank=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _code_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __str__(self):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         p = TimePattern.objects.filter(id=id)[:1]
         if p:
@@ -66,8 +67,7 @@ class TimePattern(models.Model):
         p = TimePattern.get_by_id(id)
         if p:
             return TP.compile_to_python([t.term for t in p.timepatternterm_set.all()])
-        else:
-            return None
+        return None
 
     @property
     def time_pattern(self):

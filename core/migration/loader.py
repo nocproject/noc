@@ -22,8 +22,9 @@ class MigrationLoader(object):
     def __init__(self):
         pass
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_migration_cache"))
-    def get_migration(self, name):
+    def get_migration(cls, name):
         """
         Get migration instance
         :param name: Migration name

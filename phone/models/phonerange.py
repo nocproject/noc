@@ -36,6 +36,7 @@ from .numbercategory import NumberCategory
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
+_path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
 @on_save
@@ -80,7 +81,6 @@ class PhoneRange(Document):
     effective_client_groups = ListField(ObjectIdField())
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
-    _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.name
@@ -91,7 +91,7 @@ class PhoneRange(Document):
     def get_by_id(cls, id):
         return PhoneRange.objects.filter(id=id).first()
 
-    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):
         """
         Returns list of parent range ids
@@ -99,8 +99,7 @@ class PhoneRange(Document):
         """
         if self.parent:
             return self.parent.get_path() + [self.id]
-        else:
-            return [self.id]
+        return [self.id]
 
     @classmethod
     def get_closest_range(cls, dialplan, from_number,
