@@ -77,6 +77,10 @@ TELNET_OPTIONS = {
     37: "AUTHENTICATION",
     38: "ENCRYPT",
     39: "NEW_ENVIRON",
+    40: "TN3270E",
+    41: "XAUTH",
+    42: "CHARSET",
+    45: "SLE",
     255: "EXOPL",
 }
 
@@ -136,7 +140,7 @@ class TelnetIOStream(IOStream):
                     else:
                         i = right.index(SE)
                         self.process_iac_sb(right[1:i - 1])
-                        chunk = right[i:]
+                        chunk = right[i + 1:]
             else:
                 # Return leftovers
                 break
@@ -147,8 +151,7 @@ class TelnetIOStream(IOStream):
 
     def write(self, data, callback=None):
         data = data.replace(IAC, IAC + IAC)
-        return super(TelnetIOStream, self).write(data,
-                                                 callback=callback)
+        return super(TelnetIOStream, self).write(data, callback=callback)
 
     def send_iac(self, cmd, opt):
         """
@@ -163,8 +166,13 @@ class TelnetIOStream(IOStream):
         if data:
             sb += data
         sb += IAC + SE
-        self.logger.debug("Send IAC SB %r %r IAC SE",
-                          opt, data)
+        if opt == "\x18\x00":
+            opt = "TTYPE IS"
+        elif opt == "\x1f":
+            opt = "WS"
+        else:
+            opt = "%r" % opt
+        self.logger.debug("Send IAC SB %s %r IAC SE", opt, data)
         self.out_iac_seq += [sb]
         # self.write_to_fd(sb)
 
@@ -189,9 +197,11 @@ class TelnetIOStream(IOStream):
             self.send_iac_sb(opt, self.naws)
 
     def process_iac_sb(self, sb):
-        self.logger.debug("Received IAC SB %s SE", sb.encode("hex"))
-        if sb == "\x18\x01":  # TTYPE SEND
-            self.out_iac_seq += [IAC + SB + "\x18\x00XTERM" + IAC + SE]
+        if sb.encode("hex") == "1801":
+            self.logger.debug("Received IAC SB TTYPE SEND IAC SE")
+            self.send_iac_sb("\x18\x00", "XTERM")
+        else:
+            self.logger.debug("Received IAC SB %s IAC SE", sb.encode("hex"))
 
     def iac_repr(self, cmd, opt):
         """
