@@ -1,0 +1,10 @@
+{
+    "name": "Radio | RxPower",
+    "$collection": "pm.metrictypes",
+    "uuid": "17ed6324-0097-4eaf-b81d-575f6c4dce89",
+    "scope__name": "Interface",
+    "field_name": "rx_power",
+    "field_type": "Float32",
+    "description": "Signal Rx Power on transmitter",
+    "measure": "dBm"
+}
