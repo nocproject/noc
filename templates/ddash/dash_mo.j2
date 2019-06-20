@@ -124,7 +124,7 @@
         {% for port in port_types -%}
             {{ comma() }}
             {
-              "collapse": false,
+              "collapse": true,
               "editable": false,
               "height": "250px",
               "showTitle": true,
@@ -142,7 +142,7 @@
     ,
         {% set comma = joiner(",") -%}
         {
-          "collapse": false,
+          "collapse": true,
           "editable": false,
           "height": "250px",
           "showTitle": true,
@@ -160,7 +160,7 @@
         {% for lag in lags -%}
 
             {{ comma() }}{
-              "collapse": false,
+              "collapse": true,
               "editable": false,
               "height": "250px",
               "showTitle": true,
@@ -177,6 +177,22 @@
     {%if port_types %}
     ,
         {% include "row_errors.j2" with context -%}
+    {%endif%}
+
+    {%if port_types %}
+    ,
+        {
+          "collapse": true,
+          "editable": false,
+          "height": "250px",
+          "showTitle": true,
+          "internal_comment": "radio_row",
+          "title": "Radio metrics",
+          "panels": [
+              {% include "graph_radio_rssi_cinr.j2" with context -%},
+              {% include "graph_radio_txrxpower.j2" with context -%}
+          ]
+        }
     {%endif%}
 
 
