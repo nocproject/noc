@@ -6,10 +6,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import time
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.quantile import Stream, LowBiasedStream, HighBiasedStream, TargetedStream
+from noc.core.quantile import Stream, LowBiasedStream, HighBiasedStream, TargetedStream, Summary
 
 # Default quantiles
 Q_DEFAULT_EPS = 0.05
@@ -223,3 +225,21 @@ def test_reset():
     assert not stream.merged
     assert not stream.merged_width
     assert not stream.sorted
+
+
+def test_summary():
+    summary = Summary(1, 3, HighBiasedStream, 100, Q_DEFAULT_EPS)
+    # Check slots amount
+    assert len(summary.slots) == 4
+    # Check slots
+    for slot in summary.slots:
+        assert isinstance(slot, HighBiasedStream)
+    # Check insertion
+    for v in seq_linear(1.0, 0.0, 10):
+        summary.register(v)
+        time.sleep(0.5)
+    # Request quantiles
+    values = summary.query(0.95, 0, 1, 2)
+    assert len(values) == 3
+    assert values[0] < values[1]
+    assert values[1] < values[2]
