@@ -16,7 +16,7 @@ from noc.core.confdb.patterns import ANY
 
 class Profile(BaseProfile):
     name = "Raisecom.ROS"
-    pattern_more = "^ --More--\s*"
+    pattern_more = r"^ --More--\s*"
     pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"
     pattern_prompt = r"^\S+?#"
@@ -26,8 +26,8 @@ class Profile(BaseProfile):
         r"% \".+\"  (?:Unknown command.)|Error input in the position marked by"
     pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
-    config_volatile = [r"radius(-server | accounting-server )encrypt-key \S+\n",
-                       r"tacacs(-server | accounting-server )encrypt-key \S+\n"]
+    config_volatile = [r"radius(-server | accounting-server |-)encrypt-key \S+\n",
+                       r"tacacs(-server | accounting-server |-)encrypt-key \S+\n"]
     config_tokenizer = "context"
     config_tokenizer_settings = {
         "line_comment": "!",
