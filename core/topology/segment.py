@@ -50,11 +50,7 @@ class SegmentTopology(BaseTopology):
 
     @cachetools.cachedmethod(operator.attrgetter("_uplinks_cache"))
     def get_uplinks(self):
-        r = []
-        for i in self.G.node:
-            if self.G.node[i].get("role") == "uplink":
-                r += [i]
-        return r
+        return [i for i in self.G.node if self.G.node[i].get("role") == "uplink"]
 
     def load(self):
         """
@@ -213,6 +209,16 @@ class SegmentTopology(BaseTopology):
         :returns: ObjectUplinks items
         """
         def get_node_uplinks(node):
+            role = self.G.node[node]["role"]
+            if role == "uplink":
+                # Only downlinks matter
+                return []
+            elif role == "downlink":
+                # All segment neighbors are uplinks.
+                # As no inter-downlink segment's links are loaded
+                # so all neigbors are from current segment
+                return list(self.G.neighbors(node))
+            # Segment role
             ups = {}
             for u in uplinks:
                 for path in nx.all_simple_paths(self.G, node, u):
@@ -225,6 +231,7 @@ class SegmentTopology(BaseTopology):
         from noc.sa.models.objectdata import ObjectUplinks
 
         uplinks = self.get_uplinks()
+        # @todo: Workaround for empty uplinks
         # Get all cloud nodes
         cloud_nodes = [o for o in self.G.node if self.G.node[o]["type"] == "cloud"]
         # Get uplinks for cloud nodes
@@ -232,12 +239,12 @@ class SegmentTopology(BaseTopology):
             (o, [int(u) for u in get_node_uplinks(o)])
             for o in cloud_nodes
         )
-        # Get all segment objects' nodes
-        segment_objects = set(str(o) for o in self.segment_objects)  # Convert to string
+        # All objects including neighbors
+        all_objects = set(o for o in self.G.node if self.G.node[o]["type"] == "managedobject")
         # Get objects uplinks
         obj_uplinks = {}
         obj_downlinks = defaultdict(set)
-        for o in segment_objects:
+        for o in all_objects:
             mo = int(o)
             ups = []
             for u in get_node_uplinks(o):
@@ -252,16 +259,21 @@ class SegmentTopology(BaseTopology):
                 obj_downlinks[u].add(mo)
         # Calculate RCA neighbors and yield result
         for mo in obj_uplinks:
+            # Filter out only current segment. Neighbors will be updated by their
+            # segment's tasks
+            if mo not in self.segment_objects:
+                continue
             # All uplinks
             neighbors = set(obj_uplinks[mo])
             # All downlinks
             for dmo in obj_downlinks[mo]:
                 neighbors.add(dmo)
-                # And uplinks of neighbors
+                # And uplinks of downlinks
                 neighbors |= set(obj_uplinks[dmo])
             # Not including object itself
             if mo in neighbors:
                 neighbors.remove(mo)
+            # Recalculated result
             yield ObjectUplinks(
                 object_id=mo,
                 uplinks=obj_uplinks[mo],
