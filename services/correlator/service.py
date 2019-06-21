@@ -622,7 +622,7 @@ class CorrelatorService(Service):
 
         def correlate(a1):
             """
-            Correlate with uplink alarms if all aplinks are faulty.
+            Correlate with uplink alarms if all uplinks are faulty.
             :param a1:
             :return:
             """
@@ -641,9 +641,11 @@ class CorrelatorService(Service):
             (a.managed_object.id, a)
             for a in ActiveAlarm.objects.filter(
                 alarm_class=alarm.alarm_class.id,
-                rca_neighbors=alarm.managed_object.id
+                rca_neighbors__in=[alarm.managed_object.id]
             )
         )
+        # Add current alarm to corellate downlink alarms properly
+        neighbor_alarms[alarm.managed_object.id] = alarm
         # Correlate current alarm
         correlate(alarm)
         # Correlate all downlink alarms
