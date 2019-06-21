@@ -11,7 +11,8 @@ from threading import local
 # Third-party modules
 import pymongo.monitoring
 # NOC modules
-from noc.core.hist import get_hist
+from noc.core.hist.monitor import get_hist
+from noc.core.quantile.monitor import get_quantile
 from noc.core.span import Span
 
 tls = local()
@@ -22,6 +23,7 @@ class MongoCommandSpan(pymongo.monitoring.CommandListener):
         span = Span(
             service="mongo",
             hist=get_hist("mongo", ("command", event.command_name)),
+            quantile=get_quantile("mongo", ("command", event.command_name)),
             in_label=event.command_name
         )
         setattr(tls, str(event.request_id), span)

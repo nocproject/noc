@@ -32,7 +32,8 @@ from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from noc.core.debug import excepthook, error_report, ErrorReport
 from noc.core.log import ErrorFormatter
 from noc.core.perf import metrics, apply_metrics
-from noc.core.hist import apply_hists
+from noc.core.hist.monitor import apply_hists
+from noc.core.quantile.monitor import apply_quantiles
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
@@ -555,6 +556,8 @@ class Service(object):
         self.ioloop.stop()
         m = {}
         apply_metrics(m)
+        apply_hists(m)
+        apply_quantiles(m)
         self.logger.info("Post-mortem metrics: %s", m)
         self.die("")
 
@@ -654,6 +657,7 @@ class Service(object):
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
         apply_hists(r)
+        apply_quantiles(r)
         return r
 
     def iter_rpc_retry_timeout(self):

@@ -11,7 +11,7 @@ import time
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.quantile import Stream, LowBiasedStream, HighBiasedStream, TargetedStream, Summary
+from noc.core.quantile.base import Stream, LowBiasedStream, HighBiasedStream, TargetedStream, Summary
 
 # Default quantiles
 Q_DEFAULT_EPS = 0.05

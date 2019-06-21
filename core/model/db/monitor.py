@@ -10,7 +10,8 @@
 import psycopg2.extensions
 # NOC modules
 from noc.core.span import Span
-from noc.core.hist import get_hist
+from noc.core.hist.monitor import get_hist
+from noc.core.quantile.monitor import get_quantile
 
 
 class SpanCursor(psycopg2.extensions.cursor):
@@ -19,5 +20,6 @@ class SpanCursor(psycopg2.extensions.cursor):
         with Span(
                 service="postgres",
                 hist=get_hist("postgres", ("command", label)),
+                quantile=get_quantile("postgres", ("command", label)),
                 in_label=label):
             super(SpanCursor, self).execute(query, vars)

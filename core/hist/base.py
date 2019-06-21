@@ -10,9 +10,6 @@
 import bisect
 # Third-party modules
 from atomiclong import AtomicLong
-import six
-# NOC modules
-from noc.config import config
 
 DEFAULT_HIST_SCALE = 1000000
 
@@ -53,27 +50,3 @@ class Histogram(object):
         count_name = "%s_count" % name
         yield "# TYPE %s untyped" % count_name
         yield "%s{%s} %s" % (count_name, ",".join(ext_labels), self.total_count.value)
-
-
-hists = {}
-
-
-def get_hist(*args):
-    hist = hists.get(args, False)
-    if hist is False:
-        cfg = config.get_hist_config(args[0])
-        if cfg:
-            hist = Histogram(cfg)
-        else:
-            hist = None
-        hists[args] = hist
-    return hist
-
-
-def apply_hists(d):
-    """
-    Apply histogram values to dict d
-    :param d: Dictionary
-    :return:
-    """
-    d.update(hists)

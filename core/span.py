@@ -48,7 +48,7 @@ class Span(object):
     def __init__(self, client=DEFAULT_CLIENT, server=DEFAULT_SERVER,
                  service=DEFAULT_SERVICE, sample=PARENT_SAMPLE,
                  in_label=DEFAULT_LABEL, parent=DEFAULT_ID,
-                 context=DEFAULT_ID, hist=None):
+                 context=DEFAULT_ID, hist=None, quantile=None):
         self.client = client
         self.server = server
         self.service = service
@@ -75,6 +75,7 @@ class Span(object):
         if config.features.forensic:
             self.forensic_id = str(uuid.uuid4())
         self.hist = hist
+        self.quantile = quantile
 
     def __enter__(self):
         if config.features.forensic:
@@ -83,7 +84,7 @@ class Span(object):
                 self.forensic_id, self.server,
                 self.service, self.in_label
             )
-        if self.is_sampled or self.hist:
+        if self.is_sampled or self.hist or self.quantile:
             self.ts0 = perf_counter()
         if not self.is_sampled:
             return self
@@ -114,10 +115,12 @@ class Span(object):
                 return str(s).encode("string_escape")
 
         global spans
-        if self.is_sampled or self.hist:
+        if self.is_sampled or self.hist or self.quantile:
             self.duration = int((perf_counter() - self.ts0) * US)
         if self.hist:
             self.hist.register(self.duration)
+        if self.quantile:
+            self.quantile.register(self.duration)
         if config.features.forensic and hasattr(self, "forensic_id"):
             # N.B. config.features.forensic may be changed during span
             forensic_logger.info("[<%s]", self.forensic_id)

@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.core.hist import Histogram
+from noc.core.hist.base import Histogram
 
 
 @pytest.mark.parametrize("config,sample,expected", [

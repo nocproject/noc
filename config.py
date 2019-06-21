@@ -621,6 +621,14 @@ class Config(BaseConfig):
         postgres_hist = ListParameter(item=FloatParameter(), default=[
             0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
         ])
+        default_quantiles = ListParameter(item=FloatParameter(), default=[
+            0.5, 0.9, 0.95
+        ])
+        default_quantiles_epsilon = 0.01
+        default_quantiles_window = 60
+        default_quantiles_buffer = 100
+        enable_mongo_quantiles = BooleanParameter(default=False)
+        enable_postgres_quantiles = BooleanParameter(default=False)
 
     # pylint: disable=super-init-not-called
     def __init__(self):
@@ -771,6 +779,14 @@ class Config(BaseConfig):
             return cfg
         # Fallback to defaults
         return self.metrics.default_hist or None
+
+    def get_quantiles_config(self, name):
+        """
+        Check if quantile is enabled
+        :return: True if quantile is enabled
+        """
+        # Check quantiles is enabled
+        return getattr(self.metrics, "enable_%s_quantiles" % name, False)
 
 
 CHClusterShard = namedtuple("CHClusterShard", ["replicas", "weight"])

@@ -54,6 +54,8 @@ class MetricsHandler(tornado.web.RequestHandler):
             local_labels.update(labels)
             cleared_name = str(metric_name).translate(TR).lower()
             value = mdata[key]
+            if value is None:
+                continue
             if hasattr(value, "iter_prom_metrics"):
                 out += list(value.iter_prom_metrics(cleared_name, local_labels))
             else:
