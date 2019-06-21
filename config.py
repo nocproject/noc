@@ -617,6 +617,10 @@ class Config(BaseConfig):
         mongo_hist = ListParameter(item=FloatParameter(), default=[
             0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
         ])
+        enable_postgres_hist = BooleanParameter(default=False)
+        postgres_hist = ListParameter(item=FloatParameter(), default=[
+            0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
+        ])
 
     # pylint: disable=super-init-not-called
     def __init__(self):

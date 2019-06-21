@@ -229,7 +229,7 @@ def test_reset():
 
 def test_summary():
     summary = Summary(1, 3, HighBiasedStream, 100, Q_DEFAULT_EPS)
-    # Check slots amount
+    # Check slots amount (N+1)
     assert len(summary.slots) == 4
     # Check slots
     for slot in summary.slots:
@@ -240,6 +240,8 @@ def test_summary():
         time.sleep(0.5)
     # Request quantiles
     values = summary.query(0.95, 0, 1, 2)
+    # Check result. Input sequence is declining, so resulting values must be
+    # increasing between time slots
     assert len(values) == 3
     assert values[0] < values[1]
     assert values[1] < values[2]

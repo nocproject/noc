@@ -61,7 +61,11 @@ hists = {}
 def get_hist(*args):
     hist = hists.get(args, False)
     if hist is False:
-        hist = Histogram(config.get_hist_config(args[0]))
+        cfg = config.get_hist_config(args[0])
+        if cfg:
+            hist = Histogram(cfg)
+        else:
+            hist = None
         hists[args] = hist
     return hist
 
