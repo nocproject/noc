@@ -111,7 +111,8 @@ class Command(BaseCommand):
             version = {
                 "vendor": obj.vendor.name if obj.vendor else None,
                 "platform": obj.platform.name if obj.platform else None,
-                "version": obj.version.version if obj.version else None
+                "version": obj.version.version if obj.version else None,
+                "image": obj.image if obj.image else None
             }
         else:
             version = None
@@ -386,6 +387,7 @@ class JSONObject(object):
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
         self.version = VersionStub(data["version"]) if "version" in data else None
+        self.image = data["image"] if "image" in data else None
 
     @property
     def credentials(self):
