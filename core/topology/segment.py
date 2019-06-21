@@ -209,7 +209,7 @@ class SegmentTopology(BaseTopology):
         :returns: ObjectUplinks items
         """
         def get_node_uplinks(node):
-            role = self.G.node[node]["role"]
+            role = self.G.node[node].get("role", "cloud")
             if role == "uplink":
                 # Only downlinks matter
                 return []
@@ -218,7 +218,7 @@ class SegmentTopology(BaseTopology):
                 # As no inter-downlink segment's links are loaded
                 # so all neigbors are from current segment
                 return list(self.G.neighbors(node))
-            # Segment role
+            # Segment role and clouds
             ups = {}
             for u in uplinks:
                 for path in nx.all_simple_paths(self.G, node, u):
