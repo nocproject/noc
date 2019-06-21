@@ -232,12 +232,10 @@ class SegmentTopology(BaseTopology):
 
         uplinks = self.get_uplinks()
         # @todo: Workaround for empty uplinks
-        # Get all cloud nodes
-        cloud_nodes = [o for o in self.G.node if self.G.node[o]["type"] == "cloud"]
         # Get uplinks for cloud nodes
         cloud_uplinks = dict(
             (o, [int(u) for u in get_node_uplinks(o)])
-            for o in cloud_nodes
+            for o in self.G.node if self.G.node[o]["type"] == "cloud"
         )
         # All objects including neighbors
         all_objects = set(o for o in self.G.node if self.G.node[o]["type"] == "managedobject")
@@ -249,7 +247,7 @@ class SegmentTopology(BaseTopology):
             ups = []
             for u in get_node_uplinks(o):
                 cu = cloud_uplinks.get(u)
-                if cu:
+                if cu is not None:
                     # Uplink is a cloud. Use cloud's uplinks instead
                     ups += cu
                 else:
