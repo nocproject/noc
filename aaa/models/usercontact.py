@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# UserProfileContact model
+# UserContact model
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -13,24 +13,24 @@ import six
 from django.db import models
 # NOC modules
 from noc.core.model.hacks import tuck_up_pants
-from .userprofile import UserProfile
-from .timepattern import TimePattern
-from .notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.models.timepattern import TimePattern
+from noc.main.models. notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from .user import User
 
 
 @tuck_up_pants
 @six.python_2_unicode_compatible
-class UserProfileContact(models.Model):
+class UserContact(models.Model):
     class Meta(object):
         verbose_name = "User Profile Contact"
         verbose_name_plural = "User Profile Contacts"
-        unique_together = [("user_profile", "time_pattern",
+        unique_together = [("user", "time_pattern",
                             "notification_method", "params")]
-        app_label = "main"
-        db_table = "main_userprofilecontact"
+        app_label = "aaa"
+        db_table = "aaa_usercontact"
 
-    user_profile = models.ForeignKey(
-        UserProfile, verbose_name="User Profile")
+    user = models.ForeignKey(
+        User, verbose_name="User")
     time_pattern = models.ForeignKey(
         TimePattern, verbose_name="Time Pattern")
     notification_method = models.CharField(
@@ -39,8 +39,8 @@ class UserProfileContact(models.Model):
     params = models.CharField("Params", max_length=256)
 
     def __str__(self):
-        return "%s %s %s" % (
-            self.user_profile.user.username,
+        return u"%s %s %s" % (
+            self.user.username,
             self.time_pattern.name,
             self.notification_method
         )

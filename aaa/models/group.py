@@ -14,19 +14,21 @@ import cachetools
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
-@tuck_up_pants
+@on_delete_check(check=[
+    ("sa.GroupAccess", "group")
+])
 @six.python_2_unicode_compatible
 class Group(models.Model):
     class Meta(object):
         verbose_name = "Group"
         verbose_name_plural = "Groups"
         app_label = "aaa"
-        # Point to django's auth_user table
+        # Point to django"s auth_user table
         db_table = "auth_group"
         ordering = ["name"]
 

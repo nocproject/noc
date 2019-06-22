@@ -139,7 +139,6 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = ["locale"]
-AUTH_PROFILE_MODULE = "main.UserProfile"
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
 # Suppress deprecation warning. We don't use django's testing framework

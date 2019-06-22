@@ -23,14 +23,14 @@ id_lock = Lock()
 
 @on_delete_check(check=[
     # ("fm.EscalationItem", "administrative_domain")
+    ("aaa.UserContact", "time_pattern"),
     ("fm.AlarmTrigger", "time_pattern"),
     ("fm.EventTrigger", "time_pattern"),
     ("main.TimePatternTerm", "time_pattern"),
     ("main.NotificationGroupUser", "time_pattern"),
     ("main.NotificationGroupOther", "time_pattern"),
     ("maintenance.Maintenance", "time_pattern"),
-    ("sa.ManagedObject", "time_pattern"),
-    ("main.UserProfileContact", "time_pattern")
+    ("sa.ManagedObject", "time_pattern")
 ])
 @six.python_2_unicode_compatible
 class TimePattern(models.Model):

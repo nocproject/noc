@@ -102,17 +102,10 @@ class NotificationGroup(models.Model):
         m = []
         # Collect user notifications
         for ngu in self.notificationgroupuser_set.filter(user__is_active=True):
-            lang = default_language
-            try:
-                profile = ngu.user.get_profile()
-                if profile.preferred_language:
-                    lang = profile.preferred_language
-            except Exception:
-                # Fallback to user's email
-                m += [(TimePatternList([]), "mail", ngu.user.email, lang)]
-                continue
-            if profile.contacts:
-                for tp, method, params in profile.contacts:
+            lang = ngu.user.preferred_language or default_language
+            user_contacts = ngu.user.contacts
+            if user_contacts:
+                for tp, method, params in user_contacts:
                     m += [(TimePatternList([ngu.time_pattern, tp]),
                            method, params, lang)]
             else:

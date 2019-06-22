@@ -53,16 +53,7 @@ class DesktopApplication(ExtApplication):
         """
         Get language for request
         """
-        user = request.user
-        language = config.language
-        if user.is_authenticated:
-            try:
-                profile = user.get_profile()
-                if profile.preferred_language:
-                    language = profile.preferred_language
-            except Exception:
-                pass
-        return language
+        return request.user.preferred_language or config.language
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
     def view_desktop(self, request):
