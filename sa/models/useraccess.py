@@ -15,12 +15,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.aaa.models.user import User
 from .managedobjectselector import ManagedObjectSelector
 from .groupaccess import GroupAccess
 from .administrativedomain import AdministrativeDomain
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class UserAccess(models.Model):
     class Meta(object):

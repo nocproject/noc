@@ -14,6 +14,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
@@ -114,6 +115,7 @@ class AuthProfile(models.Model):
                 yield s.user, s.password, s.super_password
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class AuthProfileSuggestSNMP(models.Model):
     class Meta(object):
@@ -132,6 +134,7 @@ class AuthProfileSuggestSNMP(models.Model):
         return self.auth_profile.name
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class AuthProfileSuggestCLI(models.Model):
     class Meta(object):

@@ -13,7 +13,7 @@ import datetime
 import six
 from django.db.models import AutoField
 from django.db import connection
-from django.db.backends.util import truncate_name
+from django.db.backends.utils import truncate_name
 from django.core.management.color import no_style
 
 logger = logging.getLogger("migration")
@@ -31,6 +31,9 @@ class DB(object):
     @staticmethod
     def quote_name(name):
         return connection.ops.quote_name(name)
+
+    def has_table(self, table_name):
+        return bool(self.execute("SELECT COUNT(*) FROM pg_class WHERE relname=%s", [table_name])[0][0])
 
     def create_table(self, table_name, fields):
         assert len(table_name) <= self.MAX_NAME_LENGTH, "Too long table name"
@@ -127,6 +130,7 @@ class DB(object):
                 self.db_table = db_table
                 self.db_tablespace = ""
                 self.object_name = model_name
+                self.model_name = model_name
                 self.module_name = model_name.lower()
 
                 if pk_field_type == AutoField:

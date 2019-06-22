@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018, The NOC Project
+# Copyright (C) 2007-2019, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,7 +35,6 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from services.correlator import utils
-from noc.lib.dateutils import total_seconds
 from noc.core.perf import metrics
 
 
@@ -564,7 +563,7 @@ class CorrelatorService(Service):
         def can_correlate(a1, a2):
             return (
                 not config.correlator.topology_rca_window or
-                total_seconds(a1.timestamp - a2.timestamp) <= config.correlator.topology_rca_window
+                (a1.timestamp - a2.timestamp).total_seconds() <= config.correlator.topology_rca_window
             )
 
         self.logger.debug("[%s] Topology RCA", alarm.id)

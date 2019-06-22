@@ -20,9 +20,9 @@ class LoaderChain(object):
         self.loaders = {}  # name -> loader
         self.lseq = []
         self.cache = cachetools.LRUCache(
-            maxsize=1000,
-            missing=self.get_cached
+            maxsize=1000
         )
+        self.cache.__missing__ = self.get_cached
 
     def get_loader(self, name):
         loader = self.loaders.get(name)

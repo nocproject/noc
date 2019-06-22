@@ -18,7 +18,6 @@ from six import StringIO
 from django.http import HttpResponse
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
@@ -174,7 +173,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             mos = mos.filter(administrative_domain__in=AdministrativeDomain.get_nested_ids(int(administrative_domain)))
         if object_profile:
             mos = mos.filter(object_profile=object_profile)
-        iface_dict = {}
+        # iface_dict = {}
 
         d_url = {
             "path": "/ui/grafana/dashboard/script/report.js",
@@ -191,8 +190,8 @@ class ReportMetricsDetailApplication(ExtApplication):
                 "url": '%(path)s?title=interface&biid=%(biid)s'
                        '&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s',
                 "q_group": ["interface"],
-                "q_select": {(0, 'managed_object', None): "managed_object",
-                             (1, 'path', 'iface'): "arrayStringConcat(path)"}
+                "q_select": {(0, 'managed_object', "id"): "managed_object",
+                             (1, 'path', 'iface_name'): "arrayStringConcat(path)"}
             },
             "errors": {
                 "url": """%(path)s?title=errors&biid=%(biid)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
@@ -200,12 +199,12 @@ class ReportMetricsDetailApplication(ExtApplication):
             },
             "load_cpu": {
                 "url": """%(path)s?title=cpu&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "q_select": {(0, 'managed_object', None): "managed_object",
+                "q_select": {(0, 'managed_object', "id"): "managed_object",
                              (1, 'path', 'slot'): "arrayStringConcat(path)"}
             },
             "ping": {
                 "url": """%(path)s?title=ping&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "q_select": {(0, 'managed_object', None): "managed_object"}
+                "q_select": {(0, 'managed_object', "id"): "managed_object"}
             }
         }
 
@@ -214,7 +213,9 @@ class ReportMetricsDetailApplication(ExtApplication):
             "iface_description": (
                 '', 'iface_description',
                 "dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path)))"),
-            "iface_speed": ('speed', 'iface_speed', "max(speed)"),
+            "iface_speed": ('speed', 'iface_speed',
+                            "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
+                            "(managed_object, arrayStringConcat(path))), max(speed))"),
             "load_in": ('load_in', 'l_in', "round(quantile(0.90)(load_in), 0)"),
             "load_in_p": ('load_in', 'l_in_p',
                           "replaceOne(toString(round(quantile(0.90)(load_in) / "
@@ -231,30 +232,24 @@ class ReportMetricsDetailApplication(ExtApplication):
             "ping_rtt": ('rtt', 'ping_rtt', "round(quantile(0.90)(rtt) / 1000, 2)"),
             "ping_attempts": ('attempts', 'ping_attempts', "avg(attempts)")
         }
+        query_fields = []
+        for c in report_map[reporttype]["q_select"]:
+            query_fields += [c[2]]
+        field_shift = len(query_fields)  # deny replacing field
         for c in columns.split(","):
             if c not in query_map:
                 continue
             field, alias, func = query_map[c]
             report_map[reporttype]["q_select"][
-                (columns_order.index(c), field, alias)] = func
+                (columns_order.index(c) + field_shift, field, alias)] = func
+            query_fields += [c]
+        metrics_attrs = namedtuple("METRICSATTRs", query_fields)
 
         mo_attrs = namedtuple("MOATTRs", [c for c in cols if c.startswith("object")])
         moss = {}
         for row in mos.values_list("bi_id", "name", "address", "platform", "administrative_domain__name", "segment"):
-            x = mo_attrs(*[row[1], row[2], str(Platform.get_by_id(row[3]) if row[3] else ""),
-                           row[4], str(NetworkSegment.get_by_id(row[5])) if row[5] else ""])
-            moss[row[0]] = [getattr(x, y) for y in object_columns]
-        # if reporttype in ["load_interfaces", "errors"]:
-        #     ifaces = Interface._get_collection()
-        #     xx = set(mos.values_list("id", flat=True))
-        #     for iface in ifaces.find(
-        #             {"type": "physical"},
-        #             {"managed_object": 1, "name": 1, "description": 1, "in_speed": 1, "out_speed": 1}):
-        #         if iface["managed_object"] not in xx:
-        #             continue
-        #         iface_dict[(iface["managed_object"],
-        #                     iface["name"])] = (iface.get("description", ""),
-        #                                        iface.get("in_speed", 0), iface.get("out_speed", 0))
+            moss[row[0]] = mo_attrs(*[row[1], row[2], str(Platform.get_by_id(row[3]) if row[3] else ""),
+                                      row[4], str(NetworkSegment.get_by_id(row[5])) if row[5] else ""])
 
         url = report_map[reporttype].get("url", "")
         report_metric = self.metric_source[reporttype](tuple(sorted(moss)), from_date, to_date, columns=None)
@@ -266,36 +261,21 @@ class ReportMetricsDetailApplication(ExtApplication):
             report_metric.CUSTOM_FILTER["having"] += [
                 "dictGetString('interfaceattributes', 'profile', "
                 "(managed_object, arrayStringConcat(path))) = '%s'" % interface_profile.name]
-        # OBJECT_PLATFORM, ADMIN_DOMAIN, SEGMENT, OBJECT_HOSTNAM
+        # OBJECT_PLATFORM, ADMIN_DOMAIN, SEGMENT, OBJECT_HOSTNAME
         for row in report_metric.do_query():
-            bi_id, data = row[0], row[1:]
-            mo = moss[int(bi_id)]
-            res = [bi_id] if "id" in columns_filter else []
-            res += mo
-            if reporttype == "load_interfaces":
-                iface_name, data = data[0], data[1:]
-                d_url["iname"] = row[1]
-                res += [iface_name]
-                res += data
-                # if "load_interfaces" in reporttype:
-                #     i_d = iface_dict.get((mo[1], l[1]), ["", "", ""])
-                #     res.insert(3, i_d[0])
-                #     if percent_in:
-                #         in_p = float(data[0])
-                #         in_p = round((in_p / 1000.0) / (i_d[1] / 100.0), 2) if i_d[1] and in_p > 0 else 0
-                #         # in
-                #         res.insert(-1, in_p)
-                #     if percent_out:
-                #         # out
-                #         out_p = float(data[1])
-                #         res += [round((out_p / 1000.0) / (i_d[2] / 100.0), 2) if i_d[2] and out_p > 0 else 0]
-            else:
-                res += data
+            mm = metrics_attrs(*row)
+            mo = moss[int(mm.id)]
+            res = []
+            for y in columns_order:
+                if y in object_columns:
+                    res += [getattr(mo, y)]
+                else:
+                    res += [getattr(mm, y)]
             if "interface_load_url" in columns_filter:
-                d_url["biid"] = bi_id
+                d_url["biid"] = mm.id
                 d_url["oname"] = mo[2].replace("#", "%23")
                 # res += [url % d_url, interval]
-                res += [url % d_url]
+                res.insert(columns_order.index("interface_load_url"), url % d_url)
             r += [res]
 
         if o_format == "csv":

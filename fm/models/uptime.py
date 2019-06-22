@@ -15,7 +15,6 @@ import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
 # NOC modules
-from noc.lib.dateutils import total_seconds
 from .reboot import Reboot
 
 logger = logging.getLogger(__name__)
@@ -86,7 +85,7 @@ class Uptime(Document):
                 # Get wrapped delta
                 dl = cls.FWRAP - d["last_value"] + uptime
                 # Get timestamp delta
-                tsd = total_seconds(now - d["last"])
+                tsd = (now - d["last"]).total_seconds()
                 if abs(dl - tsd) > tsd * cls.WPREC:
                     is_rebooted = True
                 else:

@@ -12,11 +12,13 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from .userprofile import UserProfile
 from .timepattern import TimePattern
 from .notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class UserProfileContact(models.Model):
     class Meta(object):

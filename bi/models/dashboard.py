@@ -13,10 +13,9 @@ import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField, ListField,
                                 IntField, BinaryField, EmbeddedDocumentField)
-# Third-party modules
-from django.contrib.auth.models import Group
 # NOC modules
 from noc.aaa.models.user import User
+from noc.aaa.models.group import Group
 from noc.lib.nosql import ForeignKeyField
 
 DAL_NONE = -1

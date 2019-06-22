@@ -218,7 +218,8 @@ epub_exclude_files = ['search.html']
 #
 extlinks = {
     'hardlink': ('https://docs.getnoc.com/{0}/%s'.format(branch), ''),
-    'issue': ('https://code.getnoc.com/noc/noc/issues/%s', '')
+    'issue': ('https://code.getnoc.com/noc/noc/issues/%s', ''),
+    'mr': ('https://code.getnoc.com/noc/noc/merge_requests/%s', '')
 }
 
 rst_epilog = "\n".join([

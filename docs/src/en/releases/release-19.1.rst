@@ -275,256 +275,499 @@ Migration
 
 New features
 ------------
-|    MR                                                           | Title                                                                        |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `MR1515 <https://code.getnoc.com/noc/noc/merge_requests/1515>`_ | Add *estimate* param to job command.                                         |
-| `MR1525 <https://code.getnoc.com/noc/noc/merge_requests/1525>`_ | Collection sharing                                                           |
-| `MR1498 <https://code.getnoc.com/noc/noc/merge_requests/1498>`_ | DataStream: *asset* part of ManagedObject                                    |
-| `MR1516 <https://code.getnoc.com/noc/noc/merge_requests/1516>`_ | APIKey ACL                                                                   |
-| `MR1518 <https://code.getnoc.com/noc/noc/merge_requests/1518>`_ | Add export/import to ./noc beef command.                                     |
-| `MR1514 <https://code.getnoc.com/noc/noc/merge_requests/1514>`_ | Configurable behavior on new platforms and firmware policy violations        |
-| `MR1512 <https://code.getnoc.com/noc/noc/merge_requests/1512>`_ | new fm-alarm                                                                 |
-| `MR1508 <https://code.getnoc.com/noc/noc/merge_requests/1508>`_ | IRE-Polus.Taros profile                                                      |
-| `MR1507 <https://code.getnoc.com/noc/noc/merge_requests/1507>`_ | Summary glyph display order                                                  |
-| `MR1501 <https://code.getnoc.com/noc/noc/merge_requests/1501>`_ | Add Errors Out and Discards In for ddash                                     |
-| `MR1595 <https://code.getnoc.com/noc/noc/merge_requests/595>`_  | Add periodic diagnostic to alarmdiagnostic.                                  |
-| `MR1460 <https://code.getnoc.com/noc/noc/merge_requests/1460>`_ | ThresholdProfile: Flexible thresholds configuration                          |
-| `MR1497 <https://code.getnoc.com/noc/noc/merge_requests/1497>`_ | Alarm acknowledge/unacknowledge                                              |
-| `MR1491 <https://code.getnoc.com/noc/noc/merge_requests/1491>`_ | network stp topology changes on graph                                        |
-| `MR1476 <https://code.getnoc.com/noc/noc/merge_requests/1476>`_ | GridVCS: bsdiff4 patches and zlib compression                                |
-| `MR1432 <https://code.getnoc.com/noc/noc/merge_requests/1432>`_ | Add initial support for NSN.TIMOS profile                                    |
-| `MR1475 <https://code.getnoc.com/noc/noc/merge_requests/1475>`_ | High-precision timers                                                        |
-| `MR1458 <https://code.getnoc.com/noc/noc/merge_requests/1458>`_ | Add `Network | STP | Topology Changes metric`.                               |
-| `MR1455 <https://code.getnoc.com/noc/noc/merge_requests/1455>`_ | CapsProfile                                                                  |
-| `MR1396 <https://code.getnoc.com/noc/noc/merge_requests/1396>`_ | redis cache backend                                                          |
-| `MR1404 <https://code.getnoc.com/noc/noc/merge_requests/1404>`_ | #794: IPAM `seen` propagation policy                                         |
-| `MR1384 <https://code.getnoc.com/noc/noc/merge_requests/1384>`_ | card: project card                                                           |
-| `MR1390 <https://code.getnoc.com/noc/noc/merge_requests/1390>`_ | #942: Remove Root container                                                  |
-| `MR1352 <https://code.getnoc.com/noc/noc/merge_requests/1352>`_ | #694 ClickHouse table cleaning policy                                        |
-| `MR1363 <https://code.getnoc.com/noc/noc/merge_requests/1363>`_ | Vector.Lambda profile                                                        |
-| `MR1283 <https://code.getnoc.com/noc/noc/merge_requests/1283>`_ | NOC theme                                                                    |
-| `MR1336 <https://code.getnoc.com/noc/noc/merge_requests/1336>`_ | OIDRule: High-order scale functions                                          |
-| `MR1338 <https://code.getnoc.com/noc/noc/merge_requests/1338>`_ | #539 Syslog archiving                                                        |
-| `MR1255 <https://code.getnoc.com/noc/noc/merge_requests/1255>`_ | nbi service                                                                  |
-| `MR1345 <https://code.getnoc.com/noc/noc/merge_requests/1345>`_ | #497 syslogcollector/trapcollector: SO_REUSEPORT and IP_FREEBIND support     |
-| `MR1252 <https://code.getnoc.com/noc/noc/merge_requests/1252>`_ | datastream: Alarm datastream                                                 |
-| `MR1226 <https://code.getnoc.com/noc/noc/merge_requests/1226>`_ | #636 Phone Workflow integraton                                               |
-| `MR1113 <https://code.getnoc.com/noc/noc/merge_requests/1113>`_ | Profiles should be moved to profile.py                                       |
++------------+---------------------------------------------------------------------------+
+| MR         | Title                                                                     |
++------------+---------------------------------------------------------------------------+
+| :mr:`1515` | Add *estimate* param to job command.                                      |
++------------+---------------------------------------------------------------------------+
+| :mr:`1525` | Collection sharing                                                        |
++------------+---------------------------------------------------------------------------+
+| :mr:`1498` | DataStream: *asset* part of ManagedObject                                 |
++------------+---------------------------------------------------------------------------+
+| :mr:`1516` | APIKey ACL                                                                |
++------------+---------------------------------------------------------------------------+
+| :mr:`1518` | Add export/import to ./noc beef command.                                  |
++------------+---------------------------------------------------------------------------+
+| :mr:`1514` | Configurable behavior on new platforms and firmware policy violations     |
++------------+---------------------------------------------------------------------------+
+| :mr:`1512` | new fm-alarm                                                              |
++------------+---------------------------------------------------------------------------+
+| :mr:`1508` | IRE-Polus.Taros profile                                                   |
++------------+---------------------------------------------------------------------------+
+| :mr:`1507` | Summary glyph display order                                               |
++------------+---------------------------------------------------------------------------+
+| :mr:`1501` | Add Errors Out and Discards In for ddash                                  |
++------------+---------------------------------------------------------------------------+
+| :mr:`1595` | Add periodic diagnostic to alarm diagnostic.                              |
++------------+---------------------------------------------------------------------------+
+| :mr:`1460` | ThresholdProfile: Flexible thresholds configuration                       |
++------------+---------------------------------------------------------------------------+
+| :mr:`1497` | Alarm acknowledge/unacknowledge                                           |
++------------+---------------------------------------------------------------------------+
+| :mr:`1491` | network stp topology changes on graph                                     |
++------------+---------------------------------------------------------------------------+
+| :mr:`1476` | GridVCS: bsdiff4 patches and zlib compression                             |
++------------+---------------------------------------------------------------------------+
+| :mr:`1432` | Add initial support for NSN.TIMOS profile                                 |
++------------+---------------------------------------------------------------------------+
+| :mr:`1475` | High-precision timers                                                     |
++------------+---------------------------------------------------------------------------+
+| :mr:`1458` | Add `Network | STP | Topology Changes metric`.                            |
++------------+---------------------------------------------------------------------------+
+| :mr:`1455` | CapsProfile                                                               |
++------------+---------------------------------------------------------------------------+
+| :mr:`1396` | redis cache backend                                                       |
++------------+---------------------------------------------------------------------------+
+| :mr:`1404` | #794: IPAM `seen` propagation policy                                      |
++------------+---------------------------------------------------------------------------+
+| :mr:`1384` | card: project card                                                        |
++------------+---------------------------------------------------------------------------+
+| :mr:`1390` | #942: Remove Root container                                               |
++------------+---------------------------------------------------------------------------+
+| :mr:`1352` | #694 ClickHouse table cleaning policy                                     |
++------------+---------------------------------------------------------------------------+
+| :mr:`1363` | Vector.Lambda profile                                                     |
++------------+---------------------------------------------------------------------------+
+| :mr:`1283` | NOC theme                                                                 |
++------------+---------------------------------------------------------------------------+
+| :mr:`1336` | OIDRule: High-order scale functions                                       |
++------------+---------------------------------------------------------------------------+
+| :mr:`1338` | #539 Syslog archiving                                                     |
++------------+---------------------------------------------------------------------------+
+| :mr:`1255` | nbi service                                                               |
++------------+---------------------------------------------------------------------------+
+| :mr:`1345` | #497 syslogcollector/trapcollector: SO_REUSEPORT and IP_FREEBIND support  |
++------------+---------------------------------------------------------------------------+
+| :mr:`1252` | datastream: Alarm datastream                                              |
++------------+---------------------------------------------------------------------------+
+| :mr:`1226` | #636 Phone Workflow integraton                                            |
++------------+---------------------------------------------------------------------------+
+| :mr:`1113` | Profiles should be moved to profile.py                                    |
++------------+---------------------------------------------------------------------------+
+
 
 Improvements
 ------------
 
-|    MR                                                           | Title                                                                        |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `MR1534 <https://code.getnoc.com/noc/noc/merge_requests/1534>`_ | Set default loglevel on command to info.                                     |
-| `MR1535 <https://code.getnoc.com/noc/noc/merge_requests/1535>`_ | Update RU translation.                                                       |
-| `MR1527 <https://code.getnoc.com/noc/noc/merge_requests/1527>`_ | FM Alarms localization                                                       |
-| `MR1529 <https://code.getnoc.com/noc/noc/merge_requests/1529>`_ | Add full_name to PlatformApplication query fields.                           |
-| `MR1522 <https://code.getnoc.com/noc/noc/merge_requests/1522>`_ | Update/report interface status3                                              |
-| `MR1510 <https://code.getnoc.com/noc/noc/merge_requests/1510>`_ | Update DLink.DxS profile                                                     |
-| `MR1556 <https://code.getnoc.com/noc/noc/merge_requests/1556>`_ | Update Rotek.BT profile (get_version)                                        |
-| `MR1539 <https://code.getnoc.com/noc/noc/merge_requests/1539>`_ | Update settings by snmp requests for Dlink.DxS                               |
-| `MR1500 <https://code.getnoc.com/noc/noc/merge_requests/1500>`_ | Update Juniper.JUNOS profile                                                 |
-| `MR1503 <https://code.getnoc.com/noc/noc/merge_requests/1503>`_ | Speedup NetworkSegment Service Summary count.                                |
-| `MR1502 <https://code.getnoc.com/noc/noc/merge_requests/1502>`_ | Update Report for Interfaces Status                                          |
-| `MR1490 <https://code.getnoc.com/noc/noc/merge_requests/1490>`_ | Generic.get_chassis_id disable Multicast MAC address check.                  |
-| `MR1494 <https://code.getnoc.com/noc/noc/merge_requests/1494>`_ | SKS.SKS and BDCOM.IOS config volatile.                                       |
-| `MR1488 <https://code.getnoc.com/noc/noc/merge_requests/1488>`_ | Add platform to Linksys.SPS2xx profile.                                      |
-| `MR1451 <https://code.getnoc.com/noc/noc/merge_requests/1451>`_ | Unified loader interface                                                     |
-| `MR1485 <https://code.getnoc.com/noc/noc/merge_requests/1485>`_ | Add caps profile to managedobject profile ETL loader.                        |
-| `MR1484 <https://code.getnoc.com/noc/noc/merge_requests/1484>`_ | Add to Linksys.SPS24xx platform OID                                          |
-| `MR1434 <https://code.getnoc.com/noc/noc/merge_requests/1434>`_ | ./noc dnszone import: Parse complex $TTL directives                          |
-| `MR1452 <https://code.getnoc.com/noc/noc/merge_requests/1452>`_ | Move methods from SegmentTopology to BaseTopology                            |
-| `MR1449 <https://code.getnoc.com/noc/noc/merge_requests/1449>`_ | inv.networksegment: Bulk fields calculation                                  |
-| `MR1454 <https://code.getnoc.com/noc/noc/merge_requests/1454>`_ | Add to_python method to ClickHouse model.                                    |
-| `MR1466 <https://code.getnoc.com/noc/noc/merge_requests/1466>`_ | Add to Huawei.VRP profile get Serial Number attributes.                      |
-| `MR1453 <https://code.getnoc.com/noc/noc/merge_requests/1453>`_ | ResourceGroup: TreeCombo                                                     |
-| `MR1461 <https://code.getnoc.com/noc/noc/merge_requests/1461>`_ | Add config_volatile to Orion.NOS and SKS.SKS                                 |
-| `MR1447 <https://code.getnoc.com/noc/noc/merge_requests/1447>`_ | Increase query interval for core.pm.utils function.                          |
-| `MR1417 <https://code.getnoc.com/noc/noc/merge_requests/1417>`_ | Extendable Generic.get_chassis_id script                                     |
-| `MR1441 <https://code.getnoc.com/noc/noc/merge_requests/1441>`_ | Add patern more to Huawei.MA5600T profile.                                   |
-| `MR1440 <https://code.getnoc.com/noc/noc/merge_requests/1440>`_ | Optimize reportalarmdetail and reportobjectdetail.                           |
-| `MR1439 <https://code.getnoc.com/noc/noc/merge_requests/1439>`_ | Update/eltex mes execute snmp                                                |
-| `MR1437 <https://code.getnoc.com/noc/noc/merge_requests/1437>`_ | Delete aggregateinterface bi model                                           |
-| `MR1420 <https://code.getnoc.com/noc/noc/merge_requests/1420>`_ | Add dynamically loader BI models.                                            |
-| `MR1418 <https://code.getnoc.com/noc/noc/merge_requests/1418>`_ | RepoPreview MVVC                                                             |
-| `MR1427 <https://code.getnoc.com/noc/noc/merge_requests/1427>`_ | Migrate Alstec.24xx.get_metrics to new model.                                |
-| `MR1414 <https://code.getnoc.com/noc/noc/merge_requests/1414>`_ | networkx 2.2 and improvend spring layout implementation                      |
-| `MR1413 <https://code.getnoc.com/noc/noc/merge_requests/1413>`_ | dns.dnsserver: Remove *sync* field                                           |
-| `MR1400 <https://code.getnoc.com/noc/noc/merge_requests/1400>`_ | requests 2.20.0                                                              |
-| `MR1392 <https://code.getnoc.com/noc/noc/merge_requests/1392>`_ | Diverged permissions                                                         |
-| `MR1382 <https://code.getnoc.com/noc/noc/merge_requests/1382>`_ | #961 Process *All addresses* and *Loopback address* syslog/trap source types |
-| `MR1408 <https://code.getnoc.com/noc/noc/merge_requests/1408>`_ | Add Generic.get_vlans and get_switchport scripts.                            |
-| `MR1409 <https://code.getnoc.com/noc/noc/merge_requests/1409>`_ | Add get_lldp_snmp capabilities for Cisco.IOS                                 |
-| `MR1410 <https://code.getnoc.com/noc/noc/merge_requests/1410>`_ | Change Iface Name OID for get_ifindexes Plante.WCDG profile                  |
-| `MR1374 <https://code.getnoc.com/noc/noc/merge_requests/1374>`_ | migrate inv map to leafletjs                                                 |
-| `MR1381 <https://code.getnoc.com/noc/noc/merge_requests/1381>`_ | #971 trapcollector: Gentler handling of BER decoding errors                  |
-| `MR1371 <https://code.getnoc.com/noc/noc/merge_requests/1371>`_ | dnszone: Ignore addresses with missed FQDNs                                  |
-| `MR1369 <https://code.getnoc.com/noc/noc/merge_requests/1369>`_ | Add theme variable to login page render.                                     |
-| `MR1368 <https://code.getnoc.com/noc/noc/merge_requests/1368>`_ | Add "Up/10M" to reportcolumndatasource for report object detail.             |
-| `MR1391 <https://code.getnoc.com/noc/noc/merge_requests/1391>`_ | CODEOWNERS file                                                              |
-| `MR1353 <https://code.getnoc.com/noc/noc/merge_requests/1353>`_ | #788 Try to determine VRF's for DHCP address discovery                       |
-| `MR1361 <https://code.getnoc.com/noc/noc/merge_requests/1361>`_ | DataStream: Load from custom                                                 |
-| `MR1251 <https://code.getnoc.com/noc/noc/merge_requests/1251>`_ | Customized PyMongo connection pool                                           |
-| `MR1397 <https://code.getnoc.com/noc/noc/merge_requests/1397>`_ | Juniper.junos                                                                |
-| `MR1398 <https://code.getnoc.com/noc/noc/merge_requests/1398>`_ | auto logout remove msg                                                       |
-| `MR1385 <https://code.getnoc.com/noc/noc/merge_requests/1385>`_ | Dead code cleanup                                                            |
-| `MR1284 <https://code.getnoc.com/noc/noc/merge_requests/1284>`_ | runcommands refactoring                                                      |
-| `MR1375 <https://code.getnoc.com/noc/noc/merge_requests/1375>`_ | Cleanup pyrule from classifier trigger.                                      |
-| `MR1341 <https://code.getnoc.com/noc/noc/merge_requests/1341>`_ | theme body padding for form                                                  |
-| `MR1362 <https://code.getnoc.com/noc/noc/merge_requests/1362>`_ | Add convert ifname for MA4000                                                |
-| `MR1349 <https://code.getnoc.com/noc/noc/merge_requests/1349>`_ | Cleanup AlliedTelesis profiles.                                              |
-| `MR1346 <https://code.getnoc.com/noc/noc/merge_requests/1346>`_ | snmp: Try to negotiate broken error_index                                    |
-| `MR1344 <https://code.getnoc.com/noc/noc/merge_requests/1344>`_ | Add Interface packets dashboard in MO dash.                                  |
-| `MR1318 <https://code.getnoc.com/noc/noc/merge_requests/1318>`_ | Migrate ReportProfileCheck report to ReportStat Backend.                     |
-| `MR1228 <https://code.getnoc.com/noc/noc/merge_requests/1228>`_ | Move numpy import to parse_table_header in lib/text.                         |
-| `MR1316 <https://code.getnoc.com/noc/noc/merge_requests/1316>`_ | Additional LLDP constants and caps conversion functions                      |
-| `MR1324 <https://code.getnoc.com/noc/noc/merge_requests/1324>`_ | Add TZ parameter to NBI query.                                               |
-| `MR1126 <https://code.getnoc.com/noc/noc/merge_requests/1126>`_ | #260 add password widget                                                     |
-| `MR1322 <https://code.getnoc.com/noc/noc/merge_requests/1322>`_ | Add get_lldp_neighbors and get_capabilities for Qtech2500 profile            |
-| `MR1264 <https://code.getnoc.com/noc/noc/merge_requests/1264>`_ | Add clean to events command.                                                 |
-| `MR1307 <https://code.getnoc.com/noc/noc/merge_requests/1307>`_ | Update Alcatel.OS62xx profile                                                |
-| `MR1285 <https://code.getnoc.com/noc/noc/merge_requests/1285>`_ | Hp.1910                                                                      |
-| `MR1190 <https://code.getnoc.com/noc/noc/merge_requests/1190>`_ | Update Rotek.RTBSv1 profile                                                  |
-| `MR1297 <https://code.getnoc.com/noc/noc/merge_requests/1297>`_ | Add Rotek.RTBSv1.get_metrics script.                                         |
-| `MR1296 <https://code.getnoc.com/noc/noc/merge_requests/1296>`_ | add get_config script for Dlink.DVG profile                                  |
-| `MR1291 <https://code.getnoc.com/noc/noc/merge_requests/1291>`_ | Extend job command.                                                          |
-| `MR1276 <https://code.getnoc.com/noc/noc/merge_requests/1276>`_ | Add clean_id_bson to alarm datastream.                                       |
-| `MR1274 <https://code.getnoc.com/noc/noc/merge_requests/1274>`_ | threadpool: Cleanup worker result just after setting future                  |
-| `MR1286 <https://code.getnoc.com/noc/noc/merge_requests/1286>`_ | Add late_alarm metric to seflmon fm collector.                               |
-| `MR1249 <https://code.getnoc.com/noc/noc/merge_requests/1249>`_ | Profile.cli_retries_super_password parameter                                 |
-| `MR1250 <https://code.getnoc.com/noc/noc/merge_requests/1250>`_ | perm: response layout                                                        |                                      |
-| `MR1229 <https://code.getnoc.com/noc/noc/merge_requests/1229>`_ | ldap: Additional check of username format                                    |
-| `MR1214 <https://code.getnoc.com/noc/noc/merge_requests/1214>`_ | Add telemetry to MRT service.                                                |
-| `MR1244 <https://code.getnoc.com/noc/noc/merge_requests/1244>`_ | Add physical iface count metrics to selfmon.                                 |
-| `MR1216 <https://code.getnoc.com/noc/noc/merge_requests/1216>`_ | Add vv (very verbose parameter) to test command.                             |
++------------+-------------------------------------------------------------------------------+
+| MR         | Title                                                                         |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1534` | Set default loglevel on command to info.                                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1535` | Update RU translation.                                                        |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1527` | FM Alarms localization                                                        |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1529` | Add full_name to PlatformApplication query fields.                            |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1522` | Update/report interface status3                                               |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1510` | Update DLink.DxS profile                                                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1556` | Update Rotek.BT profile (get_version)                                         |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1539` | Update settings by snmp requests for Dlink.DxS                                |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1500` | Update Juniper.JUNOS profile                                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1503` | Speedup NetworkSegment Service Summary count.                                 |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1502` | Update Report for Interfaces Status                                           |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1490` | Generic.get_chassis_id disable Multicast MAC address check.                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1494` | SKS.SKS and BDCOM.IOS config volatile.                                        |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1488` | Add platform to Linksys.SPS2xx profile.                                       |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1451` | Unified loader interface                                                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1485` | Add caps profile to managedobject profile ETL loader.                         |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1484` | Add to Linksys.SPS24xx platform OID                                           |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1434` | ./noc dnszone import: Parse complex $TTL directives                           |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1452` | Move methods from SegmentTopology to BaseTopology                             |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1449` | inv.networksegment: Bulk fields calculation                                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1454` | Add to_python method to ClickHouse model.                                     |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1466` | Add to Huawei.VRP profile get Serial Number attributes.                       |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1453` | ResourceGroup: TreeCombo                                                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1461` | Add config_volatile to Orion.NOS and SKS.SKS                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1447` | Increase query interval for core.pm.utils function.                           |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1417` | Extendable Generic.get_chassis_id script                                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1441` | Add patern more to Huawei.MA5600T profile.                                    |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1440` | Optimize reportalarmdetail and reportobjectdetail.                            |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1439` | Update/eltex mes execute snmp                                                 |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1437` | Delete aggregateinterface bi model                                            |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1420` | Add dynamically loader BI models.                                             |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1418` | RepoPreview MVVC                                                              |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1427` | Migrate Alstec.24xx.get_metrics to new model.                                 |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1414` | networkx 2.2 and improvend spring layout implementation                       |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1413` | dns.dnsserver: Remove *sync* field                                            |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1400` | requests 2.20.0                                                               |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1392` | Diverged permissions                                                          |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1382` | #961 Process *All addresses* and *Loopback address* syslog/trap source types  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1408` | Add Generic.get_vlans and get_switchport scripts.                             |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1409` | Add get_lldp_snmp capabilities for Cisco.IOS                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1410` | Change Iface Name OID for get_ifindexes Plante.WCDG profile                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1374` | migrate inv map to leafletjs                                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1381` | #971 trapcollector: Gentler handling of BER decoding errors                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1371` | dnszone: Ignore addresses with missed FQDNs                                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1369` | Add theme variable to login page render.                                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1368` | Add "Up/10M" to reportcolumndatasource for report object detail.              |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1391` | CODEOWNERS file                                                               |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1353` | #788 Try to determine VRF's for DHCP address discovery                        |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1361` | DataStream: Load from custom                                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1251` | Customized PyMongo connection pool                                            |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1397` | Juniper.junos                                                                 |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1398` | auto logout remove msg                                                        |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1385` | Dead code cleanup                                                             |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1284` | runcommands refactoring                                                       |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1375` | Cleanup pyrule from classifier trigger.                                       |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1341` | theme body padding for form                                                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1362` | Add convert ifname for MA4000                                                 |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1349` | Cleanup AlliedTelesis profiles.                                               |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1346` | snmp: Try to negotiate broken error_index                                     |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1344` | Add Interface packets dashboard in MO dash.                                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1318` | Migrate ReportProfileCheck report to ReportStat Backend.                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1228` | Move numpy import to parse_table_header in lib/text.                          |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1316` | Additional LLDP constants and caps conversion functions                       |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1324` | Add TZ parameter to NBI query.                                                |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1126` | #260 add password widget                                                      |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1322` | Add get_lldp_neighbors and get_capabilities for Qtech2500 profile             |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1264` | Add clean to events command.                                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1307` | Update Alcatel.OS62xx profile                                                 |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1285` | Hp.1910                                                                       |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1190` | Update Rotek.RTBSv1 profile                                                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1297` | Add Rotek.RTBSv1.get_metrics script.                                          |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1296` | add get_config script for Dlink.DVG profile                                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1291` | Extend job command.                                                           |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1276` | Add clean_id_bson to alarm datastream.                                        |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1274` | threadpool: Cleanup worker result just after setting future                   |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1286` | Add late_alarm metric to seflmon fm collector.                                |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1249` | Profile.cli_retries_super_password parameter                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1250` | perm: response layout                                                         |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1229` | ldap: Additional check of username format                                     |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1214` | Add telemetry to MRT service.                                                 |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1244` | Add physical iface count metrics to selfmon.                                  |
++------------+-------------------------------------------------------------------------------+
+| :mr:`1216` | Add vv (very verbose parameter) to test command.                              |
++------------+-------------------------------------------------------------------------------+
 
 Bugfixes
 --------
 
-|    MR                                                           | Title                                                                        |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `MR1487 <https://code.getnoc.com/noc/noc/merge_requests/1487>`_ | Use ch_escape function on syslogcollector.                                   |
-| `MR1478 <https://code.getnoc.com/noc/noc/merge_requests/1478>`_ | Fix Report Unknown Model Summary.                                            |
-| `MR1477 <https://code.getnoc.com/noc/noc/merge_requests/1477>`_ | Fix Generic.get_capabilities snmp_v1                                         |
-| `MR1474 <https://code.getnoc.com/noc/noc/merge_requests/1474>`_ | Fix load metric priority. Profile first, Generic second.                     |
-| `MR1473 <https://code.getnoc.com/noc/noc/merge_requests/1473>`_ | Fix Radio and SLA graph template for CH use.                                 |
-| `MR1481 <https://code.getnoc.com/noc/noc/merge_requests/1481>`_ | Fix displaying `platform` in some Cisco Stackable switches                   |
-| `MR1479 <https://code.getnoc.com/noc/noc/merge_requests/1479>`_ | Fix Rotek RTBSv1 Tx Power metric                                             |
-| `MR1438 <https://code.getnoc.com/noc/noc/merge_requests/1438>`_ | Fix Huawei.VRP.get_mac_address_table script                                  |
-| `MR1422 <https://code.getnoc.com/noc/noc/merge_requests/1422>`_ | Fix MikroTik.RouterOS.get_interface_status_ex script                         |
-| `MR1462 <https://code.getnoc.com/noc/noc/merge_requests/1462>`_ | Fix heavy cpu load on `show vlan` command                                    |
-| `MR1469 <https://code.getnoc.com/noc/noc/merge_requests/1469>`_ | Fix Huawei.VRP.get_version SerialNumber rogue chart.                         |
-| `MR1467 <https://code.getnoc.com/noc/noc/merge_requests/1467>`_ | Fix DLink.DxS profile                                                        |
-| `MR1463 <https://code.getnoc.com/noc/noc/merge_requests/1463>`_ | Fix Extreme.XOS.get_interfaces script                                        |
-| `MR1465 <https://code.getnoc.com/noc/noc/merge_requests/1465>`_ | Fix PrefixBookmark import loop.                                              |
-| `MR1464 <https://code.getnoc.com/noc/noc/merge_requests/1464>`_ | Fix selfmon FM metric name.                                                  |
-| `MR1457 <https://code.getnoc.com/noc/noc/merge_requests/1457>`_ | Fix getting single oid from multiple metrics.                                |
-| `MR1444 <https://code.getnoc.com/noc/noc/merge_requests/1444>`_ | Fix Iskratel.MSAN profile                                                    |
-| `MR1450 <https://code.getnoc.com/noc/noc/merge_requests/1450>`_ | Fix Orion.NOS.get_lldp_neighbors script                                      |
-| `MR1433 <https://code.getnoc.com/noc/noc/merge_requests/1433>`_ | Fix Cisco.IOSXR profile                                                      |
-| `MR1436 <https://code.getnoc.com/noc/noc/merge_requests/1436>`_ | Fix Cisco.NXOS.get_arp script                                                |
-| `MR1448 <https://code.getnoc.com/noc/noc/merge_requests/1448>`_ | Fix c.id in card.base.f_object_location.                                     |
-| `MR1445 <https://code.getnoc.com/noc/noc/merge_requests/1445>`_ | login button width fixed                                                     |
-| `MR1459 <https://code.getnoc.com/noc/noc/merge_requests/1459>`_ | Lambda fix metrics                                                           |
-| `MR1468 <https://code.getnoc.com/noc/noc/merge_requests/1468>`_ | Huawei.VRP.get_version strip serial number.                                  |
-| `MR1435 <https://code.getnoc.com/noc/noc/merge_requests/1435>`_ | InfiNet fix __init__.py pattern_prompt                                       |
-| `MR1426 <https://code.getnoc.com/noc/noc/merge_requests/1426>`_ | inv.map fix performance                                                      |
-| `MR1443 <https://code.getnoc.com/noc/noc/merge_requests/1443>`_ | Fix Object.get_coordinate_zoom method.                                       |
-| `MR1428 <https://code.getnoc.com/noc/noc/merge_requests/1428>`_ | Fix Huawei.MA5600T profile                                                   |
-| `MR1430 <https://code.getnoc.com/noc/noc/merge_requests/1430>`_ | Fix Alstec.24xx metric name.                                                 |
-| `MR1289 <https://code.getnoc.com/noc/noc/merge_requests/1289>`_ | Fix Juniper.JUNOS.get_lldp_neighbors Parameter 'remote_port' required.       |
-| `MR1423 <https://code.getnoc.com/noc/noc/merge_requests/1423>`_ | Fix managedobject and object card for delete Root.                           |
-| `MR1429 <https://code.getnoc.com/noc/noc/merge_requests/1429>`_ | Fix avs Object.get_address_text method                                       |
-| `MR1424 <https://code.getnoc.com/noc/noc/merge_requests/1424>`_ | Fix getting container path in Alarm Web and Card.                            |
-| `MR1425 <https://code.getnoc.com/noc/noc/merge_requests/1425>`_ | Fix typo in ManagedObject console UI.                                        |
-| `MR1483 <https://code.getnoc.com/noc/noc/merge_requests/1483>`_ | Fix Raisecom.ROS.get_lldp_neighbors script                                   |
-| `MR1395 <https://code.getnoc.com/noc/noc/merge_requests/1395>`_ | Fix container field type when remove Root.                                   |
-| `MR1401 <https://code.getnoc.com/noc/noc/merge_requests/1401>`_ | ip.ipam: Fix prefix style                                                    |
-| `MR1411 <https://code.getnoc.com/noc/noc/merge_requests/1411>`_ | Fix Add Objects to Maintenance from SA !582                                  |
-| `MR1386 <https://code.getnoc.com/noc/noc/merge_requests/1386>`_ | fix error "Отсутствуют адреса линка" in dns.reportmissedp2p                  |
-| `MR1405 <https://code.getnoc.com/noc/noc/merge_requests/1405>`_ | Fix Discovery Problem Detail report trace.                                   |
-| `MR1394 <https://code.getnoc.com/noc/noc/merge_requests/1394>`_ | Fix get_lldp_neighbors by SNMP                                               |
-| `MR1407 <https://code.getnoc.com/noc/noc/merge_requests/1407>`_ | Fix Plantet.WGSD Profile                                                     |
-| `MR1403 <https://code.getnoc.com/noc/noc/merge_requests/1403>`_ | #976 Fix closing of already closed session                                   |
-| `MR1406 <https://code.getnoc.com/noc/noc/merge_requests/1406>`_ | Fix avs environments graph tmpl 148                                          |
-| `MR1402 <https://code.getnoc.com/noc/noc/merge_requests/1402>`_ | jsloader fixed                                                               |
-| `MR1399 <https://code.getnoc.com/noc/noc/merge_requests/1399>`_ | Fix Ubiquiti profile and Generic.get_interfaces(get_bulk)                    |
-| `MR1389 <https://code.getnoc.com/noc/noc/merge_requests/1389>`_ | Fix Report Discovery Poison                                                  |
-| `MR1378 <https://code.getnoc.com/noc/noc/merge_requests/1378>`_ | Fix theme variable in desktop.html template.                                 |
-| `MR1379 <https://code.getnoc.com/noc/noc/merge_requests/1379>`_ | Fix etl managedobject resourcegroup                                          |
-| `MR1367 <https://code.getnoc.com/noc/noc/merge_requests/1367>`_ | Fix prompt in Rotek.RTBS.v1 profile.                                         |
-| `MR1366 <https://code.getnoc.com/noc/noc/merge_requests/1366>`_ | Fix workflow CH dictionary.                                                  |
-| `MR1365 <https://code.getnoc.com/noc/noc/merge_requests/1365>`_ | Fix selfmon FM collector.                                                    |
-| `MR1364 <https://code.getnoc.com/noc/noc/merge_requests/1364>`_ | Fix update operation for superuser on secret field.                          |
-| `MR1376 <https://code.getnoc.com/noc/noc/merge_requests/1376>`_ | noc/noc#952 Fix metric path for Environment metric scope.                    |
-| `MR1310 <https://code.getnoc.com/noc/noc/merge_requests/1310>`_ | #964 Fix SA sessions leaking                                                 |
-| `MR1357 <https://code.getnoc.com/noc/noc/merge_requests/1357>`_ | Natex_fix_sn                                                                 |
-| `MR1355 <https://code.getnoc.com/noc/noc/merge_requests/1355>`_ | Cisco_fix_snmp                                                               |
-| `MR1370 <https://code.getnoc.com/noc/noc/merge_requests/1370>`_ | Increase ManagedObject cache version for syslog archive field.               |
-| `MR1356 <https://code.getnoc.com/noc/noc/merge_requests/1356>`_ | Fix Interface name Eltex.MES                                                 |
-| `MR1354 <https://code.getnoc.com/noc/noc/merge_requests/1354>`_ | Fix Interface name QSW2500                                                   |
-| `MR1335 <https://code.getnoc.com/noc/noc/merge_requests/1335>`_ | Fix get_interfaces, add reth aenet                                           |
-| `MR1343 <https://code.getnoc.com/noc/noc/merge_requests/1343>`_ | Fix profilecheckdetail.                                                      |
-| `MR1342 <https://code.getnoc.com/noc/noc/merge_requests/1342>`_ | Fix secret field.                                                            |
-| `MR1351 <https://code.getnoc.com/noc/noc/merge_requests/1351>`_ | InfiNet-fix-get_version                                                      |
-| `MR1350 <https://code.getnoc.com/noc/noc/merge_requests/1350>`_ | Fix get_interfaces for Telindus profile                                      |
-| `MR1348 <https://code.getnoc.com/noc/noc/merge_requests/1348>`_ | Fix stacked packets graph.                                                   |
-| `MR1360 <https://code.getnoc.com/noc/noc/merge_requests/1360>`_ | Fix Interface name ROS                                                       |
-| `MR1326 <https://code.getnoc.com/noc/noc/merge_requests/1326>`_ | Fix ch_state ch datasource.                                                  |
-| `MR1332 <https://code.getnoc.com/noc/noc/merge_requests/1332>`_ | Fix Span Card view from ClickHouse data.                                     |
-| `MR1331 <https://code.getnoc.com/noc/noc/merge_requests/1331>`_ | Fix Huawei.MA5600T.get_cpe.                                                  |
-| `MR1328 <https://code.getnoc.com/noc/noc/merge_requests/1328>`_ | Fix Cisco.IOS.get_lldp_neighbors regex                                       |
-| `MR1327 <https://code.getnoc.com/noc/noc/merge_requests/1327>`_ | Fix get_interfaces for Rotek.RTBSv1, add rule for platform RT-BS24           |
-| `MR1325 <https://code.getnoc.com/noc/noc/merge_requests/1325>`_ | Fix CLIPS engine in slots.                                                   |
-| `MR1320 <https://code.getnoc.com/noc/noc/merge_requests/1320>`_ | Fix SNMP Trap OID Resolver                                                   |
-| `MR1323 <https://code.getnoc.com/noc/noc/merge_requests/1323>`_ | Fix get_interfaces for QSW2500 (dowwn -> down)                               |
-| `MR1269 <https://code.getnoc.com/noc/noc/merge_requests/1269>`_ | Fix Juniper.JUNOSe.get_interfaces script                                     |
-| `MR1278 <https://code.getnoc.com/noc/noc/merge_requests/1278>`_ | Fix Huawei.MA5600T.get_cpe ValueError.                                       |
-| `MR1314 <https://code.getnoc.com/noc/noc/merge_requests/1314>`_ | Fix Generic.get_chassis_id script                                            |
-| `MR1306 <https://code.getnoc.com/noc/noc/merge_requests/1306>`_ | Fix AlliedTelesis.AT8000S.get_interfaces script                              |
-| `MR1313 <https://code.getnoc.com/noc/noc/merge_requests/1313>`_ | Fix Cisco.IOS.get_version for ME series                                      |
-| `MR1262 <https://code.getnoc.com/noc/noc/merge_requests/1262>`_ | Fix Raisecom.RCIOS password prompt matching                                  |
-| `MR1238 <https://code.getnoc.com/noc/noc/merge_requests/1238>`_ | Fix Juniper.JUNOS profile                                                    |
-| `MR1279 <https://code.getnoc.com/noc/noc/merge_requests/1279>`_ | Fixes empty range list in discoveryid.                                       |
-| `MR1305 <https://code.getnoc.com/noc/noc/merge_requests/1305>`_ | Fix Rotek.RTBS profiles.                                                     |
-| `MR1304 <https://code.getnoc.com/noc/noc/merge_requests/1304>`_ | Fix some attributes for Span in MRT serivce                                  |
-| `MR1303 <https://code.getnoc.com/noc/noc/merge_requests/1303>`_ | Fix selfmon escalator metrics.                                               |
-| `MR1300 <https://code.getnoc.com/noc/noc/merge_requests/1300>`_ | fm.eventclassificationrule: Fix creating from event                          |
-| `MR1295 <https://code.getnoc.com/noc/noc/merge_requests/1295>`_ | Fix ./noc mib lookup                                                         |
-| `MR1298 <https://code.getnoc.com/noc/noc/merge_requests/1298>`_ | Fix custom metrics path in Generic.get_metrics.                              |
-| `MR1290 <https://code.getnoc.com/noc/noc/merge_requests/1290>`_ | Fix custom metrics.                                                          |
-| `MR1225 <https://code.getnoc.com/noc/noc/merge_requests/1225>`_ | noc/noc#954 Fix Cisco.IOS.get_inventory script                               |
-| `MR1275 <https://code.getnoc.com/noc/noc/merge_requests/1275>`_ | Fix InfiNet.WANFlexX.get_lldp_neighbors script                               |
-| `MR1281 <https://code.getnoc.com/noc/noc/merge_requests/1281>`_ | Delete quit() in script                                                      |
-| `MR1280 <https://code.getnoc.com/noc/noc/merge_requests/1280>`_ | Fit get_config                                                               |
-| `MR1277 <https://code.getnoc.com/noc/noc/merge_requests/1277>`_ | Fix Zhone.Bitstorm.get_interfaces script                                     |
-| `MR1254 <https://code.getnoc.com/noc/noc/merge_requests/1254>`_ | Fix InfiNet.WANFlexX.get_interfaces script                                   |
-| `MR1272 <https://code.getnoc.com/noc/noc/merge_requests/1272>`_ | Fix vendor name in SAE script credentials.                                   |
-| `MR1246 <https://code.getnoc.com/noc/noc/merge_requests/1246>`_ | Fix Huawei.VRP pager                                                         |
-| `MR1268 <https://code.getnoc.com/noc/noc/merge_requests/1268>`_ | Fix scheme migrations                                                        |
-| `MR1245 <https://code.getnoc.com/noc/noc/merge_requests/1245>`_ | Fix Huawei.VRP3 prompt match                                                 |
-| `MR1259 <https://code.getnoc.com/noc/noc/merge_requests/1259>`_ | fix_error_web                                                                |
-| `MR1258 <https://code.getnoc.com/noc/noc/merge_requests/1258>`_ | Fix managed_object_platform migration.                                       |
-| `MR1260 <https://code.getnoc.com/noc/noc/merge_requests/1260>`_ | Fix pm.util.get_objects_metrics if object_profile metrics empty.             |
-| `MR1253 <https://code.getnoc.com/noc/noc/merge_requests/1253>`_ | Fix path in radius(services)                                                 |
-| `MR1203 <https://code.getnoc.com/noc/noc/merge_requests/1203>`_ | Fix prompt pattern in Eltex.DSLAM profile                                    |
-| `MR1247 <https://code.getnoc.com/noc/noc/merge_requests/1247>`_ | Fix consul resolver index handling                                           |
-| `MR1239 <https://code.getnoc.com/noc/noc/merge_requests/1239>`_ | #911 consul: Fix faulty state caused by changes in consul timeout behavior   |
-| `MR1237 <https://code.getnoc.com/noc/noc/merge_requests/1237>`_ | #956 fix web scripts                                                         |
-| `MR1221 <https://code.getnoc.com/noc/noc/merge_requests/1221>`_ | Fix Generic.get_lldp_neighbors script                                        |
-| `MR1243 <https://code.getnoc.com/noc/noc/merge_requests/1243>`_ | Fix now shift for selfmon task late.                                         |
-| `MR1231 <https://code.getnoc.com/noc/noc/merge_requests/1231>`_ | noc/noc#946 Fix ManagedObject web console.                                   |
-| `MR1235 <https://code.getnoc.com/noc/noc/merge_requests/1235>`_ | Fix futurize in SLA probe.                                                   |
-| `MR1234 <https://code.getnoc.com/noc/noc/merge_requests/1234>`_ | Fix Huawei.MA5600T.get_cpe.                                                  |
-| `MR1220 <https://code.getnoc.com/noc/noc/merge_requests/1220>`_ | Fix Generic.get_interfaces script                                            |
-| `MR1204 <https://code.getnoc.com/noc/noc/merge_requests/1204>`_ | Fix Raisecom.ROS.get_interfaces script                                       |
-| `MR1215 <https://code.getnoc.com/noc/noc/merge_requests/1215>`_ | Fix platform field in Platform Card.                                         |
-| `MR1210 <https://code.getnoc.com/noc/noc/merge_requests/1210>`_ | ManagedObject datastream: Fix *links* property. *capabilities* property      |
-| `MR1212 <https://code.getnoc.com/noc/noc/merge_requests/1212>`_ | Fix save empty metrics threshold in ManagedObjectProfile UI.                 |
-| `MR1211 <https://code.getnoc.com/noc/noc/merge_requests/1211>`_ | Fix interface validation errors in Huawei.VRP, Siklu.EH, Zhone.Bitstorm.     |
-| `MR1317 <https://code.getnoc.com/noc/noc/merge_requests/1317>`_ | sa.managedobjectprofile: Fix text                                            |
-| `MR1340 <https://code.getnoc.com/noc/noc/merge_requests/1340>`_ | noc/noc#966                                                                  |
-| `MR1294 <https://code.getnoc.com/noc/noc/merge_requests/1294>`_ | selfmon typo in mo                                                           |
-| `MR1105 <https://code.getnoc.com/noc/noc/merge_requests/1105>`_ | #856 Rack view fix                                                           |
-| `MR1208 <https://code.getnoc.com/noc/noc/merge_requests/1208>`_ | #947 Fix MAC ranges optimization                                             |
++------------+------------------------------------------------------------------------------+
+| MR         | Title                                                                        |
++------------+------------------------------------------------------------------------------+
+| :mr:`1487` | Use ch_escape function on syslogcollector.                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1478` | Fix Report Unknown Model Summary.                                            |
++------------+------------------------------------------------------------------------------+
+| :mr:`1477` | Fix Generic.get_capabilities snmp_v1                                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1474` | Fix load metric priority. Profile first, Generic second.                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1473` | Fix Radio and SLA graph template for CH use.                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1481` | Fix displaying `platform` in some Cisco Stackable switches                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1479` | Fix Rotek RTBSv1 Tx Power metric                                             |
++------------+------------------------------------------------------------------------------+
+| :mr:`1438` | Fix Huawei.VRP.get_mac_address_table script                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1422` | Fix MikroTik.RouterOS.get_interface_status_ex script                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1462` | Fix heavy cpu load on `show vlan` command                                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1469` | Fix Huawei.VRP.get_version SerialNumber rogue chart.                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1467` | Fix DLink.DxS profile                                                        |
++------------+------------------------------------------------------------------------------+
+| :mr:`1463` | Fix Extreme.XOS.get_interfaces script                                        |
++------------+------------------------------------------------------------------------------+
+| :mr:`1465` | Fix PrefixBookmark import loop.                                              |
++------------+------------------------------------------------------------------------------+
+| :mr:`1464` | Fix selfmon FM metric name.                                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1457` | Fix getting single oid from multiple metrics.                                |
++------------+------------------------------------------------------------------------------+
+| :mr:`1444` | Fix Iskratel.MSAN profile                                                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1450` | Fix Orion.NOS.get_lldp_neighbors script                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1433` | Fix Cisco.IOSXR profile                                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1436` | Fix Cisco.NXOS.get_arp script                                                |
++------------+------------------------------------------------------------------------------+
+| :mr:`1448` | Fix c.id in card.base.f_object_location.                                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1445` | login button width fixed                                                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1459` | Lambda fix metrics                                                           |
++------------+------------------------------------------------------------------------------+
+| :mr:`1468` | Huawei.VRP.get_version strip serial number.                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1435` | InfiNet fix __init__.py pattern_prompt                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1426` | inv.map fix performance                                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1443` | Fix Object.get_coordinate_zoom method.                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1428` | Fix Huawei.MA5600T profile                                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1430` | Fix Alstec.24xx metric name.                                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1289` | Fix Juniper.JUNOS.get_lldp_neighbors Parameter 'remote_port' required.       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1423` | Fix managedobject and object card for delete Root.                           |
++------------+------------------------------------------------------------------------------+
+| :mr:`1429` | Fix avs Object.get_address_text method                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1424` | Fix getting container path in Alarm Web and Card.                            |
++------------+------------------------------------------------------------------------------+
+| :mr:`1425` | Fix typo in ManagedObject console UI.                                        |
++------------+------------------------------------------------------------------------------+
+| :mr:`1483` | Fix Raisecom.ROS.get_lldp_neighbors script                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1395` | Fix container field type when remove Root.                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1401` | ip.ipam: Fix prefix style                                                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1411` | Fix Add Objects to Maintenance from SA !582                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1386` | fix error "Отсутствуют адреса линка" in dns.reportmissedp2p                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1405` | Fix Discovery Problem Detail report trace.                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1394` | Fix get_lldp_neighbors by SNMP                                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1407` | Fix Plantet.WGSD Profile                                                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1403` | #976 Fix closing of already closed session                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1406` | Fix avs environments graph tmpl 148                                          |
++------------+------------------------------------------------------------------------------+
+| :mr:`1402` | jsloader fixed                                                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1399` | Fix Ubiquiti profile and Generic.get_interfaces(get_bulk)                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1389` | Fix Report Discovery Poison                                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1378` | Fix theme variable in desktop.html template.                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1379` | Fix etl managedobject resourcegroup                                          |
++------------+------------------------------------------------------------------------------+
+| :mr:`1367` | Fix prompt in Rotek.RTBS.v1 profile.                                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1366` | Fix workflow CH dictionary.                                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1365` | Fix selfmon FM collector.                                                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1364` | Fix update operation for superuser on secret field.                          |
++------------+------------------------------------------------------------------------------+
+| :mr:`1376` | noc/noc#952 Fix metric path for Environment metric scope.                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1310` | #964 Fix SA sessions leaking                                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1357` | Natex_fix_sn                                                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1355` | Cisco_fix_snmp                                                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1370` | Increase ManagedObject cache version for syslog archive field.               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1356` | Fix Interface name Eltex.MES                                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1354` | Fix Interface name QSW2500                                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1335` | Fix get_interfaces, add reth aenet                                           |
++------------+------------------------------------------------------------------------------+
+| :mr:`1343` | Fix profilecheckdetail.                                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1342` | Fix secret field.                                                            |
++------------+------------------------------------------------------------------------------+
+| :mr:`1351` | InfiNet-fix-get_version                                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1350` | Fix get_interfaces for Telindus profile                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1348` | Fix stacked packets graph.                                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1360` | Fix Interface name ROS                                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1326` | Fix ch_state ch datasource.                                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1332` | Fix Span Card view from ClickHouse data.                                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1331` | Fix Huawei.MA5600T.get_cpe.                                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1328` | Fix Cisco.IOS.get_lldp_neighbors regex                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1327` | Fix get_interfaces for Rotek.RTBSv1, add rule for platform RT-BS24           |
++------------+------------------------------------------------------------------------------+
+| :mr:`1325` | Fix CLIPS engine in slots.                                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1320` | Fix SNMP Trap OID Resolver                                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1323` | Fix get_interfaces for QSW2500 (dowwn -> down)                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1269` | Fix Juniper.JUNOSe.get_interfaces script                                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1278` | Fix Huawei.MA5600T.get_cpe ValueError.                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1314` | Fix Generic.get_chassis_id script                                            |
++------------+------------------------------------------------------------------------------+
+| :mr:`1306` | Fix AlliedTelesis.AT8000S.get_interfaces script                              |
++------------+------------------------------------------------------------------------------+
+| :mr:`1313` | Fix Cisco.IOS.get_version for ME series                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1262` | Fix Raisecom.RCIOS password prompt matching                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1238` | Fix Juniper.JUNOS profile                                                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1279` | Fixes empty range list in discoveryid.                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1305` | Fix Rotek.RTBS profiles.                                                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1304` | Fix some attributes for Span in MRT serivce                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1303` | Fix selfmon escalator metrics.                                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1300` | fm.eventclassificationrule: Fix creating from event                          |
++------------+------------------------------------------------------------------------------+
+| :mr:`1295` | Fix ./noc mib lookup                                                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1298` | Fix custom metrics path in Generic.get_metrics.                              |
++------------+------------------------------------------------------------------------------+
+| :mr:`1290` | Fix custom metrics.                                                          |
++------------+------------------------------------------------------------------------------+
+| :mr:`1225` | noc/noc#954 Fix Cisco.IOS.get_inventory script                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1275` | Fix InfiNet.WANFlexX.get_lldp_neighbors script                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1281` | Delete quit() in script                                                      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1280` | Fit get_config                                                               |
++------------+------------------------------------------------------------------------------+
+| :mr:`1277` | Fix Zhone.Bitstorm.get_interfaces script                                     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1254` | Fix InfiNet.WANFlexX.get_interfaces script                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1272` | Fix vendor name in SAE script credentials.                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1246` | Fix Huawei.VRP pager                                                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1268` | Fix scheme migrations                                                        |
++------------+------------------------------------------------------------------------------+
+| :mr:`1245` | Fix Huawei.VRP3 prompt match                                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1259` | fix_error_web                                                                |
++------------+------------------------------------------------------------------------------+
+| :mr:`1258` | Fix managed_object_platform migration.                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1260` | Fix pm.util.get_objects_metrics if object_profile metrics empty.             |
++------------+------------------------------------------------------------------------------+
+| :mr:`1253` | Fix path in radius(services)                                                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1203` | Fix prompt pattern in Eltex.DSLAM profile                                    |
++------------+------------------------------------------------------------------------------+
+| :mr:`1247` | Fix consul resolver index handling                                           |
++------------+------------------------------------------------------------------------------+
+| :mr:`1239` | #911 consul: Fix faulty state caused by changes in consul timeout behavior   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1237` | #956 fix web scripts                                                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1221` | Fix Generic.get_lldp_neighbors script                                        |
++------------+------------------------------------------------------------------------------+
+| :mr:`1243` | Fix now shift for selfmon task late.                                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1231` | noc/noc#946 Fix ManagedObject web console.                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1235` | Fix futurize in SLA probe.                                                   |
++------------+------------------------------------------------------------------------------+
+| :mr:`1234` | Fix Huawei.MA5600T.get_cpe.                                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1220` | Fix Generic.get_interfaces script                                            |
++------------+------------------------------------------------------------------------------+
+| :mr:`1204` | Fix Raisecom.ROS.get_interfaces script                                       |
++------------+------------------------------------------------------------------------------+
+| :mr:`1215` | Fix platform field in Platform Card.                                         |
++------------+------------------------------------------------------------------------------+
+| :mr:`1210` | ManagedObject datastream: Fix *links* property. *capabilities* property      |
++------------+------------------------------------------------------------------------------+
+| :mr:`1212` | Fix save empty metrics threshold in ManagedObjectProfile UI.                 |
++------------+------------------------------------------------------------------------------+
+| :mr:`1211` | Fix interface validation errors in Huawei.VRP, Siklu.EH, Zhone.Bitstorm.     |
++------------+------------------------------------------------------------------------------+
+| :mr:`1317` | sa.managedobjectprofile: Fix text                                            |
++------------+------------------------------------------------------------------------------+
+| :mr:`1340` | noc/noc#966                                                                  |
++------------+------------------------------------------------------------------------------+
+| :mr:`1294` | selfmon typo in mo                                                           |
++------------+------------------------------------------------------------------------------+
+| :mr:`1105` | #856 Rack view fix                                                           |
++------------+------------------------------------------------------------------------------+
+| :mr:`1208` | #947 Fix MAC ranges optimization                                             |
++------------+------------------------------------------------------------------------------+

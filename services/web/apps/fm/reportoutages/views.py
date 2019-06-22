@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # fm.reportoutages
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 from collections import defaultdict
-# Django modu;es
+# Third-party modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 # NOC modules
@@ -17,7 +17,6 @@ from noc.fm.models.outage import Outage
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
-from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
 from noc.core.translation import ugettext as _
 
@@ -89,8 +88,8 @@ class ReportOutagesApplication(SimpleReport):
             start = max(o.start, b)
             stop = o.stop if o.stop else now
             outages[o.object] += [o]
-            otime[o.object] += total_seconds(stop - start)
-        td = total_seconds(d)
+            otime[o.object] += (stop - start).total_seconds()
+        td = d.total_seconds()
         if not request.user.is_superuser:
             for mo in ManagedObject.objects.exclude(administrative_domain__in=UserAccess.get_domains(request.user)):
                 if mo.id in otime:

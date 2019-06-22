@@ -11,8 +11,8 @@ import os
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
-                                IntField)
+from mongoengine.fields import StringField, UUIDField, ObjectIdField, IntField
+from mongoengine.errors import ValidationError
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.sa.models.profile import Profile
@@ -67,6 +67,11 @@ class ProfileCheckRule(Document):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        super(ProfileCheckRule, self).clean()
+        if "snmp" in self.method and self.param.startswith("."):
+            raise ValidationError("SNMP Param must not be started with dot")
 
     @property
     def json_data(self):

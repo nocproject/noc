@@ -6,7 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from django.db.models import Q
-from noc.main.models.permission import Permission as DBPermission
+from noc.aaa.models.permission import Permission as DBPermission
 
 
 class PermissionDenied(Exception):

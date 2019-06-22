@@ -52,6 +52,7 @@ class AlarmSeverity(Document):
     volume = IntField(default=100)
 
     _id_cache = cachetools.TTLCache(maxsize=50, ttl=60)
+    _css_cache = cachetools.TTLCache(maxsize=1000, ttl=600)
     _order_cache = {}
     _weight_cache = {}
 
@@ -99,7 +100,7 @@ class AlarmSeverity(Document):
         return s
 
     @classmethod
-    @cachetools.ttl_cache(maxsize=1000, ttl=600)
+    @cachetools.cachedmethod(operator.attrgetter("_css_cache"), lock=lambda _: id_lock)
     def get_severity_css_class_name(cls, severity):
         return cls.get_severity(severity).style.css_class_name
 

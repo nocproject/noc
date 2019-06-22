@@ -116,7 +116,11 @@ class ProfileChecker(object):
         """
         return self.error
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
+    def get_profile_check_rules(cls):
+        return list(ProfileCheckRule.objects.all().order_by("preference"))
+
     def get_rules(self):
         """
         Load ProfileCheckRules and return a list, grouped by preferences
@@ -133,11 +137,8 @@ class ProfileChecker(object):
         """
         self.logger.info("Compiling \"Profile Check rules\"")
         d = {}  # preference -> (method, param) -> [rule, ..]
-        for r in ProfileCheckRule.objects.all().order_by("preference"):
+        for r in self.get_profile_check_rules():
             if "snmp" in r.method and self.ignoring_snmp:
-                continue
-            if "snmp" in r.method and r.param.startswith("."):
-                self.logger.error("Bad SNMP in ruleset \"%s\", Skipping..." % r.name)
                 continue
             if r.preference not in d:
                 d[r.preference] = {}
@@ -158,8 +159,9 @@ class ProfileChecker(object):
         for p in sorted(d):
             yield d[p].items()
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_re_cache"))
-    def get_re(self, regexp):
+    def get_re(cls, regexp):
         return re.compile(regexp)
 
     def do_check(self, method, param):

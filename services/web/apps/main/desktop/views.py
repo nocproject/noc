@@ -8,18 +8,17 @@
 
 # NOC modules
 import datetime
-# Django modules
+# Third-party modules
 from django.http import HttpResponse
-from django.contrib.auth.models import Group
 # NOC modules
 from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged
 from noc.core.version import version
+from noc.aaa.models.group import Group
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
-from noc.main.models.permission import Permission
+from noc.aaa.models.permission import Permission
 from noc.support.cp import CPClient
 from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.translation import ugettext as _
@@ -73,8 +72,7 @@ class DesktopApplication(ExtApplication):
         cp = CPClient()
         ext_apps = [
             a for a in self.site.apps
-            if isinstance(self.site.apps[a],
-                          (ExtApplication, ModelApplication))
+            if isinstance(self.site.apps[a], ExtApplication)
         ]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings

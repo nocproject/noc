@@ -9,7 +9,7 @@ console.debug("Defining NOC.core.TagsField");
 
 Ext.define("NOC.core.TagsField", {
     extend: "Ext.form.field.Tag",
-    alias: ["widget.tagsfield"],
+    alias: "widget.tagsfield",
     displayField: "label",
     valueField: "id",
     queryParam: "__query",
@@ -18,9 +18,14 @@ Ext.define("NOC.core.TagsField", {
     filterPickList: true,
     forceSelection: false,
     createNewOnEnter: true,
-    // triggerAction: 'all',
-    // createNewOnBlur: true,
-
+    triggers: {
+        toBuffer: {
+            cls: "fas fa fa-clipboard",
+            hidden: false,
+            weight: -1,
+            handler: "toClipboard"
+        }
+    },
     initComponent: function() {
         var me = this;
 
@@ -48,5 +53,31 @@ Ext.define("NOC.core.TagsField", {
             }
         });
         me.callParent();
+    },
+    toClipboard: function(btn) {
+        var writeText = function(btn) {
+            var text = btn.getValue().join(","),
+                tagsEl = btn.el.query(".x-tagfield-list"),
+                selectElementText = function(el) {
+                    var range = document.createRange(),
+                        selection = window.getSelection();
+                    range.selectNode(el);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                },
+                listener = function(e) {
+                    if(e.clipboardData && Ext.isFunction(e.clipboardData.setData)) {
+                        e.clipboardData.setData("text/plain", text);
+                    } else { // IE 11
+                        clipboardData.setData("Text", text);
+                    }
+                    e.preventDefault();
+                };
+            selectElementText(tagsEl[0]);
+            document.addEventListener("copy", listener);
+            document.execCommand("copy");
+            document.removeEventListener("copy", listener);
+        };
+        writeText(btn);
     }
 });

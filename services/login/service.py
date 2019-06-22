@@ -17,7 +17,7 @@ from noc.services.login.auth import AuthRequestHandler
 from noc.services.login.logout import LogoutRequestHandler
 from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
-from noc.main.models.apikey import APIKey
+from noc.aaa.models.apikey import APIKey
 from noc.core.perf import metrics
 from noc.config import config
 
@@ -121,8 +121,9 @@ class LoginService(UIService):
             self.logger.info("Changed user credentials: %s", c)
         return r
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_apikey_cache"))
-    def get_api_access(self, key, ip):
+    def get_api_access(cls, key, ip):
         return APIKey.get_name_and_access_str(key, ip)
 
 

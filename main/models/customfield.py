@@ -19,6 +19,7 @@ from mongoengine.base.common import _document_registry
 from mongoengine import fields
 import mongoengine.signals
 # NOC modules
+from noc.core.model.hacks import tuck_up_pants
 from noc.lib.validators import is_int
 from .customfieldenumgroup import CustomFieldEnumGroup
 
@@ -26,6 +27,7 @@ logger = logging.getLogger(__name__)
 id_lock = threading.Lock()
 
 
+@tuck_up_pants
 @six.python_2_unicode_compatible
 class CustomField(models.Model):
     """
@@ -261,9 +263,11 @@ class CustomField(models.Model):
 
     def model_class(self):
         """
-        Return appropriative Model class
+        Return appropriate Model class
         """
         a, m = self.table.split("_", 1)
+        if a == "auth":
+            a = "aaa"
         return models.get_model(a, m)
 
     def document_class(self):

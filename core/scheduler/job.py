@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Scheduler Job Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,6 @@ import tornado.gen
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
-from noc.lib.dateutils import total_seconds
 from .error import RetryAfter
 from noc.core.span import Span
 from noc.core.backport.time import perf_counter
@@ -140,9 +139,7 @@ class Job(object):
                 "[%s] Starting at %s (Lag %.2fms)",
                 self.name,
                 self.scheduler.scheduler_id,
-                total_seconds(
-                    datetime.datetime.now() - self.attrs[self.ATTR_TS]
-                ) * 1000.0
+                (datetime.datetime.now() - self.attrs[self.ATTR_TS]).total_seconds() * 1000.0
             )
             # Run handler
             status = self.E_EXCEPTION

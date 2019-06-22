@@ -33,6 +33,7 @@ from .objectlog import ObjectLog
 from .error import ConnectionError, ModelDataError
 
 id_lock = Lock()
+_path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 
 @bi_sync
@@ -75,7 +76,6 @@ class Object(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     REBUILD_CONNECTIONS = [
         "links",
@@ -173,7 +173,7 @@ class Object(Document):
                 if new_pop:
                     new_pop.update_pop_links()
 
-    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):
         """
         Returns list of parent segment ids

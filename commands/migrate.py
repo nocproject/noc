@@ -8,7 +8,19 @@
 
 # NOC modules
 from noc.core.migration.runner import MigrationRunner
+from noc.core.management.base import BaseCommand
+
+
+class Command(BaseCommand):
+    """
+    Perform database migrations
+    """
+    help = "migrate database"
+
+    def handle(self, *args, **options):
+        runner = MigrationRunner()
+        runner.migrate()
+
 
 if __name__ == "__main__":
-    runner = MigrationRunner()
-    runner.migrate()
+    Command().run()
