@@ -290,6 +290,8 @@ class CorrelatorService(Service):
             r.u_name, severity
         )
         # Create new alarm
+        direct_services = SummaryItem.dict_to_items(summary["service"])
+        direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
         a = ActiveAlarm(
             timestamp=e.timestamp,
             last_update=e.timestamp,
@@ -298,11 +300,11 @@ class CorrelatorService(Service):
             severity=severity,
             vars=vars,
             discriminator=discriminator,
-            direct_services=SummaryItem.dict_to_items(summary["service"]),
-            direct_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
+            direct_services=direct_services,
+            direct_subscribers=direct_subscribers,
             total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),
-            total_services=SummaryItem.dict_to_items(summary["service"]),
-            total_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
+            total_services=direct_services,
+            total_subscribers=direct_subscribers,
             log=[
                 AlarmLog(
                     timestamp=datetime.datetime.now(),
