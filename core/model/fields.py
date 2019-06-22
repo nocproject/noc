@@ -108,28 +108,6 @@ class TextArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         return ""
 
 
-class TextArray2Field(six.with_metaclass(models.SubfieldBase, models.Field)):
-    """
-    Two-dimensioned text array field maps to PostgreSQL TEXT[][]
-    """
-    def db_type(self, connection):
-        return "TEXT[][]"
-
-    def to_python(self, value):
-        def to_unicode(s):
-            if isinstance(s, unicode):
-                return s
-            else:
-                try:
-                    return unicode(s.replace("\\\\", "\\"), "utf-8")
-                except UnicodeDecodeError:
-                    return s
-
-        if value is None:
-            return None
-        return [[to_unicode(y) for y in x] for x in value]
-
-
 class InetArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     """
     INETArrayField maps to PostgreSQL INET[] type
@@ -150,25 +128,6 @@ class InetArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         if value is None:
             return None
         return "{ " + ", ".join(value) + " }"
-
-
-class DateTimeArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
-    def db_type(self, connection):
-        return "TIMESTAMP[]"
-
-    def to_python(self, value):
-        if isinstance(value, list):
-            return value
-        elif value == "{}":
-            return []
-        elif value is None:
-            return None
-        return [x for x in value[1:-1].split(",")]  # @todo: fix
-
-    def get_db_prep_value(self, value, connection, prepared=False):
-        if value is None:
-            return None
-        return "{ " + ", ".join([str(x) for x in value]) + " }"
 
 
 class PickledField(six.with_metaclass(models.SubfieldBase, models.Field)):
@@ -237,32 +196,6 @@ class TagsField(six.with_metaclass(models.SubfieldBase, models.Field)):
 
     def get_db_prep_value(self, value, connection, prepared=False):
         return value
-
-
-class ColorField(six.with_metaclass(models.SubfieldBase, models.Field)):
-    """
-    Color field
-    """
-    default_validators = []
-
-    def db_type(self, connection):
-        return "INTEGER"
-
-    def __init__(self, *args, **kwargs):
-        super(ColorField, self).__init__(*args, **kwargs)
-
-    def to_python(self, value):
-        if isinstance(value, six.string_types):
-            return value
-        return u"#%06x" % value
-
-    def get_db_prep_value(self, value, connection, prepared=False):
-        if isinstance(value, six.string_types):
-            if value.startswith("#"):
-                value = value[1:]
-            return int(value, 16)
-        else:
-            return value
 
 
 class DocumentReferenceDescriptor(object):
