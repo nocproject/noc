@@ -1,11 +1,11 @@
-.. _release-19.X:
+.. _release-18.X:
 
 ====
-19.X
+18.X
 ====
 
 .. toctree::
     :titlesonly:
     :glob:
 
-    /releases/release-19.*
+    /releases/release-18.*
