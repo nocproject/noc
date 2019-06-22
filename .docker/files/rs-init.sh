@@ -33,3 +33,5 @@ mongo --host "$mongo_config_host" \
 		});
 		rs.initiate(rsConfig);
 	EOJS
+echo healthy > /tmp/job_is_done
+sleep 60

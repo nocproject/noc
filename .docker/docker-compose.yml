@@ -24,6 +24,11 @@ services:
       MONGO_REPL_SET_NAME: noc
       MONGO_REPL_SET_HOSTS: mongo
     entrypoint: sh /rs-init.sh
+    healthcheck:
+      test: ["CMD","grep", "healthy", "/tmp/job_is_done"]
+      interval: 3s
+      timeout: 3s
+      retries: 100
 
   postgres:
     image: "postgres:9.6"
@@ -73,7 +78,7 @@ services:
       postgres:
         condition: service_healthy
       mongodb-repl-set-init:
-        condition: service_started
+        condition: service_healthy
       clickhouse:
         condition: service_started
       nsqd:
@@ -97,7 +102,7 @@ services:
       postgres:
         condition: service_healthy
       mongodb-repl-set-init:
-        condition: service_started
+        condition: service_healthy
       clickhouse:
         condition: service_started
       nsqd:
@@ -142,161 +147,6 @@ services:
       timeout: 3s
       retries: 100
 
-  web:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - clickhouse
-      - redis
-      - nsqd
-      - nsqlookupd
-      - login
-    command: /usr/bin/python /opt/noc/services/web/service.py
-    env_file:
-      - noc.conf
-
-  login:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-    command: /usr/bin/python /opt/noc/services/login/service.py
-
-    env_file:
-      - noc.conf
-
-  card:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - redis
-      - login
-    command: /usr/bin/python /opt/noc/services/card/service.py
-
-    env_file:
-      - noc.conf
-
-  mrt:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-    command: /usr/bin/python /opt/noc/services/mrt/service.py
-
-    env_file:
-      - noc.conf
-
-  sae:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - redis
-    command: /usr/bin/python /opt/noc/services/sae/service.py
-    env_file:
-      - noc.conf
-
-  datasource:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-    command: /usr/bin/python /opt/noc/services/datasource/service.py
-
-    env_file:
-      - noc.conf
-
-  datastream:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-    command: /usr/bin/python /opt/noc/services/datastream/service.py
-    env_file:
-      - noc.conf
-
-  nbi:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - clickhouse
-      - login
-      - nsqd
-    command: /usr/bin/python /opt/noc/services/nbi/service.py
-    env_file:
-      - noc.conf
-
-  activator-default:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    command: /usr/bin/python /opt/noc/services/activator/service.py
-    environment:
-      NOC_POOL: default
-      NOC_LOGLEVEL: debug
-    env_file:
-      - noc.conf
-
-  bi:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - clickhouse
-    command: /usr/bin/python /opt/noc/services/bi/service.py
-    env_file:
-      - noc.conf
-
-  scheduler:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - redis
-    command: /usr/bin/python /opt/noc/services/scheduler/service.py
-
-    env_file:
-      - noc.conf
-
-  classifier:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - redis
-      - nsqlookupd
-      - nsqd
-    command: /usr/bin/python /opt/noc/services/classifier/service.py
-
-    env_file:
-      - noc.conf
-
   clickhouse:
     image: yandex/clickhouse-server:latest
 
@@ -305,54 +155,3 @@ services:
 
   redis:
     image: redis:5-alpine
-
-  chwriter:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - clickhouse
-      - nsqlookupd
-      - nsqd
-    command: /usr/bin/python /opt/noc/services/chwriter/service.py
-    env_file:
-      - noc.conf
-
-  selfmon:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-      - nsqlookupd
-      - nsqd
-    command: /usr/bin/python /opt/noc/services/selfmon/service.py
-
-    env_file:
-      - noc.conf
-
-  mib:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - mongo
-    command: /usr/bin/python /opt/noc/services/mib/service.py
-
-    env_file:
-      - noc.conf
-
-  syslogcollector:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile.build
-    restart: "no"
-    depends_on:
-      - nsqd
-      - datastream
-    command: /usr/bin/python /opt/noc/services/syslogcollector/service.py
-    env_file:
-      - noc.conf
