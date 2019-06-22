@@ -45,23 +45,20 @@ class INETField(models.Field):
     def db_type(self, connection):
         return "INET"
 
-    def to_python(self, value):
-        return str(value)
-
     def get_db_prep_value(self, value, connection, prepared=False):
         if not value:
             return None
         return value
 
 
-class MACField(six.with_metaclass(models.SubfieldBase, models.Field)):
+class MACField(models.Field):
     """
     MACField maps to the PostgreSQL MACADDR field
     """
     def db_type(self, connection):
         return "MACADDR"
 
-    def to_python(self, value):
+    def from_db_value(self, value, expression, connection, context):
         if value is None:
             return None
         return value.upper()
@@ -81,14 +78,14 @@ class BinaryField(models.Field):
         return "BYTEA"
 
 
-class TextArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
+class TextArrayField(models.Field):
     """
     Text Array field maps to PostgreSQL TEXT[] type
     """
     def db_type(self, connection):
         return "TEXT[]"
 
-    def to_python(self, value):
+    def from_db_value(self, value, expression, connection, context):
         def to_unicode(s):
             if isinstance(s, unicode):
                 return s
@@ -108,14 +105,14 @@ class TextArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         return ""
 
 
-class InetArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
+class InetArrayField(models.Field):
     """
     INETArrayField maps to PostgreSQL INET[] type
     """
     def db_type(self, connection):
         return "INET[]"
 
-    def to_python(self, value):
+    def from_db_value(self, value, expression, connection, context):
         if isinstance(value, list):
             return value
         elif value == "{}":
@@ -130,14 +127,14 @@ class InetArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         return "{ " + ", ".join(value) + " }"
 
 
-class PickledField(six.with_metaclass(models.SubfieldBase, models.Field)):
+class PickledField(models.Field):
     """
     Pickled object
     """
     def db_type(self, connection):
         return "BYTEA"
 
-    def to_python(self, value):
+    def from_db_value(self, value, expression, connection, context):
         # if not value:
         #    return None
         try:
@@ -156,20 +153,12 @@ class AutoCompleteTagsField(models.Field):
     def db_type(self, connection):
         return "TEXT"
 
-    def formfield(self, **kwargs):
-        from noc.lib.widgets import AutoCompleteTags
-        defaults = {'widget': AutoCompleteTags}
-        defaults.update(kwargs)
-        if defaults['widget'] == AdminTextInputWidget:
-            defaults['widget'] = AutoCompleteTags
-        return super(AutoCompleteTagsField, self).formfield(**defaults)
 
-
-class TagsField(six.with_metaclass(models.SubfieldBase, models.Field)):
+class TagsField(models.Field):
     def db_type(self, connection):
         return "TEXT[]"
 
-    def to_python(self, value):
+    def from_db_value(self, value, expression, connection, context):
         def to_unicode(s):
             if isinstance(s, unicode):
                 return s
@@ -185,14 +174,6 @@ class TagsField(six.with_metaclass(models.SubfieldBase, models.Field)):
             return [x for x in value if x]
         else:
             return [to_unicode(x) for x in value]
-
-    def formfield(self, **kwargs):
-        from noc.lib.widgets import AutoCompleteTags
-        defaults = {'widget': AutoCompleteTags}
-        defaults.update(kwargs)
-        if defaults['widget'] == AdminTextInputWidget:
-            defaults['widget'] = AutoCompleteTags
-        return super(TagsField, self).formfield(**defaults)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         return value
@@ -310,14 +291,14 @@ class CachedForeignKey(models.ForeignKey):
                 CachedForeignKeyDescriptor(self))
 
 
-class ObjectIDArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
+class ObjectIDArrayField(models.Field):
     """
     ObjectIDArrayField maps to PostgreSQL CHAR[] type
     """
     def db_type(self, connection):
         return "CHAR(24)[]"
 
-    def to_python(self, value):
+    def from_db_value(self, value, expression, connection, context):
         if isinstance(value, list):
             return value
         elif value == "{}":
@@ -332,6 +313,3 @@ class ObjectIDArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         if isinstance(value, (six.string_types, ObjectId)):
             value = [value]
         return "{ %s }" % ", ".join(str(x) for x in value)
-
-
-from django.contrib.admin.widgets import AdminTextInputWidget
