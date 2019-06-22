@@ -24,12 +24,13 @@ class Script(BaseScript):
                         re.MULTILINE)
 
     def execute_snmp(self):
+        platform = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
         active_rev = self.snmp.get("1.3.6.1.4.1.193.81.2.7.1.3.0", cached=True)
         version = self.snmp.get("1.3.6.1.4.1.193.81.2.7.1.2.1.3.%s" % active_rev, cached=True)
         serial = self.snmp.get("1.3.6.1.4.1.193.81.2.7.1.2.1.2.%s" % active_rev, cached=True)
         return {
             "vendor": "Ericsson",
-            "platform": "Mini-Link",
+            "platform": platform.replace("Traffic Node", "TN").replace("Compact Node", "CN"),
             "version": version,
             "attributes": {
                 "Serial Number": serial

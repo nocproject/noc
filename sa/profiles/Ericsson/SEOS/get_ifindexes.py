@@ -27,13 +27,20 @@ class Script(BaseScript):
     def execute_snmp(self):
         r = {}
         unknown_interfaces = []
-        for oid, index in self.snmp.getnext(mib["IF-MIB::ifIndex"], max_retries=self.get_getnext_retires()):
-            name = self.snmp.get(mib["IF-MIB::ifName", index])
-            descr = self.snmp.get(mib["IF-MIB::ifDescr", index])
+        d = {}
+        for doid, descr in self.snmp.getnext(mib["IF-MIB::ifDescr"], max_retries=self.get_getnext_retires()):
+            dindex = int(doid.split(".")[-1])
+            d[dindex] = descr
+        for oid, name in self.snmp.getnext(mib["IF-MIB::ifName"], max_retries=self.get_getnext_retires()):
+            index = int(oid.split(".")[-1])
+            if not name:
+                continue
+            if r.get(name):
+                name = "%s-%s" % (name, d[index])
             try:
-                v = self.profile.convert_interface_name("%s/%s" % (name, descr))
+                v = self.profile.convert_interface_name(name.strip())
             except InterfaceTypeError as e:
-                self.logger.debug("Ignoring unknown interface %s: %s", "%s/%s" % (name, descr), e)
+                self.logger.debug("Ignoring unknown interface %s: %s", name, e)
                 unknown_interfaces += [name]
                 continue
             r[v] = index
