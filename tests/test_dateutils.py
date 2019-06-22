@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  Test dateutils
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import datetime
 # Third-party modules
 import pytest
 # NOC modules
-from noc.lib.dateutils import hits_in_range, total_seconds
+from noc.lib.dateutils import hits_in_range
 
 
 def test_hits_in_range():
@@ -70,4 +70,4 @@ def total_seconds_data(request):
 
 def test_total_seconds(total_seconds_data):
     d, s = total_seconds_data
-    assert total_seconds(d) == s
+    assert d.total_seconds() == s

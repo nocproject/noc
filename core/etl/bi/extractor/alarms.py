@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alarms Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,6 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.alarms import Alarms
 from noc.core.etl.bi.stream import Stream
-from noc.lib.dateutils import total_seconds
 from noc.config import config
 from noc.lib.dateutils import hits_in_range
 from noc.sa.models.serviceprofile import ServiceProfile
@@ -97,7 +96,7 @@ class AlarmsExtractor(ArchivingExtractor):
             self.alarm_stream.push(
                 ts=d["timestamp"],
                 close_ts=d["clear_timestamp"],
-                duration=max(0, int(total_seconds(d["clear_timestamp"] - d["timestamp"]))),
+                duration=max(0, int((d["clear_timestamp"] - d["timestamp"]).total_seconds())),
                 alarm_id=str(d["_id"]),
                 root=str(d.get("root") or ""),
                 alarm_class=AlarmClass.get_by_id(d["alarm_class"]),

@@ -12,7 +12,6 @@ from __future__ import print_function
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
 # NOC modules
-from noc.lib.dateutils import total_seconds
 from noc.core.migration.base import BaseMigration
 
 
@@ -25,7 +24,7 @@ class Migration(BaseMigration):
                 UpdateOne({
                     "_id": d["_id"]
                 }, {"$set": {
-                    "last_value": float(total_seconds(d["last"] - d["start"]))
+                    "last_value": float((d["last"] - d["start"]).total_seconds())
                 }})
             ]
         if bulk:

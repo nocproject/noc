@@ -29,7 +29,6 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.selectorcache import SelectorCache
 from noc.lib.nosql import ForeignKeyField
 from noc.core.defer import call_later
-from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
 ac_lock = Lock()
@@ -137,7 +136,7 @@ class AlarmEscalation(Document):
                 )
                 et = alarm.timestamp + datetime.timedelta(seconds=e_item.delay)
                 if et > now:
-                    delay = total_seconds(et - now)
+                    delay = (et - now).total_seconds()
                 else:
                     delay = None
                 call_later(
