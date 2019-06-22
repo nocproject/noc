@@ -18,6 +18,7 @@ from mongoengine import *
 import mongoengine
 import six
 import bson
+import pymongo.errors
 # NOC modules
 from noc.config import config
 from noc.models import get_model
@@ -30,6 +31,10 @@ def auto_connect():
     Connect to the mongo database
     :return:
     """
+    temporary_errors = (
+        mongoengine.connection.MongoEngineConnectionError,
+        pymongo.errors.AutoReconnect
+    )
     retries = config.mongo.retries
     timeout = config.mongo.timeout
 
@@ -43,7 +48,7 @@ def auto_connect():
             connect_args = config.mongo_connection_args
             connect(**connect_args)
             break
-        except mongoengine.connection.MongoEngineConnectionError as e:
+        except temporary_errors as e:
             logger.error("Cannot connect to mongodb: %s", e)
             if i < retries - 1:
                 logger.error("Waiting %d seconds", timeout)
