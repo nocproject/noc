@@ -18,7 +18,7 @@ import six
 from django.http import HttpResponse
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
-                                BinaryField, ObjectIdField)
+                                BinaryField, ObjectIdField, UUIDField)
 from mongoengine.errors import ValidationError
 # NOC modules
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
@@ -286,7 +286,7 @@ class ExtDocApplication(ExtApplication):
                     else:
                         v = None
                 elif (isinstance(v, six.string_types) or isinstance(v, six.integer_types) or
-                      isinstance(v, (bool, dict)) or isinstance(f, ObjectIdField)):
+                      isinstance(v, (bool, dict)) or isinstance(f, ObjectIdField) or isinstance(f, UUIDField)):
                     if hasattr(v, "id"):
                         v = v.id
                     else:
