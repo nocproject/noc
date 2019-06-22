@@ -38,6 +38,7 @@ def tuck_up_pants(cls):
     app_config = apps.app_configs.get(label)
     if not app_config:
         app_config = AppConfig.create(app_name)
+        app_config.models = {}
         apps.app_configs[label] = app_config
     # Fake up registry ready flag
     apps.apps_ready = True

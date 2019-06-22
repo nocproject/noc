@@ -34,7 +34,6 @@ DATABASES = {
         "PORT": config.pg.addresses[0].port,
         "AUTOCOMMIT": True,
         "OPTIONS": {
-            "autocommit": True,
             "connect_timeout": config.pg.connect_timeout
         }
     }
