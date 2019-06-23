@@ -13,6 +13,8 @@ get_interfaces
 .. todo::
     Describe get_interfaces script
 
+.. versionadded:: ???
+
 Input Arguments
 ---------------
 
@@ -24,6 +26,8 @@ Examples
 
 Supported Profiles
 ------------------
+
+.. include:: ../include/auto/supported-profiles-get_interfaces.rst
 
 Used in
 -------

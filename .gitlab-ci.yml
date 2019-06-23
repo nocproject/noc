@@ -299,6 +299,7 @@ Build Master Docs:
   image: registry.getnoc.com/infrastructure/docs:master
   script:
     - cd docs/
+    - python ./scripts/build-auto-include.py
     - sphinx-build -a -E -b html src/en ../build/docs/en
     - python ./scripts/build-go.py ../build/docs/en/objects.inv
   tags:
