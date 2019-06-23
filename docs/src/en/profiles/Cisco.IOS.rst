@@ -20,6 +20,54 @@ Cisco.IOS Profile
 Configuration
 -------------
 
+Show firmware version
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block::
+
+    show version
+
+Show platform
+^^^^^^^^^^^^^
+
+.. code-block::
+
+    show version
+
+Show configuration
+^^^^^^^^^^^^^^^^^^
+Show current running configuration
+
+.. code-block::
+
+    show running-config
+
+Show startup configuraion
+
+.. code-block::
+
+    show startup-config
+
+Entering Configuration Mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+All configuration commands are entered in the configuration mode.
+To enter configuration mode type
+
+.. code-block:: text
+
+    configure terminal
+
+Save Configuration
+^^^^^^^^^^^^^^^^^^
+
+To save configuration changes type
+
+.. code-block::
+
+    copy running-config startup-config
+
+
 Create Local User
 ^^^^^^^^^^^^^^^^^
 
@@ -61,3 +109,15 @@ Supported Platforms
 -------------------
 
 .. include:: ../include/auto/supported-platforms-Cisco.IOS.rst
+
+.. _profile-Cisco.IOS-used:
+
+Used Commands
+-------------
+`Cisco.IOS` profile emmits following commands. Ensure they are
+available for NOC user:
+
+* show version
+* show running-config
+* show startup-config
+...
