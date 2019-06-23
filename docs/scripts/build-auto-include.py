@@ -41,14 +41,11 @@ def render_platform(vendor, data):
         "    * - Vendor",
         "      - %s" % vendor,
         "    * - Model",
-        "      - %s" % data["name"]
+        "      - %s" % data["name"],
     ]
     aliases = data.get("aliases")
     if aliases:
-        r += [
-            "    * - Aliases",
-            "      - %s" % ", ".join(sorted(aliases))
-        ]
+        r += ["    * - Aliases", "      - %s" % ", ".join(sorted(aliases))]
     r += [
         "    * - Start of Sale",
         "      - %s" % (data.get("start_of_sale") or "N/A"),
@@ -60,39 +57,23 @@ def render_platform(vendor, data):
         "      - %s" % (data.get("end_of_xsupport") or "N/A"),
     ]
     if len(profiles) == 1:
-        r += [
-            "    * - Profile",
-            "      - :ref:`%s <profile-%s>`" % (profiles[0], profiles[0])
-        ]
+        r += ["    * - Profile", "      - :ref:`%s <profile-%s>`" % (profiles[0], profiles[0])]
     elif len(profiles) > 1:
         r += [
             "    * - Profiles",
-            "      - %s" % ", ".join([":ref:`%s <profile-%s>`" % (p, p) for p in sorted(profiles)])
+            "      - %s" % ", ".join([":ref:`%s <profile-%s>`" % (p, p) for p in sorted(profiles)]),
         ]
     if data.get("snmp_sysobjectid"):
-        r += [
-            "    * - SNMP SysObjectId",
-            "      - %s" % data["snmp_sysobjectid"]
-        ]
+        r += ["    * - SNMP SysObjectId", "      - %s" % data["snmp_sysobjectid"]]
     r += [""]
     if data.get("description"):
-        r += [
-            data.get("description"),
-            ""
-        ]
+        r += [data.get("description"), ""]
     return "\n".join(r)
 
 
 def render_vendor_platforms(platforms):
-    r = [
-        ".. hlist::",
-        "    :columns: 3",
-        ""
-    ]
-    r += [
-        "    * :ref:`%s <%s>`" % (name, ref)
-        for name, ref in sorted(platforms)
-    ]
+    r = [".. hlist::", "    :columns: 3", ""]
+    r += ["    * :ref:`%s <%s>`" % (name, ref) for name, ref in sorted(platforms)]
     r += [""]
     return "\n".join(r)
 
@@ -110,7 +91,7 @@ def render_vendor_index(vendor):
         "    :glob:",
         "",
         "    /platforms/%s-*" % vendor,
-        ""
+        "",
     ]
     return "\n".join(r)
 
@@ -169,19 +150,13 @@ def build_scripts(root, inc_root):
     # Build supported scripts
     for profile in scripts:
         with open(os.path.join(inc_root, "supported-scripts-%s.rst" % profile), "w") as f:
-            r = [
-                "* :ref:`%s <script-%s>`" % (s, s)
-                for s in sorted(scripts[profile])
-            ]
+            r = ["* :ref:`%s <script-%s>`" % (s, s) for s in sorted(scripts[profile])]
             data = "\n".join(r)
             f.write(data)
     # Build supported profiles
     for script in profiles:
         with open(os.path.join(inc_root, "supported-profiles-%s.rst" % script), "w") as f:
-            r = [
-                "* :ref:`%s <profile-%s>`" % (p, p)
-                for p in sorted(profiles[script])
-            ]
+            r = ["* :ref:`%s <profile-%s>`" % (p, p) for p in sorted(profiles[script])]
             data = "\n".join(r)
             f.write(data)
     all_profiles = set(scripts)
