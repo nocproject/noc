@@ -6,4 +6,5 @@ Releases
     :titlesonly:
     :glob:
 
-    /releases/gen-19
+    /releases/noc-19
+    /releases/noc-18
