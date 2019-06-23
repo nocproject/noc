@@ -15,6 +15,8 @@ from .base import Summary, TargetedStream
 DEFAULT_TARGETS = [(q, config.metrics.default_quantiles_epsilon)
                    for q in config.metrics.default_quantiles]
 DEFAULT_QUANTILE_SCALE = 1000000
+Q_SUFFIX = "_@q"
+Q_SUFFIX_LEN = len(Q_SUFFIX)
 
 
 class Quantile(Summary):
@@ -25,6 +27,9 @@ class Quantile(Summary):
         self.scale = scale
 
     def iter_prom_metrics(self, name, labels):
+        # Avoid clash with histograms
+        if name.endswith(Q_SUFFIX):
+            name = name[:-Q_SUFFIX_LEN]
         # Prepare labels
         ext_labels = ['%s="%s"' % (i.lower(), labels[i]) for i in labels]
         for quantile in config.metrics.default_quantiles:
@@ -57,4 +62,5 @@ def apply_quantiles(d):
     :param d: Dictionary
     :return:
     """
-    d.update(quantiles)
+    for x in quantiles:
+        d[x + Q_SUFFIX] = quantiles[x]
