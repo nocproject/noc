@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// main.user Model
+// aaa.user Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.user.Model");
+console.debug("Defining NOC.aaa.user.Model");
 
-Ext.define("NOC.main.user.Model", {
+Ext.define("NOC.aaa.user.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/main/user/",
+    rest_url: "/aaa/user/",
 
     fields: [
         {

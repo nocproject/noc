@@ -1,15 +1,15 @@
 //---------------------------------------------------------------------
-// main.apikey application
+// aaa.apikey application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.apikey.Application");
+console.debug("Defining NOC.aaa.apikey.Application");
 
 Ext.define("NOC.main.apikey.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.apikey.Model",
+        "NOC.aaa.apikey.Model",
         "NOC.core.PasswordGenerator"
     ],
     model: "NOC.main.apikey.Model",

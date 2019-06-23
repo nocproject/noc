@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------
-// main.group Appliction Permissions widget
+// aaa.group Appliction Permissions widget
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.group.ApplicationPermission");
+console.debug("Defining NOC.aaa.group.ApplicationPermission");
 
-Ext.define("NOC.main.group.ApplicationPermission", {
+Ext.define("NOC.aaa.group.ApplicationPermission", {
     extend: "Ext.panel.Panel",
     alias: "widget.noc.group.applicationperm",
     defaultListenerScope: true,

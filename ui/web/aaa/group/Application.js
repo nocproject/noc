@@ -1,18 +1,18 @@
 //---------------------------------------------------------------------
-// main.group application
+// aaa.group application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.group.Application");
+console.debug("Defining NOC.aaa.group.Application");
 
-Ext.define("NOC.main.group.Application", {
+Ext.define("NOC.aaa.group.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.group.Model",
-        "NOC.main.group.Permission"
+        "NOC.aaa.group.Model",
+        "NOC.aaa.group.Permission"
     ],
-    model: "NOC.main.group.Model",
+    model: "NOC.aaa.group.Model",
     search: true,
     recordReload: true,
     maskElement: "el",
@@ -56,7 +56,7 @@ Ext.define("NOC.main.group.Application", {
     onNewRecord: function() {
         var me = this;
         Ext.Ajax.request({
-            url: "/main/group/new_permissions/",
+            url: "/aaa/group/new_permissions/",
             method: "GET",
             scope: me,
             success: function(response) {

@@ -10,7 +10,7 @@ Ext.define("NOC.main.authldapdomain.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.main.authldapdomain.Model",
-        "NOC.main.group.LookupField"
+        "NOC.aaa.group.LookupField"
     ],
     model: "NOC.main.authldapdomain.Model",
     initComponent: function() {
@@ -211,7 +211,7 @@ Ext.define("NOC.main.authldapdomain.Application", {
                             text: __("Local Group"),
                             dataIndex: "group",
                             flex: 1,
-                            editor: "main.group.LookupField",
+                            editor: "aaa.group.LookupField",
                             renderer: NOC.render.Lookup("group")
                         }
                     ]

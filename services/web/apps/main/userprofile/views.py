@@ -73,7 +73,7 @@ class UserProfileApplication(ExtApplication):
         user.preferred_language = preferred_language
         user.save()
         # Setup contacts
-        UserContact.objects.filter(user=self).delete()
+        UserContact.objects.filter(user=user).delete()
         for c in contacts:
             UserContact(
                 user=user,

@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// main.apikey Model
+// aaa.apikey Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.apikey.Model");
+console.debug("Defining NOC.aaa.apikey.Model");
 
-Ext.define("NOC.main.apikey.Model", {
+Ext.define("NOC.aaa.apikey.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/main/apikey/",
+    rest_url: "/aaa/apikey/",
 
     fields: [
         {
