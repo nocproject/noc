@@ -63,4 +63,8 @@ def apply_quantiles(d):
     :return:
     """
     for x in quantiles:
+        if isinstance(x, tuple):
+            x = (x[0] + Q_SUFFIX,) + x[1:]
+        else:
+            x += Q_SUFFIX
         d[x + Q_SUFFIX] = quantiles[x]
