@@ -64,7 +64,7 @@ def apply_quantiles(d):
     """
     for x in quantiles:
         if isinstance(x, tuple):
-            x = (x[0] + Q_SUFFIX,) + x[1:]
+            xk = (x[0] + Q_SUFFIX,) + x[1:]
         else:
-            x += Q_SUFFIX
-        d[x + Q_SUFFIX] = quantiles[x]
+            xk = x + Q_SUFFIX
+        d[xk] = quantiles[x]
