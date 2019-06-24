@@ -1987,13 +1987,11 @@ enable_rca_neighbor_cache
 Switch topology-based Root Cause Analysis from
 traditional uplink-based to faster neighbor-cache implementation.
 Preparations must be given before switching on.
-See release notes for details
+See :ref:`release notes <release-19.3-rca-neighbor-cache>` for details.
 
-.. todo::
+.. versionadded:: 19.3
 
-    Add release notes reference
-
-.. warning::
+.. deprecated:: 20.1
 
     Will be deprecated and switched on by default in 20.1 generation
     of NOC releases
