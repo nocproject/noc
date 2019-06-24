@@ -251,7 +251,7 @@ class ObjectModel(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
-            "vendor__code": self.vendor.code,
+            "vendor__code": self.vendor.code[0],
             "data": self.data,
             "connections": [c.json_data for c in self.connections]
         }
