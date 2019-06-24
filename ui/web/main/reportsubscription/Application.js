@@ -11,7 +11,7 @@ Ext.define("NOC.main.reportsubscription.Application", {
     requires: [
         "NOC.main.reportsubscription.Model",
         "NOC.main.notificationgroup.LookupField",
-        "NOC.main.user.LookupField",
+        "NOC.aaa.user.LookupField",
         "NOC.main.ref.report.LookupField"
     ],
     model: "NOC.main.reportsubscription.Model",
@@ -58,7 +58,7 @@ Ext.define("NOC.main.reportsubscription.Application", {
                 },
                 {
                     name: "run_as",
-                    xtype: "main.user.LookupField",
+                    xtype: "aaa.user.LookupField",
                     fieldLabel: __("Run As"),
                     allowBlank: false
                 },

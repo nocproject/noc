@@ -1,18 +1,18 @@
 //---------------------------------------------------------------------
-// main.group Permissions widget
+// aaa.group Permissions widget
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.group.Permission");
+console.debug("Defining NOC.aaa.group.Permission");
 
-Ext.define("NOC.main.group.Permission", {
+Ext.define("NOC.aaa.group.Permission", {
     extend: "Ext.panel.Panel",
     mixins: [
         "Ext.form.field.Base"
     ],
     requires: [
-        "NOC.main.group.ApplicationPermission"
+        "NOC.aaa.group.ApplicationPermission"
     ],
     alias: "widget.noc.group.permission",
     defaultListenerScope: true,

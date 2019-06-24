@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.userprofile application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,9 +12,8 @@ from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
                                     DictParameter, ModelParameter)
 from noc.settings import LANGUAGES
 from noc.main.models.timepattern import TimePattern
+from noc.aaa.models.usercontact import UserContact
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
-from noc.main.models.userprofile import UserProfile
-from noc.main.models.userprofilecontact import UserProfileContact
 from noc.core.translation import ugettext as _
 
 
@@ -30,21 +29,16 @@ class UserProfileApplication(ExtApplication):
     @view(url="^$", method=["GET"], access=PermitLogged(), api=True)
     def api_get(self, request):
         user = request.user
-        try:
-            profile = user.get_profile()
-            language = profile.preferred_language
-            contacts = [
-                {
-                    "time_pattern": c.time_pattern.id,
-                    "time_pattern__label": c.time_pattern.name,
-                    "notification_method": c.notification_method,
-                    "params": c.params
-                }
-                for c in UserProfileContact.objects.filter(user_profile=profile)
-            ]
-        except UserProfile.DoesNotExist:
-            language = None
-            contacts = []
+        language = user.preferred_language
+        contacts = [
+            {
+                "time_pattern": c.time_pattern.id,
+                "time_pattern__label": c.time_pattern.name,
+                "notification_method": c.notification_method,
+                "params": c.params
+            }
+            for c in UserContact.objects.filter(user=user)
+        ]
         return {
             "username": user.username,
             "name": (" ".join(
@@ -76,17 +70,13 @@ class UserProfileApplication(ExtApplication):
     )
     def api_save(self, request, preferred_language, contacts):
         user = request.user
-        try:
-            profile = user.get_profile()
-        except UserProfile.DoesNotExist:
-            profile = UserProfile(user=user)
-        profile.preferred_language = preferred_language
-        profile.save()
+        user.preferred_language = preferred_language
+        user.save()
         # Setup contacts
-        UserProfileContact.objects.filter(user_profile=profile).delete()
+        UserContact.objects.filter(user=user).delete()
         for c in contacts:
-            UserProfileContact(
-                user_profile=profile,
+            UserContact(
+                user=user,
                 time_pattern=c["time_pattern"],
                 notification_method=c["notification_method"],
                 params=c["params"]

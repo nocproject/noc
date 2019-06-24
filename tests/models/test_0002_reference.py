@@ -49,8 +49,6 @@ def iter_referred_models():
 
 @pytest.mark.parametrize("model,refs", iter_referred_models())
 def test_on_delete_check(model, refs):
-    if not is_document(model) and model._meta.db_table.startswith("auth_"):
-        pytest.xfail("Cannot cover django's contrib models")
     assert hasattr(model, "_on_delete"), "Must have @on_delete_check decorator (Referenced from %s)" % refs
     x_checks = set(model._on_delete["check"])
     x_checks |= set(model._on_delete["clean"])

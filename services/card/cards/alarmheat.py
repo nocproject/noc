@@ -41,12 +41,11 @@ class AlarmHeatCard(BaseCard):
     TOOLTIP_LIMIT = config.card.alarmheat_tooltip_limit
 
     def get_data(self):
-        p = self.current_user.get_profile()
         return {
             "maintenance": 0,
-            "lon": p.heatmap_lon or 0,
-            "lat": p.heatmap_lat or 0,
-            "zoom": p.heatmap_zoom or 0
+            "lon": self.current_user.heatmap_lon or 0,
+            "lat": self.current_user.heatmap_lat or 0,
+            "zoom": self.current_user.heatmap_zoom or 0
         }
 
     @classmethod

@@ -11,7 +11,7 @@ Ext.define("NOC.main.audittrail.Application", {
     requires: [
         "NOC.main.audittrail.Model",
         "NOC.main.ref.model.LookupField",
-        "NOC.main.user.LookupField"
+        "NOC.aaa.user.LookupField"
     ],
     model: "NOC.main.audittrail.Model",
     search: true,

@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------
-// NOC.main.group.Lookup
+// NOC.aaa.group.Lookup
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.group.LookupField");
+console.debug("Defining NOC.aaa.group.LookupField");
 
-Ext.define("NOC.main.group.LookupField", {
+Ext.define("NOC.aaa.group.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.group.LookupField"
+    alias: "widget.aaa.group.LookupField"
 });

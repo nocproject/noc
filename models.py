@@ -85,6 +85,7 @@ _MODELS = {
     "aaa.Group": "noc.aaa.models.group.Group",
     "aaa.Permission": "noc.aaa.models.permission.Permission",
     "aaa.User": "noc.aaa.models.user.User",
+    "aaa.UserContact": "noc.aaa.models.usercontact.UserContact",
     # main models
     "main.APIToken": "noc.main.models.apitoken.APIToken",
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
@@ -123,8 +124,6 @@ _MODELS = {
     "main.TextIndex": "noc.main.models.textindex.TextIndex",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
-    "main.UserProfile": "noc.main.models.userprofile.UserProfile",
-    "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
     "main.UserState": "noc.main.models.userstate.UserState",
     #
     "dev.Quiz": "noc.dev.models.quiz.Quiz",

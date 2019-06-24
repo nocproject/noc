@@ -1,19 +1,19 @@
 //---------------------------------------------------------------------
-// main.user application
+// aaa.user application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.user.Application");
+console.debug("Defining NOC.aaa.user.Application");
 
-Ext.define("NOC.main.user.Application", {
+Ext.define("NOC.aaa.user.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.PasswordField",
-        "NOC.main.user.Model",
-        "NOC.main.group.Permission"
+        "NOC.aaa.user.Model",
+        "NOC.aaa.group.Permission"
     ],
-    model: "NOC.main.user.Model",
+    model: "NOC.aaa.user.Model",
     search: true,
     recordReload: true,
     initComponent: function() {
@@ -148,7 +148,7 @@ Ext.define("NOC.main.user.Application", {
                                 field: "label",
                                 store: {
                                     proxy: {
-                                        url: "/main/group/lookup/",
+                                        url: "/aaa/group/lookup/",
                                         type: "rest",
                                         pageParam: "__page",
                                         startParam: "__start",
@@ -220,7 +220,7 @@ Ext.define("NOC.main.user.Application", {
         if(passwdField.getValue() === passwd1Field.getValue() && passwdField.getValue().length) {
             passwordFieldset.unsetActiveError();
             Ext.Ajax.request({
-                url: "/main/user/" + me.currentRecord.id + "/password/",
+                url: "/aaa/user/" + me.currentRecord.id + "/password/",
                 method: "POST",
                 jsonData: {password: passwdField.getValue()},
                 scope: me,
@@ -265,7 +265,7 @@ Ext.define("NOC.main.user.Application", {
         var me = this;
         me.down("[name=groups]").getStore().removeAll();
         Ext.Ajax.request({
-            url: "/main/group/new_permissions/",
+            url: "/aaa/group/new_permissions/",
             method: "GET",
             scope: me,
             success: function(response) {

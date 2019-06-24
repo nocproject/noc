@@ -13,7 +13,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
         "NOC.main.notificationgroup.UsersModel",
         "NOC.main.notificationgroup.OtherModel",
         "NOC.main.timepattern.LookupField",
-        "NOC.main.user.LookupField"
+        "NOC.aaa.user.LookupField"
     ],
     model: "NOC.main.notificationgroup.Model",
     search: true,
@@ -61,7 +61,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
                     dataIndex: "user",
                     flex: 1,
                     renderer: NOC.render.Lookup("user"),
-                    editor: "main.user.LookupField"
+                    editor: "aaa.user.LookupField"
                 }
             ]
         },

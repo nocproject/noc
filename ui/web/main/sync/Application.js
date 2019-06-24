@@ -10,7 +10,7 @@ Ext.define("NOC.main.sync.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.main.sync.Model",
-        "NOC.main.user.LookupField"
+        "NOC.aaa.user.LookupField"
     ],
     model: "NOC.main.sync.Model",
     search: true,
@@ -63,7 +63,7 @@ Ext.define("NOC.main.sync.Application", {
                 },
                 {
                     name: "user",
-                    xtype: "main.user.LookupField",
+                    xtype: "aaa.user.LookupField",
                     fieldLabel: __("Credentials")
                 },
                 {
