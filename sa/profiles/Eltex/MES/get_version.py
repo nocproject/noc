@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_version1 = re.compile(
         r"^SW version+\s+(?P<version>\S+)", re.MULTILINE)
     rx_version2 = re.compile(
-        r"^Active-image: \S+\s*\n"
+        r"^Active-image: (?P<image>\S+)\s*\n"
         r"^\s+Version: (?P<version>\S+)", re.MULTILINE)
     rx_bootprom = re.compile(
         r"^Boot version+\s+(?P<bootprom>\S+)", re.MULTILINE)
@@ -35,42 +35,15 @@ class Script(BaseScript):
     rx_serial3 = re.compile(
         r"^\s+1\s+(?P<mac>\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n",
         re.MULTILINE)
+    rx_master_unit = re.compile(r"^\s*(?P<unit>\d+)\s+.+\s+master\s*\n", re.MULTILINE)
     rx_platform = re.compile(
         r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
-
-    platforms = {
-        "24": "MES-3124",
-        "26": "MES-5148",
-        "30": "MES-3124F",
-        "35": "MES-3108",
-        "36": "MES-3108F",
-        "38": "MES-3116",
-        "39": "MES-3116F",
-        "40": "MES-3224",
-        "41": "MES-3224F",
-        "42": "MES-1024",
-        "43": "MES-2124",
-        "52": "MES-1124",
-        "54": "MES-5248",
-        "59": "MES-2124P",
-        "74": "MES-5324",
-        "75": "MES-2124F",
-        "76": "MES-2324",
-        "78": "MES-2324FB",
-        "81": "MES-3324F",
-        "83": "MES-2324B",
-        "86": "MES-2348B",
-        "88": "MES-2308",
-        "89": "MES-2308P",
-        "92": "MES-2324P",
-        "98": "MES-3508P"
-    }
 
     def execute_snmp(self, **kwargs):
         try:
             platform = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"], cached=True)
             platform = platform.split('.')[8]
-            platform = self.platforms.get(platform.split(')')[0])
+            platform = self.profile.get_platform(platform.split(')')[0])
             version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
                                     cached=True)
             bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.67108992",
@@ -99,10 +72,19 @@ class Script(BaseScript):
             raise self.UnexpectedResultError
 
     def execute_cli(self, **kwargs):
-        if self.has_capability("Stack | Members"):
-            plat = self.cli("show system unit 1", cached=True)
-            ver = self.cli("show version unit 1", cached=True)
-            ser = self.cli("show system id unit 1", cached=True)
+        try:
+            v = self.cli("show unit", cached=True)
+        except self.CLISyntaxError:
+            v = self.cli("show stack", cached=True)
+        match = self.rx_master_unit.search(v)
+        if match:
+            master_unit = match.group("unit")
+            plat = self.cli("show system unit %s" % master_unit, cached=True)
+            try:
+                ver = self.cli("show version unit %s" % master_unit, cached=True)
+            except self.CLISyntaxError:
+                ver = self.cli("show version", cached=True)
+            ser = self.cli("show system id unit %s" % master_unit, cached=True)
         else:
             plat = self.cli("show system", cached=True)
             ver = self.cli("show version", cached=True)
@@ -111,17 +93,19 @@ class Script(BaseScript):
         match = self.rx_platform.search(plat)
         platform = match.group("platform")
         platform = platform.split(".")[8]
-        platform = self.platforms.get(platform)
+        platform = self.profile.get_platform(platform)
 
         match = self.rx_version1.search(ver)
         if match:
             version = self.rx_version1.search(ver)
             bootprom = self.rx_bootprom.search(ver)
             hardware = self.rx_hardware.search(ver)
+            image = None
         else:
             version = self.rx_version2.search(ver)
             bootprom = None
             hardware = None
+            image = version.group("image").split("/")[-1]
 
         match = self.rx_serial1.search(ser)
         match2 = self.rx_serial3.search(ser)
@@ -138,9 +122,11 @@ class Script(BaseScript):
         res = {
             "vendor": "Eltex",
             "platform": platform,
-            "version": version.group("version"),
+            "version": version.group("version").split("[")[0],
             "attributes": {}}
 
+        if image:
+            res["image"] = image
         if serial:
             res["attributes"]["Serial Number"] = serial.group("serial")
         if bootprom:

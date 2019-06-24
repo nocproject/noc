@@ -70,7 +70,13 @@ class Script(BaseScript):
         :return:
         """
         r = self.cli("show version", cached=True)
-        return [e[0] for e in parse_table(r)]
+        s = [e[0] for e in parse_table(r)]
+        if not s:  # MES3324
+            r = self.cli("show system", cached=True)
+            s = [e[0] for e in parse_table(r, footer=r"^Unit\s*Main Power")]
+            while s[-1] == "":
+                del s[-1]
+        return s
 
     def execute_platform_cli(self, caps):
         s = self.has_stack()

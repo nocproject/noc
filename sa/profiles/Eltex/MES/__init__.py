@@ -27,9 +27,9 @@ class Profile(BaseProfile):
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = \
-        r"^% (Unrecognized command|Incomplete command|" \
+        r"% (Unrecognized command|Incomplete command|" \
         r"Wrong number of parameters or invalid range, size or " \
-        r"characters entered)$"
+        r"characters entered)"
     command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure"
@@ -53,6 +53,47 @@ class Profile(BaseProfile):
         ("hints", "protocols", "spanning-tree", "priority", "32768"),
         ("hints", "protocols", "loop-detect", "status", False)
     ]
+
+    matchers = {
+        "is_has_image": {
+            "image": {
+                "$regex": r"^\S+"
+            }
+        }
+    }
+
+    PLATFORMS = {
+        "24": "MES-3124",
+        "26": "MES-5148",
+        "30": "MES-3124F",
+        "35": "MES-3108",
+        "36": "MES-3108F",
+        "38": "MES-3116",
+        "39": "MES-3116F",
+        "40": "MES-3224",
+        "41": "MES-3224F",
+        "42": "MES-1024",
+        "43": "MES-2124",
+        "52": "MES-1124",
+        "54": "MES-5248",
+        "58": "MES-2208P",
+        "59": "MES-2124P",
+        "74": "MES-5324",
+        "75": "MES-2124F",
+        "76": "MES-2324",
+        "78": "MES-2324FB",
+        "80": "MES-3324",
+        "81": "MES-3324F",
+        "83": "MES-2324B",
+        "86": "MES-2348B",
+        "88": "MES-2308",
+        "89": "MES-2308P",
+        "92": "MES-2324P",
+        "98": "MES-3508P"
+    }
+
+    def get_platform(self, s):
+        return self.PLATFORMS.get(s)
 
     INTERFACE_TYPES = {
         "as": "physical",    # Async
