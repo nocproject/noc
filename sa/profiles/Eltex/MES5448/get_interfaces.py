@@ -2,18 +2,15 @@
 # ---------------------------------------------------------------------
 # Eltex.MES5448.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import time
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.ip import IPv4
 from noc.lib.text import parse_table
 
@@ -43,14 +40,13 @@ class Script(BaseScript):
     rx_ifdescr = re.compile(
         r"^Interface....... (?P<ifname>\S+)\s*\n"
         r"^ifIndex\.+ (?P<snmp_ifindex>\d+)\s*\n"
-        r"^Description\.+\s*\n"
+        r"^Description\.+.*\s*\n"
         r"^MAC address\.+(?P<mac>.*)\n",
         re.MULTILINE
     )
-    rx_mac = re.compile("MAC Address used by Routing VLANs:\s+(?P<mac>\S+)")
+    rx_mac = re.compile(r"MAC Address used by Routing VLANs:\s+(?P<mac>\S+)")
 
     def execute(self):
-        d = {}
         # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -95,7 +91,6 @@ class Script(BaseScript):
             self.cli("show interfaces status all"), allow_wrap=True
         ):
             ifname = i[0]
-            ifdescr = i[1]
             iface = {
                 "name": ifname,
                 "type": "physical",
@@ -137,6 +132,7 @@ class Script(BaseScript):
                 mac = match.group("mac").strip()
                 if mac:
                     iface["mac"] = mac
+                    iface["subinterfaces"][0]["mac"] = mac
             interfaces += [iface]
         c = self.cli("show interfaces switchport")
         for match in self.rx_port.finditer(c):
