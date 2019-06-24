@@ -300,7 +300,6 @@ class CorrelatorService(Service):
             severity=severity,
             vars=vars,
             discriminator=discriminator,
-            managed_object_profile=managed_object.object_profile.id,
             direct_services=direct_services,
             direct_subscribers=direct_subscribers,
             total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),

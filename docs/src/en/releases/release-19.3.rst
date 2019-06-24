@@ -36,10 +36,6 @@ To enable the feature perform following steps:
 
 * Stop :ref:`services-correlator` processes
 * Enable :ref:`config-fm-enable_rca_neighbor_cache` configuration variable
-* Run fix::
-
-    $ noc fix apply fix_alarm_managedobjectprofile
-
 * Start :ref:`services-correlator` processes
 
 .. warning::
