@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_int = re.compile(
         r"^(?P<ifname>\S+)\s+(?P<ifindex>\d+)"
-        r"\s+(?P<tag>\w)(?:\s+\w){3}\s+(?P<vlan>\d+)\s+(?P<desc>\S+)\s+(?P<vlans>(?:(?:\d+\s+)+))",
+        r"\s+(?P<tag>\w)(?:\s+\w){3}\s+(?P<vlan>\d+)\*?\s+(?P<desc>\S+)\s+(?P<vlans>(?:(?:\d+\s+)+))",
         re.MULTILINE)
 
     rx_desc = re.compile(r"Description\s(?P<desc>.*)")
