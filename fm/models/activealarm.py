@@ -25,6 +25,7 @@ from noc.aaa.models.user import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.datastream.decorator import datastream
@@ -102,6 +103,7 @@ class ActiveAlarm(Document):
     wait_ts = DateTimeField()
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
+    managed_object_profile = ForeignKeyField(ManagedObjectProfile)
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
     direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
@@ -253,6 +255,7 @@ class ActiveAlarm(Document):
             closing_event=self.closing_event,
             discriminator=self.discriminator,
             reopens=self.reopens,
+            managed_object_profile=self.managed_object_profile,
             direct_services=self.direct_services,
             direct_subscribers=self.direct_subscribers,
             total_objects=self.total_objects,
@@ -556,6 +559,7 @@ class ActiveAlarm(Document):
                             "_id": "$_id",
                             "root": "$root",
                             "severity": "$severity",
+                            "managed_object_profile": "$managed_object_profile",
                             "direct_services": "$direct_services",
                             "direct_subscribers": "$direct_subscribers",
                             "total_objects": "$total_objects",
@@ -575,6 +579,7 @@ class ActiveAlarm(Document):
                     "_id": "$path._id",
                     "root": "$path.root",
                     "severity": "$path.severity",
+                    "managed_object_profile": "$path.managed_object_profile",
                     "direct_services": "$path.direct_services",
                     "direct_subscribers": "$path.direct_subscribers",
                     "total_objects": "$path.total_objects",
@@ -601,6 +606,7 @@ class ActiveAlarm(Document):
                             "_id": "$_id",
                             "root": "$root",
                             "severity": "$severity",
+                            "managed_object_profile": "$managed_object_profile",
                             "direct_services": "$direct_services",
                             "direct_subscribers": "$direct_subscribers",
                             "total_objects": "$total_objects",
@@ -620,6 +626,7 @@ class ActiveAlarm(Document):
                     "_id": "$children._id",
                     "root": "$children.root",
                     "severity": "$children.severity",
+                    "managed_object_profile": "$children.managed_object_profile",
                     "direct_services": "$children.direct_services",
                     "direct_subscribers": "$children.direct_subscribers",
                     "total_objects": "$children.total_objects",
@@ -649,7 +656,14 @@ class ActiveAlarm(Document):
         for root in root_path:
             doc = alarms[root]
             consequences = children[root]
-            total_objects = get_summary(consequences, "total_objects")
+            mop = doc.get("managed_object_profile")
+            if mop:
+                direct_objects = {
+                    mop: 1
+                }
+            else:
+                direct_objects = {}
+            total_objects = get_summary(consequences, "total_objects", direct_objects)
             total_services = get_summary(consequences, "total_services", doc.get("direct_services"))
             total_subscribers = get_summary(consequences, "total_subscribers", doc.get("direct_subscribers"))
             if (doc["total_objects"] != total_objects or doc["total_services"] != total_services or

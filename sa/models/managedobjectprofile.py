@@ -58,7 +58,9 @@ id_lock = Lock()
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
     ("sa.ManagedObjectSelector", "filter_object_profile"),
-    ("inv.FirmwarePolicy", "object_profile")
+    ("inv.FirmwarePolicy", "object_profile"),
+    ("fm.ActiveAlarm", "managed_object_profile"),
+    ("fm.ArchivedAlarm", "managed_object_profile")
 ])
 @six.python_2_unicode_compatible
 class ManagedObjectProfile(models.Model):

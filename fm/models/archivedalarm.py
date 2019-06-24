@@ -18,6 +18,7 @@ from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedD
 # NOC modules
 from noc.config import config
 import noc.lib.nosql as nosql
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.datastream.decorator import datastream
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
@@ -80,6 +81,7 @@ class ArchivedAlarm(Document):
     escalation_close_ctx = LongField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
+    managed_object_profile = nosql.ForeignKeyField(ManagedObjectProfile)
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
     direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
