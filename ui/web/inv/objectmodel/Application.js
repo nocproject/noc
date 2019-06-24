@@ -146,6 +146,27 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Tags"),
+                    store: {
+                        fields: ["id", "label"],
+                        data: [
+                            {id: "chassis", label: "Chassis (equipment body)"},
+                            {id: "lc", label: "Linecard, optional replaceable module (except for fans and PSU)"},
+                            {id: "xcvr", label: "Transceiver"},
+                            {id: "psu", label: "Power supply unit"},
+                            {id: "sup", label: "Supervisor or control module (control plane)"},
+                            {id: "fabric", label: "Commutation fabric (data plane)"},
+                            {id: "fan", label: "Fan"},
+                            {id: "soft", label: "Software component"},
+                            {id: "port", label: "Contains ports acceptable for client connection either directly or via transceiver"},
+                            {id: "dsp", label: "Digital signal processor for voice/video processing"}
+                        ]
+                    },
+                    allowBlank: true
+                },
+                {
                     name: "data",
                     xtype: "modeldatafield",
                     fieldLabel: __("Model Data"),
@@ -232,12 +253,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         scope: me,
                         clone: me.onCloneConnection
                     }
-                },
-                {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
                 }
             ],
             formToolbar: [
@@ -306,7 +321,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         var me = this,
             v = record.get("name"),
             m = v.match(/(.*?)(\d+)/);
-        if(m===null) {
+        if(m === null) {
             return;
         }
         var n = +m[2] + 1;
