@@ -42,7 +42,7 @@ Show current running configuration
 
     show running-config
 
-Show startup configuraion
+Show startup configuration
 
 .. code-block::
 
