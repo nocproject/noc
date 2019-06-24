@@ -10,7 +10,7 @@ Juniper
 
     /profiles/Juniper.*
 
-`Juniper.*` family of profiles support various 
+`Juniper.*` family of profiles support various
 `Juniper Networks <http://juniper.net/>`_
 network equipment.
 

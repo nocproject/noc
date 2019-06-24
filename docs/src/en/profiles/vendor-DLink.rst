@@ -10,7 +10,7 @@ DLink
 
     /profiles/DLink.*
 
-`DLink.*` family of profiles support various 
+`DLink.*` family of profiles support various
 `D-Link <http://www.dlink.com/>`_
 network equipment.
 
