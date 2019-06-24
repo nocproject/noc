@@ -36,21 +36,31 @@ class Script(BaseScript):
     }
 
     def execute_cli(self):
+        r = []
         if self.has_capability("Stack | Members"):
-            c = self.cli("show system unit 1", cached=True)
-            match = self.rx_mac.search(c)
-            mac_begin = match.group("mac")
-            match = self.rx_mac2.search(c)
-            if match:
-                mac_end = match.group("mac")
-            else:
-                mac_end = mac_begin
+            for unit in self.capabilities["Stack | Member Ids"].split(" | "):
+                c = self.cli("show system unit %s" % unit, cached=True)
+                match = self.rx_mac.search(c)
+                if not match:
+                    continue
+                mac_begin = match.group("mac")
+                match = self.rx_mac2.search(c)
+                if match:
+                    mac_end = match.group("mac")
+                else:
+                    mac_end = mac_begin
+                r += [{
+                    "first_chassis_mac": mac_begin,
+                    "last_chassis_mac": mac_end
+                }]
+
         else:
             c = self.cli("show system", cached=True)
             match = self.rx_mac.search(c)
             mac_begin = match.group("mac")
             mac_end = match.group("mac")
-        return {
-            "first_chassis_mac": mac_begin,
-            "last_chassis_mac": mac_end
-        }
+            r = [{
+                "first_chassis_mac": mac_begin,
+                "last_chassis_mac": mac_end
+            }]
+        return r

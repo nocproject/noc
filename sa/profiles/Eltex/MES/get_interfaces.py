@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -361,7 +361,7 @@ class Script(BaseScript):
                 "subinterfaces": [sub]
             }
             if description:
-                sub["description"] = description
+                iface["description"] = description
             if ifindex:
                 iface["snmp_ifindex"] = ifindex
             if mac:
