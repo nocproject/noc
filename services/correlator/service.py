@@ -14,6 +14,7 @@ import re
 from collections import defaultdict
 from threading import Lock
 # Third-party modules
+import six
 from mongoengine.queryset import Q
 # NOC modules
 from noc.config import config
@@ -55,6 +56,10 @@ class CorrelatorService(Service):
         self.scheduler = None
         self.rca_lock = Lock()
         self.topology_rca_lock = Lock()
+        if config.fm.enable_rca_neighbor_cache:
+            self.topology_rca = self.topology_rca_neighbor
+        else:
+            self.topology_rca = self.topology_rca_uplinks
 
     def on_activate(self):
         self.scheduler = Scheduler(
@@ -285,6 +290,8 @@ class CorrelatorService(Service):
             r.u_name, severity
         )
         # Create new alarm
+        direct_services = SummaryItem.dict_to_items(summary["service"])
+        direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
         a = ActiveAlarm(
             timestamp=e.timestamp,
             last_update=e.timestamp,
@@ -293,11 +300,11 @@ class CorrelatorService(Service):
             severity=severity,
             vars=vars,
             discriminator=discriminator,
-            direct_services=SummaryItem.dict_to_items(summary["service"]),
-            direct_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
+            direct_services=direct_services,
+            direct_subscribers=direct_subscribers,
             total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),
-            total_services=SummaryItem.dict_to_items(summary["service"]),
-            total_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
+            total_services=direct_services,
+            total_subscribers=direct_subscribers,
             log=[
                 AlarmLog(
                     timestamp=datetime.datetime.now(),
@@ -559,7 +566,103 @@ class CorrelatorService(Service):
                     break
         self.logger.info("[%s] Disposition complete", event_id)
 
-    def topology_rca(self, alarm, seen=None):
+    def topology_rca_neighbor(self, alarm):
+        """
+        RCA neighbor cache implementation of `topology_rca`.
+        Used when `fm.enable_rca_neighbor_cache` config parameter is enabled
+        :param alarm:
+        :return:
+        """
+        def can_correlate(a1, a2):
+            """
+            Check if alarms can be correlated together (within corellation window)
+            :param a1:
+            :param a2:
+            :return:
+            """
+            return (
+                not config.correlator.topology_rca_window or
+                (a1.timestamp - a2.timestamp).total_seconds() <= config.correlator.topology_rca_window
+            )
+
+        def all_uplinks_failed(a1):
+            """
+            Check if all uplinks for alarm is failed
+            :param a1:
+            :return:
+            """
+            if not a1.uplinks:
+                return False
+            return sum(1 for mo in a1.uplinks if mo in neighbor_alarms) == len(a1.uplinks)
+
+        def get_root(a1):
+            """
+            Get root cause for failed uplinks.
+            Considering all uplinks are failed.
+            Uplinks are ordered according to path length.
+            Return first applicable
+
+            :param a1:
+            :return:
+            """
+            for u in a1.uplinks:
+                na = neighbor_alarms[u]
+                if can_correlate(a1, na):
+                    return na
+            return None
+
+        def iter_downlink_alarms(a1):
+            """
+            Yield all downlink alarms
+            :param a1:
+            :return:
+            """
+            mo = a1.managed_object.id
+            for na in six.itervalues(neighbor_alarms):
+                if na.uplinks and mo in na.uplinks:
+                    yield na
+
+        def correlate(a1):
+            """
+            Correlate with uplink alarms if all uplinks are faulty.
+            :param a1:
+            :return:
+            """
+            if not all_uplinks_failed(a1):
+                return
+            self.logger.info("[%s] All uplinks are faulty. Correlating", a1.id)
+            a2 = get_root(a1)
+            if a2:
+                self.logger.info("[%s] Set root to %s", a1.id, a2.id)
+                a1.set_root(a2)
+                metrics["alarm_correlated_topology"] += 1
+
+        self.logger.debug("[%s] Topology RCA", alarm.id)
+        # Get neighboring alarms
+        neighbor_alarms = dict(
+            (a.managed_object.id, a)
+            for a in ActiveAlarm.objects.filter(
+                alarm_class=alarm.alarm_class.id,
+                rca_neighbors__in=[alarm.managed_object.id]
+            )
+        )
+        # Add current alarm to corellate downlink alarms properly
+        neighbor_alarms[alarm.managed_object.id] = alarm
+        # Correlate current alarm
+        correlate(alarm)
+        # Correlate all downlink alarms
+        for a in iter_downlink_alarms(alarm):
+            correlate(a)
+        self.logger.debug("[%s] Correlation completed", alarm.id)
+
+    def topology_rca_uplinks(self, alarm, seen=None):
+        """
+        Legacy uplink-based implementation of `topology_rca`.
+        Used when `fm.enable_rca_neighbor_cache` config parameter is disabled
+        :param alarm:
+        :param seen:
+        :return:
+        """
         def can_correlate(a1, a2):
             return (
                 not config.correlator.topology_rca_window or
@@ -601,7 +704,7 @@ class CorrelatorService(Service):
                     break
         # Correlate neighbors' alarms
         for d in na:
-            self.topology_rca(na[d], seen)
+            self.topology_rca_uplinks(na[d], seen)
         self.logger.debug("[%s] Correlation completed", alarm.id)
 
 

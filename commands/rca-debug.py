@@ -11,6 +11,8 @@ from __future__ import print_function
 import datetime
 from collections import namedtuple
 import operator
+# Third-party modules
+import six
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
@@ -50,6 +52,10 @@ class Command(BaseCommand):
         def nq(s):
             return s.split("#", 1)[0]
 
+        if config.fm.enable_rca_neighbor_cache:
+            self.topology_rca = self.topology_rca_neighbor
+        else:
+            self.topology_rca = self.topology_rca_uplink
         try:
             a0 = ArchivedAlarm.objects.get(id=alarm[0])
         except ArchivedAlarm.DoesNotExist:
@@ -109,7 +115,93 @@ class Command(BaseCommand):
                 if hasattr(amap[a], "_trace_root"):
                     self.print("%s -> %s" % (a, amap[a]._trace_root))
 
-    def topology_rca(self, alarm, alarms, seen=None, ts=None):
+    def topology_rca_neighbor(self, alarm, alarms, ts=None):
+        def can_correlate(a1, a2):
+            """
+            Check if alarms can be correlated together (within corellation window)
+            :param a1:
+            :param a2:
+            :return:
+            """
+            return (
+                not config.correlator.topology_rca_window or
+                (a1.timestamp - a2.timestamp).total_seconds() <= config.correlator.topology_rca_window
+            )
+
+        def all_uplinks_failed(a1):
+            """
+            Check if all uplinks for alarm is failed
+            :param a1:
+            :return:
+            """
+            if not a1.uplinks:
+                return False
+            return sum(1 for mo in a1.uplinks if mo in alarms) == len(a1.uplinks)
+
+        def get_root(a1):
+            """
+            Get root cause for failed uplinks.
+            Considering all uplinks are failed.
+            Uplinks are ordered according to path length.
+            Return first applicable
+
+            :param a1:
+            :return:
+            """
+            for u in a1.uplinks:
+                na = alarms[u]
+                if can_correlate(a1, na):
+                    return na
+            return None
+
+        def iter_downlink_alarms(a1):
+            """
+            Yield all downlink alarms
+            :param a1:
+            :return:
+            """
+            imo = a1.managed_object.id
+            for ina in six.itervalues(alarms):
+                if ina.uplinks and imo in ina.uplinks:
+                    yield ina
+
+        def correlate(a1):
+            """
+            Correlate with uplink alarms if all aplinks are faulty.
+            :param a1:
+            :return:
+            """
+            if not all_uplinks_failed(a1):
+                return
+            a2 = get_root(a1)
+            if a2:
+                self.print("+++ SET ROOT %s -> %s" % (a1.id, a2.id))
+                a1._trace_root = a2.id
+
+        ts = ts or alarm.timestamp
+        self.print(">>> topology_rca(%s)" % alarm.id)
+        if hasattr(alarm, "_trace_root"):
+            self.print("<<< already correlated")
+            return
+        # Get neighboring alarms
+        na = {}
+        uplinks = set()
+        mo = alarm.managed_object.id
+        for n in alarms:
+            a = alarms.get(n)
+            if a and a.timestamp <= ts and mo in a.rca_neighbors:
+                na[n] = a
+                uplinks |= set(a.uplinks)
+        self.print("    Neighbor alarms: %s" % ", ".join("%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name) for x in na))
+        self.print("    Uplinks: %s" % ", ".join(ManagedObject.get_by_id(u).name for u in uplinks))
+        # Correlate current alarm
+        correlate(alarm)
+        # Correlate all downlink alarms
+        for a in iter_downlink_alarms(alarm):
+            correlate(a)
+        self.print("<<< done")
+
+    def topology_rca_uplink(self, alarm, alarms, seen=None, ts=None):
         def can_correlate(a1, a2):
             return (
                 not config.correlator.topology_rca_window or
@@ -160,7 +252,7 @@ class Command(BaseCommand):
                     break
         # Correlate neighbors' alarms
         for d in na:
-            self.topology_rca(na[d], alarms, seen, ts)
+            self.topology_rca_uplink(na[d], alarms, seen, ts)
         self.print("<<< done")
 
 
