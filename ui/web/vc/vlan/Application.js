@@ -11,7 +11,7 @@ Ext.define("NOC.vc.vlan.Application", {
     requires: [
         "NOC.vc.vlan.Model",
         "NOC.vc.vlanprofile.LookupField",
-        "NOC.inv.networksegment.LookupField",
+        "NOC.core.combotree.ComboTree",
         "NOC.project.project.LookupField",
         "NOC.vc.vpn.LookupField",
         "NOC.vc.vlan.LookupField",
@@ -105,7 +105,8 @@ Ext.define("NOC.vc.vlan.Application", {
                 },
                 {
                     name: "segment",
-                    xtype: "inv.networksegment.LookupField",
+                    xtype: "noc.core.combotree",
+                    restUrl: "/inv/networksegment/",
                     fieldLabel: __("Segment"),
                     allowBlank: false
                 },
