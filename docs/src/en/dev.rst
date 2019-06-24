@@ -7,6 +7,7 @@ Developer's Guide
 
     /dev/confdb
     /dev/modelinterfaces
+    /dev/objectmodel-tags
     /dev/inventory-protocols
     /dev/i18n
     /dev/caching

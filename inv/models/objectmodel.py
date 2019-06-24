@@ -128,6 +128,7 @@ class ObjectModel(Document):
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
     uuid = UUIDField(binary=True)
     plugins = ListField(StringField(), required=False)
+    tags = ListField(StringField())
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -264,16 +265,23 @@ class ObjectModel(Document):
             r["cr_context"] = self.cr_context
         if self.plugins:
             r["plugins"] = self.plugins
+        if self.tags:
+            r["tags"] = self.tags
         return r
 
     def to_json(self):
-        return to_json(self.json_data,
-                       order=["name", "$collection",
-                              "uuid", "vendor__code",
-                              "description",
-                              "connection_rule__name",
-                              "cr_context",
-                              "plugins"])
+        return to_json(
+            self.json_data,
+            order=[
+                "name", "$collection",
+                "uuid", "vendor__code",
+                "description",
+                "connection_rule__name",
+                "cr_context",
+                "plugins",
+                "tags"
+            ]
+        )
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
