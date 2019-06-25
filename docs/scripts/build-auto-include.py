@@ -12,9 +12,136 @@ import glob
 import os
 import sys
 from collections import defaultdict
+import json
+
+all_profiles = set()
+
+
+def render_platform(vendor, data):
+    title = "%s %s" % (vendor, data["name"])
+    r = [
+        ".. _platforms-%s-%s:" % (vendor, data["name"]),
+        "",
+        "=" * len(title),
+        title,
+        "=" * len(title),
+        "",
+        ".. contents:: On this page",
+        "    :local:",
+        "    :backlinks: none",
+        "    :depth: 2",
+        "    :class: singlecol",
+        "",
+        ".. list-table::",
+        "",
+        "    * - Vendor",
+        "      - %s" % vendor,
+        "    * - Model",
+        "      - %s" % data["name"]
+    ]
+    aliases = data.get("aliases")
+    if aliases:
+        r += [
+            "    * - Aliases",
+            "      - %s" % ", ".join(sorted(aliases))
+        ]
+    r += [
+        "    * - Start of Sale",
+        "      - %s" % (data.get("start_of_sale") or "N/A"),
+        "    * - End of Sale",
+        "      - %s" % (data.get("end_of_sale") or "N/A"),
+        "    * - End of Support",
+        "      - %s" % (data.get("end_of_support") or "N/A"),
+        "    * - End of Ext. Support",
+        "      - %s" % (data.get("end_of_xsupport") or "N/A"),
+    ]
+    if data.get("snmp_sysobjectid"):
+        r += [
+            "    * - SNMP SysObjectId",
+            "      - %s" % data["snmp_sysobjectid"]
+        ]
+    r += [""]
+    if data.get("description"):
+        r += [
+            data.get("description"),
+            ""
+        ]
+    return "\n".join(r)
+
+
+def render_vendor_platforms(platforms):
+    r = [
+        ".. hlist::",
+        "    :columns: 3",
+        ""
+    ]
+    r += [
+        "    * :ref:`%s <%s>`" % (name, ref)
+        for name, ref in sorted(platforms)
+    ]
+    r += [""]
+    return "\n".join(r)
+
+
+def render_vendor_index(vendor):
+    r = [
+        ".. _platforms-vendor-%s:" % vendor,
+        "",
+        "=" * len(vendor),
+        vendor,
+        "=" * len(vendor),
+        "",
+        ".. toctree::",
+        "    :titlesonly:",
+        "    :glob:",
+        "",
+        "    /platforms/%s-*" % vendor,
+        ""
+    ]
+    return "\n".join(r)
+
+
+def build_platforms(root, inc_root):
+    global all_profiles
+
+    coll_root = os.path.abspath(os.path.join(root, "collections", "inv.platforms"))
+    if not os.path.exists(coll_root):
+        return
+    plat_root = os.path.abspath(os.path.join(root, "docs", "src", "en", "platforms"))
+    if not os.path.exists(plat_root):
+        os.makedirs(plat_root)
+    vendor_platforms = defaultdict(list)
+    profile_platforms = defaultdict(list)
+    for path in glob.glob(os.path.join(coll_root, "*", "*.json")):
+        vendor, jname = path.split(os.sep)[-2:]
+        with open(path) as f:
+            data = json.load(f)
+        ref = "platforms-%s-%s" % (vendor, data["name"])
+        plat_rst_path = os.path.join(plat_root, "%s-%s.rst" % (vendor, jname[:-5]))
+        with open(plat_rst_path, "w") as f:
+            f.write(render_platform(vendor, data))
+        tags = data.get("tags") or []
+        vendor_platforms[vendor] += [(data["name"], ref)]
+        for t in tags:
+            if t in all_profiles:
+                profile_platforms[t] += [(data["name"], ref)]
+    # Vendor Platforms
+    for vendor in vendor_platforms:
+        # Vendor index
+        with open(os.path.join(plat_root, "vendor-%s.rst" % vendor), "w") as f:
+            f.write(render_vendor_index(vendor))
+        # Supported platform
+        with open(os.path.join(inc_root, "supported-vendor-platforms-%s.rst" % vendor), "w") as f:
+            f.write(render_vendor_platforms(vendor_platforms[vendor]))
+    # Profile platforms
+    for profile in profile_platforms:
+        with open(os.path.join(inc_root, "supported-profile-platforms-%s.rst" % profile), "w") as f:
+            f.write(render_vendor_platforms(profile_platforms[profile]))
 
 
 def build_scripts(root, inc_root):
+    global all_profiles
+
     scripts = defaultdict(list)
     profiles = defaultdict(list)
     for name in glob.glob(os.path.join(root, "sa", "profiles", "*", "*", "*.py")):
@@ -43,6 +170,7 @@ def build_scripts(root, inc_root):
             ]
             data = "\n".join(r)
             f.write(data)
+    all_profiles = set(scripts)
 
 
 def main():
@@ -54,6 +182,7 @@ def main():
         os.makedirs(inc_root)
 
     build_scripts(noc_root, inc_root)
+    build_platforms(noc_root, inc_root)
 
 
 if __name__ == "__main__":

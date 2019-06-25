@@ -23,14 +23,14 @@ Configuration
 Show firmware version
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block::
+.. code-block:: text
 
     show version
 
 Show platform
 ^^^^^^^^^^^^^
 
-.. code-block::
+.. code-block:: text
 
     show version
 
@@ -38,13 +38,13 @@ Show configuration
 ^^^^^^^^^^^^^^^^^^
 Show current running configuration
 
-.. code-block::
+.. code-block:: text
 
     show running-config
 
 Show startup configuration
 
-.. code-block::
+.. code-block:: text
 
     show startup-config
 
@@ -63,7 +63,7 @@ Save Configuration
 
 To save configuration changes type
 
-.. code-block::
+.. code-block:: text
 
     copy running-config startup-config
 
@@ -108,7 +108,7 @@ Known Issues
 Supported Platforms
 -------------------
 
-.. include:: ../include/auto/supported-platforms-Cisco.IOS.rst
+.. include:: ../include/auto/supported-profile-platforms-Cisco.IOS.rst
 
 .. _profile-Cisco.IOS-used:
 

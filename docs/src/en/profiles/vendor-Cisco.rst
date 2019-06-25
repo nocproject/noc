@@ -12,3 +12,8 @@ Cisco
 
 `Cisco.*` family of profiles support various `Cisco Systems <https://www.cisco.com>`_
 network equipment.
+
+Supported Platforms
+-------------------
+
+.. include:: ../include/auto/supported-vendor-platforms-CISCO.rst
