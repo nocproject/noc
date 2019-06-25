@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: Eltex
-# OS:     MES6448
+# OS:     MES5448
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -16,10 +16,11 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"--More-- or \(q\)uit", " ")
     ]
-    # pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = \
         r"^% (Unrecognized command|Incomplete command|" \
         r"Wrong number of parameters or invalid range, size or " \
         r"characters entered)$"
+    command_super = "enable"
     command_disable_pager = "terminal length 0"
