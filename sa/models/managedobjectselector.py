@@ -327,9 +327,9 @@ class ManagedObjectSelector(models.Model):
         return self.match(managed_object)
 
     @classmethod
-    def resolve_expression(cls, s):
+    def get_objects_from_expression(cls, s):
         """
-        Resolve expression to a list of object.
+        Get list of Managed Object matching selector expression
 
         Expression must be string or list.
         Elements must be one of:

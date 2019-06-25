@@ -77,7 +77,7 @@ class Command(BaseCommand):
         job = job[0]
         mos = []
         for x in managed_objects:
-            for mo in ManagedObjectSelector.resolve_expression(x):
+            for mo in ManagedObjectSelector.get_objects_from_expression(x):
                 if mo not in mos:
                     mos += [mo]
         checks = set()

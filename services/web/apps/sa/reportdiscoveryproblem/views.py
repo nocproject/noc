@@ -118,7 +118,7 @@ class ReportFilterApplication(SimpleReport):
     title = _("Discovery Problem")
     form = ReportForm
     try:
-        default_selector = ManagedObjectSelector.resolve_expression("@Problem Discovery Report")
+        default_selector = ManagedObjectSelector.get_objects_from_expression("@Problem Discovery Report")
     except ManagedObjectSelector.DoesNotExist:
         default_selector = None
     predefined_reports = {
