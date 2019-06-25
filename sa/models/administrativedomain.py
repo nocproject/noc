@@ -16,6 +16,7 @@ from django.db import models
 import cachetools
 # NOC modules
 from noc.config import config
+from noc.core.model.base import NOCModel
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
@@ -41,7 +42,7 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     ("phone.PhoneRange", "administrative_domain")
 ])
 @six.python_2_unicode_compatible
-class AdministrativeDomain(models.Model):
+class AdministrativeDomain(NOCModel):
     """
     Administrative Domain
     """

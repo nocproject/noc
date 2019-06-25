@@ -13,6 +13,7 @@ import datetime
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.core.model.decorator import on_delete_check
 from .language import Language
@@ -25,7 +26,7 @@ downloader_registry.register_all()
     ("main.RefBookData", "ref_book")
 ])
 @six.python_2_unicode_compatible
-class RefBook(models.Model):
+class RefBook(NOCModel):
     """
     Reference Books
     """

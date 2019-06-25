@@ -10,7 +10,7 @@
 import six
 from django.db import models
 # Peer modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.core.model.fields import INETField, TagsField
 from noc.config import config
@@ -21,10 +21,9 @@ from .peergroup import PeerGroup
 from .peeringpoint import PeeringPoint
 
 
-@tuck_up_pants
 @on_save
 @six.python_2_unicode_compatible
-class Peer(models.Model):
+class Peer(NOCModel):
     """
     BGP Peering session
     """

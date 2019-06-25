@@ -12,13 +12,12 @@ import datetime
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class Checkpoint(models.Model):
+class Checkpoint(NOCModel):
     """
     Checkpoint is a marked moment in time
     """

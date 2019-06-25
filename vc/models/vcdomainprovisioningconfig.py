@@ -12,16 +12,15 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.notificationgroup import NotificationGroup
 from .vcdomain import VCDomain
 from .vcfilter import VCFilter
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class VCDomainProvisioningConfig(models.Model):
+class VCDomainProvisioningConfig(NOCModel):
     """
     VCDomain Provisioning Parameters
     """

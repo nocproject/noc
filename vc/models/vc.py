@@ -17,8 +17,7 @@ from django.db import models
 from mongoengine.queryset import Q as MEQ
 import cachetools
 # NOC modules
-from .error import InvalidLabelException, MissedLabelException
-from .vcdomain import VCDomain
+from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
@@ -27,6 +26,8 @@ from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.cache.decorator import cachedmethod
 from noc.core.model.decorator import on_delete_check
+from .error import InvalidLabelException, MissedLabelException
+from .vcdomain import VCDomain
 
 # Regular expressions
 rx_vc_underline = re.compile("\s+")
@@ -40,7 +41,7 @@ id_lock = Lock()
 ])
 @full_text_search
 @six.python_2_unicode_compatible
-class VC(models.Model):
+class VC(NOCModel):
     """
     Virtual circuit
     """

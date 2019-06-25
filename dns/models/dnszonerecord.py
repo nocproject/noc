@@ -13,16 +13,15 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.core.model.fields import TagsField
 from noc.core.datastream.decorator import datastream
 from .dnszone import DNSZone
 
 
-@tuck_up_pants
 @datastream
 @six.python_2_unicode_compatible
-class DNSZoneRecord(models.Model):
+class DNSZoneRecord(NOCModel):
     """
     Zone RRs
     """

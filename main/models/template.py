@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError
 import jinja2
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -44,7 +45,7 @@ def template_validator(value):
     ("vc.VPNProfile", "name_template")
 ])
 @six.python_2_unicode_compatible
-class Template(models.Model):
+class Template(NOCModel):
     class Meta(object):
         app_label = "main"
         db_table = "main_template"

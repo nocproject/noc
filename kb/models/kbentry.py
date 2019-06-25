@@ -14,6 +14,7 @@ import difflib
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.lib.app.site import site
 from noc.core.model.fields import TagsField
 from noc.main.models.language import Language
@@ -31,7 +32,7 @@ from noc.core.model.decorator import on_delete_check
     ]
 )
 @six.python_2_unicode_compatible
-class KBEntry(models.Model):
+class KBEntry(NOCModel):
     """
     KB Entry
     """

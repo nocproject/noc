@@ -15,6 +15,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.config import config
 from noc.lib.rpsl import rpsl_format
@@ -38,7 +39,7 @@ id_lock = Lock()
 ])
 @on_save
 @six.python_2_unicode_compatible
-class AS(models.Model):
+class AS(NOCModel):
     class Meta(object):
         verbose_name = "AS"
         verbose_name_plural = "ASes"

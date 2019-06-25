@@ -10,16 +10,15 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class AlarmTrigger(models.Model):
+class AlarmTrigger(NOCModel):
     class Meta(object):
         db_table = "fm_alarmtrigger"
         app_label = "fm"

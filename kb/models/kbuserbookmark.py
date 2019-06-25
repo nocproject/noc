@@ -10,14 +10,13 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.kb.models.kbentry import KBEntry
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class KBUserBookmark(models.Model):
+class KBUserBookmark(NOCModel):
     """
     User Bookmarks
     """

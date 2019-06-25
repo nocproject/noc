@@ -13,16 +13,15 @@ import re
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.lib.app.site import site
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers.loader import loader
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class KBEntryTemplate(models.Model):
+class KBEntryTemplate(NOCModel):
     """
     KB Entry Template
     """

@@ -12,6 +12,7 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.profile import Profile
 from noc.core.model.fields import DocumentReferenceField
@@ -25,7 +26,7 @@ from .asn import AS
     ("peer.PrefixListCache", "peering_point")
 ])
 @six.python_2_unicode_compatible
-class PeeringPoint(models.Model):
+class PeeringPoint(NOCModel):
     class Meta(object):
         verbose_name = "Peering Point"
         verbose_name_plural = "Peering Points"

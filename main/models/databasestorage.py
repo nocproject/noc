@@ -9,13 +9,12 @@
 # Third-party models
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.core.model.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 
 
-@tuck_up_pants
-class DatabaseStorage(models.Model):
+class DatabaseStorage(NOCModel):
     """
     Database Storage
     """

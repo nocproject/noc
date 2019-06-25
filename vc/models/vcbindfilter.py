@@ -12,7 +12,7 @@ from __future__ import absolute_import
 import six
 from django.db import models, connection
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.ip.models.afi import AFI_CHOICES
 from noc.core.model.fields import CIDRField
 from .vcdomain import VCDomain
@@ -20,9 +20,8 @@ from .vcfilter import VCFilter
 from .vc import VC
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class VCBindFilter(models.Model):
+class VCBindFilter(NOCModel):
     class Meta(object):
         verbose_name = "VC Bind Filter"
         verbose_name_plural = "VC Bind Filters"
