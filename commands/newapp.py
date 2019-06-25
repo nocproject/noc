@@ -225,7 +225,7 @@ class Command(BaseCommand):
                         fc = f.__class__.__name__
                         if fc in ("ForeignKey", "OneToOneField"):
                             # Foreign key
-                            fr = f.remote_field.to
+                            fr = f.remote_field.model
                             rc = "%s.%s" % (fr.__module__.split(".")[1],
                                             fr.__name__.lower())
                             fd = {

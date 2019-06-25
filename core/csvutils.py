@@ -58,11 +58,11 @@ def get_model_fields(model):
                 # Foreign Key
                 # Try to find unique key
                 k = "id"
-                for ff in f.remote_field.to._meta.fields:
+                for ff in f.remote_field.model._meta.fields:
                     if ff.name != k and ff.unique:
                         k = ff.name
                         break
-                fields += [(f.name, required, f.remote_field.to, k)]
+                fields += [(f.name, required, f.remote_field.model, k)]
         elif hasattr(f, "document"):
             k = f.document._meta["id_field"]
             for ff, fi in f.document._fields.items():

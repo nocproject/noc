@@ -12,6 +12,7 @@ import logging
 import os
 import datetime
 import functools
+from collections import OrderedDict
 # Third-party modules
 from django.template import RequestContext
 from django.http import (HttpResponse, HttpResponseRedirect,
@@ -22,7 +23,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import escape
 from django.template import loader
 from django import forms
-from django.utils.datastructures import SortedDict
 from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
 from django.http import Http404
@@ -571,7 +571,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
             else:
                 raise ValueError("Invalid field type: '%s'" % f.type)
             fields += [(str(f.name), ff)]
-        form.base_fields.update(SortedDict(fields))
+        form.base_fields.update(OrderedDict(fields))
         return form
 
     def apply_custom_fields(self, o, v, table):
