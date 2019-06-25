@@ -43,3 +43,10 @@ To enable the feature perform following steps:
     Alarm processing will be postponed when correlator process is stopped,
     so alarm creation and clearing will be delayed until the correlator
     process will be started again.
+
+
+Breaking Changes
+----------------
+
+* ManagedObjectSelector.resolve_expression() renamed
+  to ManagedObjectSelector.get_objects_from_expression()

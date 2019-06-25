@@ -28,7 +28,7 @@ class Command(BaseCommand):
         devs = set()
         for d in devices:
             try:
-                devs |= set(ManagedObjectSelector.resolve_expression(d))
+                devs |= set(ManagedObjectSelector.get_objects_from_expression(d))
             except ManagedObjectSelector.DoesNotExist:
                 self.die("Invalid object '%s'" % d)
         self.stdout.write("profile,platform,oid,value\n")

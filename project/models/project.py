@@ -60,7 +60,7 @@ class Project(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda x: id_lock)
     def get_by_id(cls, id):
-        try:
-            return Project.objects.get(id=id)
-        except Project.DoesNotExist:
-            return None
+        p = Project.objects.filter(id=id)[:1]
+        if p:
+            return p[0]
+        return None

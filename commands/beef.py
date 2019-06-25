@@ -211,7 +211,7 @@ class Command(BaseCommand):
         # Get effective list of managed objects
         mos = set()
         for ox in objects:
-            for mo in ManagedObjectSelector.resolve_expression(ox):
+            for mo in ManagedObjectSelector.get_objects_from_expression(ox):
                 mos.add(mo)
         # Collect beefs
         for mo in mos:

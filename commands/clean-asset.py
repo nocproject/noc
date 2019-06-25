@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         clean = set()
         for expr in args:
-            for obj in ManagedObjectSelector.resolve_expression(expr):
+            for obj in ManagedObjectSelector.get_objects_from_expression(expr):
                 if obj.id in clean:
                     continue  # Already cleaned
                 self.clean_managed_object(obj)

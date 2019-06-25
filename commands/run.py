@@ -47,7 +47,7 @@ class Command(BaseCommand):
     def iter_objects(self, objects):
         r = set()
         for x in objects:
-            for o in ManagedObjectSelector.resolve_expression(x):
+            for o in ManagedObjectSelector.get_objects_from_expression(x):
                 r.add(o)
         for o in r:
             yield o

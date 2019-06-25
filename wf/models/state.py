@@ -11,7 +11,6 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
-from exceptions import ImportError
 # Third-party modules
 import six
 from mongoengine.document import Document
