@@ -20,6 +20,7 @@ import cachetools
 import six
 # NOC modules
 from noc.config import config
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.systemnotification import SystemNotification
 from noc.project.models.project import Project
@@ -46,7 +47,7 @@ ZONE_REVERSE_IPV6 = "6"
     ("dns.DNSZoneRecord", "zone")
 ])
 @six.python_2_unicode_compatible
-class DNSZone(models.Model):
+class DNSZone(NOCModel):
     """
     DNS Zone
     """

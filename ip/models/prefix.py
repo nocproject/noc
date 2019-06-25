@@ -16,6 +16,7 @@ import six
 from django.db import models, connection
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
@@ -46,7 +47,7 @@ id_lock = Lock()
     ("ip.Address", "prefix")
 ])
 @six.python_2_unicode_compatible
-class Prefix(models.Model):
+class Prefix(NOCModel):
     """
     Allocated prefix
     """

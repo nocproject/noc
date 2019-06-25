@@ -23,7 +23,7 @@ from django.db.models import (Q, Model, CharField, BooleanField,
 import cachetools
 import six
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -115,7 +115,7 @@ logger = logging.getLogger(__name__)
     ("sa.Service", "managed_object")
 ])
 @six.python_2_unicode_compatible
-class ManagedObject(Model):
+class ManagedObject(NOCModel):
     """
     Managed Object
     """
@@ -1779,10 +1779,9 @@ class ManagedObject(Model):
         return self.profile.get_profile().has_confdb_support(self)
 
 
-@tuck_up_pants
 @on_save
 @six.python_2_unicode_compatible
-class ManagedObjectAttribute(Model):
+class ManagedObjectAttribute(NOCModel):
     class Meta(object):
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"

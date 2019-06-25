@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.lib.validators import check_rd
 from noc.core.model.fields import TagsField, DocumentReferenceField
@@ -46,7 +47,7 @@ id_lock = Lock()
     ("vc.VCBindFilter", "vrf"),
 ])
 @six.python_2_unicode_compatible
-class VRF(models.Model):
+class VRF(NOCModel):
     """
     VRF
     """

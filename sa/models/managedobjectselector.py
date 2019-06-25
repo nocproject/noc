@@ -20,7 +20,7 @@ from psycopg2.extensions import adapt
 # Third-party modules
 import six
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
@@ -59,7 +59,7 @@ id_lock = Lock()
     ("vc.VCDomainProvisioningConfig", "selector"),
 ])
 @six.python_2_unicode_compatible
-class ManagedObjectSelector(models.Model):
+class ManagedObjectSelector(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Selector")
         verbose_name_plural = _("Managed Object Selectors")
@@ -371,9 +371,8 @@ class ManagedObjectSelector(models.Model):
         return list(objects)
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class ManagedObjectSelectorByAttribute(models.Model):
+class ManagedObjectSelectorByAttribute(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Selector by Attribute")
         db_table = "sa_managedobjectselectorbyattribute"

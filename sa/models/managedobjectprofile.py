@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
@@ -61,7 +62,7 @@ id_lock = Lock()
     ("inv.FirmwarePolicy", "object_profile")
 ])
 @six.python_2_unicode_compatible
-class ManagedObjectProfile(models.Model):
+class ManagedObjectProfile(NOCModel):
 
     class Meta(object):
         verbose_name = _("Managed Object Profile")

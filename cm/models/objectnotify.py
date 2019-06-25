@@ -10,7 +10,7 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 
@@ -18,9 +18,8 @@ OBJECT_TYPES = ["config", "dns", "prefix-list", "rpsl"]
 OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES if x != "config"]
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class ObjectNotify(models.Model):
+class ObjectNotify(NOCModel):
     class Meta(object):
         app_label = "cm"
         db_table = "cm_objectnotify"

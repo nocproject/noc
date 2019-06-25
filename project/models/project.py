@@ -14,6 +14,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -38,7 +39,7 @@ id_lock = Lock()
     ("vc.VLAN", "project")
 ])
 @six.python_2_unicode_compatible
-class Project(models.Model):
+class Project(NOCModel):
     """
     Projects are used to track investment projects expenses and profits
     """

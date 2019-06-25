@@ -12,7 +12,7 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.core.model.fields import TextArrayField
 from .refbook import RefBook
 
@@ -26,9 +26,8 @@ class RBDManader(models.Manager):
         return super(RBDManader, self).get_queryset().extra(order_by=["main_refbookdata.value[1]"])
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class RefBookData(models.Model):
+class RefBookData(NOCModel):
     """
     Ref. Book Data
     """

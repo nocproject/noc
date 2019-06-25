@@ -14,7 +14,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
@@ -34,7 +34,7 @@ id_lock = Lock()
     ("sa.ManagedObjectProfile", "cpe_auth_profile")
 ])
 @six.python_2_unicode_compatible
-class AuthProfile(models.Model):
+class AuthProfile(NOCModel):
     class Meta(object):
         verbose_name = "Auth Profile"
         verbose_name_plural = "Auth Profiles"
@@ -115,9 +115,8 @@ class AuthProfile(models.Model):
                 yield s.user, s.password, s.super_password
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class AuthProfileSuggestSNMP(models.Model):
+class AuthProfileSuggestSNMP(NOCModel):
     class Meta(object):
         verbose_name = "Auth Profile Suggest SNMP"
         verbose_name_plural = "Auth Profile Suggest SNMP"
@@ -134,9 +133,8 @@ class AuthProfileSuggestSNMP(models.Model):
         return self.auth_profile.name
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class AuthProfileSuggestCLI(models.Model):
+class AuthProfileSuggestCLI(NOCModel):
     class Meta(object):
         verbose_name = "Auth Profile Suggest CLI"
         verbose_name_plural = "Auth Profile Suggest CLI"

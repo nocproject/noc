@@ -10,6 +10,7 @@
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
@@ -19,7 +20,7 @@ from noc.core.model.decorator import on_delete_check
     ("kb.KBEntryTemplate", "language")
 ])
 @six.python_2_unicode_compatible
-class Language(models.Model):
+class Language(NOCModel):
     """
     Language
     """

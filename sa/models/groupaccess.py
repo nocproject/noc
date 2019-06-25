@@ -13,15 +13,14 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.group import Group
 from .managedobjectselector import ManagedObjectSelector
 from .administrativedomain import AdministrativeDomain
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class GroupAccess(models.Model):
+class GroupAccess(NOCModel):
     class Meta(object):
         verbose_name = _("Group Access")
         verbose_name_plural = _("Group Access")

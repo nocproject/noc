@@ -13,15 +13,14 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.lib.template import render_message
 from .managedobjectselector import ManagedObjectSelector
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class ObjectNotification(models.Model):
+class ObjectNotification(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Notification")
         db_table = "sa_objectnotification"

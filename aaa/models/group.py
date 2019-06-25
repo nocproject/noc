@@ -14,6 +14,7 @@ import cachetools
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -23,7 +24,7 @@ id_lock = Lock()
     ("sa.GroupAccess", "group")
 ])
 @six.python_2_unicode_compatible
-class Group(models.Model):
+class Group(NOCModel):
     class Meta(object):
         verbose_name = "Group"
         verbose_name_plural = "Groups"

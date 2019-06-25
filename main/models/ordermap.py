@@ -10,7 +10,7 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 
 # model -> label field
 ORDER_MAP_MODELS = {
@@ -20,9 +20,8 @@ ORDER_MAP_MODELS = {
 }
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class OrderMap(models.Model):
+class OrderMap(NOCModel):
     """
     Custom field description
     """

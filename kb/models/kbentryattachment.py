@@ -11,14 +11,13 @@ import six
 from django.db import models
 from django.db.models import Q
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.databasestorage import database_storage
 from noc.kb.models.kbentry import KBEntry
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class KBEntryAttachment(models.Model):
+class KBEntryAttachment(NOCModel):
     """
     Attachments
     """

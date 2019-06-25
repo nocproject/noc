@@ -12,15 +12,14 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.timepattern import TimePattern
 from noc.main.models. notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from .user import User
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class UserContact(models.Model):
+class UserContact(NOCModel):
     class Meta(object):
         verbose_name = "User Profile Contact"
         verbose_name_plural = "User Profile Contacts"

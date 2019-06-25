@@ -12,6 +12,7 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.decorator import on_save
@@ -26,7 +27,7 @@ from .person import Person
 ])
 @on_save
 @six.python_2_unicode_compatible
-class Maintainer(models.Model):
+class Maintainer(NOCModel):
     class Meta(object):
         verbose_name = "Maintainer"
         verbose_name_plural = "Maintainers"
