@@ -18,6 +18,10 @@ all_profiles = set()
 
 
 def render_platform(vendor, data):
+    global all_profiles
+
+    profiles = [t for t in (data.get("tags") or []) if t in all_profiles]
+
     title = "%s %s" % (vendor, data["name"])
     r = [
         ".. _platforms-%s-%s:" % (vendor, data["name"]),
@@ -55,6 +59,16 @@ def render_platform(vendor, data):
         "    * - End of Ext. Support",
         "      - %s" % (data.get("end_of_xsupport") or "N/A"),
     ]
+    if len(profiles) == 1:
+        r += [
+            "    * - Profile",
+            "      - :ref:`%s <profile-%s>`" % (profiles[0], profiles[0])
+        ]
+    elif len(profiles) > 1:
+        r += [
+            "    * - Profiles",
+            "      - %s" % ", ".join([":ref:`%s <profile-%s>`" % (p, p) for p in sorted(profiles)])
+        ]
     if data.get("snmp_sysobjectid"):
         r += [
             "    * - SNMP SysObjectId",

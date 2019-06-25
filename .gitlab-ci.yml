@@ -240,6 +240,10 @@ Test code:
   tags:
     - shell
   allow_failure: false
+  artifacts:
+    paths:
+      - collections/
+    expire_in: 1 day
 
 Test python 3:
   stage: test
