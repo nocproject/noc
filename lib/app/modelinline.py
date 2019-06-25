@@ -126,7 +126,7 @@ class ModelInline(object):
         self.parent_model = self.app.model
         self.parent_rel = None
         for f in self.model._meta.fields:
-            if f.rel and f.rel.to and f.rel.to == self.parent_model:
+            if f.rel and f.remote_field.to and f.remote_field.to == self.parent_model:
                 self.parent_rel = f.name
                 break
         assert self.parent_rel
@@ -157,9 +157,9 @@ class ModelInline(object):
         elif isinstance(field, TextArrayField):
             return StringListParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
-            self.fk_fields[field.name] = field.rel.to
+            self.fk_fields[field.name] = field.remote_field.to
             return ModelParameter(
-                field.rel.to,
+                field.remote_field.to,
                 required=not field.null
             )
         else:
