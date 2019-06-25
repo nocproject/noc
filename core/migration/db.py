@@ -194,13 +194,13 @@ class DB(object):
                 if field.empty_strings_allowed and connection.features.interprets_empty_strings_as_nulls:
                     sql += [" DEFAULT ''"]
         # FOREIGN KEY
-        if field.rel:
+        if field.remote_field:
             self.deferred_sql += [
                 self._foreign_key_sql(
                     table_name,
                     field.column,
-                    field.remote_field.to._meta.db_table,
-                    field.remote_field.to._meta.get_field(field.remote_field.field_name).column
+                    field.remote_field.model._meta.db_table,
+                    field.remote_field.model._meta.get_field(field.remote_field.field_name).column
                 )
             ]
         # Indexes
