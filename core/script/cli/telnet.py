@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+import logging
 # Third-party modules
 from tornado.iostream import IOStream
 import tornado.gen
@@ -16,16 +17,19 @@ import six
 # NOC modules
 from .base import CLI
 
-IAC = chr(0xFF)  # Interpret As Command
-DONT = chr(0xFE)
-DO = chr(0xFD)
-WONT = chr(0xFC)
-WILL = chr(0xFB)
-SB = chr(0xFA)
-SE = chr(0xF0)
-NAWS = chr(0x1F)
-AO = chr(0xF5)
-AYT = chr(0xF6)
+_logger = logging.getLogger(__name__)
+
+
+IAC = "\xFF"  # Interpret As Command
+DONT = "\xFE"
+DO = "\xFD"
+WONT = "\xFC"
+WILL = "\xFB"
+SB = "\xFA"
+SE = "\xF0"
+NAWS = "\x1F"
+AO = "\xF5"
+AYT = "\xF6"
 
 IAC_CMD = {
     DO: "DO",
@@ -88,24 +92,24 @@ TELNET_OPTIONS = {
 ACCEPTED_TELNET_OPTIONS = "\x01\x03\x18\x1f"
 
 
-class TelnetIOStream(IOStream):
-    def __init__(self, sock, cli, *args, **kwargs):
-        super(TelnetIOStream, self).__init__(sock, *args, **kwargs)
-        self.cli = cli
-        self.logger = cli.logger
+class TelnetParser(object):
+    """
+    Telnet protocol state and commands processing
+    """
+    def __init__(self, logger=None, writer=None, naws="\x00\x80\x00\x80"):
+        self.logger = logger or _logger
+        self.writer = writer
         self.iac_seq = ""
         self.out_iac_seq = []
-        self.naws = cli.profile.get_telnet_naws()
+        self.naws = naws
 
-    @tornado.gen.coroutine
-    def startup(self):
-        if self.cli.profile.telnet_send_on_connect:
-            self.logger.debug("Sending %r on connect",
-                              self.cli.profile.telnet_send_on_connect)
-            yield self.write(self.cli.profile.telnet_send_on_connect)
+    def feed(self, chunk):
+        """
+        Feed chunk of data to parser
 
-    def read_from_fd(self):
-        chunk = super(TelnetIOStream, self).read_from_fd()
+        :param chunk: String
+        :return: Parsed data
+        """
         if self.iac_seq and chunk:
             # Restore incomplete IAC context
             chunk = self.iac_seq + chunk
@@ -145,13 +149,9 @@ class TelnetIOStream(IOStream):
                 # Return leftovers
                 break
         if self.out_iac_seq:
-            self.write_to_fd("".join(self.out_iac_seq))
+            self.writer("".join(self.out_iac_seq))
             self.out_iac_seq = []
         return "".join(r)
-
-    def write(self, data, callback=None):
-        data = data.replace(IAC, IAC + IAC)
-        return super(TelnetIOStream, self).write(data, callback=callback)
 
     def send_iac(self, cmd, opt):
         """
@@ -159,7 +159,6 @@ class TelnetIOStream(IOStream):
         """
         self.logger.debug("Send %s", self.iac_repr(cmd, opt))
         self.out_iac_seq += [IAC + cmd + opt]
-        # self.write_to_fd(IAC + cmd + opt)
 
     def send_iac_sb(self, opt, data=None):
         sb = IAC + SB + opt
@@ -174,7 +173,6 @@ class TelnetIOStream(IOStream):
             opt = "%r" % opt
         self.logger.debug("Send IAC SB %s %r IAC SE", opt, data)
         self.out_iac_seq += [sb]
-        # self.write_to_fd(sb)
 
     def process_iac(self, cmd, opt):
         """
@@ -197,13 +195,14 @@ class TelnetIOStream(IOStream):
             self.send_iac_sb(opt, self.naws)
 
     def process_iac_sb(self, sb):
-        if sb.encode("hex") == "1801":
+        if sb == "\x18\x01":
             self.logger.debug("Received IAC SB TTYPE SEND IAC SE")
             self.send_iac_sb("\x18\x00", "XTERM")
         else:
             self.logger.debug("Received IAC SB %s IAC SE", sb.encode("hex"))
 
-    def iac_repr(self, cmd, opt):
+    @staticmethod
+    def iac_repr(cmd, opt):
         """
         Human-readable IAC sequence
         :param cmd:
@@ -216,6 +215,37 @@ class TelnetIOStream(IOStream):
             IAC_CMD.get(cmd, cmd),
             TELNET_OPTIONS.get(opt, opt),
         )
+
+    @staticmethod
+    def escape(data):
+        return data.replace(IAC, IAC + IAC)
+
+
+class TelnetIOStream(IOStream):
+    def __init__(self, sock, cli, *args, **kwargs):
+        super(TelnetIOStream, self).__init__(sock, *args, **kwargs)
+        self.cli = cli
+        self.logger = cli.logger
+        self.parser = TelnetParser(
+            logger=self.logger,
+            writer=self.write_to_fd,
+            naws=cli.profile.get_telnet_naws()
+        )
+
+    @tornado.gen.coroutine
+    def startup(self):
+        if self.cli.profile.telnet_send_on_connect:
+            self.logger.debug("Sending %r on connect",
+                              self.cli.profile.telnet_send_on_connect)
+            yield self.write(self.cli.profile.telnet_send_on_connect)
+
+    def read_from_fd(self):
+        chunk = super(TelnetIOStream, self).read_from_fd()
+        return self.parser.feed(chunk)
+
+    def write(self, data, callback=None):
+        data = self.parser.escape(data)
+        return super(TelnetIOStream, self).write(data, callback=callback)
 
 
 class TelnetCLI(CLI):
