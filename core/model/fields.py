@@ -274,7 +274,7 @@ class CachedForeignKeyDescriptor(object):
         val = getattr(instance, self.field.attname)
         if val is None:
             raise AttributeError
-        v = self.field.rel.to.get_by_id(val)
+        v = self.field.remote_field.to.get_by_id(val)
         if v is not None:
             setattr(instance, self.cache_name, v)
             return v
