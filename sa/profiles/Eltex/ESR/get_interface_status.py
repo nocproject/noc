@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,11 @@ class Script(BaseScript):
     def execute(self, interface=None):
         r = []
         c = self.cli("show interfaces status", cached=True)
-        for iface, astate, lstate, mtu, mac in parse_table(c):
+        # ESR-12V ver.1.0.9 produce random empty lines
+        c = "\n".join([s for s in c.split("\n") if s])
+        for line in parse_table(c, allow_wrap=True):
+            iface = line[0]
+            lstate = line[2]
             if (interface is not None) and (interface != iface):
                 continue
             r += [{
