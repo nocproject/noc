@@ -208,7 +208,7 @@ class MetricScope(Document):
                     )
                     c = True
                 after = f
-                if existing[f] != t:
+                if f in existing and existing[f] != t:
                     print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], t))
                     print("Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s" % (table_name, f, t))
             return c

@@ -184,7 +184,7 @@ class Model(six.with_metaclass(ModelBase)):
                     c_type = "Array(%s)" % cls._fields[f].get_db_type()
                 else:
                     c_type = cls._fields[f].get_db_type()
-                if existing[f] != c_type:
+                if f in existing and existing[f] != c_type:
                     print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], c_type))
                     print("Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s" % (table_name, f, c_type))
                 after = f
