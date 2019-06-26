@@ -39,5 +39,5 @@ sensor               Measured name
 Alarms
 ------
 ================= ======================================================================
-Closing Event for :ref:`alarm-class-network-link-dom-warning:-out-of-threshold`
+Closing Event for :ref:`alarm-class-network-link-dom-warning-out-of-threshold`
 ================= ======================================================================
