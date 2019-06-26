@@ -610,6 +610,27 @@ class Config(BaseConfig):
         max_prefix_length = IntParameter(default=24)
         rpsl_inverse_pref_style = BooleanParameter(default=False)
 
+    class metrics(ConfigSection):
+        default_hist = ListParameter(item=FloatParameter(), default=[
+            0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
+        ])
+        enable_mongo_hist = BooleanParameter(default=False)
+        mongo_hist = ListParameter(item=FloatParameter(), default=[
+            0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
+        ])
+        enable_postgres_hist = BooleanParameter(default=False)
+        postgres_hist = ListParameter(item=FloatParameter(), default=[
+            0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
+        ])
+        default_quantiles = ListParameter(item=FloatParameter(), default=[
+            0.5, 0.9, 0.95
+        ])
+        default_quantiles_epsilon = 0.01
+        default_quantiles_window = 60
+        default_quantiles_buffer = 100
+        enable_mongo_quantiles = BooleanParameter(default=False)
+        enable_postgres_quantiles = BooleanParameter(default=False)
+
     # pylint: disable=super-init-not-called
     def __init__(self):
         self.setup_logging()
@@ -662,6 +683,9 @@ class Config(BaseConfig):
             url += [",".join(str(h) for h in hosts)]
             url += ["/%s" % self.mongo.db]
             self._mongo_connection_args["host"] = "".join(url)
+            if self.metrics.enable_mongo_hist:
+                from noc.core.mongo.monitor import MongoCommandSpan
+                self._mongo_connection_args["event_listeners"] = [MongoCommandSpan()]
         return self._mongo_connection_args
 
     def setup_logging(self, loglevel=None):
@@ -740,6 +764,30 @@ class Config(BaseConfig):
             else:
                 return [rpath, cpath]
         return [rpath]
+
+    def get_hist_config(self, name):
+        """
+        Get configuration for hist `name`. Returns list of times or None, if hist is disabled
+        :param name: Hist name
+        :return: List of hist config or None
+        """
+        # Check hist is enabled
+        if not getattr(self.metrics, "enable_%s_hist" % name, False):
+            return None
+        # Get config
+        cfg = getattr(self.metrics, "%s_hist" % name)
+        if cfg:
+            return cfg
+        # Fallback to defaults
+        return self.metrics.default_hist or None
+
+    def get_quantiles_config(self, name):
+        """
+        Check if quantile is enabled
+        :return: True if quantile is enabled
+        """
+        # Check quantiles is enabled
+        return getattr(self.metrics, "enable_%s_quantiles" % name, False)
 
 
 CHClusterShard = namedtuple("CHClusterShard", ["replicas", "weight"])
