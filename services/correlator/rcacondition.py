@@ -10,8 +10,7 @@
 import datetime
 # Third-party modules
 import six
-# NOC modules
-from noc.lib.nosql import ObjectId
+import bson
 
 
 @six.python_2_unicode_compatible
@@ -25,7 +24,7 @@ class RCACondition(object):
         self.condition = compile(condition.condition, "<string>", "eval")
         # Build match condition expression
         x = [
-            "'alarm_class': ObjectId('%s')" % self.root.id,
+            "'alarm_class': bson.ObjectId('%s')" % self.root.id,
             "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
             "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
         ]
@@ -42,7 +41,7 @@ class RCACondition(object):
         )
         # Build reverse match condition expression
         x = [
-            "'alarm_class': ObjectId('%s')" % alarm_class.id,
+            "'alarm_class': bson.ObjectId('%s')" % alarm_class.id,
             "'root__exists': False",
             "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
             "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
@@ -64,7 +63,7 @@ class RCACondition(object):
         return {
             "alarm": alarm,
             "datetime": datetime,
-            "ObjectId": ObjectId
+            "ObjectId": bson.ObjectId
         }
 
     def check_condition(self, alarm):

@@ -34,7 +34,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.core.version import version
 from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
-from noc.lib.nosql import ObjectId
 from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
@@ -187,9 +186,9 @@ class ClassifierService(Service):
                 "'timestamp__lte': event.timestamp + datetime.timedelta(seconds=%d)" % s["window"]
             ]
             if len(s["event_class"]) == 1:
-                x += ["'event_class': ObjectId('%s')" % s["event_class"][0]]
+                x += ["'event_class': bson.ObjectId('%s')" % s["event_class"][0]]
             else:
-                x += ["'event_class__in: [%s]" % ", ".join(["ObjectId('%s')" % c for c in s["event_class"]])]
+                x += ["'event_class__in: [%s]" % ", ".join(["bson.ObjectId('%s')" % c for c in s["event_class"]])]
             for k, v in s["match_condition"].items():
                 x += ["'%s': %s" % (k, v)]
             return compile("{%s}" % ", ".join(x), "<string>", "eval")
@@ -362,7 +361,8 @@ class ClassifierService(Service):
                 try:
                     v = decoder(event, v)
                 except InterfaceTypeError:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
+                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s"
+                                                % (ecv.name, ecv.type, repr(v)))
             r[ecv.name] = v
         return r
 
@@ -380,7 +380,7 @@ class ClassifierService(Service):
         for r, name, suppress in self.suppression[event.event_class.id]:
             q = eval(r, {}, {
                 "event": event,
-                "ObjectId": ObjectId,
+                "ObjectId": bson.ObjectId,
                 "datetime": datetime,
                 "vars": vars
             })
