@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Eltex.ESR.get_interfaces"
     interface = IGetInterfaces
 
-    rx_iface = re.compile("Interface\s+(?P<iface>\S+)")
+    rx_iface = re.compile(r"Interface\s+(?P<iface>\S+)")
 
     types = {
         "gi": "physical",
@@ -53,7 +53,15 @@ class Script(BaseScript):
             ipv6_addresses[ifname] = ip
         interfaces = []
         c = self.cli("show interfaces status", cached=True)
-        for ifname, astate, lstate, mtu, mac in parse_table(c):
+        # ESR-12V ver.1.0.9 produce random empty lines
+        c = "\n".join([s for s in c.split("\n") if s])
+        for line in parse_table(c, allow_wrap=True):
+            # In some cases may be over 5 columns
+            ifname = line[0]
+            astate = line[1]
+            lstate = line[2]
+            mtu = line[3]
+            mac = line[4]
             description = descriptions.get(ifname)
             sub = {
                 "name": ifname,
