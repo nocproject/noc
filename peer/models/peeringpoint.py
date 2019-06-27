@@ -38,7 +38,7 @@ class PeeringPoint(NOCModel):
     location = models.CharField(
         "Location", max_length=64, blank=True, null=True)
     local_as = models.ForeignKey(AS, verbose_name="Local AS")
-    router_id = models.IPAddressField("Router-ID", unique=True)
+    router_id = models.GenericIPAddressField("Router-ID", unique=True, protocol="IPv4")
     # @todo: Replace with managed object
     profile = DocumentReferenceField(Profile, null=False, blank=False)
     communities = models.CharField(

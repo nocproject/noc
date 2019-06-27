@@ -15,4 +15,4 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("dns_dnsserver", "ip", models.IPAddressField("IP", null=True, blank=True))
+        self.db.add_column("dns_dnsserver", "ip", models.GenericIPAddressField("IP", null=True, blank=True, protocol="IPv4"))

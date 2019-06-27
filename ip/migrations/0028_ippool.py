@@ -32,7 +32,7 @@ class Migration(BaseMigration):
                 ("vrf", models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ("afi", models.CharField("Address Family", max_length=1, choices=AFI_CHOICES)),
                 ("type", models.CharField("Type", max_length=1, choices=[("D", "Dynamic"), ("S", "Static")])),
-                ("from_address", models.IPAddressField("From Address")),
-                ("to_address", models.IPAddressField("To Address"))
+                ("from_address", models.GenericIPAddressField("From Address", protocol="IPv4")),
+                ("to_address", models.GenericIPAddressField("To Address", protocol="IPv4"))
             )
         )

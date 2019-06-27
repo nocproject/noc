@@ -102,7 +102,7 @@ class Migration(BaseMigration):
             'ip_ipv4address', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('vrf', models.ForeignKey(VRF, verbose_name=VRF, on_delete=models.CASCADE)), ('fqdn', models.CharField("FQDN", max_length=64)),
-                ('ip', models.IPAddressField("IP")),
+                ('ip', models.GenericIPAddressField("IP", protocol="IPv4")),
                 ('description', models.CharField("Description", blank=True, null=True, max_length=64)),
                 ('modified_by', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE)),
                 ('last_modified', models.DateTimeField("Last modified", auto_now=True, auto_now_add=True)),
