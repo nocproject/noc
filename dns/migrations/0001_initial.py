@@ -44,7 +44,7 @@ class Migration(BaseMigration):
                 ('description', models.CharField("Description", null=True, blank=True, max_length=64)),
                 ('is_auto_generated', models.BooleanField("Auto generated?")),
                 ('serial', models.CharField("Serial", max_length=10, default="0000000000")),
-                ('profile', models.ForeignKey(DNSZoneProfile, verbose_name="Profile"))
+                ('profile', models.ForeignKey(DNSZoneProfile, verbose_name="Profile", on_delete=models.CASCADE))
             )
         )
         # Model 'DNSZoneRecordType'
@@ -69,9 +69,9 @@ class Migration(BaseMigration):
         self.db.create_table(
             'dns_dnszonerecord', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('zone', models.ForeignKey(DNSZone, verbose_name="Zone")),
+                ('zone', models.ForeignKey(DNSZone, verbose_name="Zone", on_delete=models.CASCADE)),
                 ('left', models.CharField("Left", max_length=32, blank=True, null=True)),
-                ('type', models.ForeignKey(DNSZoneRecordType, verbose_name="Type")),
+                ('type', models.ForeignKey(DNSZoneRecordType, verbose_name="Type", on_delete=models.CASCADE)),
                 ('right', models.CharField("Right", max_length=64))
             )
         )

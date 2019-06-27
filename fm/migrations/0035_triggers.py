@@ -78,8 +78,8 @@ class Migration(BaseMigration):
                     )
                 ), (
                     "notification_group",
-                    models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True)
-                ), ("template", models.ForeignKey(Template, verbose_name="Template", null=True, blank=True)),
-                ("pyrule", models.ForeignKey(PyRule, verbose_name="pyRule", null=True, blank=True))
+                    models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True, on_delete=models.CASCADE)
+                ), ("template", models.ForeignKey(Template, verbose_name="Template", null=True, blank=True, on_delete=models.CASCADE)),
+                ("pyrule", models.ForeignKey(PyRule, verbose_name="pyRule", null=True, blank=True, on_delete=models.CASCADE))
             )
         )

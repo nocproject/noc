@@ -122,7 +122,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'fm_eventdata', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('event', models.ForeignKey(Event, verbose_name=Event)),
+                ('event', models.ForeignKey(Event, verbose_name=Event, on_delete=models.CASCADE)),
                 ('key', models.CharField("Key", max_length=64)),
                 ('value', models.TextField("Value", blank=True, null=True)), (
                     'type',

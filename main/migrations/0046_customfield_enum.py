@@ -32,7 +32,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "main_customfieldenumvalue", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("enum_group", models.ForeignKey(CustomFieldEnumGroup, verbose_name="Enum Group")),
+                ("enum_group", models.ForeignKey(CustomFieldEnumGroup, verbose_name="Enum Group", on_delete=models.CASCADE)),
                 ("is_active", models.BooleanField("Is Active", default=True)),
                 ("key", models.CharField("Key", max_length=256)), ("value", models.CharField("Value", max_length=256))
             )
@@ -40,5 +40,5 @@ class Migration(BaseMigration):
         # CustomField.enum_group
         self.db.add_column(
             "main_customfield", "enum_group",
-            models.ForeignKey(CustomFieldEnumGroup, verbose_name="Enum Group", null=True, blank=True)
+            models.ForeignKey(CustomFieldEnumGroup, verbose_name="Enum Group", null=True, blank=True, on_delete=models.CASCADE)
         )

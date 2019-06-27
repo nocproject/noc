@@ -30,7 +30,7 @@ class Migration(BaseMigration):
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("periodic_name", models.CharField("Periodic Task", max_length=64)),
                 ("is_enabled", models.BooleanField("Enabled?", default=False)),
-                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern")),
+                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)),
                 ("run_every", models.PositiveIntegerField("Run Every (secs)", default=86400)),
                 ("timeout", models.PositiveIntegerField("Timeout (secs)", null=True, blank=True)),
                 ("last_run", models.DateTimeField("Last Run", blank=True, null=True)),

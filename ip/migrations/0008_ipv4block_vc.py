@@ -19,4 +19,4 @@ class Migration(BaseMigration):
         VC = self.db.mock_model(
             model_name='VC', db_table='vc_vc'
         )
-        self.db.add_column("ip_ipv4block", "vc", models.ForeignKey(VC, verbose_name="VC", null=True, blank=True))
+        self.db.add_column("ip_ipv4block", "vc", models.ForeignKey(VC, verbose_name="VC", null=True, blank=True, on_delete=models.CASCADE))

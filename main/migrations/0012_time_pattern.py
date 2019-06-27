@@ -33,7 +33,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'main_timepatternterm', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern")),
+                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)),
                 ('term', models.CharField("Term", max_length=256))
             )
         )

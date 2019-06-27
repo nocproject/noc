@@ -24,7 +24,7 @@ class Migration(BaseMigration):
             'main_systemnotification', (
                 (
                     'notification_group',
-                    models.ForeignKey(NotificationGroup, null=True, verbose_name="Notification Group", blank=True)
+                    models.ForeignKey(NotificationGroup, null=True, verbose_name="Notification Group", blank=True, on_delete=models.CASCADE)
                 ),
                 ('id', models.AutoField(primary_key=True)),
                 ('name', models.CharField("Name", unique=True, max_length=64)),

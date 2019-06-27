@@ -32,9 +32,9 @@ class Migration(BaseMigration):
                 ('id', models.AutoField(primary_key=True)),
                 (
                     'preferred_language',
-                    models.ForeignKey(Language, null=True, verbose_name="Preferred Language", blank=True)
+                    models.ForeignKey(Language, null=True, verbose_name="Preferred Language", blank=True, on_delete=models.CASCADE)
                 ),
-                ('user', models.ForeignKey(User, unique=True)),
+                ('user', models.ForeignKey(User, unique=True, on_delete=models.CASCADE)),
             )
         )
         UserProfile = self.db.mock_model(
@@ -45,10 +45,10 @@ class Migration(BaseMigration):
         # Adding model 'UserProfileContact'
         self.db.create_table(
             'main_userprofilecontact', (
-                ('user_profile', models.ForeignKey(UserProfile, verbose_name="User Profile")),
+                ('user_profile', models.ForeignKey(UserProfile, verbose_name="User Profile", on_delete=models.CASCADE)),
                 ('notification_method', models.CharField("Method", max_length=16)),
                 ('params', models.CharField("Params", max_length=256)),
-                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern")),
+                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)),
                 ('id', models.AutoField(primary_key=True)),
             )
         )
