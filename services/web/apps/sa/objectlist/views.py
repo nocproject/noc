@@ -10,7 +10,7 @@
 import bson
 # Third-party modules
 from django.db.models import Q as d_Q
-from noc.lib.nosql import Q as m_Q
+from mongoengine.queryset.visitor import Q as m_Q
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
