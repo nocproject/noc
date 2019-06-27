@@ -24,6 +24,7 @@ from noc.config import config
 from noc.models import get_model
 
 logger = logging.getLogger(__name__)
+_connected = False
 
 
 def auto_connect():
@@ -31,6 +32,9 @@ def auto_connect():
     Connect to the mongo database
     :return:
     """
+    global _connected
+    if _connected:
+        return
     temporary_errors = (
         mongoengine.connection.MongoEngineConnectionError,
         pymongo.errors.AutoReconnect
@@ -47,6 +51,7 @@ def auto_connect():
             logger.info("Connecting to MongoDB %s", ca)
             connect_args = config.mongo_connection_args
             connect(**connect_args)
+            _connected = True
             break
         except temporary_errors as e:
             logger.error("Cannot connect to mongodb: %s", e)
