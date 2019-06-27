@@ -10,7 +10,7 @@
 import datetime
 # Third-party modules
 import six
-import bson
+from bson import ObjectId
 
 
 @six.python_2_unicode_compatible
@@ -24,7 +24,7 @@ class RCACondition(object):
         self.condition = compile(condition.condition, "<string>", "eval")
         # Build match condition expression
         x = [
-            "'alarm_class': bson.ObjectId('%s')" % self.root.id,
+            "'alarm_class': ObjectId('%s')" % self.root.id,
             "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
             "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
         ]
@@ -41,7 +41,7 @@ class RCACondition(object):
         )
         # Build reverse match condition expression
         x = [
-            "'alarm_class': bson.ObjectId('%s')" % alarm_class.id,
+            "'alarm_class': ObjectId('%s')" % alarm_class.id,
             "'root__exists': False",
             "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
             "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
@@ -63,7 +63,7 @@ class RCACondition(object):
         return {
             "alarm": alarm,
             "datetime": datetime,
-            "ObjectId": bson.ObjectId
+            "ObjectId": ObjectId
         }
 
     def check_condition(self, alarm):

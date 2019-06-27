@@ -18,7 +18,7 @@ import re
 import cachetools
 import tornado.gen
 import tornado.ioloop
-import bson
+from bson import ObjectId
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -186,9 +186,9 @@ class ClassifierService(Service):
                 "'timestamp__lte': event.timestamp + datetime.timedelta(seconds=%d)" % s["window"]
             ]
             if len(s["event_class"]) == 1:
-                x += ["'event_class': bson.ObjectId('%s')" % s["event_class"][0]]
+                x += ["'event_class': ObjectId('%s')" % s["event_class"][0]]
             else:
-                x += ["'event_class__in: [%s]" % ", ".join(["bson.ObjectId('%s')" % c for c in s["event_class"]])]
+                x += ["'event_class__in: [%s]" % ", ".join(["ObjectId('%s')" % c for c in s["event_class"]])]
             for k, v in s["match_condition"].items():
                 x += ["'%s': %s" % (k, v)]
             return compile("{%s}" % ", ".join(x), "<string>", "eval")
@@ -380,7 +380,7 @@ class ClassifierService(Service):
         for r, name, suppress in self.suppression[event.event_class.id]:
             q = eval(r, {}, {
                 "event": event,
-                "ObjectId": bson.ObjectId,
+                "ObjectId": ObjectId,
                 "datetime": datetime,
                 "vars": vars
             })
@@ -742,7 +742,7 @@ class ClassifierService(Service):
                  id=None, *args, **kwargs):
         event_ts = datetime.datetime.fromtimestamp(ts)
         # Generate or reuse existing object id
-        event_id = bson.ObjectId(id)
+        event_id = ObjectId(id)
         # Calculate messate processing delay
         lag = (time.time() - ts) * 1000
         metrics["lag_us"] = int(lag * 1000)
