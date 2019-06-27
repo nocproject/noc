@@ -56,7 +56,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'ip_ipv4blockaccess', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('user', models.ForeignKey(User, verbose_name=User)),
+                ('user', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE)),
                 ('vrf', models.ForeignKey(VRF, verbose_name=VRF, on_delete=models.CASCADE)),
                 ('prefix', models.CharField("prefix", max_length=18)),
                 ('tt', models.IntegerField("TT", blank=True, null=True))
