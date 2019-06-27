@@ -21,7 +21,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'ip_ipv4addressrange', (
                 ('id', models.AutoField(primary_key=True)),
-                ('vrf', models.ForeignKey(VRF, verbose_name="VRF")),
+                ('vrf', models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ('name', models.CharField("Name", max_length=64)),
                 ('from_ip', models.IPAddressField("From IP")),
                 ('to_ip', models.IPAddressField("To Address")),

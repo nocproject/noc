@@ -51,6 +51,6 @@ class Migration(BaseMigration):
             "main_permission_users", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("permission", models.ForeignKey(Permission, null=False, on_delete=models.CASCADE)),
-                ("user", models.ForeignKey(User, null=False))
+                ("user", models.ForeignKey(User, null=False, on_delete=models.CASCADE))
             )
         )

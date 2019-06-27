@@ -89,7 +89,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "cm_prefixlist_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("prefixlist", models.ForeignKey(PrefixList, null=False)),
+                ("prefixlist", models.ForeignKey(PrefixList, null=False, on_delete=models.CASCADE)),
                 ("objectcategory", models.ForeignKey(ObjectCategory, null=False, on_delete=models.CASCADE))
             )
         )

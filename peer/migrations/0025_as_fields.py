@@ -60,7 +60,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_maintainers', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('maintainer', models.ForeignKey(Maintainer, null=False, on_delete=models.CASCADE))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('maintainer', models.ForeignKey(Maintainer, null=False, on_delete=models.CASCADE))
             )
         )
 
@@ -68,7 +69,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_tech_contacts', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('person', models.ForeignKey(Person, null=False, on_delete=models.CASCADE))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('person', models.ForeignKey(Person, null=False, on_delete=models.CASCADE))
             )
         )
 
@@ -76,7 +78,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_routes_maintainers', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('maintainer', models.ForeignKey(Maintainer, null=False, on_delete=models.CASCADE))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('maintainer', models.ForeignKey(Maintainer, null=False, on_delete=models.CASCADE))
             )
         )
 
@@ -84,7 +87,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_administrative_contacts', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('person', models.ForeignKey(Person, null=False, on_delete=models.CASCADE))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('person', models.ForeignKey(Person, null=False, on_delete=models.CASCADE))
             )
         )
 

@@ -48,7 +48,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'main_refbookfield', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book")),
+                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book", on_delete=models.CASCADE)),
                 ('name', models.CharField("Name", max_length="64")),
                 ('order', models.IntegerField("Order")),
                 ('is_required', models.BooleanField("Is Required", default=True)),

@@ -19,7 +19,7 @@ class Migration(BaseMigration):
             db_table="main_notificationgroup"
         )
         self.db.add_column(
-            "dns_dnszoneprofile", "notification_group", models.ForeignKey(NotificationGroup, blank=True, null=True)
+            "dns_dnszoneprofile", "notification_group", models.ForeignKey(NotificationGroup, blank=True, null=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
-            "dns_dnszone", "notification_group", models.ForeignKey(NotificationGroup, blank=True, null=True))
+            "dns_dnszone", "notification_group", models.ForeignKey(NotificationGroup, blank=True, null=True, on_delete=models.CASCADE))
