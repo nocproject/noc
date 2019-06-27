@@ -53,11 +53,12 @@ class VC(NOCModel):
         app_label = "vc"
         ordering = ["vc_domain", "l1", "l2"]
 
-    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
+    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)
     name = models.CharField("Name", max_length=64)
     state = models.ForeignKey(
         ResourceState, verbose_name="State",
-        default=ResourceState.get_default
+        default=ResourceState.get_default,
+        on_delete=models.CASCADE
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",
@@ -68,7 +69,7 @@ class VC(NOCModel):
     description = models.CharField("Description", max_length=256, null=True,
                                    blank=True)
     style = models.ForeignKey(Style, verbose_name="Style", blank=True,
-                              null=True)
+                              null=True, on_delete=models.CASCADE)
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

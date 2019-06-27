@@ -28,7 +28,7 @@ class Migration(BaseMigration):
                 ("description", models.TextField("Description")),
                 ("snippet", models.TextField("Snippet")),
                 ("change_configuration", models.BooleanField("Change configuration", default=False)),
-                ("selector", models.ForeignKey(ManagedObjectSelector, verbose_name="Object Selector")),
+                ("selector", models.ForeignKey(ManagedObjectSelector, verbose_name="Object Selector", on_delete=models.CASCADE)),
                 ("is_enabled", models.BooleanField("Is Enabled?", default=True)),
                 ("timeout", models.IntegerField("Timeout", default=60)),
                 ("tags", AutoCompleteTagsField("Tags", null=True, blank=True)),

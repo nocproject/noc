@@ -35,5 +35,10 @@ class Migration(BaseMigration):
 
         self.db.add_column(
             "sa_managedobject", "auth_profile",
-            models.ForeignKey(AuthProfile, verbose_name="Auth Profile", null=True, blank=True)
+            models.ForeignKey(
+                AuthProfile,
+                verbose_name="Auth Profile",
+                null=True, blank=True,
+                on_delete=models.CASCADE
+            )
         )

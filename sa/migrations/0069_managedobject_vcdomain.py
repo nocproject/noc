@@ -20,4 +20,7 @@ class Migration(BaseMigration):
             model_name="VCDomain",
             db_table="vc_vcdomain"
         )
-        self.db.add_column("sa_managedobject", "vc_domain", models.ForeignKey(VCDomain, null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject", "vc_domain",
+            models.ForeignKey(VCDomain, null=True, blank=True, on_delete=models.CASCADE)
+        )

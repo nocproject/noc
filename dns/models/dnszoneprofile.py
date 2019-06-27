@@ -69,7 +69,8 @@ class DNSZoneProfile(NOCModel):
     notification_group = models.ForeignKey(
         NotificationGroup,
         verbose_name=_("Notification Group"), null=True, blank=True,
-        help_text=_("Notification group to use when zone group is not set"))
+        help_text=_("Notification group to use when zone group is not set"),
+        on_delete=models.CASCADE)
     description = models.TextField(_("Description"), blank=True, null=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

@@ -378,8 +378,10 @@ class ManagedObjectSelectorByAttribute(NOCModel):
         db_table = "sa_managedobjectselectorbyattribute"
         app_label = "sa"
 
-    selector = models.ForeignKey(ManagedObjectSelector,
-                                 verbose_name=_("Object Selector"))
+    selector = models.ForeignKey(
+        ManagedObjectSelector,
+        verbose_name=_("Object Selector"), on_delete=models.CASCADE
+    )
     key_re = models.CharField(_("Filter by key (REGEXP)"),
                               max_length=256, validators=[check_re])
     value_re = models.CharField(_("Filter by value (REGEXP)"),

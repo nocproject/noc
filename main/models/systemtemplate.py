@@ -28,7 +28,7 @@ class SystemTemplate(NOCModel):
 
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", null=True, blank=True)
-    template = models.ForeignKey(Template, verbose_name="Template")
+    template = models.ForeignKey(Template, verbose_name="Template", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

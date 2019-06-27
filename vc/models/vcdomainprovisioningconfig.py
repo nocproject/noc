@@ -31,17 +31,17 @@ class VCDomainProvisioningConfig(NOCModel):
         app_label = "vc"
         unique_together = [("vc_domain", "selector")]
 
-    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
+    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)
     selector = models.ForeignKey(ManagedObjectSelector,
-                                 verbose_name="Managed Object Selector")
+                                 verbose_name="Managed Object Selector", on_delete=models.CASCADE)
     is_enabled = models.BooleanField("Is Enabled", default=True)
     vc_filter = models.ForeignKey(VCFilter, verbose_name="VC Filter",
-                                  null=True, blank=True)
+                                  null=True, blank=True, on_delete=models.CASCADE)
     tagged_ports = models.CharField("Tagged Ports", max_length=256, null=True,
                                     blank=True)
     notification_group = models.ForeignKey(NotificationGroup,
                                            verbose_name="Notification Group",
-                                           null=True, blank=True)
+                                           null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return u"%s: %s" % (unicode(self.vc_domain), unicode(self.selector))

@@ -91,7 +91,10 @@ class VRF(NOCModel):
         help_text=_("Enable IPv6 Address Family"))
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="vrf_set")
+        null=True, blank=True,
+        on_delete=models.CASCADE,
+        related_name="vrf_set",
+    )
     description = models.TextField(
         _("Description"), blank=True, null=True)
     tt = models.IntegerField(

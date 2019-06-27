@@ -53,8 +53,9 @@ class Migration(BaseMigration):
         self.db.create_table(
             'vc_vc', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain")),
-                ('type', models.ForeignKey(VCType, verbose_name="type")), ('l1', models.IntegerField("Label 1")),
+                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)),
+                ('type', models.ForeignKey(VCType, verbose_name="type", on_delete=models.CASCADE)),
+                ('l1', models.IntegerField("Label 1")),
                 ('l2', models.IntegerField("Label 2", default=0)),
                 ('description', models.CharField("Description", max_length=256))
             )

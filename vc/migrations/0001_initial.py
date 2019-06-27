@@ -33,7 +33,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'vc_vc', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain")),
+                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)),
                 ('type', models.CharField("Type", max_length=1)),
                 ('l1', models.IntegerField("Label 1")),
                 ('l2', models.IntegerField("Label 2", default=0)),

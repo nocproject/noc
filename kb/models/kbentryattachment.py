@@ -28,7 +28,7 @@ class KBEntryAttachment(NOCModel):
         db_table = "kb_kbentryattachment"
         unique_together = [("kb_entry", "name")]
 
-    kb_entry = models.ForeignKey(KBEntry, verbose_name="KB Entry")
+    kb_entry = models.ForeignKey(KBEntry, verbose_name="KB Entry", on_delete=models.CASCADE)
     name = models.CharField("Name", max_length=256)
     description = models.CharField("Description", max_length=256, null=True,
                                    blank=True)

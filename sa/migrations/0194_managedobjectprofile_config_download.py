@@ -23,7 +23,7 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectprofile", "config_download_template",
-            models.ForeignKey(Template, verbose_name="Config download Template", blank=True, null=True)
+            models.ForeignKey(Template, verbose_name="Config download Template", blank=True, null=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
             "sa_managedobjectprofile", "config_policy",

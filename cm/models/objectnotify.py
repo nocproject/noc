@@ -27,13 +27,18 @@ class ObjectNotify(NOCModel):
         verbose_name_plural = "Object Notifies"
 
     type = models.CharField("Type", max_length=16, choices=OBJECT_TYPE_CHOICES)
-    administrative_domain = models.ForeignKey(AdministrativeDomain,
-                                              verbose_name="Administrative Domain",
-                                              blank=True, null=True)
+    administrative_domain = models.ForeignKey(
+        AdministrativeDomain,
+        verbose_name="Administrative Domain",
+        blank=True, null=True,
+        on_delete=models.CASCADE
+    )
     notify_immediately = models.BooleanField("Notify Immediately", default=False)
     notify_delayed = models.BooleanField("Notify Delayed", default=False)
-    notification_group = models.ForeignKey(NotificationGroup,
-                                           verbose_name="Notification Group")
+    notification_group = models.ForeignKey(
+        NotificationGroup,
+        verbose_name="Notification Group"
+    )
 
     def __str__(self):
         return u"(%s, %s, %s)" % (self.type, self.administrative_domain,

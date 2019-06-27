@@ -45,7 +45,7 @@ class Address(NOCModel):
         app_label = "ip"
         unique_together = [("vrf", "afi", "address")]
 
-    prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"))
+    prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"), on_delete=models.CASCADE)
     vrf = models.ForeignKey(
         VRF,
         verbose_name=_("VRF"),

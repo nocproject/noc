@@ -32,8 +32,8 @@ class PrefixBookmark(NOCModel):
         app_label = "ip"
         unique_together = [("user", "prefix")]
 
-    user = models.ForeignKey(User, verbose_name="User")
-    prefix = models.ForeignKey(Prefix, verbose_name="Prefix")
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    prefix = models.ForeignKey(Prefix, verbose_name="Prefix", on_delete=models.CASCADE)
 
     def __str__(self):
         return u"Bookmark at %s for %s" % (

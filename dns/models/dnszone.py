@@ -73,16 +73,20 @@ class DNSZone(NOCModel):
                                    null=True, blank=True, max_length=64)
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="dnszone_set")
+        null=True, blank=True, related_name="dnszone_set", on_delete=models.CASCADE)
     # @todo: Rename to is_provisioned
     is_auto_generated = models.BooleanField(_("Auto generated?"), default=False)
     serial = models.IntegerField(_("Serial"), default=0)
-    profile = models.ForeignKey(DNSZoneProfile,
-                                verbose_name=_("Profile"))
+    profile = models.ForeignKey(
+        DNSZoneProfile,
+        verbose_name=_("Profile"), on_delete=models.CASCADE
+    )
     notification_group = models.ForeignKey(
         NotificationGroup,
         verbose_name=_("Notification Group"), null=True, blank=True,
-        help_text=_("Notification group to use when zone changed"))
+        help_text=_("Notification group to use when zone changed"),
+        on_delete=models.CASCADE
+    )
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
     tags = TagsField(_("Tags"), null=True, blank=True)
 
