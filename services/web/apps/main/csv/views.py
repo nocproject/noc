@@ -13,12 +13,13 @@ from six import StringIO
 from django import forms
 from django.contrib import admin
 from django.db import models
+from django.apps import apps
 from django.http import HttpResponse
 from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.application import Application, view
 from noc.core.csvutils import csv_export, csv_import, get_model_fields, IR_FAIL, IR_SKIP, IR_UPDATE
-from noc.models import get_model, get_model_id
+from noc.models import get_model, get_model_id, load_models
 
 
 class CSVApplication(Application):
@@ -26,11 +27,13 @@ class CSVApplication(Application):
 
     @view(url="^$", url_name="index", menu=[_("Setup"), _("CSV Export/Import")], access="import")
     def view_index(self, request):
+        load_models()
+
         class ModelForm(forms.Form):
             model = forms.ChoiceField(
                 choices=[
                     (get_model_id(m), get_model_id(m))
-                    for m in sorted(models.get_models(), key=lambda x: x._meta.db_table)
+                    for m in sorted(apps.get_models(), key=lambda x: x._meta.db_table)
                 ]
             )
             action = forms.CharField(widget=forms.HiddenInput)
