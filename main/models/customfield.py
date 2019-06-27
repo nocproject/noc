@@ -56,8 +56,7 @@ class CustomField(NOCModel):
     description = models.TextField("Description", null=True, blank=True)
     # Applicable only for "str" type
     max_length = models.IntegerField("Max. Length", default=0)
-    regexp = models.CharField("Regexp", max_length=256,
-                              null=True, blank=True)
+    regexp = models.CharField("Regexp", max_length=256, null=True, blank=True)
     # Create database index on field
     is_indexed = models.BooleanField("Is Indexed", default=False)
     # Include into the applications search fields
@@ -68,9 +67,9 @@ class CustomField(NOCModel):
     # Field is excluded from forms
     is_hidden = models.BooleanField("Is Hidden", default=False)
     # Is enumeration?
-    enum_group = models.ForeignKey(CustomFieldEnumGroup,
-                                   verbose_name="Enum Group",
-                                   null=True, blank=True)
+    enum_group = models.ForeignKey(
+        CustomFieldEnumGroup, verbose_name="Enum Group", null=True, blank=True, on_delete=models.CASCADE
+    )
     _cfields = {}
     _installed = set()
     _table_fields = None

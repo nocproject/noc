@@ -28,12 +28,11 @@ class VCBindFilter(NOCModel):
         db_table = "vc_vcbindfilter"
         app_label = "vc"
 
-    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
-    vrf = models.ForeignKey("ip.VRF", verbose_name="VRF")
-    afi = models.CharField("Address Family", max_length=1,
-                           choices=AFI_CHOICES, default="4")
+    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)
+    vrf = models.ForeignKey("ip.VRF", verbose_name="VRF", on_delete=models.CASCADE)
+    afi = models.CharField("Address Family", max_length=1, choices=AFI_CHOICES, default="4")
     prefix = CIDRField("Prefix")
-    vc_filter = models.ForeignKey(VCFilter, verbose_name="VC Filter")
+    vc_filter = models.ForeignKey(VCFilter, verbose_name="VC Filter", on_delete=models.CASCADE)
 
     def __str__(self):
         return u"%s %s %s %s" % (

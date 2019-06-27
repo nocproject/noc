@@ -36,8 +36,7 @@ class RefBook(NOCModel):
         verbose_name_plural = "Ref Books"
 
     name = models.CharField("Name", max_length=128, unique=True)
-    language = models.ForeignKey(Language,
-                                 verbose_name="Language")
+    language = models.ForeignKey(Language, verbose_name="Language", on_delete=models.CASCADE)
     description = models.TextField("Description", blank=True, null=True)
     is_enabled = models.BooleanField("Is Enabled", default=False)
     is_builtin = models.BooleanField("Is Builtin", default=False)

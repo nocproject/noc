@@ -36,7 +36,7 @@ class RefBookData(NOCModel):
         verbose_name = "Ref Book Data"
         verbose_name_plural = "Ref Book Data"
 
-    ref_book = models.ForeignKey(RefBook, verbose_name="Ref Book")
+    ref_book = models.ForeignKey(RefBook, verbose_name="Ref Book", on_delete=models.CASCADE)
     value = TextArrayField("Value")
 
     objects = RBDManader()

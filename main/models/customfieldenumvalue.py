@@ -31,7 +31,8 @@ class CustomFieldEnumValue(NOCModel):
     enum_group = models.ForeignKey(
         CustomFieldEnumGroup,
         verbose_name="Enum Group",
-        related_name="enumvalue_set"
+        related_name="enumvalue_set",
+        on_delete=models.CASCADE
     )
     is_active = models.BooleanField("Is Active", default=True)
     key = models.CharField("Key", max_length=256)

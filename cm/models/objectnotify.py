@@ -36,8 +36,7 @@ class ObjectNotify(NOCModel):
     notify_immediately = models.BooleanField("Notify Immediately", default=False)
     notify_delayed = models.BooleanField("Notify Delayed", default=False)
     notification_group = models.ForeignKey(
-        NotificationGroup,
-        verbose_name="Notification Group"
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE
     )
 
     def __str__(self):

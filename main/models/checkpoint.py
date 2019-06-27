@@ -28,7 +28,7 @@ class Checkpoint(NOCModel):
         verbose_name_plural = "Checkpoints"
 
     timestamp = models.DateTimeField("Timestamp")
-    user = models.ForeignKey(User, verbose_name="User", blank=True, null=True)
+    user = models.ForeignKey(User, verbose_name="User", blank=True, null=True, on_delete=models.CASCADE)
     comment = models.CharField("Comment", max_length=256)
     private = models.BooleanField("Private", default=False)
 

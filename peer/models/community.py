@@ -25,7 +25,7 @@ class Community(NOCModel):
         app_label = "peer"
 
     community = models.CharField("Community", max_length=20, unique=True)
-    type = models.ForeignKey(CommunityType, verbose_name="Type")
+    type = models.ForeignKey(CommunityType, verbose_name="Type", on_delete=models.CASCADE)
     description = models.CharField("Description", max_length=64)
 
     def __str__(self):

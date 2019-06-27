@@ -10,7 +10,7 @@
 from __future__ import absolute_import
 import re
 import shlex
-# Django modules
+# Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -39,7 +39,7 @@ class CommandSnippet(NOCModel):
     description = models.TextField(_("Description"))
     snippet = models.TextField(_("Snippet"), help_text=_("Code snippet template"))
     change_configuration = models.BooleanField(_("Change configuration"), default=False)
-    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Object Selector"))
+    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Object Selector"), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"), default=False)
