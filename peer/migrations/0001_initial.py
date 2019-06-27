@@ -67,7 +67,7 @@ class Migration(BaseMigration):
             'peer_peeringpoint', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('hostname', models.CharField("FQDN", max_length=64, unique=True)),
-                ('router_id', models.IPAddressField("Router-ID", unique=True)),
+                ('router_id', models.GenericIPAddressField("Router-ID", unique=True, protocol="IPv4")),
                 ('type', models.ForeignKey(PeeringPointType, verbose_name="Type", on_delete=models.CASCADE)),
                 ('communities', models.CharField("Import Communities", max_length=128, blank=True, null=True))
             )
@@ -103,8 +103,9 @@ class Migration(BaseMigration):
                 ('peer_group', models.ForeignKey(PeerGroup, verbose_name="Peer Group", on_delete=models.CASCADE)),
                 ('peering_point', models.ForeignKey(PeeringPoint, verbose_name="Peering Point", on_delete=models.CASCADE)),
                 ('local_asn', models.ForeignKey(AS, verbose_name="Local AS", on_delete=models.CASCADE)),
-                ('local_ip', models.IPAddressField("Local IP")), ('remote_asn', models.IntegerField("Remote AS")),
-                ('remote_ip', models.IPAddressField("Remote IP")),
+                ('local_ip', models.GenericIPAddressField("Local IP", protocol="IPv4")),
+                ('remote_asn', models.IntegerField("Remote AS")),
+                ('remote_ip', models.GenericIPAddressField("Remote IP", protocol="IPv4")),
                 ('import_filter', models.CharField("Import filter", max_length=64)),
                 ('local_pref', models.IntegerField("Local Pref", null=True, blank=True)),
                 ('export_filter', models.CharField("Export filter", max_length=64)),

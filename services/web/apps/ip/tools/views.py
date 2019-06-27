@@ -95,10 +95,11 @@ class ToolsAppplication(Application):
             "Name server IP address. NS must have zone transfer enabled for NOC host"))
         zone = forms.CharField(label=_("Zone"),
                                help_text=_("DNS Zone name to transfer"))
-        source_address = forms.IPAddressField(label=_("Source Address"),
-                                              required=False,
-                                              help_text=_(
-                                                  "Source address to issue zone transfer"))
+        source_address = forms.GenericIPAddressField(
+            label=_("Source Address"),
+            required=False,
+            protocol="IPv4",
+            help_text=_("Source address to issue zone transfer"))
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/upload_axfr/$",

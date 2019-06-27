@@ -56,7 +56,7 @@ class Command(BaseCommand):
         "DateField": ("date", "datefield", None),
         "DateTimeField": ("date", "datefield", None),
         "CIDRField": ("string", "textfield", None),
-        "IPAddressField": ("string", "textfield", None),
+        "GenericIPAddressField": ("string", "textfield", None),
         "INETField": ("string", "textfield", None),
         "MACField": ("string", "textfield", None),
         "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags"),

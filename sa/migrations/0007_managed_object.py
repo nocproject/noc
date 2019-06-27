@@ -53,7 +53,7 @@ class Migration(BaseMigration):
                 ('password', models.CharField("Password", max_length=32, blank=True, null=True)),
                 ('super_password', models.CharField("Super Password", max_length=32, blank=True, null=True)),
                 ('remote_path', models.CharField("Path", max_length=32, blank=True, null=True)),
-                ('trap_source_ip', models.IPAddressField("Trap Source IP", null=True)),
+                ('trap_source_ip', models.GenericIPAddressField("Trap Source IP", null=True, protocol="IPv4")),
                 ('trap_community', models.CharField("Trap Community", blank=True, null=True, max_length=64)),
                 ('is_configuration_managed', models.BooleanField("Is Configuration Managed?", default=True)),
                 ('repo_path', models.CharField("Repo Path", max_length=128, blank=True, null=True))
