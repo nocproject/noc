@@ -495,11 +495,11 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         Called once by profile loader
         """
         if cls.pattern_syntax_error:
-            cls.rx_pattern_syntax_error = re.compile(cls.pattern_syntax_error)
+            cls.rx_pattern_syntax_error = re.compile(cls.pattern_syntax_error, re.MULTILINE)
         else:
             cls.rx_pattern_syntax_error = None
         if cls.pattern_operation_error:
-            cls.rx_pattern_operation_error = re.compile(cls.pattern_operation_error)
+            cls.rx_pattern_operation_error = re.compile(cls.pattern_operation_error, re.MULTILINE)
         else:
             cls.rx_pattern_operation_error = None
 
