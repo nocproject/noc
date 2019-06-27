@@ -36,9 +36,8 @@ class Maintainer(NOCModel):
 
     maintainer = models.CharField("mntner", max_length=64, unique=True)
     description = models.CharField("description", max_length=64)
-    password = models.CharField("Password", max_length=64,
-                                null=True, blank=True)
-    rir = models.ForeignKey(RIR, verbose_name="RIR")
+    password = models.CharField("Password", max_length=64, null=True, blank=True)
+    rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
     admins = models.ManyToManyField(Person, verbose_name="admin-c")
     extra = models.TextField("extra", blank=True, null=True)
     rpsl = GridVCSField("rpsl_maintainer")

@@ -49,7 +49,8 @@ class Address(NOCModel):
     vrf = models.ForeignKey(
         VRF,
         verbose_name=_("VRF"),
-        default=VRF.get_global
+        default=VRF.get_global,
+        on_delete=models.CASCADE
     )
     afi = models.CharField(
         _("Address Family"),

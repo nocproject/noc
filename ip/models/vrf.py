@@ -66,7 +66,7 @@ class VRF(NOCModel):
     profile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
         VRFGroup, verbose_name=_("VRF Group"),
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
     rd = models.CharField(
         _("RD"),

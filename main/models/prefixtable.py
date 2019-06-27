@@ -67,7 +67,7 @@ class PrefixTablePrefix(NOCModel):
         unique_together = [("table", "afi", "prefix")]
         ordering = ["table", "afi", "prefix"]
 
-    table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"))
+    table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"), on_delete=models.CASCADE)
     afi = models.CharField(_("Address Family"), max_length=1, choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = CIDRField(_("Prefix"))
 

@@ -31,7 +31,7 @@ class UserAccess(NOCModel):
         app_label = "sa"
         ordering = ["user"]
 
-    user = models.ForeignKey(User, verbose_name=_("User"))
+    user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
     # Legacy interface
     selector = models.ForeignKey(
         ManagedObjectSelector,

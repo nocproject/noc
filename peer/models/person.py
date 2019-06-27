@@ -41,7 +41,7 @@ class Person(NOCModel):
     phone = models.TextField("phone")
     fax_no = models.TextField("fax-no", blank=True, null=True)
     email = models.TextField("email")
-    rir = models.ForeignKey(RIR, verbose_name="RIR")
+    rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
     extra = models.TextField("extra", blank=True, null=True)
     rpsl = GridVCSField("rpsl_person")
 
