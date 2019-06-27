@@ -28,11 +28,11 @@ class GroupAccess(NOCModel):
         app_label = "sa"
         ordering = ["group"]
 
-    group = models.ForeignKey(Group, verbose_name=_("Group"))
-    selector = models.ForeignKey(ManagedObjectSelector, null=True, blank=True)
+    group = models.ForeignKey(Group, verbose_name=_("Group"), on_delete=models.CASCADE)
+    selector = models.ForeignKey(ManagedObjectSelector, null=True, blank=True, on_delete=models.CASCADE)
     administrative_domain = models.ForeignKey(
         AdministrativeDomain,
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __str__(self):

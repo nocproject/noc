@@ -18,4 +18,8 @@ class Migration(BaseMigration):
             model_name="TimePattern",
             db_table="main_timepattern"
         )
-        self.db.add_column("sa_managedobject", "time_pattern", models.ForeignKey(TimePattern, null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject",
+            "time_pattern",
+            models.ForeignKey(TimePattern, null=True, blank=True, on_delete=models.CASCADE)
+        )

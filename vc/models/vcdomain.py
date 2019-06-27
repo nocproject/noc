@@ -46,7 +46,7 @@ class VCDomain(NOCModel):
 
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", blank=True, null=True)
-    type = models.ForeignKey(VCType, verbose_name="Type")
+    type = models.ForeignKey(VCType, verbose_name="Type", on_delete=models.CASCADE)
     enable_provisioning = models.BooleanField(
         "Enable Provisioning", default=False)
     enable_vc_bind_filter = models.BooleanField(
@@ -54,7 +54,8 @@ class VCDomain(NOCModel):
     style = models.ForeignKey(
         Style,
         verbose_name="Style",
-        blank=True, null=True)
+        blank=True, null=True, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return self.name

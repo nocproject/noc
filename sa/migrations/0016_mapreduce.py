@@ -38,8 +38,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'sa_maptask', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('task', models.ForeignKey(ReduceTask, verbose_name="Task")),
-                ('managed_object', models.ForeignKey(ManagedObject, verbose_name="Managed Object")),
+                ('task', models.ForeignKey(ReduceTask, verbose_name="Task", on_delete=models.CASCADE)),
+                ('managed_object', models.ForeignKey(ManagedObject, verbose_name="Managed Object", on_delete=models.CASCADE)),
                 ('map_script', models.CharField("Script", max_length=256)),
                 ('script_params', PickledField("Params", null=True, blank=True)),
                 ('next_try', models.DateTimeField("Next Try")),

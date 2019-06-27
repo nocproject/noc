@@ -32,18 +32,30 @@ class EventTrigger(NOCModel):
         max_length=256, null=True, blank=True)
     event_class_re = models.CharField("Event class RE", max_length=256)
     condition = models.CharField("Condition", max_length=256, default="True")
-    time_pattern = models.ForeignKey(TimePattern,
-                                     verbose_name="Time Pattern",
-                                     null=True, blank=True)
-    selector = models.ForeignKey(ManagedObjectSelector,
-                                 verbose_name="Managed Object Selector",
-                                 null=True, blank=True)
-    notification_group = models.ForeignKey(NotificationGroup,
-                                           verbose_name="Notification Group",
-                                           null=True, blank=True)
-    template = models.ForeignKey(Template,
-                                 verbose_name="Template",
-                                 null=True, blank=True)
+    time_pattern = models.ForeignKey(
+        TimePattern,
+        verbose_name="Time Pattern",
+        null=True, blank=True,
+        on_delete=models.CASCADE
+    )
+    selector = models.ForeignKey(
+        ManagedObjectSelector,
+        verbose_name="Managed Object Selector",
+        null=True, blank=True,
+        on_delete=models.CASCADE
+    )
+    notification_group = models.ForeignKey(
+        NotificationGroup,
+        verbose_name="Notification Group",
+        null=True, blank=True,
+        on_delete=models.CASCADE
+    )
+    template = models.ForeignKey(
+        Template,
+        verbose_name="Template",
+        null=True, blank=True,
+        on_delete=models.CASCADE
+    )
     handler = models.CharField("Handler",
                                max_length=128, null=True, blank=True)
 

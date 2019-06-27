@@ -24,7 +24,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'fm_eventarchivationrule', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class", unique=True)),
+                ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class", unique=True, on_delete=models.CASCADE)),
                 ('ttl', models.IntegerField("Time To Live")), (
                     'ttl_measure',
                     models.CharField(

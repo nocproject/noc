@@ -40,10 +40,10 @@ class Migration(BaseMigration):
         self.db.create_table(
             "aaa_usercontact", (
                 ("id", models.AutoField(primary_key=True)),
-                ("user", models.ForeignKey(User, verbose_name="User")),
+                ("user", models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)),
                 ("notification_method", models.CharField("Method", max_length=16)),
                 ("params", models.CharField("Params", max_length=256)),
-                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern"))
+                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE))
             )
         )
         # Creating unique_together for [user_profile, time_pattern, notification_method, params] on UserProfileContact.

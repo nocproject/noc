@@ -29,8 +29,10 @@ class TimePatternTerm(NOCModel):
         app_label = "main"
         unique_together = [("time_pattern", "term")]
 
-    time_pattern = models.ForeignKey(TimePattern,
-                                     verbose_name="Time Pattern")
+    time_pattern = models.ForeignKey(
+        TimePattern,
+        verbose_name="Time Pattern", on_delete=models.CASCADE
+    )
     term = models.CharField("Term", max_length=256)
 
     def __str__(self):

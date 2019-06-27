@@ -123,7 +123,7 @@ class AuthProfileSuggestSNMP(NOCModel):
         db_table = "sa_authprofilesuggestsnmp"
         app_label = "sa"
 
-    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile")
+    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile", on_delete=models.CASCADE)
     snmp_ro = models.CharField(
         "RO Community", blank=True, null=True, max_length=64)
     snmp_rw = models.CharField(
@@ -141,7 +141,7 @@ class AuthProfileSuggestCLI(NOCModel):
         db_table = "sa_authprofilesuggestcli"
         app_label = "sa"
 
-    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile")
+    auth_profile = models.ForeignKey(AuthProfile, verbose_name="Auth Profile", on_delete=models.CASCADE)
     user = models.CharField(
         "User", max_length=32, blank=True, null=True)
     password = models.CharField(

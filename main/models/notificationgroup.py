@@ -231,10 +231,10 @@ class NotificationGroupUser(NOCModel):
         unique_together = [("notification_group", "time_pattern", "user")]
 
     notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group")
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)
     time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern")
-    user = models.ForeignKey(User, verbose_name="User")
+        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
 
     def __str__(self):
         return u"%s: %s: %s" % (
@@ -253,9 +253,9 @@ class NotificationGroupOther(NOCModel):
                             "notification_method", "params")]
 
     notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group")
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)
     time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern")
+        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)
     notification_method = models.CharField(
         "Method", max_length=16, choices=NOTIFICATION_METHOD_CHOICES)
     params = models.CharField("Params", max_length=256)

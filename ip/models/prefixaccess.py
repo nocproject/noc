@@ -35,8 +35,8 @@ class PrefixAccess(NOCModel):
         unique_together = [("user", "vrf", "afi", "prefix")]
         ordering = ["user", "vrf", "afi", "prefix"]
 
-    user = models.ForeignKey(User, verbose_name=_("User"))
-    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"))
+    user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
+    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"), on_delete=models.CASCADE)
     afi = models.CharField(
         _("Address Family"),
         max_length=1,

@@ -40,7 +40,7 @@ class ResourceState(NOCModel):
     is_provisioned = models.BooleanField(default=True)
     # Automatically step to next state when
     # resource's allocated_till field expired
-    step_to = models.ForeignKey("self", blank=True, null=True)
+    step_to = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

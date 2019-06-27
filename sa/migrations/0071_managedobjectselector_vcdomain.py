@@ -25,9 +25,9 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_vrf",
-            models.ForeignKey(VRF, verbose_name="Filter by VRF", null=True, blank=True)
+            models.ForeignKey(VRF, verbose_name="Filter by VRF", null=True, blank=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_vc_domain",
-            models.ForeignKey(VCDomain, verbose_name="Filter by VC Domain", null=True, blank=True)
+            models.ForeignKey(VCDomain, verbose_name="Filter by VC Domain", null=True, blank=True, on_delete=models.CASCADE)
         )

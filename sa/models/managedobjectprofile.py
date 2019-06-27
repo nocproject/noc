@@ -76,7 +76,7 @@ class ManagedObjectProfile(NOCModel):
         _("Description"), blank=True, null=True)
     level = models.IntegerField(_("Level"), default=25)
     style = models.ForeignKey(
-        Style, verbose_name=_("Style"), blank=True, null=True)
+        Style, verbose_name=_("Style"), blank=True, null=True, on_delete=models.CASCADE)
     # Stencils
     shape = models.CharField(_("Shape"), blank=True, null=True,
                              choices=stencil_registry.choices, max_length=128)
@@ -315,12 +315,12 @@ class ManagedObjectProfile(NOCModel):
     cpe_profile = models.ForeignKey(
         "self",
         verbose_name="Object Profile",
-        blank=True, null=True
+        blank=True, null=True, on_delete=models.CASCADE
     )
     cpe_auth_profile = models.ForeignKey(
         AuthProfile,
         verbose_name="Auth Profile",
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
     #
     hk_handler = models.CharField(
@@ -567,7 +567,7 @@ class ManagedObjectProfile(NOCModel):
     config_download_template = models.ForeignKey(
         Template, verbose_name=_("Config Mirror Template"),
         blank=True, null=True,
-        related_name="config_download_objects_set"
+        related_name="config_download_objects_set", on_delete=models.CASCADE
     )
     config_fetch_policy = models.CharField(
         _("Config Fetch Policy"),
@@ -586,7 +586,7 @@ class ManagedObjectProfile(NOCModel):
     config_mirror_template = models.ForeignKey(
         Template, verbose_name=_("Config Mirror Template"),
         blank=True, null=True,
-        related_name="config_mirror_objects_set"
+        related_name="config_mirror_objects_set", on_delete=models.CASCADE
     )
     config_mirror_policy = models.CharField(
         _("Config Mirror Policy"),
@@ -675,7 +675,7 @@ class ManagedObjectProfile(NOCModel):
     beef_path_template = models.ForeignKey(
         Template, verbose_name=_("Beef Path Template"),
         blank=True, null=True,
-        related_name="beef_objects_set"
+        related_name="beef_objects_set", on_delete=models.CASCADE
     )
     beef_policy = models.CharField(
         _("Beef Policy"),

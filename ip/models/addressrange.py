@@ -35,7 +35,7 @@ class AddressRange(NOCModel):
 
     name = models.CharField(_("Name"), max_length=64, unique=True)
     is_active = models.BooleanField(_("Is Active"), default=True)
-    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"))
+    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"), on_delete=models.CASCADE)
     afi = models.CharField(
         _("Address Family"),
         max_length=1,

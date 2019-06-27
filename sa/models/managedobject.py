@@ -19,7 +19,7 @@ import datetime
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              DateTimeField, BigIntegerField, SET_NULL)
+                              DateTimeField, BigIntegerField, SET_NULL, CASCADE)
 import cachetools
 import six
 # NOC modules
@@ -132,7 +132,7 @@ class ManagedObject(NOCModel):
     )
     administrative_domain = CachedForeignKey(
         AdministrativeDomain,
-        verbose_name="Administrative Domain"
+        verbose_name="Administrative Domain", on_delete=CASCADE
     )
     segment = DocumentReferenceField(
         NetworkSegment, null=False, blank=False
@@ -160,7 +160,8 @@ class ManagedObject(NOCModel):
     )
     object_profile = CachedForeignKey(
         ManagedObjectProfile,
-        verbose_name="Object Profile")
+        verbose_name="Object Profile", on_delete=CASCADE
+    )
     description = CharField(
         "Description",
         max_length=256, null=True, blank=True)
@@ -168,7 +169,7 @@ class ManagedObject(NOCModel):
     auth_profile = CachedForeignKey(
         AuthProfile,
         verbose_name="Auth Profile",
-        null=True, blank=True
+        null=True, blank=True, on_delete=CASCADE
     )
     scheme = IntegerField(
         "Scheme",
@@ -264,17 +265,18 @@ class ManagedObject(NOCModel):
     vc_domain = ForeignKey(
         "vc.VCDomain",
         verbose_name="VC Domain",
-        null=True, blank=True
+        null=True, blank=True, on_delete=CASCADE
     )
     # CM
     config = GridVCSField("config")
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
-                     blank=True, null=True)
+                     blank=True, null=True, on_delete=CASCADE)
     # Reference to controller, when object is CPE
     controller = ForeignKey(
         "self", verbose_name="Controller",
-        blank=True, null=True
+        blank=True, null=True,
+        on_delete=CASCADE
     )
     # CPE id on given controller
     local_cpe_id = CharField(
@@ -1792,7 +1794,7 @@ class ManagedObjectAttribute(NOCModel):
 
     managed_object = ForeignKey(
         ManagedObject,
-        verbose_name="Managed Object"
+        verbose_name="Managed Object", on_delete=CASCADE
     )
     key = CharField("Key", max_length=64)
     value = CharField(

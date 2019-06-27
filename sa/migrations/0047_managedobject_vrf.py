@@ -19,4 +19,8 @@ class Migration(BaseMigration):
         VRF = self.db.mock_model(
             model_name="VRF", db_table="ip_vrf"
         )
-        self.db.add_column("sa_managedobject", "vrf", models.ForeignKey(VRF, null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject",
+            "vrf",
+            models.ForeignKey(VRF, null=True, blank=True, on_delete=models.CASCADE)
+        )

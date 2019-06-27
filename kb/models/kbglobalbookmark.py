@@ -26,7 +26,7 @@ class KBGlobalBookmark(NOCModel):
         app_label = "kb"
         db_table = "kb_kbglobalbookmark"
 
-    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", unique=True)
+    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", unique=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return unicode(self.kb_entry)

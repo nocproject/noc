@@ -27,9 +27,9 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_prefix",
-            models.ForeignKey(PrefixTable, verbose_name="Filter by Prefix Table", null=True, blank=True)
+            models.ForeignKey(PrefixTable, verbose_name="Filter by Prefix Table", null=True, blank=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_shard",
-            models.ForeignKey(Shard, verbose_name="Filter by shard", null=True, blank=True)
+            models.ForeignKey(Shard, verbose_name="Filter by shard", null=True, blank=True, on_delete=models.CASCADE)
         )
