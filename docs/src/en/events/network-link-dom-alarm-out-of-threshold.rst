@@ -1,30 +1,29 @@
-.. _event-class-network-link-dom-alarm:-out-of-threshold-recovered:
+.. _event-class-network-link-dom-alarm:-out-of-threshold:
 
-========================================================
-Network | Link | DOM | Alarm: Out of Threshold Recovered
-========================================================
+==============================================
+Network | Link | DOM | Alarm: Out of Threshold
+==============================================
 .. contents:: On this page
     :local:
     :backlinks: none
     :depth: 1
     :class: singlecol
 
-DOM above or below threshold recovered
+DOM above or below threshold exceeded
 
 Symptoms
 --------
-.. todo::
-    Describe Network | Link | DOM | Alarm: Out of Threshold Recovered symptoms
+Connection lost
 
 Probable Causes
 ---------------
 .. todo::
-    Describe Network | Link | DOM | Alarm: Out of Threshold Recovered probable causes
+    Describe Network | Link | DOM | Alarm: Out of Threshold probable causes
 
 Recommended Actions
 -------------------
 .. todo::
-    Describe Network | Link | DOM | Alarm: Out of Threshold Recovered recommended actions
+    Describe Network | Link | DOM | Alarm: Out of Threshold recommended actions
 
 Variables
 ----------
@@ -34,10 +33,12 @@ Name                 Description
 interface            Physical port
 threshold            Threshold type
 sensor               Measured name
+ovalue               Operating value
+tvalue               Threshold value
 ==================== ==================================================
 
 Alarms
 ------
 ================= ======================================================================
-Closing Event for :ref:`alarm-class-network-link-dom-alarm:-out-of-threshold`
+Opening Event for :ref:`alarm-class-network-link-dom-alarm-out-of-threshold`
 ================= ======================================================================

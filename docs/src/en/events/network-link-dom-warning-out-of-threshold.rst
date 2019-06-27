@@ -40,5 +40,5 @@ tvalue               Threshold value
 Alarms
 ------
 ================= ======================================================================
-Opening Event for :ref:`alarm-class-network-link-dom-warning:-out-of-threshold`
+Opening Event for :ref:`alarm-class-network-link-dom-warning-out-of-threshold`
 ================= ======================================================================
