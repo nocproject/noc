@@ -15,14 +15,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from .prefix import Prefix
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class PrefixBookmark(models.Model):
+class PrefixBookmark(NOCModel):
     """
     User Bookmarks
     """
@@ -33,8 +32,8 @@ class PrefixBookmark(models.Model):
         app_label = "ip"
         unique_together = [("user", "prefix")]
 
-    user = models.ForeignKey(User, verbose_name="User")
-    prefix = models.ForeignKey(Prefix, verbose_name="Prefix")
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    prefix = models.ForeignKey(Prefix, verbose_name="Prefix", on_delete=models.CASCADE)
 
     def __str__(self):
         return u"Bookmark at %s for %s" % (

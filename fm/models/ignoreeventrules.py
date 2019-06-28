@@ -10,12 +10,11 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class IgnoreEventRules(models.Model):
+class IgnoreEventRules(NOCModel):
     class Meta(object):
         app_label = "fm"
         db_table = "fm_ignoreeventrules"

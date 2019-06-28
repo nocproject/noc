@@ -12,7 +12,7 @@ import re
 import operator
 # Third-party modules
 import six
-from django.db import models
+from django.apps import apps
 from mongoengine.base.common import _document_registry
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -98,7 +98,7 @@ class RefAppplication(ExtApplication):
         """
         return sorted(
             ({"id": m._meta.db_table, "label": m._meta.db_table}
-             for m in models.get_models()),
+             for m in apps.get_models()),
             key=lambda x: x["label"])
 
     def build_modcol(self):
@@ -111,7 +111,7 @@ class RefAppplication(ExtApplication):
             "id": m._meta.db_table,
             "label": "%s.%s" % (m._meta.app_label, m.__name__),
             "table": m._meta.db_table
-        } for m in models.get_models()]
+        } for m in apps.get_models()]
         # Collections
         r += [
             {

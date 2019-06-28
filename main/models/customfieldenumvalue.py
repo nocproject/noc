@@ -12,13 +12,12 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from .customfieldenumgroup import CustomFieldEnumGroup
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class CustomFieldEnumValue(models.Model):
+class CustomFieldEnumValue(NOCModel):
     """
     Enumeration groups values
     """
@@ -32,7 +31,8 @@ class CustomFieldEnumValue(models.Model):
     enum_group = models.ForeignKey(
         CustomFieldEnumGroup,
         verbose_name="Enum Group",
-        related_name="enumvalue_set"
+        related_name="enumvalue_set",
+        on_delete=models.CASCADE
     )
     is_active = models.BooleanField("Is Active", default=True)
     key = models.CharField("Key", max_length=256)

@@ -20,7 +20,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_prefixlistcache', (
                 ('id', models.AutoField(primary_key=True)),
-                ('peering_point', models.ForeignKey(PeeringPoint, verbose_name="Peering Point")),
+                ('peering_point', models.ForeignKey(PeeringPoint, verbose_name="Peering Point", on_delete=models.CASCADE)),
                 ('name', models.CharField("Name", max_length=64)),
                 ('data', InetArrayField("Data")),
                 ('strict', models.BooleanField("Strict")),

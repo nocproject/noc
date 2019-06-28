@@ -22,5 +22,8 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "cm_objectnotify", "notification_group",
-            models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True)
+            models.ForeignKey(
+                NotificationGroup,
+                verbose_name="Notification Group",
+                null=True, blank=True, on_delete=models.CASCADE)
         )

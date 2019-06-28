@@ -10,22 +10,21 @@
 from __future__ import absolute_import
 import re
 import shlex
-# Django modules
+# Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.permission import Permission
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from .managedobjectselector import ManagedObjectSelector
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class CommandSnippet(models.Model):
+class CommandSnippet(NOCModel):
     """
     Command snippet
     """
@@ -40,7 +39,7 @@ class CommandSnippet(models.Model):
     description = models.TextField(_("Description"))
     snippet = models.TextField(_("Snippet"), help_text=_("Code snippet template"))
     change_configuration = models.BooleanField(_("Change configuration"), default=False)
-    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Object Selector"))
+    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Object Selector"), on_delete=models.CASCADE)
     is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"), default=False)

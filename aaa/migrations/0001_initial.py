@@ -56,7 +56,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "auth_user_groups", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("user", models.ForeignKey(User, null=False)),
-                ("group", models.ForeignKey(Group, null=False))
+                ("user", models.ForeignKey(User, null=False, on_delete=models.CASCADE)),
+                ("group", models.ForeignKey(Group, null=False, on_delete=models.CASCADE))
             )
         )

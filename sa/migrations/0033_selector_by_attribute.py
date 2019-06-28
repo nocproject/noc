@@ -18,7 +18,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'sa_managedobjectselectorbyattribute', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('selector', models.ForeignKey(ManagedObjectSelector, verbose_name="Object Selector")),
+                ('selector', models.ForeignKey(ManagedObjectSelector, verbose_name="Object Selector", on_delete=models.CASCADE)),
                 ('key_re', models.CharField("Filter by key (REGEXP)", max_length=256)),
                 ('value_re', models.CharField("Filter by value (REGEXP)", max_length=256))
             )

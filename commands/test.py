@@ -43,6 +43,10 @@ class Command(BaseCommand):
             help="Write HTML error report to specified path"
         )
         run_parser.add_argument(
+            "--idea-bookmarks",
+            help="Dump warnings as IDEA bookmarks XML"
+        )
+        run_parser.add_argument(
             "--statistics",
             action="store_true",
             help="Dump statistics"
@@ -60,7 +64,8 @@ class Command(BaseCommand):
         return getattr(self, "handle_check_%s" % check_cmd)(*args, **options)
 
     def handle_run(self, tests=None, verbose=False, test_db=None, statistics=False,
-                   coverage_report=False, test_report=None, *args, **options):
+                   coverage_report=False, test_report=None, idea_bookmarks=None,
+                   *args, **options):
         def run_tests(args):
             self.print("Running test")
             # Must be imported within coverage
@@ -73,7 +78,10 @@ class Command(BaseCommand):
             config.pg.db = db_name
             config.mongo.db = db_name
             config.clickhouse.db = db_name
-            return pytest_main(args)
+            exit_code = pytest_main(args)
+            if idea_bookmarks:
+                self.dump_idea_bookmarks(idea_bookmarks)
+            return exit_code
 
         # Run tests
         args = []
@@ -190,6 +198,32 @@ class Command(BaseCommand):
                 subprocess.check_call(["git", "pull"], cwd=d)
         else:
             self.print("No directories to pull")
+
+    def dump_idea_bookmarks(self, path):
+        def is_project_path(p):
+            return os.path.commonprefix([cwd, p]) == cwd
+
+        from noc.tests.conftest import _stats as stats
+
+        warnings = stats.get("warnings", [])
+        r = []
+        cwd = os.path.abspath(os.getcwd())
+        lcwd = len(cwd)
+        if not cwd.endswith(os.sep):
+            lcwd += len(os.sep)
+        for w in warnings:
+            wp, line = w.fslocation
+            if is_project_path(wp):
+                r += [
+                    "<bookmark url=\"file://$PROJECT_DIR$/%s\" line=\"%d\" />" % (
+                        wp[lcwd:], line - 1)
+                ]
+        if not r:
+            self.print("No warnings to dump as bookmarks")
+            return
+        self.print("Dumping %d IDEA bookmarks to %s" % (len(r), path))
+        with open(path, "w") as f:
+            f.write("\n".join(sorted(r)))
 
 
 if __name__ == "__main__":

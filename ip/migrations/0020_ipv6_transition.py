@@ -24,5 +24,13 @@ class Migration(BaseMigration):
             db_table="ip_address"
         )
 
-        self.db.add_column("ip_prefix", "ipv6_transition", models.OneToOneField(Prefix, null=True, blank=True))
-        self.db.add_column("ip_address", "ipv6_transition", models.OneToOneField(Address, null=True, blank=True))
+        self.db.add_column(
+            "ip_prefix",
+            "ipv6_transition",
+            models.OneToOneField(Prefix, null=True, blank=True, on_delete=models.CASCADE)
+        )
+        self.db.add_column(
+            "ip_address",
+            "ipv6_transition",
+            models.OneToOneField(Address, null=True, blank=True, on_delete=models.CASCADE)
+        )

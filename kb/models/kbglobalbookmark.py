@@ -10,13 +10,12 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.kb.models.kbentry import KBEntry
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class KBGlobalBookmark(models.Model):
+class KBGlobalBookmark(NOCModel):
     """
     Global Bookmarks
     @todo: Replace with boolean flag in KBEntry
@@ -27,7 +26,7 @@ class KBGlobalBookmark(models.Model):
         app_label = "kb"
         db_table = "kb_kbglobalbookmark"
 
-    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", unique=True)
+    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", unique=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return unicode(self.kb_entry)

@@ -21,5 +21,6 @@ class Migration(BaseMigration):
             model_name="ResourceState",
             db_table="main_resourcestate"
         )
-        self.db.add_column("vc_vc", "state",
-                           models.ForeignKey(ResourceState, verbose_name="State", null=True, blank=True))
+        self.db.add_column(
+            "vc_vc", "state",
+            models.ForeignKey(ResourceState, verbose_name="State", null=True, blank=True, on_delete=models.CASCADE))

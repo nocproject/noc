@@ -12,14 +12,13 @@ from __future__ import absolute_import
 from django.db import models
 import six
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from .template import Template
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class SystemTemplate(models.Model):
+class SystemTemplate(NOCModel):
     class Meta(object):
         app_label = "main"
         db_table = "main_systemtemplate"
@@ -29,7 +28,7 @@ class SystemTemplate(models.Model):
 
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", null=True, blank=True)
-    template = models.ForeignKey(Template, verbose_name="Template")
+    template = models.ForeignKey(Template, verbose_name="Template", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

@@ -20,5 +20,5 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "vc_vcdomain", "selector",
-            models.ForeignKey(ManagedObjectSelector, verbose_name="Selector", null=True, blank=True)
+            models.ForeignKey(ManagedObjectSelector, verbose_name="Selector", null=True, blank=True, on_delete=models.CASCADE)
         )

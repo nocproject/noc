@@ -29,8 +29,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'vc_vcdomainprovisioningconfig', (
                 ('id', models.AutoField(primary_key=True)),
-                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain")),
-                ('selector', models.ForeignKey(ManagedObjectSelector, verbose_name="Managed Object Selector")),
+                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)),
+                ('selector', models.ForeignKey(ManagedObjectSelector, verbose_name="Managed Object Selector", on_delete=models.CASCADE)),
                 ('key', models.CharField("Key", max_length=64)),
                 ('value', models.CharField("Value", max_length=256)),
             )

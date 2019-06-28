@@ -21,7 +21,6 @@ import six
 from six.moves.urllib.parse import urlencode
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
-from django.conf.urls import patterns
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
@@ -82,13 +81,8 @@ class Site(object):
 
     def __init__(self):
         self.apps = {}  # app_id -> app instance
-        self.urlpatterns = patterns("")
-        # Install admin: namespace
-        # for model applications
-        self.admin_patterns = patterns("")  # Django 1.4 compatibility
-        self.urlpatterns = [RegexURLResolver(
-            "^admin/", self.admin_patterns, namespace="admin")]
-        self.urlresolvers = {}  # (module,appp) -> RegexURLResolver
+        self.urlpatterns = []
+        self.urlresolvers = {}  # (module, app) -> RegexURLResolver
         self.menu = []
         self.menu_roots = {}  # app -> menu
         self.reports = []  # app_id -> title
@@ -96,7 +90,7 @@ class Site(object):
         self.log_api_calls = config.logging.log_api_calls
         self.log_sql_statements = config.logging.log_sql_statements
         self.app_contributors = defaultdict(set)
-        self.installed_applications = []
+        self.app_count = 0
 
     @property
     def urls(self):
@@ -117,32 +111,29 @@ class Site(object):
         n = getattr(n, app_ns)
         setattr(n, name, view)
 
-    def view_urls(self, view):
+    def iter_view_urls(self, view):
         """
         Generator returning view's URL objects
         """
         if isinstance(view.url, six.string_types):  # view.url is string type
-            yield URL(view.url,
-                      name=getattr(view, "url_name", None),
-                      method=getattr(view, "method", None))
+            yield URL(
+                view.url,
+                name=getattr(view, "url_name", None),
+                method=getattr(view, "method", None)
+            )
         elif isinstance(view.url, URL):  # Explicit URL object
             yield view.url
-        elif isinstance(view.url, (list, tuple)):  # List type
-            for o in view.url:
-                if isinstance(o, six.string_types):  # Given by string
-                    yield URL(o)
-                elif isinstance(o, URL):
-                    yield o
-                else:
-                    raise Exception("Invalid URL object: %s" % str(o))
         else:
-            raise Exception("Invalid URL object: %s" % str(view.url))
+            raise ValueError("Invalid URL object: %s" % str(view.url))
 
     def site_access(self, app, view):
         """
         Curry application with access
         """
-        return lambda user: view.access.check(app, user)
+        def wrap(user):
+            return view.access.check(app, user)
+
+        return wrap
 
     def site_view(self, app, view_map):
         """
@@ -324,65 +315,53 @@ class Site(object):
             r["access"] = lambda user: app.launch_access.check(app, user)
         root["children"] += [r]
 
-    def register(self, app_class):
-        """
-        Register application class
-        Fetch all view_* methods
-        And register them
-        """
-        self.installed_applications += [app_class]
-
     def register_url_resolver(self, app):
         # Install module URL resolver
         # @todo: Legacy django part?
         try:
-            mr = self.urlresolvers[app.module, None]
+            mod_resolver = self.urlresolvers[app.module, None]
         except KeyError:
-            mr = patterns("")
-            self.urlpatterns += [RegexURLResolver("^%s/" % app.module, mr,
+            mod_resolver = []
+            self.urlpatterns += [RegexURLResolver("^%s/" % app.module, mod_resolver,
                                                   namespace=app.module)]
-            self.urlresolvers[app.module, None] = mr
+            self.urlresolvers[app.module, None] = mod_resolver
         # Install application URL resolver
         try:
-            ar = self.urlresolvers[app.module, app.app]
+            app_resolver = self.urlresolvers[app.module, app.app]
         except KeyError:
-            ar = patterns("")
-            mr += [RegexURLResolver("^%s/" % app.app, ar, namespace=app.app)]
-            self.urlresolvers[app.module, app.app] = ar
-        return ar
+            app_resolver = []
+            mod_resolver += [RegexURLResolver("^%s/" % app.app, app_resolver, namespace=app.app)]
+            self.urlresolvers[app.module, app.app] = app_resolver
+        return app_resolver
 
-    def register_views(self, app, ar):
-        umap = defaultdict(list)  # url -> [(URL, view)]
-        for view in app.get_views():
+    def register_views(self, app, app_resolver):
+        """
+        Register application views
+        :param app:
+        :param app_resolver:
+        :return:
+        """
+        url_map = defaultdict(list)  # url -> [(URL, view)]
+        for view in app.iter_views():
             if hasattr(view, "url"):
-                for u in self.view_urls(view):
-                    umap[u.url] += [(u, view)]
-        for url in umap:
-            mm = {}
+                for url in self.iter_view_urls(view):
+                    url_map[url.url] += [(url, view)]
+        for url in url_map:
+            methods = {}
             names = set()
-            for u, v in umap[url]:
-                for m in u.method:
-                    mm[m] = v
-                if getattr(v, "menu", None):
-                    self.register_app_menu(app, v)
-                if u.name:
-                    names.add(u.name)
-            sv = self.site_view(app, mm)
-            # Django 1.4 workaround
-            u_name = u.name
-            if u_name and u_name.startswith("admin:"):
-                if "%" in u_name:
-                    u_name = u_name % (app.app_alias or app.module, app.app)
-                url = "^../%s/%s/%s" % (app.module, app.app, u.url[1:])
-                self.admin_patterns += [
-                    RegexURLPattern(url, sv, name=u_name.split(":", 1)[1])
-                ]
-                u_name = u_name.rsplit("_", 1)[1]
-            ar += [RegexURLPattern(u.url, sv, name=u_name)]
+            for url, view in url_map[url]:
+                for method in url.method:
+                    methods[method] = view
+                if getattr(view, "menu", None):
+                    self.register_app_menu(app, view)
+                if url.name:
+                    names.add(url.name)
+            sv = self.site_view(app, methods)
+            app_resolver += [RegexURLPattern(url.url, sv, name=url.name)]
             for n in names:
                 self.register_named_view(app.module, app.app, n, sv)
 
-    def install_application(self, app_class):
+    def register(self, app_class):
         """
         Install application class to the router
         :param app_class:
@@ -405,6 +384,7 @@ class Site(object):
         # Register application-level menu
         if hasattr(app, "launch_access") and hasattr(app, "menu") and app.menu:
             self.register_app_menu(app)
+        self.app_count += 1
 
     def add_module_menu(self, m):
         mn = "noc.services.web.apps.%s" % m[4:]  # Strip noc.
@@ -425,9 +405,11 @@ class Site(object):
             # Do not discover site twice
             return
         # Connect to mongodb
-        import noc.lib.nosql  # noqa:F401
-        self.installed_applications = []
-        prefix = "services/web/apps"
+        from noc.lib.nosql import auto_connect
+        auto_connect()
+        #
+        self.app_count = 0
+        prefix = os.path.join("services", "web", "apps")
         # Load applications
         installed_apps = [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]
         self.menu_roots = {}
@@ -448,22 +430,14 @@ class Site(object):
                     # Skip application loading if denoted by DISABLED file
                     if os.path.isfile(os.path.join(d, "DISABLED")):
                         continue
+                    # site.register will be called by metaclass, registering views
                     __import__(".".join([basename] +
                                         f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1:]),
                                {}, {}, "*")
         # Install applications
-        for app_class in self.installed_applications:
-            self.install_application(app_class)
-        logger.info("%d applications are installed", len(self.installed_applications))
-        self.installed_applications = []
+        logger.info("%d applications are installed", self.app_count)
         # Finally, order the menu
         self.sort_menu()
-
-    def application_by_class(self, app_class):
-        """
-        Get application instance
-        """
-        return self.apps[app_class.get_app_id()]
 
     rx_namespace = re.compile(r"^[a-z0-9_]+:[a-z0-9_]+:[a-z0-9_]+$",
                               re.IGNORECASE)
@@ -512,7 +486,5 @@ class Site(object):
                     yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
 
 
-#
-# Global application site instance
-#
+# Site singletone
 site = Site()

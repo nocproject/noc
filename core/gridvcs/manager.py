@@ -21,7 +21,7 @@ class GridVCSField(object):
     """
     Django's model manager.
 
-    class MyModel(models.Model):
+    class MyModel(NOCModel):
         ...
         data = GridVCSModelManager("my_repo")
         ...

@@ -34,7 +34,7 @@ def iter_references():
             # Django model
             for f in model._meta.fields:
                 if isinstance(f, ForeignKey):
-                    yield f.rel.to, model_id, f.name
+                    yield f.remote_field.model, model_id, f.name
                 elif isinstance(f, DocumentReferenceField):
                     yield f.document, model_id, f.name
 

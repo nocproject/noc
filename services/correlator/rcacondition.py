@@ -10,8 +10,7 @@
 import datetime
 # Third-party modules
 import six
-# NOC modules
-from noc.lib.nosql import ObjectId
+from bson import ObjectId
 
 
 @six.python_2_unicode_compatible

@@ -31,7 +31,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "main_prefixtableprefix", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("table", models.ForeignKey(PrefixTable, verbose_name="Prefix Table")),
+                ("table", models.ForeignKey(PrefixTable, verbose_name="Prefix Table", on_delete=models.CASCADE)),
                 ("afi", models.CharField("Address Family", max_length=1, choices=[("4", "IPv4"), ("6", "IPv6")])),
                 ("prefix", CIDRField("Prefix"))
             )

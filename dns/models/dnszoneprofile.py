@@ -17,6 +17,7 @@ from django.db import models
 import cachetools
 # NOC modules
 from noc.config import config
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
@@ -30,7 +31,7 @@ id_lock = Lock()
     ("dns.DNSZone", "profile")
 ])
 @six.python_2_unicode_compatible
-class DNSZoneProfile(models.Model):
+class DNSZoneProfile(NOCModel):
     """
     DNS Zone profile is a set of common parameters, shared between zones.
 
@@ -68,7 +69,8 @@ class DNSZoneProfile(models.Model):
     notification_group = models.ForeignKey(
         NotificationGroup,
         verbose_name=_("Notification Group"), null=True, blank=True,
-        help_text=_("Notification group to use when zone group is not set"))
+        help_text=_("Notification group to use when zone group is not set"),
+        on_delete=models.CASCADE)
     description = models.TextField(_("Description"), blank=True, null=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

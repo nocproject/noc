@@ -25,7 +25,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "kb_kbglobalbookmark", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("kb_entry", models.ForeignKey(KBEntry, verbose_name=KBEntry, unique=True))
+                ("kb_entry", models.ForeignKey(KBEntry, verbose_name=KBEntry, unique=True, on_delete=models.CASCADE))
             )
         )
 
@@ -43,8 +43,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             "kb_kbuserbookmark", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("user", models.ForeignKey(User, verbose_name=User)),
-                ("kb_entry", models.ForeignKey(KBEntry, verbose_name=KBEntry))
+                ("user", models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE)),
+                ("kb_entry", models.ForeignKey(KBEntry, verbose_name=KBEntry, on_delete=models.CASCADE))
             )
         )
         self.db.create_index("kb_kbuserbookmark", ["user_id", "kb_entry_id"], unique=True)

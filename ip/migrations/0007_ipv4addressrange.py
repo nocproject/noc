@@ -21,10 +21,10 @@ class Migration(BaseMigration):
         self.db.create_table(
             'ip_ipv4addressrange', (
                 ('id', models.AutoField(primary_key=True)),
-                ('vrf', models.ForeignKey(VRF, verbose_name="VRF")),
+                ('vrf', models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ('name', models.CharField("Name", max_length=64)),
-                ('from_ip', models.IPAddressField("From IP")),
-                ('to_ip', models.IPAddressField("To Address")),
+                ('from_ip', models.GenericIPAddressField("From IP", protocol="IPv4")),
+                ('to_ip', models.GenericIPAddressField("To Address", protocol="IPv4")),
                 ('description', models.TextField("Description", null=True, blank=True)),
                 ('is_locked', models.BooleanField("Range is locked", default=False)),
                 ('fqdn_action', models.CharField("FQDN Action", default='N', max_length=1)),

@@ -32,16 +32,16 @@ class Migration(BaseMigration):
         self.db.create_table(
             'fm_eventpostprocessingrule', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class")),
+                ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class", on_delete=models.CASCADE)),
                 ('name', models.CharField("Name", max_length=64)),
                 ('preference', models.IntegerField("Preference", default=1000)),
                 ('is_active', models.BooleanField("Is Active", default=True)),
                 ('description', models.TextField("Description", blank=True, null=True)), (
                     'change_priority',
-                    models.ForeignKey(EventPriority, verbose_name="Change Priority to", blank=True, null=True)
+                    models.ForeignKey(EventPriority, verbose_name="Change Priority to", blank=True, null=True, on_delete=models.CASCADE)
                 ), (
                     'change_category',
-                    models.ForeignKey(EventCategory, verbose_name="Change Category to", blank=True, null=True)
+                    models.ForeignKey(EventCategory, verbose_name="Change Category to", blank=True, null=True, on_delete=models.CASCADE)
                 ), (
                     'action',
                     models.CharField(
@@ -64,7 +64,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'fm_eventpostprocessingre', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('rule', models.ForeignKey(EventPostProcessingRule, verbose_name="Event Post-Processing Rule")),
+                ('rule', models.ForeignKey(EventPostProcessingRule, verbose_name="Event Post-Processing Rule", on_delete=models.CASCADE)),
                 ('var_re', models.CharField("Var RE", max_length=256)),
                 ('value_re', models.CharField("Value RE", max_length=256))
             )

@@ -40,7 +40,8 @@ class VersionCheck(DiscoveryCheck):
         platform = Platform.ensure_platform(
             vendor,
             result["platform"],
-            strict=strict_platform
+            strict=strict_platform,
+            tags=[self.object.profile.name]
         )
         if strict_platform and platform is None:
             # Denied to create platform, stop

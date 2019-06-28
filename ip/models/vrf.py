@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.lib.validators import check_rd
 from noc.core.model.fields import TagsField, DocumentReferenceField
@@ -46,7 +47,7 @@ id_lock = Lock()
     ("vc.VCBindFilter", "vrf"),
 ])
 @six.python_2_unicode_compatible
-class VRF(models.Model):
+class VRF(NOCModel):
     """
     VRF
     """
@@ -65,7 +66,7 @@ class VRF(models.Model):
     profile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
         VRFGroup, verbose_name=_("VRF Group"),
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
     rd = models.CharField(
         _("RD"),
@@ -90,7 +91,10 @@ class VRF(models.Model):
         help_text=_("Enable IPv6 Address Family"))
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="vrf_set")
+        null=True, blank=True,
+        on_delete=models.CASCADE,
+        related_name="vrf_set",
+    )
     description = models.TextField(
         _("Description"), blank=True, null=True)
     tt = models.IntegerField(

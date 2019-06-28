@@ -82,6 +82,12 @@ Ext.define("NOC.inv.platform.Application", {
                     text: __("End of Extended Support"),
                     dataIndex: "end_of_xsupport",
                     width: 150
+                },
+                {
+                    text: __("Tags"),
+                    dataIndex: "tags",
+                    width: 100,
+                    renderer: NOC.render.Tags
                 }
             ],
 
@@ -172,6 +178,14 @@ Ext.define("NOC.inv.platform.Application", {
                             uiStyle: "large"
                         }
                     ]
+                },
+                {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Tags"),
+                    store: {
+                    },
+                    allowBlank: true
                 }
             ],
 

@@ -37,8 +37,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             "main_permission_groups", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("permission", models.ForeignKey(Permission, null=False)),
-                ("group", models.ForeignKey(Group, null=False))
+                ("permission", models.ForeignKey(Permission, null=False, on_delete=models.CASCADE)),
+                ("group", models.ForeignKey(Group, null=False, on_delete=models.CASCADE))
             )
         )
 
@@ -50,7 +50,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "main_permission_users", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("permission", models.ForeignKey(Permission, null=False)),
-                ("user", models.ForeignKey(User, null=False))
+                ("permission", models.ForeignKey(Permission, null=False, on_delete=models.CASCADE)),
+                ("user", models.ForeignKey(User, null=False, on_delete=models.CASCADE))
             )
         )

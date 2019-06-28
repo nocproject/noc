@@ -13,7 +13,7 @@ import gzip
 import argparse
 # Third-party modules
 import ujson
-from noc.lib.nosql import DoesNotExist
+from mongoengine.errors import DoesNotExist
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB

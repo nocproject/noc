@@ -12,8 +12,8 @@ import logging
 import six
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne, InsertOne, DeleteOne
-# NOC modules
-from noc.lib.nosql import Document, StringField
+from mongoengine.document import Document
+from mongoengine.fields import StringField
 
 logger = logging.getLogger(__name__)
 

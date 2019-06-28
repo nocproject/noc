@@ -33,6 +33,6 @@ class Migration(BaseMigration):
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=64, unique=True)),
                 ("description", models.TextField("Description", null=True, blank=True)),
-                ("template", models.ForeignKey(Template, verbose_name="Template")),
+                ("template", models.ForeignKey(Template, verbose_name="Template", on_delete=models.CASCADE)),
             )
         )

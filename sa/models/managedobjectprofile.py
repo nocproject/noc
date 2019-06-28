@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
@@ -61,7 +62,7 @@ id_lock = Lock()
     ("inv.FirmwarePolicy", "object_profile")
 ])
 @six.python_2_unicode_compatible
-class ManagedObjectProfile(models.Model):
+class ManagedObjectProfile(NOCModel):
 
     class Meta(object):
         verbose_name = _("Managed Object Profile")
@@ -75,7 +76,7 @@ class ManagedObjectProfile(models.Model):
         _("Description"), blank=True, null=True)
     level = models.IntegerField(_("Level"), default=25)
     style = models.ForeignKey(
-        Style, verbose_name=_("Style"), blank=True, null=True)
+        Style, verbose_name=_("Style"), blank=True, null=True, on_delete=models.CASCADE)
     # Stencils
     shape = models.CharField(_("Shape"), blank=True, null=True,
                              choices=stencil_registry.choices, max_length=128)
@@ -314,12 +315,12 @@ class ManagedObjectProfile(models.Model):
     cpe_profile = models.ForeignKey(
         "self",
         verbose_name="Object Profile",
-        blank=True, null=True
+        blank=True, null=True, on_delete=models.CASCADE
     )
     cpe_auth_profile = models.ForeignKey(
         AuthProfile,
         verbose_name="Auth Profile",
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
     #
     hk_handler = models.CharField(
@@ -566,7 +567,7 @@ class ManagedObjectProfile(models.Model):
     config_download_template = models.ForeignKey(
         Template, verbose_name=_("Config Mirror Template"),
         blank=True, null=True,
-        related_name="config_download_objects_set"
+        related_name="config_download_objects_set", on_delete=models.CASCADE
     )
     config_fetch_policy = models.CharField(
         _("Config Fetch Policy"),
@@ -585,7 +586,7 @@ class ManagedObjectProfile(models.Model):
     config_mirror_template = models.ForeignKey(
         Template, verbose_name=_("Config Mirror Template"),
         blank=True, null=True,
-        related_name="config_mirror_objects_set"
+        related_name="config_mirror_objects_set", on_delete=models.CASCADE
     )
     config_mirror_policy = models.CharField(
         _("Config Mirror Policy"),
@@ -674,7 +675,7 @@ class ManagedObjectProfile(models.Model):
     beef_path_template = models.ForeignKey(
         Template, verbose_name=_("Beef Path Template"),
         blank=True, null=True,
-        related_name="beef_objects_set"
+        related_name="beef_objects_set", on_delete=models.CASCADE
     )
     beef_policy = models.CharField(
         _("Beef Policy"),

@@ -19,5 +19,5 @@ class Migration(BaseMigration):
             db_table="sa_administrativedomain"
         )
         for t in ("sa_useraccess", "sa_groupaccess"):
-            self.db.add_column(t, "administrative_domain", models.ForeignKey(AdministrativeDomain, null=True, blank=True))
+            self.db.add_column(t, "administrative_domain", models.ForeignKey(AdministrativeDomain, null=True, blank=True, on_delete=models.CASCADE))
             self.db.execute("ALTER TABLE %s ALTER selector_id DROP NOT NULL" % t)

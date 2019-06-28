@@ -48,16 +48,18 @@ class Migration(BaseMigration):
                 ("is_enabled", models.BooleanField("Is Enabled", default=True)),
                 ("event_class_re", models.CharField("Event class RE", max_length=256)),
                 ("condition", models.CharField("Condition", max_length=256, default="True")),
-                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern", null=True, blank=True)), (
+                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern", null=True, blank=True, on_delete=models.CASCADE)),
+                (
                     "selector",
                     models.ForeignKey(
-                        ManagedObjectSelector, verbose_name="Managed Object Selector", null=True, blank=True
+                        ManagedObjectSelector, verbose_name="Managed Object Selector", null=True, blank=True,
+                        on_delete=models.CASCADE
                     )
                 ), (
                     "notification_group",
-                    models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True)
-                ), ("template", models.ForeignKey(Template, verbose_name="Template", null=True, blank=True)),
-                ("pyrule", models.ForeignKey(PyRule, verbose_name="pyRule", null=True, blank=True))
+                    models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True, on_delete=models.CASCADE)
+                ), ("template", models.ForeignKey(Template, verbose_name="Template", null=True, blank=True, on_delete=models.CASCADE)),
+                ("pyrule", models.ForeignKey(PyRule, verbose_name="pyRule", null=True, blank=True, on_delete=models.CASCADE))
             )
         )
 
@@ -68,15 +70,16 @@ class Migration(BaseMigration):
                 ("is_enabled", models.BooleanField("Is Enabled", default=True)),
                 ("alarm_class_re", models.CharField("Alarm class RE", max_length=256)),
                 ("condition", models.CharField("Condition", max_length=256, default="True")),
-                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern", null=True, blank=True)), (
+                ("time_pattern", models.ForeignKey(TimePattern, verbose_name="Time Pattern", null=True, blank=True, on_delete=models.CASCADE)),
+                (
                     "selector",
                     models.ForeignKey(
-                        ManagedObjectSelector, verbose_name="Managed Object Selector", null=True, blank=True
+                        ManagedObjectSelector, verbose_name="Managed Object Selector", null=True, blank=True, on_delete=models.CASCADE
                     )
                 ), (
                     "notification_group",
-                    models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True)
-                ), ("template", models.ForeignKey(Template, verbose_name="Template", null=True, blank=True)),
-                ("pyrule", models.ForeignKey(PyRule, verbose_name="pyRule", null=True, blank=True))
+                    models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True, on_delete=models.CASCADE)
+                ), ("template", models.ForeignKey(Template, verbose_name="Template", null=True, blank=True, on_delete=models.CASCADE)),
+                ("pyrule", models.ForeignKey(PyRule, verbose_name="pyRule", null=True, blank=True, on_delete=models.CASCADE))
             )
         )

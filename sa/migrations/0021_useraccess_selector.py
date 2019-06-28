@@ -17,7 +17,7 @@ class Migration(BaseMigration):
         ManagedObjectSelector = self.db.mock_model(model_name="ManagedObjectSelector", db_table="sa_managedobjectselector")
         self.db.add_column(
             'sa_useraccess', 'selector',
-            models.ForeignKey(ManagedObjectSelector, verbose_name="Object Selector", null=True, blank=True)
+            models.ForeignKey(ManagedObjectSelector, verbose_name="Object Selector", null=True, blank=True, on_delete=models.CASCADE)
         )
         self.db.delete_column('sa_useraccess', 'administrative_domain_id')
         self.db.delete_column('sa_useraccess', 'group_id')
