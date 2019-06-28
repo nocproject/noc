@@ -22,5 +22,5 @@ class Migration(BaseMigration):
         self.db.add_column("sa_administrativedomain", "tags", TagsField("Tags", null=True, blank=True))
         self.db.add_column(
             "sa_administrativedomain", "parent",
-            models.ForeignKey(AdministrativeDomain, verbose_name="Parent", null=True, blank=True)
+            models.ForeignKey(AdministrativeDomain, verbose_name="Parent", null=True, blank=True, on_delete=models.CASCADE)
         )

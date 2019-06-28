@@ -40,7 +40,7 @@ class Migration(BaseMigration):
             model_name='ManagedObject',
             db_table='sa_managedobject'
         )
-        self.db.add_column("cm_config", "managed_object", models.ForeignKey(ManagedObject, null=True))
+        self.db.add_column("cm_config", "managed_object", models.ForeignKey(ManagedObject, null=True, on_delete=models.CASCADE))
 
         # Move objects
         for id, repo_path, activator_id, profile_name, scheme, address, port, user, password, super_password,\
@@ -87,10 +87,10 @@ class Migration(BaseMigration):
 
         self.db.add_column(
             "cm_objectnotify", "administrative_domain",
-            models.ForeignKey(AdministrativeDomain, verbose_name="Administrative Domain", blank=True, null=True)
+            models.ForeignKey(AdministrativeDomain, verbose_name="Administrative Domain", blank=True, null=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
-            "cm_objectnotify", "group", models.ForeignKey(ObjectGroup, verbose_name="Group", blank=True, null=True)
+            "cm_objectnotify", "group", models.ForeignKey(ObjectGroup, verbose_name="Group", blank=True, null=True, on_delete=models.CASCADE)
         )
         for id, category_id, location_id in self.db.execute("SELECT id,category_id,location_id FROM cm_objectnotify"):
             self.db.execute(

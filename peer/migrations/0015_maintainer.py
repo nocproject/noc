@@ -35,7 +35,7 @@ class Migration(BaseMigration):
                 ('nic_hdl', models.CharField("nic-hdl", max_length=64, unique=True)),
                 ('person', models.CharField("person", max_length=128)), ('address', models.TextField("address")),
                 ('phone', models.TextField("phone")), ('fax_no', models.TextField("fax-no", blank=True, null=True)),
-                ('email', models.TextField("email")), ('rir', models.ForeignKey(RIR, verbose_name=RIR)),
+                ('email', models.TextField("email")), ('rir', models.ForeignKey(RIR, verbose_name=RIR, on_delete=models.CASCADE)),
                 ('extra', models.TextField("extra", blank=True, null=True))
             )
         )
@@ -51,7 +51,7 @@ class Migration(BaseMigration):
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('maintainer', models.CharField("mntner", max_length=64, unique=True)),
                 ('description', models.CharField("description", max_length=64)), ('auth', models.TextField("auth")),
-                ('rir', models.ForeignKey(RIR, verbose_name=RIR)),
+                ('rir', models.ForeignKey(RIR, verbose_name=RIR, on_delete=models.CASCADE)),
                 ('extra', models.TextField("extra", blank=True, null=True))
             )
         )
@@ -69,8 +69,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_maintainer_admins', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('maintainer', models.ForeignKey(Maintainer, null=False)),
-                ('person', models.ForeignKey(Person, null=False))
+                ('maintainer', models.ForeignKey(Maintainer, null=False, on_delete=models.CASCADE)),
+                ('person', models.ForeignKey(Person, null=False, on_delete=models.CASCADE))
             )
         )
 

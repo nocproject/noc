@@ -230,9 +230,6 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None):
                     sender=cls,
                     weak=False  # Cannot use weak reference due to lost of internal scope
                 )
-        if not is_document(cls):
-            from noc.core.model.hacks import tuck_up_pants
-            cls = tuck_up_pants(cls)
 
         cls._on_delete = cfg
         return cls

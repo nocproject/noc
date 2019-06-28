@@ -17,8 +17,7 @@ from django.db import models
 from mongoengine.queryset import Q as MEQ
 import cachetools
 # NOC modules
-from .error import InvalidLabelException, MissedLabelException
-from .vcdomain import VCDomain
+from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
@@ -27,6 +26,8 @@ from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.cache.decorator import cachedmethod
 from noc.core.model.decorator import on_delete_check
+from .error import InvalidLabelException, MissedLabelException
+from .vcdomain import VCDomain
 
 # Regular expressions
 rx_vc_underline = re.compile("\s+")
@@ -40,7 +41,7 @@ id_lock = Lock()
 ])
 @full_text_search
 @six.python_2_unicode_compatible
-class VC(models.Model):
+class VC(NOCModel):
     """
     Virtual circuit
     """
@@ -52,11 +53,12 @@ class VC(models.Model):
         app_label = "vc"
         ordering = ["vc_domain", "l1", "l2"]
 
-    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
+    vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)
     name = models.CharField("Name", max_length=64)
     state = models.ForeignKey(
         ResourceState, verbose_name="State",
-        default=ResourceState.get_default
+        default=ResourceState.get_default,
+        on_delete=models.CASCADE
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",
@@ -67,7 +69,7 @@ class VC(models.Model):
     description = models.CharField("Description", max_length=256, null=True,
                                    blank=True)
     style = models.ForeignKey(Style, verbose_name="Style", blank=True,
-                              null=True)
+                              null=True, on_delete=models.CASCADE)
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

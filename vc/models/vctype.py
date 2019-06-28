@@ -11,13 +11,14 @@ import six
 from django.db import models
 # NOC modules
 from noc.core.model.decorator import on_delete_check
+from noc.core.model.base import NOCModel
 
 
 @on_delete_check(check=[
-    ('vc.VCDomain', 'type')
+    ("vc.VCDomain", "type")
 ])
 @six.python_2_unicode_compatible
-class VCType(models.Model):
+class VCType(NOCModel):
     """
     VC Type
     """

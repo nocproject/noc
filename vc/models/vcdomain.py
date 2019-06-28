@@ -13,11 +13,12 @@ import six
 from builtins import range, object
 from django.db import models
 # NOC modules
-from .vctype import VCType
-from .vcfilter import VCFilter
+from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.model.decorator import on_delete_check
+from .vctype import VCType
+from .vcfilter import VCFilter
 
 
 @on_save
@@ -33,7 +34,7 @@ from noc.core.model.decorator import on_delete_check
     ("inv.MACDB", "vc_domain")
 ])
 @six.python_2_unicode_compatible
-class VCDomain(models.Model):
+class VCDomain(NOCModel):
     """
     Virtual circuit domain, allows to separate unique VC spaces
     """
@@ -45,7 +46,7 @@ class VCDomain(models.Model):
 
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", blank=True, null=True)
-    type = models.ForeignKey(VCType, verbose_name="Type")
+    type = models.ForeignKey(VCType, verbose_name="Type", on_delete=models.CASCADE)
     enable_provisioning = models.BooleanField(
         "Enable Provisioning", default=False)
     enable_vc_bind_filter = models.BooleanField(
@@ -53,7 +54,8 @@ class VCDomain(models.Model):
     style = models.ForeignKey(
         Style,
         verbose_name="Style",
-        blank=True, null=True)
+        blank=True, null=True, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return self.name

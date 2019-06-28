@@ -18,6 +18,7 @@ from django.db import models
 from django.core import validators
 from django.contrib.auth.hashers import check_password, make_password
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
 from noc.settings import LANGUAGE_CODE, LANGUAGES
@@ -40,7 +41,7 @@ id_lock = Lock()
     ("main.Favorites", "user")
 ])
 @six.python_2_unicode_compatible
-class User(models.Model):
+class User(NOCModel):
     class Meta(object):
         verbose_name = "User"
         verbose_name_plural = "Users"

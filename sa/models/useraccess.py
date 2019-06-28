@@ -15,16 +15,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from .managedobjectselector import ManagedObjectSelector
 from .groupaccess import GroupAccess
 from .administrativedomain import AdministrativeDomain
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class UserAccess(models.Model):
+class UserAccess(NOCModel):
     class Meta(object):
         verbose_name = _("User Access")
         verbose_name_plural = _("User Access")
@@ -32,16 +31,16 @@ class UserAccess(models.Model):
         app_label = "sa"
         ordering = ["user"]
 
-    user = models.ForeignKey(User, verbose_name=_("User"))
+    user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
     # Legacy interface
     selector = models.ForeignKey(
         ManagedObjectSelector,
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
     #
     administrative_domain = models.ForeignKey(
         AdministrativeDomain,
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __str__(self):

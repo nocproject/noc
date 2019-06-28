@@ -38,7 +38,10 @@ class Migration(BaseMigration):
         loc_id = self.db.execute("SELECT id FROM cm_objectlocation WHERE name=%s", ["default"])[0][0]
 
         for ot in OBJECT_TYPES:
-            self.db.add_column("cm_%s" % ot, "location", models.ForeignKey(ObjectLocation, null=True, blank=True))
+            self.db.add_column(
+                "cm_%s" % ot,
+                "location",
+                models.ForeignKey(ObjectLocation, null=True, blank=True, on_delete=models.CASCADE))
             self.db.execute("UPDATE cm_%s SET location_id=%%s" % ot, [loc_id])
             self.db.execute("ALTER TABLE cm_%s ALTER location_id SET NOT NULL" % ot)
 
@@ -61,9 +64,9 @@ class Migration(BaseMigration):
             'cm_objectaccess', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('type', models.CharField("Type", max_length=16, choices=OBJECT_TYPE_CHOICES)),
-                ('category', models.ForeignKey(ObjectCategory, verbose_name="Category", blank=True, null=True)),
-                ('location', models.ForeignKey(ObjectLocation, verbose_name="Location", blank=True, null=True)),
-                ('user', models.ForeignKey(User, verbose_name=User))
+                ('category', models.ForeignKey(ObjectCategory, verbose_name="Category", blank=True, null=True, on_delete=models.CASCADE)),
+                ('location', models.ForeignKey(ObjectLocation, verbose_name="Location", blank=True, null=True, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE))
             )
         )
 
@@ -82,8 +85,8 @@ class Migration(BaseMigration):
             'cm_objectnotify', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('type', models.CharField("Type", max_length=16, choices=OBJECT_TYPE_CHOICES)),
-                ('category', models.ForeignKey(ObjectCategory, verbose_name="Category", blank=True, null=True)),
-                ('location', models.ForeignKey(ObjectLocation, verbose_name="Location", blank=True, null=True)),
+                ('category', models.ForeignKey(ObjectCategory, verbose_name="Category", blank=True, null=True, on_delete=models.CASCADE)),
+                ('location', models.ForeignKey(ObjectLocation, verbose_name="Location", blank=True, null=True, on_delete=models.CASCADE)),
                 ('emails', models.CharField("Emails", max_length=128)),
                 ('notify_immediately', models.BooleanField("Notify Immediately")),
                 ('notify_delayed', models.BooleanField("Notify Delayed")),

@@ -25,7 +25,7 @@ class Migration(BaseMigration):
                 ('id', models.AutoField(primary_key=True)),
                 ('name', models.CharField("Name", max_length=64, unique=True)),
                 ('description', models.TextField("Description", blank=True, null=True)),
-                ('style', models.ForeignKey(Style, verbose_name="Style", blank=True, null=True)),
+                ('style', models.ForeignKey(Style, verbose_name="Style", blank=True, null=True, on_delete=models.CASCADE)),
                 # Name restrictions
                 # Regular expression to check name format
                 ('name_template', models.CharField("Name template", max_length=256, blank=True, null=True)),

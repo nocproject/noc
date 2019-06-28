@@ -23,7 +23,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "sa_authprofilesuggestsnmp", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("auth_profile", models.ForeignKey(AuthProfile)),
+                ("auth_profile", models.ForeignKey(AuthProfile, on_delete=models.CASCADE)),
                 ("snmp_ro", models.CharField("RO Community", blank=True, null=True, max_length=64)),
                 ("snmp_rw", models.CharField("RW Community", blank=True, null=True, max_length=64))
             )
@@ -31,7 +31,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "sa_authprofilesuggestcli", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("auth_profile", models.ForeignKey(AuthProfile)),
+                ("auth_profile", models.ForeignKey(AuthProfile, on_delete=models.CASCADE)),
                 ("user", models.CharField("User", max_length=32, blank=True, null=True)),
                 ("password", models.CharField("Password", max_length=32, blank=True, null=True)),
                 ("super_password", models.CharField("Super Password", max_length=32, blank=True, null=True))

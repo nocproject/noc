@@ -15,17 +15,16 @@ import six
 from django.db.models import Model, CharField, ManyToManyField
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
-from noc.core.model.hacks import tuck_up_pants
 
 perm_lock = Lock()
 id_lock = Lock()
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class Permission(Model):
+class Permission(NOCModel):
     """
     Permissions.
 

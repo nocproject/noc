@@ -42,7 +42,7 @@ class Migration(BaseMigration):
                 blank=False
             )
         )
-        self.db.add_column("sa_managedobject", "syslog_source_ip", models.IPAddressField("Syslog Source IP", null=True))
+        self.db.add_column("sa_managedobject", "syslog_source_ip", models.GenericIPAddressField("Syslog Source IP", null=True, protocol="IPv4"))
         self.db.execute(
             """UPDATE sa_managedobject
                 SET trap_source_type='s', syslog_source_ip=trap_source_ip, syslog_source_type='s'

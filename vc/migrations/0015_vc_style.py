@@ -22,5 +22,5 @@ class Migration(BaseMigration):
             db_table="main_style"
         )
         self.db.add_column("vc_vcdomain", "style",
-                           models.ForeignKey(Style, verbose_name="Style", null=True, blank=True))
-        self.db.add_column("vc_vc", "style", models.ForeignKey(Style, verbose_name="Style", null=True, blank=True))
+                           models.ForeignKey(Style, verbose_name="Style", null=True, blank=True, on_delete=models.CASCADE))
+        self.db.add_column("vc_vc", "style", models.ForeignKey(Style, verbose_name="Style", null=True, blank=True, on_delete=models.CASCADE))

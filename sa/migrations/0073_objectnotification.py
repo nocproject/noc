@@ -28,8 +28,8 @@ class Migration(BaseMigration):
             "sa_objectnotification",
             (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("selector", models.ForeignKey(ManagedObjectSelector)),
-                ("notification_group", models.ForeignKey(NotificationGroup)),
+                ("selector", models.ForeignKey(ManagedObjectSelector, on_delete=models.CASCADE)),
+                ("notification_group", models.ForeignKey(NotificationGroup, on_delete=models.CASCADE)),
                 # Events
                 ("config_changed", models.BooleanField("Config changed")),
                 ("alarm_risen", models.BooleanField("Alarm risen")),

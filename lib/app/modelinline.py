@@ -126,7 +126,7 @@ class ModelInline(object):
         self.parent_model = self.app.model
         self.parent_rel = None
         for f in self.model._meta.fields:
-            if f.rel and f.rel.to and f.rel.to == self.parent_model:
+            if f.remote_field and f.remote_field.model and f.remote_field.model == self.parent_model:
                 self.parent_rel = f.name
                 break
         assert self.parent_rel
@@ -157,9 +157,9 @@ class ModelInline(object):
         elif isinstance(field, TextArrayField):
             return StringListParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
-            self.fk_fields[field.name] = field.rel.to
+            self.fk_fields[field.name] = field.remote_field.model
             return ModelParameter(
-                field.rel.to,
+                field.remote_field.model,
                 required=not field.null
             )
         else:
@@ -283,7 +283,7 @@ class ModelInline(object):
             if f.name == "tags":
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
-            elif f.rel is None:
+            elif f.remote_field is None:
                 v = f._get_val_from_obj(o)
                 if (
                     v is not None and not isinstance(v, six.string_types) and

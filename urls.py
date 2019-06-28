@@ -7,10 +7,9 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.conf.urls import url
 from django.http import HttpResponseServerError
 # NOC modules
-from noc.lib.app.site import site, patterns
+from noc.lib.app.site import site
 from noc.core.debug import error_report
 
 #
@@ -20,10 +19,7 @@ site.autodiscover()
 #
 # Install URL handlers
 #
-urlpatterns = patterns(
-    "",
-    (url('jsi18n/', 'django.views.i18n.javascript_catalog', {"packages": "django.conf"}, name='javascript-catalog'))
-) + site.urls
+urlpatterns = site.urls
 
 
 def handler500(request):

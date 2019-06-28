@@ -44,7 +44,7 @@ class Migration(BaseMigration):
         self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description TYPE TEXT")
         self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description DROP NOT NULL")
         self.db.execute("ALTER TABLE ip_vrf ALTER COLUMN description SET DEFAULT 'V'")
-        self.db.add_column("ip_vrf", "style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True))
+        self.db.add_column("ip_vrf", "style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True, on_delete=models.CASCADE))
         self.db.add_column("ip_vrf", "allocated_till", models.DateField("Allocated till", null=True, blank=True))
         # Prefix
         VRF = self.db.mock_model(
@@ -70,16 +70,16 @@ class Migration(BaseMigration):
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)), (
                     "parent",
                     models.ForeignKey(
-                        Prefix, related_name="children_set", verbose_name="Parent", null=True, blank=True
+                        Prefix, related_name="children_set", verbose_name="Parent", null=True, blank=True, on_delete=models.CASCADE
                     )
-                ), ("vrf", models.ForeignKey(VRF, verbose_name="VRF")),
+                ), ("vrf", models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ("afi", models.CharField("Address Family", max_length=1, choices=AFI_CHOICES)),
-                ("prefix", CIDRField("Prefix")), ("asn", models.ForeignKey(AS, verbose_name="AS")),
-                ("vc", models.ForeignKey(VC, verbose_name="VC", null=True, blank=True)),
+                ("prefix", CIDRField("Prefix")), ("asn", models.ForeignKey(AS, verbose_name="AS", on_delete=models.CASCADE)),
+                ("vc", models.ForeignKey(VC, verbose_name="VC", null=True, blank=True, on_delete=models.CASCADE)),
                 ("description", models.TextField("Description", blank=True, null=True)),
                 ("tags", AutoCompleteTagsField("Tags", null=True, blank=True)),
                 ("tt", models.IntegerField("TT", blank=True, null=True)),
-                ("style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True)),
+                ("style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True, on_delete=models.CASCADE)),
                 ("allocated_till", models.DateField("Allocated till", null=True, blank=True))
             )
         )
@@ -88,8 +88,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             "ip_address", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("prefix", models.ForeignKey(Prefix, verbose_name="Prefix")),
-                ("vrf", models.ForeignKey(VRF, verbose_name="VRF")),
+                ("prefix", models.ForeignKey(Prefix, verbose_name="Prefix", on_delete=models.CASCADE)),
+                ("vrf", models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ("afi", models.CharField("Address Family", max_length=1, choices=AFI_CHOICES)),
                 ("address", INETField("Address")),
                 ("fqdn", models.CharField("FQDN", max_length=255)),
@@ -98,13 +98,13 @@ class Migration(BaseMigration):
                 (
                     "managed_object",
                     models.ForeignKey(
-                        ManagedObject, verbose_name="Managed Object", null=True, blank=True, related_name="address_set"
+                        ManagedObject, verbose_name="Managed Object", null=True, blank=True, related_name="address_set", on_delete=models.CASCADE
                     )
                 ),
                 ("description", models.TextField("Description", blank=True, null=True)),
                 ("tags", AutoCompleteTagsField("Tags", null=True, blank=True)),
                 ("tt", models.IntegerField("TT", blank=True, null=True)),
-                ("style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True)),
+                ("style", models.ForeignKey(Style, verbose_name="Style", blank=True, null=True, on_delete=models.CASCADE)),
                 ("allocated_till", models.DateField("Allocated till", null=True, blank=True)),
             )
         )
@@ -117,8 +117,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             "ip_prefixaccess", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("user", models.ForeignKey(User, verbose_name="User")),
-                ("vrf", models.ForeignKey(VRF, verbose_name="VRF")),
+                ("user", models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)),
+                ("vrf", models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ("afi", models.CharField("Address Family", max_length=1, choices=AFI_CHOICES)),
                 ("prefix", CIDRField("Prefix")),
                 ("can_view", models.BooleanField("Can View", default=False)),
@@ -132,7 +132,7 @@ class Migration(BaseMigration):
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=64, unique=True)),
                 ("is_active", models.BooleanField("Is Active", default=True)),
-                ("vrf", models.ForeignKey(VRF, verbose_name="VRF")),
+                ("vrf", models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ("afi", models.CharField("Address Family", max_length=1, choices=AFI_CHOICES)),
                 ("from_address", INETField("Address")),
                 ("to_address", INETField("Address")),
@@ -162,8 +162,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             "ip_prefixbookmark", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("user", models.ForeignKey(User, verbose_name="User")),
-                ("prefix", models.ForeignKey(Prefix, verbose_name="Prefix"))
+                ("user", models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)),
+                ("prefix", models.ForeignKey(Prefix, verbose_name="Prefix", on_delete=models.CASCADE))
             )
         )
         self.db.create_index("ip_prefixbookmark", ["user_id", "prefix_id"], unique=True)

@@ -56,7 +56,7 @@ class Command(BaseCommand):
         "DateField": ("date", "datefield", None),
         "DateTimeField": ("date", "datefield", None),
         "CIDRField": ("string", "textfield", None),
-        "IPAddressField": ("string", "textfield", None),
+        "GenericIPAddressField": ("string", "textfield", None),
         "INETField": ("string", "textfield", None),
         "MACField": ("string", "textfield", None),
         "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags"),
@@ -225,7 +225,7 @@ class Command(BaseCommand):
                         fc = f.__class__.__name__
                         if fc in ("ForeignKey", "OneToOneField"):
                             # Foreign key
-                            fr = f.rel.to
+                            fr = f.remote_field.model
                             rc = "%s.%s" % (fr.__module__.split(".")[1],
                                             fr.__name__.lower())
                             fd = {

@@ -10,7 +10,7 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 
@@ -18,9 +18,8 @@ OBJECT_TYPES = ["config", "dns", "prefix-list", "rpsl"]
 OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES if x != "config"]
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class ObjectNotify(models.Model):
+class ObjectNotify(NOCModel):
     class Meta(object):
         app_label = "cm"
         db_table = "cm_objectnotify"
@@ -28,13 +27,17 @@ class ObjectNotify(models.Model):
         verbose_name_plural = "Object Notifies"
 
     type = models.CharField("Type", max_length=16, choices=OBJECT_TYPE_CHOICES)
-    administrative_domain = models.ForeignKey(AdministrativeDomain,
-                                              verbose_name="Administrative Domain",
-                                              blank=True, null=True)
+    administrative_domain = models.ForeignKey(
+        AdministrativeDomain,
+        verbose_name="Administrative Domain",
+        blank=True, null=True,
+        on_delete=models.CASCADE
+    )
     notify_immediately = models.BooleanField("Notify Immediately", default=False)
     notify_delayed = models.BooleanField("Notify Delayed", default=False)
-    notification_group = models.ForeignKey(NotificationGroup,
-                                           verbose_name="Notification Group")
+    notification_group = models.ForeignKey(
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return u"(%s, %s, %s)" % (self.type, self.administrative_domain,

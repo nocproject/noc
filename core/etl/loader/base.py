@@ -630,7 +630,7 @@ class BaseLoader(object):
                         self.clean_reference,
                         self.chain.get_mappings(
                             self.mapped_fields[f.name]),
-                        f.rel.to
+                        f.remote_field.model
                     )
             elif f.name in self.mapped_fields:
                 self.clean_map[f.name] = functools.partial(

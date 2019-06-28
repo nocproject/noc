@@ -10,12 +10,13 @@
 from __future__ import print_function
 import sys
 import argparse
-# Django modules
-from django.db import models
+# Third-party modules modules
+from django.apps import apps
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject  # noqa
 from noc.core.management.base import BaseCommand
 from noc.core.csvutils import csv_export
+from noc.models import load_models
 
 
 class Command(BaseCommand):
@@ -38,7 +39,8 @@ class Command(BaseCommand):
         print("Usage:")
         print("%s csv-export [-t] <model>" % (sys.argv[0]))
         print("Where <model> is one of:")
-        for m in models.get_models():
+        load_models()
+        for m in apps.get_models():
             t = m._meta.db_table
             app, model = t.split("_", 1)
             print("%s.%s" % (app, model))
@@ -61,7 +63,8 @@ class Command(BaseCommand):
         if len(r) != 2:
             self._usage()
         app, model = r
-        m = models.get_model(app, model)
+        load_models()
+        m = apps.get_model(app, model)
         if not m:
             return self._usage()
         print(csv_export(m,

@@ -34,7 +34,7 @@ class Migration(BaseMigration):
                 ), (
                     'filter_administrative_domain',
                     models.ForeignKey(
-                        AdministrativeDomain, verbose_name="Filter by Administrative Domain", null=True, blank=True
+                        AdministrativeDomain, verbose_name="Filter by Administrative Domain", null=True, blank=True, on_delete=models.CASCADE
                     )
                 ), ('filter_user', models.CharField("Filter by User (REGEXP)", max_length=256, null=True, blank=True)),
                 (
@@ -68,8 +68,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'sa_managedobjectselector_filter_groups', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False)),
-                ('objectgroup', models.ForeignKey(ObjectGroup, null=False))
+                ('managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False, on_delete=models.CASCADE)),
+                ('objectgroup', models.ForeignKey(ObjectGroup, null=False, on_delete=models.CASCADE))
             )
         )
         # Mock Models
@@ -80,7 +80,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'sa_managedobjectselector_sources', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('from_managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False)),
-                ('to_managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False))
+                ('from_managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False, on_delete=models.CASCADE)),
+                ('to_managedobjectselector', models.ForeignKey(ManagedObjectSelector, null=False, on_delete=models.CASCADE))
             )
         )

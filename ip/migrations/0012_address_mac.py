@@ -22,5 +22,5 @@ class Migration(BaseMigration):
             db_table="sa_managedobject"
         )
         self.db.add_column("ip_ipv4address", "mac", MACField("MAC", null=True, blank=True))
-        self.db.add_column("ip_ipv4address", "managed_object", models.ForeignKey(ManagedObject, null=True, blank=True))
+        self.db.add_column("ip_ipv4address", "managed_object", models.ForeignKey(ManagedObject, null=True, blank=True, on_delete=models.CASCADE))
         self.db.add_column("ip_ipv4address", "auto_update_mac", models.BooleanField("Auto Update MAC", default=False))

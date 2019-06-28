@@ -13,6 +13,7 @@ import datetime
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.core.model.decorator import on_delete_check
 from .language import Language
@@ -25,7 +26,7 @@ downloader_registry.register_all()
     ("main.RefBookData", "ref_book")
 ])
 @six.python_2_unicode_compatible
-class RefBook(models.Model):
+class RefBook(NOCModel):
     """
     Reference Books
     """
@@ -35,8 +36,7 @@ class RefBook(models.Model):
         verbose_name_plural = "Ref Books"
 
     name = models.CharField("Name", max_length=128, unique=True)
-    language = models.ForeignKey(Language,
-                                 verbose_name="Language")
+    language = models.ForeignKey(Language, verbose_name="Language", on_delete=models.CASCADE)
     description = models.TextField("Description", blank=True, null=True)
     is_enabled = models.BooleanField("Is Enabled", default=False)
     is_builtin = models.BooleanField("Is Builtin", default=False)

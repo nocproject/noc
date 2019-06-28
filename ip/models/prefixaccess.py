@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.core.model.fields import CIDRField
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
@@ -25,9 +25,8 @@ from .afi import AFI_CHOICES
 from .vrf import VRF
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class PrefixAccess(models.Model):
+class PrefixAccess(NOCModel):
     class Meta(object):
         verbose_name = _("Prefix Access")
         verbose_name_plural = _("Prefix Access")
@@ -36,8 +35,8 @@ class PrefixAccess(models.Model):
         unique_together = [("user", "vrf", "afi", "prefix")]
         ordering = ["user", "vrf", "afi", "prefix"]
 
-    user = models.ForeignKey(User, verbose_name=_("User"))
-    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"))
+    user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
+    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"), on_delete=models.CASCADE)
     afi = models.CharField(
         _("Address Family"),
         max_length=1,

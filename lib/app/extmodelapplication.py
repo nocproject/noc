@@ -75,7 +75,7 @@ class ExtModelApplication(ExtApplication):
         # m2m fields
         self.m2m_fields = {}  # Name -> Model
         for f in self.model._meta.many_to_many:
-            self.m2m_fields[f.name] = f.rel.to
+            self.m2m_fields[f.name] = f.remote_field.model
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -122,8 +122,8 @@ class ExtModelApplication(ExtApplication):
         elif isinstance(field, TextArrayField):
             return StringListParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
-            self.fk_fields[field.name] = field.rel.to
-            return ModelParameter(field.rel.to,
+            self.fk_fields[field.name] = field.remote_field.model
+            return ModelParameter(field.remote_field.model,
                                   required=not field.null)
         else:
             return None

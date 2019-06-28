@@ -11,14 +11,13 @@ import six
 from django.db import models
 from django.db.models import Q
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.databasestorage import database_storage
 from noc.kb.models.kbentry import KBEntry
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class KBEntryAttachment(models.Model):
+class KBEntryAttachment(NOCModel):
     """
     Attachments
     """
@@ -29,7 +28,7 @@ class KBEntryAttachment(models.Model):
         db_table = "kb_kbentryattachment"
         unique_together = [("kb_entry", "name")]
 
-    kb_entry = models.ForeignKey(KBEntry, verbose_name="KB Entry")
+    kb_entry = models.ForeignKey(KBEntry, verbose_name="KB Entry", on_delete=models.CASCADE)
     name = models.CharField("Name", max_length=256)
     description = models.CharField("Description", max_length=256, null=True,
                                    blank=True)

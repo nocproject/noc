@@ -35,13 +35,16 @@ class Migration(BaseMigration):
                 verbose_name="Termination Group",
                 blank=True,
                 null=True,
-                related_name="termination_set"
+                related_name="termination_set", on_delete=models.CASCADE
             )
         )
         self.db.add_column(
             "sa_managedobject", "service_terminator",
             models.ForeignKey(
-                TerminationGroup, verbose_name="Service Terminator", blank=True, null=True, related_name="access_set"
+                TerminationGroup,
+                verbose_name="Service Terminator",
+                blank=True, null=True,
+                related_name="access_set", on_delete=models.CASCADE
             )
         )
         # Selector
@@ -52,7 +55,7 @@ class Migration(BaseMigration):
                 verbose_name="Filter by termination group",
                 null=True,
                 blank=True,
-                related_name="selector_termination_group_set"
+                related_name="selector_termination_group_set", on_delete=models.CASCADE
             )
         )
         self.db.add_column(
@@ -62,6 +65,6 @@ class Migration(BaseMigration):
                 verbose_name="Filter by service terminator",
                 null=True,
                 blank=True,
-                related_name="selector_service_terminator_set"
+                related_name="selector_service_terminator_set", on_delete=models.CASCADE
             )
         )

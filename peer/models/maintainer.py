@@ -12,6 +12,7 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.decorator import on_save
@@ -26,7 +27,7 @@ from .person import Person
 ])
 @on_save
 @six.python_2_unicode_compatible
-class Maintainer(models.Model):
+class Maintainer(NOCModel):
     class Meta(object):
         verbose_name = "Maintainer"
         verbose_name_plural = "Maintainers"
@@ -35,9 +36,8 @@ class Maintainer(models.Model):
 
     maintainer = models.CharField("mntner", max_length=64, unique=True)
     description = models.CharField("description", max_length=64)
-    password = models.CharField("Password", max_length=64,
-                                null=True, blank=True)
-    rir = models.ForeignKey(RIR, verbose_name="RIR")
+    password = models.CharField("Password", max_length=64, null=True, blank=True)
+    rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
     admins = models.ManyToManyField(Person, verbose_name="admin-c")
     extra = models.TextField("extra", blank=True, null=True)
     rpsl = GridVCSField("rpsl_maintainer")

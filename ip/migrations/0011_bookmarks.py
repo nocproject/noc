@@ -25,8 +25,9 @@ class Migration(BaseMigration):
         # Adding model 'IPv4BlockBookmark'
         self.db.create_table(
             'ip_ipv4blockbookmark', (
-                ('id', models.AutoField(primary_key=True)), ('user', models.ForeignKey(User, verbose_name="User")),
-                ('prefix', models.ForeignKey(IPv4Block, verbose_name="Prefix"))
+                ('id', models.AutoField(primary_key=True)),
+                ('user', models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)),
+                ('prefix', models.ForeignKey(IPv4Block, verbose_name="Prefix", on_delete=models.CASCADE))
             )
         )
 

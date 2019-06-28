@@ -13,13 +13,12 @@ import re
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from .refbook import RefBook
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class RefBookField(models.Model):
+class RefBookField(NOCModel):
     """
     Refbook fields
     """
@@ -30,7 +29,7 @@ class RefBookField(models.Model):
         unique_together = [("ref_book", "order"), ("ref_book", "name")]
         ordering = ["ref_book", "order"]
 
-    ref_book = models.ForeignKey(RefBook, verbose_name="Ref Book")
+    ref_book = models.ForeignKey(RefBook, verbose_name="Ref Book", on_delete=models.CASCADE)
     name = models.CharField("Name", max_length="64")
     order = models.IntegerField("Order")
     is_required = models.BooleanField("Is Required", default=True)

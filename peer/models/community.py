@@ -12,13 +12,12 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from .communitytype import CommunityType
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class Community(models.Model):
+class Community(NOCModel):
     class Meta(object):
         verbose_name = "Community"
         verbose_name_plural = "Communities"
@@ -26,7 +25,7 @@ class Community(models.Model):
         app_label = "peer"
 
     community = models.CharField("Community", max_length=20, unique=True)
-    type = models.ForeignKey(CommunityType, verbose_name="Type")
+    type = models.ForeignKey(CommunityType, verbose_name="Type", on_delete=models.CASCADE)
     description = models.CharField("Description", max_length=64)
 
     def __str__(self):

@@ -17,10 +17,8 @@ from django.db import models
 from django.db.models import Q
 import cachetools
 from psycopg2.extensions import adapt
-# Third-party modules
-import six
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
@@ -59,7 +57,7 @@ id_lock = Lock()
     ("vc.VCDomainProvisioningConfig", "selector"),
 ])
 @six.python_2_unicode_compatible
-class ManagedObjectSelector(models.Model):
+class ManagedObjectSelector(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Selector")
         verbose_name_plural = _("Managed Object Selectors")
@@ -73,38 +71,34 @@ class ManagedObjectSelector(models.Model):
     filter_id = models.IntegerField(_("Filter by ID"), null=True, blank=True)
     filter_name = models.CharField(_("Filter by Name (REGEXP)"),
                                    max_length=256, null=True, blank=True, validators=[check_re])
-    filter_managed = models.NullBooleanField(
-        _("Filter by Is Managed"),
-        null=True, blank=True, default=True)
+    filter_managed = models.NullBooleanField(_("Filter by Is Managed"), null=True, blank=True, default=True)
     filter_pool = DocumentReferenceField(Pool, null=True, blank=True)
     filter_profile = DocumentReferenceField(Profile, null=True, blank=True)
     filter_vendor = DocumentReferenceField(Vendor, null=True, blank=True)
     filter_platform = DocumentReferenceField(Platform, null=True, blank=True)
     filter_version = DocumentReferenceField(Firmware, null=True, blank=True)
-    filter_object_profile = models.ForeignKey(ManagedObjectProfile,
-                                              verbose_name=_("Filter by Object's Profile"), null=True, blank=True)
+    filter_object_profile = models.ForeignKey(ManagedObjectProfile, verbose_name=_("Filter by Object's Profile"),
+                                              null=True, blank=True, on_delete=models.CASCADE)
     filter_address = models.CharField(_("Filter by Address (REGEXP)"),
                                       max_length=256, null=True, blank=True, validators=[check_re])
-    filter_prefix = models.ForeignKey(PrefixTable,
-                                      verbose_name=_("Filter by Prefix Table"), null=True, blank=True)
+    filter_prefix = models.ForeignKey(PrefixTable, verbose_name=_("Filter by Prefix Table"),
+                                      null=True, blank=True, on_delete=models.CASCADE)
     filter_administrative_domain = models.ForeignKey(AdministrativeDomain,
                                                      verbose_name=_("Filter by Administrative Domain"),
-                                                     null=True, blank=True)
-    filter_vrf = models.ForeignKey("ip.VRF",
-                                   verbose_name=_("Filter by VRF"), null=True, blank=True)
-    filter_vc_domain = models.ForeignKey("vc.VCDomain",
-                                         verbose_name=_("Filter by VC Domain"), null=True, blank=True)
+                                                     null=True, blank=True, on_delete=models.CASCADE)
+    filter_vrf = models.ForeignKey("ip.VRF", verbose_name=_("Filter by VRF"),
+                                   null=True, blank=True, on_delete=models.CASCADE)
+    filter_vc_domain = models.ForeignKey("vc.VCDomain", verbose_name=_("Filter by VC Domain"),
+                                         null=True, blank=True, on_delete=models.CASCADE)
     filter_service_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     filter_client_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     filter_tt_system = DocumentReferenceField(TTSystem, null=True, blank=True)
-    filter_user = models.CharField(_("Filter by User (REGEXP)"),
-                                   max_length=256, null=True, blank=True)
+    filter_user = models.CharField(_("Filter by User (REGEXP)"), max_length=256, null=True, blank=True)
     filter_remote_path = models.CharField(_("Filter by Remote Path (REGEXP)"),
                                           max_length=256, null=True, blank=True, validators=[check_re])
     filter_description = models.CharField(_("Filter by Description (REGEXP)"),
                                           max_length=256, null=True, blank=True, validators=[check_re])
-    filter_tags = TagsField(_("Filter By Tags"),
-                            null=True, blank=True)
+    filter_tags = TagsField(_("Filter By Tags"), null=True, blank=True)
     source_combine_method = models.CharField(_("Source Combine Method"),
                                              max_length=1, default="O", choices=[("A", "AND"), ("O", "OR")])
     sources = models.ManyToManyField("self",
@@ -371,16 +365,17 @@ class ManagedObjectSelector(models.Model):
         return list(objects)
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class ManagedObjectSelectorByAttribute(models.Model):
+class ManagedObjectSelectorByAttribute(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Selector by Attribute")
         db_table = "sa_managedobjectselectorbyattribute"
         app_label = "sa"
 
-    selector = models.ForeignKey(ManagedObjectSelector,
-                                 verbose_name=_("Object Selector"))
+    selector = models.ForeignKey(
+        ManagedObjectSelector,
+        verbose_name=_("Object Selector"), on_delete=models.CASCADE
+    )
     key_re = models.CharField(_("Filter by key (REGEXP)"),
                               max_length=256, validators=[check_re])
     value_re = models.CharField(_("Filter by value (REGEXP)"),

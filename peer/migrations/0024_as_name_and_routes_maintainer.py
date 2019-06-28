@@ -22,6 +22,6 @@ class Migration(BaseMigration):
         self.db.add_column(
             "peer_as", "routes_maintainer",
             models.ForeignKey(
-                Maintainer, verbose_name="Routes Maintainer", null=True, blank=True, related_name="routes_maintainer"
+                Maintainer, verbose_name="Routes Maintainer", null=True, blank=True, related_name="routes_maintainer", on_delete=models.CASCADE
             )
         )

@@ -15,11 +15,12 @@ import threading
 import six
 from django.db import models, connection
 from django.db.models import signals as django_signals
+from django.apps import apps
 from mongoengine.base.common import _document_registry
 from mongoengine import fields
 import mongoengine.signals
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.lib.validators import is_int
 from .customfieldenumgroup import CustomFieldEnumGroup
 
@@ -27,9 +28,8 @@ logger = logging.getLogger(__name__)
 id_lock = threading.Lock()
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class CustomField(models.Model):
+class CustomField(NOCModel):
     """
     Custom field description
     """
@@ -57,8 +57,7 @@ class CustomField(models.Model):
     description = models.TextField("Description", null=True, blank=True)
     # Applicable only for "str" type
     max_length = models.IntegerField("Max. Length", default=0)
-    regexp = models.CharField("Regexp", max_length=256,
-                              null=True, blank=True)
+    regexp = models.CharField("Regexp", max_length=256, null=True, blank=True)
     # Create database index on field
     is_indexed = models.BooleanField("Is Indexed", default=False)
     # Include into the applications search fields
@@ -69,9 +68,9 @@ class CustomField(models.Model):
     # Field is excluded from forms
     is_hidden = models.BooleanField("Is Hidden", default=False)
     # Is enumeration?
-    enum_group = models.ForeignKey(CustomFieldEnumGroup,
-                                   verbose_name="Enum Group",
-                                   null=True, blank=True)
+    enum_group = models.ForeignKey(
+        CustomFieldEnumGroup, verbose_name="Enum Group", null=True, blank=True, on_delete=models.CASCADE
+    )
     _cfields = {}
     _installed = set()
     _table_fields = None
@@ -268,7 +267,7 @@ class CustomField(models.Model):
         a, m = self.table.split("_", 1)
         if a == "auth":
             a = "aaa"
-        return models.get_model(a, m)
+        return apps.get_model(a, m)
 
     def document_class(self):
         """

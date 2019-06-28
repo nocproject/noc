@@ -12,17 +12,16 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.core.gridvcs.manager import GridVCSField
 from noc.lib.rpsl import rpsl_format, rpsl_multiple
 from noc.core.model.decorator import on_save
 from .rir import RIR
 
 
-@tuck_up_pants
 @on_save
 @six.python_2_unicode_compatible
-class Person(models.Model):
+class Person(NOCModel):
     class Meta(object):
         verbose_name = "Person"
         verbose_name_plural = "Persons"
@@ -42,7 +41,7 @@ class Person(models.Model):
     phone = models.TextField("phone")
     fax_no = models.TextField("fax-no", blank=True, null=True)
     email = models.TextField("email")
-    rir = models.ForeignKey(RIR, verbose_name="RIR")
+    rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
     extra = models.TextField("extra", blank=True, null=True)
     rpsl = GridVCSField("rpsl_person")
 

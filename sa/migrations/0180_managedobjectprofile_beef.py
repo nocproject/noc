@@ -25,7 +25,7 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectprofile", "beef_path_template",
-            models.ForeignKey(Template, verbose_name="Config Mirror Template", blank=True, null=True)
+            models.ForeignKey(Template, verbose_name="Config Mirror Template", blank=True, null=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
             "sa_managedobjectprofile", "beef_policy",

@@ -33,7 +33,7 @@ class Migration(BaseMigration):
                 ("pull_every", models.PositiveIntegerField("Pull Every (secs)", default=86400, blank=True, null=True)),
                 ("next_pull", models.DateTimeField("Next Pull", blank=True, null=True)),
                 ("last_pull", models.DateTimeField("Last Pull", blank=True, null=True)),
-                ("activator", models.ForeignKey(Activator, verbose_name="Activator")),
+                ("activator", models.ForeignKey(Activator, verbose_name="Activator", on_delete=models.CASCADE)),
                 ("profile_name", models.CharField("Profile", max_length=128)),
                 ("scheme", models.IntegerField("Scheme", choices=SCHEME_CHOICES)),
                 ("address", models.CharField("Address", max_length=64)),
@@ -58,8 +58,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             "cm_config_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("config", models.ForeignKey(Config, null=False)),
-                ("objectcategory", models.ForeignKey(ObjectCategory, null=False))
+                ("config", models.ForeignKey(Config, null=False, on_delete=models.CASCADE)),
+                ("objectcategory", models.ForeignKey(ObjectCategory, null=False, on_delete=models.CASCADE))
             )
         )
         # Model "PrefixList"
@@ -89,8 +89,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             "cm_prefixlist_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("prefixlist", models.ForeignKey(PrefixList, null=False)),
-                ("objectcategory", models.ForeignKey(ObjectCategory, null=False))
+                ("prefixlist", models.ForeignKey(PrefixList, null=False, on_delete=models.CASCADE)),
+                ("objectcategory", models.ForeignKey(ObjectCategory, null=False, on_delete=models.CASCADE))
             )
         )
         # Model "DNS"
@@ -121,7 +121,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "cm_dns_categories", (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
-                ("dns", models.ForeignKey(DNS, null=False)),
-                ("objectcategory", models.ForeignKey(ObjectCategory, null=False))
+                ("dns", models.ForeignKey(DNS, null=False, on_delete=models.CASCADE)),
+                ("objectcategory", models.ForeignKey(ObjectCategory, null=False, on_delete=models.CASCADE))
             )
         )
