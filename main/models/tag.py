@@ -8,8 +8,8 @@
 
 # Third-party modules
 import six
-# NOC modules
-from noc.lib.nosql import Document, IntField, StringField, ListField
+from mongoengine.document import Document
+from mongoengine.fields import StringField, IntField, ListField
 
 
 @six.python_2_unicode_compatible
