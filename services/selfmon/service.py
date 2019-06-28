@@ -22,6 +22,7 @@ from noc.services.selfmon.loader import iter_collectors
 
 class SelfMonService(Service):
     name = "selfmon"
+    use_mongo = True
 
     def __init__(self):
         super(SelfMonService, self).__init__()

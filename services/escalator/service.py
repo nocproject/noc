@@ -23,6 +23,7 @@ class EscalatorService(Service):
     name = "escalator"
     leader_lock_name = "escalator"
     use_telemetry = True
+    use_mongo = True
 
     def __init__(self, *args, **kwargs):
         super(EscalatorService, self).__init__(*args, **kwargs)

@@ -42,6 +42,7 @@ from noc.core.perf import metrics
 class CorrelatorService(Service):
     name = "correlator"
     pooled = True
+    use_mongo = True
     leader_lock_name = "correlator-%(pool)s"
     process_name = "noc-%(name).10s-%(pool).5s"
 

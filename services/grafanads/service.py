@@ -15,6 +15,7 @@ from noc.services.grafanads.annotations import AnnotationsHandler
 
 class GrafanaDSService(UIService):
     name = "grafanads"
+    use_mongo = True
 
     def get_handlers(self):
         return super(GrafanaDSService, self).get_handlers() + [

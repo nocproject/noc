@@ -21,6 +21,7 @@ class BIService(UIService):
     ]
     api_request_handler = AuthAPIRequestHandler
     use_translation = True
+    use_mongo = True
     if config.features.traefik:
         traefik_backend = "bi"
         traefik_frontend_rule = "PathPrefix:/api/bi"
