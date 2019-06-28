@@ -94,6 +94,14 @@ MIDDLEWARE_CLASSES = [
 
 ROOT_URLCONF = "noc.urls"
 
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": False,
+        "DIRS": [".", "templates"]
+    }
+]
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
