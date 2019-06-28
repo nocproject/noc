@@ -84,12 +84,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "noc.core.middleware.context.messages"
 )
 #
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
-    "noc.core.middleware.remoteuser.RemoteUserMiddleware",
-    "noc.core.middleware.tls.TLSMiddleware",  # Thread local storage
-    "noc.core.middleware.extformat.ExtFormatMiddleware"
+    "noc.core.middleware.remoteuser.remote_user_middleware",
+    "noc.core.middleware.tls.tls_middleware",
+    "noc.core.middleware.extformat.ext_format_middleware"
 ]
 
 ROOT_URLCONF = "noc.urls"
