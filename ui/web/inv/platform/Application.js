@@ -180,10 +180,11 @@ Ext.define("NOC.inv.platform.Application", {
                     ]
                 },
                 {
-
                     name: "tags",
                     xtype: "tagsfield",
                     fieldLabel: __("Tags"),
+                    store: {
+                    },
                     allowBlank: true
                 }
             ],
