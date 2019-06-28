@@ -55,11 +55,11 @@ class AS(NOCModel):
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="as_set")
+        null=True, blank=True, related_name="as_set", on_delete=models.CASCADE)
     # RPSL descr field
     description = models.CharField("Description", max_length=64)
     organisation = models.ForeignKey(
-        Organisation, verbose_name="Organisation")
+        Organisation, verbose_name="Organisation", on_delete=models.CASCADE)
     administrative_contacts = models.ManyToManyField(
         Person,
         verbose_name="admin-c",
@@ -88,7 +88,7 @@ class AS(NOCModel):
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
     # remarks: will be prepended automatically
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
-    rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
+    rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
     tags = TagsField("Tags", null=True, blank=True)
     rpsl = GridVCSField("rpsl_as")
 

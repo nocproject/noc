@@ -63,11 +63,13 @@ class Prefix(NOCModel):
         related_name="children_set",
         verbose_name=_("Parent"),
         null=True,
-        blank=True)
+        blank=True,
+        on_delete=models.CASCADE)
     vrf = CachedForeignKey(
         VRF,
         verbose_name=_("VRF"),
-        default=VRF.get_global
+        default=VRF.get_global,
+        on_delete=models.CASCADE
     )
     afi = models.CharField(
         _("Address Family"),
@@ -86,7 +88,7 @@ class Prefix(NOCModel):
     asn = CachedForeignKey(
         AS, verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
-        null=True, blank=True
+        null=True, blank=True, on_delete=models.CASCADE
     )
     project = CachedForeignKey(
         Project, verbose_name="Project",

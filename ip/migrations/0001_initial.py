@@ -56,7 +56,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'ip_ipv4blockaccess', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('user', models.ForeignKey(User, verbose_name=User)), ('vrf', models.ForeignKey(VRF, verbose_name=VRF, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE)),
+                ('vrf', models.ForeignKey(VRF, verbose_name=VRF, on_delete=models.CASCADE)),
                 ('prefix', models.CharField("prefix", max_length=18)),
                 ('tt', models.IntegerField("TT", blank=True, null=True))
             )
@@ -80,8 +81,10 @@ class Migration(BaseMigration):
             'ip_ipv4block', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('description', models.CharField("Description", max_length=64)),
-                ('prefix', models.CharField("prefix", max_length=18)), ('vrf', models.ForeignKey(VRF, on_delete=models.CASCADE)),
-                ('asn', models.ForeignKey(AS, on_delete=models.CASCADE)), ('modified_by', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE)),
+                ('prefix', models.CharField("prefix", max_length=18)),
+                ('vrf', models.ForeignKey(VRF, on_delete=models.CASCADE)),
+                ('asn', models.ForeignKey(AS, on_delete=models.CASCADE)),
+                ('modified_by', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE)),
                 ('last_modified', models.DateTimeField("Last modified", auto_now=True, auto_now_add=True)),
                 ('tt', models.IntegerField("TT", blank=True, null=True))
             )
@@ -101,7 +104,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'ip_ipv4address', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('vrf', models.ForeignKey(VRF, verbose_name=VRF, on_delete=models.CASCADE)), ('fqdn', models.CharField("FQDN", max_length=64)),
+                ('vrf', models.ForeignKey(VRF, verbose_name=VRF, on_delete=models.CASCADE)),
+                ('fqdn', models.CharField("FQDN", max_length=64)),
                 ('ip', models.GenericIPAddressField("IP", protocol="IPv4")),
                 ('description', models.CharField("Description", blank=True, null=True, max_length=64)),
                 ('modified_by', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE)),

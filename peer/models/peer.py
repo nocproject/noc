@@ -9,7 +9,7 @@
 # Third-party modules
 import six
 from django.db import models
-# Peer modules
+# NOC modules
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.core.model.fields import INETField, TagsField
@@ -34,13 +34,13 @@ class Peer(NOCModel):
         app_label = "peer"
 
     peer_group = models.ForeignKey(
-        PeerGroup, verbose_name="Peer Group")
+        PeerGroup, verbose_name="Peer Group", on_delete=models.CASCADE)
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="peer_set")
+        null=True, blank=True, related_name="peer_set", on_delete=models.CASCADE)
     peering_point = models.ForeignKey(
-        PeeringPoint, verbose_name="Peering Point")
-    local_asn = models.ForeignKey(AS, verbose_name="Local AS")
+        PeeringPoint, verbose_name="Peering Point", on_delete=models.CASCADE)
+    local_asn = models.ForeignKey(AS, verbose_name="Local AS", on_delete=models.CASCADE)
     local_ip = INETField("Local IP")
     local_backup_ip = INETField(
         "Local Backup IP", null=True, blank=True)

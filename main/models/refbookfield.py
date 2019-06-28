@@ -29,7 +29,7 @@ class RefBookField(NOCModel):
         unique_together = [("ref_book", "order"), ("ref_book", "name")]
         ordering = ["ref_book", "order"]
 
-    ref_book = models.ForeignKey(RefBook, verbose_name="Ref Book")
+    ref_book = models.ForeignKey(RefBook, verbose_name="Ref Book", on_delete=models.CASCADE)
     name = models.CharField("Name", max_length="64")
     order = models.IntegerField("Order")
     is_required = models.BooleanField("Is Required", default=True)

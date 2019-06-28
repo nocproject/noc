@@ -35,8 +35,9 @@ class KBEntryTemplate(NOCModel):
     name = models.CharField("Name", max_length=128, unique=True)
     subject = models.CharField("Subject", max_length=256)
     body = models.TextField("Body")
-    language = models.ForeignKey(Language, verbose_name="Language",
-                                 limit_choices_to={"is_active": True})
+    language = models.ForeignKey(
+        Language, verbose_name="Language",limit_choices_to={"is_active": True}, on_delete=models.CASCADE
+    )
     markup_language = models.CharField("Markup Language", max_length="16",
                                        choices=[(x, x) for x in loader])
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)

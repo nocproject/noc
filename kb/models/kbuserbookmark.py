@@ -27,8 +27,8 @@ class KBUserBookmark(NOCModel):
         db_table = "kb_kbuserbookmark"
         unique_together = [("user", "kb_entry")]
 
-    user = models.ForeignKey(User, verbose_name="User")
-    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry")
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", on_delete=models.CASCADE)
 
     def __str__(self):
         return u"%s: %s" % (unicode(self.user), unicode(self.kb_entry))

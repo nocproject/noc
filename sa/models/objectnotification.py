@@ -26,12 +26,9 @@ class ObjectNotification(NOCModel):
         db_table = "sa_objectnotification"
         app_label = "sa"
 
-    selector = models.ForeignKey(
-        ManagedObjectSelector,
-        verbose_name=_("Selector"))
-    notification_group = models.ForeignKey(
-        NotificationGroup,
-        verbose_name=_("Notification Group"))
+    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Selector"), on_delete=models.CASCADE)
+    notification_group = models.ForeignKey(NotificationGroup, verbose_name=_("Notification Group"),
+                                           on_delete=models.CASCADE)
     # Events
     config_changed = models.BooleanField(_("Config changed"), default=False)
     alarm_risen = models.BooleanField(_("Alarm risen"), default=False)
