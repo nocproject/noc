@@ -630,14 +630,21 @@ class ManagedObject(NOCModel):
         else:
             return None
 
-    def iter_changed_datastream(self):
-        if config.datastream.enable_managedobject:
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_managedobject and "managed_object_profile" not in changed_fields:
             yield "managedobject", self.id
-        if config.datastream.enable_cfgping:
+        if config.datastream.enable_cfgping and changed_fields.intersection({
+                "report_ping_rtt", "enable_ping", "ping_interval", "ping_policy",
+                "ping_size", "ping_count", "ping_timeout_ms", "report_ping_attempts",
+                "event_processing_policy"}):
             yield "cfgping", self.id
-        if config.datastream.enable_cfgsyslog:
+        if config.datastream.enable_cfgsyslog and changed_fields.intersection({
+                "event_processing_policy", "syslog_archive_policy",
+                "syslog_source_type", "syslog_source_ip"}):
             yield "cfgsyslog", self.id
-        if config.datastream.enable_cfgtrap:
+        if config.datastream.enable_cfgtrap and changed_fields.intersection({
+            "event_processing_policy", "trap_source_type", "trap_source_ip"
+        }):
             yield "cfgtrap", self.id
 
     @property
