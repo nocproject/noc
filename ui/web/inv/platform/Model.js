@@ -76,6 +76,10 @@ Ext.define("NOC.inv.platform.Model", {
         {
             name: "aliases",
             type: "auto"
+        },
+        {
+            name: "tags",
+            type: "auto"
         }
     ]
 });
