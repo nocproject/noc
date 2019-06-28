@@ -6,21 +6,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from threading import Lock
-import operator
 # Third-party modules
 from django.utils.functional import SimpleLazyObject
-import cachetools
+
 # NOC modules
 from noc.aaa.models.user import User
 from noc.core.perf import metrics
-from noc.core.debug import ErrorReport
 
-user_lock = Lock()
+HEADER = "HTTP_REMOTE_USER"
 
 
-class RemoteUserMiddleware(object):
+def remote_user_middleware(get_response):
     """
     Authenticate against REMOTE_USER request header
 
@@ -31,32 +27,27 @@ class RemoteUserMiddleware(object):
     If authentication is successful, the user is automatically logged in to
     persist the user in the session.
 
-    The header used is configurable and defaults to ``REMOTE_USER``.  Subclass
-    this class and change the ``header`` attribute if you need to use a
-    different header.
+    :param get_response: Callable returning response from downstream middleware
+    :return:
     """
-    HEADER = "HTTP_REMOTE_USER"
 
-    _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    def user_getter(user):
+        def getter():
+            u = User.get_by_username(user)
+            if not u:
+                metrics["error", ("type", "user_not_found")] += 1
+            return u
 
-    def process_request(self, request):
+        return getter
+
+    def middleware(request):
         # Get username from REMOTE_USER
-        user_name = request.META.get(self.HEADER)
+        user_name = request.META.get(HEADER)
         if user_name:
-            request.user = SimpleLazyObject(lambda: self.get_user_by_name(user_name))
+            request.user = SimpleLazyObject(user_getter(user_name))
         else:
             request.user = None
 
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_user_cache"), lock=lambda _: user_lock)
-    def get_user_by_name(cls, name):
-        with ErrorReport():
-            user = User.objects.filter(username=name)[:1]
-            if user:
-                return user[0]
-            else:
-                metrics["error", ("type", "user_not_found")] += 1
-                return None
+        return get_response(request)
 
-    def get_user(self, user_name):
-        return self.get_user_by_name(user_name)
+    return middleware
