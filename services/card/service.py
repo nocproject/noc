@@ -19,6 +19,7 @@ class CardService(UIService):
 
     use_translation = True
     use_jinja = True
+    use_mongo = True
     if config.features.traefik:
         traefik_backend = "card"
         traefik_frontend_rule = "PathPrefix:/api/card"

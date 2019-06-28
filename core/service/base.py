@@ -84,6 +84,8 @@ class Service(object):
 
     # Run NSQ writer on service startup
     require_nsq_writer = False
+    # Connect to MongoDB on activate
+    use_mongo = False
     # List of API instances
     api = []
     # Request handler class
@@ -435,6 +437,9 @@ class Service(object):
         Initialize services before run
         """
         self.logger.warn("Activating service")
+        if self.use_mongo:
+            from noc.lib.nosql import auto_connect
+            auto_connect()
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
             (r"^/metrics$", MetricsHandler, {"service": self}),

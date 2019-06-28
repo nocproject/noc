@@ -26,6 +26,7 @@ class WebService(Service):
     name = "web"
     api = []
     use_translation = True
+    use_mongo = True
     if config.features.traefik:
         traefik_backend = "web"
         traefik_frontend_rule = "PathPrefix:/"

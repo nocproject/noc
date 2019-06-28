@@ -20,6 +20,7 @@ class SchedulerService(Service):
     name = "scheduler"
     leader_group_name = "scheduler"
     leader_lock_name = "scheduler"
+    use_mongo = True
 
     @tornado.gen.coroutine
     def on_activate(self):

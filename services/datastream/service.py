@@ -26,6 +26,7 @@ from noc.config import config
 
 class DataStreamService(Service):
     name = "datastream"
+    use_mongo = True
     if config.features.traefik:
         traefik_backend = "datastream"
         traefik_frontend_rule = "PathPrefix:/api/datastream"
