@@ -15,6 +15,7 @@ import threading
 import six
 from django.db import models, connection
 from django.db.models import signals as django_signals
+from django.apps import apps
 from mongoengine.base.common import _document_registry
 from mongoengine import fields
 import mongoengine.signals
@@ -266,7 +267,7 @@ class CustomField(NOCModel):
         a, m = self.table.split("_", 1)
         if a == "auth":
             a = "aaa"
-        return models.get_model(a, m)
+        return apps.get_model(a, m)
 
     def document_class(self):
         """

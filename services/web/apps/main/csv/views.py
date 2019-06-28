@@ -43,7 +43,7 @@ class CSVApplication(Application):
             if form.is_valid():
                 if form.cleaned_data["action"] == "Export":
                     app, m = form.cleaned_data["model"].split(".", 1)
-                    model = models.get_model(app, m)
+                    model = app.get_model(app, m)
                     if not model:
                         return self.response_not_found("Invalid model")
                     return self.render_plain_text(
@@ -86,7 +86,7 @@ class CSVApplication(Application):
         :return:
         """
         app, model = model.split(".", 1)
-        m = models.get_model(app, model)
+        m = apps.get_model(app, model)
         if not m:
             return self.response_not_found("Invalid model")
         if request.POST:
