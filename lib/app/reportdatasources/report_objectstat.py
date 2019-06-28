@@ -99,7 +99,10 @@ class AttributeIsolator(IsolatorClass):
 
 class CapabilitiesIsolator(IsolatorClass):
     name = "has"
-    default_set = set(ManagedObject.objects.filter().values_list("id", flat=True))
+
+    @property
+    def default_set(self):
+        return set(ManagedObject.objects.filter().values_list("id", flat=True))
 
     @staticmethod
     def _2_has(index):
