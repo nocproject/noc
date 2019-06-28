@@ -40,6 +40,8 @@ yapf:
         echo "No files to lint"
         true;
       fi
+  except:
+    - master
   tags:
     - docker
   allow_failure: true
@@ -213,6 +215,25 @@ Build docs:
   only:
     changes:
       - docs/**
+
+Build Master Docs:
+  stage: Build docs
+  environment: docs
+  image: registry.getnoc.com/infrastructure/docs:master
+  script:
+    - cd docs/
+    - sphinx-build -a -E -b html src/en ../build/docs/en
+    - python ./scripts/build-go.py ../build/docs/en/objects.inv
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/docs/en
+    expire_in: 1 day
+  only:
+    refs:
+      - master
+      - /^release-\d+\.\d+/
 
 Build release image:
   stage: Build release container
