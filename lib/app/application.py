@@ -473,7 +473,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
                 result += [{id_field: r, name_field: r}]
         return self.render_json(result)
 
-    def get_views(self):
+    def iter_views(self):
         """
         Iterator returning application views
         """
@@ -490,7 +490,7 @@ class Application(six.with_metaclass(ApplicationBase, object)):
         prefix = self.get_app_id().replace(".", ":")
         p = {"%s:launch" % prefix}
         # View permissions from HasPerm
-        for view in self.get_views():
+        for view in self.iter_views():
             if isinstance(view.access, HasPerm):
                 p.add(view.access.get_permission(self))
         # mrt_config permissions
