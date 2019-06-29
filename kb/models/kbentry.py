@@ -61,7 +61,7 @@ class KBEntry(NOCModel):
     def get_absolute_url(self):
         return site.reverse("kb:view:view", self.id)
 
-    def save(self, force_insert=False, force_update=False, using=None):
+    def save(self, *args, **kwargs):
         """
         save model, compute body's diff and save event history
         """
@@ -73,7 +73,7 @@ class KBEntry(NOCModel):
             old_body = KBEntry.objects.get(id=self.id).body
         else:
             old_body = ""
-        super(KBEntry, self).save()
+        super(KBEntry, self).save(*args, **kwargs)
         if old_body != self.body:
             diff = "\n".join(difflib.unified_diff(self.body.splitlines(), old_body.splitlines()))
             KBEntryHistory(kb_entry=self, user=user, diff=diff,

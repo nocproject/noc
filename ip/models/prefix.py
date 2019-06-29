@@ -256,12 +256,12 @@ class Prefix(NOCModel):
         if self.is_root and self.parent:
             raise ValidationError("Root prefix cannot have parent")
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         """
         Save prefix
         """
         self.clean()
-        super(Prefix, self).save(**kwargs)
+        super(Prefix, self).save(*args, **kwargs)
         # Rebuild tree if necessary
         # Reconnect children children prefixes
         c = connection.cursor()

@@ -45,9 +45,9 @@ class TimePatternTerm(NOCModel):
         """
         TP(term)
 
-    def save(self, *args):
+    def save(self, *args, **kwargs):
         """
         Check syntax before save
         """
         TimePatternTerm.check_syntax(self.term)
-        super(TimePatternTerm, self).save(*args)
+        super(TimePatternTerm, self).save(*args, **kwargs)

@@ -85,7 +85,7 @@ class Maintenance(Document):
     def get_by_id(cls, id):
         return Maintenance.objects.filter(id=id).first()
 
-    def save(self, force_insert=False, force_update=False, using=None):
+    def save(self, *args, **kwargs):
         if self.direct_objects:
             if any(o_elem.object is None for o_elem in self.direct_objects):
                 raise ValidationError("Object line is Empty")
@@ -95,7 +95,7 @@ class Maintenance(Document):
                     elem.segment = elem.segment
                 except Exception:
                     raise ValidationError("Segment line is Empty")
-        super(Maintenance, self).save(force_insert, force_update)
+        super(Maintenance, self).save(*args, **kwargs)
 
     def on_save(self):
         self.update_affected_objects()
