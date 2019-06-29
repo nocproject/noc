@@ -117,7 +117,7 @@ class DNSZone(NOCModel):
             return zone[0]
         return None
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_dnszone:
             yield "dnszone", self.id
 

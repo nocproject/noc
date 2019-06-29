@@ -97,11 +97,11 @@ class DNSZoneProfile(NOCModel):
         else:
             return None
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:
             return
         for z in self.dnszone_set.all():
-            for ds, id in z.iter_changed_datastream():
+            for ds, id in z.iter_changed_datastream(changed_fields=changed_fields):
                 yield ds, id
 
     @property

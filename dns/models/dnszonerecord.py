@@ -45,6 +45,6 @@ class DNSZoneRecord(NOCModel):
             " ".join([x for x in (self.name, self.type, self.content) if x])
         )
 
-    def iter_changed_datastream(self):
-        for ds, id in self.zone.iter_changed_datastream():
+    def iter_changed_datastream(self, changed_fields=None):
+        for ds, id in self.zone.iter_changed_datastream(changed_fields=changed_fields):
             yield ds, id

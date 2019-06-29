@@ -25,7 +25,7 @@ def datastream(cls):
     @datastream
     class MyModel(Model):
         ...
-        def iter_changed_datastream(self):
+        def iter_changed_datastream(self, changed_fields=None):
            yield <datastream name>, <object id>
            ...
            yield <datastream name>, <object id>

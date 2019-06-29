@@ -139,7 +139,7 @@ class Address(NOCModel):
     def __str__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:
             return
 
@@ -149,12 +149,12 @@ class Address(NOCModel):
             # Touch forward zone
             fz = DNSZone.get_zone(self.fqdn)
             if fz:
-                for ds, id in fz.iter_changed_datastream():
+                for ds, id in fz.iter_changed_datastream(changed_fields=changed_fields):
                     yield ds, id
             # Touch reverse zone
             rz = DNSZone.get_zone(self.address)
             if rz:
-                for ds, id in rz.iter_changed_datastream():
+                for ds, id in rz.iter_changed_datastream(changed_fields=changed_fields):
                     yield ds, id
 
     @classmethod

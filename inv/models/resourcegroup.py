@@ -95,7 +95,7 @@ class ResourceGroup(Document):
     def get_by_bi_id(cls, id):
         return ResourceGroup.objects.filter(bi_id=id).first()
 
-    def iter_changed_datastream(self):
+    def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_resourcegroup:
             yield "resourcegroup", self.id
 
