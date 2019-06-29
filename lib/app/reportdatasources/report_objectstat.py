@@ -12,9 +12,9 @@ from collections import defaultdict
 import cachetools
 from django.db.models import Q as d_Q
 from pymongo import ReadPreference
+from mongoengine.queryset.visitor import Q as m_Q
 # NOC modules
 from noc.lib.nosql import get_db
-from noc.lib.nosql import Q as m_Q
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.profile import Profile
@@ -55,7 +55,9 @@ class IsolatorClass(object):
 class AttributeIsolator(IsolatorClass):
     name = "attribute"
 
-    OP_ATTR_MAP = {
+    @property
+    def OP_ATTR_MAP(self):
+        return {
         "2": {"1": False,
               "2": True},
         "7": {"1": str(Profile.get_generic_profile_id()),
@@ -97,7 +99,10 @@ class AttributeIsolator(IsolatorClass):
 
 class CapabilitiesIsolator(IsolatorClass):
     name = "has"
-    default_set = set(ManagedObject.objects.filter().values_list("id", flat=True))
+
+    @property
+    def default_set(self):
+        return set(ManagedObject.objects.filter().values_list("id", flat=True))
 
     @staticmethod
     def _2_has(index):

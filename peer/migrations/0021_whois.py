@@ -30,7 +30,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_whoislookup', (
                 ('id', models.AutoField(primary_key=True)),
-                ('whois_database', models.ForeignKey(WhoisDatabase, verbose_name='Whois Database')),
+                ('whois_database', models.ForeignKey(WhoisDatabase, verbose_name='Whois Database', on_delete=models.CASCADE)),
                 ('url', models.CharField("Object", max_length=256)),
                 ('direction', models.CharField("Direction", max_length=1)),
                 ('key', models.CharField("Key", max_length=32)),
@@ -46,7 +46,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_whoiscache', (
                 ('id', models.AutoField(primary_key=True)),
-                ('lookup', models.ForeignKey(WhoisLookup, verbose_name="Whois Lookup")),
+                ('lookup', models.ForeignKey(WhoisLookup, verbose_name="Whois Lookup", on_delete=models.CASCADE)),
                 ('key', models.CharField("Key", max_length=64)),
                 ('value', models.TextField("Value")),
             )

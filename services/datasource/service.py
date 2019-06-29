@@ -15,6 +15,7 @@ from noc.services.datasource.handler import DataSourceRequestHandler
 
 class DataSourceService(Service):
     name = "datasource"
+    use_mongo = True
 
     def get_handlers(self):
         return [

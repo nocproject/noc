@@ -14,6 +14,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -38,7 +39,7 @@ id_lock = Lock()
     ("vc.VLAN", "project")
 ])
 @six.python_2_unicode_compatible
-class Project(models.Model):
+class Project(NOCModel):
     """
     Projects are used to track investment projects expenses and profits
     """
@@ -60,7 +61,7 @@ class Project(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda x: id_lock)
     def get_by_id(cls, id):
-        try:
-            return Project.objects.get(id=id)
-        except Project.DoesNotExist:
-            return None
+        p = Project.objects.filter(id=id)[:1]
+        if p:
+            return p[0]
+        return None

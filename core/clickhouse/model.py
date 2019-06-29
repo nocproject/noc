@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import hashlib
 from collections import OrderedDict
 # Third-party modules
@@ -179,6 +179,14 @@ class Model(six.with_metaclass(ModelBase)):
                             after)
                     )
                     c = True
+                if "." in f:
+                    # For Nested field
+                    c_type = "Array(%s)" % cls._fields[f].get_db_type()
+                else:
+                    c_type = cls._fields[f].get_db_type()
+                if f in existing and existing[f] != c_type:
+                    print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], c_type))
+                    print("Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s" % (table_name, f, c_type))
                 after = f
             return c
 

@@ -42,9 +42,9 @@ class Migration(BaseMigration):
         self.db.create_table(
             'main_notificationgroupuser', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('notification_group', models.ForeignKey(NotificationGroup, verbose_name="Notification Group")),
-                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern")),
-                ('user', models.ForeignKey(User, verbose_name=User))
+                ('notification_group', models.ForeignKey(NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)),
+                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(User, verbose_name=User, on_delete=models.CASCADE))
             )
         )
         self.db.create_index(
@@ -65,8 +65,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'main_notificationgroupother', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('notification_group', models.ForeignKey(NotificationGroup, verbose_name="Notification Group")),
-                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern")),
+                ('notification_group', models.ForeignKey(NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)),
+                ('time_pattern', models.ForeignKey(TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)),
                 ('notification_method', models.CharField("Method", max_length=16)),
                 ('params', models.CharField("Params", max_length=256))
             )

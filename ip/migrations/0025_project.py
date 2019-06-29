@@ -22,4 +22,8 @@ class Migration(BaseMigration):
             db_table="project_project"
         )
         for t in ["ip_vrf", "ip_prefix", "ip_address"]:
-            self.db.add_column(t, "project", models.ForeignKey(Project, verbose_name="Project", null=True, blank=True))
+            self.db.add_column(
+                t,
+                "project",
+                models.ForeignKey(Project, verbose_name="Project", null=True, blank=True, on_delete=models.CASCADE)
+            )

@@ -27,10 +27,8 @@ Ext.define("NOC.core.TagsField", {
         }
     },
     initComponent: function() {
-        var me = this;
-
-        Ext.apply(me, {
-            store: {
+        var me = this,
+            store = me.store || {
                 fields: ["id", "label"],
                 pageSize: 25,
                 proxy: {
@@ -50,7 +48,9 @@ Ext.define("NOC.core.TagsField", {
                         successProperty: "success"
                     }
                 }
-            }
+            };
+        Ext.apply(me, {
+            store: store
         });
         me.callParent();
     },

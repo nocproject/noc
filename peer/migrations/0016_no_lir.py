@@ -29,7 +29,8 @@ class Migration(BaseMigration):
             lir_to_rir[lir_id] = \
                 self.db.execute("SELECT id FROM peer_maintainer WHERE maintainer=%s", [name])[0][0]
         self.db.add_column(
-            "peer_as", "maintainer", models.ForeignKey(Maintainer, verbose_name="Maintainer", null=True, blank=True)
+            "peer_as", "maintainer",
+            models.ForeignKey(Maintainer, verbose_name="Maintainer", null=True, blank=True, on_delete=models.CASCADE)
         )
         for as_id, lir_id in self.db.execute("SELECT id,lir_id FROM peer_as"):
             self.db.execute("UPDATE peer_as SET maintainer_id=%s WHERE id=%s", [lir_to_rir[lir_id], as_id])

@@ -19,5 +19,8 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobject", "config_diff_filter_rule",
-            models.ForeignKey(PyRule, verbose_name="Config Notification Filter pyRule", null=True, blank=True)
+            models.ForeignKey(
+                PyRule,
+                verbose_name="Config Notification Filter pyRule",
+                null=True, blank=True, on_delete=models.CASCADE)
         )

@@ -19,7 +19,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'sa_activator', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('name', models.CharField("Name", max_length=32, unique=True)), ('ip', models.IPAddressField("IP")),
+                ('name', models.CharField("Name", max_length=32, unique=True)), ('ip', models.GenericIPAddressField("IP", protocol="IPv4")),
                 ('auth', models.CharField("Auth String", max_length=64)),
                 ('is_active', models.BooleanField("Is Active", default=True))
             )

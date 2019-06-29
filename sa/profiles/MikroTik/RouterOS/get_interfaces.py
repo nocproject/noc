@@ -97,6 +97,10 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                     "subinterfaces": []
                 }
+                if "mac-address" in r:
+                    ifaces[r["name"]]["mac"] = r["mac-address"]
+                if "mac" in r:
+                    ifaces[r["name"]]["mac"] = r["mac"]
                 misc[r["name"]] = {"type": r["type"]}
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
@@ -122,10 +126,6 @@ class Script(BaseScript):
                         self.get_tunnel("GRE", "R", "IPv4", ifaces)
                     ifaces[r["name"]]["subinterfaces"] += [self.si]
         time.sleep(1)
-        # Refine ethernet parameters
-        for n, f, r in self.cli_detail("/interface ethernet print detail without-paging"):
-            iface = ifaces[r["name"]]
-            ifaces[r["name"]]["mac"] = r["mac-address"]
         # Attach `vlan` subinterfaces to parent
         for n, f, r in self.cli_detail("/interface vlan print detail without-paging"):
             if r["interface"] in ifaces:
@@ -163,7 +163,7 @@ class Script(BaseScript):
         # "RB532", "x86", CCR1009 not support internal switch port
         try:
             # Attach subinterfaces with `BRIDGE` AFI to parent
-            v = self.cli_detail("/interface ethernet switch vlan print detail without-paging")
+            v = self.cli_detail("/interface ethernet switch vlan print detail without-paging", cached=True)
             for n, f, r in v:
                 # vlan-id=auto ? Need more testing
                 if not is_int(r["vlan-id"]):
@@ -204,6 +204,65 @@ class Script(BaseScript):
                                 found = True
                     if not found:
                         i["subinterfaces"] += [self.si]
+        except self.CLISyntaxError:
+            pass
+        # Vlans on bridge
+        try:
+            v = self.cli_detail("/interface bridge vlan print detail without-paging", cached=True)
+            for n, f, d in v:
+                if "X" in f or "D" in f:
+                    continue
+                vlans = self.expand_rangelist(d["vlan-ids"])
+                for vlan_id in vlans:
+                    untagged = d["untagged"].split(",")
+                    for p in untagged:
+                        if p not in ifaces:
+                            continue
+                        i = ifaces[p]
+                        self.si = {
+                            "name": p,
+                            "mac": i.get("mac"),
+                            "admin_status": i.get("admin_status"),
+                            "oper_status": i.get("oper_status"),
+                            "enabled_afi": ["BRIDGE"],
+                            "enabled_protocols": [],
+                            "utagged_vlans": vlan_id
+                        }
+                        if self.get_mtu(i) is not None:
+                            self.si["mtu"] = self.get_mtu(i)
+                        # Try to find in already created subinterfaces
+                        for sub in i["subinterfaces"]:
+                            if sub["name"] == p:
+                                sub["utagged_vlan"] = vlan_id
+                                break
+                        else:
+                            i["subinterfaces"] += [self.si]
+                    tagged = d["tagged"].split(",")
+                    for p in tagged:
+                        if p not in ifaces:
+                            continue
+                        i = ifaces[p]
+                        self.si = {
+                            "name": p,
+                            "mac": i.get("mac"),
+                            "admin_status": i.get("admin_status"),
+                            "oper_status": i.get("oper_status"),
+                            "enabled_afi": ["BRIDGE"],
+                            "enabled_protocols": [],
+                            "tagged_vlans": [vlan_id]
+                        }
+                        if self.get_mtu(i) is not None:
+                            self.si["mtu"] = self.get_mtu(i)
+                        # Try to find in already created subinterfaces
+                        for sub in i["subinterfaces"]:
+                            if sub["name"] == p:
+                                if "tagged_vlans" in sub and vlan_id not in sub["tagged_vlans"]:
+                                    sub["tagged_vlans"] += [vlan_id]
+                                else:
+                                    sub["tagged_vlans"] = [vlan_id]
+                                break
+                        else:
+                            i["subinterfaces"] += [self.si]
         except self.CLISyntaxError:
             pass
         # Refine ip addresses

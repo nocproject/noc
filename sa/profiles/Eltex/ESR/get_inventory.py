@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,6 +26,12 @@ class Script(BaseScript):
         r"System uptime:.+\n"
         r"System MAC address:\s+\S+\s*\n"
         r"System serial number:\s+(?P<serial>\S+)\s*\n")
+
+    """
+    In ESR-12V ver.1.0.9 `show interfaces sfp` command produce this error:
+
+    <klish_get_oimgr_sfps> IS_LE check failed: sfps_size (0 <= 0) !!!
+    """
 
     def execute(self):
         c = self.scripts.get_system()

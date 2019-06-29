@@ -33,7 +33,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'pm_timeseriesdata', (
                 ('id', models.AutoField(primary_key=True)),
-                ('time_series', models.ForeignKey(TimeSeries, verbose_name="Time Series")),
+                ('time_series', models.ForeignKey(TimeSeries, verbose_name="Time Series", on_delete=models.CASCADE)),
                 ('timestamp', models.IntegerField("Timestamp")),
                 ('value', models.FloatField("Value", null=True, blank=True)),
             )
@@ -56,8 +56,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'pm_chart_time_series', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('chart', models.ForeignKey(Chart, null=False)),
-                ('timeseries', models.ForeignKey(TimeSeries, null=False))
+                ('chart', models.ForeignKey(Chart, null=False, on_delete=models.CASCADE)),
+                ('timeseries', models.ForeignKey(TimeSeries, null=False, on_delete=models.CASCADE))
             )
         )
         #

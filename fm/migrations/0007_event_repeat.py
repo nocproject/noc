@@ -24,7 +24,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'fm_eventrepeat', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('event', models.ForeignKey(Event, verbose_name="Event")),
+                ('event', models.ForeignKey(Event, verbose_name="Event", on_delete=models.CASCADE)),
                 ('timestamp', models.DateTimeField("Timestamp"))
             )
         )
@@ -38,7 +38,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'fm_eventclassvar', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class")),
+                ('event_class', models.ForeignKey(EventClass, verbose_name="Event Class", on_delete=models.CASCADE)),
                 ('name', models.CharField("Name", max_length=64)),
                 ('required', models.BooleanField("Required", default=True)),
                 ('repeat_suppression', models.BooleanField("Repeat Suppression", default=False))

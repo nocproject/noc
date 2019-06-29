@@ -93,6 +93,8 @@ class ArchivedAlarm(Document):
     container_path = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
+    # RCA neighbor cache, for topology_rca only
+    rca_neighbors = ListField(IntField())
 
     def __str__(self):
         return u"%s" % self.id

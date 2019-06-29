@@ -10,7 +10,7 @@
 import six
 from django.db import models
 # NOC module
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.lib.rpsl import rpsl_format
@@ -18,10 +18,9 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.core.model.decorator import on_save
 
 
-@tuck_up_pants
 @on_save
 @six.python_2_unicode_compatible
-class ASSet(models.Model):
+class ASSet(NOCModel):
     class Meta(object):
         verbose_name = "ASSet"
         verbose_name_plural = "ASSets"
@@ -30,8 +29,8 @@ class ASSet(models.Model):
 
     name = models.CharField("Name", max_length=32, unique=True)
     project = models.ForeignKey(
-        Project, verbose_name="Project",
-        null=True, blank=True, related_name="asset_set")
+        Project, verbose_name="Project", null=True, blank=True, related_name="asset_set", on_delete=models.CASCADE
+    )
     description = models.CharField("Description", max_length=64)
     members = models.TextField("Members", null=True, blank=True)
     rpsl_header = models.TextField("RPSL Header", null=True, blank=True)

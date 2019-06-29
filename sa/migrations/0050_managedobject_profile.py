@@ -18,4 +18,8 @@ class Migration(BaseMigration):
             db_table="sa_managedobjectprofile"
         )
 
-        self.db.add_column("sa_managedobject", "object_profile", models.ForeignKey(ManagedObjectProfile, null=True))
+        self.db.add_column(
+            "sa_managedobject",
+            "object_profile",
+            models.ForeignKey(ManagedObjectProfile, null=True, on_delete=models.CASCADE)
+        )

@@ -26,7 +26,7 @@ class Migration(BaseMigration):
             'main_refbook', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField("Name", max_length=128, unique=True)),
-                ('language', models.ForeignKey(Language, verbose_name=Language)),
+                ('language', models.ForeignKey(Language, verbose_name=Language, on_delete=models.CASCADE)),
                 ('description', models.TextField("Description", blank=True, null=True)),
                 ('is_enabled', models.BooleanField("Is Enabled", default=False)),
                 ('is_builtin', models.BooleanField("Is Builtin", default=False)),
@@ -48,7 +48,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'main_refbookfield', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book")),
+                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book", on_delete=models.CASCADE)),
                 ('name', models.CharField("Name", max_length="64")),
                 ('order', models.IntegerField("Order")),
                 ('is_required', models.BooleanField("Is Required", default=True)),
@@ -74,9 +74,9 @@ class Migration(BaseMigration):
         self.db.create_table(
             'main_refbookdata', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book")),
+                ('ref_book', models.ForeignKey(RefBook, verbose_name="Ref Book", on_delete=models.CASCADE)),
                 ('record_id', models.IntegerField("ID")),
-                ('field', models.ForeignKey(RefBookField, verbose_name="Field")),
+                ('field', models.ForeignKey(RefBookField, verbose_name="Field", on_delete=models.CASCADE)),
                 ('value', models.TextField("Value", null=True, blank=True))
             )
         )

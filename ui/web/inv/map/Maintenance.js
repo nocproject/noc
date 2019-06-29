@@ -17,8 +17,7 @@ Ext.define('NOC.inv.map.Maintenance', {
 
         "NOC.maintenance.maintenance.Model",
         "NOC.maintenance.maintenancetype.LookupField",
-        "NOC.sa.managedobject.LookupField",
-        "NOC.inv.networksegment.LookupField"
+        "NOC.sa.managedobject.LookupField"
     ],
 
     model: 'NOC.maintenance.maintenance.Model',

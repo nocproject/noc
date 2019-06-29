@@ -12,6 +12,7 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from .maintainer import Maintainer
 
@@ -25,7 +26,7 @@ ORG_TYPE_CHOICES = [
     ("peer.AS", "organisation")
 ])
 @six.python_2_unicode_compatible
-class Organisation(models.Model):
+class Organisation(NOCModel):
     class Meta(object):
         verbose_name = "Organisation"
         verbose_name_plural = "Organisations"
@@ -33,20 +34,15 @@ class Organisation(models.Model):
         app_label = "peer"
 
     # NIC Handle
-    organisation = models.CharField(
-        "Organisation",
-        max_length=128, unique=True)
+    organisation = models.CharField("Organisation", max_length=128, unique=True)
     # org-name:
     org_name = models.CharField("Org. Name", max_length=128)
     # org-type
-    org_type = models.CharField(
-        "Org. Type",
-        max_length=64,
-        choices=ORG_TYPE_CHOICES)
+    org_type = models.CharField("Org. Type", max_length=64, choices=ORG_TYPE_CHOICES)
     # address: will be prepended automatically for each line
     address = models.TextField("Address")
     # mnt-ref
-    mnt_ref = models.ForeignKey(Maintainer, verbose_name="Mnt. Ref")
+    mnt_ref = models.ForeignKey(Maintainer, verbose_name="Mnt. Ref", on_delete=models.CASCADE)
 
     def __str__(self):
         return u" %s (%s)" % (self.organisation, self.org_name)

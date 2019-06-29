@@ -18,7 +18,7 @@ import re
 import cachetools
 import tornado.gen
 import tornado.ioloop
-import bson
+from bson import ObjectId
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -34,7 +34,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.core.version import version
 from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
-from noc.lib.nosql import ObjectId
 from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
@@ -91,6 +90,7 @@ class ClassifierService(Service):
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
     pooled = True
+    use_mongo = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
     # SNMP OID pattern
@@ -362,7 +362,9 @@ class ClassifierService(Service):
                 try:
                     v = decoder(event, v)
                 except InterfaceTypeError:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
+                    raise EventProcessingFailed(
+                        "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
+                    )
             r[ecv.name] = v
         return r
 
@@ -742,7 +744,7 @@ class ClassifierService(Service):
                  id=None, *args, **kwargs):
         event_ts = datetime.datetime.fromtimestamp(ts)
         # Generate or reuse existing object id
-        event_id = bson.ObjectId(id)
+        event_id = ObjectId(id)
         # Calculate messate processing delay
         lag = (time.time() - ts) * 1000
         metrics["lag_us"] = int(lag * 1000)

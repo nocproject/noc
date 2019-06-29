@@ -20,5 +20,9 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_object_profile",
-            models.ForeignKey(ManagedObjectProfile, verbose_name="Filter by Object Profile", null=True, blank=True)
+            models.ForeignKey(
+                ManagedObjectProfile,
+                verbose_name="Filter by Object Profile",
+                null=True, blank=True, on_delete=models.CASCADE
+            )
         )

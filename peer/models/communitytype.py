@@ -10,6 +10,7 @@
 import six
 from django.db import models
 # NOC models
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
@@ -17,7 +18,7 @@ from noc.core.model.decorator import on_delete_check
     ("peer.Community", "type")
 ])
 @six.python_2_unicode_compatible
-class CommunityType(models.Model):
+class CommunityType(NOCModel):
     class Meta(object):
         verbose_name = "Community Type"
         verbose_name_plural = "Community Types"

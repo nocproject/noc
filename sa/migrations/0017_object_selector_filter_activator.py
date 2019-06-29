@@ -19,5 +19,5 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectselector", "filter_activator",
-            models.ForeignKey(Activator, verbose_name="Filter by Activator", null=True, blank=True)
+            models.ForeignKey(Activator, verbose_name="Filter by Activator", null=True, blank=True, on_delete=models.CASCADE)
         )

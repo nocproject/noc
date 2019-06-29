@@ -8,10 +8,10 @@
 
 # Third-party modules
 import six
+from mongoengine.document import Document
+from mongoengine.fields import StringField, IntField, ListField, DictField, DateTimeField, FloatField
 # NOC modules
-from noc.lib.nosql import (Document, StringField, ListField,
-                           ForeignKeyField, DictField, DateTimeField,
-                           IntField, FloatField)
+from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 
 

@@ -326,7 +326,8 @@ class ManagedObjectDataStream(DataStream):
                 "vendor": {
                     "id": str(o.model.vendor.id),
                     "name": str(o.model.vendor.name)
-                }
+                },
+                "tags": [str(t) for t in o.model.tags or []]
             },
             "serial": o.get_data("asset", "serial") or "",
             "revision": rev,

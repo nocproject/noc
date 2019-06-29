@@ -10,14 +10,13 @@
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.kb.models.kbentry import KBEntry
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class KBUserBookmark(models.Model):
+class KBUserBookmark(NOCModel):
     """
     User Bookmarks
     """
@@ -28,8 +27,8 @@ class KBUserBookmark(models.Model):
         db_table = "kb_kbuserbookmark"
         unique_together = [("user", "kb_entry")]
 
-    user = models.ForeignKey(User, verbose_name="User")
-    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry")
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    kb_entry = models.ForeignKey(KBEntry, verbose_name="KBEntry", on_delete=models.CASCADE)
 
     def __str__(self):
         return u"%s: %s" % (unicode(self.user), unicode(self.kb_entry))

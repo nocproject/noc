@@ -22,4 +22,4 @@ class Migration(BaseMigration):
             db_table="project_project"
         )
         self.db.add_column("vc_vc", "project",
-                           models.ForeignKey(Project, verbose_name="Project", null=True, blank=True))
+                           models.ForeignKey(Project, verbose_name="Project", null=True, blank=True, on_delete=models.CASCADE))

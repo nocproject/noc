@@ -61,7 +61,7 @@ class Command(BaseCommand):
     def get_objects(exprs):
         objects = set()
         for s in exprs:
-            objects.update(ManagedObjectSelector.resolve_expression(s))
+            objects.update(ManagedObjectSelector.get_objects_from_expression(s))
         return sorted(objects, key=lambda x: x.name)
 
     @staticmethod

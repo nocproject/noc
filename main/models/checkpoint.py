@@ -12,13 +12,12 @@ import datetime
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class Checkpoint(models.Model):
+class Checkpoint(NOCModel):
     """
     Checkpoint is a marked moment in time
     """
@@ -29,7 +28,7 @@ class Checkpoint(models.Model):
         verbose_name_plural = "Checkpoints"
 
     timestamp = models.DateTimeField("Timestamp")
-    user = models.ForeignKey(User, verbose_name="User", blank=True, null=True)
+    user = models.ForeignKey(User, verbose_name="User", blank=True, null=True, on_delete=models.CASCADE)
     comment = models.CharField("Comment", max_length=256)
     private = models.BooleanField("Private", default=False)
 

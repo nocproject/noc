@@ -29,6 +29,7 @@ class SAEService(Service):
     # Some activator pools may be unavailable
     # while SAE remains healthy
     require_dcs_health = False
+    use_mongo = True
 
     def __init__(self):
         super(SAEService, self).__init__()

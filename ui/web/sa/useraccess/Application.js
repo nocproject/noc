@@ -10,7 +10,7 @@ Ext.define("NOC.sa.useraccess.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.useraccess.Model",
-        "NOC.main.user.LookupField",
+        "NOC.aaa.user.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.sa.administrativedomain.LookupField"
     ],
@@ -35,7 +35,7 @@ Ext.define("NOC.sa.useraccess.Application", {
     fields: [
         {
             name: "user",
-            xtype: "main.user.LookupField",
+            xtype: "aaa.user.LookupField",
             fieldLabel: __("User"),
             allowBlank: false
         },
@@ -57,7 +57,7 @@ Ext.define("NOC.sa.useraccess.Application", {
             title: __("By User"),
             name: "user",
             ftype: "lookup",
-            lookup: "main.user"
+            lookup: "aaa.user"
         },
         {
             title: __("By Selector"),

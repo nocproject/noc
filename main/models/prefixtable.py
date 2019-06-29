@@ -11,6 +11,7 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC Modules
+from noc.core.model.base import NOCModel
 from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
@@ -21,7 +22,7 @@ from noc.core.model.decorator import on_delete_check
     ("sa.ManagedObjectSelector", "filter_prefix")
 ])
 @six.python_2_unicode_compatible
-class PrefixTable(models.Model):
+class PrefixTable(NOCModel):
     class Meta(object):
         verbose_name = _("Prefix Table")
         verbose_name_plural = _("Prefix Tables")
@@ -57,7 +58,7 @@ class PrefixTable(models.Model):
 
 
 @six.python_2_unicode_compatible
-class PrefixTablePrefix(models.Model):
+class PrefixTablePrefix(NOCModel):
     class Meta(object):
         verbose_name = _("Prefix")
         verbose_name_plural = _("Prefixes")
@@ -66,7 +67,7 @@ class PrefixTablePrefix(models.Model):
         unique_together = [("table", "afi", "prefix")]
         ordering = ["table", "afi", "prefix"]
 
-    table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"))
+    table = models.ForeignKey(PrefixTable, verbose_name=_("Prefix Table"), on_delete=models.CASCADE)
     afi = models.CharField(_("Address Family"), max_length=1, choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = CIDRField(_("Prefix"))
 

@@ -34,7 +34,8 @@ class Migration(BaseMigration):
                         related_name="dbtrigger_presave_set",
                         limit_choices_to={"interface": "IDBPreSave"},
                         blank=True,
-                        null=True
+                        null=True,
+                        on_delete=models.CASCADE
                     )
                 ),
                 (
@@ -45,7 +46,8 @@ class Migration(BaseMigration):
                         related_name="dbtrigger_postsave_set",
                         limit_choices_to={"interface": "IDBPostSave"},
                         blank=True,
-                        null=True
+                        null=True,
+                        on_delete=models.CASCADE
                     )
                 ),
                 (
@@ -56,7 +58,8 @@ class Migration(BaseMigration):
                         related_name="dbtrigger_predelete_set",
                         limit_choices_to={"interface": "IDBPreDelete"},
                         blank=True,
-                        null=True
+                        null=True,
+                        on_delete=models.CASCADE
                     )
                 ),
                 (
@@ -67,7 +70,8 @@ class Migration(BaseMigration):
                         related_name="dbtrigger_postdelete_set",
                         limit_choices_to={"interface": "IDBPostDelete"},
                         blank=True,
-                        null=True
+                        null=True,
+                        on_delete=models.CASCADE
                     )
                 ),
             )

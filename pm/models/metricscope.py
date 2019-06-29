@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import operator
 from threading import Lock
 # Third-party modules
@@ -208,6 +208,9 @@ class MetricScope(Document):
                     )
                     c = True
                 after = f
+                if f in existing and existing[f] != t:
+                    print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], t))
+                    print("Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s" % (table_name, f, t))
             return c
 
         changed = False

@@ -34,7 +34,6 @@ DATABASES = {
         "PORT": config.pg.addresses[0].port,
         "AUTOCOMMIT": True,
         "OPTIONS": {
-            "autocommit": True,
             "connect_timeout": config.pg.connect_timeout
         }
     }
@@ -95,6 +94,14 @@ MIDDLEWARE_CLASSES = [
 
 ROOT_URLCONF = "noc.urls"
 
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": False,
+        "DIRS": [".", "templates"]
+    }
+]
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -139,7 +146,6 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = ["locale"]
-AUTH_PROFILE_MODULE = "main.UserProfile"
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
 # Suppress deprecation warning. We don't use django's testing framework

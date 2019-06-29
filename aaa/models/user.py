@@ -18,16 +18,30 @@ from django.db import models
 from django.core import validators
 from django.contrib.auth.hashers import check_password, make_password
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
+from noc.settings import LANGUAGE_CODE, LANGUAGES
 from .group import Group
 
 id_lock = Lock()
 
 
-@tuck_up_pants
+@on_delete_check(check=[
+    ("kb.KBEntryPreviewLog", "user"),
+    ("aaa.UserContact", "user"),
+    ("sa.UserAccess", "user"),
+    ("kb.KBUserBookmark", "user"),
+    ("main.Checkpoint", "user"),
+    ("main.NotificationGroupUser", "user"),
+    ("main.ReportSubscription", "run_as"),
+    ("ip.PrefixBookmark", "user"),
+    ("kb.KBEntryHistory", "user"),
+    ("ip.PrefixAccess", "user"),
+    ("main.Favorites", "user")
+])
 @six.python_2_unicode_compatible
-class User(models.Model):
+class User(NOCModel):
     class Meta(object):
         verbose_name = "User"
         verbose_name_plural = "Users"
@@ -66,6 +80,17 @@ class User(models.Model):
                     "his/her group."),
         related_name="user_set", related_query_name="user"
     )
+    # Custom profile
+    preferred_language = models.CharField(
+        max_length=16,
+        null=True, blank=True,
+        default=LANGUAGE_CODE,
+        choices=LANGUAGES
+    )
+    # Heatmap position
+    heatmap_lon = models.FloatField("Longitude", blank=True, null=True)
+    heatmap_lat = models.FloatField("Latitude", blank=True, null=True)
+    heatmap_zoom = models.IntegerField("Zoom", blank=True, null=True)
 
     _id_cache=cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -103,3 +128,24 @@ class User(models.Model):
             self.save(update_fields=["password"])
 
         return check_password(raw_password, self.password, setter)
+
+    @property
+    def contacts(self):
+        from .usercontact import UserContact
+
+        return [
+            (c.time_pattern, c.notification_method, c.params)
+            for c in UserContact.objects.filter(user=self)]
+
+    @property
+    def active_contacts(self):
+        """
+        Get list of currently active contacts
+
+        :returns: List of (method, params)
+        """
+        now = datetime.datetime.now()
+        return [
+            (c.notification_method, c.params)
+            for c in self.contacts if c.time_pattern.match(now)
+        ]

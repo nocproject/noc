@@ -10,7 +10,7 @@ Ext.define("NOC.sa.groupaccess.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.groupaccess.Model",
-        "NOC.main.group.LookupField",
+        "NOC.aaa.group.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.sa.administrativedomain.LookupField"
     ],
@@ -35,7 +35,7 @@ Ext.define("NOC.sa.groupaccess.Application", {
     fields: [
         {
             name: "group",
-            xtype: "main.group.LookupField",
+            xtype: "aaa.group.LookupField",
             fieldLabel: __("Group"),
             allowBlank: false
         },
@@ -57,7 +57,7 @@ Ext.define("NOC.sa.groupaccess.Application", {
             title: __("By Group"),
             name: "group",
             ftype: "lookup",
-            lookup: "main.group"
+            lookup: "aaa.group"
         },
         {
             title: __("By Selector"),

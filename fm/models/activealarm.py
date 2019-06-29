@@ -9,10 +9,12 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+from collections import defaultdict
 # Third-party modules
 import six
 from django.template import Template as DjangoTemplate
 from django.template import Context
+from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedDocumentField,
                                 IntField, LongField, BooleanField, ObjectIdField, DictField)
@@ -52,7 +54,8 @@ class ActiveAlarm(Document):
             "adm_path",
             "segment_path",
             "container_path",
-            "uplinks"
+            "uplinks",
+            ("alarm_class", "rca_neighbors")
         ]
     }
     status = "A"
@@ -115,6 +118,8 @@ class ActiveAlarm(Document):
     container_path = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
+    # RCA neighbor cache, for topology_rca only
+    rca_neighbors = ListField(IntField())
 
     def __str__(self):
         return u"%s" % self.id
@@ -132,6 +137,7 @@ class ActiveAlarm(Document):
         self.segment_path = data.segment_path
         self.container_path = data.container_path
         self.uplinks = data.uplinks
+        self.rca_neighbors = data.rca_neighbors
 
     def safe_save(self, **kwargs):
         """
@@ -178,11 +184,24 @@ class ActiveAlarm(Document):
         if to_save:
             self.safe_save()
 
-    def log_message(self, message, to_save=True):
+    def log_message(self, message, to_save=True, bulk=None):
+        if bulk:
+            bulk += [UpdateOne({
+                "_id": self.id
+            }, {
+                "$push": {
+                    "log": {
+                        "timestamp": datetime.datetime.now(),
+                        "from_status": self.status,
+                        "to_status": self.status,
+                        "message": message
+                    }
+                }
+            })]
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
                      from_status=self.status, to_status=self.status,
                      message=message)]
-        if to_save:
+        if to_save and not bulk:
             self.safe_save()
 
     def clear_alarm(self, message, ts=None, force=False):
@@ -242,7 +261,8 @@ class ActiveAlarm(Document):
             adm_path=self.adm_path,
             segment_path=self.segment_path,
             container_path=self.container_path,
-            uplinks=self.uplinks
+            uplinks=self.uplinks,
+            rca_neighbors=self.rca_neighbors
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
@@ -412,6 +432,11 @@ class ActiveAlarm(Document):
         return root
 
     def update_summary(self):
+        """
+        Recalculate all summaries for given alarm.
+        Performs recursive descent
+        :return:
+        """
         def update_dict(d1, d2):
             for k in d2:
                 if k in d1:
@@ -455,7 +480,209 @@ class ActiveAlarm(Document):
                 self.change_severity(severity=ns, to_save=False)
             self.safe_save()
 
-    def set_root(self, root_alarm):
+    def _get_path_summary_bulk(self):
+        def list_to_dict(summary):
+            if not summary:
+                return {}
+            return dict((d["profile"], d["summary"]) for d in summary)
+
+        def e_list_to_dict(summary):
+            if not summary:
+                return {}
+            return dict((d.profile, d.summary) for d in summary)
+
+        def dict_to_list(d):
+            return [{"profile": k, "summary": d[k]} for k in sorted(d)]
+
+        def get_summary(docs, key, direct=None):
+            r = direct.copy() if direct else {}
+            for doc in docs:
+                dv = doc.get(key)
+                if not dv:
+                    continue
+                for k in dv:
+                    nv = dv[k]
+                    if nv:
+                        r[k] = r.get(k, 0) + nv
+            return r
+
+        def get_root_path(alarm_id, path=None):
+            path = path or []
+            if alarm_id in path:
+                raise ValueError("Loop detected: %s" % (str(x) for x in path))
+            path = path + [alarm_id]
+            root = alarms[alarm_id].get("root")
+            if not root:
+                return path
+            return get_root_path(root, path)
+
+        alarms = {}  # id -> alarm doc
+        children = defaultdict(list)  # id -> [alarm doc, ..]
+        # Inject current alarm
+        alarms[self.id] = {
+            "_id": self.id,
+            "root": self.root,
+            "severity": self.severity,
+            "total_objects": e_list_to_dict(self.total_objects),
+            "total_services": e_list_to_dict(self.total_services),
+            "total_subscribers": e_list_to_dict(self.total_subscribers)
+        }
+        # Collect relevant neighbors
+        for doc in ActiveAlarm._get_collection().aggregate([
+            # Starting from given alarm
+            {
+                "$match": {
+                    "_id": self.root
+                }
+            },
+            # Add to 'path' field all alarm upwards
+            {
+                "$graphLookup": {
+                    "from": "noc.alarms.active",
+                    "connectFromField": "root",
+                    "connectToField": "_id",
+                    "startWith": "$root",
+                    "as": "path",
+                    "maxDepth": 50
+                }
+            },
+            # Append the necessary fields of given alarm to 'path' field
+            # and wipe out all other fields
+            {
+                "$project": {
+                    "_id": 0,
+                    "path": {
+                        "$concatArrays": ["$path", [{
+                            "_id": "$_id",
+                            "root": "$root",
+                            "severity": "$severity",
+                            "direct_services": "$direct_services",
+                            "direct_subscribers": "$direct_subscribers",
+                            "total_objects": "$total_objects",
+                            "total_services": "$total_services",
+                            "total_subscribers": "$total_subscribers"
+                        }]]
+                    }
+                }
+            },
+            # Convert path field to the list of documents
+            {
+                "$unwind": "$path"
+            },
+            # Normalize resulting documents
+            {
+                "$project": {
+                    "_id": "$path._id",
+                    "root": "$path.root",
+                    "severity": "$path.severity",
+                    "direct_services": "$path.direct_services",
+                    "direct_subscribers": "$path.direct_subscribers",
+                    "total_objects": "$path.total_objects",
+                    "total_services": "$path.total_services",
+                    "total_subscribers": "$path.total_subscribers"
+                }
+            },
+            # Add all children alarms to 'children' field
+            {
+                "$lookup": {
+                    "from": "noc.alarms.active",
+                    "localField": "_id",
+                    "foreignField": "root",
+                    "as": "children"
+                }
+            },
+            # Append the neccessary fields of path alarms to `children` field
+            # and wipe out all other fields
+            {
+                "$project": {
+                    "_id": 0,
+                    "children": {
+                        "$concatArrays": ["$children", [{
+                            "_id": "$_id",
+                            "root": "$root",
+                            "severity": "$severity",
+                            "direct_services": "$direct_services",
+                            "direct_subscribers": "$direct_subscribers",
+                            "total_objects": "$total_objects",
+                            "total_services": "$total_services",
+                            "total_subscribers": "$total_subscribers"
+                        }]]
+                    }
+                }
+            },
+            # Convert path field to the list of documents
+            {
+                "$unwind": "$children"
+            },
+            # Normalize resulting documents
+            {
+                "$project": {
+                    "_id": "$children._id",
+                    "root": "$children.root",
+                    "severity": "$children.severity",
+                    "direct_services": "$children.direct_services",
+                    "direct_subscribers": "$children.direct_subscribers",
+                    "total_objects": "$children.total_objects",
+                    "total_services": "$children.total_services",
+                    "total_subscribers": "$children.total_subscribers"
+                }
+            }
+        ]):
+            # May contains duplicates, perform deduplication
+            doc["direct_services"] = list_to_dict(doc.get("direct_services"))
+            doc["direct_subscribers"] = list_to_dict(doc.get("direct_subscribers"))
+            doc["total_objects"] = list_to_dict(doc.get("total_objects"))
+            doc["total_services"] = list_to_dict(doc.get("total_services"))
+            doc["total_subscribers"] = list_to_dict(doc.get("total_subscribers"))
+            if doc["_id"] == self.id:
+                doc["root"] = self.root
+            alarms[doc["_id"]] = doc
+
+        for doc in alarms.values():
+            children[doc.get("root")] += [doc]
+
+        # Get path to from current root upwards to global root
+        # Check for loops, raise Value error if loop detected
+        root_path = get_root_path(self.root)
+        bulk = []
+        now = datetime.datetime.now()
+        for root in root_path:
+            doc = alarms[root]
+            consequences = children[root]
+            total_objects = get_summary(consequences, "total_objects", {self.managed_object.object_profile.id: 1})
+            total_services = get_summary(consequences, "total_services", doc.get("direct_services"))
+            total_subscribers = get_summary(consequences, "total_subscribers", doc.get("direct_subscribers"))
+            if (doc["total_objects"] != total_objects or doc["total_services"] != total_services or
+                    doc["total_subscribers"] != total_subscribers):
+                # Changed
+                severity = ServiceSummary.get_severity({
+                    "service": total_services,
+                    "subscriber": total_subscribers,
+                    "objects": total_objects
+                })
+                op = {
+                    "$set": {
+                        "severity": severity,
+                        "total_objects": dict_to_list(total_objects),
+                        "total_services": dict_to_list(total_services),
+                        "total_subscribers": dict_to_list(total_subscribers)
+                    }
+                }
+                if severity != doc.get("severity"):
+                    op["$push"] = {
+                        "log": {
+                            "timestamp": now,
+                            "from_status": "A",
+                            "to_status": "A",
+                            "message": "Severity changed to %d" % severity
+                        }
+                    }
+                bulk += [UpdateOne({
+                    "_id": root
+                }, op)]
+        return bulk
+
+    def set_root_plain(self, root_alarm):
         """
         Set root cause
         """
@@ -480,6 +707,41 @@ class ActiveAlarm(Document):
         root_alarm.update_summary()
         # Clear pending notifications
         # Notification.purge_delayed("alarm:%s" % self.id)
+
+    def set_root_rca_cache(self, root_alarm):
+        """
+        Set root cause
+        """
+        if self.root:
+            return
+        if self.id == root_alarm.id:
+            raise Exception("Cannot set self as root cause")
+        # Set root
+        self.root = root_alarm.id
+        try:
+            bulk = self._get_path_summary_bulk()
+        except ValueError as e:
+            return  # Loop detected
+        bulk += [UpdateOne({
+            "_id": self.id
+        }, {"$set": {
+            "root": root_alarm.id
+        }})]
+        self.log_message(
+            "Alarm %s has been marked as root cause" % root_alarm.id,
+            bulk=bulk
+        )
+        # self.save()  Saved by log_message
+        root_alarm.log_message(
+            "Alarm %s has been marked as child" % self.id,
+            bulk=bulk
+        )
+        ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
+
+    if config.fm.enable_rca_neighbor_cache:
+        set_root = set_root_rca_cache
+    else:
+        set_root = set_root_plain
 
     def escalate(self, tt_id, close_tt=False):
         self.escalation_tt = tt_id

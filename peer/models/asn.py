@@ -15,6 +15,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.config import config
 from noc.lib.rpsl import rpsl_format
@@ -38,7 +39,7 @@ id_lock = Lock()
 ])
 @on_save
 @six.python_2_unicode_compatible
-class AS(models.Model):
+class AS(NOCModel):
     class Meta(object):
         verbose_name = "AS"
         verbose_name_plural = "ASes"
@@ -54,11 +55,11 @@ class AS(models.Model):
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",
-        null=True, blank=True, related_name="as_set")
+        null=True, blank=True, related_name="as_set", on_delete=models.CASCADE)
     # RPSL descr field
     description = models.CharField("Description", max_length=64)
     organisation = models.ForeignKey(
-        Organisation, verbose_name="Organisation")
+        Organisation, verbose_name="Organisation", on_delete=models.CASCADE)
     administrative_contacts = models.ManyToManyField(
         Person,
         verbose_name="admin-c",
@@ -87,7 +88,7 @@ class AS(models.Model):
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
     # remarks: will be prepended automatically
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
-    rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
+    rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
     tags = TagsField("Tags", null=True, blank=True)
     rpsl = GridVCSField("rpsl_as")
 

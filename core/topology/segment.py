@@ -50,11 +50,7 @@ class SegmentTopology(BaseTopology):
 
     @cachetools.cachedmethod(operator.attrgetter("_uplinks_cache"))
     def get_uplinks(self):
-        r = []
-        for i in self.G.node:
-            if self.G.node[i].get("role") == "uplink":
-                r += [i]
-        return r
+        return [i for i in self.G.node if self.G.node[i].get("role") == "uplink"]
 
     def load(self):
         """
@@ -206,12 +202,23 @@ class SegmentTopology(BaseTopology):
                         n = max(n, len(p))
         return n
 
-    def get_object_uplinks(self):
+    def iter_uplinks(self):
         """
-        Returns a dict of <object id> -> [<uplink object id>, ...]
-        Shortest path first
+        Yields ObjectUplinks items for segment
+
+        :returns: ObjectUplinks items
         """
         def get_node_uplinks(node):
+            role = self.G.node[node].get("role", "cloud")
+            if role == "uplink":
+                # Only downlinks matter
+                return []
+            elif role == "downlink":
+                # All segment neighbors are uplinks.
+                # As no inter-downlink segment's links are loaded
+                # so all neigbors are from current segment
+                return list(self.G.neighbors(node))
+            # Segment role and clouds
             ups = {}
             for u in uplinks:
                 for path in nx.all_simple_paths(self.G, node, u):
@@ -221,29 +228,55 @@ class SegmentTopology(BaseTopology):
             # Shortest path first
             return sorted(ups, key=lambda x: ups[x])
 
+        from noc.sa.models.objectdata import ObjectUplinks
+
         uplinks = self.get_uplinks()
-        # Get all cloud nodes
-        cloud_nodes = [o for o in self.G.node if self.G.node[o]["type"] == "cloud"]
+        # @todo: Workaround for empty uplinks
         # Get uplinks for cloud nodes
         cloud_uplinks = dict(
             (o, [int(u) for u in get_node_uplinks(o)])
-            for o in cloud_nodes
+            for o in self.G.node if self.G.node[o]["type"] == "cloud"
         )
-        # Get all segment objects' nodes
-        segment_objects = set(str(o) for o in self.segment_objects)  # Convert to string
+        # All objects including neighbors
+        all_objects = set(o for o in self.G.node if self.G.node[o]["type"] == "managedobject")
         # Get objects uplinks
-        r = {}
-        for o in segment_objects:
+        obj_uplinks = {}
+        obj_downlinks = defaultdict(set)
+        for o in all_objects:
+            mo = int(o)
             ups = []
             for u in get_node_uplinks(o):
                 cu = cloud_uplinks.get(u)
-                if cu:
+                if cu is not None:
                     # Uplink is a cloud. Use cloud's uplinks instead
                     ups += cu
                 else:
                     ups += [int(u)]
-            r[int(o)] = ups
-        return r
+            obj_uplinks[mo] = ups
+            for u in ups:
+                obj_downlinks[u].add(mo)
+        # Calculate RCA neighbors and yield result
+        for mo in obj_uplinks:
+            # Filter out only current segment. Neighbors will be updated by their
+            # segment's tasks
+            if mo not in self.segment_objects:
+                continue
+            # All uplinks
+            neighbors = set(obj_uplinks[mo])
+            # All downlinks
+            for dmo in obj_downlinks[mo]:
+                neighbors.add(dmo)
+                # And uplinks of downlinks
+                neighbors |= set(obj_uplinks[dmo])
+            # Not including object itself
+            if mo in neighbors:
+                neighbors.remove(mo)
+            # Recalculated result
+            yield ObjectUplinks(
+                object_id=mo,
+                uplinks=obj_uplinks[mo],
+                rca_neighbors=list(sorted(neighbors))
+            )
 
 
 def update_uplinks(segment_id):
@@ -257,5 +290,5 @@ def update_uplinks(segment_id):
 
     st = SegmentTopology(segment)
     ObjectData.update_uplinks(
-        st.get_object_uplinks()
+        st.iter_uplinks()
     )

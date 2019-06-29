@@ -12,6 +12,7 @@ from collections import defaultdict
 # Third-party modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
+from mongoengine.queryset.visitor import Q
 # NOC modules
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
@@ -20,7 +21,6 @@ from noc.lib.nosql import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from noc.lib.nosql import Q
 from pymongo import ReadPreference
 from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.core.translation import ugettext as _

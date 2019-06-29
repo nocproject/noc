@@ -24,9 +24,9 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectprofile", "cpe_profile",
-            models.ForeignKey(ManagedObjectProfile, verbose_name="Object Profile", blank=True, null=True)
+            models.ForeignKey(ManagedObjectProfile, verbose_name="Object Profile", blank=True, null=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
             "sa_managedobjectprofile", "cpe_auth_profile",
-            models.ForeignKey(AuthProfile, verbose_name="Object Profile", blank=True, null=True)
+            models.ForeignKey(AuthProfile, verbose_name="Object Profile", blank=True, null=True, on_delete=models.CASCADE)
         )

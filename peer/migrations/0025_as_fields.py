@@ -42,7 +42,7 @@ class Migration(BaseMigration):
                 ('org_name', models.CharField("Org. Name", max_length=128)),
                 ('org_type', models.CharField("Org. Type", max_length=64, choices=[("LIR", "LIR")])),
                 ('address', models.TextField("Address")),
-                ('mnt_ref', models.ForeignKey(Maintainer, verbose_name="Mnt. Ref")),
+                ('mnt_ref', models.ForeignKey(Maintainer, verbose_name="Mnt. Ref", on_delete=models.CASCADE))
             )
         )
 
@@ -51,8 +51,8 @@ class Migration(BaseMigration):
             db_table='peer_organisation'
         )
 
-        self.db.add_column("peer_as", "rir", models.ForeignKey(RIR, null=True, blank=True))
-        self.db.add_column("peer_as", "organisation", models.ForeignKey(Organisation, null=True, blank=True))
+        self.db.add_column("peer_as", "rir", models.ForeignKey(RIR, null=True, blank=True, on_delete=models.CASCADE))
+        self.db.add_column("peer_as", "organisation", models.ForeignKey(Organisation, null=True, blank=True, on_delete=models.CASCADE))
         self.db.add_column("peer_as", 'header_remarks', models.TextField("Header Remarks", null=True, blank=True))
         self.db.add_column("peer_as", 'footer_remarks', models.TextField("Footer Remarks", null=True, blank=True))
 
@@ -60,7 +60,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_maintainers', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('maintainer', models.ForeignKey(Maintainer, null=False))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('maintainer', models.ForeignKey(Maintainer, null=False, on_delete=models.CASCADE))
             )
         )
 
@@ -68,7 +69,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_tech_contacts', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('person', models.ForeignKey(Person, null=False))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('person', models.ForeignKey(Person, null=False, on_delete=models.CASCADE))
             )
         )
 
@@ -76,7 +78,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_routes_maintainers', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('maintainer', models.ForeignKey(Maintainer, null=False))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('maintainer', models.ForeignKey(Maintainer, null=False, on_delete=models.CASCADE))
             )
         )
 
@@ -84,7 +87,8 @@ class Migration(BaseMigration):
         self.db.create_table(
             'peer_as_administrative_contacts', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('as', models.ForeignKey(AS, null=False)), ('person', models.ForeignKey(Person, null=False))
+                ('as', models.ForeignKey(AS, null=False, on_delete=models.CASCADE)),
+                ('person', models.ForeignKey(Person, null=False, on_delete=models.CASCADE))
             )
         )
 

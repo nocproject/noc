@@ -25,5 +25,5 @@ class Migration(BaseMigration):
             self.db.execute("UPDATE peer_peeringpoint SET local_as_id=%s", [as_id])
             self.db.execute("ALTER TABLE peer_peeringpoint ALTER local_as_id SET NOT NULL")
         else:
-            self.db.add_column("peer_peeringpoint", "local_as", models.ForeignKey(AS, verbose_name="Local AS"))
+            self.db.add_column("peer_peeringpoint", "local_as", models.ForeignKey(AS, verbose_name="Local AS", on_delete=models.CASCADE))
         self.db.add_column("peer_peer", "masklen", models.PositiveIntegerField("Masklen", default=30))

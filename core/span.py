@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # External call spans
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ class Span(object):
     def __init__(self, client=DEFAULT_CLIENT, server=DEFAULT_SERVER,
                  service=DEFAULT_SERVICE, sample=PARENT_SAMPLE,
                  in_label=DEFAULT_LABEL, parent=DEFAULT_ID,
-                 context=DEFAULT_ID):
+                 context=DEFAULT_ID, hist=None, quantile=None):
         self.client = client
         self.server = server
         self.service = service
@@ -74,6 +74,8 @@ class Span(object):
         self.span_parent = DEFAULT_ID
         if config.features.forensic:
             self.forensic_id = str(uuid.uuid4())
+        self.hist = hist
+        self.quantile = quantile
 
     def __enter__(self):
         if config.features.forensic:
@@ -82,6 +84,8 @@ class Span(object):
                 self.forensic_id, self.server,
                 self.service, self.in_label
             )
+        if self.is_sampled or self.hist or self.quantile:
+            self.ts0 = perf_counter()
         if not self.is_sampled:
             return self
         # Generate span ID
@@ -101,7 +105,6 @@ class Span(object):
             tls.span_context = self.span_context
         tls.span_parent = self.span_id
         self.start = time.time()
-        self.ts0 = perf_counter()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -112,6 +115,12 @@ class Span(object):
                 return str(s).encode("string_escape")
 
         global spans
+        if self.is_sampled or self.hist or self.quantile:
+            self.duration = int((perf_counter() - self.ts0) * US)
+        if self.hist:
+            self.hist.register(self.duration)
+        if self.quantile:
+            self.quantile.register(self.duration)
         if config.features.forensic and hasattr(self, "forensic_id"):
             # N.B. config.features.forensic may be changed during span
             forensic_logger.info("[<%s]", self.forensic_id)
@@ -120,7 +129,6 @@ class Span(object):
         if exc_type and not self.error_text and not self.is_ignorable_error(exc_type):
             self.error_code = ERR_UNKNOWN
             self.error_text = str(exc_val).strip("\t").replace("\t", " ").replace("\n", " ")
-        self.duration = int((perf_counter() - self.ts0) * US)
         lt = time.localtime(self.start)
         row = "\t".join(str(x) for x in [
             time.strftime("%Y-%m-%d", lt),

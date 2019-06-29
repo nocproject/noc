@@ -26,6 +26,6 @@ class Migration(BaseMigration):
                 ('name', models.CharField("Name", max_length=64, unique=True)),
                 ('description', models.TextField("Description", blank=True, null=True)),
                 ('is_active', models.BooleanField("Is Active", default=True)),
-                ('selector', models.ForeignKey(ManagedObjectSelector))
+                ('selector', models.ForeignKey(ManagedObjectSelector, on_delete=models.CASCADE))
             )
         )

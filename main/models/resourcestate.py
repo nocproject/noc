@@ -10,6 +10,7 @@
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
@@ -19,7 +20,7 @@ from noc.core.model.decorator import on_delete_check
     ("main.ResourceState", "step_to")
 ])
 @six.python_2_unicode_compatible
-class ResourceState(models.Model):
+class ResourceState(NOCModel):
     class Meta(object):
         verbose_name = "Resource State"
         verbose_name_plural = "Resource States"
@@ -39,7 +40,7 @@ class ResourceState(models.Model):
     is_provisioned = models.BooleanField(default=True)
     # Automatically step to next state when
     # resource's allocated_till field expired
-    step_to = models.ForeignKey("self", blank=True, null=True)
+    step_to = models.ForeignKey("self", blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

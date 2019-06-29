@@ -62,12 +62,12 @@ def test_load_data(initial_data):
             # Django models
             for f in model._meta.fields:
                 if isinstance(f, (models.ForeignKey, CachedForeignKey)):
-                    refs[f.name] = f.rel.to
+                    refs[f.name] = f.remote_field.model
                 elif isinstance(f, DocumentReferenceField):
                     refs[f.name] = f.document
             for f in model._meta.many_to_many:
                 if isinstance(f, models.ManyToManyField):
-                    mrefs[f.name] = f.rel.to
+                    mrefs[f.name] = f.remote_field.model
         model_refs[data["$model"]] = refs
         m2m_refs[data["$model"]] = mrefs
     #

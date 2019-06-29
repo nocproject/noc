@@ -313,5 +313,21 @@ Ext.define("NOC.core.combotree.ComboTree", {
         }
         this.doFilter();
         self.getTrigger("clear").show();
+    },
+    // Called by ModelApplication
+    cleanValue: function(record) {
+        var me = this,
+            rv = record.get(me.name),
+            mv = {};
+        if(!rv || rv === "" || rv === 0) {
+            return ""
+        }
+        mv[me.valueField] = rv;
+        mv[me.displayField] = record.get(me.name + "__label");
+        if(mv[me.displayField] === undefined) {
+            // Incomplete input data. Just use value as label
+            mv[me.displayField] = rv
+        }
+        return me.store.getModel().create(mv)
     }
 });

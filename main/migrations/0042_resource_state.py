@@ -28,6 +28,6 @@ class Migration(BaseMigration):
                 ("is_active", models.BooleanField(default=True)), ("is_starting", models.BooleanField(default=True)),
                 ("is_default", models.BooleanField(default=False)),
                 ("is_provisioned", models.BooleanField(default=True)),
-                ("step_to", models.ForeignKey(ResourceState, blank=True, null=True))
+                ("step_to", models.ForeignKey(ResourceState, blank=True, null=True, on_delete=models.CASCADE))
             )
         )

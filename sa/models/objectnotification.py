@@ -13,26 +13,22 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.lib.template import render_message
 from .managedobjectselector import ManagedObjectSelector
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class ObjectNotification(models.Model):
+class ObjectNotification(NOCModel):
     class Meta(object):
         verbose_name = _("Managed Object Notification")
         db_table = "sa_objectnotification"
         app_label = "sa"
 
-    selector = models.ForeignKey(
-        ManagedObjectSelector,
-        verbose_name=_("Selector"))
-    notification_group = models.ForeignKey(
-        NotificationGroup,
-        verbose_name=_("Notification Group"))
+    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Selector"), on_delete=models.CASCADE)
+    notification_group = models.ForeignKey(NotificationGroup, verbose_name=_("Notification Group"),
+                                           on_delete=models.CASCADE)
     # Events
     config_changed = models.BooleanField(_("Config changed"), default=False)
     alarm_risen = models.BooleanField(_("Alarm risen"), default=False)

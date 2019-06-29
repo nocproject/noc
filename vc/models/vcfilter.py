@@ -15,6 +15,7 @@ from django.db import models
 import cachetools
 import six
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
@@ -26,7 +27,7 @@ id_lock = Lock()
     ("vc.VCDomainProvisioningConfig", "vc_filter"),
 ])
 @six.python_2_unicode_compatible
-class VCFilter(models.Model):
+class VCFilter(NOCModel):
     """
     VC Filter
     """

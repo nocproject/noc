@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.config import config
+from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
@@ -36,7 +37,7 @@ from .addressprofile import AddressProfile
     ("ip.Address", "ipv6_transition")
 ])
 @six.python_2_unicode_compatible
-class Address(models.Model):
+class Address(NOCModel):
     class Meta(object):
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
@@ -44,11 +45,12 @@ class Address(models.Model):
         app_label = "ip"
         unique_together = [("vrf", "afi", "address")]
 
-    prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"))
+    prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"), on_delete=models.CASCADE)
     vrf = models.ForeignKey(
         VRF,
         verbose_name=_("VRF"),
-        default=VRF.get_global
+        default=VRF.get_global,
+        on_delete=models.CASCADE
     )
     afi = models.CharField(
         _("Address Family"),

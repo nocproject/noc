@@ -6,9 +6,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import psycopg2
 from django.db.backends.postgresql_psycopg2.base import DatabaseWrapper as PGDatabaseWrapper
+# NOC modules
+from .monitor import SpanCursor
 
 
 class DatabaseWrapper(PGDatabaseWrapper):
@@ -21,7 +25,7 @@ class DatabaseWrapper(PGDatabaseWrapper):
         :param conn_params:
         :return:
         """
-        return psycopg2.connect(**conn_params)
+        return psycopg2.connect(cursor_factory=SpanCursor, **conn_params)
 
     def init_connection_state(self):
         """

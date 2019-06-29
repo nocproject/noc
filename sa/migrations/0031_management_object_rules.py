@@ -19,9 +19,9 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobject", "config_filter_rule",
-            models.ForeignKey(PyRule, verbose_name="Config Filter pyRule", null=True, blank=True)
+            models.ForeignKey(PyRule, verbose_name="Config Filter pyRule", null=True, blank=True, on_delete=models.CASCADE)
         )
         self.db.add_column(
             "sa_managedobject", "config_validation_rule",
-            models.ForeignKey(PyRule, verbose_name="Config Validation pyRule", null=True, blank=True)
+            models.ForeignKey(PyRule, verbose_name="Config Validation pyRule", null=True, blank=True, on_delete=models.CASCADE)
         )

@@ -14,8 +14,8 @@ class Migration(BaseMigration):
     depends_on = [("sa", "0008_copy_objects")]
 
     def migrate(self):
-        self.db.execute("DROP INDEX cm_config_managed_object_id")
-        self.db.execute("CREATE UNIQUE INDEX cm_config_managed_object_id ON cm_config(managed_object_id)")
+        # self.db.execute("DROP INDEX cm_config_managed_object_id")
+        # self.db.execute("CREATE UNIQUE INDEX cm_config_managed_object_id ON cm_config(managed_object_id)")
         self.db.delete_column("cm_objectnotify", "category_id")
         self.db.delete_column("cm_objectnotify", "location_id")
         for column in ["activator_id", "profile_name", "scheme", "address", "port", "user", "password",

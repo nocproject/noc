@@ -36,7 +36,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             'dns_dnszoneprofile_ns_servers', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('dnszoneprofile', models.ForeignKey(DNSZoneProfile, null=False)),
-                ('dnsserver', models.ForeignKey(DNSServer, null=False))
+                ('dnszoneprofile', models.ForeignKey(DNSZoneProfile, null=False, on_delete=models.CASCADE)),
+                ('dnsserver', models.ForeignKey(DNSServer, null=False, on_delete=models.CASCADE))
             )
         )

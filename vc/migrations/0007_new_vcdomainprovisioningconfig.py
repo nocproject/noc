@@ -38,7 +38,7 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "vc_vcdomainprovisioningconfig", "notification_group",
-            models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True)
+            models.ForeignKey(NotificationGroup, verbose_name="Notification Group", null=True, blank=True, on_delete=models.CASCADE)
         )
         self.db.delete_column("vc_vcdomainprovisioningconfig", "key")
         self.db.delete_column("vc_vcdomainprovisioningconfig", "value")

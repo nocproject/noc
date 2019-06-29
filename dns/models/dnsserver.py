@@ -11,16 +11,15 @@ import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.core.model.fields import INETField
 from noc.core.datastream.decorator import datastream
 
 
-@tuck_up_pants
 @datastream
 @six.python_2_unicode_compatible
-class DNSServer(models.Model):
+class DNSServer(NOCModel):
     """
     DNS Server is an database object representing real DNS server.
 

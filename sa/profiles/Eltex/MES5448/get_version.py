@@ -35,7 +35,7 @@ class Script(BaseScript):
         r = {
             "vendor": "Eltex",
             "platform": match.group("platform"),
-            "version": match.group("version"),
+            "version": match.group("version").split("[")[0],
             "attributes": {
                 "Serial Number": match.group("serial")
             }

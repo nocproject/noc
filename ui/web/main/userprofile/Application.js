@@ -15,53 +15,38 @@ Ext.define("NOC.main.userprofile.Application", {
     layout: "fit",
     //
     initComponent: function() {
-        var me = this,
-            lw = 60;
+        var me = this;
         me.usernameField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: __("Login"),
-            labelWidth: lw
+            fieldLabel: __("Login")
         });
         me.nameField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: __("Name"),
-            labelWidth: lw
+            fieldLabel: __("Name")
         });
         me.emailField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: __("Mail"),
-            labelWidth: lw
+            fieldLabel: __("Mail")
         });
         me.languageField = Ext.create("NOC.main.ref.ulanguage.LookupField", {
             fieldLabel: __("Language"),
-            labelWidth: lw,
             allowBlank: false
         });
         me.groupsField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: __("Groups"),
-            labelWidth: lw
+            fieldLabel: __("Groups")
         });
         // Contacts grid
-        me.contactsStore = Ext.create("Ext.data.Store", {
-            fields: [
-                "time_pattern",
-                "time_pattern__label",
-                "notification_method",
-                "params"
-            ],
-            data: []
-        });
-        me.contactsGrid = Ext.create("Ext.grid.Panel", {
-            store: me.contactsStore,
+        me.contactsGrid = Ext.create({
+            xtype: "gridfield",
             columns: [
                 {
                     text: __("Time Pattern"),
                     dataIndex: "time_pattern",
-                    width: 100,
+                    width: 150,
                     renderer: NOC.render.Lookup("time_pattern"),
                     editor: "main.timepattern.LookupField"
                 },
                 {
                     text: __("Method"),
                     dataIndex: "notification_method",
-                    width: 100,
+                    width: 120,
                     editor: "main.ref.unotificationmethod.LookupField"
                 },
                 {
@@ -71,61 +56,20 @@ Ext.define("NOC.main.userprofile.Application", {
                     editor: "textfield"
                 }
             ],
-            plugins: [
-                Ext.create("Ext.grid.plugin.RowEditing", {
-                    clicksToEdit: 2
-                })
-            ],
-            dockedItems: [
-                {
-                    xtype: "toolbar",
-                    dock: "top",
-                    items: [
-                        {
-                            text: __("Add"),
-                            glyph: NOC.glyph.plus,
-                            handler: function() {
-                                var grid = this.up("panel"),
-                                    rowEditing = grid.plugins[0];
-                                rowEditing.cancelEdit();
-                                grid.store.insert(0, {});
-                                rowEditing.startEdit(0, 0);
-                            }
-                        },
-                        {
-                            text: __("Delete"),
-                            glyph: NOC.glyph.times,
-                            handler: function() {
-                                var grid = this.up("panel"),
-                                    sm = grid.getSelectionModel(),
-                                    rowEditing = grid.plugins[0],
-                                    app = grid.up("panel").up("panel");
-                                rowEditing.cancelEdit();
-                                grid.store.remove(sm.getSelection());
-                                if(grid.store.getCount() > 0) {
-                                    sm.select(0);
-                                }
-                                app.onInlineEdit();
-                            }
-                        }
-                    ]
-                }
-            ],
-            listeners: {
-                validateedit: function(editor, e) {
-                    // @todo: Bring to plugin
-                    var form = editor.editor.getForm();
-                    // Process comboboxes
-                    form.getFields().each(function(field) {
-                        e.record.set(field.name, field.getValue());
-                        if(Ext.isDefined(field.getLookupData))
-                            e.record.set(field.name + "__label",
-                                         field.getLookupData());
-                        });
-                }
+            getValue: function() {
+                var grid = this, records = [];
+                this.store.each(function(r) {
+                    var d = {};
+                    Ext.each(grid.fields, function(f) {
+                        // ToDo change Ext.ux.form.GridField
+                        var field_name = f.name || f;
+                        d[field_name] = r.get(field_name);
+                    });
+                    records.push(d);
+                });
+                return records;
             }
         });
-        //
         Ext.apply(me, {
             items: [
                 {
@@ -196,22 +140,20 @@ Ext.define("NOC.main.userprofile.Application", {
         me.emailField.setValue(data.email);
         me.languageField.setValue(data.preferred_language);
         me.groupsField.setRawValue((data.groups || []).join(", "));
-        me.contactsStore.loadData(data.contacts);
+        me.contactsGrid.setValue(data.contacts || []);
     },
     //
     onSave: function() {
         var me = this,
             data = {
                 preferred_language: me.languageField.getValue(),
-                contacts: me.contactsStore.data.items.map(function(x) {
-                    return x.data
-                })
+                contacts: me.contactsGrid.getValue()
             };
         Ext.Ajax.request({
             url: "/main/userprofile/",
             method: "POST",
             jsonData: data,
-            success: function(response) {
+            success: function() {
                 NOC.msg.complete(__("Profile saved"));
                 if(me.profileData.preferred_language !== data.preferred_language) {
                     NOC.app.app.restartApplication(__("Changing language"));

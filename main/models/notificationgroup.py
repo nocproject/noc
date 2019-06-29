@@ -17,7 +17,7 @@ import six
 from django.db import models
 import cachetools
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
@@ -57,7 +57,7 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
     ("peer.PeeringPoint", "prefix_list_notification_group")
 ])
 @six.python_2_unicode_compatible
-class NotificationGroup(models.Model):
+class NotificationGroup(NOCModel):
     """
     Notification Groups
     """
@@ -102,17 +102,10 @@ class NotificationGroup(models.Model):
         m = []
         # Collect user notifications
         for ngu in self.notificationgroupuser_set.filter(user__is_active=True):
-            lang = default_language
-            try:
-                profile = ngu.user.get_profile()
-                if profile.preferred_language:
-                    lang = profile.preferred_language
-            except Exception:
-                # Fallback to user's email
-                m += [(TimePatternList([]), "mail", ngu.user.email, lang)]
-                continue
-            if profile.contacts:
-                for tp, method, params in profile.contacts:
+            lang = ngu.user.preferred_language or default_language
+            user_contacts = ngu.user.contacts
+            if user_contacts:
+                for tp, method, params in user_contacts:
                     m += [(TimePatternList([ngu.time_pattern, tp]),
                            method, params, lang)]
             else:
@@ -228,9 +221,8 @@ class NotificationGroup(models.Model):
             )
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class NotificationGroupUser(models.Model):
+class NotificationGroupUser(NOCModel):
     class Meta(object):
         verbose_name = "Notification Group User"
         verbose_name_plural = "Notification Group Users"
@@ -239,10 +231,10 @@ class NotificationGroupUser(models.Model):
         unique_together = [("notification_group", "time_pattern", "user")]
 
     notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group")
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)
     time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern")
-    user = models.ForeignKey(User, verbose_name="User")
+        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
 
     def __str__(self):
         return u"%s: %s: %s" % (
@@ -250,9 +242,8 @@ class NotificationGroupUser(models.Model):
             self.time_pattern.name, self.user.username)
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class NotificationGroupOther(models.Model):
+class NotificationGroupOther(NOCModel):
     class Meta(object):
         verbose_name = "Notification Group Other"
         verbose_name_plural = "Notification Group Others"
@@ -262,9 +253,9 @@ class NotificationGroupOther(models.Model):
                             "notification_method", "params")]
 
     notification_group = models.ForeignKey(
-        NotificationGroup, verbose_name="Notification Group")
+        NotificationGroup, verbose_name="Notification Group", on_delete=models.CASCADE)
     time_pattern = models.ForeignKey(
-        TimePattern, verbose_name="Time Pattern")
+        TimePattern, verbose_name="Time Pattern", on_delete=models.CASCADE)
     notification_method = models.CharField(
         "Method", max_length=16, choices=NOTIFICATION_METHOD_CHOICES)
     params = models.CharField("Params", max_length=256)

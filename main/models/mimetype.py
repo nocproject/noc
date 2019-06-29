@@ -12,13 +12,12 @@ import os
 import six
 from django.db import models
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.lib.validators import check_extension, check_mimetype
 
 
-@tuck_up_pants
 @six.python_2_unicode_compatible
-class MIMEType(models.Model):
+class MIMEType(NOCModel):
     """
     MIME Type mapping
     """

@@ -24,10 +24,10 @@ class Migration(BaseMigration):
         self.db.create_table(
             'vc_vcbindfilter', (
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain")),
-                ('vrf', models.ForeignKey(VRF, verbose_name="VRF")),
+                ('vc_domain', models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)),
+                ('vrf', models.ForeignKey(VRF, verbose_name="VRF", on_delete=models.CASCADE)),
                 ('prefix', CIDRField("Prefix")),
-                ('vc_filter', models.ForeignKey(VCFilter, verbose_name="VC Filter")),
+                ('vc_filter', models.ForeignKey(VCFilter, verbose_name="VC Filter", on_delete=models.CASCADE)),
             )
         )
 

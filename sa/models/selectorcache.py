@@ -21,7 +21,7 @@ from mongoengine.document import Document
 from mongoengine.fields import IntField
 import cachetools
 # NOC modules
-from noc.core.model.hacks import ensure_pending_models
+from noc.models import get_model
 from noc.core.defer import call_later
 
 logger = logging.getLogger(__name__)
@@ -83,6 +83,27 @@ class SelectorCache(Document):
         from .managedobjectselector import ManagedObjectSelector
         return list(ManagedObjectSelector.objects.filter(is_enabled=True))
 
+    _REFERRED_MODELS = [
+        "sa.ManagedObjectProfile",
+        "main.PrefixTable",
+        "sa.AdministrativeDomain",
+        "ip.VRF",
+        "vc.VCDomain"
+    ]
+
+    @classmethod
+    def ensure_models(cls):
+        """
+        Load all models referred from ManagedObjectSelector
+        to fully initialize django models
+        :return:
+        """
+        if hasattr(cls, "_ensured_models"):
+            return
+        for model_id in cls._REFERRED_MODELS:
+            get_model(model_id)
+        setattr(cls, "_ensured_models", True)
+
     @classmethod
     def selectors_for_object(cls, object):
         from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -91,7 +112,7 @@ class SelectorCache(Document):
         selectors = cls.get_active_selectors()
         if not selectors:
             return set()
-        ensure_pending_models()  # Resolve ForeignKey models
+        cls.ensure_models()
         sql = []
         params = []
         for s in selectors:
@@ -103,9 +124,10 @@ class SelectorCache(Document):
                 continue
             if s.filter_pool and object.pool.id != s.filter_pool.id:
                 continue
-            if (s.filter_administrative_domain and
-                object.administrative_domain.id not in AdministrativeDomain.get_nested_ids(
-                        s.filter_administrative_domain.id)):
+            if (
+                s.filter_administrative_domain and
+                object.administrative_domain.id not in AdministrativeDomain.get_nested_ids(s.filter_administrative_domain.id)
+            ):
                 continue
             if s.filter_name:
                 try:

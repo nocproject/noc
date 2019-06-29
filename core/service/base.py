@@ -32,6 +32,8 @@ from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from noc.core.debug import excepthook, error_report, ErrorReport
 from noc.core.log import ErrorFormatter
 from noc.core.perf import metrics, apply_metrics
+from noc.core.hist.monitor import apply_hists
+from noc.core.quantile.monitor import apply_quantiles
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
@@ -82,6 +84,8 @@ class Service(object):
 
     # Run NSQ writer on service startup
     require_nsq_writer = False
+    # Connect to MongoDB on activate
+    use_mongo = False
     # List of API instances
     api = []
     # Request handler class
@@ -433,6 +437,9 @@ class Service(object):
         Initialize services before run
         """
         self.logger.warn("Activating service")
+        if self.use_mongo:
+            from noc.lib.nosql import auto_connect
+            auto_connect()
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
             (r"^/metrics$", MetricsHandler, {"service": self}),
@@ -554,6 +561,8 @@ class Service(object):
         self.ioloop.stop()
         m = {}
         apply_metrics(m)
+        apply_hists(m)
+        apply_quantiles(m)
         self.logger.info("Post-mortem metrics: %s", m)
         self.die("")
 
@@ -652,6 +661,8 @@ class Service(object):
             for x in self.executors:
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
+        apply_hists(r)
+        apply_quantiles(r)
         return r
 
     def iter_rpc_retry_timeout(self):

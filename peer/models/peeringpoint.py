@@ -12,6 +12,7 @@ from __future__ import absolute_import
 import six
 from django.db import models
 # NOC modules
+from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.profile import Profile
 from noc.core.model.fields import DocumentReferenceField
@@ -25,7 +26,7 @@ from .asn import AS
     ("peer.PrefixListCache", "peering_point")
 ])
 @six.python_2_unicode_compatible
-class PeeringPoint(models.Model):
+class PeeringPoint(NOCModel):
     class Meta(object):
         verbose_name = "Peering Point"
         verbose_name_plural = "Peering Points"
@@ -34,21 +35,17 @@ class PeeringPoint(models.Model):
 
     # @todo: Replace with managed object
     hostname = models.CharField("FQDN", max_length=64, unique=True)
-    location = models.CharField(
-        "Location", max_length=64, blank=True, null=True)
-    local_as = models.ForeignKey(AS, verbose_name="Local AS")
-    router_id = models.IPAddressField("Router-ID", unique=True)
+    location = models.CharField("Location", max_length=64, blank=True, null=True)
+    local_as = models.ForeignKey(AS, verbose_name="Local AS", on_delete=models.CASCADE)
+    router_id = models.GenericIPAddressField("Router-ID", unique=True, protocol="IPv4")
     # @todo: Replace with managed object
     profile = DocumentReferenceField(Profile, null=False, blank=False)
-    communities = models.CharField(
-        "Import Communities", max_length=128,
-        blank=True, null=True)
-    enable_prefix_list_provisioning = models.BooleanField(
-        "Enable Prefix-List Provisioning", default=False)
+    communities = models.CharField("Import Communities", max_length=128, blank=True, null=True)
+    enable_prefix_list_provisioning = models.BooleanField("Enable Prefix-List Provisioning", default=False)
     prefix_list_notification_group = models.ForeignKey(
-        NotificationGroup,
-        verbose_name="Prefix List Notification Group",
-        null=True, blank=True)
+        NotificationGroup, verbose_name="Prefix List Notification Group",
+        null=True, blank=True, on_delete=models.CASCADE
+    )
 
     def __str__(self):
         if self.location:

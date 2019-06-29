@@ -33,5 +33,24 @@ mongo --host "$mongo_config_host" \
 		});
 		rs.initiate(rsConfig);
 	EOJS
+
+for t in $(seq 120);do
+
+    mongo --host "$mongo_config_host" \
+        --username "$MONGO_INITDB_ROOT_USERNAME" \
+        --password "$MONGO_INITDB_ROOT_PASSWORD" \
+        --authenticationDatabase admin \
+        admin \
+        --eval 'rs.status()' | grep '"stateStr" : "PRIMARY"'
+    retVal=$?
+    if [ $retVal -eq 0 ]; then
+        echo "mongo has primary"
+        break
+    else
+        echo "mongo still not active. waiting 0.7s"
+    fi
+    sleep 0.7
+done
+
 echo healthy > /tmp/job_is_done
 sleep 60

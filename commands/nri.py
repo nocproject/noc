@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
     def handle_portmap(self, portmap_objects=[]):
         for po in portmap_objects:
-            for o in ManagedObjectSelector.resolve_expression(po):
+            for o in ManagedObjectSelector.get_objects_from_expression(po):
                 if not o.remote_system:
                     self.stdout.write(
                         "%s (%s, %s) NRI: N/A\n" % (o.name, o.address, o.platform)

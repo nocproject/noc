@@ -14,7 +14,7 @@ import six
 from django.db.models import AutoField
 from django.db import connection
 from django.db.backends.utils import truncate_name
-from django.core.management.color import no_style
+from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 logger = logging.getLogger("migration")
 
@@ -194,22 +194,22 @@ class DB(object):
                 if field.empty_strings_allowed and connection.features.interprets_empty_strings_as_nulls:
                     sql += [" DEFAULT ''"]
         # FOREIGN KEY
-        if field.rel:
+        if field.remote_field:
             self.deferred_sql += [
-                self.foreign_key_sql(
+                self._foreign_key_sql(
                     table_name,
                     field.column,
-                    field.rel.to._meta.db_table,
-                    field.rel.to._meta.get_field(field.rel.field_name).column
+                    field.remote_field.model._meta.db_table,
+                    field.remote_field.model._meta.get_field(field.remote_field.field_name).column
                 )
             ]
         # Indexes
         model = self.mock_model("FakeModelForGISCreation", table_name)
-        self.deferred_sql += connection.creation.sql_indexes_for_field(model, field, no_style())
+        self.deferred_sql += self._sql_indexes_for_field(model, field)
         sql = " ".join(sql)
         return sql % params
 
-    def foreign_key_sql(self, from_table_name, from_column_name, to_table_name, to_column_name):
+    def _foreign_key_sql(self, from_table_name, from_column_name, to_table_name, to_column_name):
         """
         Generates a full SQL statement to add a foreign key constraint
         """
@@ -227,6 +227,35 @@ class DB(object):
         for sql in self.deferred_sql:
             self.execute(sql)
         self.deferred_sql = []
+
+    def _sql_indexes_for_field(self, model, field):
+        """
+        Return the CREATE INDEX SQL statements for a single model field
+
+        :param model:
+        :param field:
+        :return:
+        """
+        def qn(name):
+            if name.startswith('"') and name.endswith('"'):
+                return name  # Quoting once is enough.
+            return '"%s"' % name
+
+        max_name_length = 63
+
+        if field.db_index and not field.unique:
+            i_name = "%s_%s" % (
+                model._meta.db_table,
+                BaseDatabaseSchemaEditor._digest(field.column)
+            )
+            return [
+                "CREATE INDEX %s ON %s(%s)" % (
+                    qn(truncate_name(i_name, max_name_length)),
+                    qn(model._meta.db_table),
+                    qn(field.column)
+                )
+            ]
+        return []
 
 
 # Singletone

@@ -52,7 +52,7 @@ services:
       postgres:
         condition: service_healthy
       mongodb-repl-set-init:
-        condition: service_started
+        condition: service_healthy
       clickhouse:
         condition: service_started
     command: >

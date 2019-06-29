@@ -19,11 +19,11 @@ import datetime
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              DateTimeField, BigIntegerField, SET_NULL)
+                              DateTimeField, BigIntegerField, SET_NULL, CASCADE)
 import cachetools
 import six
 # NOC modules
-from noc.core.model.hacks import tuck_up_pants
+from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -115,7 +115,7 @@ logger = logging.getLogger(__name__)
     ("sa.Service", "managed_object")
 ])
 @six.python_2_unicode_compatible
-class ManagedObject(Model):
+class ManagedObject(NOCModel):
     """
     Managed Object
     """
@@ -132,7 +132,7 @@ class ManagedObject(Model):
     )
     administrative_domain = CachedForeignKey(
         AdministrativeDomain,
-        verbose_name="Administrative Domain"
+        verbose_name="Administrative Domain", on_delete=CASCADE
     )
     segment = DocumentReferenceField(
         NetworkSegment, null=False, blank=False
@@ -160,7 +160,8 @@ class ManagedObject(Model):
     )
     object_profile = CachedForeignKey(
         ManagedObjectProfile,
-        verbose_name="Object Profile")
+        verbose_name="Object Profile", on_delete=CASCADE
+    )
     description = CharField(
         "Description",
         max_length=256, null=True, blank=True)
@@ -168,7 +169,7 @@ class ManagedObject(Model):
     auth_profile = CachedForeignKey(
         AuthProfile,
         verbose_name="Auth Profile",
-        null=True, blank=True
+        null=True, blank=True, on_delete=CASCADE
     )
     scheme = IntegerField(
         "Scheme",
@@ -264,17 +265,18 @@ class ManagedObject(Model):
     vc_domain = ForeignKey(
         "vc.VCDomain",
         verbose_name="VC Domain",
-        null=True, blank=True
+        null=True, blank=True, on_delete=CASCADE
     )
     # CM
     config = GridVCSField("config")
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
-                     blank=True, null=True)
+                     blank=True, null=True, on_delete=CASCADE)
     # Reference to controller, when object is CPE
     controller = ForeignKey(
         "self", verbose_name="Controller",
-        blank=True, null=True
+        blank=True, null=True,
+        on_delete=CASCADE
     )
     # CPE id on given controller
     local_cpe_id = CharField(
@@ -1779,10 +1781,9 @@ class ManagedObject(Model):
         return self.profile.get_profile().has_confdb_support(self)
 
 
-@tuck_up_pants
 @on_save
 @six.python_2_unicode_compatible
-class ManagedObjectAttribute(Model):
+class ManagedObjectAttribute(NOCModel):
     class Meta(object):
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"
@@ -1793,7 +1794,7 @@ class ManagedObjectAttribute(Model):
 
     managed_object = ForeignKey(
         ManagedObject,
-        verbose_name="Managed Object"
+        verbose_name="Managed Object", on_delete=CASCADE
     )
     key = CharField("Key", max_length=64)
     value = CharField(
