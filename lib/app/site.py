@@ -419,10 +419,6 @@ class Site(object):
         if self.apps:
             # Do not discover site twice
             return
-        # Connect to mongodb
-        from noc.lib.nosql import auto_connect
-        auto_connect()
-        #
         self.app_count = 0
         prefix = os.path.join("services", "web", "apps")
         # Load applications

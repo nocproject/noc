@@ -48,5 +48,30 @@ To enable the feature perform following steps:
 Breaking Changes
 ----------------
 
+.. _release-19.3-explicit-mongo-connect:
+
+Explicit MongoDB Connections
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Prior to 19.3 NOC relied that importing of `noc.lib.nosql` automatically
+creates MongoDB connection. This kind of auto-magic is used to work
+but requires to access all mongo-related stuff via `noc.lib.nosql`.
+Starting from 19.3 we're beginning to cleanup API and the code and demand,
+that MongoDB connection is to be initialized implicitly.
+
+For custom commands and python scripts
+
+.. code-block:: python
+
+    from noc.core.mongo.connection import connect
+
+    ...
+    connect()
+
+
+For custom services set service's `use_mongo` property to `True`
+
+Other Changes
+^^^^^^^^^^^^^
 * ManagedObjectSelector.resolve_expression() renamed
   to ManagedObjectSelector.get_objects_from_expression()
