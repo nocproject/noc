@@ -252,7 +252,7 @@ class ExtModelApplication(ExtApplication):
                 if not is_document(model):
                     extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
                         self.model._meta.db_table, self.model._meta.pk.name,
-                        model._meta.get_field_by_name(fn)[0].attname,
+                        model._meta.get_field(fn).attname,
                         model._meta.db_table
                     )
                     if None in nq:
