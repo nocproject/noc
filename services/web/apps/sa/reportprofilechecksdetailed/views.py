@@ -20,22 +20,9 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
-class ReportForm(forms.Form):
-    pool = forms.ModelChoiceField(
-        label=_("Managed Objects Pool"),
-        required=False,
-        help_text="Pool for choice",
-        queryset=Pool.objects.order_by("name"))
-    selector = forms.ModelChoiceField(
-        label=_("Managed Objects Selector"),
-        required=False,
-        help_text="Selector for choice",
-        queryset=ManagedObjectSelector.objects.order_by("name"))
-
-
 class ReportFilterApplication(SimpleReport):
     title = _("Failed Discovery")
-    form = ReportForm
+
     try:
         default_pool = Pool.objects.get(name="default")
     except Exception:
@@ -47,6 +34,20 @@ class ReportFilterApplication(SimpleReport):
             }
         )
     }
+
+    def get_form(self):
+        class ReportForm(forms.Form):
+            pool = forms.ChoiceField(
+                label=_("Managed Objects Pool"),
+                required=False,
+                help_text="Pool for choice",
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+            selector = forms.ModelChoiceField(
+                label=_("Managed Objects Selector"),
+                required=False,
+                help_text="Selector for choice",
+                queryset=ManagedObjectSelector.objects.order_by("name"))
+        return ReportForm
 
     @staticmethod
     def decode_problem(problems):
@@ -96,6 +97,7 @@ class ReportFilterApplication(SimpleReport):
 
         mos = ManagedObject.objects.filter()
         if pool:
+            pool = Pool.get_by_id(pool)
             mos = mos.filter(pool=pool)
             data += [SectionRow(name=pool.name)]
         if not request.user.is_superuser:
