@@ -222,6 +222,9 @@ class DocumentReferenceDescriptor(object):
                 "Cannot assign None: \"%s.%s\" does not allow null values." % (
                     instance._meta.object_name, self.field.name)
             )
+        elif value is None:
+            # Reset cache
+            setattr(instance, self.cache_name, None)
         elif value is not None and not isinstance(value, (self.field.document, six.string_types)):
             raise ValueError(
                 "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
@@ -283,8 +286,8 @@ class CachedForeignKeyDescriptor(object):
 
 
 class CachedForeignKey(models.ForeignKey):
-    def contribute_to_class(self, cls, name):
-        super(CachedForeignKey, self).contribute_to_class(cls, name)
+    def contribute_to_class(self, cls, name, *args, **kwargs):
+        super(CachedForeignKey, self).contribute_to_class(cls, name, *args, **kwargs)
         setattr(cls, self.get_cache_name(),
                 CachedForeignKeyDescriptor(self))
 
