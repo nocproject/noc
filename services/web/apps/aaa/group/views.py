@@ -33,6 +33,7 @@ class GroupsApplication(ExtModelApplication):
     query_condition = "icontains"
     query_fields = ["name"]
     default_ordering = ["name"]
+    m2m_fields = {"permissions": Permission}
 
     @classmethod
     @cachedmethod(
@@ -82,6 +83,7 @@ class GroupsApplication(ExtModelApplication):
         return r
 
     def update_m2m(self, o, name, values):
+        print("Update m2m", values)
         if values is None:
             return  # Do not touch
         if name == "permissions":
