@@ -183,7 +183,7 @@ class DocumentReferenceDescriptor(object):
     def __init__(self, field):
         self.field = field
         self.cache_name = field.get_cache_name()
-        self.raw_name = field.raw_name
+        self.name = field.name
         self.has_get_by_id = hasattr(self.field.document, "get_by_id")
 
     def is_cached(self, instance):
@@ -196,7 +196,7 @@ class DocumentReferenceDescriptor(object):
             # Try already resolved value
             return getattr(instance, self.cache_name)
         except AttributeError:
-            val = getattr(instance, self.raw_name)
+            val = instance.__dict__.get(self.name)
             if val is None:
                 # If NULL is an allowed value, return it.
                 if self.field.null:
@@ -231,7 +231,7 @@ class DocumentReferenceDescriptor(object):
             # Save to cache
             setattr(instance, self.cache_name, value)
             value = str(value.id)
-        setattr(instance, self.raw_name, value)
+        instance.__dict__[self.name] = value
 
 
 class DocumentReferenceField(models.Field):
@@ -239,10 +239,8 @@ class DocumentReferenceField(models.Field):
         self.document = document
         super(DocumentReferenceField, self).__init__(*args, **kwargs)
 
-    def contribute_to_class(self, cls, name):
-        super(DocumentReferenceField, self).contribute_to_class(cls,
-                                                                name)
-        self.raw_name = name + "_raw"
+    def contribute_to_class(self, cls, name, *args, **kwargs):
+        super(DocumentReferenceField, self).contribute_to_class(cls, name, *args, **kwargs)
         setattr(cls, self.name, DocumentReferenceDescriptor(self))
 
     def db_type(self, connection):
