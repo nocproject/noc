@@ -30,7 +30,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             pool = forms.ChoiceField(
                 label=_("Managed Objects Pools"),
                 required=True,
-                choices=list(Pool.objects.order_by("name")))
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
             obj_profile = forms.ModelChoiceField(
                 label=_("Managed Objects Profile"),
                 required=False,
@@ -38,7 +38,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
 
         return ReportForm
 
-    def get_data(self, request, pool, obj_profile=None, **kwargs):
+    def get_data(self, request, pool=None, obj_profile=None, **kwargs):
         problems = {}  # id -> problem
 
         if not obj_profile:

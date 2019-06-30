@@ -25,17 +25,6 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
-class ReportForm(forms.Form):
-    pool = forms.ModelChoiceField(
-        label=_("Managed Objects Pools"),
-        required=True,
-        queryset=Pool.objects.order_by("name"))
-    obj_profile = forms.ModelChoiceField(
-        label=_("Managed Objects Profile"),
-        required=False,
-        queryset=ManagedObjectProfile.objects.order_by("name"))
-
-
 class ReportPendingLinks(object):
     def __init__(self, ids, cache_key=None, ignore_profiles=None):
         self.ids = ids
@@ -51,7 +40,7 @@ class ReportPendingLinks(object):
     @staticmethod
     def load(ids, ignore_profiles=None):
         problems = defaultdict(dict)  # id -> problem
-        rg = re.compile("Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
+        rg = re.compile(r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
                         re.IGNORECASE)
 
         mos_job = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id for mo_id in ids]
@@ -66,8 +55,8 @@ class ReportPendingLinks(object):
                 {"$project": {"_id": 1, "problems.lldp": 1}}])
 
             for discovery in job_logs:
-                if "RPC Error:" in discovery["problems"]["lldp"] or \
-                                "Unhandled exception" in discovery["problems"]["lldp"]:
+                if "RPC Error:" in discovery["problems"]["lldp"]\
+                        or "Unhandled exception" in discovery["problems"]["lldp"]:
                     continue
                 mo_id = discovery["_id"].split("-")[2]
                 mo = ManagedObject.get_by_id(mo_id)
@@ -110,11 +99,22 @@ class ReportPendingLinks(object):
 
 class ReportDiscoveryTopologyProblemApplication(SimpleReport):
     title = _("Pending Links")
-    form = ReportForm
 
-    def get_data(self, request, pool, obj_profile=None, filter_ignore_iface=True, **kwargs):
+    def get_form(self):
+        class ReportForm(forms.Form):
+            pool = forms.ChoiceField(
+                label=_("Managed Objects Pools"),
+                required=True,
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+            obj_profile = forms.ModelChoiceField(
+                label=_("Managed Objects Profile"),
+                required=False,
+                queryset=ManagedObjectProfile.objects.order_by("name"))
+        return ReportForm
 
-        rn = re.compile("'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
+    def get_data(self, request, pool=None, obj_profile=None, filter_ignore_iface=True, **kwargs):
+
+        rn = re.compile(r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
                         re.IGNORECASE)
         problem = {"Not found iface on remote": "->",
                    "Not found local iface on remote": "<-",
