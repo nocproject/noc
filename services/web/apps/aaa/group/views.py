@@ -33,7 +33,7 @@ class GroupsApplication(ExtModelApplication):
     query_condition = "icontains"
     query_fields = ["name"]
     default_ordering = ["name"]
-    m2m_fields = {"permissions": Permission}
+    custom_m2m_fields = {"permissions": Permission}
 
     @classmethod
     @cachedmethod(
