@@ -31,7 +31,7 @@ class AuditTrailApplication(ExtDocApplication):
     def g_model(self, model_id):
         try:
             md = get_model(model_id)
-            if md and "name" in md._meta.get_all_field_names():
+            if md and hasattr(md, "name"):
                 return md
         except Exception as e:
             logger.info("No model: Error %s", e)

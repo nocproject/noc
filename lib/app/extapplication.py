@@ -184,7 +184,6 @@ class ExtApplication(Application):
         fav_items = None
         if self.fav_status in q:
             fs = q.pop(self.fav_status) == "true"
-        # @todo Filter models field (validate) data.model._meta.get_all_field_names()
         xaa, ordering = self.extra_query(q, ordering)
         q = self.cleaned_query(q)
         if None in q:

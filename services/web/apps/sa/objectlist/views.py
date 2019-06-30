@@ -171,7 +171,7 @@ class ObjectListApplication(ExtApplication):
         if ids:
             nq["id__in"] = list(ids)
 
-        xf = list((set(nq.keys())) - set(self.model._meta.get_all_field_names()))
+        xf = list((set(nq.keys())) - set(f.name for f in self.model._meta.get_fields()))
         # @todo move validation fields
         for x in xf:
             if x in ["address__in", "id__in", "administrative_domain__in"]:
