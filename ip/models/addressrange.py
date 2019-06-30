@@ -109,7 +109,7 @@ class AddressRange(NOCModel):
             check_ipv6(self.from_address)
             check_ipv6(self.to_address)
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         def generate_fqdns():
             # Prepare FQDN template
             t = Template(self.fqdn_template)
@@ -150,7 +150,7 @@ class AddressRange(NOCModel):
         if not created:
             # Get old values
             old = AddressRange.objects.get(id=self.id)
-        super(AddressRange, self).save(**kwargs)
+        super(AddressRange, self).save(*args, **kwargs)
         if created:
             # New
             if self.action == "G":

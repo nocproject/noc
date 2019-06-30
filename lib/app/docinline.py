@@ -217,7 +217,8 @@ class DocInline(object):
                 model = self.app.site.apps[app].model
                 extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
                     self.model._meta.db_table, self.model._meta.pk.name,
-                    model._meta.get_field_by_name(fn)[0].attname, model._meta.db_table
+                    model._meta.get_field(fn).attname,
+                    model._meta.db_table
                 )
                 if None in nq:
                     nq[None] += [extra_where]

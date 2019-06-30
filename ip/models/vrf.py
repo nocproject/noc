@@ -168,7 +168,7 @@ class VRF(NOCModel):
         """
         return VRF.get_by_vpn_id(cls.GLOBAL_RD)
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         """
         Create root entries for all enabled AFIs
         """
@@ -206,7 +206,7 @@ class VRF(NOCModel):
                         # Cannot change until emptied
                         self.afi_ipv6 = True
         # Save VRF
-        super(VRF, self).save(**kwargs)
+        super(VRF, self).save(*args, **kwargs)
         if self.afi_ipv4:
             # Create IPv4 root, if not exists
             Prefix.objects.get_or_create(

@@ -15,6 +15,7 @@ from noc.services.mib.api.mib import MIBAPI
 class MIBService(Service):
     name = "mib"
     api = [MIBAPI]
+    use_mongo = True
 
 
 if __name__ == "__main__":

@@ -183,7 +183,7 @@ class DocumentReferenceDescriptor(object):
     def __init__(self, field):
         self.field = field
         self.cache_name = field.get_cache_name()
-        self.raw_name = field.raw_name
+        self.name = field.name
         self.has_get_by_id = hasattr(self.field.document, "get_by_id")
 
     def is_cached(self, instance):
@@ -196,7 +196,7 @@ class DocumentReferenceDescriptor(object):
             # Try already resolved value
             return getattr(instance, self.cache_name)
         except AttributeError:
-            val = getattr(instance, self.raw_name)
+            val = instance.__dict__.get(self.name)
             if val is None:
                 # If NULL is an allowed value, return it.
                 if self.field.null:
@@ -211,6 +211,10 @@ class DocumentReferenceDescriptor(object):
             setattr(instance, self.cache_name, rel_obj)
             return rel_obj
 
+    def _reset_cache(self, instance):
+        if self.is_cached(instance):
+            del instance.__dict__[self.cache_name]
+
     def __set__(self, instance, value):
         if instance is None:
             raise AttributeError(
@@ -222,16 +226,21 @@ class DocumentReferenceDescriptor(object):
                 "Cannot assign None: \"%s.%s\" does not allow null values." % (
                     instance._meta.object_name, self.field.name)
             )
-        elif value is not None and not isinstance(value, (self.field.document, six.string_types)):
-            raise ValueError(
-                "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
-                    value, instance._meta.object_name,
-                    self.field.name, self.field.document))
+        elif value is None or isinstance(value, six.string_types):
+            self._reset_cache(instance)
+        elif isinstance(value, ObjectId):
+            self._reset_cache(instance)
+            value = str(value)
         elif value and isinstance(value, self.field.document):
             # Save to cache
             setattr(instance, self.cache_name, value)
             value = str(value.id)
-        setattr(instance, self.raw_name, value)
+        else:
+            raise ValueError(
+                "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
+                    value, instance._meta.object_name,
+                    self.field.name, self.field.document))
+        instance.__dict__[self.name] = value
 
 
 class DocumentReferenceField(models.Field):
@@ -239,10 +248,8 @@ class DocumentReferenceField(models.Field):
         self.document = document
         super(DocumentReferenceField, self).__init__(*args, **kwargs)
 
-    def contribute_to_class(self, cls, name):
-        super(DocumentReferenceField, self).contribute_to_class(cls,
-                                                                name)
-        self.raw_name = name + "_raw"
+    def contribute_to_class(self, cls, name, *args, **kwargs):
+        super(DocumentReferenceField, self).contribute_to_class(cls, name, *args, **kwargs)
         setattr(cls, self.name, DocumentReferenceDescriptor(self))
 
     def db_type(self, connection):
@@ -285,8 +292,8 @@ class CachedForeignKeyDescriptor(object):
 
 
 class CachedForeignKey(models.ForeignKey):
-    def contribute_to_class(self, cls, name):
-        super(CachedForeignKey, self).contribute_to_class(cls, name)
+    def contribute_to_class(self, cls, name, *args, **kwargs):
+        super(CachedForeignKey, self).contribute_to_class(cls, name, *args, **kwargs)
         setattr(cls, self.get_cache_name(),
                 CachedForeignKeyDescriptor(self))
 

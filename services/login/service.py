@@ -28,6 +28,7 @@ class LoginService(UIService):
     api = [
         LoginAPI
     ]
+    use_mongo = True
     use_translation = True
     if config.features.traefik:
         traefik_backend = "login"
