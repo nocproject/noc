@@ -17,7 +17,7 @@ from collections import OrderedDict
 from django.template import RequestContext
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseForbidden, HttpResponseNotFound)
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.db import connection
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
@@ -303,9 +303,18 @@ class Application(six.with_metaclass(ApplicationBase, object)):
                 )
             )
         else:
-            return render_to_response(self.get_template_path(template),
-                                      dict if dict else kwargs,
-                                      context_instance=RequestContext(request, {"app": self}))
+            ctx = {
+                "app": self
+            }
+            if dict:
+                ctx.update(dict)
+            else:
+                ctx.update(kwargs)
+            return render(
+                request,
+                self.get_template_path(template),
+                ctx
+            )
 
     def render_template(self, template, dict=None, **kwargs):
         """

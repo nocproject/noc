@@ -183,7 +183,7 @@ class Address(NOCModel):
         except Address.DoesNotExist:
             return None
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         """
         Override default save() method to set AFI,
         parent prefix, and check VRF group restrictions
@@ -191,7 +191,7 @@ class Address(NOCModel):
         :return:
         """
         self.clean()
-        super(Address, self).save(**kwargs)
+        super(Address, self).save(*args, **kwargs)
 
     def clean(self):
         """

@@ -18,24 +18,28 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
-class ReportForm(forms.Form):
-    pool = forms.ModelChoiceField(
-        label=_("Managed Objects Pool"),
-        required=True,
-        queryset=Pool.objects.order_by("name"))
-    obj_profile = forms.ModelChoiceField(
-        label=_("Managed Objects Profile"),
-        required=False,
-        queryset=ManagedObjectProfile.objects.order_by("name"))
-
-
 class ReportDiscoveryCapsApplication(SimpleReport):
     title = _("Discovery Object Caps")
-    form = ReportForm
 
-    def get_data(self, request, pool="default", obj_profile=None, **kwargs):
-        problems = {}  # id -> problem
+    def get_form(self):
+
+        class ReportForm(forms.Form):
+            pool = forms.ChoiceField(
+                label=_("Managed Objects Pool"),
+                required=True,
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+            obj_profile = forms.ModelChoiceField(
+                label=_("Managed Objects Profile"),
+                required=False,
+                queryset=ManagedObjectProfile.objects.order_by("name"))
+        return ReportForm
+
+    def get_data(self, request, pool=None, obj_profile=None, **kwargs):
         data = []
+        if pool:
+            pool = Pool.get_by_id(pool)
+        else:
+            pool = Pool.get_by_name("default")
         # Get all managed objects
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool)
         if not request.user.is_superuser:

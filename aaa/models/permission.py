@@ -43,9 +43,9 @@ class Permission(NOCModel):
     implied = CharField(
         "Implied", max_length=256, null=True, blank=True)
     users = ManyToManyField(
-        User, related_name="noc_user_permissions")
+        User, related_name="permissions")
     groups = ManyToManyField(
-        Group, related_name="noc_group_permissions")
+        Group, related_name="permissions")
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -92,8 +92,7 @@ class Permission(NOCModel):
         """
         Return a set of user permissions
         """
-        return set(user.noc_user_permissions.values_list("name",
-                                                         flat=True))
+        return set(user.permissions.values_list("name", flat=True))
 
     @classmethod
     def set_user_permissions(cls, user, perms):
@@ -127,8 +126,7 @@ class Permission(NOCModel):
         """
         Get set of group permissions
         """
-        return set(group.noc_group_permissions.values_list("name",
-                                                           flat=True))
+        return set(group.permissions.values_list("name", flat=True))
 
     @classmethod
     def set_group_permissions(cls, group, perms):
@@ -167,13 +165,13 @@ class Permission(NOCModel):
                 "name", flat=True))
         perms = set()
         # User permissions
-        for p in user.noc_user_permissions.all():
+        for p in user.permissions.all():
             perms.add(p.name)
             if p.implied:
                 perms.update(p.implied.split(","))
         # Group permissions
         for g in user.groups.all():
-            for p in g.noc_group_permissions.all():
+            for p in g.permissions.all():
                 perms.add(p.name)
                 if p.implied:
                     perms.update(p.implied.split(","))

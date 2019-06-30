@@ -21,7 +21,7 @@ import six
 from six.moves.urllib.parse import urlencode
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
-from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
+from django.urls import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
 import ujson
