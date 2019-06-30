@@ -211,6 +211,10 @@ class DocumentReferenceDescriptor(object):
             setattr(instance, self.cache_name, rel_obj)
             return rel_obj
 
+    def _reset_cache(self, instance):
+        if self.is_cached(instance):
+            del instance.__dict__[self.cache_name]
+
     def __set__(self, instance, value):
         if instance is None:
             raise AttributeError(
@@ -222,18 +226,20 @@ class DocumentReferenceDescriptor(object):
                 "Cannot assign None: \"%s.%s\" does not allow null values." % (
                     instance._meta.object_name, self.field.name)
             )
-        elif value is None:
-            # Reset cache
-            setattr(instance, self.cache_name, None)
-        elif value is not None and not isinstance(value, (self.field.document, six.string_types)):
-            raise ValueError(
-                "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
-                    value, instance._meta.object_name,
-                    self.field.name, self.field.document))
+        elif value is None or isinstance(value, six.string_types):
+            self._reset_cache(instance)
+        elif isinstance(value, ObjectId):
+            self._reset_cache(instance)
+            value = str(value)
         elif value and isinstance(value, self.field.document):
             # Save to cache
             setattr(instance, self.cache_name, value)
             value = str(value.id)
+        else:
+            raise ValueError(
+                "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
+                    value, instance._meta.object_name,
+                    self.field.name, self.field.document))
         instance.__dict__[self.name] = value
 
 
