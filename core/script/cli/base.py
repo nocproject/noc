@@ -265,7 +265,7 @@ class CLI(object):
                 (self.profile.rx_pattern_syntax_error.search(self.result) or
                  self.result == self.SYNTAX_ERROR_CODE)):
             error_text = self.result
-            if self.profile.send_on_syntax_error:
+            if self.profile.send_on_syntax_error and self.name != "beef_cli":
                 yield self.on_error_sequence(
                     self.profile.send_on_syntax_error,
                     self.command,
