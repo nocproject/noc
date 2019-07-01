@@ -19,7 +19,8 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     def execute(self):
-        v = self.http.get("/ISAPI/System/deviceInfo", json=False, cached=True, use_basic=True)
+        v = self.http.get("/ISAPI/System/deviceInfo", cached=True, use_basic=True)
+        v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
         for child in root:
             key = child.tag.split("}")[1][0:]
