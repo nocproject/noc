@@ -23,6 +23,7 @@ ALLOW_XFAIL = {
     "noc.scripts.build-models",
     "noc.scripts.build.compile-handlebars",
     "noc.scripts.check-db",
+    "noc.scripts.check-labels",
     "noc.scripts.paste",
     "noc.scripts.migrate-ignored-interfaces",
     "noc.gis.parsers.address.fias",
