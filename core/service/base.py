@@ -438,8 +438,8 @@ class Service(object):
         """
         self.logger.warn("Activating service")
         if self.use_mongo:
-            from noc.lib.nosql import auto_connect
-            auto_connect()
+            from noc.core.mongo.connection import connect
+            connect()
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
             (r"^/metrics$", MetricsHandler, {"service": self}),

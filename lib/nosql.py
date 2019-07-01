@@ -8,9 +8,8 @@
 
 # Python modules
 import logging
-import sys
-import time
 import datetime
+import warnings
 # Third-party modules
 from django.db.models import Model
 from mongoengine.base import *
@@ -18,10 +17,15 @@ from mongoengine import *
 import mongoengine
 import six
 import bson
-import pymongo.errors
 # NOC modules
-from noc.config import config
 from noc.models import get_model
+from noc.core.deprecations import RemovedInNOC1905Warning
+
+
+warnings.warn(
+    "noc.lib.nosql is deprecated and will be removed in NOC 19.5."
+    "Watch for pending instructions", RemovedInNOC1905Warning, stacklevel=2
+)
 
 logger = logging.getLogger(__name__)
 _connected = False
@@ -29,38 +33,21 @@ _connected = False
 
 def auto_connect():
     """
-    Connect to the mongo database
+    Fired by module import. Check if mongo database connection initialized.
+    To maintain legacy behavior auto-connect when necessary and leave deprecation warning.
+
     :return:
     """
-    global _connected
-    if _connected:
-        return
-    temporary_errors = (
-        mongoengine.connection.MongoEngineConnectionError,
-        pymongo.errors.AutoReconnect
-    )
-    retries = config.mongo.retries
-    timeout = config.mongo.timeout
+    from noc.core.mongo.connection import connect, is_connected
 
-    ca = config.mongo_connection_args.copy()
-    if ca.get("password"):
-        ca["host"] = ca["host"].replace(":%s@" % ca["password"], ":********@")
-        ca["password"] = "********"
-    for i in range(retries):
-        try:
-            logger.info("Connecting to MongoDB %s", ca)
-            connect_args = config.mongo_connection_args
-            connect(**connect_args)
-            _connected = True
-            break
-        except temporary_errors as e:
-            logger.error("Cannot connect to mongodb: %s", e)
-            if i < retries - 1:
-                logger.error("Waiting %d seconds", timeout)
-                time.sleep(timeout)
-            else:
-                logger.error("Cannot connect %d times. Exiting", retries)
-                sys.exit(1)
+    if is_connected():
+        return
+
+    warnings.warn(
+        "Implicit auto-connecting to MongoDB via importing noc.lib.nosql is deprecated and to be removed in NOC 19.5."
+        "Use noc.core.mongo.connection to explicit connect.", RemovedInNOC1905Warning, stacklevel=2
+    )
+    connect()
 
 
 # Legacy-behavior autoconnect
