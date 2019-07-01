@@ -76,7 +76,9 @@ class FIASParser(AddressParser):
         path = os.path.join(self.prefix, "oktmo.csv")
         with open(path) as f:
             reader = csv.reader(f, delimiter=";")
-            reader.next()
+            # Skip header
+            next(reader)
+            # Read rest
             for okato, oktmo, name, parent in reader:
                 o = OKTMO(okato=okato, oktmo=oktmo,
                           name=name, parent=parent)
