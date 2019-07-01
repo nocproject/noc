@@ -446,7 +446,7 @@ class ModelInline(object):
         except self.model.DoesNotExist:
             return self.app.response("", status=self.NOT_FOUND)
         attrs[self.parent_rel] = parent
-        for k, v in attrs.items():
+        for k, v in six.iteritems(attrs):
             setattr(o, k, v)
         try:
             o.save()

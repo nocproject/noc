@@ -2,11 +2,10 @@
 # ---------------------------------------------------------------------
 # DLink.DES21xx.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -51,7 +50,7 @@ class Script(BaseScript):
         # Get switchport data and overall result
         r = []
         d = {}
-        for name in interface_status.keys():
+        for name in interface_status:
             d = {
                      "interface": name,
                         "status": interface_status.get(name, False),

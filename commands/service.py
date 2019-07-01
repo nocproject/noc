@@ -8,6 +8,8 @@
 
 # Python modules
 import argparse
+# Third-party modules
+import six
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.service.loader import get_service
@@ -29,7 +31,7 @@ class Command(BaseCommand):
         for sn in services:
             service.dcs.resolve_sync(sn)
             if sn in service.dcs.resolvers:
-                for svc_id, address in service.dcs.resolvers[sn].services.items():
+                for svc_id, address in six.iteritems(service.dcs.resolvers[sn].services):
                     out += [[sn, svc_id, address]]
         self.stdout.write(
             format_table(

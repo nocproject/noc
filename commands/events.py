@@ -191,8 +191,7 @@ class Command(BaseCommand):
                 x = []
                 vars = e.raw_vars
                 keys = []
-                lkeys = [k for k in vars.keys()
-                         if k not in ("1.3.6.1.2.1.1.3.0",)]
+                lkeys = [k for k in vars if k not in ("1.3.6.1.2.1.1.3.0",)]
                 for k in ("source", "profile", "1.3.6.1.6.3.1.1.4.1.0"):
                     if k in vars:
                         keys += [k]

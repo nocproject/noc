@@ -71,7 +71,7 @@ class RefBook(NOCModel):
         for f in self.refbookfield_set.all():
             fields[f.name] = f.order - 1
         r = [None for f in range(len(fields))]
-        for k, v in data.items():
+        for k, v in six.iteritems(data):
             r[fields[k]] = v
         RefBookData(ref_book=self, value=r).save()
 
@@ -96,7 +96,7 @@ class RefBook(NOCModel):
         # Insert data
         for r in data:
             row = row_template[:]  # Clone template row
-            for k, v in r.items():
+            for k, v in six.iteritems(r):
                 if k in fields:
                     row[fields[k]] = v
             RefBookData(ref_book=self, value=row).save()

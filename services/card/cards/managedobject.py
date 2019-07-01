@@ -10,8 +10,8 @@
 from __future__ import absolute_import
 import datetime
 import operator
-import six
 # Third-party modules
+import six
 from django.db.models import Q
 from mongoengine.errors import DoesNotExist
 # NOC modules
@@ -183,7 +183,7 @@ class ManagedObjectCard(BaseCard):
         metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
         if objects_metrics:
             for path, mres in six.iteritems(objects_metrics):
-                for key in mres.keys():
+                for key in mres:
                     metric_name = "%s | %s" % (key, path) if any(path.split("|")) else key
                     meta[metric_name] = {
                         "type": metric_type_name[key],

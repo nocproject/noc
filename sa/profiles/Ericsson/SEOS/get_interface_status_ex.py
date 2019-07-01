@@ -83,4 +83,4 @@ class Script(BaseScript):
             rr["out_speed"] = self.snmp.get("1.3.6.1.4.1.193.81.3.4.1.1.14.1.7.1")
             res[ifindex] = rr
         r.update(res)
-        return r.values()
+        return list(six.itervalues(r))

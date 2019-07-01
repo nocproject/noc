@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # PM Utils
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,13 +31,13 @@ def get_objects_metrics(managed_objects):
     # Object Metrics
     bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
     query_interval = ManagedObjectProfile.get_max_metrics_interval(
-        set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=bi_map.keys()))
+        set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map)))
     ) * 2
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)
 
     # @todo Left Join
-    object_profiles = set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=bi_map.keys()))
+    object_profiles = set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map)))
     msd = {ms.id: ms.table_name for ms in MetricScope.objects.filter()}
     mts = {str(mt.id): (msd[mt.scope.id], mt.field_name, mt.name) for mt in MetricType.objects.all()}
     mmm = set()
@@ -96,7 +96,7 @@ def get_interface_metrics(managed_objects):
         managed_objects = [managed_objects]
     bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
     query_interval = ManagedObjectProfile.get_max_metrics_interval(
-        set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=bi_map.keys()))
+        set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map)))
     ) * 1.5
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)

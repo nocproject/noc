@@ -13,6 +13,7 @@ import errno
 import os
 import sys
 # Third-party modules
+import six
 from tornado.util import errno_from_exception
 from tornado.ioloop import IOLoop
 from tornado.platform.auto import set_close_exec
@@ -119,7 +120,7 @@ class UDPServer(object):
         Requests currently in progress may still continue after the
         server is stopped.
         """
-        for fd, sock in self._sockets.items():
+        for fd, sock in six.iteritems(self._sockets):
             self.io_loop.remove_handler(fd)
             sock.close()
 

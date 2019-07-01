@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportObjectDiscoveryResult datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 from collections import namedtuple
 # Third-party modules
+import six
 from pymongo import ReadPreference
 # NOC modules
 from noc.lib.nosql import get_db
@@ -77,7 +78,7 @@ class ReportDiscoveryResult(BaseReportColumn):
             ids.difference_update(pool_ids)
             if not ids:
                 break
-        return r.values()
+        return list(six.itervalues(r))
 
     def convert(self, val):
         dresult = namedtuple("DResult", self.ATTRS)

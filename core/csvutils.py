@@ -34,7 +34,7 @@ def update_if_changed(obj, values):
     :rtype: list
     """
     changes = []
-    for k, v in values.items():
+    for k, v in six.iteritems(values):
         vv = getattr(obj, k)
         if v != vv:
             if not isinstance(v, int) or not hasattr(vv, "id") or v != vv.id:
@@ -66,7 +66,7 @@ def get_model_fields(model):
                 fields += [(f.name, required, f.remote_field.model, k)]
         elif hasattr(f, "document"):
             k = f.document._meta["id_field"]
-            for ff, fi in f.document._fields.items():
+            for ff, fi in six.iteritems(f.document._fields):
                 if fi.name != k and fi.unique and fi.name not in IGNORED_FIELDS:
                     k = fi.name
                     break
@@ -161,7 +161,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
         if len(row) != l_header:
             return None, "Invalid row size. line %d" % count
         vars = dict(zip(header, row))
-        for h, v in vars.items():
+        for h, v in six.iteritems(vars):
             if v in ("None", ""):
                 v = None
             # Check required field is not none
@@ -238,7 +238,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Create object
             o = model()
         # Set attributes
-        for k, v in vars.items():
+        for k, v in six.iteritems(vars):
             setattr(o, k, v)
         # Save
         try:

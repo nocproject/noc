@@ -233,9 +233,11 @@ class AS(NOCModel):
             else:
                 peers[p.remote_asn] = p
         asn = "AS%d" % self.asn
-        for subgraph, peers in [("uplinks", uplinks.values()),
-                                ("peers", peers.values()),
-                                ("downlinks", downlinks.values())]:
+        for subgraph, peers in [
+            ("uplinks", list(six.itervalues(uplinks))),
+            ("peers", list(six.itervalues(peers))),
+            ("downlinks", list(six.itervalues(downlinks)))
+        ]:
             s += ["subgraph %s {" % subgraph]
             for p in peers:
                 attrs = ["taillabel=\" %s\"" % p.import_filter,

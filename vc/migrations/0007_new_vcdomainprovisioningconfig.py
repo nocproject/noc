@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -44,8 +45,8 @@ class Migration(BaseMigration):
         self.db.delete_column("vc_vcdomainprovisioningconfig", "value")
         # Save data
         self.db.execute("DELETE FROM vc_vcdomainprovisioningconfig")
-        for vc_domain_id, c in pc.items():
-            for selector_id, v in c.items():
+        for vc_domain_id, c in six.iteritems(pc):
+            for selector_id, v in six.iteritems(x):
                 self.db.execute(
                     """
                     INSERT INTO vc_vcdomainprovisioningconfig

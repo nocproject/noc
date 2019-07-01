@@ -11,6 +11,7 @@ import re
 from collections import defaultdict
 import xml.etree.ElementTree as ElementTree
 # Third-party modules
+import six
 from six import StringIO
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -486,4 +487,4 @@ class Script(BaseScript):
                                       if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]
 
-        return vrfs.values()
+        return list(six.itervalues(vrfs))

@@ -56,7 +56,7 @@ class DocInline(object):
         self.pk_field_name = "id"
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
-        for name, f in self.model._fields.items():
+        for name, f in six.iteritems(self.model._fields):
             if isinstance(f, BooleanField):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, IntField):
@@ -67,7 +67,7 @@ class DocInline(object):
         if not self.query_fields:
             self.query_fields = [
                 "%s__%s" % (n, self.query_condition)
-                for n, f in self.model._fields.items()
+                for n, f in six.iteritems(self.model._fields)
                 if f.unique and isinstance(f, StringField)
             ]
         # Find field_* and populate custom fields
@@ -244,7 +244,7 @@ class DocInline(object):
 
     def instance_to_dict(self, o, fields=None):
         r = {}
-        for n, f in o._fields.items():
+        for n, f in six.iteritems(o._fields):
             if fields and n not in fields:
                 continue
             v = getattr(o, n)
@@ -415,7 +415,7 @@ class DocInline(object):
         except self.model.DoesNotExist:
             return self.app.response("", status=self.NOT_FOUND)
         attrs[self.parent_rel] = parent
-        for k, v in attrs.items():
+        for k, v in six.iteritems(attrs):
             setattr(o, k, v)
         try:
             o.save()

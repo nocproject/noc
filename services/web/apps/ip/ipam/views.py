@@ -9,6 +9,7 @@
 # Python modules
 from operator import itemgetter
 # Third-party modules modules
+import six
 import ujson
 from django import forms
 from django.db.models import Q
@@ -227,14 +228,13 @@ class IPAMApplication(ExtApplication):
                 n = (IP.prefix(r.to_address) + 1).address
                 if n not in r_changes:
                     r_changes[n] = (set(), set())
-            r_spots = r_changes.keys()
+            r_spots = list(six.iterkeys(r_changes))
             # Allocate slots
             used_slots = set()
             free_slots = set()
             r_slots = {}  # Range -> slot
             max_slots = 0
-            rs = sorted([[IP.prefix(i), d, []] for i, d in r_changes.items()],
-                        key=itemgetter(0))
+            rs = sorted(([IP.prefix(i), d, []] for i, d in six.iteritems(r_changes)), key=itemgetter(0))
             for address, d, x in rs:
                 entering, leaving = d
                 for r in entering:
@@ -301,7 +301,7 @@ class IPAMApplication(ExtApplication):
         for a in addresses:
             if a.profile.style and a.profile.style.css_class_name not in styles:
                 styles[a.profile.style.css_class_name] = a.profile.style.css
-        styles = "\n".join(styles.values())
+        styles = "\n".join(six.itervalues(styles))
         # Render
         return self.render(
             request, "vrf_index.html.j2",

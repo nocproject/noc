@@ -84,4 +84,4 @@ class Coverage(Document):
             for cb in CoveredBuilding.objects.filter(
                     building=building, entrance=entrance):
                 c[cb.coverage] = cb.preference
-        return [x[0] for x in sorted(c.items(), key=lambda y: -y[1]) if x[1]]
+        return [x[0] for x in sorted(six.iteritems(c), key=lambda y: -y[1]) if x[1]]

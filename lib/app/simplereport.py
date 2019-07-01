@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SimpleReport implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ class ReportNode(object):
         Return opening XML tag
         """
         s = "<%s" % self.tag
-        for k, v in kwargs.items():
+        for k, v in six.iteritems(kwargs):
             if v:
                 s += " %s='%s'" % (k, self.quote(v))
         s += ">"
@@ -287,7 +287,7 @@ class TableColumn(ReportNode):
             elif self.align & self.H_ALIGN_MASK == self.ALIGN_CENTER:
                 attrs["align"] = "center"
         return " " + " ".join(
-            ["%s='%s'" % (k, self.quote(v)) for k, v in attrs.items()])
+            ["%s='%s'" % (k, self.quote(v)) for k, v in six.iteritems(attrs)])
 
     def format_html(self, s):
         """

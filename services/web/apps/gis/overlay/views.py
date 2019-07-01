@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.gis.models.overlay import Overlay
@@ -34,7 +36,7 @@ class OverlayApplication(ExtDocApplication):
         if not overlay.is_active:
             return self.rensponse_not_found("Overlay is disabled")
         # Parse bbox
-        kwargs = dict(request.GET.items())
+        kwargs = dict(six.iteritems(request.GET))
         if "bbox" in kwargs:
             bbox = kwargs["bbox"]
             bbox = [float(x) for x in bbox.split(",")]

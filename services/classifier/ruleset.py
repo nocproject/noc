@@ -11,6 +11,8 @@ from __future__ import absolute_import
 from collections import defaultdict
 import logging
 import re
+# Third-party modules
+import six
 # NOC modules
 from .rule import Rule
 from .exception import InvalidPatternException, EventProcessingFailed
@@ -112,7 +114,7 @@ class RuleSet(object):
         self.enumerations = {}
         for e in Enumeration.objects.all():
             r = {}
-            for k, v in e.values.items():
+            for k, v in six.iteritems(e.values):
                 for vv in v:
                     r[vv.lower()] = k
             self.enumerations[e.name] = r

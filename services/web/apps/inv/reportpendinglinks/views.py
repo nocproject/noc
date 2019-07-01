@@ -10,6 +10,7 @@
 import re
 from collections import defaultdict
 # Third-party modules
+import six
 from django import forms
 # NOC modules
 from noc.core.cache.base import cache
@@ -40,9 +41,10 @@ class ReportPendingLinks(object):
     @staticmethod
     def load(ids, ignore_profiles=None):
         problems = defaultdict(dict)  # id -> problem
-        rg = re.compile(r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
-                        re.IGNORECASE)
-
+        rg = re.compile(
+            r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
+            re.IGNORECASE
+        )
         mos_job = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id for mo_id in ids]
         n = 0
         ignored_ifaces = []
@@ -133,9 +135,10 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             mos = mos.filter(object_profile=obj_profile)
 
         mos_id = dict((mo.id, mo) for mo in mos)
-        report = ReportPendingLinks(mos_id.keys(),
-                                    ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")))
-
+        report = ReportPendingLinks(
+            list(six.iterkeys(mos_id)),
+            ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I"))
+        )
         problems = report.out
         for mo_id in problems:
             mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))

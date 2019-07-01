@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -23,7 +25,7 @@ COLORS = {
 
 class Migration(BaseMigration):
     def migrate(self):
-        for p, colors in COLORS.items():
+        for p, colors in six.iteritems(COLORS):
             font, bg = colors
             r = self.db.execute("SELECT id,font_color,background_color FROM fm_eventpriority WHERE name=%s", [p])
             if len(r) == 1:

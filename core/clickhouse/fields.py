@@ -14,6 +14,7 @@ from functools import partial
 import socket
 import struct
 # Third-party modules
+import six
 from six.moves import zip
 # NOC modules
 from noc.config import config
@@ -378,7 +379,7 @@ class NestedField(ArrayField):
             return []
         value = literal_eval(value)
         return [{k: self.field_type._fields[k].to_python(v.strip("'")) for k, v in
-                dict(zip(self.field_type._fields_order, v)).iteritems()} for v in value]
+                six.iteritems(dict(zip(self.field_type._fields_order, v)))} for v in value]
 
     def get_select_sql(self):
         m = ["toString(%s.%s[x])" % (self.name, x) for x in self.field_type._fields_order]

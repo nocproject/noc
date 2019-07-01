@@ -13,6 +13,8 @@ import re
 from collections import namedtuple
 import operator
 import time
+# Third-party modules
+import six
 # NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -57,7 +59,7 @@ class Command(BaseCommand):
         def show():
             self.print("\x1b[2J\x1b[1;1H%s Spans: %d/%d" % (time.strftime("%H:%M:%S"), n_closed, n_open))
             self.print(self.show_mask % ("Timestamp", "ID", "Server", "Service", "Label"))
-            for s in sorted(spans.values(), key=operator.attrgetter("ts")):
+            for s in sorted(six.itervalues(spans), key=operator.attrgetter("ts")):
                 self.print(self.show_mask % (s.ts, s.id, s.server, s.service, s.label))
             if not spans:
                 self.print("  No spans")
@@ -66,7 +68,7 @@ class Command(BaseCommand):
             now = time.time()
             self.print("\x1b[2J\x1b[1;1H%s Spans: %d/%d" % (time.strftime("%H:%M:%S"), n_closed, n_open))
             self.print(self.show_watch_mask % ("Timestamp", "Dur", "ID", "Server", "Service", "Label"))
-            for s in sorted(spans.values(), key=operator.attrgetter("ts")):
+            for s in sorted(six.itervalues(spans), key=operator.attrgetter("ts")):
                 ts = time.mktime(time.strptime(s.ts.split(",", 1)[0], self.time_format))
                 duration = str(int(now - ts))
                 self.print(self.show_watch_mask % (s.ts, duration, s.id, s.server, s.service, s.label))

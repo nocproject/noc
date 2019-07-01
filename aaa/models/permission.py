@@ -198,7 +198,7 @@ class Permission(NOCModel):
         new_perms = set()
         implied_permissions = {}
         diverged_permissions = {}  # new -> old
-        for app in site.apps.values():
+        for app in six.itervalues(site.apps):
             new_perms = new_perms.union(app.get_permissions())
             for p in app.implied_permissions:
                 ips = sorted([normalize(app, pp)

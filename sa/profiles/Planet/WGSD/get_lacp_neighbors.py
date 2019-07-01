@@ -8,6 +8,8 @@
 
 # Python modules
 import re
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
@@ -73,7 +75,7 @@ class Script(BaseScript):
                     else:
                         memb += [iface]
             d[ifname] = memb
-        for pc in d.items():
+        for pc in six.iteritems(d):
             # Get lacp port-channel
             chan_num = str(pc[0]).replace("Po", "")
             v = self.cli("show lacp %s" % pc[0])

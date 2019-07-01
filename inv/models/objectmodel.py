@@ -11,8 +11,8 @@ from __future__ import absolute_import
 import os
 from threading import Lock
 import operator
-import six
 # Third-party modules
+import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
@@ -357,6 +357,6 @@ class ModelConnectionsCache(Document):
                 "name": c.name
             })]
         if cache:
-            bulk += [DeleteOne({"_id": x}) for x in cache.values()]
+            bulk += [DeleteOne({"_id": x}) for x in six.itervalues(cache)]
         if bulk:
             collection.bulk_write(bulk)

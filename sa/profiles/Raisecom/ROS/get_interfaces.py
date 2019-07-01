@@ -9,6 +9,8 @@
 # Python modules
 import re
 from collections import defaultdict
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -211,7 +213,7 @@ class Script(BaseScript):
         for l in (statuses, ifaces):
             for elem in l:
                 d[elem['name']].update(elem)
-        l3 = d.values()
+        l3 = list(six.itervalues(d))
 
         for port in l3:
             name = port["name"]
