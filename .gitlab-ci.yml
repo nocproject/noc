@@ -56,7 +56,7 @@ black:
     - merge_requests
   tags:
     - docker
-  allow_failure: true
+  allow_failure: false
 
 # waiting for https://github.com/rubik/xenon/issues/21
 xenon:
