@@ -14,11 +14,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_init
 from noc.core.model.fields import TagsField
 from noc.core.datastream.decorator import datastream
 from .dnszone import DNSZone
 
 
+@on_init
 @datastream
 @six.python_2_unicode_compatible
 class DNSZoneRecord(NOCModel):
