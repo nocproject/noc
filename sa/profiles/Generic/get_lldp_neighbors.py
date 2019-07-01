@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Third-party modules
 import six
+from six.moves import zip
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-# from noc.core.mib import mib
 from noc.core.mac import MAC
 from noc.core.mib import mib
 

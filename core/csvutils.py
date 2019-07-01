@@ -10,6 +10,7 @@
 import csv
 # Third-party modules
 import six
+from six.moves import zip
 # Django modules
 from django.db import models
 

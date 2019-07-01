@@ -13,6 +13,8 @@ import itertools
 import types
 import re
 from collections import defaultdict
+# Third-party modules
+from six.moves import zip
 # NOC modules
 from noc.core.vlan import has_vlan, optimize_filter
 from .transformer import PredicateTransformer
