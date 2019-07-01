@@ -19,6 +19,7 @@ from django.db import models
 import cachetools
 import six
 # NOC modules
+from noc.core.model.decorator import on_init
 from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
@@ -42,6 +43,7 @@ ZONE_REVERSE_IPV4 = "4"
 ZONE_REVERSE_IPV6 = "6"
 
 
+@on_init
 @datastream
 @on_delete_check(check=[
     ("dns.DNSZoneRecord", "zone")

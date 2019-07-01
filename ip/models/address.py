@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.config import config
+from noc.core.model.decorator import on_init
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
@@ -30,6 +31,7 @@ from .vrf import VRF
 from .addressprofile import AddressProfile
 
 
+@on_init
 @datastream
 @full_text_search
 @workflow
