@@ -29,8 +29,6 @@ class Script(BaseScript):
     def execute_cli(self):
         objects = []
         v = self.cli("show hardware")
-        if not v:
-            raise NotImplementedError()
         media = self.cli("show port trans")
         for l in v.splitlines():
             if "backplane" in l:
