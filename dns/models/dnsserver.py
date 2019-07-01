@@ -12,11 +12,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_init
 from noc.config import config
 from noc.core.model.fields import INETField
 from noc.core.datastream.decorator import datastream
 
 
+@on_init
 @datastream
 @six.python_2_unicode_compatible
 class DNSServer(NOCModel):
