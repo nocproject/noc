@@ -18,6 +18,7 @@ import cachetools
 # NOC modules
 from noc.config import config
 from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_init
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.datastream.decorator import datastream
 from noc.core.model.decorator import on_delete_check
@@ -26,6 +27,7 @@ from .dnsserver import DNSServer
 id_lock = Lock()
 
 
+@on_init
 @datastream
 @on_delete_check(check=[
     ("dns.DNSZone", "profile")
