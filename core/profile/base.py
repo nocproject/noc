@@ -65,11 +65,11 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
     # If pattern_more is a list of (pattern,command)
     # send appropriate command
     pattern_more = "^---MORE---"
-    # Regular expression to catch the syntax errors in cli output.
+    # Regular expression (string or compiled) to catch the syntax errors in cli output.
     # If CLI output matches pattern_syntax_error,
     # then CLISyntaxError exception raised
     pattern_syntax_error = None
-    # Regular expression to catch the CLI commands errors in cli output.
+    # Regular expression (string or compiled) to catch the CLI commands errors in cli output.
     # If CLI output matches pattern_syntax_error and not matches
     # pattern_syntax_error, then CLIOperationError exception raised
     pattern_operation_error = None
@@ -494,12 +494,17 @@ class BaseProfile(six.with_metaclass(BaseProfileMetaclass, object)):
         """
         Called once by profile loader
         """
+        def compile(pattern):
+            if isinstance(pattern, six.string_types):
+                return re.compile(pattern)
+            return pattern
+
         if cls.pattern_syntax_error:
-            cls.rx_pattern_syntax_error = re.compile(cls.pattern_syntax_error, re.MULTILINE)
+            cls.rx_pattern_syntax_error = compile(cls.pattern_syntax_error)
         else:
             cls.rx_pattern_syntax_error = None
         if cls.pattern_operation_error:
-            cls.rx_pattern_operation_error = re.compile(cls.pattern_operation_error, re.MULTILINE)
+            cls.rx_pattern_operation_error = compile(cls.pattern_operation_error)
         else:
             cls.rx_pattern_operation_error = None
 
