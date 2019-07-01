@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 # Third-party modules
 import six
+from six.moves import zip
 from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -49,4 +50,4 @@ class RefBookData(NOCModel):
         """
         Returns list of pairs (field,data)
         """
-        return zip(self.ref_book.fields, self.value)
+        return list(zip(self.ref_book.fields, self.value))

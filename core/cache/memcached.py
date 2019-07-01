@@ -8,16 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
-
 import logging
-
 # Third-party modules
+from six.moves import zip
 import pylibmc
 import pylibmc.pools
+# NOC modules
 from noc.config import config
 from noc.core.perf import metrics
-
-# NOC modules
 from .base import BaseCache
 
 logger = logging.getLogger(__name__)

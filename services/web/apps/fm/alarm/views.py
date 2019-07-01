@@ -16,6 +16,7 @@ import datetime
 import dateutil.parser
 import operator
 # Third-party modules
+from six.moves import zip
 import bson
 from pymongo import ReadPreference
 from mongoengine.errors import DoesNotExist
@@ -743,7 +744,7 @@ class AlarmApplication(ExtApplication):
             mtc = {x["_id"]: x["intervals"] for x in Maintenance._get_collection().aggregate(pipeline)}
             for x in data:
                 if x["managed_object"] in mtc:
-                    left, right = zip(*mtc[x["managed_object"]])
+                    left, right = list(zip(*mtc[x["managed_object"]]))
                     x["isInMaintenance"] = (
                         bisect.bisect(right, dateutil.parser.parse(x["timestamp"]).replace(tzinfo=None)) !=
                         bisect.bisect(left, dateutil.parser.parse(x["clear_timestamp"]).replace(tzinfo=None))

@@ -5,11 +5,12 @@
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+# Third-party modules
 import six
+from six.moves import zip
 # NOC modiles
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors

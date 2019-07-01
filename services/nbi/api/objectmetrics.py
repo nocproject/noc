@@ -14,6 +14,7 @@ import tornado.gen
 import ujson
 import dateutil.parser
 import six
+from six.moves import zip
 # NOC modules
 from noc.config import config
 from noc.core.service.apiaccess import authenticated
