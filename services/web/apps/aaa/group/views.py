@@ -9,7 +9,6 @@
 import threading
 # Third-party modules
 from django.http import HttpResponse
-from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 # NOC modules
 from noc.lib.app.site import site
@@ -17,6 +16,7 @@ from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.aaa.models.group import Group
 from noc.aaa.models.permission import Permission
 from noc.core.cache.decorator import cachedmethod
+from noc.core.translation import ugettext as _
 
 apps_lock = threading.RLock()
 
@@ -33,7 +33,7 @@ class GroupsApplication(ExtModelApplication):
     query_condition = "icontains"
     query_fields = ["name"]
     default_ordering = ["name"]
-    m2m_fields = {"permissions": Permission}
+    custom_m2m_fields = {"permissions": Permission}
 
     @classmethod
     @cachedmethod(

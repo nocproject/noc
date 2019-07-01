@@ -6,13 +6,13 @@
 //---------------------------------------------------------------------
 console.debug("Defining NOC.aaa.apikey.Application");
 
-Ext.define("NOC.main.apikey.Application", {
+Ext.define("NOC.aaa.apikey.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.aaa.apikey.Model",
         "NOC.core.PasswordGenerator"
     ],
-    model: "NOC.main.apikey.Model",
+    model: "NOC.aaa.apikey.Model",
     search: true,
     helpId: "reference-apikey",
 

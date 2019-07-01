@@ -47,7 +47,7 @@ class ExtModelApplication(ExtApplication):
     clean_fields = {"id": IntParameter()}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
     # m2m fields
-    m2m_fields = {}  # Name -> Model
+    custom_m2m_fields = {}  # Name -> Model
     secret_fields = None  # Set of sensitive fields. "secret" permission is required to show of modify
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
@@ -75,6 +75,9 @@ class ExtModelApplication(ExtApplication):
             if f.default is not None and not f.blank:
                 self.field_defaults[f.name] = f.default
         # m2m fields
+        self.m2m_fields = {}  # Name -> Model
+        if self.custom_m2m_fields:
+            self.m2m_fields.update(self.custom_m2m_fields)
         for f in self.model._meta.many_to_many:
             self.m2m_fields[f.name] = f.remote_field.model
         # Find field_* and populate custom fields
