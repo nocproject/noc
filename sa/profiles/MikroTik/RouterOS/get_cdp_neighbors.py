@@ -18,9 +18,7 @@ class Script(BaseScript):
     def execute(self):
         device_id = self.scripts.get_fqdn()
         interfaces = []
-        for n, f, r in self.cli_detail(
-            '/interface print detail without-paging where type="ether"'
-        ):
+        for n, f, r in self.cli_detail('/interface print detail without-paging where type="ether"'):
             interfaces += [r["name"]]
         # Get neighbors
         neighbors = []
