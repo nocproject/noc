@@ -9,6 +9,8 @@
 # Python modules
 import re
 import time
+# Third-party modules
+import six
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -424,7 +426,7 @@ class Script(BaseScript):
                     if imap.get(si["name"], "default") == vrf
                 ]
                 vrfs[vrf]["interfaces"] += [c]
-        return vrfs.values()
+        return list(six.itervalues(vrfs))
 
     rx_vlan_sep = re.compile(r"^VLAN:", re.MULTILINE)
     rx_802_1Q_tag = re.compile(r"802.1Q\s+Tag:\s+(?P<tag>\d+)",

@@ -60,7 +60,7 @@ class ExtDocApplication(ExtApplication):
         self.has_uuid = False
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
-        for name, f in self.model._fields.items():
+        for name, f in six.iteritems(self.model._fields):
             if isinstance(f, BooleanField):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, GeoPointField):
@@ -87,10 +87,10 @@ class ExtDocApplication(ExtApplication):
         #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)
-                                 for n, f in self.model._fields.items()
+                                 for n, f in six.iteritems(self.model._fields)
                                  if f.unique and isinstance(f, StringField)]
         self.unique_fields = [
-            n for n, f in self.model._fields.items() if f.unique
+            n for n, f in six.iteritems(self.model._fields) if f.unique
         ]
         # Install JSON API call when necessary
         self.json_collection = self.model._meta.get("json_collection")
@@ -214,7 +214,7 @@ class ExtDocApplication(ExtApplication):
                 del q[p]
         # Extract IN
         # extjs not working with same parameter name in query
-        for p in q.keys():
+        for p in q:
             if p.endswith("__in") and self.rx_oper_splitter.match(p):
                 field = self.rx_oper_splitter.match(p).group("field") + "__in"
                 if field not in q:
@@ -244,7 +244,7 @@ class ExtDocApplication(ExtApplication):
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
-        for n, f in o._fields.items():
+        for n, f in six.iteritems(o._fields):
             if fields and n not in fields:
                 continue
             v = getattr(o, n)
@@ -364,7 +364,7 @@ class ExtDocApplication(ExtApplication):
                 if self.queryset(request).filter(**q).first():
                     return self.response(status=self.CONFLICT)
         o = self.model()
-        for k, v in attrs.items():
+        for k, v in six.iteritems(attrs):
             if k != self.pk and "__" not in k:
                 setattr(o, k, v)
         try:

@@ -110,7 +110,7 @@ class Script(BaseScript):
         if unknown_interfaces:
             self.logger.info("%d unknown interfaces has been ignored",
                              len(unknown_interfaces))
-        return r.values()
+        return list(six.itervalues(r))
 
     def execute_snmp(self, interfaces=None, **kwargs):
         r = self.get_data(interfaces=interfaces)

@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -153,7 +155,7 @@ class Script(BaseScript):
                                 ssid_broadcast = "Enable"
                             else:
                                 ssid_broadcast = "Disable"
-                            for ri in wres.items():
+                            for ri in six.iteritems(wres):
                                 if ri[0] == radio:
                                     iface = {
                                         "type": "physical",

@@ -419,7 +419,7 @@ class ExtModelApplication(ExtApplication):
         """
         if self.file_fields_mask:
             fdata = defaultdict(dict)
-            for f in pdata.keys():
+            for f in pdata:
                 match = self.file_fields_mask.match(f)
                 if match:
                     fdata[match.group("findex")][match.group("fname")] = pdata[f]
@@ -625,7 +625,7 @@ class ExtModelApplication(ExtApplication):
                 self.logger.info("Register Tag: %s" % t)
                 Tag.register_tag(t, repr(self.model))
         # Update attributes
-        for k, v in attrs.items():
+        for k, v in six.iteritems(attrs):
             if self.secret_fields and k in self.secret_fields and not self.has_secret():
                 continue
             setattr(o, k, v)

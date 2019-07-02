@@ -195,7 +195,7 @@ class RefAppplication(ExtApplication):
         return sorted(
             (
                 f(k, v)
-                for k, v in validator_registry.validators.items()
+                for k, v in six.iteritems(validator_registry.validators)
                 if v.TITLE
             ),
             key=lambda x: x["label"]

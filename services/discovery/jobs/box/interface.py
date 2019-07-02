@@ -509,11 +509,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             if "tagged" in d:
                 unit["tagged_vlans"] = ranges_to_list(d["tagged"])
         # Flatten units
-        r = instances.values()
+        r = list(six.itervalues(instances))
         for fi in r:
             # Flatten interfaces
-            fi["interfaces"] = fi["interfaces"].values()
+            fi["interfaces"] = list(six.itervalues(fi["interfaces"]))
             # Flatten units
             for i in fi["interfaces"]:
-                i["subinterfaces"] = i["subinterfaces"].values()
+                i["subinterfaces"] = list(six.itervalues(i["subinterfaces"]))
         return IGetInterfaces().clean_result(r)

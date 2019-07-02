@@ -9,6 +9,7 @@
 # Python modules
 import csv
 # Third-party modules
+import six
 from six import StringIO
 from django import forms
 from django.contrib import admin
@@ -102,7 +103,7 @@ class CSVApplication(Application):
                     keys = None
                     for row in csv_reader:
                         if not keys:
-                            keys = row.keys()
+                            keys = list(six.iterkeys(row))
                         for prefix in accepted_prefixes:
                             if self.address_in_network(row['address'], prefix[0])\
                                     and get_model('ip.VRF').objects.get(id=prefix[1]).name == row['vrf']:

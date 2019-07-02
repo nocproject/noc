@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.db import models
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -64,7 +65,7 @@ class Migration(BaseMigration):
 
         # Fill in VC types
         vc_map = {}  # letter -> id
-        for vt, d in vc_checks.items():
+        for vt, d in six.iteritems(vc_checks):
             name, min_labels, l1, l2 = d
             if l2 is None:
                 l2 = (0, 0)

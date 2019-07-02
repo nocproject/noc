@@ -2,12 +2,14 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -41,6 +43,6 @@ class Script(BaseScript):
 
             except self.snmp.TimeOutError:
                 pass
-            for port, nbs in per_port.items():
+            for port, nbs in six.iteritems(per_port):
                 r.append({"local_interface": port, "neighbors": nbs})
         return r

@@ -34,7 +34,7 @@ class Script(BaseScript):
                 firstline = False
                 continue
             ll = ll.strip().split()
-            if ll[1] not in vrfif.keys():
+            if ll[1] not in vrfif:
                 vrfif[ll[1]] = []
             vrfif[ll[1]].append(ll[0])
         vpns = []

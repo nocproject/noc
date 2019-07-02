@@ -10,6 +10,8 @@
 import re
 import time
 from collections import defaultdict
+# Third-party modules
+import six
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -281,7 +283,7 @@ class Script(BaseScript):
                         c["subinterfaces"] = [si for si in subs
                                               if imap.get(si["name"], "default") == vrf]
                         vrfs[vrf]["interfaces"] += [c]
-            return vrfs.values()
+            return list(six.itervalues(vrfs))
         return r
 
     def execute_cli(self):
@@ -543,4 +545,4 @@ class Script(BaseScript):
                 c["subinterfaces"] = [si for si in subs
                                       if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]
-        return vrfs.values()
+        return list(six.itervalues(vrfs))

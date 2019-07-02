@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Force10.FTOS.set_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -101,8 +101,8 @@ class Script(BaseScript):
             del remove_tagged[1]
         # Process VLAN mappings
         vlans = sorted(set(
-            add_untagged.keys() + add_tagged.keys() +
-            remove_untagged.keys() + remove_tagged.keys()
+            list(add_untagged) + list(add_tagged) +
+            list(remove_untagged) + list(remove_tagged)
         ))
         # Remove interfaces
         for v in vlans:

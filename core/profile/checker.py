@@ -11,10 +11,10 @@ import logging
 import operator
 from threading import Lock
 import re
-import six
 from collections import defaultdict
-# Third-party modules
 from builtins import str, object
+# Third-party modules
+import six
 import cachetools
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -157,7 +157,7 @@ class ProfileChecker(object):
     def iter_rules(self):
         d = self.get_rules()
         for p in sorted(d):
-            yield d[p].items()
+            yield list(six.iteritems(d[p]))
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_re_cache"))

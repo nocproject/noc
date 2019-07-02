@@ -104,7 +104,7 @@ class Command(BaseCommand):
             self.print("Time range: %s -- %s" % (t0, t1))
             self.print("Topology RCA Window: %s" % ("%ss" % config.correlator.topology_rca_window if
                                                     config.correlator.topology_rca_window else "Disabled"))
-            amap = dict((a.id, a) for a in alarms.values())
+            amap = dict((a.id, a) for a in six.itervalues(alarms))
             for x in sorted(r, key=operator.attrgetter("timestamp")):
                 if not x.alarm_id:
                     continue

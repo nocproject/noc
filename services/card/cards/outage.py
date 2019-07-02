@@ -2,13 +2,15 @@
 # ---------------------------------------------------------------------
 # Total Outage card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from __future__ import absolute_import
 import datetime
+# Third-party modules
+import six
 # NOC modules
 from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
@@ -37,21 +39,21 @@ class OutageCard(BaseCard):
             services = {}
             subscribers = {}
             # Calculate direct segments' coverage
-            for o in segment["objects"].values():
+            for o in six.itervalues(segment["objects"]):
                 update_dict(services, o["services"])
                 update_dict(subscribers, o["subscribers"])
             # Flatten objects
             segment["objects"] = sorted(
-                segment["objects"].values(),
+                six.itervalues(segment["objects"]),
                 key=lambda x: -x["weight"]
             )
             # Calculate children's coverage
-            for s in segment["segments"].values():
+            for s in six.itervalues(segment["segments"]):
                 update_summary(s)
                 update_dict(services, s["services"])
                 update_dict(subscribers, s["subscribers"])
             segment["segments"] = sorted(
-                segment["segments"].values(),
+                six.itervalues(segment["segments"]),
                 key=lambda x: -x["weight"]
             )
             segment["services"] = services

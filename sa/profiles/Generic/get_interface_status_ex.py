@@ -126,7 +126,7 @@ class Script(BaseScript):
         # Log unknown interfaces
         if unknown_interfaces:
             self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
-        return r.values()
+        return list(six.itervalues(r))
 
     def is_high_speed(self, data, speed):
         """

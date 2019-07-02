@@ -178,7 +178,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["untagged_vlan"] = swp["untagged"]
             except KeyError:
                 pass
-            if "description" in swp.keys():
+            if "description" in swp:
                 iface["description"] = swp["description"]
                 iface["subinterfaces"][0]["description"] = swp["description"]
             if name in ctp:
@@ -198,7 +198,7 @@ class Script(BaseScript):
                 ipifarr[vid] = [ip]
             else:
                 ipifarr[vid].append(ip)
-        for v in ipifarr.keys():
+        for v in ipifarr:
             iface = {
                 "name": "vlan%d" % v if v else "Management",
                 "mac": mac,  # @todo: get mgmt mac

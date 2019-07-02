@@ -232,7 +232,7 @@ class Link(Document):
             d = defaultdict(int)  # object -> count
             for i in self.interfaces:
                 d[i.managed_object.id] += 1
-            k = d.keys()
+            k = list(d)
             if d[k[0]] == d[k[1]]:
                 return "a"  # Point-to-Point aggregated
         if n_objects > 2:

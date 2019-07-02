@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import math
 # Third-party modules
+import six
 from six.moves import zip
 import networkx as nx
 import numpy as np
@@ -130,7 +131,7 @@ def fruchterman_reingold_layout(G,
 
     if pos is not None:
         # Determine size of existing domain to adjust initial positions
-        dom_size = max(coord for pos_tup in pos.values() for coord in pos_tup)
+        dom_size = max(coord for pos_tup in six.itervalues(pos) for coord in pos_tup)
         if dom_size == 0:
             dom_size = 1
         pos_arr = seed.rand(len(G), dim) * dom_size + center

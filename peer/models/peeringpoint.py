@@ -93,7 +93,7 @@ class PeeringPoint(NOCModel):
                 pls[pr.import_filter_name] = pr.import_filter
             if pr.export_filter_name:
                 pls[pr.export_filter_name] = pr.export_filter
-        return pls.items()
+        return list(six.iteritems(pls))
 
     @property
     def rpsl(self):
@@ -114,7 +114,7 @@ class PeeringPoint(NOCModel):
             else:
                 masklen = "30"
             s += ["ifaddr: %s masklen %s" % (ip, masklen)]
-        for remote_ip, remote_as in sorted(peers.keys(), key=lambda x: x[0]):
+        for remote_ip, remote_as in sorted(peers, key=lambda x: x[0]):
             if "/" in remote_ip:
                 remote_ip, masklen = remote_ip.split("/")
             s += ["peer: BGP4 %s asno(%s)" % (remote_ip, remote_as)]

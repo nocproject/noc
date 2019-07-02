@@ -8,11 +8,11 @@
 
 # Python modules
 import re
-from collections import defaultdict
+# Third-party modules
+import six
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError, MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -341,7 +341,7 @@ class Script(BaseScript):
                 rr["rd"] = rd
             # create ifaces
 
-            rr["interfaces"] = ifaces.values()
+            rr["interfaces"] = list(six.itervalues(ifaces))
         r += [rr]
         # Return result
         return r

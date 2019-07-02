@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportObjectHostname datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,9 +12,9 @@ from collections import namedtuple
 # Third-party modules
 from pymongo import ReadPreference
 # NOC modules
-from .base import BaseReportColumn
 from noc.lib.nosql import get_db
 from noc.inv.models.capability import Capability
+from .base import BaseReportColumn
 
 
 class ReportObjectCaps(BaseReportColumn):
@@ -35,7 +35,7 @@ class ReportObjectCaps(BaseReportColumn):
     def extract(self):
         # load(self, mo_ids, attributes):
         # Namedtuple caps, for save
-        Caps = namedtuple("Caps", self.ATTRS.keys())
+        Caps = namedtuple("Caps", list(self.ATTRS))
         Caps.__new__.__defaults__ = ("",) * len(Caps._fields)
 
         mo_ids = self.sync_ids[:]

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,8 @@
 import re
 import time
 from collections import defaultdict
+# Third-party modules
+import six
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -171,7 +173,7 @@ class Script(BaseScript):
                         c["subinterfaces"] = [si for si in subs
                                               if imap.get(si["name"], "default") == vrf]
                         vrfs[vrf]["interfaces"] += [c]
-            return vrfs.values()
+            return list(six.itervalues(vrfs))
         return r
 
     def execute_cli(self):
@@ -392,4 +394,4 @@ class Script(BaseScript):
                     vrfs[vrf]["interfaces"] += [c]
             elif i.get("aggregated_interface"):
                 vrfs["default"]["interfaces"] += [i]
-        return vrfs.values()
+        return list(six.itervalues(vrfs))

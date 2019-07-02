@@ -43,8 +43,7 @@ class Script(BaseScript):
         iface = {}
         interfaces = []
         step = len(self.objstr)
-        lines = self.cli("walkMIB " + " "
-                         .join(self.objstr.keys())).split("\n")[:-1]
+        lines = self.cli("walkMIB " + " ".join(self.objstr)).split("\n")[:-1]
         sh_ip = self.cli("show ip")
 
         try:

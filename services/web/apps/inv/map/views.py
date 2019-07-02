@@ -236,7 +236,7 @@ class MapApplication(ExtApplication):
         mo_in = defaultdict(float)
         mo_out = defaultdict(float)
         mos = [ManagedObject.get_by_id(mo["id"]) for mo in r["objects"]]
-        metric_map, last_ts = get_interface_metrics(o.keys())
+        metric_map, last_ts = get_interface_metrics(list(six.iterkeys(o)))
         for mo in o:
             if mo not in metric_map:
                 continue
@@ -252,7 +252,7 @@ class MapApplication(ExtApplication):
                 int(max(mo_in[mo2], mo_out[mo1])),
             ]
         else:
-            mv = mo_in.values() + mo_out.values()
+            mv = list(six.itervalues(mo_in)) + list(six.itervalues(mo_out))
             if mv:
                 r["utilisation"] = [int(max(mv))]
             else:

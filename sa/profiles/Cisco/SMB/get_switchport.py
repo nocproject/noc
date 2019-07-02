@@ -72,7 +72,7 @@ class Script(BaseScript):
         for p in self.get_description():
             descriptions[p["interface"]] = p["description"]
             interfaces[p["interface"]] = False  # default is down
-        for po in portchannels.keys():
+        for po in portchannels:
             interfaces[po] = False
         if not interfaces:
             return []
@@ -82,12 +82,12 @@ class Script(BaseScript):
 
         # Set up interface statuses
         for intstatus in self.scripts.get_interface_status():
-            if intstatus['interface'] in interfaces.keys():
+            if intstatus['interface'] in interfaces:
                 interfaces[intstatus['interface']] = intstatus['status']
 
         r = []  # reply
         # For each interface
-        for interface in interfaces.keys():
+        for interface in interfaces:
             try:
                 v = self.cli("show interfaces switchport %s" % interface)
                 sleep(0.7)
@@ -142,7 +142,7 @@ class Script(BaseScript):
             }
             if is_int(untagged):
                 iface["untagged"] = untagged
-            if interface in descriptions.keys():
+            if interface in descriptions:
                 if descriptions[interface]:
                     iface["description"] = descriptions[interface]
 

@@ -9,6 +9,8 @@
 
 # Python modules
 import re
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -85,7 +87,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["mac"] = MAC(mac)
             interfaces += [iface]
             if self.is_platform_BS24:
-                for i in ss.items():
+                for i in six.iteritems(ss):
                     if int(i[0]) == ifindex:
                         a = self.cli("show interface %s ssid-broadcast" % name)
                         if len(a.strip()) != 0:

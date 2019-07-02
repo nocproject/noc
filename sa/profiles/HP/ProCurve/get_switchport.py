@@ -30,7 +30,7 @@ class Script(BaseScript):
             "dot1qVlanStaticEgressPorts": egr,
         }
         stat = 'dot1qVlanStatic'
-        lines = self.cli("walkMIB " + " ".join(lmap.keys())).split(stat)[1:-1]
+        lines = self.cli("walkMIB " + " ".join(lmap)).split(stat)[1:-1]
 
         for l in lines:
             inc = 0
@@ -46,10 +46,10 @@ class Script(BaseScript):
                     bit <<= 1
                 inc = inc + 8
 
-        for i in egr.keys():
+        for i in egr:
             for j in egr[i]:
                 if j not in untag[i]:
-                    if i not in tag.keys():
+                    if i not in tag:
                         tag[i] = []
                     tag[i] += [j]
         return untag, tag
@@ -61,7 +61,7 @@ class Script(BaseScript):
         iface = {}
         sports = []
         step = len(self.objstr)
-        lines = self.cli("walkMIB " + " ".join(self.objstr.keys())).split("\n")[:-1]
+        lines = self.cli("walkMIB " + " ".join(self.objstr)).split("\n")[:-1]
         portchannel_members = {}  # member -> (portchannel, type)
         portchannels = {}  # portchannel name -> [members]
 
@@ -85,11 +85,11 @@ class Script(BaseScript):
                     iface[self.objstr[leaf]] = val
             ifindex = int(strn.split('=')[0].split(".")[1])
             iface["untagged"] = 1
-            for t in untagged.keys():
+            for t in untagged:
                 if ifindex in untagged[t]:
                     iface["untagged"] = t
             iface["tagged"] = []
-            for t in tagged.keys():
+            for t in tagged:
                 if t == iface["untagged"]:
                     continue
                 if ifindex in tagged[t]:

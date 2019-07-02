@@ -42,7 +42,7 @@ class GroupsApplication(ExtModelApplication):
     )
     def apps_permissions_list(cls):
         r = []
-        apps = site.apps.keys()
+        apps = list(site.apps)
         perms = Permission.objects.values_list("name", flat=True)
         for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
             mod = module[4:]

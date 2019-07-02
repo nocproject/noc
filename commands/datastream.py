@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # noc datastream command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@
 from __future__ import print_function
 import argparse
 # Third-party modules
+import six
 import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -101,7 +102,7 @@ class Command(BaseCommand):
 
     def handle_rebuild(self, datastream, *args, **kwargs):
         if not datastream:
-            self.die("--datastream is not set. Set one from list: %s" % self.MODELS.keys())
+            self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
         model = self.MODELS.get(datastream)
         if not model:
             self.die("Unsupported datastream")
@@ -123,7 +124,7 @@ class Command(BaseCommand):
 
     def handle_get(self, datastream, objects, filter, *args, **kwargs):
         if not datastream:
-            self.die("--datastream is not set. Set one from list: %s" % self.MODELS.keys())
+            self.die("--datastream is not set. Set one from list: %s" % ", ".join(self.MODELS))
         ds = loader[datastream]
         if not ds:
             self.die("Cannot initialize datastream")

@@ -8,6 +8,8 @@
 
 # Python modules
 import time
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -63,7 +65,7 @@ class Script(BaseScript):
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
                 # in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
-                if "local-address" in r1.keys():
+                if "local-address" in r1:
                     tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
                 return
@@ -444,4 +446,4 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             pass
 
-        return [{"interfaces": ifaces.values()}]
+        return [{"interfaces": list(six.itervalues(ifaces))}]

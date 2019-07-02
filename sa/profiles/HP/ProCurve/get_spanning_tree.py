@@ -6,6 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -195,12 +199,10 @@ class Script(BaseScript):
 
         # Install interfaces
         for instance_id in instances:
-            instances[instance_id]["interfaces"] = sorted(
-                instance_ports[instance_id].values(), lambda x, y: cmp(x["port_id"], y["port_id"])
-            )
+            instances[instance_id]["interfaces"] = list(sorted(six.itervalues(instance_ports[instance_id]), key=operator.itemgetter("port_id")))
 
         # Install instances
-        r["instances"] = sorted(instances.values(), lambda x, y: cmp(x["id"], y["id"]))
+        r["instances"] = list(sorted(six.itervalues(instances), key=operator.itemgetter["id"]))
         return r
 
     def process_rstp(self):

@@ -2,10 +2,12 @@
 # ---------------------------------------------------------------------
 # DCN.DCWL.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -64,7 +66,7 @@ class Script(BaseScript):
             if ssid:
                 res[name] = {"ssid": "%s.%s" % (name, ssid), "bss": bss}
 
-        for s in res.values():
+        for s in six.itervalues(res):
             v = self.cli("get bss %s detail" % s["bss"])
             for vline in v.splitlines():
                 rr = vline.split(' ', 1)
@@ -74,9 +76,9 @@ class Script(BaseScript):
                     radio = rr[1].strip()
                 if rr[0] == "beacon-interface":
                     name = rr[1].strip()
-                    if name in res.keys():
+                    if name in res:
                         res[name].update({"radio": radio, "status": status})
-        for o in res.items():
+        for o in six.iteritems(res):
             if "status" not in o[1]:
                 continue
             status = o[1]["status"]
@@ -85,7 +87,7 @@ class Script(BaseScript):
             else:
                 oper_status = False
             interface = o[1]["ssid"]
-            for w in wres.items():
+            for w in six.iteritems(wres):
                 if w[0] in o[1]["radio"]:
                     astatus = w[1]["status"]
                     if "up" in astatus:
@@ -104,7 +106,7 @@ class Script(BaseScript):
                         'out_speed': out_speed
                     }
                     result += [r]
-        for o in res.items():
+        for o in six.iteritems(res):
             if "status" not in o[1]:
                 continue
             status = o[1]["status"]
@@ -113,7 +115,7 @@ class Script(BaseScript):
             else:
                 oper_status = False
             interface = o[0]
-            for w in wres.items():
+            for w in six.iteritems(wres):
                 if w[0] in o[1]["radio"]:
                     astatus = w[1]["status"]
                     if "up" in astatus:

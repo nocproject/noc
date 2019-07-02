@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportMetrics datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,10 +10,9 @@
 from __future__ import absolute_import
 import time
 from collections import namedtuple, OrderedDict
-# Third-party modules
 # NOC modules
-from .base import BaseReportColumn
 from noc.core.clickhouse.connect import connection
+from .base import BaseReportColumn
 
 
 class ReportMetrics(BaseReportColumn):
@@ -83,7 +82,7 @@ class ReportMetrics(BaseReportColumn):
 
     def extract(self):
         # do_query_ch(self, moss, query_map, f_date, to_date)
-        Metrics = namedtuple("Metrics", [x[1] for x in self.KEY_FIELDS] + self.ATTRS.keys())
+        Metrics = namedtuple("Metrics", [x[1] for x in self.KEY_FIELDS] + list(self.ATTRS))
         Metrics.__new__.__defaults__ = ("",) * len(Metrics._fields)
         current_mo, block = None, []
         for row in self.do_query():

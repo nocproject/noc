@@ -2,15 +2,15 @@
 # ---------------------------------------------------------------------
 # Forms wrapper
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
+import six
 from django import forms
 from django.utils.encoding import force_unicode
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
 
 
 class NOCBoundField(forms.forms.BoundField):
@@ -56,6 +56,6 @@ class NOCForm(forms.Form):
         self.disabled_fields.add(name)
 
     def __iter__(self):
-        for name, field in self.fields.items():
+        for name, field in six.iteritems(self.fields):
             if name not in self.disabled_fields:
                 yield NOCBoundField(self, field, name)

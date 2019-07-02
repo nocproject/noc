@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Opticin.OS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+# Third-party modules
+import six
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
@@ -157,8 +158,7 @@ class Script(BaseScript):
             if rd:
                 rr["rd"] = rd
             # create ifaces
-
-            rr["interfaces"] = ifaces.values()
+            rr["interfaces"] = list(six.itervalues(ifaces))
         r += [rr]
         # Return result
         return r

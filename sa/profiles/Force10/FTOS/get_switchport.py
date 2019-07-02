@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-import re
 
 rx_portchannel_member = re.compile(r"^(\S+\s+\S+)\s+\((Port-channel\s+\d+)\)")
 

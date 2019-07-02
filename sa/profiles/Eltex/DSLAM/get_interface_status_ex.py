@@ -6,8 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from __future__ import print_function
+# Third-party modules
 import six
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -66,7 +65,7 @@ class Script(BaseScript):
                 ri["in_speed"] = s // 1000
                 ri["out_speed"] = s // 1000
 
-        return r.values()
+        return list(six.itervalues(r))
 
     def get_data_sw(self, o):
         # ifIndex -> ifName mapping
@@ -97,7 +96,7 @@ class Script(BaseScript):
                 s = int(s)
                 ri["in_speed"] = s * 1000
                 ri["out_speed"] = s * 1000
-        return r.values()
+        return list(six.itervalues(r))
 
     def get_data_adsl(self, o):
         # ifIndex -> ifName mapping
@@ -123,7 +122,7 @@ class Script(BaseScript):
                 s = int(s)
                 ri["in_speed"] = s
                 ri["out_speed"] = s
-        return r.values()
+        return list(six.itervalues(r))
 
     def execute_snmp(self, interfaces=None):
         if self.is_platform_MXA24:
