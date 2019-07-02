@@ -9,11 +9,14 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Third-party modules
 from tornado.iostream import IOStream
 import tornado.gen
+
 # Third-party modules
 import six
+
 # NOC modules
 from .base import CLI
 
@@ -31,12 +34,7 @@ NAWS = "\x1F"
 AO = "\xF5"
 AYT = "\xF6"
 
-IAC_CMD = {
-    DO: "DO",
-    DONT: "DONT",
-    WILL: "WILL",
-    WONT: "WONT"
-}
+IAC_CMD = {DO: "DO", DONT: "DONT", WILL: "WILL", WONT: "WONT"}
 
 IGNORED_CMD = {AO, AYT}
 
@@ -96,6 +94,7 @@ class TelnetParser(object):
     """
     Telnet protocol state and commands processing
     """
+
     def __init__(self, logger=None, writer=None, naws="\x00\x80\x00\x80"):
         self.logger = logger or _logger
         self.writer = writer
@@ -143,8 +142,8 @@ class TelnetParser(object):
                         break
                     else:
                         i = right.index(SE)
-                        self.process_iac_sb(right[1:i - 1])
-                        chunk = right[i + 1:]
+                        self.process_iac_sb(right[1 : i - 1])
+                        chunk = right[i + 1 :]
             else:
                 # Return leftovers
                 break
@@ -211,10 +210,7 @@ class TelnetParser(object):
         """
         if isinstance(opt, six.string_types):
             opt = ord(opt)
-        return "%s %s" % (
-            IAC_CMD.get(cmd, cmd),
-            TELNET_OPTIONS.get(opt, opt),
-        )
+        return "%s %s" % (IAC_CMD.get(cmd, cmd), TELNET_OPTIONS.get(opt, opt))
 
     @staticmethod
     def escape(data):
@@ -227,16 +223,13 @@ class TelnetIOStream(IOStream):
         self.cli = cli
         self.logger = cli.logger
         self.parser = TelnetParser(
-            logger=self.logger,
-            writer=self.write_to_fd,
-            naws=cli.profile.get_telnet_naws()
+            logger=self.logger, writer=self.write_to_fd, naws=cli.profile.get_telnet_naws()
         )
 
     @tornado.gen.coroutine
     def startup(self):
         if self.cli.profile.telnet_send_on_connect:
-            self.logger.debug("Sending %r on connect",
-                              self.cli.profile.telnet_send_on_connect)
+            self.logger.debug("Sending %r on connect", self.cli.profile.telnet_send_on_connect)
             yield self.write(self.cli.profile.telnet_send_on_connect)
 
     def read_from_fd(self):
