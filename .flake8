@@ -1,5 +1,7 @@
 [flake8]
 exclude=.git,var,share
+# E203 whitespace before ':'
+#    Conflicts with black formatting
 # E402 module level import not at top of file
 #    Imports may be at the end of module to resolve circular references
 # E501 line too long
@@ -18,4 +20,4 @@ exclude=.git,var,share
 #    that will not be for several Python releases.
 #    Not an actual error for Python2 and breaks already passed tests.
 #    Postponed for a while
-ignore=E402,E501,F403,F405,W504,W605
+ignore=E203,E402,E501,F403,F405,W504,W605
