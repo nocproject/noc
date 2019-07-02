@@ -124,8 +124,7 @@ def check_backport(labels):
         return []  # Already have problems
     if kind[0] != "kind::bug":
         return [
-            "'%s' cannot be used with '%s'.\n"
-            "Use only with 'kind::bug'" % (BACKPORT, kind[0])
+            "'%s' cannot be used with '%s'.\n" "Use only with 'kind::bug'" % (BACKPORT, kind[0])
         ]
     return []
 
@@ -150,7 +149,8 @@ def check_affected(labels):
     return [
         "'%s' label is not set.\n"
         "Refer to %s for details." % (l, go_url("dev-mr-labels-affected"))
-        for l in should_have if l not in labels
+        for l in should_have
+        if l not in labels
     ]
 
 
@@ -179,7 +179,7 @@ def main():
     else:
         problems += check(labels)
     if problems:
-        print("\n\n".join(problems))
+        print ("\n\n".join(problems))
         sys.exit(ERR_FAIL)
     sys.exit(ERR_OK)
 
