@@ -329,10 +329,6 @@ class Prefix(NOCModel):
             params=[self.prefix]
         ).values_list("id", flat=True)
         #
-        zones = set()
-        for a in Address.objects.filter(prefix__in=ids):
-            zones.add(a.address)
-            zones.add(a.fqdn)
         # Delete nested addresses
         Address.objects.filter(prefix__in=ids).delete()
         # Delete nested prefixes
@@ -345,9 +341,6 @@ class Prefix(NOCModel):
             where=["prefix <<= %s"],
             params=[self.prefix]
         )
-        # Touch dns zones
-        for z in zones:
-            DNSZone.touch(z)
 
     @property
     def maintainers(self):
