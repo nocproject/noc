@@ -38,16 +38,16 @@ flake8:
   tags:
     - docker
 
-yapf:
+black:
   stage: lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
+  image: registry.getnoc.com/infrastructure/black:master
   script:
     - set -x
     - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
-        yapf -d -vv $FLIST;
+        black --check $FLIST;
       else
         echo "No files to lint"
         true;
@@ -56,7 +56,7 @@ yapf:
     - merge_requests
   tags:
     - docker
-  allow_failure: true
+  allow_failure: false
 
 # waiting for https://github.com/rubik/xenon/issues/21
 xenon:
