@@ -6,6 +6,7 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 # Python modules
 import re
 # NOC modules
@@ -19,7 +20,7 @@ class Profile(BaseProfile):
         (r"--More-- ", " "),
         (r"\[Yes/press any key for no\]", "Y")
     ]
-    pattern_prompt = r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)> "
+    pattern_prompt = r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@]+)> "
     pattern_syntax_error = r"Command not found"
     pattern_operation_error = r"ERROR: Can't stat show result|ALARM: Board temperature mount to limit"
     # command_disable_pager = "terminal datadump"
