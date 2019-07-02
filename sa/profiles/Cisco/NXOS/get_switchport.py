@@ -93,7 +93,7 @@ class Script(BaseScript):
                 untagged = int(match.group("nvlan"))
                 vlans = match.group("vlans").strip()
                 if vlans == "ALL":
-                    tagged = range(1, 4095)
+                    tagged = list(range(1, 4095))
                 elif vlans.upper() == "NONE":
                     tagged = []
                 #

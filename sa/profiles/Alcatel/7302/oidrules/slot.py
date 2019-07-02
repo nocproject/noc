@@ -23,7 +23,7 @@ class SlotRule(OIDRule):
         if script.has_capability("Stack | Member Ids"):
             sys_slot_index = [0] + [int(index) for index in script.capabilities["Stack | Member Ids"].split(" | ")]
         elif script.has_capability("Stack | Members"):
-            sys_slot_index = [0] + range(1, script.capabilities["Stack | Members"] + 1)
+            sys_slot_index = list(range(0, script.capabilities["Stack | Members"] + 1))
         else:
             sys_slot_index = [0]
 

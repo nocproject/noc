@@ -36,7 +36,7 @@ class Script(BaseScript):
                 vlans = match.group("vlans")
                 if vlans is not None and vlans != '':
                     if vlans == "ALL":
-                        tagged = range(1, 4095)
+                        tagged = list(range(1, 4095))
                     else:
                         tagged = self.expand_rangelist(vlans)
                 else:
