@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_version = re.compile(r"^\s+Firmware version: (?P<version>\d+\S+)", re.MULTILINE)
     rx_serial = re.compile(r"^\s+Serial number: (?P<serial>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         ver = self.cli("show system information 1", cached=True)
         if (
             "Unit 1 is unavaible" in ver

@@ -8,17 +8,28 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, LLDP_CHASSIS_SUBTYPE_LOCAL,
-    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NETWORK_ADDRESS, LLDP_PORT_SUBTYPE_LOCAL,
-    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_WLAN_ACCESS_POINT, LLDP_CAP_ROUTER,
-    LLDP_CAP_TELEPHONE, LLDP_CAP_DOCSIS_CABLE_DEVICE, LLDP_CAP_STATION_ONLY,
-    lldp_caps_to_bits
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
 )
 
 
@@ -33,11 +44,11 @@ class Script(BaseScript):
         r"(^Port description:(?P<port_descr>.*)\n)?"
         r"(^System name:(?P<system_name>.*)\n)?"
         r"(^System description:(?P<system_descr>.*)\n)?",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_caps = re.compile(r"^Capabilities:(?P<caps>.+)\n\n", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         t = parse_table(self.cli("show lldp neighbor"), allow_wrap=True)
         for i in t:
@@ -61,7 +72,7 @@ class Script(BaseScript):
                 "remote_chassis_id": chassis_id,
                 "remote_chassis_id_subtype": chassis_id_subtype,
                 "remote_port": port_id,
-                "remote_port_subtype": port_id_subtype
+                "remote_port_subtype": port_id_subtype,
             }
             if match.group("port_descr"):
                 port_descr = match.group("port_descr").strip()
@@ -88,13 +99,10 @@ class Script(BaseScript):
                         "router": LLDP_CAP_ROUTER,
                         "telephone": LLDP_CAP_TELEPHONE,
                         "cable device": LLDP_CAP_DOCSIS_CABLE_DEVICE,
-                        "station only": LLDP_CAP_STATION_ONLY
-                    }
+                        "station only": LLDP_CAP_STATION_ONLY,
+                    },
                 )
             neighbor["remote_capabilities"] = caps
 
-            r += [{
-                "local_interface": i[0],
-                "neighbors": [neighbor]
-            }]
+            r += [{"local_interface": i[0], "neighbors": [neighbor]}]
         return r
