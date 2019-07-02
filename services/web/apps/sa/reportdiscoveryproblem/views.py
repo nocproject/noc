@@ -76,10 +76,10 @@ class ReportDiscoveryProblem(object):
 
 
 class ReportForm(forms.Form):
-    pool = forms.ModelChoiceField(
+    pool = forms.ChoiceField(
         label=_("Managed Objects Pool"),
         required=False,
-        queryset=Pool.objects.order_by("name"))
+        choices=list(Pool.objects.order_by("name").scalar("id", "name")))
     obj_profile = forms.ModelChoiceField(
         label=_("Managed Objects Profile"),
         required=False,
@@ -146,7 +146,9 @@ class ReportFilterApplication(SimpleReport):
             "10004": "SSH Protocol error"
         }
 
-        if not pool:
+        if pool:
+            pool = Pool.get_by_id(pool)
+        else:
             pool = Pool.objects.filter()[0]
         data += [SectionRow(name="Report by %s" % pool.name)]
         if selector:

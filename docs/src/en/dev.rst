@@ -5,6 +5,7 @@ Developer's Guide
 .. toctree::
     :titlesonly:
 
+    /dev/mr-labels
     /dev/confdb
     /dev/modelinterfaces
     /dev/objectmodel-tags

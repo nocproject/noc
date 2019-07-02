@@ -45,7 +45,7 @@ class CLIPSEnv(object):
                 logger.debug("Reusing CLIPS environment #%d", self.env_id)
             else:
                 # Create new environment
-                self.env_id = self.env_seq.next()
+                self.env_id = next(self.env_seq)
                 logger.debug("Creating new CLIPS environment #%d", self.env_id)
                 env = clips.Environment()
             self.used_envs[self.env_id] = env

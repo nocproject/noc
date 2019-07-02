@@ -48,6 +48,7 @@ class UserApplication(ExtModelApplication):
         "first_name": StringParameter(default=""),
         "last_name": StringParameter(default=""),
         "email": StringParameter(default="")}
+    custom_m2m_fields = {"permissions": Permission}
 
     @classmethod
     def apps_permissions_list(cls):

@@ -44,12 +44,12 @@ class MACDB(Document):
     def __str__(self):
         return self.mac
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.mac = MAC(self.mac)
         if not self.last_changed:
             self.last_changed = datetime.datetime.now()
         try:
-            super(MACDB, self).save()
+            super(MACDB, self).save(*args, **kwargs)
         except Exception as e:
             raise ValueError("%s: %s" % (e.__doc__, e.message))
 

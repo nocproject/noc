@@ -13,6 +13,8 @@ import itertools
 from functools import partial
 import socket
 import struct
+# Third-party modules
+from six.moves import zip
 # NOC modules
 from noc.config import config
 

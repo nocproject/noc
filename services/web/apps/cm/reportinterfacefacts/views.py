@@ -20,28 +20,9 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
-class ReportForm(forms.Form):
-    pool = forms.ModelChoiceField(
-        label=_("Managed Objects Pool"),
-        required=False,
-        queryset=Pool.objects.order_by("name"))
-    int_profile = forms.ModelChoiceField(
-        label=_("Interface Profile"),
-        required=True,
-        queryset=InterfaceProfile.objects.order_by("name"))
-    mop = forms.ModelChoiceField(
-        label=_("Managed Object Profile"),
-        required=False,
-        queryset=ManagedObjectProfile.objects.order_by("name"))
-    # int_fact = forms.ModelChoiceField(
-    #    label=_("Check Facts"),
-    #    required=False,
-    #    queryset=ManagedObjectProfile.objects.order_by("name"))
-
-
 class ReportFilterApplication(SimpleReport):
     title = _("Check Interface Facts")
-    form = ReportForm
+
     try:
         default_pool = Pool.objects.get(name="default")
     except Pool.DoesNotExist:
@@ -54,8 +35,27 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
-    def get_data(self, request, pool=None, int_profile=None,
-                 mop=None, avail_status=None, **kwargs):
+    def get_form(self):
+        class ReportForm(forms.Form):
+            pool = forms.ChoiceField(
+                label=_("Managed Objects Pool"),
+                required=False,
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+            int_profile = forms.ChoiceField(
+                label=_("Interface Profile"),
+                required=True,
+                choices=list(InterfaceProfile.objects.order_by("name").scalar("id", "name")))
+            mop = forms.ModelChoiceField(
+                label=_("Managed Object Profile"),
+                required=False,
+                queryset=ManagedObjectProfile.objects.order_by("name"))
+            # int_fact = forms.ModelChoiceField(
+            #    label=_("Check Facts"),
+            #    required=False,
+            #    queryset=ManagedObjectProfile.objects.order_by("name"))
+        return ReportForm
+
+    def get_data(self, request, pool=None, int_profile=None, mop=None, avail_status=None, **kwargs):
         data = []
         mos = ManagedObject.objects.filter(is_managed=True)
 

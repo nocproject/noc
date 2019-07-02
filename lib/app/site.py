@@ -21,7 +21,7 @@ import six
 from six.moves.urllib.parse import urlencode
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
-from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
+from django.urls import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
 import ujson
@@ -91,6 +91,7 @@ class Site(object):
         self.log_sql_statements = config.logging.log_sql_statements
         self.app_contributors = defaultdict(set)
         self.app_count = 0
+        self.pending_applications = []
 
     @property
     def urls(self):
@@ -363,7 +364,21 @@ class Site(object):
 
     def register(self, app_class):
         """
-        Install application class to the router
+        Schedule application class to be installed to the router.
+        Scheduling is necessary to allow the class decorators to add custom views
+
+        :param app_class:
+        :return:
+        """
+        app_id = app_class.get_app_id()
+        if app_id in self.apps:
+            raise Exception("Application %s is already registered" % app_id)
+        self.pending_applications += [app_class]
+
+    def do_register(self, app_class):
+        """
+        Actually register class
+
         :param app_class:
         :return:
         """
@@ -404,10 +419,6 @@ class Site(object):
         if self.apps:
             # Do not discover site twice
             return
-        # Connect to mongodb
-        from noc.lib.nosql import auto_connect
-        auto_connect()
-        #
         self.app_count = 0
         prefix = os.path.join("services", "web", "apps")
         # Load applications
@@ -434,6 +445,10 @@ class Site(object):
                     __import__(".".join([basename] +
                                         f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1:]),
                                {}, {}, "*")
+        # Register all collected applications
+        for app_class in self.pending_applications:
+            self.do_register(app_class)
+        self.pending_applications = []
         # Install applications
         logger.info("%d applications are installed", self.app_count)
         # Finally, order the menu

@@ -13,31 +13,25 @@ from threading import local
 _tls = local()
 
 
-class TLSMiddleware(object):
+def tls_middleware(get_response):
     """
-    Thread local storage middleware
+    Store request and user to thread-local storage
+
+    :param get_response: Callable returning response from downstream middleware
+    :return:
     """
-    def process_request(self, request):
-        """
-        Set up TLS' user and request
-        """
+
+    def middleware(request):
+        global _tls
+
         _tls.request = request
         set_user(getattr(request, "user", None))
-
-    def process_response(self, request, response):
-        """
-        Clean TLS
-        """
+        response = get_response(request)
         _tls.request = None
         _tls.user = None
         return response
 
-    def process_exception(self, request, exception):
-        """
-        Clean TLS
-        """
-        _tls.request = None
-        _tls.user = None
+    return middleware
 
 
 def set_user(user):

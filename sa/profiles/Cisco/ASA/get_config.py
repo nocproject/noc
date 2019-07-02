@@ -4,6 +4,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from six.moves import zip
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig

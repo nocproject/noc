@@ -47,8 +47,7 @@ class Stream(object):
         if not self.out:
             self.out_path = os.path.join(
                 self.prefix,
-                "%s-%06d.tsv.gz.tmp" % (self.fs,
-                                        self.chunk_count.next())
+                "%s-%06d.tsv.gz.tmp" % (self.fs, next(self.chunk_count))
             )
             meta_path = self.out_path[:-11] + ".meta"
             with open(meta_path, "w") as f:

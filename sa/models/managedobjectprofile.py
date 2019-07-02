@@ -771,14 +771,14 @@ class ManagedObjectProfile(NOCModel):
     def can_cli_session(self):
         return self.cli_session_policy == "E"
 
-    def save(self, force_insert=False, force_update=False, using=None):
+    def save(self, *args, **kwargs):
         # Validate MeticType for object profile
         if self.metrics:
             try:
                 self.metrics = m_valid.clean(self.metrics)
             except ValueError as e:
                 raise ValueError(e)
-        super(ManagedObjectProfile, self).save(force_insert, force_update)
+        super(ManagedObjectProfile, self).save(*args, **kwargs)
 
     @classmethod
     def get_max_metrics_interval(cls, managed_object_profiles=None):

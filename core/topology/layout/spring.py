@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import math
 # Third-party modules
+from six.moves import zip
 import networkx as nx
 import numpy as np
 # NOC modules

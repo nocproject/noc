@@ -2,12 +2,13 @@
 # ---------------------------------------------------------------------
 # Generic.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import six
+from six.moves import zip
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.core.snmp.error import SNMPError

@@ -22,22 +22,23 @@ from noc.core.translation import ugettext as _
 from noc.core.profile.loader import GENERIC_PROFILE
 
 
-class ReportForm(forms.Form):
-    pool = forms.ModelChoiceField(
-        label=_("Managed Objects Pools"),
-        required=True,
-        queryset=Pool.objects.order_by("name"))
-    obj_profile = forms.ModelChoiceField(
-        label=_("Managed Objects Profile"),
-        required=False,
-        queryset=ManagedObjectProfile.objects.order_by("name"))
-
-
 class ReportDiscoveryTopologyProblemApplication(SimpleReport):
     title = _("Discovery Topology Problems")
-    form = ReportForm
 
-    def get_data(self, request, pool, obj_profile=None, **kwargs):
+    def get_form(self):
+        class ReportForm(forms.Form):
+            pool = forms.ChoiceField(
+                label=_("Managed Objects Pools"),
+                required=True,
+                choices=list(Pool.objects.order_by("name").scalar("id", "name")))
+            obj_profile = forms.ModelChoiceField(
+                label=_("Managed Objects Profile"),
+                required=False,
+                queryset=ManagedObjectProfile.objects.order_by("name"))
+
+        return ReportForm
+
+    def get_data(self, request, pool=None, obj_profile=None, **kwargs):
         problems = {}  # id -> problem
 
         if not obj_profile:

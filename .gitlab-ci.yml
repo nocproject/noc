@@ -7,12 +7,24 @@ stages:
   - Build additional release containers
   - Upload docs
 
+check labels:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - set -x
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA))
+    - python ./scripts/check-labels.py $FLIST
+  only:
+    - merge_requests
+  tags:
+    - docker
+
 flake8:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -21,28 +33,30 @@ flake8:
         echo "No files to lint"
         true;
       fi
-  except:
-    - master
+  only:
+    - merge_requests
   tags:
     - docker
 
-yapf:
+black:
   stage: lint
-  image: registry.getnoc.com/infrastructure/noc-lint:master
+  image: registry.getnoc.com/infrastructure/black:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD)  |egrep ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
-        yapf -d -vv $FLIST;
+        black --check $FLIST;
       else
         echo "No files to lint"
         true;
       fi
+  only:
+    - merge_requests
   tags:
     - docker
-  allow_failure: true
+  allow_failure: false
 
 # waiting for https://github.com/rubik/xenon/issues/21
 xenon:
@@ -50,7 +64,7 @@ xenon:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD)  |egrep ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
     - x=0
     - >
       if [ ! -z "$FLIST" ];
@@ -61,8 +75,8 @@ xenon:
         done;
       fi
     - if [ "$x" -gt 0 ] ; then exit 1; fi
-  except:
-    - master
+  only:
+    - merge_requests
   tags:
     - docker
   allow_failure: true
@@ -72,7 +86,7 @@ pylint:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -81,8 +95,8 @@ pylint:
         echo "No files to lint"
         true;
       fi
-  except:
-    - master
+  only:
+    - merge_requests
   tags:
     - docker
 
@@ -90,10 +104,10 @@ futurize:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/" || true)
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
     - /bin/future.sh "$FLIST"
-  except:
-    - master
+  only:
+    - merge_requests
   tags:
     - docker
 
@@ -101,10 +115,10 @@ futurize stage2:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $(git branch -q -r --contains) $(git merge-base origin/HEAD HEAD) |egrep ".py$" | grep -v ".docker/" || true)
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
     - /bin/future2.sh "$FLIST"
-  except:
-    - master
+  only:
+    - merge_requests
   tags:
     - docker
   allow_failure: true
@@ -134,6 +148,11 @@ Test migrate:
       -f .docker/docker-compose.yml
       -p "${DOCKER_COMPOSE_PROJECT}-migrate"
       down -v
+  only:
+    refs:
+      - merge_requests
+      - master
+      - /^release-\d+\.\d+/
   tags:
     - shell
   allow_failure: false
@@ -162,6 +181,11 @@ Test code:
       -f .docker/docker-compose.yml
       -p "${DOCKER_COMPOSE_PROJECT}-tests"
       down -v
+  only:
+    refs:
+      - merge_requests
+      - master
+      - /^release-\d+\.\d+/
   tags:
     - shell
   allow_failure: false
@@ -213,6 +237,25 @@ Build docs:
   only:
     changes:
       - docs/**
+
+Build Master Docs:
+  stage: Build docs
+  environment: docs
+  image: registry.getnoc.com/infrastructure/docs:master
+  script:
+    - cd docs/
+    - sphinx-build -a -E -b html src/en ../build/docs/en
+    - python ./scripts/build-go.py ../build/docs/en/objects.inv
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/docs/en
+    expire_in: 1 day
+  only:
+    refs:
+      - master
+      - /^release-\d+\.\d+/
 
 Build release image:
   stage: Build release container
