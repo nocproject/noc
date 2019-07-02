@@ -127,6 +127,7 @@ def check_backport(labels):
             "'%s' cannot be used with '%s'.\n"
             "Use only with 'kind::bug'" % (BACKPORT, kind[0])
         ]
+    return []
 
 
 def check_affected(labels):
