@@ -99,6 +99,26 @@ pylint:
   tags:
     - docker
 
+bandit:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - set -x
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        bandit "$FLIST";
+      else
+        echo "No files to lint"
+        true;
+      fi
+  only:
+    - merge_requests
+  tags:
+    - docker
+  allow_failure: true
+
 futurize:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
