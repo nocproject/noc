@@ -9,9 +9,11 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.refbooks.downloaders import downloader_registry
@@ -21,15 +23,13 @@ from .language import Language
 downloader_registry.register_all()
 
 
-@on_delete_check(check=[
-    ("main.RefBookField", "ref_book"),
-    ("main.RefBookData", "ref_book")
-])
+@on_delete_check(check=[("main.RefBookField", "ref_book"), ("main.RefBookData", "ref_book")])
 @six.python_2_unicode_compatible
 class RefBook(NOCModel):
     """
     Reference Books
     """
+
     class Meta(object):
         app_label = "main"
         verbose_name = "Ref Book"
@@ -41,22 +41,12 @@ class RefBook(NOCModel):
     is_enabled = models.BooleanField("Is Enabled", default=False)
     is_builtin = models.BooleanField("Is Builtin", default=False)
     downloader = models.CharField(
-        "Downloader", max_length=64,
-        choices=downloader_registry.choices,
-        blank=True, null=True)
-    download_url = models.CharField(
-        "Download URL",
-        max_length=256, null=True,
-        blank=True)
-    last_updated = models.DateTimeField(
-        "Last Updated", blank=True,
-        null=True)
-    next_update = models.DateTimeField(
-        "Next Update", blank=True,
-        null=True)
-    refresh_interval = models.IntegerField(
-        "Refresh Interval (days)",
-        default=0)
+        "Downloader", max_length=64, choices=downloader_registry.choices, blank=True, null=True
+    )
+    download_url = models.CharField("Download URL", max_length=256, null=True, blank=True)
+    last_updated = models.DateTimeField("Last Updated", blank=True, null=True)
+    next_update = models.DateTimeField("Next Update", blank=True, null=True)
+    refresh_interval = models.IntegerField("Refresh Interval (days)", default=0)
 
     def __str__(self):
         return self.name
@@ -113,7 +103,8 @@ class RefBook(NOCModel):
                 self.bulk_upload(data)
                 self.last_updated = datetime.datetime.now()
                 self.next_update = self.last_updated + datetime.timedelta(
-                    days=self.refresh_interval)
+                    days=self.refresh_interval
+                )
                 self.save()
 
     @property
@@ -121,8 +112,7 @@ class RefBook(NOCModel):
         """
         Check refbook has at least one searchable field
         """
-        return self.refbookfield_set.filter(
-            search_method__isnull=False).exists()
+        return self.refbookfield_set.filter(search_method__isnull=False).exists()
 
     @property
     def fields(self):

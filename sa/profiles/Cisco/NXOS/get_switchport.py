@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -29,18 +30,14 @@ class Script(BaseScript):
         "^  Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
         "^  Trunking VLANs Allowed: (?P<vlans>.+?)$",
         # "Pruning VLANs Enabled:",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
 
     rx_body_name = re.compile(r"^(?P<interface>\S+).+", re.MULTILINE)
 
-    rx_body_omode = re.compile(
-        r"^Operational Mode: (?P<omode>\S+)\s*$", re.MULTILINE
-    )
+    rx_body_omode = re.compile(r"^Operational Mode: (?P<omode>\S+)\s*$", re.MULTILINE)
 
-    rx_body_nvlan = re.compile(
-        r"^Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+", re.MULTILINE
-    )
+    rx_body_nvlan = re.compile(r"^Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+", re.MULTILINE)
 
     rx_descr_if = re.compile(
         r"^(?P<interface>\S+)\s+(?:up|down|admin down|deleted)\s+(?:up|down)\s+"
@@ -54,10 +51,12 @@ class Script(BaseScript):
             match = self.rx_descr_if.match(ll.strip())
             if not match:
                 continue
-            r += [{
-                "interface": self.profile.convert_interface_name(match.group("interface")),
-                "description": match.group("description")
-            }]
+            r += [
+                {
+                    "interface": self.profile.convert_interface_name(match.group("interface")),
+                    "description": match.group("description"),
+                }
+            ]
         return r
 
     def execute(self):
@@ -85,8 +84,7 @@ class Script(BaseScript):
                 continue
                 # raise self.NotSupportedError()
 
-            interface = self.profile.convert_interface_name(
-                match.group("interface"))
+            interface = self.profile.convert_interface_name(match.group("interface"))
             is_trunk = match.group("omode").strip() == "trunk"
 
             if is_trunk:
@@ -117,7 +115,7 @@ class Script(BaseScript):
                 "tagged": [vv for vv in tagged if vv in known_vlans],
                 "members": portchannels.get(interface, []),
                 "802.1Q Enabled": is_trunk,
-                "802.1ad Tunnel": False
+                "802.1ad Tunnel": False,
             }
             if untagged:
                 iface["untagged"] = untagged
