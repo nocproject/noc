@@ -28,7 +28,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL
     )
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         for pc in self.scripts.get_portchannel():
             lacp = {

@@ -5,11 +5,12 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -19,9 +20,8 @@ class Script(BaseScript):
         r"^\s*Current MAC address of active (?:main|control )board:\s+(?P<mac>\S+)",
         re.MULTILINE)
 
-    def execute(self):
-        match = self.re_search(self.rx_mac,
-            self.cli("display sysman mac-address"))
+    def execute_cli(self, **kwargs):
+        match = self.re_search(self.rx_mac, self.cli("display sysman mac-address"))
         mac = match.group("mac")
         return {
             "first_chassis_mac": mac,

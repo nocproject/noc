@@ -5,11 +5,12 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -30,7 +31,7 @@ class Script(BaseScript):
         r"^\s*VERSION\s*:\s*(?P<platform>(MA|UA)\S+)(?P<version>V\d+R\d+\S+)\s*\n",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("display version")
         match = self.rx_ver1.search(v)
         if match:

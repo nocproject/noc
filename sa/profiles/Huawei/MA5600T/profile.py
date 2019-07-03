@@ -75,13 +75,15 @@ class Profile(BaseProfile):
 
     @staticmethod
     def get_board_type(name):
-        if "GP" in name or "XGB" in name:
+        if "EP" in name or "GP" in name or "XGB" in name:
             return "GPON"
         elif "ETH" in name or "X2C" in name or "GIC" in name or "X1C" in name:
             return "Ethernet"
-        elif "CU" in name:
+        elif "CU" in name or "IPMB" in name:
             return "Control"
-        return "unknown"
+        elif "AD" in name or "CS" in name:
+            return "ADSL"
+        return None
 
     def get_board(self, script):
         r = []
@@ -96,7 +98,7 @@ class Profile(BaseProfile):
             if board:
                 name, status = board.split(None, 2)[:2]
                 board_type = self.get_board_type(name)
-                r += [{"num": num, "name": name, "status": status, "type": board_type}]
+                r += [{"num": int(num), "name": name, "status": status, "type": board_type}]
             slots += 1
         return slots, r
 
@@ -144,6 +146,21 @@ class Profile(BaseProfile):
         if self.rx_port_name.match(interface):
             return self.rx_port_name.findall(interface)[0][1]
         return interface
+
+    INTERFACE_TYPES = {
+        "meth": "management",
+        "null": "null",
+        "loop": "loopback",
+        "vlan": "SVI",
+        "seri": "physical",
+        "adsl": "physical",
+        "gpon": "physical",
+        "vdsl": "physical"
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:4].lower())
 
     @staticmethod
     def update_dict(s, d):

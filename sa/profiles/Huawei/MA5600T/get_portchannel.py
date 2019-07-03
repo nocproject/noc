@@ -16,11 +16,10 @@ class Script(BaseScript):
     name = "Huawei.MA5600T.get_portchannel"
     interface = IGetPortchannel
 
-    rx_id = re.compile("^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
-    rx_iface = re.compile(
-        "^\s+(?:Master|Sub) Port: (?P<port>\S+)", re.MULTILINE)
+    rx_id = re.compile(r"^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
+    rx_iface = re.compile(r"^\s+(?:Master|Sub) Port: (?P<port>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         try:
             s = self.cli("display lacp link-aggregation summary")

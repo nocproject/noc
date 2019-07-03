@@ -25,7 +25,7 @@ class Script(BaseScript):
         r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s*\n",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         v = self.cli("display arp all")
         for match in self.rx_arp1.finditer(v):
