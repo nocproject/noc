@@ -17,7 +17,6 @@ from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.models.profile import Profile
 
 rules_lock = threading.Lock()
-generic_profile = Profile.get_generic_profile_id()
 
 
 class ProfileCheck(DiscoveryCheck):
@@ -83,8 +82,9 @@ class ProfileCheck(DiscoveryCheck):
             return profile
         # Report problem
         self.set_problem(
-            alarm_class="Discovery | Guess | Profile", message=checker.get_error(),
-            fatal=self.object.profile.id == generic_profile,
+            alarm_class="Discovery | Guess | Profile",
+            message=checker.get_error(),
+            fatal=self.object.profile.id == Profile.get_generic_profile_id(),
         )
         self.logger.debug("Result %s" % self.job.problems)
         return None
