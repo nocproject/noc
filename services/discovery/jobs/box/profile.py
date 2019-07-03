@@ -14,8 +14,10 @@ import cachetools
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.profile.checker import ProfileChecker
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+from noc.sa.models.profile import Profile
 
 rules_lock = threading.Lock()
+generic_profile = Profile.get_generic_profile_id()
 
 
 class ProfileCheck(DiscoveryCheck):
@@ -34,10 +36,12 @@ class ProfileCheck(DiscoveryCheck):
         if not profile:
             return  # Cannot detect
         if profile.id == self.object.profile.id:
-            self.logger.info("Profile is correct: %s", profile)
+            self.logger.info(
+                "Profile is correct: %s", profile
+            )
         else:
             self.logger.info(
-                "Profile change detected: %s -> %s. " "Fixing database, resetting platform info",
+                "Profile change detected: %s -> %s. Fixing database, resetting platform info",
                 self.object.profile.name,
                 profile.name,
             )
@@ -53,7 +57,10 @@ class ProfileCheck(DiscoveryCheck):
         Returns profile for object, or None when not known
         """
         # Get SNMP version and community
-        if hasattr(self.object, "_suggest_snmp") and self.object._suggest_snmp:
+        if (
+            hasattr(self.object, "_suggest_snmp")
+            and self.object._suggest_snmp
+        ):
             # Use guessed community
             # as defined one may be invalid
             snmp_community = self.object._suggest_snmp[0]
@@ -63,7 +70,10 @@ class ProfileCheck(DiscoveryCheck):
         else:
             snmp_community = self.object.credentials.snmp_ro
             caps = self.object.get_caps()
-            if caps.get("SNMP | v2c") is False or caps.get("SNMP | v2c") is None:
+            if (
+                caps.get("SNMP | v2c") is False
+                or caps.get("SNMP | v2c") is None
+            ):
                 snmp_version = [SNMP_v1, SNMP_v2c]
             else:
                 snmp_version = [SNMP_v2c, SNMP_v1]
@@ -81,7 +91,8 @@ class ProfileCheck(DiscoveryCheck):
             return profile
         # Report problem
         self.set_problem(
-            alarm_class="Discovery | Guess | Profile", message=checker.get_error(), fatal=False
+            alarm_class="Discovery | Guess | Profile", message=checker.get_error(),
+            fatal=self.object.profile.id == generic_profile,
         )
         self.logger.debug("Result %s" % self.job.problems)
         return None

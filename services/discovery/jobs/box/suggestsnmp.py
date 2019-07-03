@@ -36,7 +36,7 @@ class SuggestSNMPCheck(DiscoveryCheck):
             return
         self.object._suggest_snmp = None
         for oid in self.CHECK_OIDS:
-            for ro, rw in self.object.auth_profile.iter_snmp():
+            for (ro, rw) in self.object.auth_profile.iter_snmp():
                 for ver in sorted(self.CHECK_VERSION):
                     if self.check_oid(oid, ro, self.CHECK_VERSION[ver]):
                         self.logger.info("Guessed community: %s, version: %d", ro, ver)
@@ -48,7 +48,7 @@ class SuggestSNMPCheck(DiscoveryCheck):
         self.set_problem(
             alarm_class="Discovery | Guess | SNMP Community",
             message="Failed to guess SNMP community",
-            fatal=True,
+            fatal=False,
         )
 
     def check_oid(self, oid, community, version="snmp_v2c_get"):
