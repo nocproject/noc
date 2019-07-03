@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.SlotRule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,9 +18,11 @@ class SlotRule(OIDRule):
         i = 1
         r = {}
         if script.has_capability("Stack | Member Ids"):
-            sysSlotIndex = [int(index) for index in script.capabilities["Stack | Member Ids"].split(" | ")]
+            sysSlotIndex = [
+                int(index) for index in script.capabilities["Stack | Member Ids"].split(" | ")
+            ]
         elif script.has_capability("Stack | Members"):
-            sysSlotIndex = range(1, script.capabilities["Stack | Members"] + 1)
+            sysSlotIndex = list(range(1, script.capabilities["Stack | Members"] + 1))
         else:
             sysSlotIndex = [1]
 

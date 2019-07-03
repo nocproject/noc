@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 import six
 from itertools import compress
 from binascii import hexlify
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -24,22 +25,25 @@ class Script(BaseScript):
 
     rx_cont = re.compile(r",\s*$\s+", re.MULTILINE)
     rx_line = re.compile(r"\n+\s*Name:\s+", re.MULTILINE)
-    rx_body = re.compile(r"^(?P<interface>\S+).+"
-                         "^\s*Administrative Mode: (?P<amode>.+).+"
-                         "^\s*Operational Mode: (?P<omode>.+).+"
-                         "^\s*Administrative Trunking Encapsulation:.+"
-                         "^\s*Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
-                         "^\s*Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
-                         "^\s*Trunking VLANs Enabled: (?P<vlans>.+?)$",
-                         # "Pruning VLANs Enabled:",
-                         re.MULTILINE | re.DOTALL)
+    rx_body = re.compile(
+        r"^(?P<interface>\S+).+"
+        "^\s*Administrative Mode: (?P<amode>.+).+"
+        "^\s*Operational Mode: (?P<omode>.+).+"
+        "^\s*Administrative Trunking Encapsulation:.+"
+        "^\s*Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
+        "^\s*Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
+        "^\s*Trunking VLANs Enabled: (?P<vlans>.+?)$",
+        # "Pruning VLANs Enabled:",
+        re.MULTILINE | re.DOTALL,
+    )
 
     rx_descr_if = re.compile(
         r"^(?P<interface>\S+)\s+(?:up|down|admin down|deleted)\s+"
-        r"(?:up|down)\s+(?P<description>.+)")
+        r"(?:up|down)\s+(?P<description>.+)"
+    )
     rx_tagged = re.compile(
-        r"^Port\s+Vlans allowed on trunk\s*\n"
-        r"^\S+\s+([0-9\-\,]+)\s*\n", re.MULTILINE)
+        r"^Port\s+Vlans allowed on trunk\s*\n" r"^\S+\s+([0-9\-\,]+)\s*\n", re.MULTILINE
+    )
 
     rx_conf_iface = re.compile(
         r"^\s*interface (?P<ifname>\S+)\s*\n"
@@ -48,7 +52,8 @@ class Script(BaseScript):
         r"^\s*switchport trunk encapsulation dot1q\s*\n"
         r"^\s*switchport trunk allowed vlan (?P<vlans>.+?)"
         r"^\s*switchport mode (?P<mode>trunk|access)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     @staticmethod
     def convert_vlan(vlans):
@@ -68,10 +73,12 @@ class Script(BaseScript):
         names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
         r = {}
         for ifindex, port_type, pvid, port_status in self.snmp.get_tables(
-                [
-                    mib["CISCO-VLAN-MEMBERSHIP-MIB::vmVlanType"],
-                    mib["CISCO-VLAN-MEMBERSHIP-MIB::vmVlan"],
-                    mib["CISCO-VLAN-MEMBERSHIP-MIB::vmPortStatus"]]):
+            [
+                mib["CISCO-VLAN-MEMBERSHIP-MIB::vmVlanType"],
+                mib["CISCO-VLAN-MEMBERSHIP-MIB::vmVlan"],
+                mib["CISCO-VLAN-MEMBERSHIP-MIB::vmPortStatus"],
+            ]
+        ):
             # print port_num, ifindex, port_type, pvid
             r[int(ifindex)] = {
                 "interface": names[int(ifindex)],
@@ -80,21 +87,31 @@ class Script(BaseScript):
                 # "port_type": port_type,
                 "untagged": pvid,
                 "tagged": [],
-                "members": []
+                "members": [],
             }
         start = 0
-        for ifindex, native_vlan, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k in self.snmp.get_tables([
-            mib["CISCO-VTP-MIB::vlanTrunkPortNativeVlan"],
-            mib["CISCO-VTP-MIB::vlanTrunkPortEncapsulationOperType"],
-            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled"],
-            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled2k"],
-            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled3k"],
-            # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled4k"]
-            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined"],
-            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined2k"],
-            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"],
-            mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"]
-        ]):
+        for (
+            ifindex,
+            native_vlan,
+            enc_type,
+            vlans_base,
+            vlans_2k,
+            vlans_3k,
+            vlans_4k,
+        ) in self.snmp.get_tables(
+            [
+                mib["CISCO-VTP-MIB::vlanTrunkPortNativeVlan"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortEncapsulationOperType"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled2k"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled3k"],
+                # mib["CISCO-VTP-MIB::vlanTrunkPortVlansEnabled4k"]
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined2k"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined3k"],
+                mib["CISCO-VTP-MIB::vlanTrunkPortVlansXmitJoined4k"],
+            ]
+        ):
             # print(ifindex, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k)
             if int(enc_type) != 4:
                 # not dot1Q
@@ -102,7 +119,9 @@ class Script(BaseScript):
             vlans_bank = hexlify("".join([vlans_base, vlans_2k, vlans_3k, vlans_4k]))
             # vlans_bank = hexlify(vlans_bank)
             if int(ifindex) in r:
-                r[int(ifindex)]["tagged"] += list(compress(range(start, 4096), self.convert_vlan(vlans_bank)))
+                r[int(ifindex)]["tagged"] += list(
+                    compress(range(start, 4096), self.convert_vlan(vlans_bank))
+                )
             else:
                 r[int(ifindex)] = {
                     "interface": names[int(ifindex)],
@@ -111,7 +130,7 @@ class Script(BaseScript):
                     # "port_type": port_type,
                     "untagged": native_vlan,
                     "tagged": list(compress(range(start, 4096), self.convert_vlan(vlans_bank))),
-                    "members": []
+                    "members": [],
                 }
             # r[port_num]["802.1Q Enabled"] = True
         return list(six.itervalues(r))
@@ -142,10 +161,12 @@ class Script(BaseScript):
             match = self.rx_descr_if.match(l.strip())
             if not match:
                 continue
-            r += [{
-                "interface": self.profile.convert_interface_name(match.group("interface")),
-                "description": match.group("description")
-            }]
+            r += [
+                {
+                    "interface": self.profile.convert_interface_name(match.group("interface")),
+                    "description": match.group("description"),
+                }
+            ]
         return r
 
     def execute_cli(self, **kwargs):
@@ -174,15 +195,14 @@ class Script(BaseScript):
             if not match:
                 continue  # raise self.NotSupportedError()
 
-            interface = self.profile.convert_interface_name(
-                match.group("interface"))
+            interface = self.profile.convert_interface_name(match.group("interface"))
             is_trunk = match.group("amode").strip() == "trunk"
 
             if is_trunk:
                 untagged = int(match.group("nvlan"))
                 vlans = match.group("vlans").strip()
                 if vlans == "ALL":
-                    tagged = range(1, 4095)
+                    tagged = list(range(1, 4095))
                 elif vlans.upper() == "NONE":
                     tagged = []
                 #

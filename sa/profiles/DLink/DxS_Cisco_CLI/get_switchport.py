@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -20,7 +21,8 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
         r"(?P<mode>ACCESS|TRUNK)\s+(?P<access_vlan>\d+)\s+"
-        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)?\n", re.MULTILINE
+        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)?\n",
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -34,9 +36,9 @@ class Script(BaseScript):
             if trunk:
                 pvid = int(match.group("untagged"))
                 vlans = match.group("vlans")
-                if vlans is not None and vlans != '':
+                if vlans is not None and vlans != "":
                     if vlans == "ALL":
-                        tagged = range(1, 4095)
+                        tagged = list(range(1, 4095))
                     else:
                         tagged = self.expand_rangelist(vlans)
                 else:
@@ -60,7 +62,7 @@ class Script(BaseScript):
                     "802.1ad Tunnel": False,
                     "untagged": pvid,
                     "tagged": tagged,
-                    "members": members
+                    "members": members,
                 }
             ]
         return r
