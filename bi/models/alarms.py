@@ -8,12 +8,19 @@
 
 # NOC modules
 from noc.core.clickhouse.model import Model, NestedModel
-from noc.core.clickhouse.fields import (DateField, DateTimeField,
-                                        Int16Field,
-                                        Int32Field, Int64Field,
-                                        StringField,
-                                        Float64Field, ReferenceField,
-                                        IPv4Field, NestedField, UInt32Field)
+from noc.core.clickhouse.fields import (
+    DateField,
+    DateTimeField,
+    Int16Field,
+    Int32Field,
+    Int64Field,
+    StringField,
+    Float64Field,
+    ReferenceField,
+    IPv4Field,
+    NestedField,
+    UInt32Field,
+)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.vendor import Vendor
@@ -92,32 +99,17 @@ class Alarms(Model):
         # Get user domains
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
-        domain_ids = [
-            x.bi_id
-            for x in AdministrativeDomainM.objects.filter(id__in=domains)
-        ]
+        domain_ids = [x.bi_id for x in AdministrativeDomainM.objects.filter(id__in=domains)]
         filter = query.get("filter", {})
         dl = len(domain_ids)
         if not dl:
             return None
         elif dl == 1:
-            q = {
-                "$eq": [
-                    {"$field": "administrative_domain"},
-                    domain_ids[0]
-                ]
-            }
+            q = {"$eq": [{"$field": "administrative_domain"}, domain_ids[0]]}
         else:
-            q = {
-                "$in": [
-                    {"$field": "administrative_domain"},
-                    domain_ids
-                ]
-            }
+            q = {"$in": [{"$field": "administrative_domain"}, domain_ids]}
         if filter:
-            query["filter"] = {
-                "$and": [query["filter"], q]
-            }
+            query["filter"] = {"$and": [query["filter"], q]}
         else:
             query["filter"] = q
         return query
@@ -125,12 +117,20 @@ class Alarms(Model):
     @classmethod
     def transform_field(cls, field):
         if field == "services":
-            return ",".join(["arrayStringConcat(arrayMap(x -> concat(dictGetString('serviceprofile'",
-                             " 'name', toUInt64(services.profile[indexOf(services.summary, x)]))",
-                             " ':', toString(x)), services.summary),',')"])
+            return ",".join(
+                [
+                    "arrayStringConcat(arrayMap(x -> concat(dictGetString('serviceprofile'",
+                    " 'name', toUInt64(services.profile[indexOf(services.summary, x)]))",
+                    " ':', toString(x)), services.summary),',')",
+                ]
+            )
 
         elif field == "subscribers":
-            return ",".join(["arrayStringConcat(arrayMap(x -> concat(dictGetString('subscriberprofile'",
-                             " 'name', toUInt64(subscribers.profile[indexOf(subscribers.summary, x)]))",
-                             " ':', toString(x)), subscribers.summary),',')"])
+            return ",".join(
+                [
+                    "arrayStringConcat(arrayMap(x -> concat(dictGetString('subscriberprofile'",
+                    " 'name', toUInt64(subscribers.profile[indexOf(subscribers.summary, x)]))",
+                    " ':', toString(x)), subscribers.summary),',')",
+                ]
+            )
         return field

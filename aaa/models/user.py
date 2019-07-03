@@ -11,12 +11,14 @@ from __future__ import absolute_import
 import datetime
 from threading import Lock
 import operator
+
 # Third-party modules
 import cachetools
 import six
 from django.db import models
 from django.core import validators
 from django.contrib.auth.hashers import check_password, make_password
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
@@ -27,19 +29,21 @@ from .group import Group
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("kb.KBEntryPreviewLog", "user"),
-    ("aaa.UserContact", "user"),
-    ("sa.UserAccess", "user"),
-    ("kb.KBUserBookmark", "user"),
-    ("main.Checkpoint", "user"),
-    ("main.NotificationGroupUser", "user"),
-    ("main.ReportSubscription", "run_as"),
-    ("ip.PrefixBookmark", "user"),
-    ("kb.KBEntryHistory", "user"),
-    ("ip.PrefixAccess", "user"),
-    ("main.Favorites", "user")
-])
+@on_delete_check(
+    check=[
+        ("kb.KBEntryPreviewLog", "user"),
+        ("aaa.UserContact", "user"),
+        ("sa.UserAccess", "user"),
+        ("kb.KBUserBookmark", "user"),
+        ("main.Checkpoint", "user"),
+        ("main.NotificationGroupUser", "user"),
+        ("main.ReportSubscription", "run_as"),
+        ("ip.PrefixBookmark", "user"),
+        ("kb.KBEntryHistory", "user"),
+        ("ip.PrefixAccess", "user"),
+        ("main.Favorites", "user"),
+    ]
+)
 @six.python_2_unicode_compatible
 class User(NOCModel):
     class Meta(object):
@@ -53,46 +57,50 @@ class User(NOCModel):
     username = models.CharField(
         max_length=75,
         unique=True,
-        help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                    "@/./+/-/_ only."),
+        help_text=_("Required. 30 characters or fewer. Letters, digits and " "@/./+/-/_ only."),
         validators=[
             validators.RegexValidator(r"^[\w.@+-]+$", _("Enter a valid username."), "invalid")
-        ])
+        ],
+    )
     first_name = models.CharField(max_length=75, blank=True)
     last_name = models.CharField(max_length=75, blank=True)
     email = models.EmailField(blank=True)
     password = models.CharField(max_length=128)
     is_active = models.BooleanField(
         default=True,
-        help_text=_("Designates whether this user should be treated as "
-                    "active. Unselect this instead of deleting accounts."))
+        help_text=_(
+            "Designates whether this user should be treated as "
+            "active. Unselect this instead of deleting accounts."
+        ),
+    )
     is_superuser = models.BooleanField(
         default=False,
         help_text=_(
-            "Designates that this user has all permissions without "
-            "explicitly assigning them."))
+            "Designates that this user has all permissions without " "explicitly assigning them."
+        ),
+    )
     date_joined = models.DateTimeField(default=datetime.datetime.now)
     groups = models.ManyToManyField(
         Group,
         blank=True,
-        help_text=_("The groups this user belongs to. A user will "
-                    "get all permissions granted to each of "
-                    "his/her group."),
-        related_name="user_set", related_query_name="user"
+        help_text=_(
+            "The groups this user belongs to. A user will "
+            "get all permissions granted to each of "
+            "his/her group."
+        ),
+        related_name="user_set",
+        related_query_name="user",
     )
     # Custom profile
     preferred_language = models.CharField(
-        max_length=16,
-        null=True, blank=True,
-        default=LANGUAGE_CODE,
-        choices=LANGUAGES
+        max_length=16, null=True, blank=True, default=LANGUAGE_CODE, choices=LANGUAGES
     )
     # Heatmap position
     heatmap_lon = models.FloatField("Longitude", blank=True, null=True)
     heatmap_lat = models.FloatField("Latitude", blank=True, null=True)
     heatmap_zoom = models.IntegerField("Zoom", blank=True, null=True)
 
-    _id_cache=cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
@@ -123,6 +131,7 @@ class User(NOCModel):
         Returns a boolean of whether the raw_password was correct. Handles
         hashing formats behind the scenes.
         """
+
         def setter(raw_password):
             self.set_password(raw_password)
             self.save(update_fields=["password"])
@@ -135,7 +144,8 @@ class User(NOCModel):
 
         return [
             (c.time_pattern, c.notification_method, c.params)
-            for c in UserContact.objects.filter(user=self)]
+            for c in UserContact.objects.filter(user=self)
+        ]
 
     @property
     def active_contacts(self):
@@ -146,6 +156,5 @@ class User(NOCModel):
         """
         now = datetime.datetime.now()
         return [
-            (c.notification_method, c.params)
-            for c in self.contacts if c.time_pattern.match(now)
+            (c.notification_method, c.params) for c in self.contacts if c.time_pattern.match(now)
         ]

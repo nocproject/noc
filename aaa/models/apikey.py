@@ -8,11 +8,18 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, DateTimeField, ListField,
-                                EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    DateTimeField,
+    ListField,
+    EmbeddedDocumentField,
+)
+
 # NOC modules
 from noc.core.acl import match
 
@@ -42,11 +49,7 @@ class APIAccessACL(EmbeddedDocument):
 
 @six.python_2_unicode_compatible
 class APIKey(Document):
-    meta = {
-        "collection": "apikeys",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "apikeys", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     is_active = BooleanField()

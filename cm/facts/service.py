@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
+
 # NOC modules
 from .base import BaseFact
 

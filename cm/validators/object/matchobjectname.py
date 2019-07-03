@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Hostname *MUST* match DB
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import logging
 # NOC modules
 from noc.cm.validators.base import BaseValidator
 
@@ -33,6 +31,4 @@ class MatchObjectNameValidator(BaseValidator):
             if sf.managed_object_name.split(".")[0] == sf.hostname:
                 return
         #
-        self.assert_error(
-            "System | Hostname Mismatches DB"
-        )
+        self.assert_error("System | Hostname Mismatches DB")

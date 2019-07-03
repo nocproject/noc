@@ -8,7 +8,13 @@
 
 # NOC modules
 from noc.core.clickhouse.model import Model
-from noc.core.clickhouse.fields import DateField, DateTimeField, UInt8Field, ReferenceField, StringField
+from noc.core.clickhouse.fields import (
+    DateField,
+    DateTimeField,
+    UInt8Field,
+    ReferenceField,
+    StringField,
+)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
@@ -35,32 +41,17 @@ class Syslog(Model):
         # Get user domains
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
-        domain_ids = [
-            x.bi_id
-            for x in AdministrativeDomainM.objects.filter(id__in=domains)
-        ]
+        domain_ids = [x.bi_id for x in AdministrativeDomainM.objects.filter(id__in=domains)]
         filter = query.get("filter", {})
         dl = len(domain_ids)
         if not dl:
             return None
         elif dl == 1:
-            q = {
-                "$eq": [
-                    {"$field": "administrative_domain"},
-                    domain_ids[0]
-                ]
-            }
+            q = {"$eq": [{"$field": "administrative_domain"}, domain_ids[0]]}
         else:
-            q = {
-                "$in": [
-                    {"$field": "administrative_domain"},
-                    domain_ids
-                ]
-            }
+            q = {"$in": [{"$field": "administrative_domain"}, domain_ids]}
         if filter:
-            query["filter"] = {
-                "$and": [query["filter"], q]
-            }
+            query["filter"] = {"$and": [query["filter"], q]}
         else:
             query["filter"] = q
         return query

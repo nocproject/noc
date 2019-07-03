@@ -9,6 +9,7 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
@@ -30,8 +31,9 @@ class ObjectNotify(NOCModel):
     administrative_domain = models.ForeignKey(
         AdministrativeDomain,
         verbose_name="Administrative Domain",
-        blank=True, null=True,
-        on_delete=models.CASCADE
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
     )
     notify_immediately = models.BooleanField("Notify Immediately", default=False)
     notify_delayed = models.BooleanField("Notify Delayed", default=False)
@@ -40,5 +42,4 @@ class ObjectNotify(NOCModel):
     )
 
     def __str__(self):
-        return u"(%s, %s, %s)" % (self.type, self.administrative_domain,
-                                  self.notification_group)
+        return u"(%s, %s, %s)" % (self.type, self.administrative_domain, self.notification_group)

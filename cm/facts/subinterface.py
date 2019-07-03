@@ -10,8 +10,10 @@
 from __future__ import absolute_import
 import bisect
 import logging
+
 # Third-party modules
 import six
+
 # NOC modules
 from .base import BaseFact
 from noc.inv.models.subinterface import SubInterface as DBSubInterface
@@ -21,34 +23,65 @@ logger = logging.getLogger(__name__)
 
 @six.python_2_unicode_compatible
 class SubInterface(BaseFact):
-    ATTRS = ["name", "description", "admin_status", "profile",
-             "[vlan_ids]",
-             "[ipv4_addresses]", "[ipv6_addresses]",
-             "ip_proxy_arp", "ip_redirects",
-             "[tagged_vlans]", "untagged_vlan",
-             "[protocols]", "[afi]",
-             "input_ipv4_filter", "output_ipv4_filter",
-             "isis_l1_metric", "isis_l2_metric",
-             "isis_ptp",
-             "port_security", "port_security_max",
-             "pim_mode", "pim_version", "traffic_control_unicast",
-             "traffic_control_broadcast", "traffic_control_multicast"
-             ]
+    ATTRS = [
+        "name",
+        "description",
+        "admin_status",
+        "profile",
+        "[vlan_ids]",
+        "[ipv4_addresses]",
+        "[ipv6_addresses]",
+        "ip_proxy_arp",
+        "ip_redirects",
+        "[tagged_vlans]",
+        "untagged_vlan",
+        "[protocols]",
+        "[afi]",
+        "input_ipv4_filter",
+        "output_ipv4_filter",
+        "isis_l1_metric",
+        "isis_l2_metric",
+        "isis_ptp",
+        "port_security",
+        "port_security_max",
+        "pim_mode",
+        "pim_version",
+        "traffic_control_unicast",
+        "traffic_control_broadcast",
+        "traffic_control_multicast",
+    ]
     ID = ["name"]
 
-    def __init__(self, name, interface=None, description=None,
-                 admin_status=False, profile=None, vlan_ids=None,
-                 ip_proxy_arp=False,
-                 ip_redirects=False, tagged_vlans=None,
-                 untagged_vlan=None, ipv4_addresses=None,
-                 ipv6_addresses=None, protocols=None, afi=None,
-                 input_ipv4_filter=None, output_ipv4_filter=None,
-                 isis_l1_metric=None, isis_l2_metric=None,
-                 isis_ptp=None,
-                 port_security=None, port_security_max=None,
-                 pim_mode=None, pim_version=None, traffic_control_unicast=None,
-                 traffic_control_broadcast=None, traffic_control_multicast=None,
-                 **kwargs):
+    def __init__(
+        self,
+        name,
+        interface=None,
+        description=None,
+        admin_status=False,
+        profile=None,
+        vlan_ids=None,
+        ip_proxy_arp=False,
+        ip_redirects=False,
+        tagged_vlans=None,
+        untagged_vlan=None,
+        ipv4_addresses=None,
+        ipv6_addresses=None,
+        protocols=None,
+        afi=None,
+        input_ipv4_filter=None,
+        output_ipv4_filter=None,
+        isis_l1_metric=None,
+        isis_l2_metric=None,
+        isis_ptp=None,
+        port_security=None,
+        port_security_max=None,
+        pim_mode=None,
+        pim_version=None,
+        traffic_control_unicast=None,
+        traffic_control_broadcast=None,
+        traffic_control_multicast=None,
+        **kwargs
+    ):
         super(SubInterface, self).__init__()
         self.name = name
         self.interface = interface
@@ -321,8 +354,7 @@ class SubInterface(BaseFact):
         if self.name:
             self.name = self.managed_object.get_profile().convert_interface_name(self.name)
             si = DBSubInterface.objects.filter(
-                managed_object=self.managed_object.id,
-                name=self.name
+                managed_object=self.managed_object.id, name=self.name
             ).first()
             if si:
                 logger.debug("bind %s to database", unicode(self))

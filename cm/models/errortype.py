@@ -8,10 +8,12 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -23,7 +25,7 @@ class ErrorType(Document):
         "collection": "noc.errortypes",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "cm.errortypes"
+        "json_collection": "cm.errortypes",
     }
     name = StringField(unique=True)
     uuid = UUIDField(binary=True, unique=True)
@@ -44,10 +46,18 @@ class ErrorType(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "subject_template": self.subject_template,
-            "body_template": self.body_template
+            "body_template": self.body_template,
         }
         if self.description:
             r["description"] = self.description
-        return to_json(r, order=["name", "$collection",
-                                 "uuid", "description",
-                                 "subject_template", "body_template"])
+        return to_json(
+            r,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "description",
+                "subject_template",
+                "body_template",
+            ],
+        )

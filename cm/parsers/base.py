@@ -73,8 +73,12 @@ class BaseParser(object):
             self.system_fact = System(
                 profile=self.managed_object.profile.name,
                 vendor=self.managed_object.vendor.name if self.managed_object.vendor else None,
-                platform=self.managed_object.platform.name if self.managed_object.platform else None,
-                version=self.managed_object.version.version if self.managed_object.version else None,
+                platform=self.managed_object.platform.name
+                if self.managed_object.platform
+                else None,
+                version=self.managed_object.version.version
+                if self.managed_object.version
+                else None,
             )
             self.yield_fact(self.system_fact)
         return self.system_fact
@@ -100,9 +104,7 @@ class BaseParser(object):
     def get_interface_fact(self, name):
         n = self.convert_interface_name(name)
         if n not in self.interface_facts:
-            self.interface_facts[n] = Interface(
-                n, **self.get_interface_defaults(n)
-            )
+            self.interface_facts[n] = Interface(n, **self.get_interface_defaults(n))
             self.yield_fact(self.interface_facts[n])
         self.current_interface = self.interface_facts[n]
         return self.current_interface
@@ -116,13 +118,10 @@ class BaseParser(object):
     def get_subinterface_fact(self, name, interface_name=None):
         n = self.convert_interface_name(name)
         if n not in self.subinterface_facts:
-            i_fact = self.get_interface_fact(
-                self.convert_interface_name(
-                    interface_name or name
-                )
-            )
+            i_fact = self.get_interface_fact(self.convert_interface_name(interface_name or name))
             self.subinterface_facts[n] = SubInterface(
-                n, interface=i_fact, **self.get_subinterface_defaults())
+                n, interface=i_fact, **self.get_subinterface_defaults()
+            )
             self.yield_fact(self.subinterface_facts[n])
         self.current_subinterface = self.subinterface_facts[n]
         return self.current_subinterface

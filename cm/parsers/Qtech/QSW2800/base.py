@@ -8,6 +8,7 @@
 
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
+
 # NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
@@ -16,7 +17,7 @@ from noc.lib.text import ranges_to_list
 
 class BaseQSW2800Parser(BaseParser):
     def parse(self, config):
-        VALUE = OneOrMore(Word(alphanums + "-/.:_+[],") | QuotedString("\""))
+        VALUE = OneOrMore(Word(alphanums + "-/.:_+[],") | QuotedString('"'))
         context = []
         inactive_level = 1
         for line in config.splitlines():
@@ -164,7 +165,7 @@ class BaseQSW2800Parser(BaseParser):
                 self.get_vlan_fact(int(v))
 
     def on_vlan_name(self, tokens):
-            self.get_current_vlan().name = tokens[-1]
+        self.get_current_vlan().name = tokens[-1]
 
     def on_system_ntp_server(self, tokens):
         """
@@ -206,15 +207,9 @@ class BaseQSW2800Parser(BaseParser):
         "logging": on_system_logging_host,
         "clock": on_system_time_zone,
         "username": on_system_login_user_class,
-        "vlan": {
-            "vlan": on_vlan,
-            "*": {
-                "name": on_vlan_name
-            }
-        },
+        "vlan": {"vlan": on_vlan, "*": {"name": on_vlan_name}},
         "ip": on_static_route,
-        "snmp-server": {
-        },
+        "snmp-server": {},
         "Interface": {
             "Interface": on_interface_context,
             "*": {
@@ -224,13 +219,11 @@ class BaseQSW2800Parser(BaseParser):
                 "igmp": on_interface_igmp,
                 "storm-control": on_storm_control,
                 "lldp": on_protocol,
-            }
+            },
         },
         "interface": {
             "interface": on_sub_interface_context,
-            "*": {
-                "ip": on_subinterface_ipv4_address,
-            }
+            "*": {"ip": on_subinterface_ipv4_address},
         },
-        "ntp": on_system_ntp_server
+        "ntp": on_system_ntp_server,
     }

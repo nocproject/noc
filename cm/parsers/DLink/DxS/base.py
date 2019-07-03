@@ -8,9 +8,11 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 import six
 from pyparsing import nums, Word, Group, Optional, Suppress, Combine, Literal, delimitedList
+
 # NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
@@ -148,9 +150,7 @@ class BaseDLinkParser(BaseParser):
                 iface.description = desc
 
     def get_vlan_fact(self, id):
-        return super(BaseDLinkParser, self).get_vlan_fact(
-            self.vlan_ids.get(id, id)
-        )
+        return super(BaseDLinkParser, self).get_vlan_fact(self.vlan_ids.get(id, id))
 
     def parse_create_vlan(self, tokens):
         """
@@ -289,8 +289,8 @@ class BaseDLinkParser(BaseParser):
 
     def parse_traffic_control(self, tokens):
         """
-        config traffic control 1 broadcast enable multicast enable unicast enable action drop threshold 64 countdown 0 time_interval 5 
-        config traffic control 49 broadcast disable multicast disable unicast disable action drop threshold 131072 countdown 0 time_interval 5 
+        config traffic control 1 broadcast enable multicast enable unicast enable action drop threshold 64 countdown 0 time_interval 5
+        config traffic control 49 broadcast disable multicast disable unicast disable action drop threshold 131072 countdown 0 time_interval 5
         """
         ports = self.next_item(tokens, "control") or ""
         unicast = self.next_item(tokens, "unicast")
@@ -311,9 +311,10 @@ DIGITS = Word(nums)
 PORT = Combine(DIGITS + Optional(Literal(":") + DIGITS))
 # 1:(2,3,10-20)
 PORT_RANGE_PT = Group(
-    DIGITS + Literal(":(") +
-    delimitedList(Group(DIGITS + Suppress(Literal("-")) + DIGITS) | DIGITS, delim=",") +
-    Suppress(Literal(")"))
+    DIGITS
+    + Literal(":(")
+    + delimitedList(Group(DIGITS + Suppress(Literal("-")) + DIGITS) | DIGITS, delim=",")
+    + Suppress(Literal(")"))
 )
 # 1:2-1:5
 PORT_RANGE = Group(PORT + Suppress(Literal("-")) + PORT)

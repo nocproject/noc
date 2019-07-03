@@ -9,8 +9,8 @@
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, UUIDField, IntField,
-                                ListField, EmbeddedDocumentField)
+from mongoengine.fields import StringField, UUIDField, IntField, ListField, EmbeddedDocumentField
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 
@@ -42,7 +42,7 @@ class DashboardCell(EmbeddedDocument):
             "sm": self.sm,
             "md": self.md,
             "lg": self.lg,
-            "height": self.height
+            "height": self.height,
         }
 
 
@@ -52,7 +52,7 @@ class DashboardLayout(Document):
         "collection": "noc.dashboardlayouts",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "bi.dashboardlayouts"
+        "json_collection": "bi.dashboardlayouts",
     }
 
     name = StringField()
@@ -65,13 +65,16 @@ class DashboardLayout(Document):
         return self.name
 
     def to_json(self):
-        return to_json({
-            "name": self.name,
-            "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
-            "description": self.description,
-            "cells": [s.to_json() for s in self.cells]
-        }, order=["name", "uuid", "description", "cells"])
+        return to_json(
+            {
+                "name": self.name,
+                "$collection": self._meta["json_collection"],
+                "uuid": self.uuid,
+                "description": self.description,
+                "cells": [s.to_json() for s in self.cells],
+            },
+            order=["name", "uuid", "description", "cells"],
+        )
 
     def get_json_path(self):
         return "%s.json" % self.name

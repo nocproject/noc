@@ -9,21 +9,30 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # Third-party modules
 import six
-from pyparsing import (Word, Suppress, alphanums, QuotedString, Group, LineStart, Literal,
-                       restOfLine, ZeroOrMore, Optional, FollowedBy)
+from pyparsing import (
+    Word,
+    Suppress,
+    alphanums,
+    QuotedString,
+    Group,
+    LineStart,
+    Literal,
+    restOfLine,
+    ZeroOrMore,
+    Optional,
+    FollowedBy,
+)
+
 # NOC modules
 from noc.cm.parsers.pyparser import BasePyParser
 
 
 class RouterOSParser(BasePyParser):
     rx_continue = re.compile(r"\\\n\s*", re.MULTILINE)
-    SPEED_MAP = {
-        "10Gbps": 10000,
-        "1Gbps": 1000,
-        "100Mbps": 100
-    }
+    SPEED_MAP = {"10Gbps": 10000, "1Gbps": 1000, "100Mbps": 100}
 
     def __init__(self, managed_object):
         super(RouterOSParser, self).__init__(managed_object)
@@ -41,12 +50,18 @@ class RouterOSParser(BasePyParser):
         EQ = Suppress("=")
         SLASH = Suppress("/")
         KEY = Word(alphanums + "-")
-        VALUE = Word(alphanums + "-/.:_+") | QuotedString("\"")
+        VALUE = Word(alphanums + "-/.:_+") | QuotedString('"')
         FIND = LBRACKET + Group(Literal("find") + Literal("default-name") + EQ + VALUE) + RBRACKET
         KVP = Group(KEY + EQ + VALUE)
         BEGIN = LineStart() + SLASH + restOfLine.setParseAction(self.on_begin)
         ADD_OP = LineStart() + Literal("add") + ZeroOrMore(KVP).setParseAction(self.on_add)
-        SET_OP = LineStart() + Literal("set") + (Optional(FIND | KEY + ~FollowedBy(EQ) | QuotedString("\"")) + ZeroOrMore(KVP)).setParseAction(self.on_set)
+        SET_OP = (
+            LineStart()
+            + Literal("set")
+            + (
+                Optional(FIND | KEY + ~FollowedBy(EQ) | QuotedString('"')) + ZeroOrMore(KVP)
+            ).setParseAction(self.on_set)
+        )
         CONFIG = ZeroOrMore(BEGIN | ADD_OP | SET_OP)
         return CONFIG
 
@@ -73,10 +88,7 @@ class RouterOSParser(BasePyParser):
             return i
 
     def get_interface_defaults(self, name):
-        r = {
-            "admin_status": True,
-            "protocols": []
-        }
+        r = {"admin_status": True, "protocols": []}
         return r
 
     def on_set(self, tokens):

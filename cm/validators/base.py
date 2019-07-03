@@ -8,8 +8,10 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.cm.facts.error import Error
 from noc.config import config
@@ -69,6 +71,7 @@ class BaseValidator(six.with_metaclass(ValidatorBase, object)):
 
     Then errors collected via engine.iter_errors
     """
+
     TITLE = None
     DESCRIPTION = None
     PRIORITY = 1000
@@ -93,8 +96,7 @@ class BaseValidator(six.with_metaclass(ValidatorBase, object)):
     # Validation scope
     SCOPE = OBJECT
 
-    def __init__(self, engine, object=None, config=None, scope=None,
-                 rule=None):
+    def __init__(self, engine, object=None, config=None, scope=None, rule=None):
         """
         object depends on scope:
             * OBJECT -> Managed Object
@@ -159,10 +161,12 @@ class BaseValidator(six.with_metaclass(ValidatorBase, object)):
             return True
         v = self.object.version
         for r in self.restrictions:
-            if (match_attr(v, r, "profile") and
-                    match_attr(v, r, "vendor") and
-                    match_attr(v, r, "platform") and
-                    match_attr(v, r, "version")):
+            if (
+                match_attr(v, r, "profile")
+                and match_attr(v, r, "vendor")
+                and match_attr(v, r, "platform")
+                and match_attr(v, r, "version")
+            ):
                 return r.get("applicable", True)
         return False
 
@@ -211,8 +215,7 @@ class BaseValidator(six.with_metaclass(ValidatorBase, object)):
             return ""
 
     def assert_error(self, type, obj=None, msg=None):
-        self.engine.assert_fact(Error(type, obj=obj, msg=msg,
-                                      rule=self.rule_id))
+        self.engine.assert_fact(Error(type, obj=obj, msg=msg, rule=self.rule_id))
 
 
 #

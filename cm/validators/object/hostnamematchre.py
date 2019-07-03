@@ -9,6 +9,7 @@
 # Python modules
 import re
 import logging
+
 # NOC modules
 from noc.cm.validators.base import BaseValidator
 
@@ -26,7 +27,7 @@ class HostnameMatchRegexpValidator(BaseValidator):
             "name": "regexp",
             "xtype": "textfield",
             "fieldLabel": "Hostname REGEXP",
-            "allowBlank": False
+            "allowBlank": False,
         }
     ]
 
@@ -39,15 +40,8 @@ class HostnameMatchRegexpValidator(BaseValidator):
         try:
             rx = re.compile(regexp)
         except Exception as e:
-            self.assert_error(
-                "Validator | Internal Error",
-                obj=self.rule.name,
-                msg=str(e)
-            )
+            self.assert_error("Validator | Internal Error", obj=self.rule.name, msg=str(e))
             return
         # Check regexp
         if sf.hostname is not None and not rx.search(sf.hostname):
-            self.assert_error(
-                "System | Hostname Mismatches Regexp",
-                msg=regexp
-            )
+            self.assert_error("System | Hostname Mismatches Regexp", msg=regexp)

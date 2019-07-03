@@ -16,24 +16,9 @@ class MatchAllStringsValidator(TextValidator):
         Config must contain all strings in arbitrary order
     """
     CONFIG_FORM = [
-        {
-            "name": "template",
-            "xtype": "textarea",
-            "fieldLabel": "Template",
-            "allowBlank": False
-        },
-        {
-            "name": "error_text",
-            "xtype": "textarea",
-            "fieldLabel": "Error text",
-            "allowBlank": True
-        },
-        {
-            "name": "strip",
-            "xtype": "checkbox",
-            "boxLabel": "Strip spaces",
-            "inputValue": True
-        }
+        {"name": "template", "xtype": "textarea", "fieldLabel": "Template", "allowBlank": False},
+        {"name": "error_text", "xtype": "textarea", "fieldLabel": "Error text", "allowBlank": True},
+        {"name": "strip", "xtype": "checkbox", "boxLabel": "Strip spaces", "inputValue": True},
     ]
 
     def check(self, template, error_text, strip=False, **kwargs):
@@ -42,11 +27,11 @@ class MatchAllStringsValidator(TextValidator):
         if strip:
             tpl = [x.strip() for x in tpl]
         seen = set(x for x in tpl if x)
-        for l in self.get_config_block().splitlines():
+        for line in self.get_config_block().splitlines():
             if strip:
-                l = l.strip()
-            if l in seen:
-                seen.remove(l)
+                line = line.strip()
+            if line in seen:
+                seen.remove(line)
             if not seen:
                 break
         if seen:
@@ -55,7 +40,5 @@ class MatchAllStringsValidator(TextValidator):
             else:
                 obj = None
             self.assert_error(
-                "Config | Mismatch Template",
-                obj=obj,
-                msg=error_text or "\n".join(seen)
+                "Config | Mismatch Template", obj=obj, msg=error_text or "\n".join(seen)
             )
