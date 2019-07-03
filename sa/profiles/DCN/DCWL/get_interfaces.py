@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -16,157 +19,122 @@ class Script(BaseScript):
     name = "DCN.DCWL.get_interfaces"
     cache = True
     interface = IGetInterfaces
+
     BLOCK_SPLITTER = "-" * 15
+    BSS_DESCRIPTION_TEMPLATE = (
+        "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz"
+    )
 
-    INTERFACE_TYPES = {
-
-        "lo": "loopback",  # Loopback
-
-    }
-
-    INTERFACE_TYPES2 = {
-
-        "brv": "unknown",  # No comment
-        "eth": "physical",  # No comment
-        "wla": "physical",  # No comment
-
-    }
-
-    @classmethod
-    def get_interface_type(cls, name):
-        c = cls.INTERFACE_TYPES2.get(name[:3])
-        if c:
-            return c
-        c = cls.INTERFACE_TYPES.get(name[:2])
-        return c
-
-    FREQ = {
-        "bg-n": "2400GHz",
-        "a-n": "5150GHz"
-    }
+    FREQ = {"bg-n": "2400GHz", "a-n": "5150GHz"}
 
     @classmethod
     def get_interface_freq(cls, name):
         c = cls.FREQ.get(name)
         return c
 
-    IEEE = {
-        "bg-n": "IEEE 802.11b/g/n",
-        "a-n": "IEEE 802.11a/n"
-    }
+    IEEE = {"bg-n": "IEEE 802.11b/g/n", "a-n": "IEEE 802.11a/n"}
 
     @classmethod
     def get_interface_ieee(cls, name):
         c = cls.IEEE.get(name)
         return c
 
-    def execute(self):
-        interfaces = []
-        wres = {}
+    def get_radio_detail(self):
+        r = {}
         w = self.cli("get radio all detail")
-        for wline in w.splitlines():
-            wr = wline.split(" ", 1)
-            if wr[0] == "name":
-                wname = wr[1].strip()
-            if wr[0].strip() == "mode":
-                mode = wr[1].strip()
-                freq = self.get_interface_freq(mode)
-                ieee_mode = self.get_interface_ieee(mode)
-            if wr[0].strip() == "channel":
-                channel = wr[1].strip()
-            if wr[0].strip() == "n-bandwidth":
-                channelbandwidth = wr[1].strip()
-                wres[wname] = {"ieee_mode": ieee_mode,
-                               "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
-        c = self.cli("get interface all detail")
-        ip_address = None
-        for line in c.splitlines():
-            if line.startswith(self.BLOCK_SPLITTER):
-                ip_address = None
-            r = line.split(' ', 1)
-            if r[0] == "name":
-                name = r[1].strip()
-                iftype = self.get_interface_type(name)
-                if not name:
-                    self.logger.info(
-                        "Ignoring unknown interface type: '%s", iftype
-                    )
-                    continue
-            if r[0] == "mac":
-                mac = r[1].strip()
-                if "eth" in name:
-                    iface = {
-                        "type": iftype,
-                        "name": name,
-                        "mac": mac,
-                        "subinterfaces": [{
-                            "name": name,
-                            "mac": mac,
-                            "enabled_afi": ["BRIDGE"],
-                        }]
-                    }
-                    interfaces += [iface]
-            if r[0] == "ip" or r[0] == "static-ip":
-                ip_address = r[1].strip()
-            if r[0] == "mask":
-                ip_subnet = r[1].strip()
-                # ip address + ip subnet
-                if ip_subnet and ip_address:
-                    ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-                    iface = {
-                        "type": iftype,
-                        "name": name,
-                        "mac": mac,
-                        "subinterfaces": [{
-                            "name": name,
-                            "mac": mac,
-                            "enabled_afi": ["IPv4"],
-                            "ipv4_addresses": [ip_address],
-                        }]
-                    }
-                    interfaces += [iface]
-                    ip_address = None
 
-        descr_template = "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz"
-        for line in c.splitlines():
-            r = line.split(' ', 1)
-            if r[0] == "name":
-                name = r[1].strip()
-            if r[0] == "mac":
-                mac = r[1].strip()
-            if r[0] == "ssid":
-                ssid = r[1].strip().replace(" ", "").replace("Managed", "")
+        for block in w.split("\n\n"):
+            if not block:
+                continue
+            value = self.profile.table_parser(block)
+            if "name" in value:
+                r[value["name"]] = {
+                    "ieee_mode": self.get_interface_ieee(value["mode"]),
+                    "channel": value["channel"],
+                    "freq": self.get_interface_freq(value["mode"]),
+                    "channelbandwidth": value["n-bandwidth"]
+                    if "n-bandwidth" in value
+                    else value["bandwidth"],
+                }
+        return r
+
+    def get_bss_detail(self, bss):
+        v = self.cli("get bss %s detail" % bss)
+        value = self.profile.table_parser(v)
+        if value.get("radio"):
+            return value
+
+    def execute_cli(self, **kwargs):
+        interfaces = {}
+        wres = self.get_radio_detail()
+
+        c = self.cli("get interface all detail")
+        for block in c.split("\n\n"):
+            value = self.profile.table_parser(block)
+            if "name" not in value:
+                self.logger.info("Ignoring unknown interface: '%s", value)
+                continue
+            ip_address = None
+            ifname = value["name"]
+            interfaces[ifname] = {
+                "type": self.profile.get_interface_type(ifname),
+                "name": ifname,
+                "mac": value["mac"],
+                "subinterfaces": [],
+            }
+            if "eth" in ifname:
+                interfaces[ifname]["subinterfaces"] += [
+                    {"name": ifname, "mac": value["mac"], "enabled_afi": ["BRIDGE"]}
+                ]
+            # static-ip or "ip" field may use
+            if value.get("static-ip"):
+                ip_address = "%s/%s" % (
+                    value["static-ip"],
+                    IPv4.netmask_to_len(value.get("static-mask") or "255.255.255.255"),
+                )
+            elif value.get("ip") in value:
+                ip_address = "%s/%s" % (
+                    value["ip"],
+                    IPv4.netmask_to_len(value.get("mask") or "255.255.255.255"),
+                )
+            if ip_address:
+                interfaces[ifname]["subinterfaces"] += [
+                    {
+                        "name": ifname,
+                        "mac": value["mac"],
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip_address],
+                    }
+                ]
+            if value.get("bss") and value.get("ssid"):
+                # For some reason creating SSID as interfaces otherwise sub.
+                interfaces.pop(ifname)
+                ssid = value["ssid"].replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
                     ssid = ssid.decode("hex")
-            if r[0] == "bss":
-                bss = r[1].strip()
-                if ssid:
-                    b = self.cli("get bss %s detail" % bss)
-                    for line in b.splitlines():
-                        rb = line.split(' ', 1)
-                        if rb[0] == "radio":
-                            radio = rb[1].strip()
-                        if rb[0] == "ignore-broadcast-ssid":
-                            sb = rb[1].strip()
-                            if sb == "off":
-                                ssid_broadcast = "Enable"
-                            else:
-                                ssid_broadcast = "Disable"
-                            for ri in wres.items():
-                                if ri[0] == radio:
-                                    iface = {
-                                        "type": "physical",
-                                        "name": "%s.%s" % (name, ssid),
-                                        "mac": mac,
-                                        "description": descr_template % (ssid_broadcast, ri[1]["ieee_mode"],
-                                                                         ri[1]["channel"], ri[1]["freq"],
-                                                                         ri[1]["channelbandwidth"]),
-                                        "subinterfaces": [{
-                                            "name": "%s.%s" % (name, ssid),
-                                            "mac": mac,
-                                            "enabled_afi": ["BRIDGE"],
-                                        }]
-                                    }
-                                    interfaces += [iface]
-        return [{"interfaces": interfaces}]
+                r = self.get_bss_detail(value["bss"])
+                bss_ifname = "%s.%s" % (ifname, ssid)
+                if r:
+                    radio = wres[r["radio"]]
+                    interfaces[bss_ifname] = {
+                        "type": "physical",
+                        "name": bss_ifname,
+                        "mac": value["mac"],
+                        "description": self.BSS_DESCRIPTION_TEMPLATE
+                        % (
+                            "Enable" if r["ignore-broadcast-ssid"] == "off" else "Disable",
+                            radio["ieee_mode"],
+                            radio["channel"],
+                            radio["freq"],
+                            radio["channelbandwidth"],
+                        ),
+                        "subinterfaces": [
+                            {
+                                "name": "%s.%s" % (ifname, ssid),
+                                "mac": value["mac"],
+                                "enabled_afi": ["BRIDGE"],
+                            }
+                        ],
+                    }
+        return [{"interfaces": list(six.itervalues(interfaces))}]
