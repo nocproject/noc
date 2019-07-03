@@ -36,9 +36,7 @@ class ProfileCheck(DiscoveryCheck):
         if not profile:
             return  # Cannot detect
         if profile.id == self.object.profile.id:
-            self.logger.info(
-                "Profile is correct: %s", profile
-            )
+            self.logger.info("Profile is correct: %s", profile)
         else:
             self.logger.info(
                 "Profile change detected: %s -> %s. Fixing database, resetting platform info",
@@ -57,10 +55,7 @@ class ProfileCheck(DiscoveryCheck):
         Returns profile for object, or None when not known
         """
         # Get SNMP version and community
-        if (
-            hasattr(self.object, "_suggest_snmp")
-            and self.object._suggest_snmp
-        ):
+        if hasattr(self.object, "_suggest_snmp") and self.object._suggest_snmp:
             # Use guessed community
             # as defined one may be invalid
             snmp_community = self.object._suggest_snmp[0]
@@ -70,10 +65,7 @@ class ProfileCheck(DiscoveryCheck):
         else:
             snmp_community = self.object.credentials.snmp_ro
             caps = self.object.get_caps()
-            if (
-                caps.get("SNMP | v2c") is False
-                or caps.get("SNMP | v2c") is None
-            ):
+            if caps.get("SNMP | v2c") is False or caps.get("SNMP | v2c") is None:
                 snmp_version = [SNMP_v1, SNMP_v2c]
             else:
                 snmp_version = [SNMP_v2c, SNMP_v1]
