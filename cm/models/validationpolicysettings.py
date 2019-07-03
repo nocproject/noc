@@ -8,11 +8,18 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, ReferenceField, ListField,
-                                EmbeddedDocumentField, BooleanField)
+from mongoengine.fields import (
+    StringField,
+    ReferenceField,
+    ListField,
+    EmbeddedDocumentField,
+    BooleanField,
+)
+
 # NOC modules
 from .validationpolicy import ValidationPolicy
 
@@ -32,7 +39,7 @@ class ValidationPolicySettings(Document):
         "collection": "noc.validationpolicysettings",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [("model_id", "object_id")]
+        "indexes": [("model_id", "object_id")],
     }
     model_id = StringField()
     object_id = StringField()

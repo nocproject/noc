@@ -18,8 +18,19 @@ class Migration(BaseMigration):
         # self.db.execute("CREATE UNIQUE INDEX cm_config_managed_object_id ON cm_config(managed_object_id)")
         self.db.delete_column("cm_objectnotify", "category_id")
         self.db.delete_column("cm_objectnotify", "location_id")
-        for column in ["activator_id", "profile_name", "scheme", "address", "port", "user", "password",
-                       "super_password", "remote_path", "trap_source_ip", "trap_community"]:
+        for column in [
+            "activator_id",
+            "profile_name",
+            "scheme",
+            "address",
+            "port",
+            "user",
+            "password",
+            "super_password",
+            "remote_path",
+            "trap_source_ip",
+            "trap_community",
+        ]:
             self.db.delete_column("cm_config", column)
         for table in ["cm_config", "cm_rpsl", "cm_dns", "cm_prefixlist"]:
             self.db.delete_column(table, "location_id")

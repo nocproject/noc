@@ -8,6 +8,7 @@
 
 # NOC modules
 from __future__ import absolute_import
+
 # NOC modules
 from .base import BaseParser
 
@@ -47,10 +48,7 @@ class BasePyParser(BaseParser):
                 yield f
         if self.RX_INTERFACE_BLOCK:
             for match in self.RX_INTERFACE_BLOCK.finditer(config):
-                self.register_interface_section(
-                    match.group("name"),
-                    match.start(), match.end()
-                )
+                self.register_interface_section(match.group("name"), match.start(), match.end())
 
     def on_tokens(self, tokens):
         pass

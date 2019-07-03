@@ -9,15 +9,23 @@
 # Python modules
 from collections import defaultdict
 import datetime
+
 # Third-party modules
 import six
 from six.moves import zip
+
 # NOC modules
 from noc.config import config
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
-    DateField, DateTimeField, UInt64Field, UInt16Field, UInt8Field,
-    StringField, ReferenceField)
+    DateField,
+    DateTimeField,
+    UInt64Field,
+    UInt16Field,
+    UInt8Field,
+    StringField,
+    ReferenceField,
+)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.interfaceprofile import InterfaceProfile
@@ -57,20 +65,11 @@ class MAC(Model):
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))
-    managed_object = ReferenceField(
-        ManagedObject,
-        description=_("Object Name")
-    )
+    managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     mac = UInt64Field(description=_("MAC"))
     interface = StringField(description=_("Interface"))
-    interface_profile = ReferenceField(
-        InterfaceProfile,
-        description=_("Interface Profile")
-    )
-    segment = ReferenceField(
-        NetworkSegment,
-        description=_("Network Segment")
-    )
+    interface_profile = ReferenceField(InterfaceProfile, description=_("Interface Profile"))
+    segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
     vlan = UInt16Field(description=_("VLAN"))
     is_uni = UInt8Field(description=_("Is UNI"))
 
@@ -95,8 +94,12 @@ class MAC(Model):
         if not query:
             return
 
-        f_filter = {"$and": [{"$gte": [{"$field": "date"}, t0.date().isoformat()]},
-                             {"$gte": [{"$field": "ts"}, t0.isoformat(sep=" ")]}]}
+        f_filter = {
+            "$and": [
+                {"$gte": [{"$field": "date"}, t0.date().isoformat()]},
+                {"$gte": [{"$field": "ts"}, t0.isoformat(sep=" ")]},
+            ]
+        }
         for k in query:
             field = k
             q = "eq"
@@ -117,12 +120,13 @@ class MAC(Model):
             f_filter["$and"] += [{"$%s" % q: [{"$field": field}, arg]}]
         if not f_filter:
             return
-        fields = [{"expr": "argMax(ts, ts)", "alias": "timestamp", "order": 0},
-                  {"expr": "mac", "alias": "mac", "group": 1},
-                  {"expr": "vlan", "alias": "vlan", "group": 2},
-                  {"expr": "managed_object", "alias": "managed_object", "group": 3},
-                  {"expr": "argMax(interface, ts)", "alias": "interface"}
-                  ]
+        fields = [
+            {"expr": "argMax(ts, ts)", "alias": "timestamp", "order": 0},
+            {"expr": "mac", "alias": "mac", "group": 1},
+            {"expr": "vlan", "alias": "vlan", "group": 2},
+            {"expr": "managed_object", "alias": "managed_object", "group": 3},
+            {"expr": "argMax(interface, ts)", "alias": "interface"},
+        ]
         if convert_mac:
             fields[1]["expr"] = "MACNumToString(mac)"
         # @todo paging (offset and limit)

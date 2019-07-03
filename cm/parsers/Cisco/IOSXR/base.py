@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
+
 # NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.lib.validators import is_ipv4, is_ipv6
@@ -113,15 +115,8 @@ class BaseIOSXRParser(BaseParser):
 
     handlers = {
         "hostname": on_hostname,
-        "clock": {
-            "timezone": on_timezone
-        },
-        "domain": {
-            "name": on_domain_name,
-            "name-server": on_domain_name_server
-        },
-        "ntp": {
-            "server": on_ntp_server
-        },
-        "logging": on_syslog_server
+        "clock": {"timezone": on_timezone},
+        "domain": {"name": on_domain_name, "name-server": on_domain_name_server},
+        "ntp": {"server": on_ntp_server},
+        "logging": on_syslog_server,
     }

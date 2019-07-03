@@ -23,6 +23,4 @@ class HostnameNotEmptyValidator(BaseValidator):
             return
         # Exact match
         if not sf.hostname:
-            self.assert_error(
-                "System | Hostname is Empty"
-            )
+            self.assert_error("System | Hostname is Empty")

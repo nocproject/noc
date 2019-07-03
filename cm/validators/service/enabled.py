@@ -27,10 +27,5 @@ class ServiceDisabledValidator(CLIPSObjectValidator):
     """
 
     CONFIG_FORM = [
-        {
-            "name": "service",
-            "xtype": "textfield",
-            "fieldLabel": "Service",
-            "allowBlank": False
-        }
+        {"name": "service", "xtype": "textfield", "fieldLabel": "Service", "allowBlank": False}
     ]

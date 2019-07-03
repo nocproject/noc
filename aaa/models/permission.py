@@ -10,10 +10,12 @@
 from __future__ import print_function
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
-from django.db.models import Model, CharField, ManyToManyField
+from django.db.models import CharField, ManyToManyField
 import cachetools
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -31,6 +33,7 @@ class Permission(NOCModel):
     Populated by manage.py sync-perm
     @todo: Check name format
     """
+
     class Meta(object):
         verbose_name = "Permission"
         verbose_name_plural = "Permissions"
@@ -40,12 +43,9 @@ class Permission(NOCModel):
     # module:app:permission
     name = CharField("Name", max_length=128, unique=True)
     # comma-separated list of permissions
-    implied = CharField(
-        "Implied", max_length=256, null=True, blank=True)
-    users = ManyToManyField(
-        User, related_name="permissions")
-    groups = ManyToManyField(
-        Group, related_name="permissions")
+    implied = CharField("Implied", max_length=256, null=True, blank=True)
+    users = ManyToManyField(User, related_name="permissions")
+    groups = ManyToManyField(Group, related_name="permissions")
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -73,8 +73,7 @@ class Permission(NOCModel):
     def get_implied_permissions(self):
         if not self.implied:
             return []
-        return [Permission.objects.get(name=p.strip())
-                for p in self.implied.split(",")]
+        return [Permission.objects.get(name=p.strip()) for p in self.implied.split(",")]
 
     @classmethod
     def has_perm(cls, user, perm):
@@ -106,8 +105,7 @@ class Permission(NOCModel):
         """
         # Add implied permissions
         perms = set(perms)  # Copy
-        for p in cls.objects.filter(
-                name__in=list(perms), implied__isnull=False):
+        for p in cls.objects.filter(name__in=list(perms), implied__isnull=False):
             perms.update([x.strip() for x in p.implied.split(",")])
         #
         current = cls.get_user_permissions(user)
@@ -140,8 +138,7 @@ class Permission(NOCModel):
         """
         # Add implied permissions
         perms = set(perms)  # Copy
-        for p in cls.objects.filter(
-                name__in=list(perms), implied__isnull=False):
+        for p in cls.objects.filter(name__in=list(perms), implied__isnull=False):
             perms.update([x.strip() for x in p.implied.split(",")])
         #
         current = cls.get_group_permissions(group)
@@ -153,16 +150,14 @@ class Permission(NOCModel):
             Permission.objects.get(name=p).groups.remove(group)
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_effective_perm_cache"),
-                             lock=lambda _: perm_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_effective_perm_cache"), lock=lambda _: perm_lock)
     def get_effective_permissions(cls, user):
         """
         Returns a set of effective user permissions,
         counting group and implied ones
         """
         if user.is_superuser:
-            return set(Permission.objects.values_list(
-                "name", flat=True))
+            return set(Permission.objects.values_list("name", flat=True))
         perms = set()
         # User permissions
         for p in user.permissions.all():
@@ -201,11 +196,12 @@ class Permission(NOCModel):
         for app in six.itervalues(site.apps):
             new_perms = new_perms.union(app.get_permissions())
             for p in app.implied_permissions:
-                ips = sorted([normalize(app, pp)
-                              for pp in app.implied_permissions[p]])
+                ips = sorted([normalize(app, pp) for pp in app.implied_permissions[p]])
                 implied_permissions[normalize(app, p)] = ips
             for p in app.diverged_permissions:
-                diverged_permissions[normalize(app, p)] = normalize(app, app.diverged_permissions[p])
+                diverged_permissions[normalize(app, p)] = normalize(
+                    app, app.diverged_permissions[p]
+                )
         # Check all implied permissions are present
         for p in implied_permissions:
             if p not in new_perms:
@@ -221,19 +217,19 @@ class Permission(NOCModel):
             # @todo: add implied permissions
             p = Permission(name=name, implied=get_implied(name))
             p.save()
-            print("+ %s" % name)
+            print ("+ %s" % name)
             created_perms[name] = p
         # Check implied permissions match
         for name in old_perms.intersection(new_perms):
             implied = get_implied(name)
             p = Permission.objects.get(name=name)
             if p.implied != implied:
-                print("~ %s" % name)
+                print ("~ %s" % name)
                 p.implied = implied
                 p.save()
         # Deleted permissions
         for name in old_perms - new_perms:
-            print("- %s" % name)
+            print ("- %s" % name)
             Permission.objects.get(name=name).delete()
         # Diverge created permissions
         for name in created_perms:
@@ -244,7 +240,7 @@ class Permission(NOCModel):
             op = Permission.get_by_name(op_name)
             if not op:
                 continue
-            print(": %s -> (%s, %s)" % (op_name, op_name, name))
+            print (": %s -> (%s, %s)" % (op_name, op_name, name))
             # Migrate users
             dp = created_perms[name]
             for u in op.users.all():

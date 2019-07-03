@@ -18,9 +18,14 @@ class Migration(BaseMigration):
         self.db.execute(
             "INSERT INTO auth_user"
             "(username, first_name, last_name, email, password, is_active, is_superuser, date_joined) "
-            "VALUES(%s, %s, %s, %s, %s, %s, %s, 'now')", [
-                "admin", "NOC", "Admin", "test@example.com",
+            "VALUES(%s, %s, %s, %s, %s, %s, %s, 'now')",
+            [
+                "admin",
+                "NOC",
+                "Admin",
+                "test@example.com",
                 "sha1$235c1$e8e4d9aaa945e1fae62a965ee87fbf7b4a185e3f",
-                True, True
-            ]
+                True,
+                True,
+            ],
         )

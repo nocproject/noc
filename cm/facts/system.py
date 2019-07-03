@@ -12,16 +12,36 @@ from .base import BaseFact
 
 
 class System(BaseFact):
-    ATTRS = ["hostname", "domain_name", "profile",
-             "vendor", "platform", "version", "timezone",
-             "[nameservers]", "managed_object_name", "object_profile",
-             "level", "location"]
+    ATTRS = [
+        "hostname",
+        "domain_name",
+        "profile",
+        "vendor",
+        "platform",
+        "version",
+        "timezone",
+        "[nameservers]",
+        "managed_object_name",
+        "object_profile",
+        "level",
+        "location",
+    ]
 
-    def __init__(self, hostname=None, domain_name=False, profile=None,
-                 vendor=None, platform=None, version=None,
-                 timezone=None, nameservers=None, object_profile=None,
-                 level=None, location=None,
-                 **kwargs):
+    def __init__(
+        self,
+        hostname=None,
+        domain_name=False,
+        profile=None,
+        vendor=None,
+        platform=None,
+        version=None,
+        timezone=None,
+        nameservers=None,
+        object_profile=None,
+        level=None,
+        location=None,
+        **kwargs
+    ):
         super(System, self).__init__()
         self.hostname = hostname
         self.domain_name = domain_name

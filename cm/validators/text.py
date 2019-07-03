@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Django modules
 from django.template import Template, Context
+
 # NOC modules
 from .base import BaseValidator
 

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from .clips import CLIPSValidator
 
@@ -18,7 +19,5 @@ class CLIPSInterfaceValidator(CLIPSValidator):
     def get_context(self):
         ctx = super(CLIPSInterfaceValidator, self).get_context()
         mo = self.object.managed_object
-        ctx.update({
-            "name": mo.get_profile().convert_interface_name(self.object.name)
-        })
+        ctx.update({"name": mo.get_profile().convert_interface_name(self.object.name)})
         return ctx
