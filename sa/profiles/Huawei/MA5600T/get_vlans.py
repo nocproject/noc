@@ -5,11 +5,12 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
-import re
 
 
 class Script(BaseScript):
@@ -22,7 +23,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_vlan3 = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         try:
             c = self.cli("display vlan all")

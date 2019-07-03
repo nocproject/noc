@@ -19,7 +19,7 @@ class Script(BaseScript):
     name = "Huawei.MA5600T.get_dom_status"
     interface = IGetDOMStatus
 
-    splitter = re.compile("\s*-{3}-+\n")
+    splitter = re.compile(r"\s*-{3}-+\n")
 
     def execute_cli(self, interface=None, **kwargs):
         interfaces = [interface] if interface else []

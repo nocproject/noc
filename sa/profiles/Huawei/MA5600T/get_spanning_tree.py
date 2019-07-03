@@ -17,12 +17,12 @@ class Script(BaseScript):
     name = "Huawei.MA5600T.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_region = re.compile("region-name\s+(?P<region>\S+)")
+    rx_region = re.compile(r"region-name\s+(?P<region>\S+)")
     rx_vlans = re.compile(
-        "^\s+instance\s+(?P<inst>\d+)\s+vlan\s+(?P<vlans>\d+.+)",
+        r"^\s+instance\s+(?P<inst>\d+)\s+vlan\s+(?P<vlans>\d+.+)",
         re.MULTILINE)
-    rx_inst_split = re.compile("^\s+=+ Instance\s+", re.MULTILINE)
-    rx_inst_id = re.compile("^\s*(?P<id>\d+)", re.MULTILINE)
+    rx_inst_split = re.compile(r"^\s+=+ Instance\s+", re.MULTILINE)
+    rx_inst_id = re.compile(r"^\s*(?P<id>\d+)", re.MULTILINE)
     rx_inst = re.compile(
         r"^\s+Bridge\s+Priority\s*:\s*(?P<bridge_priority>\d+)\s+"
         r"MAC Address\s*:\s*(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
@@ -80,7 +80,7 @@ class Script(BaseScript):
         "MasterPort": "master"
     }
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = {"mode": "None", "instances": []}
         try:
             c = self.cli("display current-configuration section config")
@@ -125,9 +125,9 @@ class Script(BaseScript):
                         if int(match.group("inst")) == instance["id"]:
                             vlans = match.group("vlans").strip()
                             # 90   to   91
-                            vlans = re.sub('\s+to\s+', '-', vlans)
+                            vlans = re.sub(r'\s+to\s+', '-', vlans)
                             # 90  100
-                            vlans = re.sub('\s{2,}', ' ', vlans)
+                            vlans = re.sub(r'\s{2,}', ' ', vlans)
                             vlans = vlans.replace(" ", ",")
                             break
                 if vlans == "":
