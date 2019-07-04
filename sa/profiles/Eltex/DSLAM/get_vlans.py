@@ -2,12 +2,13 @@
 # ---------------------------------------------------------------------
 # Eltex.DSLAM.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -18,13 +19,14 @@ class Script(BaseScript):
     interface = IGetVlans
     cache = True
 
-    rx_vlan = re.compile("^(?P<vlan_id>\d+)", re.MULTILINE)
+    rx_vlan = re.compile(r"^(?P<vlan_id>\d+)", re.MULTILINE)
 
     def execute(self):
         r = []
-        cmd = self.cli("switch show vlan table all", cached=True)
+        try:
+            cmd = self.cli("switch show vlan table all", cached=True)
+        except self.CLISyntaxError:
+            cmd = self.cli("switch show vlan all")
         for match in self.rx_vlan.finditer(cmd):
-            r += [{
-                "vlan_id": match.group("vlan_id")
-            }]
+            r += [{"vlan_id": match.group("vlan_id")}]
         return r
