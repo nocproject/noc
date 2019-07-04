@@ -47,7 +47,7 @@ between its children and the rest of network.
 
 Proper segmentation is the key concept for various areas:
 
-* Root-Cause Analysis (RCA) for Fault Management
+* :term:`Root-Cause Analysis` (:term:`RCA`) for Fault Management
 * Network Maps
 * VLAN management
 * Configuration generation and checking
@@ -114,7 +114,7 @@ unavailable.
         MO4 --- MO11
         MO10 --- MO12
 
-NOC performs auto-layout of *Tree* segment maps and proper RCA
+NOC performs auto-layout of *Tree* segment maps and proper :term:`RCA`
 
 Forest
 ^^^^^^
@@ -134,7 +134,7 @@ Forest
 
 *Forest* offers no redundancy. Any failed Object makes its children
 unavailable.
-NOC performs auto-layout of *Forest* segment maps and proper RCA
+NOC performs auto-layout of *Forest* segment maps and proper :term:`RCA`
 
 .. note::
 
@@ -197,7 +197,7 @@ is performed with cheap switches contained within same PoP with backbone nodes.
 .. todo::
     Show Ring-and-Tree topology and describe fault propagation
 
-NOC performs neat auto-layout of *Ring* segment maps and proper RCA
+NOC performs neat auto-layout of *Ring* segment maps and proper :term:`RCA`
 
 .. _network-segment-topology-mesh:
 
@@ -216,58 +216,37 @@ Mesh
         MO1 --- MO5
 
 NOC performs probabilistic spring layout for mesh networks which may
-require manual correction and performs proper RCA in most cases
+require manual correction and performs proper :term:`RCA` in most cases
 
 .. _network-segment-object-uplinks:
 
 Object Uplinks
 --------------
-While *Network Segments* establish network's hierarchy, almost each
-segment obtains one direct *Parent Segment*. Each of segment's
-*Managed Objects* should have one or more *Paths* to *Parent Segment*
-in order to establish *Connectivity* with all network. Those paths
-are called *Uplink Paths* and all direct *Neighbors* along the *Uplink Path*
-considered *Uplinks*. The role of *Uplink* is to provide *Connectivity*
-to its *Downlinks*. For reserved topologies object's *Uplink* may be
+Except in rare cases *Managed Objects* should have one or more *Paths*
+to upper levels of network (to establish *Connectivity* with all network)
+or to the NOC's probes (to be monitored and managed at all).
+
+Those paths are called *Uplink Paths* and all direct *Neighbors* on the
+*Uplink Paths* are called *Uplinks*. The role of *Uplink* is to provide
+*Connectivity* for its *Downlink*. For reserved topologies object's *Uplink* may be
 its *Downlink* at the same time.
 
-Consider the scheme:
+*Uplinks* are key concept for :term:`RCA`. *Managed Object* with all unavailable
+uplinks looses *Connectivity* and problem lies somewhere on the *Uplink Paths*.
 
-.. mermaid::
+NOC perform automatic uplinks calculation on topology changes. The proccess
+can be configured via :ref:`Network Segment Profiles'<reference-network-segment-profile>`
+:ref:`Uplink Policy <reference-network-segment-profile-uplink-policy>` setting.
 
-    graph TB
-        subgraph Parent
-        MO1
-        end
-        subgraph Segment
-        MO2
-        MO3
-        MO4
-        end
-        MO1 --- MO2
-        MO1 --- MO3
-        MO2 --- MO4
-        MO3 --- MO4
-
-Lets *MO1* belong to *Parent Segment*, while *MO2*, *MO3* and *MO4* are
-in current *Segment*. The table of *Uplinks* and *Downlinks*:
-
-======== ========= ===========
-Object   Uplinks   Downlinks
-======== ========= ===========
-MO2      MO1, MO4  MO4
-MO3      MO1, MO4  MO4
-MO4      MO2, MO3  MO2, MO3
-======== ========= ===========
-
-*Uplinks* are key concept for *Topology-based Root-cause Analysis*.
-If all object's uplinks are unavailable, object's unavailability
-is *Consequence* of uplinks' failure. This is why correct segmentation
-and link detection is necessary for proper RCA.
-
-NOC rebuilds uplinks map for segment automatically every time
-*Managed Object* joins or leaves segment or segment topology changed.
 It is advised to avoid very large segments (>100 Objects)
+
+.. _reference_network-segment-object-segment-uplinks:
+
+Segment Uplinks
+---------------
+*Segment Uplinks* is the objects providing *Connectivity* for any of
+Segment's objects. *Segment Uplinks* can belong to segment itself,
+or may belong to any neighbor segment
 
 .. _network-segment-horizontal-transit:
 
