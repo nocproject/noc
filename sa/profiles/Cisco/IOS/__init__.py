@@ -10,6 +10,7 @@
 # Python modules
 import re
 import six
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -20,127 +21,71 @@ class Profile(BaseProfile):
         (r"^ --More-- ", " "),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n"),
         (r"^Destination filename \[\S+\]", "\n"),
-        (r"^Proceed with reload\?\s*\[confirm\]", "y\n")
+        (r"^Proceed with reload\?\s*\[confirm\]", "y\n"),
     ]
     pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = \
-        r"% Invalid input detected at|% Ambiguous command:|" \
-        r"% Incomplete command."
+    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+    pattern_operation_error = "Command authorization failed."
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" \
-        r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
     can_strip_hostname_to = 20
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 
     rx_cable_if = re.compile(
-        r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)",
-        re.IGNORECASE)
+        r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE
+    )
     config_tokenizer = "indent"
-    config_tokenizer_settings = {
-        "line_comment": "!"
-    }
+    config_tokenizer_settings = {"line_comment": "!"}
     default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
     rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
 
     matchers = {
-        "is_platform_7200": {
-            "platform": {
-                "$regex": r"7200|7301"
-            }
-        },
-        "is_platform_7600": {
-            "platform": {
-                "$regex": r"76(0[3459](\-S)?|13)"
-            }
-        },
-        "is_platform_me3x00x": {
-            "platform": {
-                "$regex": r"^ME\-3[68]00X"
-            }
-        },
-        "is_isr_router": {
-            "platform": {
-                "$regex": r"^(19\d\d|29\d\d|39\d\d)$"
-            }
-        },
-        "is_iosxe": {
-            "platform": {
-                "$regex": r"ASR100[0-6]"
-            }
-        },
-        "is_cat6000": {
-            "version": {
-                "$regex": r"S[YXR]"
-            }
-        },
-        "is_cat4000": {
-            "platform": {
-                "$regex": r"^WS-C4[059]\d\d"
-            }
-        },
-        "is_small_cat": {
-            "version": {
-                "$regex": r"SE|EA|EZ|FX|EX|EY|E|WC"
-            }
-        },
-        "is_5350": {
-            "platform": {
-                "$regex": r"^5350"
-            }
-        },
-        "is_ubr": {
-            "version": {
-                "$regex": r"BC"
-            }
-        },
+        "is_platform_7200": {"platform": {"$regex": r"7200|7301"}},
+        "is_platform_7600": {"platform": {"$regex": r"76(0[3459](\-S)?|13)"}},
+        "is_platform_me3x00x": {"platform": {"$regex": r"^ME\-3[68]00X"}},
+        "is_isr_router": {"platform": {"$regex": r"^(19\d\d|29\d\d|39\d\d)$"}},
+        "is_iosxe": {"platform": {"$regex": r"ASR100[0-6]"}},
+        "is_cat6000": {"version": {"$regex": r"S[YXR]"}},
+        "is_cat4000": {"platform": {"$regex": r"^WS-C4[059]\d\d"}},
+        "is_small_cat": {"version": {"$regex": r"SE|EA|EZ|FX|EX|EY|E|WC"}},
+        "is_5350": {"platform": {"$regex": r"^5350"}},
+        "is_ubr": {"version": {"$regex": r"BC"}},
         "is_vlan_switch": {
             "platform": {
                 "$regex": r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
-                          r"C[23][69]00[a-z]?$|C8[7859]0|17\d\d|C18[01]X|19\d\d|2951|ASR\d+)"
+                r"C[23][69]00[a-z]?$|C8[7859]0|17\d\d|C18[01]X|19\d\d|2951|ASR\d+)"
             }
         },
-
     }
 
     def cmp_version(self, x, y):
         """12(25)SEC2"""
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)[0]],
-            [int(z) for z in self.rx_ver.findall(y)[0]]
-        )
+        a = [int(z) for z in self.rx_ver.findall(x)[0]]
+        b = [int(z) for z in self.rx_ver.findall(y)[0]]
+        return (a > b) - (a < b)
 
     def convert_interface_name(self, interface):
         interface = str(interface)
         if " efp_id " in interface:
             l, r = interface.split(" efp_id ", 1)
-            return "%s.SI.%d" % (
-                self.convert_interface_name_cisco(l.strip()),
-                int(r.strip())
-            )
+            return "%s.SI.%d" % (self.convert_interface_name_cisco(l.strip()), int(r.strip()))
         if "+Efp" in interface:
             l, r = interface.split("+Efp", 1)
-            return "%s.SI.%d" % (
-                self.convert_interface_name_cisco(l.strip()),
-                int(r.strip())
-            )
+            return "%s.SI.%d" % (self.convert_interface_name_cisco(l.strip()), int(r.strip()))
         if " point-to-point" in interface:
             interface = interface.replace(" point-to-point", "")
         if ".ServiceInstance." in interface:
             interface = interface.replace(".ServiceInstance.", ".SI.")
         if ".SI." in interface:
             l, r = interface.split(".SI.", 1)
-            return "%s.SI.%d" % (
-                self.convert_interface_name_cisco(l.strip()),
-                int(r.strip())
-            )
+            return "%s.SI.%d" % (self.convert_interface_name_cisco(l.strip()), int(r.strip()))
         if isinstance(interface, six.string_types):
             il = interface.lower()
         else:
@@ -172,9 +117,7 @@ class Profile(BaseProfile):
         if il.startswith("cable"):
             match = self.rx_cable_if.search(interface)
             if match:
-                return "Ca %s/%s" % (
-                    match.group('pr_if'), match.group('sub_if')
-                )
+                return "Ca %s/%s" % (match.group("pr_if"), match.group("sub_if"))
         if il.endswith(" type tunnel"):
             il = il[:-12]
         if il.startswith("virtual-template"):
@@ -222,8 +165,7 @@ class Profile(BaseProfile):
                     cluster_member = p[8:].strip()
             # Switch to cluster member, if necessary
             if cluster_member:
-                script.logger.debug(
-                    "Switching to cluster member '%s'" % cluster_member)
+                script.logger.debug("Switching to cluster member '%s'" % cluster_member)
                 script.cli("rc %s" % cluster_member)
 
     INTERFACE_TYPES = {
@@ -252,7 +194,7 @@ class Profile(BaseProfile):
         "MF": "aggregated",  # Multilink Frame Relay
         "Mf": "aggregated",  # Multilink Frame Relay
         "Mu": "aggregated",  # Multilink-group interface
-        "ND": "other",      # Netflow Data Exporter
+        "ND": "other",  # Netflow Data Exporter
         "PO": "physical",  # Packet OC-3 Port Adapter
         "Po": "aggregated",  # Port-channel/Portgroup
         "R": "aggregated",  # @todo: fix
@@ -267,7 +209,7 @@ class Profile(BaseProfile):
         "VL": "SVI",  # VLAN, found on C3500XL
         "Vl": "SVI",  # Vlan
         "Vo": "physical",  # Voice
-        "XT": "SVI"  # Extended Tag ATM
+        "XT": "SVI",  # Extended Tag ATM
     }
 
     @classmethod
