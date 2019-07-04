@@ -25,7 +25,8 @@ class Script(BaseScript):
         ns = {'isapi': 'http://www.isapi.org/ver20/XMLSchema',
               'std-cgi': 'http://www.std-cgi.com/ver20/XMLSchema',
               'hikvision': 'http://www.hikvision.com/ver20/XMLSchema'}
-        v = self.http.get("/ISAPI/System/deviceInfo", use_basic=True)
+        v = self.http.get("/ISAPI/System/deviceInfo", cached=True, use_basic=True)
+        v = v.replace("\n", "")
         if "std-cgi" in v:
             ns['ns'] = ns["std-cgi"]
         elif "www.hikvision.com" in v:
