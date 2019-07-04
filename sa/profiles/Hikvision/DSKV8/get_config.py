@@ -37,7 +37,8 @@ class Script(BaseScript):
 
     def execute(self, **kwargs):
         c = ""
-        v = self.http.get("/ISAPI/Streaming/channels", json=False, cached=True, use_basic=True)
+        v = self.http.get("/ISAPI/Streaming/channels", use_basic=True)
+        v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
         channels = v['StreamingChannelList']['StreamingChannel']
@@ -53,7 +54,8 @@ class Script(BaseScript):
                 if key == "_text" or isinstance(value, six.string_types):
                     continue
                 c += "    %s: %s\n" % (key, value[0]['_text'])
-        v = self.http.get("/ISAPI/Image/channels/1/color", json=False, cached=True, use_basic=True)
+        v = self.http.get("/ISAPI/Image/channels/1/color", use_basic=True)
+        v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
         color = v['Color']
@@ -64,7 +66,8 @@ class Script(BaseScript):
             c += "    %s: %s\n" % (key, value[0]['_text'])
 
         try:
-            v = self.http.get("/ISAPI/Image/channels/1/WDR", json=False, cached=True, use_basic=True)
+            v = self.http.get("/ISAPI/Image/channels/1/WDR", use_basic=True)
+            v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
             c += "WDR:\n"
@@ -74,36 +77,41 @@ class Script(BaseScript):
             pass
 
         try:
-            v = self.http.get("/ISAPI/Image/channels/1/BLC", json=False, cached=True, use_basic=True)
+            v = self.http.get("/ISAPI/Image/channels/1/BLC", use_basic=True)
+            v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
             c += "BLC:\n"
             c += "    enabled: %s\n" % v['BLC']['enabled'][0]['_text']
-            c += "    BLCMode: %s\n" % v['BLC']['BLCMode'][0]['_text']
+            if 'BLCMode' in v['BLC']:
+                c += "    BLCMode: %s\n" % v['BLC']['BLCMode'][0]['_text']
         except HTTPError:
             pass
 
         try:
-            v = self.http.get("/ISAPI/System/Video/inputs/channels/1/overlays/capabilities",
-                              json=False, cached=True, use_basic=True)
+            v = self.http.get("/ISAPI/System/Video/inputs/channels/1/overlays/capabilities", use_basic=True)
+            v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
-            overlay = v['VideoOverlay']['TextOverlayList'][0]['TextOverlay']
-            if overlay:
-                c += "Overlays:\n"
-            i = 1
-            for o in overlay:
-                text = o['displayText'][0]
-                if text:
-                    c += "    TextOverlay%d: \"%s\"\n" % (i, text['_text'])
-                else:
-                    c += "    TextOverlay%d: \"\"\n" % i
-                i = i + 1
+            overlay = v['VideoOverlay']['TextOverlayList'][0]
+            if 'TextOverlay' in overlay:
+                overlay = overlay['TextOverlay']
+                if overlay:
+                    c += "Overlays:\n"
+                i = 1
+                for o in overlay:
+                    text = o['displayText'][0]
+                    if text:
+                        c += "    TextOverlay%d: \"%s\"\n" % (i, text['_text'])
+                    else:
+                        c += "    TextOverlay%d: \"\"\n" % i
+                    i = i + 1
         except HTTPError:
             pass
 
         try:
-            v = self.http.get("/ISAPI/System/time", json=False, cached=True, use_basic=True)
+            v = self.http.get("/ISAPI/System/time", use_basic=True)
+            v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
             timeMode = v['Time']['timeMode'][0]['_text']
@@ -113,7 +121,8 @@ class Script(BaseScript):
             pass
 
         try:
-            v = self.http.get("/ISAPI/System/time/ntpServers", json=False, cached=True, use_basic=True)
+            v = self.http.get("/ISAPI/System/time/ntpServers", use_basic=True)
+            v = v.replace("\n", "")
             root = ElementTree.fromstring(v)
             v = self.xml_2_dict(root)
             ntp_servers = v['NTPServerList']['NTPServer']

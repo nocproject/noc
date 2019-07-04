@@ -24,7 +24,8 @@ class Script(BaseScript):
         ns = {'isapi': 'http://www.isapi.org/ver20/XMLSchema',
               'std-cgi': 'http://www.std-cgi.com/ver20/XMLSchema',
               'hikvision': 'http://www.hikvision.com/ver20/XMLSchema'}
-        v = self.http.get("/ISAPI/System/Network/interfaces", cached=True, use_basic=True)
+        v = self.http.get("/ISAPI/System/Network/interfaces", use_basic=True)
+        v = v.replace("\n", "")
         if "std-cgi" in v:
             ns['ns'] = ns["std-cgi"]
         elif "www.hikvision.com" in v:
@@ -34,7 +35,7 @@ class Script(BaseScript):
         root = ElementTree.fromstring(v)
         # mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
         for o in root:
-            o_id = o.find("ns:id", ns).text
+            o_id = o.find("{%s}id" % ns["ns"]).text
             name = "eth%s" % o_id
             iface = {
                 "name": name,
@@ -50,23 +51,24 @@ class Script(BaseScript):
             }
             try:
                 v = self.http.get("/ISAPI/System/Network/interfaces/%s/Link" % o_id, use_basic=True)
+                v = v.replace("\n", "")
                 v = ElementTree.fromstring(v)
-                mac = v.find("ns:MACAddress", ns).text
+                mac = v.find("{%s}MACAddress" % ns["ns"]).text
             except HTTPError:
                 mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
 
             if mac:
                 sub["mac"] = mac
                 iface["mac"] = mac
-            ip = o.find("ns:IPAddress", ns)
+            ip = o.find("{%s}IPAddress" % ns["ns"])
             # for ip in ip_addresses:
-            afi = ip.find("ns:ipVersion", ns).text
+            afi = ip.find("{%s}ipVersion" % ns["ns"]).text
             if afi == "v4":
                 if "IPv4" not in sub["enabled_afi"]:
                     sub["enabled_afi"] += ["IPv4"]
                 ip_address = "%s/%s" % (
-                    ip.find("ns:ipAddress", ns).text, IPv4.netmask_to_len(
-                        ip.find("ns:subnetMask", ns).text
+                    ip.find("{%s}ipAddress" % ns["ns"]).text, IPv4.netmask_to_len(
+                        ip.find("{%s}subnetMask" % ns["ns"]).text
                     )
                 )
                 if "ipv4_addresses" in sub:
@@ -77,7 +79,7 @@ class Script(BaseScript):
                 if "IPv6" not in sub["enabled_afi"]:
                     sub["enabled_afi"] += ["IPv6"]
                 ip_address = IPv6(
-                    ip.find("ns:ipAddress", ns).text, netmask=ip.find("ns:subnetMask", ns).text
+                    ip.find("{%s}ipAddress" % ns["ns"]).text, netmask=ip.find("ns:subnetMask", ns).text
                 ).prefix
 
             iface["subinterfaces"] = [sub]
