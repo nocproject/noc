@@ -10,6 +10,8 @@ Managed Object Profile
     :depth: 1
     :class: singlecol
 
+.. _reference-managed-object-profile-level:
+
 Level
 -----
 

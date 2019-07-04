@@ -159,6 +159,35 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     ]
                 },
                 {
+                    name: "uplink_policy",
+                    xtype: "gridfield",
+                    fieldLabel: __("Uplink Policy"),
+                    columns: [
+                        {
+                            text: __("Method"),
+                            dataIndex: "method",
+                            width: 150,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["seghier", _("Segment Hierarchy")],
+                                    ["molevel", _("Managed Object Level")],
+                                    ["seg", _("All Segment Objects")],
+                                    ["minaddr", _("Lesser Management Address")],
+                                    ["maxaddr", _("Greater Management Address")]
+                                ]
+                            }
+                        },
+                        {
+                            text: __("Active"),
+                            dataIndex: "is_active",
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool,
+                            flex: 1
+                        }
+                    ]
+                },
+                {
                     name: "enable_vlan",
                     xtype: "checkbox",
                     boxLabel: __("Enable VLAN Discovery")
