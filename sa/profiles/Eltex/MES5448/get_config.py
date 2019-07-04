@@ -15,7 +15,11 @@ class Script(BaseScript):
     name = "Eltex.MES5448.get_config"
     interface = IGetConfig
 
-    def execute_cli(self, **kwargs):
-        config = self.cli("show running-config")
+    def execute_cli(self, policy="r"):
+        assert policy in ("r", "s")
+        if policy == "s":
+            config = self.cli("show startup-config")
+        else:
+            config = self.cli("show running-config")
         config = self.strip_first_lines(config, 10)
         return self.cleaned_config(config)
