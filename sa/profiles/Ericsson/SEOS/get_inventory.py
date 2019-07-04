@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Ericsson.SEOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -27,10 +26,13 @@ class Script(BaseScript):
         r"Serial\s*Number\s*:\s*(\S+)\s*\S+\s*:\s*(\S*)",
         re.DOTALL | re.IGNORECASE | re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         objects = []
-        v = self.cli("show hardware")
-        media = self.cli("show port trans")
+        try:
+            v = self.cli("show hardware")
+            media = self.cli("show port trans")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError("Not supported on")
         for l in v.splitlines():
             if "backplane" in l:
                 objects += [{
@@ -76,8 +78,7 @@ class Script(BaseScript):
                     if l.split()[0].strip() == match[0].split("/")[0]:
                         objects += [{
                             "builtin": False,
-                            "description": match[1].strip() + " " +
-                                           match[4].strip(),
+                            "description": match[1].strip() + " " + match[4].strip(),
                             "number": match[0][2:],
                             "part_no": match[1].strip(),
                             "serial": match[3],
@@ -95,4 +96,3 @@ class Script(BaseScript):
                     "type": "MGMT"
                 }]
         return objects
-

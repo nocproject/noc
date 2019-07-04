@@ -26,7 +26,7 @@ class Script(BaseScript):
         1: "physical",
         6: "physical",  # ethernetCsmacd
         18: "physical",  # E1 - ds1
-        23: "tunnel",  # ppp
+        23: "physical",  # ppp
         24: "loopback",  # softwareLoopback
         117: "physical",  # gigabitEthernet
         131: "tunnel",  # tunnel
@@ -36,12 +36,10 @@ class Script(BaseScript):
         54: "physical"  # propMultiplexor
     }
 
-    def execute_snmp(self, interface=None, last_ifname=None):
-        last_ifname = self.collect_ifnames()
+    def execute_snmp(self, interface=None):
         # v = self.scripts.get_interface_status_ex()
         index = self.scripts.get_ifindexes()
         # index = self.get_ifindexes()
-        aggregated, portchannel_members = self.get_aggregated_ifaces()
         ifaces = dict((index[i], {"interface": i}) for i in index)
         # Apply ifAdminStatus
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
@@ -64,8 +62,6 @@ class Script(BaseScript):
         """
         for l in ifaces:
             iface = ifaces[l]
-            if last_ifname and iface["interface"] not in last_ifname:
-                continue
             i_type = self.get_interface_type(iface["type"])
             i = {
                 "name": iface["interface"],
@@ -76,15 +72,8 @@ class Script(BaseScript):
                 if iface.get("admin_status") else False,
                 "snmp_ifindex": l,
             }
-            if i["name"] in portchannel_members:
-                i["aggregated_interface"], lacp = portchannel_members[i["name"]]
-                if lacp:
-                    i["enabled_protocols"] = ["LACP"]
-            if i["name"] in aggregated:
-                i["type"] = "aggregated"
             if iface.get("mac_address") and is_mac(iface["mac_address"]):
                 i["mac"] = MAC(iface["mac_address"])
-            # sub = {"subinterfaces": [i.copy()]}
             r += [i]
         for l in r:
             if l["name"] in subs:
