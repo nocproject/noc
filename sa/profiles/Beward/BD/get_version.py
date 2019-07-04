@@ -17,14 +17,18 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
-        res = self.http.get("/cgi-bin/admin/param.cgi?action=list", json=False, cached=True, use_basic=True)
+        res = self.http.get(
+            "/cgi-bin/admin/param.cgi?action=list", json=False, cached=True, use_basic=True
+        )
         r = {}
         for x in res.splitlines():
             if not x:
                 continue
-            k, v = x.split("=")
+            try:
+                k, v = x.split("=")
+            except ValueError:
+                continue
             r[k] = v
-
         ver = {
             "vendor": "Beward",
             "platform": r["root.Brand.ProdNbr"],
@@ -35,7 +39,7 @@ class Script(BaseScript):
                 # "HW version": system_info["hardwareVersion"],
                 # "Serial Number": system_info["serialNumber"]
                 # "Firmware Type":
-            }
+            },
         }
 
         return ver
