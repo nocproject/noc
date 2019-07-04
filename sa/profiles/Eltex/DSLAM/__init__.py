@@ -6,8 +6,10 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -15,13 +17,12 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Eltex.DSLAM"
     pattern_username = r"(?<!Last )[Ll]ogin: "
-    pattern_more = [
-        (r"--More-- ", " "),
-        (r"\[Yes/press any key for no\]", "Y")
-    ]
-    pattern_prompt = r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)> "
+    pattern_more = [(r"--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
+    pattern_prompt = r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@]+)> "
     pattern_syntax_error = r"Command not found"
-    pattern_operation_error = r"ERROR: Can't stat show result|ALARM: Board temperature mount to limit"
+    pattern_operation_error = (
+        r"ERROR: Can't stat show result|ALARM: Board temperature mount to limit"
+    )
     # command_disable_pager = "terminal datadump"
     # command_super = "enable"
     username_submit = "\r"
@@ -48,6 +49,7 @@ class Profile(BaseProfile):
                 line = line.expandtabs()
                 yield line.split()
                 i += 1
+
         d = []
         for line in iter_lines(s):
             match = self.rx_header.search(line[0])
@@ -57,20 +59,7 @@ class Profile(BaseProfile):
         return d
 
     matchers = {
-        "is_platform_MXA24": {
-            "platform": {
-                "$regex": r"^MXA24"
-            }
-        },
-        "is_platform_MXA32": {
-            "platform": {
-                "$regex": r"^MXA32"
-            }
-        },
-        "is_platform_MXA64": {
-            "platform": {
-                "$regex": r"^MXA64"
-            }
-
-        }
+        "is_platform_MXA24": {"platform": {"$regex": r"^MXA24"}},
+        "is_platform_MXA32": {"platform": {"$regex": r"^MXA32"}},
+        "is_platform_MXA64": {"platform": {"$regex": r"^MXA64"}},
     }
