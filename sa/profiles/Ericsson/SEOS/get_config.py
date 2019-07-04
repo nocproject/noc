@@ -13,9 +13,10 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 class Script(BaseScript):
     name = "Ericsson.SEOS.get_config"
+    cache = True
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        config = self.cli("show config")
-        config = self.strip_first_lines(config, 3)
+        config = self.cli("show running-config", cached=True)
+        config = self.strip_first_lines(config, 1)
         return self.cleaned_config(config)
