@@ -18,8 +18,10 @@ class Profile(BaseProfile):
     name = "Eltex.DSLAM"
     pattern_username = r"(?<!Last )[Ll]ogin: "
     pattern_more = [(r"--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
-    pattern_prompt = r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@]+)> "
-    pattern_syntax_error = r"Command not found"
+    pattern_prompt = (
+        r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@]+)> (?!Command not found|fail to run,)"
+    )
+    pattern_syntax_error = r"Command not found|fail to run,"
     pattern_operation_error = (
         r"ERROR: Can't stat show result|ALARM: Board temperature mount to limit"
     )
