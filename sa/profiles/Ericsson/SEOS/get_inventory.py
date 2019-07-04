@@ -28,8 +28,11 @@ class Script(BaseScript):
 
     def execute_cli(self):
         objects = []
-        v = self.cli("show hardware")
-        media = self.cli("show port trans")
+        try:
+            v = self.cli("show hardware")
+            media = self.cli("show port trans")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError("Not supported on")
         for l in v.splitlines():
             if "backplane" in l:
                 objects += [{
