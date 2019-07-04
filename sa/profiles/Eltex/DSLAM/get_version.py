@@ -2,12 +2,13 @@
 # ---------------------------------------------------------------------
 # Eltex.DSLAM.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -24,7 +25,7 @@ class Script(BaseScript):
         try:
             ver = self.cli("system show software info", cached=True)
         except self.CLISyntaxError:
-            ver = self.cli("system show software version", cached=True)
+            ver = self.cli("system show software version", cached=True, ignore_errors=True)
         match = self.rx_version.search(ver)
         if match:
             version = match.group("version")
@@ -34,14 +35,6 @@ class Script(BaseScript):
                 platform = "MXA64"
             else:
                 platform = "DSLAM"
-            return {
-                "vendor": "Eltex",
-                "platform": platform,
-                "version": version
-            }
+            return {"vendor": "Eltex", "platform": platform, "version": version}
         else:
-            return {
-                "vendor": "Eltex",
-                "platform": "MXA24",
-                "version": "mxa24"
-            }
+            return {"vendor": "Eltex", "platform": "MXA24", "version": "mxa24"}
