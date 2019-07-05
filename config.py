@@ -12,35 +12,45 @@ import os
 import socket
 import sys
 from collections import namedtuple
+
 # Third-party modules
 from six.moves.urllib.parse import quote as urllib_quote
+
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
-    StringParameter, MapParameter, IntParameter, BooleanParameter,
-    HandlerParameter, SecondsParameter, FloatParameter,
-    ServiceParameter, SecretParameter, ListParameter)
+    StringParameter,
+    MapParameter,
+    IntParameter,
+    BooleanParameter,
+    HandlerParameter,
+    SecondsParameter,
+    FloatParameter,
+    ServiceParameter,
+    SecretParameter,
+    ListParameter,
+)
 
 
 class Config(BaseConfig):
-    loglevel = MapParameter(default="info", mappings={
-        # pylint: disable=used-before-assignment
-        "critical": logging.CRITICAL,
-        # pylint: disable=used-before-assignment
-        "error": logging.ERROR,
-        # pylint: disable=used-before-assignment
-        "warning": logging.WARNING,
-        # pylint: disable=used-before-assignment
-        "info": logging.INFO,
-        # pylint: disable=used-before-assignment
-        "debug": logging.DEBUG
-    })
+    loglevel = MapParameter(
+        default="info",
+        mappings={
+            # pylint: disable=used-before-assignment
+            "critical": logging.CRITICAL,
+            # pylint: disable=used-before-assignment
+            "error": logging.ERROR,
+            # pylint: disable=used-before-assignment
+            "warning": logging.WARNING,
+            # pylint: disable=used-before-assignment
+            "info": logging.INFO,
+            # pylint: disable=used-before-assignment
+            "debug": logging.DEBUG,
+        },
+    )
 
     class activator(ConfigSection):
-        tos = IntParameter(
-            min=0, max=255,
-            default=0
-        )
+        tos = IntParameter(min=0, max=255, default=0)
         script_threads = IntParameter(default=10)
         buffer_size = IntParameter(default=1048576)
         connect_retries = IntParameter(default=3, help="retries on immediate disconnect")
@@ -78,13 +88,16 @@ class Config(BaseConfig):
         enable_reboots = BooleanParameter(default=False)
         enable_managedobjects = BooleanParameter(default=False)
         enable_alarms_archive = BooleanParameter(default=False)
-        alarms_archive_policy = MapParameter(default="weekly", mappings={
-            "weekly": "{{doc[\"clear_timestamp\"].strftime(\"y%Yw%W\")}}",
-            "monthly": "{{doc[\"clear_timestamp\"].strftime(\"y%Ym%m\")}}",
-            "quarterly": "{{doc[\"clear_timestamp\"].strftime(\"y%Y\")}}"
-                         "_quarter{{(doc[\"clear_timestamp\"].month-1)//3 + 1}}",
-            "yearly": "{{doc[\"clear_timestamp\"].strftime(\"y%Y\")}}"
-        })
+        alarms_archive_policy = MapParameter(
+            default="weekly",
+            mappings={
+                "weekly": '{{doc["clear_timestamp"].strftime("y%Yw%W")}}',
+                "monthly": '{{doc["clear_timestamp"].strftime("y%Ym%m")}}',
+                "quarterly": '{{doc["clear_timestamp"].strftime("y%Y")}}'
+                '_quarter{{(doc["clear_timestamp"].month-1)//3 + 1}}',
+                "yearly": '{{doc["clear_timestamp"].strftime("y%Y")}}',
+            },
+        )
         alarms_archive_batch_limit = IntParameter(default=10000)
 
     brand = StringParameter(default="NOC")
@@ -113,8 +126,7 @@ class Config(BaseConfig):
         max_in_flight = IntParameter(default=10)
 
     class classifier(ConfigSection):
-        lookup_handler = HandlerParameter(
-            default="noc.services.classifier.rulelookup.RuleLookup")
+        lookup_handler = HandlerParameter(default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
         default_rule = StringParameter(default="Unknown | Default")
 
@@ -129,11 +141,7 @@ class Config(BaseConfig):
         request_timeout = SecondsParameter(default="1h")
         connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
-        encoding = StringParameter(default="", choices=[
-            "",
-            "deflate",
-            "gzip"
-        ])
+        encoding = StringParameter(default="", choices=["", "deflate", "gzip"])
         # Enable LowCardinality fileds
         enable_low_cardinality = BooleanParameter(default=False)
         # Cluster name for sharded/replicated configuration
@@ -184,20 +192,12 @@ class Config(BaseConfig):
         auto_escalation = BooleanParameter(default=True)
 
     class customization(ConfigSection):
-        favicon_url = StringParameter(
-            default="/ui/web/img/logo_24x24_deep_azure.png"
-        )
-        logo_url = StringParameter(
-            default="/ui/web/img/logo_white.svg"
-        )
+        favicon_url = StringParameter(default="/ui/web/img/logo_24x24_deep_azure.png")
+        logo_url = StringParameter(default="/ui/web/img/logo_white.svg")
         logo_width = IntParameter(default=24)
         logo_height = IntParameter(default=24)
-        branding_color = StringParameter(
-            default="#ffffff"
-        )
-        branding_background_color = StringParameter(
-            default="#34495e"
-        )
+        branding_color = StringParameter(default="#ffffff")
+        branding_background_color = StringParameter(default="#34495e")
         preview_theme = StringParameter(default="midnight")
 
     class date_time_formats(StringParameter):
@@ -231,12 +231,15 @@ class Config(BaseConfig):
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
-        telemetry = BooleanParameter(default=False,
-                                     help="Enable internal telemetry export to Clickhouse")
-        consul_healthchecks = BooleanParameter(default=True,
-                                               help="While registering serive in consul also register health check")
-        service_registration = BooleanParameter(default=True,
-                                                help="Permit consul self registration")
+        telemetry = BooleanParameter(
+            default=False, help="Enable internal telemetry export to Clickhouse"
+        )
+        consul_healthchecks = BooleanParameter(
+            default=True, help="While registering serive in consul also register health check"
+        )
+        service_registration = BooleanParameter(
+            default=True, help="Permit consul self registration"
+        )
         pypy = BooleanParameter(default=False)
         forensic = BooleanParameter(default=False)
 
@@ -252,10 +255,10 @@ class Config(BaseConfig):
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")
         yandex_key = SecretParameter(default="")
+        yandex_apikey = SecretParameter(default="")
         google_key = SecretParameter(default="")
         google_language = StringParameter(default="en")
-        negative_ttl = SecondsParameter(default="7d",
-                                        help="Period then saving bad result")
+        negative_ttl = SecondsParameter(default="7d", help="Period then saving bad result")
 
     class gis(ConfigSection):
         ellipsoid = StringParameter(default="PZ-90")
@@ -284,16 +287,12 @@ class Config(BaseConfig):
         https_port = IntParameter(default=443)
         validate_certs = BooleanParameter(default=False, help="Have to be set as True")
 
-    installation_name = StringParameter(
-        default="Unconfigured installation"
-    )
+    installation_name = StringParameter(default="Unconfigured installation")
 
     instance = IntParameter(default=0)
 
     language = StringParameter(default="en")
-    language_code = StringParameter(
-        default="en-us"
-    )
+    language_code = StringParameter(default="en-us")
 
     class layout(ConfigSection):
         ring_ring_edge = IntParameter(default=150)
@@ -310,9 +309,7 @@ class Config(BaseConfig):
 
     listen = StringParameter(default="auto:0")
 
-    log_format = StringParameter(
-        default="%(asctime)s [%(name)s] %(message)s"
-    )
+    log_format = StringParameter(default="%(asctime)s [%(name)s] %(message)s")
 
     thread_stack_size = IntParameter(default=0)
     gitlab_url = StringParameter("https://code.getnoc.com/")
@@ -371,27 +368,21 @@ class Config(BaseConfig):
         objectmetrics_max_interval = SecondsParameter(default="3h")
 
     class nsqd(ConfigSection):
-        addresses = ServiceParameter(service="nsqd",
-                                     wait=True, near=True,
-                                     full_result=False)
-        http_addresses = ServiceParameter(service="nsqdhttp",
-                                          wait=True, near=True,
-                                          full_result=False)
+        addresses = ServiceParameter(service="nsqd", wait=True, near=True, full_result=False)
+        http_addresses = ServiceParameter(
+            service="nsqdhttp", wait=True, near=True, full_result=False
+        )
         pub_retry_delay = FloatParameter(default=0.1)
         ch_chunk_size = IntParameter(default=4000)
         connect_timeout = SecondsParameter(default="3s")
         request_timeout = SecondsParameter(default="30s")
         reconnect_interval = IntParameter(default=15)
-        compression = StringParameter(
-            choices=["", "deflate", "snappy"],
-            default=""
-        )
+        compression = StringParameter(choices=["", "deflate", "snappy"], default="")
         compression_level = IntParameter(default=6)
         max_in_flight = IntParameter(default=1)
 
     class nsqlookupd(ConfigSection):
-        addresses = ServiceParameter(service="nsqlookupd",
-                                     wait=True, near=True, full_result=False)
+        addresses = ServiceParameter(service="nsqlookupd", wait=True, near=True, full_result=False)
         http_addresses = ServiceParameter(service="nsqlookupdhttp", wait=True, full_result=False)
 
     class path(ConfigSection):
@@ -419,10 +410,7 @@ class Config(BaseConfig):
         mib_path = StringParameter(default="/var/mib")
 
     class pg(ConfigSection):
-        addresses = ServiceParameter(
-            service="postgres",
-            wait=True, near=True, full_result=False
-        )
+        addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
         db = StringParameter(default="noc")
         user = StringParameter()
         password = SecretParameter()
@@ -431,10 +419,7 @@ class Config(BaseConfig):
     class ping(ConfigSection):
         throttle_threshold = FloatParameter()
         restore_threshold = FloatParameter()
-        tos = IntParameter(
-            min=0, max=255,
-            default=0
-        )
+        tos = IntParameter(min=0, max=255, default=0)
         # Recommended send buffer size, 4M by default
         send_buffer = IntParameter(default=4 * 1048576)
         # Recommended receive buffer size, 4M by default
@@ -463,9 +448,7 @@ class Config(BaseConfig):
         default_ttl = SecondsParameter(default="1d")
 
     class rpc(ConfigSection):
-        retry_timeout = StringParameter(
-            default="0.1,0.5,1,3,10,30"
-        )
+        retry_timeout = StringParameter(default="0.1,0.5,1,3,10,30")
         sync_connect_timeout = SecondsParameter(default="20s")
         sync_request_timeout = SecondsParameter(default="1h")
         sync_retry_timeout = FloatParameter(default=1.0)
@@ -525,9 +508,7 @@ class Config(BaseConfig):
         idle_timeout = SecondsParameter(default="30s")
         shutdown_timeout = SecondsParameter(default="1M")
 
-    timezone = StringParameter(
-        default="Europe/Moscow"
-    )
+    timezone = StringParameter(default="Europe/Moscow")
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
@@ -558,35 +539,42 @@ class Config(BaseConfig):
         enable_administrativedomain = BooleanParameter(default=False)
         enable_administrativedomain_wait = BooleanParameter(
             default=True,
-            help="Activate Wait Mode for Adm. Domain datastream (Mongo greater 3.6 needed)")
+            help="Activate Wait Mode for Adm. Domain datastream (Mongo greater 3.6 needed)",
+        )
         enable_alarm = BooleanParameter(default=False)
         enable_alarm_wait = BooleanParameter(
-            default=True,
-            help="Activate Wait Mode for Alarm datastream (Mongo greater 3.6 needed)")
+            default=True, help="Activate Wait Mode for Alarm datastream (Mongo greater 3.6 needed)"
+        )
         enable_cfgping = BooleanParameter(default=True)
         enable_cfgping_wait = BooleanParameter(
             default=True,
-            help="Activate Wait Mode for CfgPing datastream (Mongo greater 3.6 needed)")
+            help="Activate Wait Mode for CfgPing datastream (Mongo greater 3.6 needed)",
+        )
         enable_cfgsyslog = BooleanParameter(default=True)
         enable_cfgsyslog_wait = BooleanParameter(
             default=True,
-            help="Activate Wait Mode for CfgSyslog datastream (Mongo greater 3.6 needed)")
+            help="Activate Wait Mode for CfgSyslog datastream (Mongo greater 3.6 needed)",
+        )
         enable_cfgtrap = BooleanParameter(default=True)
         enable_cfgtrap_wait = BooleanParameter(
             default=True,
-            help="Activate Wait Mode for CfgTrap datastream (Mongo greater 3.6 needed)")
+            help="Activate Wait Mode for CfgTrap datastream (Mongo greater 3.6 needed)",
+        )
         enable_dnszone = BooleanParameter(default=False)
         enable_dnszone_wait = BooleanParameter(
             default=True,
-            help="Activate Wait Mode for DNS Zone datastream (Mongo greater 3.6 needed)")
+            help="Activate Wait Mode for DNS Zone datastream (Mongo greater 3.6 needed)",
+        )
         enable_managedobject = BooleanParameter(default=False)
         enable_managedobject_wait = BooleanParameter(
             default=True,
-            help="Activate Wait Mode for ManagedObject datastream (Mongo greater 3.6 needed)")
+            help="Activate Wait Mode for ManagedObject datastream (Mongo greater 3.6 needed)",
+        )
         enable_resourcegroup = BooleanParameter(default=False)
         enable_resourcegroup_wait = BooleanParameter(
             default=True,
-            help="Activate Wait Mode for ResourceGroup datastream (Mongo greater 3.6 needed)")
+            help="Activate Wait Mode for ResourceGroup datastream (Mongo greater 3.6 needed)",
+        )
 
     class help(ConfigSection):
         base_url = StringParameter(default="https://docs.getnoc.com")
@@ -611,20 +599,18 @@ class Config(BaseConfig):
         rpsl_inverse_pref_style = BooleanParameter(default=False)
 
     class metrics(ConfigSection):
-        default_hist = ListParameter(item=FloatParameter(), default=[
-            0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
-        ])
+        default_hist = ListParameter(
+            item=FloatParameter(), default=[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]
+        )
         enable_mongo_hist = BooleanParameter(default=False)
-        mongo_hist = ListParameter(item=FloatParameter(), default=[
-            0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
-        ])
+        mongo_hist = ListParameter(
+            item=FloatParameter(), default=[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]
+        )
         enable_postgres_hist = BooleanParameter(default=False)
-        postgres_hist = ListParameter(item=FloatParameter(), default=[
-            0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0
-        ])
-        default_quantiles = ListParameter(item=FloatParameter(), default=[
-            0.5, 0.9, 0.95
-        ])
+        postgres_hist = ListParameter(
+            item=FloatParameter(), default=[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]
+        )
+        default_quantiles = ListParameter(item=FloatParameter(), default=[0.5, 0.9, 0.95])
         default_quantiles_epsilon = 0.01
         default_quantiles_window = 60
         default_quantiles_buffer = 100
@@ -646,7 +632,7 @@ class Config(BaseConfig):
             "port": self.pg.addresses[0].port,
             "database": self.pg.db,
             "user": self.pg.user,
-            "password": self.pg.password
+            "password": self.pg.password,
         }
 
     @property
@@ -659,7 +645,7 @@ class Config(BaseConfig):
             self._mongo_connection_args = {
                 "db": self.mongo.db,
                 "username": self.mongo.user,
-                "password": self.mongo.password
+                "password": self.mongo.password,
             }
             if self.mongo.app_name:
                 self._mongo_connection_args["appname"] = self.mongo.app_name
@@ -678,13 +664,15 @@ class Config(BaseConfig):
                 self._mongo_connection_args["maxIdleTimeMS"] = self.mongo.max_idle_time * 1000
             url = ["mongodb://"]
             if has_credentials:
-                url += ["%s:%s@" % (urllib_quote(self.mongo.user),
-                                    urllib_quote(self.mongo.password))]
+                url += [
+                    "%s:%s@" % (urllib_quote(self.mongo.user), urllib_quote(self.mongo.password))
+                ]
             url += [",".join(str(h) for h in hosts)]
             url += ["/%s" % self.mongo.db]
             self._mongo_connection_args["host"] = "".join(url)
             if self.metrics.enable_mongo_hist:
                 from noc.core.mongo.monitor import MongoCommandSpan
+
                 self._mongo_connection_args["event_listeners"] = [MongoCommandSpan()]
         return self._mongo_connection_args
 
@@ -705,11 +693,7 @@ class Config(BaseConfig):
             logging.root.setLevel(loglevel)
         else:
             # Initialize logger
-            logging.basicConfig(
-                stream=sys.stdout,
-                format=self.log_format,
-                level=loglevel
-            )
+            logging.basicConfig(stream=sys.stdout, format=self.log_format, level=loglevel)
         logging.captureWarnings(True)
 
     @property

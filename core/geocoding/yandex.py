@@ -24,7 +24,7 @@ class YandexGeocoder(BaseGeocoder):
     def __init__(self, key=None, apikey=None, *args, **kwargs):
         super(BaseGeocoder, self).__init__(*args, **kwargs)
         self.key = key or config.geocoding.yandex_key
-        self.apikey = apikey
+        self.apikey = apikey or config.geocoding.yandex_apikey
 
     def forward(self, query, bounds=None, region=None):
         url = ["https://geocode-maps.yandex.ru/1.x/?", "format=json"]
