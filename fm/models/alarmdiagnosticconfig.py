@@ -12,11 +12,13 @@ import operator
 from threading import Lock
 from collections import defaultdict
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
 import cachetools
+
 # NOC modules
 from noc.sa.models.action import Action
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -43,9 +45,7 @@ class AlarmDiagnosticConfig(Document):
         "collection": "noc.alarmdiagnosticconfig",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "alarm_class"
-        ]
+        "indexes": ["alarm_class"],
     }
 
     name = StringField(unique=True)
@@ -83,13 +83,11 @@ class AlarmDiagnosticConfig(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_ac_cache"),
-                             lock=lambda _: ac_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_ac_cache"), lock=lambda _: ac_lock)
     def get_class_diagnostics(cls, alarm_class):
-        return list(AlarmDiagnosticConfig.objects.filter(
-            alarm_class=alarm_class.id,
-            is_active=True
-        ))
+        return list(
+            AlarmDiagnosticConfig.objects.filter(alarm_class=alarm_class.id, is_active=True)
+        )
 
     @classmethod
     def on_raise(cls, alarm):
@@ -101,44 +99,36 @@ class AlarmDiagnosticConfig(Document):
         r_cfg = defaultdict(list)
         p_cfg = defaultdict(list)
         for c in cls.get_class_diagnostics(alarm.alarm_class):
-            if c.selector and not SelectorCache.is_in_selector(
-                    alarm.managed_object, c.selector
-            ):
+            if c.selector and not SelectorCache.is_in_selector(alarm.managed_object, c.selector):
                 continue
             if c.only_root and alarm.root:
                 continue
             if c.enable_on_raise:
                 if c.on_raise_script:
-                    r_cfg[c.on_raise_delay] += [{
-                        "script": c.on_raise_script,
-                        "header": c.on_raise_header
-                    }]
+                    r_cfg[c.on_raise_delay] += [
+                        {"script": c.on_raise_script, "header": c.on_raise_header}
+                    ]
                 if c.on_raise_action:
-                    r_cfg[c.on_raise_delay] += [{
-                        "action": c.on_raise_action.name,
-                        "header": c.on_raise_header
-                    }]
+                    r_cfg[c.on_raise_delay] += [
+                        {"action": c.on_raise_action.name, "header": c.on_raise_header}
+                    ]
                 if c.on_raise_handler:
-                    r_cfg[c.on_raise_delay] += [{
-                        "handler": c.on_raise_handler,
-                        "header": c.on_raise_header
-                    }]
+                    r_cfg[c.on_raise_delay] += [
+                        {"handler": c.on_raise_handler, "header": c.on_raise_header}
+                    ]
             if c.enable_periodic:
                 if c.periodic_script:
-                    p_cfg[c.periodic_interval] += [{
-                        "script": c.periodic_script,
-                        "header": c.periodic_header
-                    }]
+                    p_cfg[c.periodic_interval] += [
+                        {"script": c.periodic_script, "header": c.periodic_header}
+                    ]
                 if c.periodic_action:
-                    p_cfg[c.periodic_interval] += [{
-                        "action": c.periodic_action.name,
-                        "header": c.periodic_header
-                    }]
+                    p_cfg[c.periodic_interval] += [
+                        {"action": c.periodic_action.name, "header": c.periodic_header}
+                    ]
                 if c.periodic_handler:
-                    p_cfg[c.periodic_interval] += [{
-                        "handler": c.periodic_handler,
-                        "header": c.periodic_header
-                    }]
+                    p_cfg[c.periodic_interval] += [
+                        {"handler": c.periodic_handler, "header": c.periodic_header}
+                    ]
         # Submit on_raise job
         for delay in r_cfg:
             call_later(
@@ -147,7 +137,7 @@ class AlarmDiagnosticConfig(Document):
                 pool=alarm.managed_object.pool.name,
                 delay=delay,
                 alarm=alarm.id,
-                cfg=r_cfg[delay]
+                cfg=r_cfg[delay],
             )
         # Submit periodic job
         for delay in p_cfg:
@@ -158,7 +148,7 @@ class AlarmDiagnosticConfig(Document):
                 pool=alarm.managed_object.pool.name,
                 delay=delay,
                 alarm=alarm.id,
-                cfg={"cfg": p_cfg[delay], "delay": delay}
+                cfg={"cfg": p_cfg[delay], "delay": delay},
             )
 
         # @todo: Submit periodic job
@@ -172,28 +162,23 @@ class AlarmDiagnosticConfig(Document):
         """
         cfg = defaultdict(list)
         for c in cls.get_class_diagnostics(alarm.alarm_class):
-            if c.selector and not SelectorCache.is_in_selector(
-                    alarm.managed_object, c.selector
-            ):
+            if c.selector and not SelectorCache.is_in_selector(alarm.managed_object, c.selector):
                 continue
             if c.only_root and alarm.root:
                 continue
             if c.enable_on_clear:
                 if c.on_clear_script:
-                    cfg[c.on_clear_delay] += [{
-                        "script": c.on_clear_script,
-                        "header": c.on_clear_header
-                    }]
+                    cfg[c.on_clear_delay] += [
+                        {"script": c.on_clear_script, "header": c.on_clear_header}
+                    ]
                 if c.on_clear_action:
-                    cfg[c.on_clear_delay] += [{
-                        "action": c.on_clear_action.id,
-                        "header": c.on_clear_header
-                    }]
+                    cfg[c.on_clear_delay] += [
+                        {"action": c.on_clear_action.id, "header": c.on_clear_header}
+                    ]
                 if c.on_clear_handler:
-                    cfg[c.on_clear_delay] += [{
-                        "handler": c.on_clear_handler,
-                        "header": c.on_clear_header
-                    }]
+                    cfg[c.on_clear_delay] += [
+                        {"handler": c.on_clear_handler, "header": c.on_clear_header}
+                    ]
         # Submit on_clear job
         for delay in cfg:
             call_later(
@@ -202,7 +187,7 @@ class AlarmDiagnosticConfig(Document):
                 pool=alarm.managed_object.pool.name,
                 delay=delay,
                 alarm=alarm.id,
-                cfg=cfg[delay]
+                cfg=cfg[delay],
             )
         AlarmDiagnostic.clear_diagnostics(alarm)
 

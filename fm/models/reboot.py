@@ -9,6 +9,7 @@
 # Python modules
 import datetime
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
@@ -23,7 +24,7 @@ class Reboot(Document):
         "collection": "noc.fm.reboots",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["ts", "object", ("object", "ts")]
+        "indexes": ["ts", "object", ("object", "ts")],
     }
 
     object = IntField()
@@ -47,11 +48,6 @@ class Reboot(Document):
             ts = datetime.datetime.now()
         if not last:
             last = ts
-        logger.debug("[%s] Register reboot at %s",
-                     managed_object.name, ts)
-        cls._get_collection().insert({
-            "object": oid,
-            "ts": ts,
-            "last": last
-        })
+        logger.debug("[%s] Register reboot at %s", managed_object.name, ts)
+        cls._get_collection().insert({"object": oid, "ts": ts, "last": last})
         managed_object.run_discovery(delta=300)

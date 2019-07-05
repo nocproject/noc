@@ -8,6 +8,7 @@
 
 # NOC modules
 from __future__ import print_function
+
 # NOC modules
 from noc.fm.models.outage import Outage
 
@@ -18,24 +19,15 @@ def fix():
     Problem has been related to out-of-order NSQ messages
     and has been fixed 08-NOV-2016
     """
-    print("Fixing broken outages")
-    r = Outage._get_collection().aggregate([
-        {
-            "$project": {
-                "_id": 1,
-                "duration": {
-                    "$subtract": ["$stop", "$start"]
-                }
-            }
-        },
-        {"$match": {"duration": {"$lte": 0}}},
-        {"$project": {"_id": 1}}
-    ])
+    print ("Fixing broken outages")
+    r = Outage._get_collection().aggregate(
+        [
+            {"$project": {"_id": 1, "duration": {"$subtract": ["$stop", "$start"]}}},
+            {"$match": {"duration": {"$lte": 0}}},
+            {"$project": {"_id": 1}},
+        ]
+    )
     ids = [d["_id"] for d in r]
     if ids:
-        Outage._get_collection().remove({
-            "_id": {
-                "$in": ids
-            }
-        })
-    print(" ... Done (%d records fixed)" % len(ids))
+        Outage._get_collection().remove({"_id": {"$in": ids}})
+    print (" ... Done (%d records fixed)" % len(ids))

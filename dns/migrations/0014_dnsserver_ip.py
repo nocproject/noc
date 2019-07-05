@@ -9,10 +9,15 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("dns_dnsserver", "ip", models.GenericIPAddressField("IP", null=True, blank=True, protocol="IPv4"))
+        self.db.add_column(
+            "dns_dnsserver",
+            "ip",
+            models.GenericIPAddressField("IP", null=True, blank=True, protocol="IPv4"),
+        )

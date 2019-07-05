@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.defer import call_later
@@ -35,7 +36,8 @@ def check_down(alarm):
     # Out-of-ordered, dispose closing job
     logger.error(
         "[%s] Out of order closing event. Scheduling to close alarm after %d seconds",
-        alarm.id, OO_CLOSE_DELAY
+        alarm.id,
+        OO_CLOSE_DELAY,
     )
     metrics["oo_pings_detected"] += 1
     call_later(
@@ -44,7 +46,7 @@ def check_down(alarm):
         scheduler="correlator",
         pool=alarm.managed_object.pool.name,
         alarm_id=alarm.id,
-        timestamp=last
+        timestamp=last,
     )
 
 
@@ -52,11 +54,7 @@ def close_oo_alarm(alarm_id, timestamp, *args, **kwargs):
     logger.info("[close_oo_alarm|%s] Closing alarm", alarm_id)
     alarm = get_alarm(alarm_id)
     if alarm.status != "A":
-        logger.info("[close_oo_alarm|%s] Already closed, skipping",
-                    alarm_id)
+        logger.info("[close_oo_alarm|%s] Already closed, skipping", alarm_id)
         return
-    alarm.clear_alarm(
-        message="Cleared as out-of-order",
-        ts=timestamp
-    )
+    alarm.clear_alarm(message="Cleared as out-of-order", ts=timestamp)
     metrics["oo_pings_closed"] += 1

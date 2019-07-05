@@ -8,8 +8,10 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 from pymongo import UpdateMany
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
@@ -25,26 +27,20 @@ def fix():
         coll = model._get_collection()
         ins = defaultdict(list)
         bulk = []
-        for doc in coll.find({
-            "managed_object_profile": {
-                "$exists": False
-            }
-        }, {"_id": 1, "managed_object": 1}):
+        for doc in coll.find(
+            {"managed_object_profile": {"$exists": False}}, {"_id": 1, "managed_object": 1}
+        ):
             mo = ManagedObject.get_by_id(doc["managed_object"])
             if not mo:
                 continue
             mop = mo.object_profile.id
             ins[mop] += [doc["_id"]]
             if len(ins[mop]) >= IN_SIZE:
-                bulk += [UpdateMany({
-                    "_id": {
-                        "$in": ins[mop]
-                    }
-                }, {
-                    "$set": {
-                        "managed_object_profile": mop
-                    }
-                })]
+                bulk += [
+                    UpdateMany(
+                        {"_id": {"$in": ins[mop]}}, {"$set": {"managed_object_profile": mop}}
+                    )
+                ]
                 ins[mop] = []
                 if len(bulk) >= BULK_SIZE:
                     coll.bulk_write(bulk)
@@ -54,4 +50,3 @@ def fix():
 
     fix_model(ActiveAlarm)
     fix_model(ArchivedAlarm)
-

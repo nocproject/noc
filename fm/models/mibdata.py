@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
+
 # NOC modules
 import noc.lib.nosql as nosql
 from .mib import MIB
@@ -21,7 +23,7 @@ class MIBData(nosql.Document):
         "collection": "noc.mibdata",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["oid", "name", "mib", "aliases"]
+        "indexes": ["oid", "name", "mib", "aliases"],
     }
     mib = nosql.PlainReferenceField(MIB)
     oid = nosql.StringField(required=True, unique=True)

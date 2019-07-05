@@ -14,6 +14,4 @@ def fix():
     for mo in ManagedObject.objects.all():
         caps = mo.get_caps()
         if caps.get("SNMP") and not caps.get("SNMP | v1") and not caps.get("SNMP | v2c"):
-            mo.update_caps({
-                "SNMP | v2c": True
-            }, source="caps")
+            mo.update_caps({"SNMP | v2c": True}, source="caps")

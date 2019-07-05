@@ -28,15 +28,20 @@ class Migration(BaseMigration):
     depends_on = [("main", "0037_template")]
 
     def migrate(self):
-        for tn, description, subject, body in [("dns.zone.new", "New DNS zone", NEW_ZONE_SUBJECT, NEW_ZONE_BODY),
-                                               ("dns.zone.change", "DNS zone change", ZONE_CHANGE_SUBJECT,
-                                                ZONE_CHANGE_BODY)]:
-            self.db.execute("INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)", [tn, subject, body])
+        for tn, description, subject, body in [
+            ("dns.zone.new", "New DNS zone", NEW_ZONE_SUBJECT, NEW_ZONE_BODY),
+            ("dns.zone.change", "DNS zone change", ZONE_CHANGE_SUBJECT, ZONE_CHANGE_BODY),
+        ]:
+            self.db.execute(
+                "INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)",
+                [tn, subject, body],
+            )
             self.db.execute(
                 """
                 INSERT INTO main_systemtemplate(name, description, template_id)
                 SELECT %s, %s, id
                 FROM main_template
                 WHERE name=%s
-            """, [tn, description, tn]
+            """,
+                [tn, description, tn],
             )

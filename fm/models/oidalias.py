@@ -10,6 +10,7 @@
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 
@@ -21,7 +22,7 @@ class OIDAlias(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "fm.oidaliases",
-        "json_unique_fields": ["rewrite_oid"]
+        "json_unique_fields": ["rewrite_oid"],
     }
 
     rewrite_oid = StringField(unique=True)
@@ -42,8 +43,7 @@ class OIDAlias(Document):
         """
         if cls.cache is None:
             # Initialize cache
-            cls.cache = dict((a.rewrite_oid, a.to_oid.split("."))
-                             for a in cls.objects.all())
+            cls.cache = dict((a.rewrite_oid, a.to_oid.split(".")) for a in cls.objects.all())
         # Lookup
         l_oid = oid.split(".")
         rest = []
@@ -66,9 +66,8 @@ class OIDAlias(Document):
             "rewrite_oid": self.rewrite_oid,
             "to_oid": self.to_oid,
             "uuid": self.uuid,
-            "$collection": self._meta["json_collection"]
+            "$collection": self._meta["json_collection"],
         }
         if self.description:
             r["description"] = self.description
-        return to_json(r, order=["$collection",
-                                 "rewrite_oid", "to_oid", "uuid"])
+        return to_json(r, order=["$collection", "rewrite_oid", "to_oid", "uuid"])

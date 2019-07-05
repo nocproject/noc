@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from .alarmclass import AlarmClass
@@ -22,11 +24,8 @@ class AlarmClassConfig(Document):
     """
     Alarm class
     """
-    meta = {
-        "collection": "noc.alarmclassconfigs",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "noc.alarmclassconfigs", "strict": False, "auto_create_index": False}
 
     alarm_class = PlainReferenceField(AlarmClass, unique=True)
     notification_delay = IntField(required=False)

@@ -8,9 +8,11 @@
 
 # NOC modules
 from __future__ import print_function
+
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
+
 # NOC modules
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.mac import MAC
@@ -30,20 +32,16 @@ def fix():
             first = MAC(r["first_mac"])
             last = MAC(r["last_mac"])
             macs += [m for m in range(int(first), int(last) + 1)]
-        bulk += [UpdateOne({"_id": d["_id"]}, {
-            "$set": {
-                "macs": macs
-            }
-        })]
+        bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"macs": macs}})]
         if len(bulk) == BATCH_SIZE:
-            print("Commiting changes to database")
+            print ("Commiting changes to database")
             try:
                 collection.bulk_write(bulk)
                 bulk = []
-                print("Database has been synced")
+                print ("Database has been synced")
             except BulkWriteError as e:
-                print("Bulk write error: '%s'", e.details)
-                print("Stopping check")
+                print ("Bulk write error: '%s'", e.details)
+                print ("Stopping check")
                 bulk = []
     if bulk:
         collection.bulk_write(bulk)

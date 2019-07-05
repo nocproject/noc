@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import TagsField
@@ -25,6 +27,7 @@ class DNSZoneRecord(NOCModel):
     """
     Zone RRs
     """
+
     class Meta(object):
         verbose_name = _("DNS Zone Record")
         verbose_name_plural = _("DNS Zone Records")
@@ -42,7 +45,7 @@ class DNSZoneRecord(NOCModel):
     def __str__(self):
         return u"%s %s" % (
             self.zone.name,
-            " ".join([x for x in (self.name, self.type, self.content) if x])
+            " ".join([x for x in (self.name, self.type, self.content) if x]),
         )
 
     def iter_changed_datastream(self):

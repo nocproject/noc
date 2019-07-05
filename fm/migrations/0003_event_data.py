@@ -33,14 +33,20 @@ class Migration(BaseMigration):
         for priority, name, description in EVENT_PRIORITY:
             self.db.execute(
                 "INSERT INTO fm_eventpriority(name,priority,description) VALUES(%s,%s,%s)",
-                [name, priority, description]
+                [name, priority, description],
             )
         for name, description in EVENT_CATEGORY:
-            self.db.execute("INSERT INTO fm_eventcategory(name,description) VALUES(%s,%s)", [name, description])
-        default_priority_id = self.db.execute("SELECT id FROM fm_eventpriority WHERE NAME=%s", ["DEFAULT"])[0][0]
-        default_category_id = self.db.execute("SELECT id FROM fm_eventcategory WHERE NAME=%s", ["DEFAULT"])[0][0]
+            self.db.execute(
+                "INSERT INTO fm_eventcategory(name,description) VALUES(%s,%s)", [name, description]
+            )
+        default_priority_id = self.db.execute(
+            "SELECT id FROM fm_eventpriority WHERE NAME=%s", ["DEFAULT"]
+        )[0][0]
+        default_category_id = self.db.execute(
+            "SELECT id FROM fm_eventcategory WHERE NAME=%s", ["DEFAULT"]
+        )[0][0]
         self.db.execute(
             """INSERT INTO fm_eventclass(name,category_id,default_priority_id,variables,subject_template,body_template,
             last_modified) VALUES('DEFAULT',%s,%s,'','Unclassified event','Unclassified event','now')""",
-            [default_category_id, default_priority_id]
+            [default_category_id, default_priority_id],
         )

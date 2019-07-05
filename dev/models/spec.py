@@ -11,12 +11,20 @@ from __future__ import absolute_import
 import os
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, EmbeddedDocumentField, DateTimeField,
-                                ListField, UUIDField, IntField)
+from mongoengine.fields import (
+    StringField,
+    EmbeddedDocumentField,
+    DateTimeField,
+    ListField,
+    UUIDField,
+    IntField,
+)
 import cachetools
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -33,10 +41,7 @@ class SpecChange(EmbeddedDocument):
 
     @property
     def json_data(self):
-        return {
-            "date": self.date.isoformat(),
-            "changes": self.changes
-        }
+        return {"date": self.date.isoformat(), "changes": self.changes}
 
 
 class SpecAnswer(EmbeddedDocument):
@@ -46,11 +51,7 @@ class SpecAnswer(EmbeddedDocument):
 
     @property
     def json_data(self):
-        return {
-            "name": self.name,
-            "type": self.type,
-            "value": self.value
-        }
+        return {"name": self.name, "type": self.type, "value": self.value}
 
 
 @six.python_2_unicode_compatible
@@ -60,9 +61,7 @@ class Spec(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "dev.specs",
-        "json_depends_on": [
-            "dev.quiz"
-        ]
+        "json_depends_on": ["dev.quiz"],
     }
 
     name = StringField(unique=True)
@@ -103,7 +102,7 @@ class Spec(Document):
             "author": self.author,
             "profile__name": self.profile.name,
             "changes": [c.json_data for c in self.changes],
-            "answers": [c.json_data for c in self.answers]
+            "answers": [c.json_data for c in self.answers],
         }
 
     def to_json(self):
@@ -118,8 +117,8 @@ class Spec(Document):
                 "quiz__name",
                 "author",
                 "profile__name",
-                "answers"
-            ]
+                "answers",
+            ],
         )
 
     def get_json_path(self):

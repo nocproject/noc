@@ -10,6 +10,7 @@
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, IntField
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 
@@ -20,7 +21,7 @@ class MIBPreference(Document):
         "collection": "noc.mibpreferences",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "fm.mibpreferences"
+        "json_collection": "fm.mibpreferences",
     }
     mib = StringField(required=True, unique=True)
     preference = IntField(required=True, unique=True)  # The less the better
@@ -33,9 +34,12 @@ class MIBPreference(Document):
         return "%s.json" % self.mib
 
     def to_json(self):
-        return to_json({
-            "mib": self.mib,
-            "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
-            "preference": self.preference
-        }, order=["mib", "$collection", "uuid", "preference"])
+        return to_json(
+            {
+                "mib": self.mib,
+                "$collection": self._meta["json_collection"],
+                "uuid": self.uuid,
+                "preference": self.preference,
+            },
+            order=["mib", "$collection", "uuid", "preference"],
+        )

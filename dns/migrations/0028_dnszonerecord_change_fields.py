@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -22,4 +23,6 @@ class Migration(BaseMigration):
             ALTER COLUMN content TYPE VARCHAR(256)
             """
         )
-        self.db.add_column("dns_dnszonerecord", "type", models.CharField("Type", max_length=16, default=""))
+        self.db.add_column(
+            "dns_dnszonerecord", "type", models.CharField("Type", max_length=16, default="")
+        )

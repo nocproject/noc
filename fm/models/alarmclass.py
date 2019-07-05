@@ -12,12 +12,23 @@ import hashlib
 import os
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, UUIDField, EmbeddedDocumentField, BooleanField,
-                                ListField, IntField, FloatField, LongField, ObjectIdField)
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    EmbeddedDocumentField,
+    BooleanField,
+    ListField,
+    IntField,
+    FloatField,
+    LongField,
+    ObjectIdField,
+)
 import cachetools
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.escape import json_escape as q
@@ -37,25 +48,26 @@ handlers_lock = Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("fm.ActiveAlarm", "alarm_class"),
-    ("fm.AlarmClassConfig", "alarm_class"),
-    ("fm.ArchivedAlarm", "alarm_class")
-])
+@on_delete_check(
+    check=[
+        ("fm.ActiveAlarm", "alarm_class"),
+        ("fm.AlarmClassConfig", "alarm_class"),
+        ("fm.ArchivedAlarm", "alarm_class"),
+    ]
+)
 @six.python_2_unicode_compatible
 class AlarmClass(Document):
     """
     Alarm class
     """
+
     meta = {
         "collection": "noc.alarmclasses",
         "strict": False,
         "auto_create_index": False,
         "json_collection": "fm.alarmclasses",
-        "json_depends_on": [
-            "fm.alarmseverities"
-        ],
-        "json_unique_fields": ["name"]
+        "json_depends_on": ["fm.alarmseverities"],
+        "json_unique_fields": ["name"],
     }
 
     name = StringField(required=True, unique=True)
@@ -83,14 +95,12 @@ class AlarmClass(Document):
 
     # Flap detection
     flap_condition = StringField(
-        required=False,
-        choices=[("none", "none"), ("count", "count")],
-        default="none")
+        required=False, choices=[("none", "none"), ("count", "count")], default="none"
+    )
     flap_window = IntField(required=False, default=0)
     flap_threshold = FloatField(required=False, default=0)
     # RCA
-    root_cause = ListField(
-        EmbeddedDocumentField(AlarmRootCauseCondition))
+    root_cause = ListField(EmbeddedDocumentField(AlarmRootCauseCondition))
     topology_rca = BooleanField(default=False)
     # List of handlers to be called on alarm raising
     handlers = ListField(StringField())
@@ -195,28 +205,30 @@ class AlarmClass(Document):
     def to_json(self):
         c = self
         r = ["{"]
-        r += ["    \"name\": \"%s\"," % q(c.name)]
-        r += ["    \"$collection\": \"%s\"," % self._meta["json_collection"]]
-        r += ["    \"uuid\": \"%s\"," % c.uuid]
+        r += ['    "name": "%s",' % q(c.name)]
+        r += ['    "$collection": "%s",' % self._meta["json_collection"]]
+        r += ['    "uuid": "%s",' % c.uuid]
         if c.description:
-            r += ["    \"desciption\": \"%s\"," % q(c.description)]
-        r += ["    \"is_unique\": %s," % q(c.is_unique)]
+            r += ['    "desciption": "%s",' % q(c.description)]
+        r += ['    "is_unique": %s,' % q(c.is_unique)]
         if c.is_unique and c.discriminator:
-            r += ["    \"discriminator\": [%s]," % ", ".join(["\"%s\"" % q(d) for d in c.discriminator])]
-        r += ["    \"user_clearable\": %s," % q(c.user_clearable)]
-        r += ["    \"default_severity__name\": \"%s\"," % q(c.default_severity.name)]
+            r += [
+                '    "discriminator": [%s],' % ", ".join(['"%s"' % q(d) for d in c.discriminator])
+            ]
+        r += ['    "user_clearable": %s,' % q(c.user_clearable)]
+        r += ['    "default_severity__name": "%s",' % q(c.default_severity.name)]
         # datasources
         if c.datasources:
-            r += ["    \"datasources\": ["]
+            r += ['    "datasources": [']
             jds = []
             for ds in c.datasources:
                 x = []
-                x += ["            \"name\": \"%s\"" % q(ds.name)]
-                x += ["            \"datasource\": \"%s\"" % q(ds.datasource)]
+                x += ['            "name": "%s"' % q(ds.name)]
+                x += ['            "datasource": "%s"' % q(ds.datasource)]
                 ss = []
                 for k in sorted(ds.search):
-                    ss += ["                \"%s\": \"%s\"" % (q(k), q(ds.search[k]))]
-                x += ["            \"search\": {\n%s\n            }" % (",\n".join(ss))]
+                    ss += ['                "%s": "%s"' % (q(k), q(ds.search[k]))]
+                x += ['            "search": {\n%s\n            }' % (",\n".join(ss))]
                 jds += ["        {\n%s\n        }" % ",\n".join(x)]
             r += [",\n\n".join(jds)]
             r += ["    ],"]
@@ -224,60 +236,63 @@ class AlarmClass(Document):
         vars = []
         for v in c.vars:
             vd = ["        {"]
-            vd += ["            \"name\": \"%s\"," % q(v.name)]
-            vd += ["            \"description\": \"%s\"" % q(v.description)]
+            vd += ['            "name": "%s",' % q(v.name)]
+            vd += ['            "description": "%s"' % q(v.description)]
             if v.default:
                 vd[-1] += ","
-                vd += ["            \"default\": \"%s\"" % q(v.default)]
+                vd += ['            "default": "%s"' % q(v.default)]
             vd += ["        }"]
             vars += ["\n".join(vd)]
-        r += ["    \"vars\": ["]
+        r += ['    "vars": [']
         r += [",\n".join(vars)]
         r += ["    ],"]
         # Handlers
         if self.handlers:
-            hh = ["        \"%s\"" % h for h in self.handlers]
-            r += ["    \"handlers\": ["]
+            hh = ['        "%s"' % h for h in self.handlers]
+            r += ['    "handlers": [']
             r += [",\n\n".join(hh)]
             r += ["    ],"]
         if self.clear_handlers:
-            hh = ["        \"%s\"" % h for h in self.clear_handlers]
-            r += ["    \"clear_handlers\": ["]
+            hh = ['        "%s"' % h for h in self.clear_handlers]
+            r += ['    "clear_handlers": [']
             r += [",\n\n".join(hh)]
             r += ["    ],"]
         # Text
-        r += ["    \"subject_template\": \"%s\"," % q(c.subject_template)]
-        r += ["    \"body_template\": \"%s\"," % q(c.body_template)]
-        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms if c.symptoms else "")]
-        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes if c.probable_causes else "")]
-        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions if c.recommended_actions else "")]
+        r += ['    "subject_template": "%s",' % q(c.subject_template)]
+        r += ['    "body_template": "%s",' % q(c.body_template)]
+        r += ['    "symptoms": "%s",' % q(c.symptoms if c.symptoms else "")]
+        r += ['    "probable_causes": "%s",' % q(c.probable_causes if c.probable_causes else "")]
+        r += [
+            '    "recommended_actions": "%s",'
+            % q(c.recommended_actions if c.recommended_actions else "")
+        ]
         # Root cause
         if self.root_cause:
             rc = []
             for rr in self.root_cause:
                 rcd = ["        {"]
-                rcd += ["            \"name\": \"%s\"," % rr.name]
-                rcd += ["            \"root__name\": \"%s\"," % rr.root.name]
-                rcd += ["            \"window\": %d," % rr.window]
+                rcd += ['            "name": "%s",' % rr.name]
+                rcd += ['            "root__name": "%s",' % rr.root.name]
+                rcd += ['            "window": %d,' % rr.window]
                 if rr.condition:
-                    rcd += ["            \"condition\": \"%s\"," % rr.condition]
-                rcd += ["            \"match_condition\": {"]
+                    rcd += ['            "condition": "%s",' % rr.condition]
+                rcd += ['            "match_condition": {']
                 mcv = []
                 for v in rr.match_condition:
-                    mcv += ["                \"%s\": \"%s\"" % (v, rr.match_condition[v])]
+                    mcv += ['                "%s": "%s"' % (v, rr.match_condition[v])]
                 rcd += [",\n".join(mcv)]
                 rcd += ["            }"]
                 rcd += ["        }"]
                 rc += ["\n".join(rcd)]
             if r[-1][-1] != ",":
                 r[-1] += ","
-            r += ["    \"root_cause\": ["]
+            r += ['    "root_cause": [']
             r += [",\n".join(rc)]
             r += ["    ]"]
         if self.topology_rca:
             if r[-1][-1] != ",":
                 r[-1] += ","
-            r += ["    \"topology_rca\": true"]
+            r += ['    "topology_rca": true']
         # Plugins
         if self.plugins:
             if r[-1][-1] != ",":
@@ -285,38 +300,38 @@ class AlarmClass(Document):
             plugins = []
             for p in self.plugins:
                 pd = ["        {"]
-                pd += ["            \"name\": \"%s\"" % p.name]
+                pd += ['            "name": "%s"' % p.name]
                 if p.config:
                     pd[-1] += ","
                     pc = []
                     for v in p.config:
-                        pc += ["                \"%s\": \"%s\"" % (v, p.config.vars[v])]
-                    pd += ["            \"config\": {"]
+                        pc += ['                "%s": "%s"' % (v, p.config.vars[v])]
+                    pd += ['            "config": {']
                     pd += [",\n".join(pc)]
                     pd += ["            }"]
                 pd += ["        }"]
                 plugins += ["\n".join(pd)]
-            r += ["    \"plugins\": ["]
+            r += ['    "plugins": [']
             r += [",\n".join(plugins)]
             r += ["    ]"]
         if self.notification_delay:
             if r[-1][-1] != ",":
                 r[-1] += ","
-            r += ["    \"notification_delay\": %d" % self.notification_delay]
+            r += ['    "notification_delay": %d' % self.notification_delay]
         if self.control_time0:
             if r[-1][-1] != ",":
                 r[-1] += ","
-            r += ["    \"control_time0\": %d" % self.control_time0]
+            r += ['    "control_time0": %d' % self.control_time0]
             if self.control_time1:
                 r[-1] += ","
-                r += ["    \"control_time1\": %d" % self.control_time1]
+                r += ['    "control_time1": %d' % self.control_time1]
                 if self.control_timeN:
                     r[-1] += ","
-                    r += ["    \"control_timeN\": %d" % self.control_timeN]
+                    r += ['    "control_timeN": %d' % self.control_timeN]
         if self.recover_time:
             if r[-1][-1] != ",":
                 r[-1] += ","
-            r += ["    \"recover_time\": %d" % self.recover_time]
+            r += ['    "recover_time": %d' % self.recover_time]
         # Close
         if r[-1].endswith(","):
             r[-1] = r[-1][:-1]

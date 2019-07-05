@@ -9,12 +9,14 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from six.moves import zip
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, UUIDField
 import cachetools
+
 # NOC modules
 from noc.main.models.style import Style
 from noc.lib.nosql import ForeignKeyField
@@ -25,21 +27,20 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("fm.AlarmClass", "default_severity")
-])
+@on_delete_check(check=[("fm.AlarmClass", "default_severity")])
 @six.python_2_unicode_compatible
 class AlarmSeverity(Document):
     """
     Alarm severities
     """
+
     meta = {
         "collection": "noc.alarmseverities",
         "strict": False,
         "auto_create_index": False,
         "indexes": ["severity"],
         "json_collection": "fm.alarmseverities",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name"],
     }
     name = StringField(required=True, unique=True)
     uuid = UUIDField(binary=True)
@@ -108,15 +109,17 @@ class AlarmSeverity(Document):
         return "%s.json" % quote_safe_path(self.name)
 
     def to_json(self):
-        return to_json({
-            "name": self.name,
-            "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
-            "description": self.description,
-            "severity": self.severity,
-            "style__name": self.style.name
-        }, order=["name", "$collection", "uuid",
-                  "description", "severity", "style"])
+        return to_json(
+            {
+                "name": self.name,
+                "$collection": self._meta["json_collection"],
+                "uuid": self.uuid,
+                "description": self.description,
+                "severity": self.severity,
+                "style__name": self.style.name,
+            },
+            order=["name", "$collection", "uuid", "description", "severity", "style"],
+        )
 
     @classmethod
     def severity_for_weight(cls, w):
@@ -124,6 +127,7 @@ class AlarmSeverity(Document):
         Calculate absolute severity for given weight *w*
         :returns: severity as int
         """
+
         def find(weights, w):
             i = 0
             for i, mw in enumerate(weights):

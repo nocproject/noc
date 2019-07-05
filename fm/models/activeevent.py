@@ -11,13 +11,21 @@ from __future__ import absolute_import
 import datetime
 import time
 from threading import Lock
+
 # Third-party modules
 import six
 from django.template import Template, Context
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DateTimeField, IntField,
-                                ListField, EmbeddedDocumentField,
-                                DictField, ObjectIdField)
+from mongoengine.fields import (
+    StringField,
+    DateTimeField,
+    IntField,
+    ListField,
+    EmbeddedDocumentField,
+    DictField,
+    ObjectIdField,
+)
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.cache.decorator import cachedmethod
@@ -33,18 +41,18 @@ class ActiveEvent(Document):
     """
     Event in the Active state
     """
+
     meta = {
         "collection": "noc.events.active",
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "timestamp", "discriminator", "alarms",
+            "timestamp",
+            "discriminator",
+            "alarms",
             ("timestamp", "event_class", "managed_object"),
-            {
-                "fields": ["expires"],
-                "expireAfterSeconds": 0
-            }
-        ]
+            {"fields": ["expires"], "expireAfterSeconds": 0},
+        ],
     }
     status = "A"
     # Fields
@@ -66,11 +74,7 @@ class ActiveEvent(Document):
         return u"%s" % self.id
 
     @classmethod
-    @cachedmethod(
-        key="activeevent-%s",
-        lock=lambda _: id_lock,
-        ttl=900
-    )
+    @cachedmethod(key="activeevent-%s", lock=lambda _: id_lock, ttl=900)
     def get_by_id(cls, event_id):
         return ActiveEvent.objects.filter(id=event_id).first()
 
@@ -86,15 +90,13 @@ class ActiveEvent(Document):
         # log = self.log + [EventLog(timestamp=datetime.datetime.now(),
         #                            from_status="A", to_status="N",
         #                            message=message)]
-        data = {
-            "source": self.source
-        }
+        data = {"source": self.source}
         data.update(self.raw_vars)
         msg = {
             "id": str(self.id),
             "ts": time.mktime(self.timestamp.timetuple()),
             "object": self.managed_object.id,
-            "data": data
+            "data": data,
         }
         nsq_pub("events.%s" % self.managed_object.pool.name, msg)
         self.delete()
@@ -104,9 +106,11 @@ class ActiveEvent(Document):
         Move event into noc.events.failed
         """
         message = "Failed to classify on NOC version %s" % version
-        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
-                                   from_status="N", to_status="F",
-                                   message=message)]
+        log = self.log + [
+            EventLog(
+                timestamp=datetime.datetime.now(), from_status="N", to_status="F", message=message
+            )
+        ]
         e = FailedEvent(
             id=self.id,
             timestamp=self.timestamp,
@@ -115,16 +119,18 @@ class ActiveEvent(Document):
             raw_vars=self.raw_vars,
             version=version,
             traceback=traceback,
-            log=log
+            log=log,
         )
         e.save()
         self.delete()
         return e
 
     def mark_as_archived(self, message):
-        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
-                                   from_status="A", to_status="S",
-                                   message=message)]
+        log = self.log + [
+            EventLog(
+                timestamp=datetime.datetime.now(), from_status="A", to_status="S", message=message
+            )
+        ]
         e = ArchivedEvent(
             id=self.id,
             timestamp=self.timestamp,
@@ -136,7 +142,7 @@ class ActiveEvent(Document):
             resolved_vars=self.resolved_vars,
             vars=self.vars,
             log=log,
-            alarms=self.alarms
+            alarms=self.alarms,
         )
         e.save()
         self.delete()
@@ -158,9 +164,14 @@ class ActiveEvent(Document):
         return self.id is None
 
     def log_message(self, message):
-        self.log += [EventLog(timestamp=datetime.datetime.now(),
-                     from_status=self.status, to_status=self.status,
-                     message=message)]
+        self.log += [
+            EventLog(
+                timestamp=datetime.datetime.now(),
+                from_status=self.status,
+                to_status=self.status,
+                message=message,
+            )
+        ]
         self.save()
 
     def log_suppression(self, timestamp):
@@ -214,16 +225,9 @@ class ActiveEvent(Document):
     def contribute_to_alarm(self, alarm):
         if alarm.id in self.alarms:
             return
-        self._get_collection().update_one({
-            "_id": self.id,
-        }, {
-            "$set": {
-                "expires": None,
-            },
-            "$push": {
-                "alarms": alarm.id
-            }
-        })
+        self._get_collection().update_one(
+            {"_id": self.id}, {"$set": {"expires": None}, "$push": {"alarms": alarm.id}}
+        )
         self.alarms.append(alarm.id)
         self.expires = None
 

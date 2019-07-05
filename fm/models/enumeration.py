@@ -10,6 +10,7 @@
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, UUIDField
+
 # Python modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
@@ -22,7 +23,7 @@ class Enumeration(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "fm.enumerations",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name"],
     }
 
     name = StringField(unique=True)
@@ -36,9 +37,12 @@ class Enumeration(Document):
         return "%s.json" % quote_safe_path(self.name)
 
     def to_json(self):
-        return to_json({
-            "name": self.name,
-            "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
-            "values": self.values
-        }, order=["name", "$collection", "uuid"])
+        return to_json(
+            {
+                "name": self.name,
+                "$collection": self._meta["json_collection"],
+                "uuid": self.uuid,
+                "values": self.values,
+            },
+            order=["name", "$collection", "uuid"],
+        )

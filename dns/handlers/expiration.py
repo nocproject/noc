@@ -9,6 +9,7 @@
 # Python modules
 import logging
 import datetime
+
 # NOC modules
 from noc.config import config
 from noc.core.ioloop.whois import whois
@@ -45,6 +46,7 @@ def notify():
     Notify domain expiration
     :return:
     """
+
     def get_table(data):
         # Format table
         max_w = max(len(z) for z, x in data)
@@ -67,12 +69,12 @@ def notify():
     SystemNotification.notify(
         "dns.domain_expiration_warning",
         subject="%d domains to be expired in %d" % (len(expiring), h_delta),
-        body="Following domains are to be expired in %d:\n%s\n" % (h_delta, get_table(expiring))
+        body="Following domains are to be expired in %d:\n%s\n" % (h_delta, get_table(expiring)),
     )
     # Get expired domains
     expired = [r for r in expiring if r[1] <= today]
     SystemNotification.notify(
         "dns.domain_expired",
         subject="%d domains are expiring" % len(expired),
-        body="Following domains are expired:\n%s\n" % get_table(expired)
+        body="Following domains are expired:\n%s\n" % get_table(expired),
     )

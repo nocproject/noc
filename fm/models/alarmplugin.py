@@ -14,10 +14,7 @@ from mongoengine.document import EmbeddedDocument
 
 @six.python_2_unicode_compatible
 class AlarmPlugin(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
 
     name = fields.StringField()
     config = fields.DictField(default={})

@@ -8,10 +8,12 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine import fields
+
 # NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
@@ -22,14 +24,13 @@ class CloneClassificationRule(Document):
     """
     Classification rules cloning
     """
+
     meta = {
         "collection": "noc.cloneclassificationrules",
         "strict": False,
         "auto_create_index": False,
         "json_collection": "fm.cloneclassificationrules",
-        "json_depends_on": [
-            "fm.eventclassificationrules"
-        ]
+        "json_depends_on": ["fm.eventclassificationrules"],
     }
 
     name = fields.StringField(unique=True)
@@ -44,17 +45,19 @@ class CloneClassificationRule(Document):
         return self.name
 
     def to_json(self):
-        return to_json({
-            "name": self.name,
-            "$collection": self._meta["json_collection"],
-            "uuid": self.uuid,
-            "re": self.re,
-            "key_re": self.key_re,
-            "value_re": self.value_re,
-            "rewrite_from": self.rewrite_from,
-            "rewrite_to": self.rewrite_to
-        }, order=["name", "uuid", "re", "key_re", "value_re",
-                  "rewrite_from", "rewrite_to"])
+        return to_json(
+            {
+                "name": self.name,
+                "$collection": self._meta["json_collection"],
+                "uuid": self.uuid,
+                "re": self.re,
+                "key_re": self.key_re,
+                "value_re": self.value_re,
+                "rewrite_from": self.rewrite_from,
+                "rewrite_to": self.rewrite_to,
+            },
+            order=["name", "uuid", "re", "key_re", "value_re", "rewrite_from", "rewrite_to"],
+        )
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
