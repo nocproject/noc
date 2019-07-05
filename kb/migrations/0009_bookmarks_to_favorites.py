@@ -27,7 +27,6 @@ class Migration(BaseMigration):
             favs[user] += [kb_entry]
         if favs:
             for u, fav in six.iteritems(favs):
-                print ({"user": u, "app": "kb.kbentry", "favorite_app": False, "favorites": fav})
                 fav_coll.insert_one(
                     {
                         "user": u,
