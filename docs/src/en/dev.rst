@@ -16,3 +16,4 @@ Developer's Guide
     /dev/remote-system-integration
     /dev/tt-integration
     /dev/handlers
+    /dev/tools
