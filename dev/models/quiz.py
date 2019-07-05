@@ -9,12 +9,20 @@
 # Python modules
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, EmbeddedDocumentField,
-                                ListField, UUIDField, IntField, DateTimeField)
+from mongoengine.fields import (
+    StringField,
+    EmbeddedDocumentField,
+    ListField,
+    UUIDField,
+    IntField,
+    DateTimeField,
+)
 import cachetools
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -28,7 +36,7 @@ Q_TYPES = [
     "int",  # Integer value
     "cli",  # CLI command. Several commands possible
     "snmp-get",  # OID for SNMP GET
-    "snmp-getnext"  # OID for SNMP GETNEXT
+    "snmp-getnext",  # OID for SNMP GETNEXT
 ]
 
 
@@ -38,10 +46,7 @@ class QuizChange(EmbeddedDocument):
 
     @property
     def json_data(self):
-        return {
-            "date": self.date.isoformat(),
-            "changes": self.changes
-        }
+        return {"date": self.date.isoformat(), "changes": self.changes}
 
 
 class QuizQuestion(EmbeddedDocument):
@@ -55,24 +60,17 @@ class QuizQuestion(EmbeddedDocument):
 
     @property
     def json_data(self):
-        return {
-            "name": self.name,
-            "question": self.question,
-            "type": self.type,
-            "when": self.when
-        }
+        return {"name": self.name, "question": self.question, "type": self.type, "when": self.when}
 
 
-@on_delete_check(check=[
-    ("dev.Spec", "quiz")
-])
+@on_delete_check(check=[("dev.Spec", "quiz")])
 @six.python_2_unicode_compatible
 class Quiz(Document):
     meta = {
         "collection": "quiz",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "dev.quiz"
+        "json_collection": "dev.quiz",
     }
 
     name = StringField(unique=True)
@@ -111,7 +109,7 @@ class Quiz(Document):
             "revision": self.revision,
             "disclaimer": self.disclaimer,
             "changes": [c.json_data for c in self.changes],
-            "questions": [c.json_data for c in self.questions]
+            "questions": [c.json_data for c in self.questions],
         }
 
     def to_json(self):
@@ -125,8 +123,8 @@ class Quiz(Document):
                 "revision",
                 "disclaimer",
                 "changes",
-                "questions"
-            ]
+                "questions",
+            ],
         )
 
     def get_json_path(self):

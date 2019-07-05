@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, LongField
 import cachetools
+
 # NOC modules
 from .subscriberprofile import SubscriberProfile
 from noc.main.models.remotesystem import RemoteSystem
@@ -33,11 +35,9 @@ id_lock = Lock()
 class Subscriber(Document):
     meta = {
         "collection": "noc.subscribers",
-        "indexes": [
-            "name"
-        ],
+        "indexes": ["name"],
         "strict": False,
-        "auto_create_index": False
+        "auto_create_index": False,
     }
 
     name = StringField()

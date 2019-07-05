@@ -38,8 +38,7 @@ class OIDCollision(Exception):
         self.msg = msg
 
     def __str__(self):
-        s = "Cannot resolve OID %s collision between %s and %s" % (
-            self.oid, self.name1, self.name2)
+        s = "Cannot resolve OID %s collision between %s and %s" % (self.oid, self.name1, self.name2)
         if self.msg:
             s += ". %s" % self.msg
         return s

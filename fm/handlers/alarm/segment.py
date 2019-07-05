@@ -8,8 +8,10 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.sa.models.objectdata import ObjectData
 from noc.fm.models.activealarm import ActiveAlarm
@@ -51,9 +53,9 @@ def check_segment_redundancy(alarm):
     seg_objects = list(seg.managed_objects.values_list("id", flat=True))
     alarms = [
         d["managed_object"]
-        for d in ActiveAlarm._get_collection().find({
-            "managed_object": {"$in": seg_objects}
-        }, {"_id": 0, "managed_object": 1})
+        for d in ActiveAlarm._get_collection().find(
+            {"managed_object": {"$in": seg_objects}}, {"_id": 0, "managed_object": 1}
+        )
         if d["managed_object"] != mo.id
     ]
     uplinks = ObjectData.uplinks_for_objects(alarms)

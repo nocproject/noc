@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.dns.utils.rr import RR
 
@@ -73,7 +74,9 @@ class ZoneFile(object):
         lnsuffix = len(nsuffix)
 
         # SOA
-        z = [HEADER % self.from_idna(self.zone), """$ORIGIN %(domain)s.
+        z = [
+            HEADER % self.from_idna(self.zone),
+            """$ORIGIN %(domain)s.
 $TTL %(ttl)d
 @ IN SOA %(primary)s %(contact)s (
     %(serial)d ; serial
@@ -81,20 +84,22 @@ $TTL %(ttl)d
     %(retry)d        ; retry (%(pretty_retry)s)
     %(expire)d      ; expire (%(pretty_expire)s)
     %(ttl)d       ; minimum (%(pretty_ttl)s)
-    )""" % {
-            "domain": self.zone,
-            "primary": primary,
-            "contact": contact,
-            "serial": serial,
-            "ttl": ttl,
-            "pretty_ttl": self.pretty_time(ttl),
-            "refresh": refresh,
-            "pretty_refresh": self.pretty_time(refresh),
-            "retry": retry,
-            "pretty_retry": self.pretty_time(retry),
-            "expire": expire,
-            "pretty_expire": self.pretty_time(expire),
-        }]
+    )"""
+            % {
+                "domain": self.zone,
+                "primary": primary,
+                "contact": contact,
+                "serial": serial,
+                "ttl": ttl,
+                "pretty_ttl": self.pretty_time(ttl),
+                "refresh": refresh,
+                "pretty_refresh": self.pretty_time(refresh),
+                "retry": retry,
+                "pretty_retry": self.pretty_time(retry),
+                "expire": expire,
+                "pretty_expire": self.pretty_time(expire),
+            },
+        ]
         # Add records
         rr = []
         for r in self.records[1:]:
@@ -164,14 +169,14 @@ $TTL %(ttl)d
         :return:
         """
         if len(value) <= cls.MAX_TXT:
-            if not value[0] == "\"":
-                value = "\"%s\"" % value
+            if not value[0] == '"':
+                value = '"%s"' % value
             return [value]
-        if value[0] == "\"" and value[-1] == "\"":
+        if value[0] == '"' and value[-1] == '"':
             value = value[1:-1]
         v = ["("]
         while value:
-            v += ["\"%s\"" % value[:cls.MAX_TXT]]
-            value = value[cls.MAX_TXT:]
+            v += ['"%s"' % value[: cls.MAX_TXT]]
+            value = value[cls.MAX_TXT :]
         v += [")"]
         return v

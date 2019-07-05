@@ -13,11 +13,13 @@ import time
 import logging
 from threading import Lock
 import operator
+
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 import six
+
 # NOC modules
 from noc.config import config
 from noc.core.model.base import NOCModel
@@ -43,14 +45,13 @@ ZONE_REVERSE_IPV6 = "6"
 
 
 @datastream
-@on_delete_check(check=[
-    ("dns.DNSZoneRecord", "zone")
-])
+@on_delete_check(check=[("dns.DNSZoneRecord", "zone")])
 @six.python_2_unicode_compatible
 class DNSZone(NOCModel):
     """
     DNS Zone
     """
+
     class Meta(object):
         verbose_name = _("DNS Zone")
         verbose_name_plural = _("DNS Zones")
@@ -61,31 +62,36 @@ class DNSZone(NOCModel):
     name = models.CharField(_("Domain"), max_length=256, unique=True)
     type = models.CharField(
         _("Type"),
-        max_length=1, null=False, blank=False,
+        max_length=1,
+        null=False,
+        blank=False,
         default=ZONE_FORWARD,
         choices=[
             (ZONE_FORWARD, "Forward"),
             (ZONE_REVERSE_IPV4, "Reverse IPv4"),
-            (ZONE_REVERSE_IPV6, "Reverse IPv6")
-        ]
+            (ZONE_REVERSE_IPV6, "Reverse IPv6"),
+        ],
     )
-    description = models.CharField(_("Description"),
-                                   null=True, blank=True, max_length=64)
+    description = models.CharField(_("Description"), null=True, blank=True, max_length=64)
     project = models.ForeignKey(
-        Project, verbose_name="Project",
-        null=True, blank=True, related_name="dnszone_set", on_delete=models.CASCADE)
+        Project,
+        verbose_name="Project",
+        null=True,
+        blank=True,
+        related_name="dnszone_set",
+        on_delete=models.CASCADE,
+    )
     # @todo: Rename to is_provisioned
     is_auto_generated = models.BooleanField(_("Auto generated?"), default=False)
     serial = models.IntegerField(_("Serial"), default=0)
-    profile = models.ForeignKey(
-        DNSZoneProfile,
-        verbose_name=_("Profile"), on_delete=models.CASCADE
-    )
+    profile = models.ForeignKey(DNSZoneProfile, verbose_name=_("Profile"), on_delete=models.CASCADE)
     notification_group = models.ForeignKey(
         NotificationGroup,
-        verbose_name=_("Notification Group"), null=True, blank=True,
+        verbose_name=_("Notification Group"),
+        null=True,
+        blank=True,
         help_text=_("Notification group to use when zone changed"),
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
     tags = TagsField(_("Tags"), null=True, blank=True)
@@ -258,8 +264,7 @@ class DNSZone(NOCModel):
     def set_next_serial(self):
         old_serial = self.serial
         self.serial = self.get_next_serial()
-        logger.info("Zone %s serial change: %s -> %s",
-                    self.name, old_serial, self.serial)
+        logger.info("Zone %s serial change: %s -> %s", self.name, old_serial, self.serial)
         # Hack to not send post_save signal
         DNSZone.objects.filter(id=self.id).update(serial=self.serial)
 
@@ -268,8 +273,9 @@ class DNSZone(NOCModel):
         """List of next-level nested zones"""
         length = len(self.name)
         s = ".%s" % self.name
-        return [z for z in DNSZone.objects.filter(name__iendswith=s)
-                if "." not in z.name[:-length - 1]]
+        return [
+            z for z in DNSZone.objects.filter(name__iendswith=s) if "." not in z.name[: -length - 1]
+        ]
 
     @classmethod
     def get_ns_name(cls, ns):
@@ -335,8 +341,7 @@ class DNSZone(NOCModel):
         n1, n = self.name.lower().split(".", 1)
         if n == "168.192.in-addr.arpa":
             return ""
-        s = ["domain: %s" % self.name] + ["nserver: %s" % ns
-                                          for ns in self.ns_list]
+        s = ["domain: %s" % self.name] + ["nserver: %s" % ns for ns in self.ns_list]
         return rpsl_format("\n".join(s))
 
     @staticmethod
@@ -354,6 +359,7 @@ class DNSZone(NOCModel):
         Resolve name to zone object
         :return:
         """
+
         def get_closest(n):
             """
             Return closest matching zone
@@ -378,8 +384,7 @@ class DNSZone(NOCModel):
             d = IPv6(name).digits
             d.reverse()
             c = ".".join(d)
-            return (get_closest("%s.ip6.arpa" % c) or
-                    get_closest("%s.ip6.int" % c))
+            return get_closest("%s.ip6.arpa" % c) or get_closest("%s.ip6.int" % c)
         else:
             return get_closest(name)
 

@@ -11,13 +11,20 @@ import logging
 import operator
 from threading import Lock
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, IntField, ReferenceField,
-                                ListField, EmbeddedDocumentField,
-                                BooleanField)
+from mongoengine.fields import (
+    StringField,
+    IntField,
+    ReferenceField,
+    ListField,
+    EmbeddedDocumentField,
+    BooleanField,
+)
 import cachetools
+
 # NOC modules
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.ttsystem import TTSystem
@@ -68,11 +75,8 @@ class AlarmEscalation(Document):
     """
     Alarm escalations
     """
-    meta = {
-        "collection": "noc.alarmescalatons",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "noc.alarmescalatons", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
@@ -109,11 +113,7 @@ class AlarmEscalation(Document):
     def get_class_escalations(cls, alarm_class):
         if hasattr(alarm_class, "id"):
             alarm_class = alarm_class.id
-        return list(
-            AlarmEscalation.objects.filter(
-                alarm_classes__alarm_class=alarm_class
-            )
-        )
+        return list(AlarmEscalation.objects.filter(alarm_classes__alarm_class=alarm_class))
 
     @classmethod
     def watch_escalations(cls, alarm):
@@ -121,19 +121,20 @@ class AlarmEscalation(Document):
         for esc in cls.get_class_escalations(alarm.alarm_class):
             for e_item in esc.escalations:
                 # Check administrative domain
-                if (e_item.administrative_domain and
-                        e_item.administrative_domain.id not in alarm.adm_path):
+                if (
+                    e_item.administrative_domain
+                    and e_item.administrative_domain.id not in alarm.adm_path
+                ):
                     continue
                 # Check severity
                 if e_item.min_severity and alarm.severity < e_item.min_severity:
                     continue
                 # Check selector
-                if e_item.selector and not SelectorCache.is_in_selector(alarm.managed_object, e_item.selector):
+                if e_item.selector and not SelectorCache.is_in_selector(
+                    alarm.managed_object, e_item.selector
+                ):
                     continue
-                logger.debug(
-                    "[%s] Watch for %s after %s seconds",
-                    alarm.id, esc.name, e_item.delay
-                )
+                logger.debug("[%s] Watch for %s after %s seconds", alarm.id, esc.name, e_item.delay)
                 et = alarm.timestamp + datetime.timedelta(seconds=e_item.delay)
                 if et > now:
                     delay = (et - now).total_seconds()
@@ -147,5 +148,5 @@ class AlarmEscalation(Document):
                     max_runs=esc.max_escalation_retries,
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
-                    escalation_delay=e_item.delay
+                    escalation_delay=e_item.delay,
                 )

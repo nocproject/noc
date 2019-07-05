@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -15,6 +16,10 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
-            "dns_dnsserver", "provisioning", models.CharField("Provisioning", max_length=128, blank=True, null=True)
+            "dns_dnsserver",
+            "provisioning",
+            models.CharField("Provisioning", max_length=128, blank=True, null=True),
         )
-        self.db.execute("UPDATE dns_dnsserver SET provisioning=%s", ["%(rsync)s -av --delete * /tmp/dns"])
+        self.db.execute(
+            "UPDATE dns_dnsserver SET provisioning=%s", ["%(rsync)s -av --delete * /tmp/dns"]
+        )

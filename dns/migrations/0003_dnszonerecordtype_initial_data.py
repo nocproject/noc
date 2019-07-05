@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -52,10 +53,18 @@ class Migration(BaseMigration):
     def migrate(self):
         rt = []
         for rtype, is_visible in RECORD_TYPES:
-            if self.db.execute("SELECT COUNT(*) FROM dns_dnszonerecordtype WHERE type=%s", [rtype])[0][0] > 0:
+            if (
+                self.db.execute(
+                    "SELECT COUNT(*) FROM dns_dnszonerecordtype WHERE type=%s", [rtype]
+                )[0][0]
+                > 0
+            ):
                 continue
             rt += [(rtype, is_visible)]
         if rt:
-            print("Creating DNS Zone record types: %s" % ", ".join(sorted([x[0] for x in rt])))
+            print ("Creating DNS Zone record types: %s" % ", ".join(sorted([x[0] for x in rt])))
             for rtype, is_visible in rt:
-                self.db.execute("INSERT INTO dns_dnszonerecordtype(type, is_visible) VALUES(%s, %s)", [rtype, is_visible])
+                self.db.execute(
+                    "INSERT INTO dns_dnszonerecordtype(type, is_visible) VALUES(%s, %s)",
+                    [rtype, is_visible],
+                )

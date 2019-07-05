@@ -10,10 +10,12 @@
 from __future__ import absolute_import
 import datetime
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
+
 # NOC modules
 from .reboot import Reboot
 
@@ -26,7 +28,7 @@ class Uptime(Document):
         "collection": "noc.fm.uptimes",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [("object", "stop")]
+        "indexes": [("object", "stop")],
     }
 
     object = IntField()
@@ -69,14 +71,10 @@ class Uptime(Document):
         oid = managed_object.id
         now = datetime.datetime.now()
         delta = datetime.timedelta(seconds=uptime)
-        logger.debug("[%s] Register uptime %s",
-                     managed_object.name, delta)
+        logger.debug("[%s] Register uptime %s", managed_object.name, delta)
         # Update data
         c = cls._get_collection()
-        d = c.find_one({
-            "object": oid,
-            "stop": None
-        })
+        d = c.find_one({"object": oid, "stop": None})
         is_rebooted = False
         if d:
             # Check for reboot
@@ -94,54 +92,39 @@ class Uptime(Document):
                 # Reboot registered
                 # Closing existing uptime
                 ts = now - delta
-                logger.debug("[%s] Closing uptime (%s - %s, delta %s)",
-                             managed_object.name,
-                             d["start"], ts - cls.SEC,
-                             delta)
-                c.update(
-                    {"_id": d["_id"]},
-                    {
-                        "$set": {
-                            "stop": ts - cls.SEC
-                        }
-                    }
+                logger.debug(
+                    "[%s] Closing uptime (%s - %s, delta %s)",
+                    managed_object.name,
+                    d["start"],
+                    ts - cls.SEC,
+                    delta,
                 )
+                c.update({"_id": d["_id"]}, {"$set": {"stop": ts - cls.SEC}})
                 # Start new uptime
-                logger.debug("[%s] Starting new uptime from %s",
-                             managed_object.name, ts)
-                c.insert({
-                    "object": oid,
-                    "start": ts,
-                    "stop": None,
-                    "last": now,
-                    "last_value": uptime
-                })
+                logger.debug("[%s] Starting new uptime from %s", managed_object.name, ts)
+                c.insert(
+                    {"object": oid, "start": ts, "stop": None, "last": now, "last_value": uptime}
+                )
                 #
                 Reboot.register(managed_object, ts, d["last"])
             else:
                 logger.debug(
                     "[%s] Refreshing existing uptime (%s - %s)",
                     managed_object.name,
-                    d["start"], now
+                    d["start"],
+                    now,
                 )
-                c.update(
-                    {"_id": d["_id"]},
-                    {
-                        "$set": {
-                            "last": now,
-                            "last_value": uptime
-                        }
-                    }
-                )
+                c.update({"_id": d["_id"]}, {"$set": {"last": now, "last_value": uptime}})
         else:
             # First uptime
-            logger.debug("[%s] First uptime from %s",
-                         managed_object.name, now)
-            c.insert({
-                "object": oid,
-                "start": now - delta,
-                "stop": None,
-                "last": now,
-                "last_value": uptime
-            })
+            logger.debug("[%s] First uptime from %s", managed_object.name, now)
+            c.insert(
+                {
+                    "object": oid,
+                    "start": now - delta,
+                    "stop": None,
+                    "last": now,
+                    "last_value": uptime,
+                }
+            )
         return not is_rebooted

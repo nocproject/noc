@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
+
 # NOC modules
 from noc.config import config
 from noc.core.model.base import NOCModel
@@ -27,9 +29,7 @@ id_lock = Lock()
 
 
 @datastream
-@on_delete_check(check=[
-    ("dns.DNSZone", "profile")
-])
+@on_delete_check(check=[("dns.DNSZone", "profile")])
 @six.python_2_unicode_compatible
 class DNSZoneProfile(NOCModel):
     """
@@ -47,6 +47,7 @@ class DNSZoneProfile(NOCModel):
     :param notification_group:
     :param description:
     """
+
     class Meta(object):
         verbose_name = _("DNS Zone Profile")
         verbose_name_plural = _("DNS Zone Profiles")
@@ -55,11 +56,11 @@ class DNSZoneProfile(NOCModel):
 
     name = models.CharField(_("Name"), max_length=32, unique=True)
     masters = models.ManyToManyField(
-        DNSServer, verbose_name=_("Masters"),
-        related_name="masters", blank=True)
+        DNSServer, verbose_name=_("Masters"), related_name="masters", blank=True
+    )
     slaves = models.ManyToManyField(
-        DNSServer, verbose_name=_("Slaves"),
-        related_name="slaves", blank=True)
+        DNSServer, verbose_name=_("Slaves"), related_name="slaves", blank=True
+    )
     zone_soa = models.CharField(_("SOA"), max_length=64)
     zone_contact = models.CharField(_("Contact"), max_length=64)
     zone_refresh = models.IntegerField(_("Refresh"), default=3600)
@@ -68,9 +69,12 @@ class DNSZoneProfile(NOCModel):
     zone_ttl = models.IntegerField(_("TTL"), default=3600)
     notification_group = models.ForeignKey(
         NotificationGroup,
-        verbose_name=_("Notification Group"), null=True, blank=True,
+        verbose_name=_("Notification Group"),
+        null=True,
+        blank=True,
         help_text=_("Notification group to use when zone group is not set"),
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+    )
     description = models.TextField(_("Description"), blank=True, null=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

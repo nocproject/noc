@@ -9,10 +9,12 @@
 # Python modules
 from __future__ import absolute_import
 import os
+
 # Third-party modules
 import six
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
+
 # NOC modules
 from .eventclass import EventClass
 from .datasource import DataSource
@@ -23,9 +25,7 @@ from noc.lib.text import quote_safe_path
 
 @six.python_2_unicode_compatible
 class EventClassificationRuleVar(EmbeddedDocument):
-    meta = {
-        "strict": False
-    }
+    meta = {"strict": False}
     name = fields.StringField(required=True)
     value = fields.StringField(required=False)
 
@@ -33,8 +33,7 @@ class EventClassificationRuleVar(EmbeddedDocument):
         return self.name
 
     def __eq__(self, other):
-        return (self.name == other.name and
-                self.value == other.value)
+        return self.name == other.name and self.value == other.value
 
 
 @six.python_2_unicode_compatible
@@ -42,7 +41,7 @@ class EventClassificationRuleCategory(Document):
     meta = {
         "collection": "noc.eventclassificationrulecategories",
         "strict": False,
-        "auto_create_index": False
+        "auto_create_index": False,
     }
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
@@ -65,9 +64,7 @@ class EventClassificationRuleCategory(Document):
 
 @six.python_2_unicode_compatible
 class EventClassificationPattern(EmbeddedDocument):
-    meta = {
-        "strict": False
-    }
+    meta = {"strict": False}
     key_re = fields.StringField(required=True)
     value_re = fields.StringField(required=True)
 
@@ -83,15 +80,14 @@ class EventClassificationRule(Document):
     """
     Classification rules
     """
+
     meta = {
         "collection": "noc.eventclassificationrules",
         "strict": False,
         "auto_create_index": False,
         "json_collection": "fm.eventclassificationrules",
-        "json_depends_on": [
-            "fm.eventclasses"
-        ],
-        "json_unique_fields": ["name"]
+        "json_depends_on": ["fm.eventclasses"],
+        "json_unique_fields": ["name"],
     }
     name = fields.StringField(required=True, unique=True)
     uuid = fields.UUIDField(binary=True)
@@ -122,24 +118,24 @@ class EventClassificationRule(Document):
 
     def to_json(self):
         r = ["{"]
-        r += ["    \"name\": \"%s\"," % jq(self.name)]
-        r += ["    \"$collection\": \"%s\"," % jq(self._meta["json_collection"])]
-        r += ["    \"uuid\": \"%s\"," % self.uuid]
+        r += ['    "name": "%s",' % jq(self.name)]
+        r += ['    "$collection": "%s",' % jq(self._meta["json_collection"])]
+        r += ['    "uuid": "%s",' % self.uuid]
         if self.description:
-            r += ["    \"description\": \"%s\"," % jq(self.description)]
-        r += ["    \"event_class__name\": \"%s\"," % jq(self.event_class.name)]
-        r += ["    \"preference\": %d," % self.preference]
+            r += ['    "description": "%s",' % jq(self.description)]
+        r += ['    "event_class__name": "%s",' % jq(self.event_class.name)]
+        r += ['    "preference": %d,' % self.preference]
         # Dump datasources
         if self.datasources:
-            r += ["    \"datasources\": ["]
+            r += ['    "datasources": [']
             jds = []
             for ds in self.datasources:
-                x = ["        \"name\": \"%s\"" % jq(ds.name)]
-                x += ["        \"datasource\": \"%s\"" % jq(ds.datasource)]
+                x = ['        "name": "%s"' % jq(ds.name)]
+                x += ['        "datasource": "%s"' % jq(ds.datasource)]
                 ss = []
                 for k in sorted(ds.search):
-                    ss += ["            \"%s\": \"%s\"" % (jq(k), jq(ds.search[k]))]
-                x += ["            \"search\": {"]
+                    ss += ['            "%s": "%s"' % (jq(k), jq(ds.search[k]))]
+                x += ['            "search": {']
                 x += [",\n".join(ss)]
                 x += ["            }"]
                 jds += ["        {", ",\n".join(x), "        }"]
@@ -147,24 +143,24 @@ class EventClassificationRule(Document):
             r += ["    ],"]
         # Dump vars
         if self.vars:
-            r += ["    \"vars\": ["]
+            r += ['    "vars": [']
             vars = []
             for v in self.vars:
                 vd = ["        {"]
-                vd += ["            \"name\": \"%s\"," % jq(v.name)]
-                vd += ["            \"value\": \"%s\"" % jq(v.value)]
+                vd += ['            "name": "%s",' % jq(v.name)]
+                vd += ['            "value": "%s"' % jq(v.value)]
                 vd += ["        }"]
                 vars += ["\n".join(vd)]
             r += [",\n\n".join(vars)]
             r += ["    ],"]
         # Dump patterns
-        r += ["    \"patterns\": ["]
+        r += ['    "patterns": [']
         patterns = []
         for p in self.patterns:
             pt = []
             pt += ["        {"]
-            pt += ["            \"key_re\": \"%s\"," % jq(p.key_re)]
-            pt += ["            \"value_re\": \"%s\"" % jq(p.value_re)]
+            pt += ['            "key_re": "%s",' % jq(p.key_re)]
+            pt += ['            "value_re": "%s"' % jq(p.value_re)]
             pt += ["        }"]
             patterns += ["\n".join(pt)]
         r += [",\n".join(patterns)]

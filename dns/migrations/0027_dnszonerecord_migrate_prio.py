@@ -12,11 +12,13 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        for id, content in self.db.execute("""
+        for id, content in self.db.execute(
+            """
                 SELECT r.id, r.right
                 FROM dns_dnszonerecord r
                 JOIN dns_dnszonerecordtype t ON (r.type_id = t.id)
-                WHERE t.type IN ('MX', 'SRV') """):
+                WHERE t.type IN ('MX', 'SRV') """
+        ):
             if " " not in content:
                 continue
             prio, rest = content.split(" ", 1)
@@ -31,5 +33,6 @@ class Migration(BaseMigration):
                     priority = %s,
                     "right" = %s
                 WHERE id = %s
-            """, [prio, rest, id]
+            """,
+                [prio, rest, id],
             )

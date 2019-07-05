@@ -8,16 +8,14 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 import noc.lib.nosql as nosql
 
 
 @six.python_2_unicode_compatible
 class AlarmClassVar(nosql.EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     name = nosql.StringField(required=True)
     description = nosql.StringField(required=False)
     default = nosql.StringField(required=False)
@@ -27,7 +25,7 @@ class AlarmClassVar(nosql.EmbeddedDocument):
 
     def __eq__(self, other):
         return (
-            self.name == other.name and
-            self.description == other.description and
-            self.default == other.default
+            self.name == other.name
+            and self.description == other.description
+            and self.default == other.default
         )

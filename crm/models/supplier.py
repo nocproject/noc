@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, BooleanField, LongField
 import cachetools
+
 # NOC modules
 from .supplierprofile import SupplierProfile
 from noc.main.models.remotesystem import RemoteSystem
@@ -30,18 +32,14 @@ id_lock = Lock()
 
 @bi_sync
 @workflow
-@on_delete_check(check=[
-    ("phone.PhoneRange", "supplier")
-])
+@on_delete_check(check=[("phone.PhoneRange", "supplier")])
 @six.python_2_unicode_compatible
 class Supplier(Document):
     meta = {
         "collection": "noc.suppliers",
-        "indexes": [
-            "name"
-        ],
+        "indexes": ["name"],
         "strict": False,
-        "auto_create_index": False
+        "auto_create_index": False,
     }
 
     name = StringField()

@@ -7,10 +7,15 @@
 # ----------------------------------------------------------------------
 
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("fm_eventclassificationrule", "drop_event", models.BooleanField("Drop Event", default=False))
+        self.db.add_column(
+            "fm_eventclassificationrule",
+            "drop_event",
+            models.BooleanField("Drop Event", default=False),
+        )

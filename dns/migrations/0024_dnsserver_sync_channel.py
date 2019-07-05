@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -15,5 +16,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
-            "dns_dnsserver", "sync_channel", models.CharField("Sync channel", max_length=64, blank=True, null=True)
+            "dns_dnsserver",
+            "sync_channel",
+            models.CharField("Sync channel", max_length=64, blank=True, null=True),
         )
