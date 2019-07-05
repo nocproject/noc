@@ -9,9 +9,11 @@
 # Python modules
 import itertools
 import operator
+
 # Third-party modules
 import bson
 import cachetools
+
 # NOC modules
 from noc.lib.nosql import get_db
 from noc.core.migration.base import BaseMigration
@@ -42,8 +44,10 @@ class Migration(BaseMigration):
                     tp = {"_id": tp_id}
                 # Fill profile
                 tp["name"] = "ip-%05d-%03d" % (next(current), n)
-                tp["description"
-                   ] = "Migrated for interface profile '%s' metric '%s'" % (doc["name"], metric["metric_type"])
+                tp["description"] = "Migrated for interface profile '%s' metric '%s'" % (
+                    doc["name"],
+                    metric["metric_type"],
+                )
                 tp["window_type"] = metric.get("window_type")
                 tp["window"] = metric.get("window")
                 tp["window_function"] = metric.get("window_function")
@@ -57,7 +61,7 @@ class Migration(BaseMigration):
                             "value": metric["high_error"],
                             "clear_op": "<",
                             "clear_value": metric["high_error"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Error")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Error"),
                         }
                     ]
                 if metric.get("low_error", False):
@@ -67,7 +71,7 @@ class Migration(BaseMigration):
                             "value": metric["low_error"],
                             "clear_op": ">",
                             "clear_value": metric["low_error"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error"),
                         }
                     ]
                 if metric.get("low_warn", False):
@@ -77,7 +81,7 @@ class Migration(BaseMigration):
                             "value": metric["low_warn"],
                             "clear_op": ">",
                             "clear_value": metric["low_warn"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning"),
                         }
                     ]
                 if metric.get("high_warn", False):
@@ -87,7 +91,7 @@ class Migration(BaseMigration):
                             "value": metric["high_warn"],
                             "clear_op": "<",
                             "clear_value": metric["high_warn"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Warning")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Warning"),
                         }
                     ]
                 # Save profile
@@ -100,8 +104,11 @@ class Migration(BaseMigration):
     @staticmethod
     def has_thresholds(metric):
         return (
-            metric.get("low_error", False) or metric.get("low_warn", False) or metric.get("high_warn", False) or
-            metric.get("high_error", False) or metric.get("threshold_profile")
+            metric.get("low_error", False)
+            or metric.get("low_warn", False)
+            or metric.get("high_warn", False)
+            or metric.get("high_error", False)
+            or metric.get("threshold_profile")
         )
 
     @classmethod

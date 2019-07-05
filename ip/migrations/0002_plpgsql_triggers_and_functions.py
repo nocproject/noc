@@ -35,7 +35,8 @@ class Migration(BaseMigration):
             FROM pg_attribute a JOIN pg_class p ON (p.oid=a.attrelid)
             WHERE p.relname='%s'
               AND a.attname='%s'
-            """ % (table, name)
+            """
+            % (table, name)
         )[0][0]
 
     def has_trigger(self, table, name):
@@ -43,7 +44,8 @@ class Migration(BaseMigration):
             """SELECT COUNT(*)>0
             FROM pg_trigger t JOIN pg_class p ON (p.oid=t.tgrelid)
             WHERE p.relname='%s'
-              AND t.tgname='%s'""" % (table, name)
+              AND t.tgname='%s'"""
+            % (table, name)
         )[0][0]
 
 

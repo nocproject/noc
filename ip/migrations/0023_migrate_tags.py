@@ -8,6 +8,7 @@
 
 # Third-party modules
 from noc.core.model.fields import TagsField
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -27,5 +28,6 @@ class Migration(BaseMigration):
             UPDATE %s
             SET tmp_tags = string_to_array(regexp_replace(tags, ',$', ''), ',')
             WHERE tags != ''
-            """ % m
+            """
+                % m
             )

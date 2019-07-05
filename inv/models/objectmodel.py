@@ -11,14 +11,21 @@ from __future__ import absolute_import
 import os
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, UUIDField, DictField,
-                                ListField, EmbeddedDocumentField,
-                                ObjectIdField)
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    DictField,
+    ListField,
+    EmbeddedDocumentField,
+    ObjectIdField,
+)
 import cachetools
 from pymongo import InsertOne, DeleteOne
+
 # NOC modules
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
@@ -35,20 +42,11 @@ id_lock = Lock()
 
 @six.python_2_unicode_compatible
 class ObjectModelConnection(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     name = StringField()
     description = StringField()
     type = PlainReferenceField(ConnectionType)
-    direction = StringField(
-        choices=[
-            "i",  # Inner slot
-            "o",  # Outer slot
-            "s"   # Connection
-        ]
-    )
+    direction = StringField(choices=["i", "o", "s"])  # Inner slot  # Outer slot  # Connection
     gender = StringField(choices=["s", "m", "f"])
     group = StringField(required=False)
     cross = StringField(required=False)
@@ -60,15 +58,15 @@ class ObjectModelConnection(EmbeddedDocument):
 
     def __eq__(self, other):
         return (
-            self.name == other.name and
-            self.description == other.description and
-            self.type.id == other.type.id and
-            self.direction == other.direction and
-            self.gender == other.gender and
-            self.group == other.group and
-            self.cross == other.cross and
-            self.protocols == other.protocols and
-            self.internal_name == other.internal_name
+            self.name == other.name
+            and self.description == other.description
+            and self.type.id == other.type.id
+            and self.direction == other.direction
+            and self.gender == other.gender
+            and self.group == other.group
+            and self.cross == other.cross
+            and self.protocols == other.protocols
+            and self.internal_name == other.internal_name
         )
 
     @property
@@ -92,30 +90,22 @@ class ObjectModelConnection(EmbeddedDocument):
 
 
 @category
-@on_delete_check(check=[
-    ("inv.ModelMapping", "model"),
-    ("inv.Object", "model")
-])
+@on_delete_check(check=[("inv.ModelMapping", "model"), ("inv.Object", "model")])
 @on_save
 @six.python_2_unicode_compatible
 class ObjectModel(Document):
     """
     Equipment vendor
     """
+
     meta = {
         "collection": "noc.objectmodels",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            ("vendor", "data.asset.part_no"),
-            ("vendor", "data.asset.order_part_no")
-        ],
+        "indexes": [("vendor", "data.asset.part_no"), ("vendor", "data.asset.order_part_no")],
         "json_collection": "inv.objectmodels",
         "json_unique_fields": ["name"],
-        "json_depends_on": [
-            "inv.vendors",
-            "inv.connectionrules"
-        ]
+        "json_depends_on": ["inv.vendors", "inv.connectionrules"],
     }
 
     name = StringField(unique=True)
@@ -161,8 +151,7 @@ class ObjectModel(Document):
     def has_connection(self, name):
         if self.get_model_connection(name) is None:
             # Check twinax virtual connection
-            return (self.get_data("twinax", "twinax") and
-                    self.get_data("twinax", "alias") == name)
+            return self.get_data("twinax", "twinax") and self.get_data("twinax", "alias") == name
         else:
             return True
 
@@ -177,15 +166,13 @@ class ObjectModel(Document):
         r = []
         c_types = cn.type.get_compatible_types(cn.gender)
         og = ConnectionType.OPPOSITE_GENDER[cn.gender]
-        for cc in ModelConnectionsCache.objects.filter(
-                type__in=c_types, gender=og):
+        for cc in ModelConnectionsCache.objects.filter(type__in=c_types, gender=og):
             r += [(cc.model, cc.name)]
         return r
 
     def get_model_connection(self, name):
         for c in self.connections:
-            if (c.name == name or (
-                    c.internal_name and c.internal_name == name)):
+            if c.name == name or (c.internal_name and c.internal_name == name):
                 return c
         return None
 
@@ -223,16 +210,10 @@ class ObjectModel(Document):
             if m:
                 return m
         # Check for asset_part_no
-        m = ObjectModel.objects.filter(
-            vendor=vendor.id,
-            data__asset__part_no=part_no
-        ).first()
+        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__part_no=part_no).first()
         if m:
             return m
-        m = ObjectModel.objects.filter(
-            vendor=vendor.id,
-            data__asset__order_part_no=part_no
-        ).first()
+        m = ObjectModel.objects.filter(vendor=vendor.id, data__asset__order_part_no=part_no).first()
         if m:
             return m
         # Not found
@@ -257,7 +238,7 @@ class ObjectModel(Document):
             "description": self.description,
             "vendor__code": self.vendor.code[0],
             "data": self.data,
-            "connections": [c.json_data for c in self.connections]
+            "connections": [c.json_data for c in self.connections],
         }
         if self.connection_rule:
             r["connection_rule__name"] = self.connection_rule.name
@@ -273,14 +254,16 @@ class ObjectModel(Document):
         return to_json(
             self.json_data,
             order=[
-                "name", "$collection",
-                "uuid", "vendor__code",
+                "name",
+                "$collection",
+                "uuid",
+                "vendor__code",
                 "description",
                 "connection_rule__name",
                 "cr_context",
                 "plugins",
-                "tags"
-            ]
+                "tags",
+            ],
         )
 
     def get_json_path(self):
@@ -292,8 +275,9 @@ class ObjectModel(Document):
         Exclude model's part numbers from unknown models
         """
         if "asset" in self.data:
-            part_no = (self.data["asset"].get("part_no", []) +
-                       self.data["asset"].get("order_part_no", []))
+            part_no = self.data["asset"].get("part_no", []) + self.data["asset"].get(
+                "order_part_no", []
+            )
             if part_no:
                 vendor = self.vendor
                 if isinstance(vendor, six.string_types):
@@ -306,7 +290,7 @@ class ModelConnectionsCache(Document):
         "collection": "noc.inv.objectconnectionscache",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["model", ("type", "gender")]
+        "indexes": ["model", ("type", "gender")],
     }
     # Connection type
     type = ObjectIdField()
@@ -322,12 +306,7 @@ class ModelConnectionsCache(Document):
         nc = []
         for m in ObjectModel.objects.all():
             for c in m.connections:
-                nc += [{
-                    "type": c.type.id,
-                    "gender": c.gender,
-                    "model": m.id,
-                    "name": c.name
-                }]
+                nc += [{"type": c.type.id, "gender": c.gender, "model": m.id, "name": c.name}]
         collection = ModelConnectionsCache._get_collection()
         collection.drop()
         if nc:
@@ -350,12 +329,11 @@ class ModelConnectionsCache(Document):
             if k in cache:
                 del cache[k]
                 continue
-            bulk += [InsertOne({
-                "type": c.type.id,
-                "gender": c.gender,
-                "model": model.id,
-                "name": c.name
-            })]
+            bulk += [
+                InsertOne(
+                    {"type": c.type.id, "gender": c.gender, "model": model.id, "name": c.name}
+                )
+            ]
         if cache:
             bulk += [DeleteOne({"_id": x}) for x in six.itervalues(cache)]
         if bulk:

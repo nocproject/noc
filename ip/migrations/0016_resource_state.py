@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -18,13 +19,26 @@ class Migration(BaseMigration):
     def migrate(self):
         # Create .state
         ResourceState = self.db.mock_model(
-            model_name="ResourceState",
-            db_table="main_resourcestate"
-        )
-        self.db.add_column("ip_vrf", "state", models.ForeignKey(ResourceState, verbose_name="State", null=True, blank=True, on_delete=models.CASCADE))
-        self.db.add_column(
-            "ip_prefix", "state", models.ForeignKey(ResourceState, verbose_name="State", null=True, blank=True, on_delete=models.CASCADE)
+            model_name="ResourceState", db_table="main_resourcestate"
         )
         self.db.add_column(
-            "ip_address", "state", models.ForeignKey(ResourceState, verbose_name="State", null=True, blank=True, on_delete=models.CASCADE)
+            "ip_vrf",
+            "state",
+            models.ForeignKey(
+                ResourceState, verbose_name="State", null=True, blank=True, on_delete=models.CASCADE
+            ),
+        )
+        self.db.add_column(
+            "ip_prefix",
+            "state",
+            models.ForeignKey(
+                ResourceState, verbose_name="State", null=True, blank=True, on_delete=models.CASCADE
+            ),
+        )
+        self.db.add_column(
+            "ip_address",
+            "state",
+            models.ForeignKey(
+                ResourceState, verbose_name="State", null=True, blank=True, on_delete=models.CASCADE
+            ),
         )

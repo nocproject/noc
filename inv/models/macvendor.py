@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 import six
 from pymongo.errors import BulkWriteError
@@ -23,11 +24,8 @@ class MACVendor(Document):
     """
     IEEE OUI database
     """
-    meta = {
-        "collection": "noc.macvendors",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "noc.macvendors", "strict": False, "auto_create_index": False}
 
     # 3 octets, hexadecimal, upper
     oui = StringField(primary_key=True)
@@ -44,12 +42,7 @@ class MACVendor(Document):
         Returns vendor for MAC or None
         """
         oui = mac.replace(":", "").upper()[:6]
-        d = MACVendor._get_collection().find_one({
-            "_id": oui
-        }, {
-            "_id": 0,
-            "vendor": 1
-        })
+        d = MACVendor._get_collection().find_one({"_id": oui}, {"_id": 0, "vendor": 1})
         if d:
             return d.get("vendor")
         else:
@@ -58,6 +51,7 @@ class MACVendor(Document):
     @classmethod
     def update(cls):
         import requests
+
         # Get new values
         new = {}
         logger.info("Fetching new items from %s", cls.DOWNLOAD_URL)
@@ -70,8 +64,7 @@ class MACVendor(Document):
                 vendor = vendor.strip()
                 new[oui] = vendor
         # Get old values
-        old = dict((d["_id"], d["vendor"])
-                   for d in MACVendor._get_collection().find())
+        old = dict((d["_id"], d["vendor"]) for d in MACVendor._get_collection().find())
         # Compare
         collection = MACVendor._get_collection()
         bulk = []
@@ -92,9 +85,12 @@ class MACVendor(Document):
                 r = collection.bulk_write(bulk, ordered=False)
                 logger.info("Database has been synced")
                 if r.acknowledged:
-                    logger.info("Inserted: %d, Modify: %d, Deleted: %d",
-                                r.inserted_count + r.upserted_count,
-                                r.modified_count, r.deleted_count)
+                    logger.info(
+                        "Inserted: %d, Modify: %d, Deleted: %d",
+                        r.inserted_count + r.upserted_count,
+                        r.modified_count,
+                        r.deleted_count,
+                    )
             except BulkWriteError as e:
                 logger.error("Bulk write error: '%s'", e.details)
                 logger.error("Stopping check")

@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
@@ -36,21 +38,24 @@ id_lock = Lock()
 @full_text_search
 @on_init
 @workflow
-@on_delete_check(check=[
-    ("ip.Address", "vrf"),
-    ("ip.AddressRange", "vrf"),
-    ("ip.PrefixAccess", "vrf"),
-    ("ip.Prefix", "vrf"),
-    # ("ip.DynamicIPPoolUsage", "vrf"),
-    ("sa.ManagedObject", "vrf"),
-    ("sa.ManagedObjectSelector", "filter_vrf"),
-    ("vc.VCBindFilter", "vrf"),
-])
+@on_delete_check(
+    check=[
+        ("ip.Address", "vrf"),
+        ("ip.AddressRange", "vrf"),
+        ("ip.PrefixAccess", "vrf"),
+        ("ip.Prefix", "vrf"),
+        # ("ip.DynamicIPPoolUsage", "vrf"),
+        ("sa.ManagedObject", "vrf"),
+        ("sa.ManagedObjectSelector", "filter_vrf"),
+        ("vc.VCBindFilter", "vrf"),
+    ]
+)
 @six.python_2_unicode_compatible
 class VRF(NOCModel):
     """
     VRF
     """
+
     class Meta(object):
         verbose_name = _("VRF")
         verbose_name_plural = _("VRFs")
@@ -58,71 +63,54 @@ class VRF(NOCModel):
         app_label = "ip"
         ordering = ["name"]
 
-    name = models.CharField(
-        _("VRF"),
-        unique=True,
-        max_length=64,
-        help_text=_("Unique VRF Name"))
+    name = models.CharField(_("VRF"), unique=True, max_length=64, help_text=_("Unique VRF Name"))
     profile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
-        VRFGroup, verbose_name=_("VRF Group"),
-        null=True, blank=True, on_delete=models.CASCADE
+        VRFGroup, verbose_name=_("VRF Group"), null=True, blank=True, on_delete=models.CASCADE
     )
     rd = models.CharField(
         _("RD"),
         max_length=21,
         validators=[check_rd],
-        null=True, blank=True,
-        help_text=_("Route Distinguisher in form of ASN:N or IP:N"))
+        null=True,
+        blank=True,
+        help_text=_("Route Distinguisher in form of ASN:N or IP:N"),
+    )
     # RFC2685-compatible VPN id
     vpn_id = models.CharField(
-        _("VPN ID"),
-        max_length=15,
-        help_text=_("RFC2685 compatible VPN ID"),
-        unique=True
+        _("VPN ID"), max_length=15, help_text=_("RFC2685 compatible VPN ID"), unique=True
     )
     afi_ipv4 = models.BooleanField(
-        _("IPv4"),
-        default=True,
-        help_text=_("Enable IPv4 Address Family"))
+        _("IPv4"), default=True, help_text=_("Enable IPv4 Address Family")
+    )
     afi_ipv6 = models.BooleanField(
-        _("IPv6"),
-        default=False,
-        help_text=_("Enable IPv6 Address Family"))
+        _("IPv6"), default=False, help_text=_("Enable IPv6 Address Family")
+    )
     project = models.ForeignKey(
-        Project, verbose_name="Project",
-        null=True, blank=True,
+        Project,
+        verbose_name="Project",
+        null=True,
+        blank=True,
         on_delete=models.CASCADE,
         related_name="vrf_set",
     )
-    description = models.TextField(
-        _("Description"), blank=True, null=True)
-    tt = models.IntegerField(
-        _("TT"),
-        blank=True,
-        null=True,
-        help_text=_("Ticket #"))
+    description = models.TextField(_("Description"), blank=True, null=True)
+    tt = models.IntegerField(_("TT"), blank=True, null=True, help_text=_("Ticket #"))
     tags = TagsField(_("Tags"), null=True, blank=True)
-    state = DocumentReferenceField(
-        State,
-        null=True, blank=True
-    )
+    state = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
         blank=True,
-        help_text=_("VRF temporary allocated till the date"))
+        help_text=_("VRF temporary allocated till the date"),
+    )
     source = models.CharField(
         "Source",
         max_length=1,
-        choices=[
-            ("M", "Manual"),
-            ("i", "Interface"),
-            ("m", "MPLS"),
-            ("c", "ConfDB")
-        ],
-        null=False, blank=False,
-        default="M"
+        choices=[("M", "Manual"), ("i", "Interface"), ("m", "MPLS"), ("c", "ConfDB")],
+        null=False,
+        blank=False,
+        default="M",
     )
 
     GLOBAL_RD = "0:0"
@@ -139,9 +127,7 @@ class VRF(NOCModel):
     _vpn_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     @classmethod
-    @cachetools.cachedmethod(
-        operator.attrgetter("_id_cache"),
-        lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         vrf = VRF.objects.filter(id=id)[:1]
         if vrf:
@@ -149,9 +135,7 @@ class VRF(NOCModel):
         return None
 
     @classmethod
-    @cachetools.cachedmethod(
-        operator.attrgetter("_vpn_id_cache"),
-        lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_vpn_id_cache"), lock=lambda _: id_lock)
     def get_by_vpn_id(cls, vpn_id):
         vrf = VRF.objects.filter(vpn_id=vpn_id)[:1]
         if vrf:
@@ -176,11 +160,7 @@ class VRF(NOCModel):
 
         # Generate unique rd, if empty
         if not self.vpn_id:
-            vdata = {
-                "type": "VRF",
-                "name": self.name,
-                "rd": self.rd
-            }
+            vdata = {"type": "VRF", "name": self.name, "rd": self.rd}
             self.vpn_id = get_vpn_id(vdata)
         if self.initial_data["id"]:
             # Delete empty ipv4 root if AFI changed
@@ -210,19 +190,25 @@ class VRF(NOCModel):
         if self.afi_ipv4:
             # Create IPv4 root, if not exists
             Prefix.objects.get_or_create(
-                vrf=self, afi="4", prefix=self.IPv4_ROOT,
+                vrf=self,
+                afi="4",
+                prefix=self.IPv4_ROOT,
                 defaults={
                     "description": "IPv4 Root",
-                    "profile": self.profile.default_prefix_profile
-                })
+                    "profile": self.profile.default_prefix_profile,
+                },
+            )
         if self.afi_ipv6:
             # Create IPv6 root, if not exists
             Prefix.objects.get_or_create(
-                vrf=self, afi="6", prefix=self.IPv6_ROOT,
+                vrf=self,
+                afi="6",
+                prefix=self.IPv6_ROOT,
                 defaults={
                     "description": "IPv6 Root",
-                    "profile": self.profile.default_prefix_profile
-                })
+                    "profile": self.profile.default_prefix_profile,
+                },
+            )
 
     def get_index(self):
         """
@@ -237,7 +223,7 @@ class VRF(NOCModel):
             "id": "ip.vrf:%s" % self.id,
             "title": self.name,
             "content": "\n".join(content),
-            "card": card
+            "card": card,
         }
         if self.tags:
             r["tags"] = self.tags

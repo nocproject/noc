@@ -21,9 +21,7 @@ class InterfaceDS(DataSource):
         if not interface and not ifindex:
             self._interface = None
             return
-        q = {
-            "managed_object": managed_object.id
-        }
+        q = {"managed_object": managed_object.id}
         if interface:
             q["name"] = managed_object.get_profile().convert_interface_name(interface)
         if ifindex:
@@ -69,10 +67,10 @@ class ChassisDS(DataSource):
             mac = MACAddressParameter.clean(mac)
             self._object = DiscoveryID.find_object(mac)
         if ipv4:
-            if SubInterface.objects.filter(
-                    ipv4_addresses=ipv4).count() == 1:
-                self._object = SubInterface.objects.filter(
-                    ipv4_addresses=ipv4).first().managed_object
+            if SubInterface.objects.filter(ipv4_addresses=ipv4).count() == 1:
+                self._object = (
+                    SubInterface.objects.filter(ipv4_addresses=ipv4).first().managed_object
+                )
 
     @property
     def object(self):

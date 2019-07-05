@@ -9,13 +9,21 @@
 # Python modules
 from collections import defaultdict
 import datetime
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.config import config
-from noc.lib.nosql import (Document, PlainReferenceListField,
-                           StringField, DateTimeField, ListField,
-                           IntField, ObjectIdField)
+from noc.lib.nosql import (
+    Document,
+    PlainReferenceListField,
+    StringField,
+    DateTimeField,
+    ListField,
+    IntField,
+    ObjectIdField,
+)
 from noc.core.model.decorator import on_delete, on_save
 from noc.core.datastream.decorator import datastream
 
@@ -32,15 +40,12 @@ class Link(Document):
     2*N for unresolved N-link portchannel
     N, N > 2 - broadcast media
     """
+
     meta = {
         "collection": "noc.links",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "interfaces",
-            "linked_objects",
-            "linked_segments"
-        ]
+        "indexes": ["interfaces", "linked_objects", "linked_segments"],
     }
 
     # Optional link name
@@ -52,18 +57,21 @@ class Link(Document):
     # List of interfaces
     interfaces = PlainReferenceListField("inv.Interface")
     # Link type, detected automatically
-    type = StringField(choices=[
-        # 2 managed objects, 2 linked interfaces
-        ("p", "Point-to-Point"),
-        # 2 managed objects, even number of linked interfaces (>2)
-        ("a", "Point-to-Point Aggregated"),
-        # >2 managed objects, one uplink
-        ("m", "Point-to-Multipoint"),
-        # >2 managed objects, no dedicated uplink
-        ("M", "Multipoint-to-Multipoint"),
-        # Unknown
-        ("u", "Unknown")
-    ], default="u")
+    type = StringField(
+        choices=[
+            # 2 managed objects, 2 linked interfaces
+            ("p", "Point-to-Point"),
+            # 2 managed objects, even number of linked interfaces (>2)
+            ("a", "Point-to-Point Aggregated"),
+            # >2 managed objects, one uplink
+            ("m", "Point-to-Multipoint"),
+            # >2 managed objects, no dedicated uplink
+            ("M", "Multipoint-to-Multipoint"),
+            # Unknown
+            ("u", "Unknown"),
+        ],
+        default="u",
+    )
     # List of linked objects
     linked_objects = ListField(IntField())
     # List of linked segments
@@ -140,6 +148,7 @@ class Link(Document):
         Returns list of interface ids, avoiding dereference
         :return:
         """
+
         def q(i):
             if hasattr(i, "id"):
                 return i.id
@@ -168,19 +177,13 @@ class Link(Document):
         Touch last_seen
         """
         now = datetime.datetime.now()
-        op = {
-            "last_seen": now
-        }
+        op = {"last_seen": now}
         self.last_seen = now
         if method:
             self.discovery_method = method
             op["discovery_method"] = method
         # Do not save to prevent rebuilding topology
-        self._get_collection().update({
-            "_id": self.id
-        }, {
-            "$set": op
-        })
+        self._get_collection().update({"_id": self.id}, {"$set": op})
         # self.save()
 
     @classmethod
@@ -204,6 +207,7 @@ class Link(Document):
         List of connected managed objects
         """
         from noc.sa.models.managedobject import ManagedObject
+
         return list(ManagedObject.objects.filter(id__in=self.linked_objects))
 
     @property
@@ -213,6 +217,7 @@ class Link(Document):
         :return:
         """
         from noc.inv.models.networksegment import NetworkSegment
+
         return list(NetworkSegment.objects.filter(id__in=self.linked_segments))
 
     def update_topology(self):

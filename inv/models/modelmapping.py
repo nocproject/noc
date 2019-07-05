@@ -8,17 +8,13 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField)
+from mongoengine.fields import StringField, BooleanField
 from noc.inv.models.objectmodel import ObjectModel
 from noc.lib.nosql import PlainReferenceField
 
 
 class ModelMapping(Document):
-    meta = {
-        "collection": "noc.modelmappings",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.modelmappings", "strict": False, "auto_create_index": False}
 
     # Vendor, as returned by get_inventory
     vendor = StringField()

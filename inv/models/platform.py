@@ -13,6 +13,7 @@ import threading
 import operator
 import uuid
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document
@@ -21,6 +22,7 @@ from mongoengine.queryset import Q
 from pymongo.collection import ReturnDocument
 import cachetools
 from bson.int64 import Int64
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField, DateField
 from noc.core.model.decorator import on_delete_check
@@ -33,11 +35,13 @@ id_lock = threading.Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("sa.ManagedObject", "platform"),
-    ("sa.ManagedObjectSelector", "filter_platform"),
-    ("inv.FirmwarePolicy", "platform")
-])
+@on_delete_check(
+    check=[
+        ("sa.ManagedObject", "platform"),
+        ("sa.ManagedObjectSelector", "filter_platform"),
+        ("inv.FirmwarePolicy", "platform"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Platform(Document):
     meta = {
@@ -46,13 +50,7 @@ class Platform(Document):
         "auto_create_index": False,
         "json_collection": "inv.platforms",
         "json_unique_fields": [("vendor", "name")],
-        "indexes": [
-            {
-                "fields": ["vendor", "name"],
-                "unique": True
-            },
-            ("vendor", "aliases")
-        ]
+        "indexes": [{"fields": ["vendor", "name"], "unique": True}, ("vendor", "aliases")],
     }
     vendor = PlainReferenceField(Vendor)
     name = StringField()
@@ -102,14 +100,12 @@ class Platform(Document):
                 self.merge_platform(a)
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Platform.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return Platform.objects.filter(bi_id=id).first()
 
@@ -118,7 +114,7 @@ class Platform(Document):
             "$collection": self._meta["json_collection"],
             "vendor__code": self.vendor.code[0],
             "name": self.name,
-            "uuid": self.uuid
+            "uuid": self.uuid,
         }
         if self.aliases:
             r["aliases"] = [str(x) for x in self.aliases]
@@ -134,20 +130,32 @@ class Platform(Document):
             r["snmp_sysobjectid"] = self.snmp_sysobjectid
         if self.tags:
             r["tags"] = self.tags
-        return to_json(r, order=[
-            "vendor__name", "name", "$collection", "uuid", "aliases",
-            "description", "start_of_sale", "end_of_sale", "end_of_support",
-            "snmp_sysobjectid", "tags"])
+        return to_json(
+            r,
+            order=[
+                "vendor__name",
+                "name",
+                "$collection",
+                "uuid",
+                "aliases",
+                "description",
+                "start_of_sale",
+                "end_of_sale",
+                "end_of_support",
+                "snmp_sysobjectid",
+                "tags",
+            ],
+        )
 
     def get_json_path(self):
-        return os.path.join(self.vendor.code[0],
-                            "%s.json" % self.name.replace("/", "_"))
+        return os.path.join(self.vendor.code[0], "%s.json" % self.name.replace("/", "_"))
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_ensure_cache"),
         key=lambda v, n, strict=False, tags=None: "%s-%s" % (v.id, n),
-        lock=lambda _: id_lock)
+        lock=lambda _: id_lock,
+    )
     def ensure_platform(cls, vendor, name, strict=False, tags=None):
         """
         Get or create platform by vendor and code
@@ -165,18 +173,20 @@ class Platform(Document):
         # Try to create
         tags = tags or []
         pu = uuid.uuid4()
-        d = Platform._get_collection().find_one_and_update({
-            "vendor": vendor.id,
-            "name": name
-        }, {
-            "$setOnInsert": {
-                "uuid": pu,
-                "full_name": "%s %s" % (vendor.name, name),
-                "bi_id": Int64(new_bi_id()),
-                "aliases": [],
-                "tags": tags
-            }
-        }, upsert=True, return_document=ReturnDocument.AFTER)
+        d = Platform._get_collection().find_one_and_update(
+            {"vendor": vendor.id, "name": name},
+            {
+                "$setOnInsert": {
+                    "uuid": pu,
+                    "full_name": "%s %s" % (vendor.name, name),
+                    "bi_id": Int64(new_bi_id()),
+                    "aliases": [],
+                    "tags": tags,
+                }
+            },
+            upsert=True,
+            return_document=ReturnDocument.AFTER,
+        )
         d["id"] = d["_id"]
         del d["_id"]
         p = Platform(**d)

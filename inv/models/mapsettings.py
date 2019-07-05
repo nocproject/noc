@@ -9,12 +9,17 @@
 # Python modules
 import datetime
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, DateTimeField,
-                                ListField, FloatField,
-                                EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    DateTimeField,
+    ListField,
+    FloatField,
+    EmbeddedDocumentField,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -48,11 +53,8 @@ class LinkSettings(EmbeddedDocument):
     type = StringField()
     id = StringField()
     connector = StringField(
-        choices=[
-            (LC_NORMAL, "Normal"),
-            (LC_SMOOTH, "Smooth"),
-            (LC_ROUNDED, "Rounded")
-        ], default=LC_NORMAL
+        choices=[(LC_NORMAL, "Normal"), (LC_SMOOTH, "Smooth"), (LC_ROUNDED, "Rounded")],
+        default=LC_NORMAL,
     )
     vertices = ListField(EmbeddedDocumentField(VertexPosition))
 
@@ -62,11 +64,7 @@ class LinkSettings(EmbeddedDocument):
 
 @six.python_2_unicode_compatible
 class MapSettings(Document):
-    meta = {
-        "collection": "noc.mapsettings",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.mapsettings", "strict": False, "auto_create_index": False}
 
     # Segment or selector id
     segment = StringField(unique=True)
@@ -113,11 +111,7 @@ class MapSettings(Document):
             logger.info("Updating settings for %s", data["id"])
         else:
             logger.info("Creating new settings for %s", data["id"])
-            d = MapSettings(
-                segment=data["id"],
-                nodes=[],
-                links=[]
-            )
+            d = MapSettings(segment=data["id"], nodes=[], links=[])
         # Update meta
         if user:
             d.user = user
@@ -139,12 +133,7 @@ class MapSettings(Document):
         my = 0.0
         for n in new_nodes:
             nd = new_nodes[n]
-            nn += [NodeSettings(
-                type=nd["type"],
-                id=nd["id"],
-                x=nd["x"],
-                y=nd["y"]
-            )]
+            nn += [NodeSettings(type=nd["type"], id=nd["id"], x=nd["x"], y=nd["y"])]
             mx = max(mx, nd["x"])
             my = max(my, nd["y"])
         d.width = data.get("width", mx)
@@ -159,26 +148,25 @@ class MapSettings(Document):
             nl = new_links.get((l.type, l.id))
             if not nl:
                 continue  # Not found
-            l.vertices = [
-                VertexPosition(x=v["x"], y=v["y"])
-                for v in nl.get("vertices", [])
-            ]
+            l.vertices = [VertexPosition(x=v["x"], y=v["y"]) for v in nl.get("vertices", [])]
             l.connector = nl.get("connector", LC_NORMAL)
             nn += [l]
             del new_links[(l.type, l.id)]
         for l in new_links:
             nl = new_links[l]
-            nn += [LinkSettings(
-                type=nl["type"],
-                id=nl["id"],
-                vertices=[
-                    VertexPosition(x=v["x"], y=v["y"])
-                    for v in nl.get("vertices", [])
-                ],
-                connector=nl.get("connector", "normal")
-            )]
-        d.links = [l for l in sorted(nn, key=lambda x: (x.type, x.id))
-                   if l.vertices or l.connector != LC_NORMAL]
+            nn += [
+                LinkSettings(
+                    type=nl["type"],
+                    id=nl["id"],
+                    vertices=[VertexPosition(x=v["x"], y=v["y"]) for v in nl.get("vertices", [])],
+                    connector=nl.get("connector", "normal"),
+                )
+            ]
+        d.links = [
+            l
+            for l in sorted(nn, key=lambda x: (x.type, x.id))
+            if l.vertices or l.connector != LC_NORMAL
+        ]
         # Finally save
         d.save()
         return d

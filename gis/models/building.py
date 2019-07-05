@@ -8,11 +8,19 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, IntField, BooleanField,
-                                ListField, EmbeddedDocumentField,
-                                DictField, DateTimeField)
+from mongoengine.fields import (
+    StringField,
+    IntField,
+    BooleanField,
+    ListField,
+    EmbeddedDocumentField,
+    DictField,
+    DateTimeField,
+)
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.core.model.decorator import on_save
@@ -22,16 +30,13 @@ from .division import Division
 
 
 @on_save
-@on_delete_check(check=[
-    ("gis.Address", "building"), 
-    ("inv.CoveredBuilding", "building")
-])
+@on_delete_check(check=[("gis.Address", "building"), ("inv.CoveredBuilding", "building")])
 class Building(Document):
     meta = {
         "collection": "noc.buildings",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["adm_division", "data", "sort_order"]
+        "indexes": ["adm_division", "data", "sort_order"],
     }
     # Administrative division
     adm_division = PlainReferenceField(Division)
@@ -42,9 +47,10 @@ class Building(Document):
             ("B", "BUILDING"),
             ("R", "READY"),
             ("E", "EVICTED"),
-            ("D", "DEMOLISHED")
+            ("D", "DEMOLISHED"),
         ],
-        default="R")
+        default="R",
+    )
     # Total homes
     homes = IntField()
     # Maximal amount of floors
@@ -79,9 +85,15 @@ class Building(Document):
         # Fallback to first address found
         return Address.objects.filter(building=self.id).first()
 
-    def fill_entrances(self, first_entrance=1, first_home=1,
-                       n_entrances=1, first_floor=1, last_floor=1,
-                       homes_per_entrance=1):
+    def fill_entrances(
+        self,
+        first_entrance=1,
+        first_home=1,
+        n_entrances=1,
+        first_floor=1,
+        last_floor=1,
+        homes_per_entrance=1,
+    ):
         e_home = first_home
         for e in range(first_entrance, first_entrance + n_entrances):
             self.entrances += [
@@ -90,7 +102,7 @@ class Building(Document):
                     first_floor=str(first_floor),
                     last_floor=str(last_floor),
                     first_home=str(e_home),
-                    last_home=str(e_home + homes_per_entrance - 1)
+                    last_home=str(e_home + homes_per_entrance - 1),
                 )
             ]
             e_home += homes_per_entrance

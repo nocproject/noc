@@ -2,23 +2,17 @@
 # ---------------------------------------------------------------------
 # Layer Settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import os
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import ObjectIdField, IntField, BooleanField
 
 
 class LayerUserSettings(Document):
-    meta = {
-        "collection": "noc.layerusersettings",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.layerusersettings", "strict": False, "auto_create_index": False}
     # User Id
     user = IntField()
     # Layer Id
@@ -31,8 +25,7 @@ class LayerUserSettings(Document):
         s = LayerUserSettings.objects.filter(user=user.id, layer=layer.id).first()
         if s:
             return s.is_visible
-        else:
-            return True
+        return True
 
     @classmethod
     def set_layer_visibility(cls, user, layer, status):

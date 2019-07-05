@@ -8,7 +8,7 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, ObjectIdField, DateTimeField)
+from mongoengine.fields import StringField, ObjectIdField, DateTimeField
 
 
 class ObjectLog(Document):
@@ -16,7 +16,7 @@ class ObjectLog(Document):
         "collection": "noc.objectlog",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object"]
+        "indexes": ["object"],
     }
 
     # Inventory object reference

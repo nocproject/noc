@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 import operator
 import threading
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
+
 # NOC modules
 from noc.config import config
 from noc.lib.nosql import PlainReferenceField
@@ -29,27 +31,29 @@ id_lock = threading.Lock()
 
 @bi_sync
 @datastream
-@on_delete_check(check=[
-    ("inv.ResourceGroup", "parent"),
-    # sa.ManagedObject
-    ("sa.ManagedObject", "static_service_groups"),
-    ("sa.ManagedObject", "effective_service_groups"),
-    ("sa.ManagedObject", "static_client_groups"),
-    ("sa.ManagedObject", "effective_client_groups"),
-    # sa.ManagedObjectSelector
-    ("sa.ManagedObjectSelector", "filter_service_group"),
-    ("sa.ManagedObjectSelector", "filter_client_group"),
-    # phone.PhoneRange
-    ("phone.PhoneRange", "static_service_groups"),
-    ("phone.PhoneRange", "effective_service_groups"),
-    ("phone.PhoneRange", "static_client_groups"),
-    ("phone.PhoneRange", "effective_client_groups"),
-    # phone.PhoneNumber
-    ("phone.PhoneNumber", "static_service_groups"),
-    ("phone.PhoneNumber", "effective_service_groups"),
-    ("phone.PhoneNumber", "static_client_groups"),
-    ("phone.PhoneNumber", "effective_client_groups")
-])
+@on_delete_check(
+    check=[
+        ("inv.ResourceGroup", "parent"),
+        # sa.ManagedObject
+        ("sa.ManagedObject", "static_service_groups"),
+        ("sa.ManagedObject", "effective_service_groups"),
+        ("sa.ManagedObject", "static_client_groups"),
+        ("sa.ManagedObject", "effective_client_groups"),
+        # sa.ManagedObjectSelector
+        ("sa.ManagedObjectSelector", "filter_service_group"),
+        ("sa.ManagedObjectSelector", "filter_client_group"),
+        # phone.PhoneRange
+        ("phone.PhoneRange", "static_service_groups"),
+        ("phone.PhoneRange", "effective_service_groups"),
+        ("phone.PhoneRange", "static_client_groups"),
+        ("phone.PhoneRange", "effective_client_groups"),
+        # phone.PhoneNumber
+        ("phone.PhoneNumber", "static_service_groups"),
+        ("phone.PhoneNumber", "effective_service_groups"),
+        ("phone.PhoneNumber", "static_client_groups"),
+        ("phone.PhoneNumber", "effective_client_groups"),
+    ]
+)
 @six.python_2_unicode_compatible
 class ResourceGroup(Document):
     """
@@ -57,11 +61,8 @@ class ResourceGroup(Document):
 
     Abstraction to restrict ResourceGroup links
     """
-    meta = {
-        "collection": "resourcegroups",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "resourcegroups", "strict": False, "auto_create_index": False}
 
     # Group | Name
     name = StringField()
@@ -101,7 +102,4 @@ class ResourceGroup(Document):
 
     @property
     def has_children(self):
-        return bool(
-            ResourceGroup.objects.filter(
-                parent=self.id).only("id").first()
-        )
+        return bool(ResourceGroup.objects.filter(parent=self.id).only("id").first())

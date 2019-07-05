@@ -14,11 +14,7 @@ from mongoengine.fields import StringField, BooleanField, IntField, GeoPointFiel
 
 @six.python_2_unicode_compatible
 class Area(Document):
-    meta = {
-        "strict": False,
-        "auto_create_index": False,
-        "collection": "noc.gis.areas"
-    }
+    meta = {"strict": False, "auto_create_index": False, "collection": "noc.gis.areas"}
 
     name = StringField()
     is_active = BooleanField(default=True)

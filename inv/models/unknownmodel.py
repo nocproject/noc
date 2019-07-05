@@ -17,11 +17,12 @@ class UnknownModel(Document):
     """
     Equipment vendor
     """
+
     meta = {
         "collection": "noc.unknown_models",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [("vendor", "managed_object", "part_no")]
+        "indexes": [("vendor", "managed_object", "part_no")],
     }
 
     vendor = StringField()  # Vendor.code
@@ -31,29 +32,24 @@ class UnknownModel(Document):
     description = StringField()
 
     def __str__(self):
-        return u"%s, %s, %s" % (
-            self.vendor, self.managed_object, self.part_no)
+        return u"%s, %s, %s" % (self.vendor, self.managed_object, self.part_no)
 
     @classmethod
-    def mark_unknown(cls, vendor, managed_object, part_no,
-                     description=""):
-        cls._get_collection().find_and_modify({
-            "vendor": vendor,
-            "managed_object": managed_object.name,
-            "platform": managed_object.platform.name if managed_object.platform else "",
-            "part_no": part_no
-        }, update={
-            # "$setOnInsert": {
-            "$set": {
-                "description": description
-            }
-        }, upsert=True)
+    def mark_unknown(cls, vendor, managed_object, part_no, description=""):
+        cls._get_collection().find_and_modify(
+            {
+                "vendor": vendor,
+                "managed_object": managed_object.name,
+                "platform": managed_object.platform.name if managed_object.platform else "",
+                "part_no": part_no,
+            },
+            update={
+                # "$setOnInsert": {
+                "$set": {"description": description}
+            },
+            upsert=True,
+        )
 
     @classmethod
     def clear_unknown(cls, vendor, part_numbers):
-        cls._get_collection().delete_many({
-            "vendor": vendor,
-            "part_no": {
-                "$in": part_numbers
-            }
-        })
+        cls._get_collection().delete_many({"vendor": vendor, "part_no": {"$in": part_numbers}})

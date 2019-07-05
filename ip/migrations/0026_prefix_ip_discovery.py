@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -15,13 +16,14 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
-            "ip_prefix", "enable_ip_discovery",
+            "ip_prefix",
+            "enable_ip_discovery",
             models.CharField(
                 "Enable IP Discovery",
                 max_length=1,
                 choices=[("I", "Inherit"), ("E", "Enable"), ("D", "Disable")],
                 default="I",
                 blank=False,
-                null=False
-            )
+                null=False,
+            ),
         )

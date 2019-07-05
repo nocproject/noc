@@ -8,10 +8,13 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("ip_prefix", "name", models.CharField("Name", max_length=255, null=True, blank=True))
+        self.db.add_column(
+            "ip_prefix", "name", models.CharField("Name", max_length=255, null=True, blank=True)
+        )

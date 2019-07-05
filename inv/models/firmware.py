@@ -12,12 +12,14 @@ import os
 import threading
 import operator
 import uuid
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
 from mongoengine.errors import NotUniqueError
 import cachetools
+
 # NOC modules
 from .vendor import Vendor
 from noc.sa.models.profile import Profile
@@ -30,12 +32,14 @@ id_lock = threading.Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("sa.ManagedObject", "version"),
-    ("sa.ManagedObject", "next_version"),
-    ("sa.ManagedObjectSelector", "filter_version"),
-    ("inv.FirmwarePolicy", "firmware")
-])
+@on_delete_check(
+    check=[
+        ("sa.ManagedObject", "version"),
+        ("sa.ManagedObject", "next_version"),
+        ("sa.ManagedObjectSelector", "filter_version"),
+        ("inv.FirmwarePolicy", "firmware"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Firmware(Document):
     meta = {
@@ -43,16 +47,9 @@ class Firmware(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.firmwares",
-        "json_depends_on": [
-            "sa.profile"
-        ],
+        "json_depends_on": ["sa.profile"],
         "json_unique_fields": ["profile", "vendor", "version"],
-        "indexes": [
-            {
-                "fields": ["profile", "vendor", "version"],
-                "unique": True
-            }
-        ]
+        "indexes": [{"fields": ["profile", "vendor", "version"], "unique": True}],
     }
     # Global ID
     uuid = UUIDField(binary=True)
@@ -79,8 +76,7 @@ class Firmware(Document):
         super(Firmware, self).clean()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Firmware.objects.filter(id=id).first()
 
@@ -90,26 +86,28 @@ class Firmware(Document):
         return Firmware.objects.filter(bi_id=id).first()
 
     def to_json(self):
-        return to_json({
-            "$collection": self._meta["json_collection"],
-            "profile__name": self.profile.name,
-            "vendor__code": self.vendor.code[0],
-            "version": self.version,
-            "uuid": self.uuid
-        }, order=["profile__name", "vendor__code", "version", "uuid"])
+        return to_json(
+            {
+                "$collection": self._meta["json_collection"],
+                "profile__name": self.profile.name,
+                "vendor__code": self.vendor.code[0],
+                "version": self.version,
+                "uuid": self.uuid,
+            },
+            order=["profile__name", "vendor__code", "version", "uuid"],
+        )
 
     def get_json_path(self):
         return os.path.join(
-            self.vendor.code[0],
-            self.profile.name,
-            "%s.json" % self.version.replace(os.sep, "_")
+            self.vendor.code[0], self.profile.name, "%s.json" % self.version.replace(os.sep, "_")
         )
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_ensure_cache"),
         key=lambda p, v, vv: "%s-%s-%s" % (p.id, v.id, vv),
-        lock=lambda _: id_lock)
+        lock=lambda _: id_lock,
+    )
     def ensure_firmware(cls, profile, vendor, version):
         """
         Get or create firmware by profile, vendor and version
@@ -120,18 +118,13 @@ class Firmware(Document):
         """
         while True:
             firmware = Firmware.objects.filter(
-                profile=profile.id,
-                vendor=vendor.id,
-                version=version
+                profile=profile.id, vendor=vendor.id, version=version
             ).first()
             if firmware:
                 return firmware
             try:
                 firmware = Firmware(
-                    profile=profile,
-                    vendor=vendor,
-                    version=version,
-                    uuid=uuid.uuid4()
+                    profile=profile, vendor=vendor, version=version, uuid=uuid.uuid4()
                 )
                 firmware.save()
                 return firmware

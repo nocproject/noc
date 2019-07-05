@@ -13,10 +13,11 @@ import logging
 import hashlib
 import base64
 import datetime
+
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, FloatField, ListField,
-                                DateTimeField)
+from mongoengine.fields import StringField, FloatField, ListField, DateTimeField
+
 # NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
 from noc.config import config
@@ -28,12 +29,7 @@ logger = logging.getLogger(__name__)
 class GeocoderCache(Document):
     meta = {
         "collection": "noc.geocodercache",
-        "indexes": [
-            {
-                "fields": ["expires"],
-                "expireAfterSeconds": 0
-            }
-        ]
+        "indexes": [{"fields": ["expires"], "expireAfterSeconds": 0}],
     }
 
     # query hash
@@ -64,7 +60,7 @@ class GeocoderCache(Document):
 
     gcls = {
         "yandex": "noc.core.geocoding.yandex.YandexGeocoder",
-        "google": "noc.core.geocoding.google.GoogleGeocoder"
+        "google": "noc.core.geocoding.google.GoogleGeocoder",
     }
 
     @classmethod
@@ -119,7 +115,7 @@ class GeocoderCache(Document):
                 query=query,
                 path=r.get("path") or [],
                 lon=r.get("lon"),
-                lat=r.get("lat")
+                lat=r.get("lat"),
             )
         # Not found, resolve
         r = None
@@ -144,11 +140,7 @@ class GeocoderCache(Document):
                     r = None
             except GeoCoderError as e:
                 error = str(e)
-        sq = {
-            "query": query,
-            "system": gsys,
-            "error": error
-        }
+        sq = {"query": query, "system": gsys, "error": error}
         if not r and lr:
             r = lr  # Reuse first non-exact message
         if r:
@@ -160,7 +152,5 @@ class GeocoderCache(Document):
         if not r or not r.exact:
             sq["expires"] = datetime.datetime.now() + datetime.timedelta(seconds=cls.NEGATIVE_TTL)
         # Write to database
-        c.update({
-            "_id": hash
-        }, {"$set": sq}, upsert=True)
+        c.update({"_id": hash}, {"$set": sq}, upsert=True)
         return r

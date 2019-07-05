@@ -9,6 +9,7 @@
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -20,6 +21,7 @@ class KBUserBookmark(NOCModel):
     """
     User Bookmarks
     """
+
     class Meta(object):
         verbose_name = "KB User Bookmark"
         verbose_name_plural = "KB User Bookmarks"

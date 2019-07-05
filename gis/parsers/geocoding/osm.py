@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 from xml.parsers.expat import ParserCreate
+
 # NOC modules
 from .base import GeocodingParser
 
@@ -27,12 +28,7 @@ class OSMXMLParser(GeocodingParser):
 
     def xml_start_element(self, name, attrs):
         if name in ("node", "way"):
-            self.current = {
-                "name": name,
-                "attrs": attrs,
-                "tags": {},
-                "nodes": []
-            }
+            self.current = {"name": name, "attrs": attrs, "tags": {}, "nodes": []}
         elif name == "tag":
             self.current["tags"][attrs["k"]] = attrs["v"]
         elif name == "nd":
@@ -50,7 +46,7 @@ class OSMXMLParser(GeocodingParser):
                     t.get("addr:country"),
                     t.get("addr:city"),
                     t.get("addr:street"),
-                    t.get("addr:housenumber")
+                    t.get("addr:housenumber"),
                 ]
                 addr = ", ".join(x for x in fp if x)
                 # Get points
@@ -58,8 +54,7 @@ class OSMXMLParser(GeocodingParser):
                     (float(self.nodes[n][0]), float(self.nodes[n][1]))
                     for n in self.current["nodes"]
                 ]
-                self.feed_building(self.current["attrs"]["id"],
-                                   addr, self.get_centroid(points))
+                self.feed_building(self.current["attrs"]["id"], addr, self.get_centroid(points))
 
     def parse(self, f):
         self.xml_parser.ParseFile(f)

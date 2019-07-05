@@ -8,26 +8,26 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DictField, BooleanField, DateTimeField)
+from mongoengine.fields import StringField, DictField, BooleanField, DateTimeField
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from .division import Division
 
 
-@on_delete_check(check=[
-    ("gis.Address", "street")
-])
+@on_delete_check(check=[("gis.Address", "street")])
 @six.python_2_unicode_compatible
 class Street(Document):
     meta = {
         "collection": "noc.streets",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["parent", "data"]
+        "indexes": ["parent", "data"],
     }
     #
     parent = PlainReferenceField(Division)
