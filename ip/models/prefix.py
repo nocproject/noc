@@ -725,7 +725,6 @@ class Prefix(NOCModel):
 
 
 # Avoid circular references
-from noc.dns.models.dnszone import DNSZone
 from .address import Address
 from .prefixaccess import PrefixAccess
 from .addressrange import AddressRange

@@ -9,7 +9,6 @@
 # Third-party modules
 import six
 from django.db import models
-from django.db.models import Q
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -67,18 +66,3 @@ class KBEntryAttachment(NOCModel):
             return s["mtime"]
         else:
             return None
-
-    @classmethod
-    def search(cls, user, query, limit):
-        """
-        Search engine
-        """
-        if user.has_perm("kb.change_kbentry"):
-            q = Q(name__icontains=query) | Q(description__icontains=query)
-            for r in KBEntryAttachment.objects.filter(q):
-                yield SearchResult(
-                    url=("kb:view:view", r.kb_entry.id),
-                    title="KB%d: %s" % (r.kb_entry.id, r.kb_entry.subject),
-                    text="Attachement: %s (%s)" % (r.name, r.description),
-                    relevancy=1.0,
-                )

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Firmware Policy
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from __future__ import absolute_import
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, ReferenceField, ListField, EmbeddedDocumentField
+from mongoengine.fields import StringField, ListField, EmbeddedDocumentField
 
 # NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
