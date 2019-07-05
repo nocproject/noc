@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import itertools
+
 # Thirs-party modules
 from six.moves import zip
 
@@ -23,7 +24,7 @@ class GeocodingParser(object):
         pass
 
     def feed_building(self, b_id, addr, coords):
-        print("BUILDING(%s=%s)" % (self.ID_ADDR, b_id), addr, coords)
+        print ("BUILDING(%s=%s)" % (self.ID_ADDR, b_id), addr, coords)
 
     def get_centroid(self, points):
         """

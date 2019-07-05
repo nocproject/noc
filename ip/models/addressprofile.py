@@ -9,11 +9,13 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
+
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
@@ -27,21 +29,19 @@ id_lock = Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("ip.Address", "profile"),
-    ("sa.ManagedObjectProfile", "address_profile_interface"),
-    ("sa.ManagedObjectProfile", "address_profile_management"),
-    ("sa.ManagedObjectProfile", "address_profile_dhcp"),
-    ("sa.ManagedObjectProfile", "address_profile_neighbor"),
-    ("sa.ManagedObjectProfile", "address_profile_confdb")
-])
+@on_delete_check(
+    check=[
+        ("ip.Address", "profile"),
+        ("sa.ManagedObjectProfile", "address_profile_interface"),
+        ("sa.ManagedObjectProfile", "address_profile_management"),
+        ("sa.ManagedObjectProfile", "address_profile_dhcp"),
+        ("sa.ManagedObjectProfile", "address_profile_neighbor"),
+        ("sa.ManagedObjectProfile", "address_profile_confdb"),
+    ]
+)
 @six.python_2_unicode_compatible
 class AddressProfile(Document):
-    meta = {
-        "collection": "addressprofiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "addressprofiles", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
@@ -53,12 +53,7 @@ class AddressProfile(Document):
     # Template.subject to render Address.fqdn
     fqdn_template = ForeignKeyField(Template)
     # Send seen event to prefix
-    seen_propagation_policy = StringField(
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable")
-        ], default="D"
-    )
+    seen_propagation_policy = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="D")
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems

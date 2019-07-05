@@ -8,33 +8,37 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DictField, BooleanField,
-                                DateTimeField, IntField, ListField)
+from mongoengine.fields import (
+    StringField,
+    DictField,
+    BooleanField,
+    DateTimeField,
+    IntField,
+    ListField,
+)
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 
 
-@on_delete_check(check=[
-    ("gis.Street", "parent"),
-    ("gis.Division", "parent"),
-    ("gis.Building", "adm_division")
-])
+@on_delete_check(
+    check=[("gis.Street", "parent"), ("gis.Division", "parent"), ("gis.Building", "adm_division")]
+)
 @six.python_2_unicode_compatible
 class Division(Document):
     meta = {
         "collection": "noc.divisions",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["parent", "data", "name"]
+        "indexes": ["parent", "data", "name"],
     }
     # Division type
-    type = StringField(default="A", choices=[
-        ("A", "Administrative")
-    ])
+    type = StringField(default="A", choices=[("A", "Administrative")])
     #
     parent = PlainReferenceField("self")
     # Normalized name
@@ -69,6 +73,7 @@ class Division(Document):
 
     def get_buildings(self):
         from .building import Building
+
         return Building.objects.filter(adm_division=self.id).order_by("sort_order")
 
     @classmethod
@@ -76,6 +81,7 @@ class Division(Document):
         """
         Update divisions levels
         """
+
         def _update(root, level):
             if root.level != level:
                 root.level = level

@@ -9,11 +9,13 @@
 # Python modules
 from __future__ import absolute_import
 from operator import attrgetter
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -25,6 +27,7 @@ class PrefixBookmark(NOCModel):
     """
     User Bookmarks
     """
+
     class Meta(object):
         verbose_name = _("Prefix Bookmark")
         verbose_name_plural = _("Prefix Bookmarks")
@@ -36,8 +39,7 @@ class PrefixBookmark(NOCModel):
     prefix = models.ForeignKey(Prefix, verbose_name="Prefix", on_delete=models.CASCADE)
 
     def __str__(self):
-        return u"Bookmark at %s for %s" % (
-            self.prefix, self.user.username)
+        return u"Bookmark at %s for %s" % (self.prefix, self.user.username)
 
     @classmethod
     def user_bookmarks(cls, user, vrf=None, afi=None):
@@ -55,7 +57,4 @@ class PrefixBookmark(NOCModel):
                 q &= Q(prefix__vrf=vrf, prefix__afi=afi)
             else:
                 q &= Q(prefix__vrf=vrf)
-        return sorted(
-            [b.prefix for b in cls.objects.filter(q)],
-            key=attrgetter("prefix")
-        )
+        return sorted([b.prefix for b in cls.objects.filter(q)], key=attrgetter("prefix"))

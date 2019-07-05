@@ -5,7 +5,4 @@
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-AFI_CHOICES = [
-    ("4", "IPv4"),
-    ("6", "IPv6")
-]
+AFI_CHOICES = [("4", "IPv4"), ("6", "IPv6")]

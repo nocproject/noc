@@ -9,9 +9,11 @@
 # Python modules
 from __future__ import absolute_import
 import re
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.lib.app.site import site
@@ -25,6 +27,7 @@ class KBEntryTemplate(NOCModel):
     """
     KB Entry Template
     """
+
     class Meta(object):
         verbose_name = "KB Entry Template"
         verbose_name_plural = "KB Entry Templates"
@@ -36,10 +39,14 @@ class KBEntryTemplate(NOCModel):
     subject = models.CharField("Subject", max_length=256)
     body = models.TextField("Body")
     language = models.ForeignKey(
-        Language, verbose_name="Language",limit_choices_to={"is_active": True}, on_delete=models.CASCADE
+        Language,
+        verbose_name="Language",
+        limit_choices_to={"is_active": True},
+        on_delete=models.CASCADE,
     )
-    markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=[(x, x) for x in loader])
+    markup_language = models.CharField(
+        "Markup Language", max_length="16", choices=[(x, x) for x in loader]
+    )
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
     rx_template_var = re.compile("{{([^}]+)}}", re.MULTILINE)

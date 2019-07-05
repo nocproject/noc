@@ -8,16 +8,12 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DateField, StringField)
+from mongoengine.fields import StringField, DateField, StringField
 from noc.lib.nosql import PlainReferenceField
 
 
 class NormativeDocument(Document):
-    meta = {
-        "collection": "noc.normative_documents",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.normative_documents", "strict": False, "auto_create_index": False}
     name = StringField()
     doc_date = DateField()
     number = StringField()

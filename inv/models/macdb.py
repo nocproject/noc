@@ -9,12 +9,19 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # Third-party modules
 import six
+
 # NOC modules
-from noc.lib.nosql import (Document, StringField, ForeignKeyField,
-                           PlainReferenceField, DateTimeField,
-                           IntField)
+from noc.lib.nosql import (
+    Document,
+    StringField,
+    ForeignKeyField,
+    PlainReferenceField,
+    DateTimeField,
+    IntField,
+)
 from .interface import Interface
 from noc.sa.models.managedobject import ManagedObject
 from noc.vc.models.vcdomain import VCDomain
@@ -27,11 +34,12 @@ class MACDB(Document):
     """
     Customer MAC address database
     """
+
     meta = {
         "collection": "noc.macs",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["mac", "interface"]
+        "indexes": ["mac", "interface"],
     }
     # Todo: Add Validation
     mac = StringField()
@@ -73,8 +81,7 @@ class MACDB(Document):
         vcd = vc_domain.id if vc_domain else None
         m = MACDB.objects.filter(mac=mac, vc_domain=vcd).first()
         if m:
-            if (managed_object != m.managed_object or
-                    interface != m.interface or vlan != m.vlan):
+            if managed_object != m.managed_object or interface != m.interface or vlan != m.vlan:
                 # Database change, write history
                 MACLog(
                     timestamp=m.last_changed,
@@ -82,7 +89,7 @@ class MACDB(Document):
                     vc_domain_name=vc_domain.name if vc_domain else None,
                     vlan=m.vlan,
                     managed_object_name=m.managed_object.name,
-                    interface_name=m.interface.name
+                    interface_name=m.interface.name,
                 ).save()
                 m.vlan = vlan
                 m.managed_object = managed_object
@@ -99,6 +106,6 @@ class MACDB(Document):
                 vlan=vlan,
                 managed_object=managed_object,
                 interface=interface,
-                last_changed=timestamp
+                last_changed=timestamp,
             ).save()
             return True

@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -23,23 +24,21 @@ class Migration(BaseMigration):
         om = db.noc.objectmodels
         root = om.find_one({"name": "Root"})
         if not root:
-            print("    Create Root model stub")
-            root = om.insert_one({"name": "Root", "uuid": self.ROOT_UUID, "data": {"container": {"container": True}}})
+            print ("    Create Root model stub")
+            root = om.insert_one(
+                {"name": "Root", "uuid": self.ROOT_UUID, "data": {"container": {"container": True}}}
+            )
             root = root.inserted_id
         else:
             root = root["_id"]
         lost_and_found = om.find_one({"name": "Lost&Found"})
         if not lost_and_found:
-            print("    Create Lost&Found model stub")
+            print ("    Create Lost&Found model stub")
             lost_and_found = om.insert_one(
                 {
                     "name": "Lost&Found",
                     "uuid": self.LOST_N_FOUND_UUID,
-                    "data": {
-                        "container": {
-                            "container": True
-                        }
-                    }
+                    "data": {"container": {"container": True}},
                 }
             )
             lost_and_found = lost_and_found.inserted_id
@@ -49,13 +48,17 @@ class Migration(BaseMigration):
         objects = db.noc.objects
         r = objects.insert_one({"name": "Root", "model": root})
         r = r.inserted_id
-        lf = objects.insert_one({"name": "Global Lost&Found", "model": lost_and_found, "container": r})
+        lf = objects.insert_one(
+            {"name": "Global Lost&Found", "model": lost_and_found, "container": r}
+        )
         lf = lf.inserted_id
         # Find all outer connection names
         m_c = {}
         containers = set()
         for m in db.noc.objectmodels.find():
-            m_c[m["_id"]] = set(c["name"] for c in m.get("connections", []) if c["direction"] == "o")
+            m_c[m["_id"]] = set(
+                c["name"] for c in m.get("connections", []) if c["direction"] == "o"
+            )
             if m.get("data", {}).get("container", {}).get("container", False):
                 containers.add(m["_id"])
         # Assign all unconnected objects to l&f

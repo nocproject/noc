@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+
 # NOC modules
 from noc.config import config
 from noc.core.model.base import NOCModel
@@ -33,9 +35,7 @@ from .addressprofile import AddressProfile
 @datastream
 @full_text_search
 @workflow
-@on_delete_check(check=[
-    ("ip.Address", "ipv6_transition")
-])
+@on_delete_check(check=[("ip.Address", "ipv6_transition")])
 @six.python_2_unicode_compatible
 class Address(NOCModel):
     class Meta(object):
@@ -47,79 +47,60 @@ class Address(NOCModel):
 
     prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"), on_delete=models.CASCADE)
     vrf = models.ForeignKey(
-        VRF,
-        verbose_name=_("VRF"),
-        default=VRF.get_global,
-        on_delete=models.CASCADE
+        VRF, verbose_name=_("VRF"), default=VRF.get_global, on_delete=models.CASCADE
     )
-    afi = models.CharField(
-        _("Address Family"),
-        max_length=1,
-        choices=AFI_CHOICES)
+    afi = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
     address = INETField(_("Address"))
-    profile = DocumentReferenceField(
-        AddressProfile,
-        null=False, blank=False
-    )
-    name = models.CharField(
-        _("Name"),
-        max_length=255,
-        null=False, blank=False
-    )
+    profile = DocumentReferenceField(AddressProfile, null=False, blank=False)
+    name = models.CharField(_("Name"), max_length=255, null=False, blank=False)
     fqdn = models.CharField(
         _("FQDN"),
         max_length=255,
         help_text=_("Full-qualified Domain Name"),
         validators=[check_fqdn],
-        null=True, blank=True
-    )
-    project = models.ForeignKey(
-        Project, verbose_name="Project",
-        on_delete=models.SET_NULL,
-        null=True, blank=True, related_name="address_set")
-    mac = MACField(
-        "MAC",
         null=True,
         blank=True,
-        help_text=_("MAC Address"))
+    )
+    project = models.ForeignKey(
+        Project,
+        verbose_name="Project",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="address_set",
+    )
+    mac = MACField("MAC", null=True, blank=True, help_text=_("MAC Address"))
     auto_update_mac = models.BooleanField(
-        "Auto Update MAC",
-        default=False,
-        help_text=_("Set to auto-update MAC field"))
+        "Auto Update MAC", default=False, help_text=_("Set to auto-update MAC field")
+    )
     managed_object = models.ForeignKey(
         ManagedObject,
         verbose_name=_("Managed Object"),
-        null=True, blank=True,
+        null=True,
+        blank=True,
         related_name="address_set",
         on_delete=models.SET_NULL,
-        help_text=_("Set if address belongs to the Managed Object's interface"))
-    subinterface = models.CharField(
-        "SubInterface",
-        max_length=128,
-        null=True, blank=True
+        help_text=_("Set if address belongs to the Managed Object's interface"),
     )
-    description = models.TextField(
-        _("Description"),
-        blank=True, null=True)
+    subinterface = models.CharField("SubInterface", max_length=128, null=True, blank=True)
+    description = models.TextField(_("Description"), blank=True, null=True)
     tags = TagsField(_("Tags"), null=True, blank=True)
-    tt = models.IntegerField(
-        _("TT"),
-        blank=True, null=True,
-        help_text=_("Ticket #"))
-    state = DocumentReferenceField(
-        State,
-        null=True, blank=True
-    )
+    tt = models.IntegerField(_("TT"), blank=True, null=True, help_text=_("Ticket #"))
+    state = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
-        null=True, blank=True,
-        help_text=_("Address temporary allocated till the date"))
+        null=True,
+        blank=True,
+        help_text=_("Address temporary allocated till the date"),
+    )
     ipv6_transition = models.OneToOneField(
         "self",
         related_name="ipv4_transition",
-        null=True, blank=True,
+        null=True,
+        blank=True,
         limit_choices_to={"afi": "6"},
-        on_delete=models.SET_NULL)
+        on_delete=models.SET_NULL,
+    )
     source = models.CharField(
         "Source",
         max_length=1,
@@ -128,10 +109,11 @@ class Address(NOCModel):
             ("i", "Interface"),
             ("m", "Management"),
             ("d", "DHCP"),
-            ("n", "Neighbor")
+            ("n", "Neighbor"),
         ],
-        null=False, blank=False,
-        default="M"
+        null=False,
+        blank=False,
+        default="M",
     )
 
     csv_ignored_fields = ["prefix"]
@@ -175,9 +157,7 @@ class Address(NOCModel):
         afi = cls.get_afi(address)
         try:
             a = Address.objects.get(
-                afi=afi,
-                address=address,
-                vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id)
+                afi=afi, address=address, vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id)
             )
             return a.vrf
         except Address.DoesNotExist:
@@ -246,7 +226,7 @@ class Address(NOCModel):
             "id": "ip.address:%s" % self.id,
             "title": self.address,
             "content": "\n".join(content),
-            "card": card
+            "card": card,
         }
         if self.tags:
             r["tags"] = self.tags

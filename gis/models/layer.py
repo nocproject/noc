@@ -10,11 +10,13 @@
 import os
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, IntField, BooleanField
 import cachetools
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -23,16 +25,14 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("inv.Object", "layer")
-])
+@on_delete_check(check=[("inv.Object", "layer")])
 @six.python_2_unicode_compatible
 class Layer(Document):
     meta = {
         "collection": "noc.layers",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "gis.layers"
+        "json_collection": "gis.layers",
     }
     name = StringField(unique=True)
     code = StringField(unique=True)
@@ -51,13 +51,27 @@ class Layer(Document):
     # Point symbolizer
     point_radius = IntField(default=5)
     point_graphic = StringField(
-        choices=[(x, x) for x in ("circle", "triangle", "cross", "x", "square", "star", "diamond", "antenna", "flag")],
-        default="circle"
+        choices=[
+            (x, x)
+            for x in (
+                "circle",
+                "triangle",
+                "cross",
+                "x",
+                "square",
+                "star",
+                "diamond",
+                "antenna",
+                "flag",
+            )
+        ],
+        default="circle",
     )
     # Line symbolizer
-    stroke_dashstyle = StringField(choices=[(x, x) for x in (
-        "solid", "dash", "dashdot", "longdash",
-        "longdashdot")], default="solid")
+    stroke_dashstyle = StringField(
+        choices=[(x, x) for x in ("solid", "dash", "dashdot", "longdash", "longdashdot")],
+        default="solid",
+    )
     # Text symbolizers
     show_labels = BooleanField(default=True)
 
@@ -100,15 +114,14 @@ class Layer(Document):
             "point_radius": self.point_radius,
             "point_graphic": self.point_graphic,
             "show_labels": self.show_labels,
-            "stroke_dashstyle": self.stroke_dashstyle
+            "stroke_dashstyle": self.stroke_dashstyle,
         }
         if self.description:
             r["description"] = self.description
         return r
 
     def to_json(self):
-        return to_json(self.json_data, order=["name", "$collection",
-                                              "uuid", "description"])
+        return to_json(self.json_data, order=["name", "$collection", "uuid", "description"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

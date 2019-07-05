@@ -10,6 +10,7 @@
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import TagsField
@@ -17,14 +18,13 @@ from noc.lib.app.site import site
 from noc.core.model.decorator import on_delete_check
 
 
-@on_delete_check(check=[
-    ("ip.VRF", "vrf_group")
-])
+@on_delete_check(check=[("ip.VRF", "vrf_group")])
 @six.python_2_unicode_compatible
 class VRFGroup(NOCModel):
     """
     Group of VRFs with common properties
     """
+
     class Meta(object):
         verbose_name = _("VRF Group")
         verbose_name_plural = _("VRF Groups")
@@ -33,19 +33,18 @@ class VRFGroup(NOCModel):
         ordering = ["name"]
 
     name = models.CharField(
-        _("VRF Group"),
-        unique=True,
-        max_length=64,
-        help_text=_("Unique VRF Group name"))
+        _("VRF Group"), unique=True, max_length=64, help_text=_("Unique VRF Group name")
+    )
     address_constraint = models.CharField(
         _("Address Constraint"),
         max_length=1,
         choices=[
             ("V", _("Addresses are unique per VRF")),
-            ("G", _("Addresses are unique per VRF Group"))],
-        default="V")
-    description = models.TextField(
-        _("Description"), blank=True, null=True)
+            ("G", _("Addresses are unique per VRF Group")),
+        ],
+        default="V",
+    )
+    description = models.TextField(_("Description"), blank=True, null=True)
     tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __str__(self):

@@ -8,6 +8,7 @@
 
 # Third-party modules
 import bson
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -24,11 +25,9 @@ class Migration(BaseMigration):
                 "mac_restrict_to_management_vlan": False,
                 "enable_lost_redundancy": True,
                 "topology_methods": [
-                    {
-                        "method": m,
-                        "is_active": True
-                    } for m in ["oam", "lacp", "udld", "lldp", "cdp", "huawei_ndp", "stp", "nri"]
-                ]
+                    {"method": m, "is_active": True}
+                    for m in ["oam", "lacp", "udld", "lldp", "cdp", "huawei_ndp", "stp", "nri"]
+                ],
             }
         )
         if isinstance(result, bson.ObjectId):

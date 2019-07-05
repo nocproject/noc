@@ -8,6 +8,7 @@
 
 # Third-party modules
 from pymongo import UpdateOne
+
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.migration.base import BaseMigration

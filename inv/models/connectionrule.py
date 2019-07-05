@@ -8,11 +8,12 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, UUIDField,
-                                ListField, EmbeddedDocumentField)
+from mongoengine.fields import StringField, UUIDField, ListField, EmbeddedDocumentField
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -21,10 +22,7 @@ from noc.core.model.decorator import on_delete_check
 
 @six.python_2_unicode_compatible
 class Context(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     type = StringField()
     scope = StringField()
     reset_scopes = ListField(StringField())
@@ -34,27 +32,20 @@ class Context(EmbeddedDocument):
 
     def __eq__(self, other):
         return (
-            self.type == other.type and
-            self.scope == other.scope and
-            self.reset_scopes == other.reset_scopes
+            self.type == other.type
+            and self.scope == other.scope
+            and self.reset_scopes == other.reset_scopes
         )
 
     @property
     def json_data(self):
-        r = {
-            "type": self.type,
-            "scope": self.scope,
-            "reset_scopes": self.reset_scopes
-        }
+        r = {"type": self.type, "scope": self.scope, "reset_scopes": self.reset_scopes}
         return r
 
 
 @six.python_2_unicode_compatible
 class Rule(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     match_type = StringField()
     match_connection = StringField()
     scope = StringField()
@@ -64,18 +55,22 @@ class Rule(EmbeddedDocument):
 
     def __str__(self):
         return "%s:%s -(%s)-> %s %s:%s" % (
-            self.match_type, self.match_connection, self.scope,
-            self.target_type, self.target_number,
-            self.target_connection)
+            self.match_type,
+            self.match_connection,
+            self.scope,
+            self.target_type,
+            self.target_number,
+            self.target_connection,
+        )
 
     def __eq__(self, other):
         return (
-            self.match_type == other.match_type and
-            self.match_connection == other.match_connection and
-            self.scope == other.scope and
-            self.target_type == other.target_type and
-            self.target_number == other.target_number and
-            self.target_connection == other.target_connection
+            self.match_type == other.match_type
+            and self.match_connection == other.match_connection
+            and self.scope == other.scope
+            and self.target_type == other.target_type
+            and self.target_number == other.target_number
+            and self.target_connection == other.target_connection
         )
 
     @property
@@ -86,25 +81,24 @@ class Rule(EmbeddedDocument):
             "scope": self.scope,
             "target_type": self.target_type,
             "target_number": self.target_number,
-            "target_connection": self.target_connection
+            "target_connection": self.target_connection,
         }
 
 
-@on_delete_check(check=[
-    ("inv.ObjectModel", "connection_rule")
-])
+@on_delete_check(check=[("inv.ObjectModel", "connection_rule")])
 @six.python_2_unicode_compatible
 class ConnectionRule(Document):
     """
     Equipment vendor
     """
+
     meta = {
         "collection": "noc.connectionrules",
         "strict": False,
         "auto_create_index": False,
         "indexes": [],
         "json_collection": "inv.connectionrules",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name"],
     }
 
     name = StringField(unique=True)
@@ -124,14 +118,13 @@ class ConnectionRule(Document):
             "uuid": self.uuid,
             "description": self.description,
             "context": [c.json_data for c in self.context],
-            "rules": [c.json_data for c in self.rules]
+            "rules": [c.json_data for c in self.rules],
         }
 
     def to_json(self):
-        return to_json(self.json_data,
-                       order=["name", "$collection",
-                              "uuid", "description",
-                              "context", "rules"])
+        return to_json(
+            self.json_data, order=["name", "$collection", "uuid", "description", "context", "rules"]
+        )
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

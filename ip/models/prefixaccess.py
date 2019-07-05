@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 from functools import reduce
 from collections import defaultdict
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -37,10 +39,7 @@ class PrefixAccess(NOCModel):
 
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
     vrf = models.ForeignKey(VRF, verbose_name=_("VRF"), on_delete=models.CASCADE)
-    afi = models.CharField(
-        _("Address Family"),
-        max_length=1,
-        choices=AFI_CHOICES)
+    afi = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
     prefix = CIDRField(_("Prefix"))
     can_view = models.BooleanField(_("Can View"), default=False)
     can_change = models.BooleanField(_("Can Change"), default=False)
@@ -54,8 +53,9 @@ class PrefixAccess(NOCModel):
         return u"%s: %s(%s): %s: %s" % (
             self.user.username,
             self.vrf.name,
-            self.afi, self.prefix,
-            ", ".join(perms)
+            self.afi,
+            self.prefix,
+            ", ".join(perms),
         )
 
     def clean(self):
@@ -91,15 +91,11 @@ class PrefixAccess(NOCModel):
                 prefix += "/32"
             else:
                 prefix += "/128"
-        return PrefixAccess.objects.filter(
-            vrf=vrf,
-            afi=afi,
-            user=user,
-            can_view=True
-        ).extra(
-            where=["prefix >>= %s"],
-            params=[prefix]
-        ).exists()
+        return (
+            PrefixAccess.objects.filter(vrf=vrf, afi=afi, user=user, can_view=True)
+            .extra(where=["prefix >>= %s"], params=[prefix])
+            .exists()
+        )
 
     @classmethod
     def user_can_change(cls, user, vrf, afi, prefix):
@@ -123,15 +119,11 @@ class PrefixAccess(NOCModel):
                 prefix += "/32"
             else:
                 prefix += "/128"
-        return PrefixAccess.objects.filter(
-            vrf=vrf,
-            afi=afi,
-            user=user,
-            can_change=True
-        ).extra(
-            where=["prefix >>= %s"],
-            params=[prefix]
-        ).exists()
+        return (
+            PrefixAccess.objects.filter(vrf=vrf, afi=afi, user=user, can_change=True)
+            .extra(where=["prefix >>= %s"], params=[prefix])
+            .exists()
+        )
 
     @classmethod
     def read_Q(cls, user, field="prefix", table=""):
@@ -153,11 +145,17 @@ class PrefixAccess(NOCModel):
         stmt = []
         for vrf, afi in vaccess:
             for p in vaccess[vrf, afi]:
-                stmt += ["(%s = %d AND %s = '%s' AND %s <<= '%s')" % (
-                    "%s.vrf_id" % table if table else "vrf_id", vrf,
-                    "%s.afi" % table if table else "afi", afi,
-                    "%s.%s" % (table, field) if table else field, p
-                )]
+                stmt += [
+                    "(%s = %d AND %s = '%s' AND %s <<= '%s')"
+                    % (
+                        "%s.vrf_id" % table if table else "vrf_id",
+                        vrf,
+                        "%s.afi" % table if table else "afi",
+                        afi,
+                        "%s.%s" % (table, field) if table else field,
+                        p,
+                    )
+                ]
         return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))
 
 

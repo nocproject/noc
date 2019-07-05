@@ -11,12 +11,14 @@ from __future__ import absolute_import
 import datetime
 import operator
 from threading import Lock
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, ListField, PointField, LongField
 from mongoengine import signals
 import cachetools
 import six
+
 # NOC modules
 from noc.gis.models.layer import Layer
 from noc.lib.nosql import PlainReferenceField
@@ -38,16 +40,19 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 @bi_sync
 @on_save
-@on_delete_check(check=[
-    ("sa.ManagedObject", "container"),
-    ("inv.CoveredObject", "object"),
-    ("inv.Object", "container")
-])
+@on_delete_check(
+    check=[
+        ("sa.ManagedObject", "container"),
+        ("inv.CoveredObject", "object"),
+        ("inv.Object", "container"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Object(Document):
     """
     Inventory object
     """
+
     meta = {
         "collection": "noc.objects",
         "strict": False,
@@ -57,8 +62,8 @@ class Object(Document):
             "container",
             ("name", "container"),
             ("model", "data.asset.serial"),
-            "data.management.managed_object"
-        ]
+            "data.management.managed_object",
+        ],
     }
 
     name = StringField()
@@ -77,10 +82,7 @@ class Object(Document):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    REBUILD_CONNECTIONS = [
-        "links",
-        "conduits"
-    ]
+    REBUILD_CONNECTIONS = ["links", "conduits"]
 
     def __str__(self):
         return unicode(self.name or self.id)
@@ -138,14 +140,11 @@ class Object(Document):
                     c.save()
             # Update nested objects
             from noc.sa.models.managedobject import ManagedObject
+
             mos = get_coordless_objects(self)
             if mos:
-                ManagedObject.objects.filter(
-                    container__in=mos
-                ).update(
-                    x=geo.get("x"),
-                    y=geo.get("y"),
-                    default_zoom=self.layer.default_zoom
+                ManagedObject.objects.filter(container__in=mos).update(
+                    x=geo.get("x"), y=geo.get("y"), default_zoom=self.layer.default_zoom
                 )
         if self._created:
             if self.container:
@@ -219,14 +218,7 @@ class Object(Document):
         None, None, None
         """
         c = ObjectConnection.objects.filter(
-            __raw__={
-                "connection": {
-                    "$elemMatch": {
-                        "object": self.id,
-                        "name": name
-                    }
-                }
-            }
+            __raw__={"connection": {"$elemMatch": {"object": self.id, "name": name}}}
         ).first()
         if c:
             for x in c.connection:
@@ -238,14 +230,7 @@ class Object(Document):
     def get_genderless_connections(self, name):
         r = []
         for c in ObjectConnection.objects.filter(
-            __raw__={
-                "connection": {
-                    "$elemMatch": {
-                        "object": self.id,
-                        "name": name
-                    }
-                }
-            }
+            __raw__={"connection": {"$elemMatch": {"object": self.id, "name": name}}}
         ):
             for x in c.connection:
                 if x.object.id != self.id:
@@ -258,12 +243,10 @@ class Object(Document):
         """
         c = self.get_p2p_connection(name)[0]
         if c:
-            self.log(u"'%s' disconnected" % name,
-                     system="CORE", op="DISCONNECT")
+            self.log(u"'%s' disconnected" % name, system="CORE", op="DISCONNECT")
             c.delete()
 
-    def connect_p2p(self, name, remote_object, remote_name, data,
-                    reconnect=False):
+    def connect_p2p(self, name, remote_object, remote_name, data, reconnect=False):
         lc = self.model.get_model_connection(name)
         if lc is None:
             raise ConnectionError("Local connection not found: %s" % name)
@@ -275,21 +258,20 @@ class Object(Document):
         # Check genders are compatible
         r_gender = ConnectionType.OPPOSITE_GENDER[rc.gender]
         if lc.gender != r_gender:
-            raise ConnectionError("Incompatible genders: %s - %s" % (
-                lc.gender, rc.gender
-            ))
+            raise ConnectionError("Incompatible genders: %s - %s" % (lc.gender, rc.gender))
         # Check directions are compatible
-        if ((lc.direction == "i" and rc.direction != "o") or
-                (lc.direction == "o" and rc.direction != "i") or
-                (lc.direction == "s" and rc.direction != "s")):
-            raise ConnectionError("Incompatible directions: %s - %s" % (
-                lc.direction, rc.direction))
+        if (
+            (lc.direction == "i" and rc.direction != "o")
+            or (lc.direction == "o" and rc.direction != "i")
+            or (lc.direction == "s" and rc.direction != "s")
+        ):
+            raise ConnectionError("Incompatible directions: %s - %s" % (lc.direction, rc.direction))
         # Check types are compatible
         c_types = lc.type.get_compatible_types(lc.gender)
         if rc.type.id not in c_types:
-            raise ConnectionError("Incompatible connection types: %s - %s" % (
-                lc.type.name, rc.type.name
-            ))
+            raise ConnectionError(
+                "Incompatible connection types: %s - %s" % (lc.type.name, rc.type.name)
+            )
         # Check existing connecitons
         if lc.type.genders in ("s", "m", "f", "mf"):
             ec, r_object, r_name = self.get_p2p_connection(name)
@@ -311,23 +293,25 @@ class Object(Document):
         c = ObjectConnection(
             connection=[
                 ObjectConnectionItem(object=self, name=name),
-                ObjectConnectionItem(object=remote_object,
-                                     name=remote_name)
+                ObjectConnectionItem(object=remote_object, name=remote_name),
             ],
-            data=data
+            data=data,
         ).save()
-        self.log(u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
-                 system="CORE", op="CONNECT")
+        self.log(
+            u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
+            system="CORE",
+            op="CONNECT",
+        )
         # Disconnect from container on o-connection
         if lc.direction == "o" and self.container:
-            self.log(u"Remove from %s" % self.container,
-                     system="CORE", op="REMOVE")
+            self.log(u"Remove from %s" % self.container, system="CORE", op="REMOVE")
             self.container = None
             self.save()
         return c
 
-    def connect_genderless(self, name, remote_object, remote_name,
-                           data=None, type=None, layer=None):
+    def connect_genderless(
+        self, name, remote_object, remote_name, data=None, type=None, layer=None
+    ):
         """
         Connect two genderless connections
         """
@@ -356,15 +340,17 @@ class Object(Document):
         ObjectConnection(
             connection=[
                 ObjectConnectionItem(object=self, name=name),
-                ObjectConnectionItem(object=remote_object,
-                                     name=remote_name)
+                ObjectConnectionItem(object=remote_object, name=remote_name),
             ],
             data=data or {},
             type=type or None,
-            layer=layer
+            layer=layer,
         ).save()
-        self.log(u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
-                 system="CORE", op="CONNECT")
+        self.log(
+            u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
+            system="CORE",
+            op="CONNECT",
+        )
 
     def put_into(self, container):
         """
@@ -386,9 +372,7 @@ class Object(Document):
                 if k in self.data["rackmount"]:
                     del self.data["rackmount"][k]
         self.save()
-        self.log(
-            "Insert into %s" % (container or "Root"),
-            system="CORE", op="INSERT")
+        self.log("Insert into %s" % (container or "Root"), system="CORE", op="INSERT")
 
     def get_content(self):
         """
@@ -416,8 +400,7 @@ class Object(Document):
             current = current.container
         return np
 
-    def log(self, message, user=None, system=None,
-            managed_object=None, op=None):
+    def log(self, message, user=None, system=None, managed_object=None, op=None):
         if not user:
             user = get_user()
         if hasattr(user, "username"):
@@ -433,7 +416,7 @@ class Object(Document):
             message=message,
             system=system,
             managed_object=managed_object,
-            op=op
+            op=op,
         ).save()
 
     def get_log(self):
@@ -470,8 +453,7 @@ class Object(Document):
         (name, remote_object, remote_name)
         """
         ic = set(c.name for c in self.model.connections if c.direction == direction)
-        for c in ObjectConnection.objects.filter(
-                connection__object=self.id):
+        for c in ObjectConnection.objects.filter(connection__object=self.id):
             sn = None
             oc = None
             for cc in c.connection:
@@ -521,10 +503,8 @@ class Object(Document):
 
     @classmethod
     def delete_disconnect(cls, sender, document, target=None):
-        for c in ObjectConnection.objects.filter(
-                connection__object=document.id):
-            left = [cc for cc in c.connection
-                    if cc.object.id != document.id]
+        for c in ObjectConnection.objects.filter(connection__object=document.id):
+            left = [cc for cc in c.connection if cc.object.id != document.id]
             if len(left) < 2:
                 c.delete()  # Remove connection
             else:
@@ -595,11 +575,7 @@ class Object(Document):
         return current
 
     def update_pop_links(self, delay=20):
-        call_later(
-            "noc.inv.util.pop_links.update_pop_links",
-            delay,
-            pop_id=self.id
-        )
+        call_later("noc.inv.util.pop_links.update_pop_links", delay, pop_id=self.id)
 
     @classmethod
     def _pre_init(cls, sender, document, values, **kwargs):

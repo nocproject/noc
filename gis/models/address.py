@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, DictField, BooleanField
 from mongoengine.signals import post_save
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from .street import Street
@@ -23,7 +25,7 @@ class Address(Document):
         "collection": "noc.addresses",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["building", "street"]
+        "indexes": ["building", "street"],
     }
     #
     building = PlainReferenceField(Building)
@@ -54,6 +56,7 @@ class Address(Document):
         """
         Reset other primary addresses from building
         """
+
         def q(x):
             return x if x else ""
 
@@ -64,37 +67,32 @@ class Address(Document):
 
         if document.is_primary:
             # Reset other primary addresses
-            Address._get_collection().update({
-                "building": document.building.id,
-                "id": {"$ne": document.id}
-            }, {
-                "$set": {
-                    "is_primary": False
-                }
-            })
+            Address._get_collection().update(
+                {"building": document.building.id, "id": {"$ne": document.id}},
+                {"$set": {"is_primary": False}},
+            )
             # Fill sort order
-            so = "|".join((str(x) if x else "") for x in [
-                document.street.name,
-                q(document.street.short_name),
-                nq(document.num),
-                q(document.num_letter),
-                nq(document.num2),
-                nq(document.build),
-                q(document.build_letter),
-                nq(document.struct),
-                q(document.struct_letter),
-                nq(document.struct2),
-                nq(document.estate),
-                q(document.estate_letter),
-                nq(document.estate2)
-            ])
-            Building._get_collection().update({
-                "_id": document.building.id
-            }, {
-                "$set": {
-                    "sort_order": so
-                }
-            })
+            so = "|".join(
+                (str(x) if x else "")
+                for x in [
+                    document.street.name,
+                    q(document.street.short_name),
+                    nq(document.num),
+                    q(document.num_letter),
+                    nq(document.num2),
+                    nq(document.build),
+                    q(document.build_letter),
+                    nq(document.struct),
+                    q(document.struct_letter),
+                    nq(document.struct2),
+                    nq(document.estate),
+                    q(document.estate_letter),
+                    nq(document.estate2),
+                ]
+            )
+            Building._get_collection().update(
+                {"_id": document.building.id}, {"$set": {"sort_order": so}}
+            )
 
     def display_ru(self, levels=0, to_level=None, sep=", "):
         """

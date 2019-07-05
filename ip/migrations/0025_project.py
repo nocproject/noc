@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -17,13 +18,12 @@ class Migration(BaseMigration):
 
     def migrate(self):
         # Create .state
-        Project = self.db.mock_model(
-            model_name="Project",
-            db_table="project_project"
-        )
+        Project = self.db.mock_model(model_name="Project", db_table="project_project")
         for t in ["ip_vrf", "ip_prefix", "ip_address"]:
             self.db.add_column(
                 t,
                 "project",
-                models.ForeignKey(Project, verbose_name="Project", null=True, blank=True, on_delete=models.CASCADE)
+                models.ForeignKey(
+                    Project, verbose_name="Project", null=True, blank=True, on_delete=models.CASCADE
+                ),
             )

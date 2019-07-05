@@ -24,5 +24,4 @@ def parse_osm_bounds(tag):
     """
     doc = xml.dom.minidom.parseString(tag)
     e = doc.getElementsByTagName("bounds")[0]
-    return [float(e.getAttribute(n)) for n in ("minlon", "minlat",
-                                               "maxlon", "maxlat")]
+    return [float(e.getAttribute(n)) for n in ("minlon", "minlat", "maxlon", "maxlat")]

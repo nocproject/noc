@@ -17,4 +17,6 @@ class Migration(BaseMigration):
         collection = db.noc.networksegments
 
         if collection.count_documents({}) == 0:
-            collection.insert_one({"name": "ALL", "parent": None, "description": "All network", "settings": {}})
+            collection.insert_one(
+                {"name": "ALL", "parent": None, "description": "All network", "settings": {}}
+            )

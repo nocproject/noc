@@ -19,8 +19,7 @@ class Migration(BaseMigration):
             c.insert_one(
                 {
                     "name": DEFAULT_NAME,
-                    "description": "Fallback interface profile.\n"
-                    "Do not remove or rename",
-                    "link_events": "A"
+                    "description": "Fallback interface profile.\n" "Do not remove or rename",
+                    "link_events": "A",
                 }
             )

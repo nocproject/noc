@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
 import cachetools
+
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 from noc.lib.nosql import PlainReferenceField
@@ -25,16 +27,10 @@ id_lock = Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("inv.NetworkSegment", "allocation_group")
-])
+@on_delete_check(check=[("inv.NetworkSegment", "allocation_group")])
 @six.python_2_unicode_compatible
 class AllocationGroup(Document):
-    meta = {
-        "collection": "allocationgroups",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "allocationgroups", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()

@@ -10,11 +10,13 @@
 import os
 import operator
 import threading
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, BooleanField, LongField
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
@@ -25,9 +27,7 @@ id_lock = threading.Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("inv.ResourceGroup", "technology")
-])
+@on_delete_check(check=[("inv.ResourceGroup", "technology")])
 @six.python_2_unicode_compatible
 class Technology(Document):
     """
@@ -35,6 +35,7 @@ class Technology(Document):
 
     Abstraction to restrict ResourceGroup links
     """
+
     meta = {
         "collection": "technologies",
         "strict": False,
@@ -88,7 +89,7 @@ class Technology(Document):
             "uuid": self.uuid,
             "single_service": self.single_service,
             "single_client": self.single_client,
-            "allow_children": self.allow_children
+            "allow_children": self.allow_children,
         }
         if self.description:
             r["description"] = self.description
@@ -96,7 +97,17 @@ class Technology(Document):
             r["service_model"] = self.service_model
         if self.client_model:
             r["client_model"] = self.client_model
-        return to_json(r, order=[
-            "name", "$collection", "uuid", "description", "service_model", "client_model",
-            "single_service", "single_client", "allow_children"
-        ])
+        return to_json(
+            r,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "description",
+                "service_model",
+                "client_model",
+                "single_service",
+                "single_client",
+                "allow_children",
+            ],
+        )

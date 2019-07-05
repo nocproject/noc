@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (IntField)
+from mongoengine.fields import IntField
+
 # NOC modules
 from .coverage import Coverage
 from noc.inv.models.object import Object
@@ -24,7 +26,7 @@ class CoveredObject(Document):
         "collection": "noc.coveredobjects",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["coverage", "object"]
+        "indexes": ["coverage", "object"],
     }
     coverage = PlainReferenceField(Coverage)
     # Coverage preference.
@@ -35,7 +37,4 @@ class CoveredObject(Document):
     object = PlainReferenceField(Object)
 
     def __str__(self):
-        return u"%s %s" % (
-            self.coverage.name,
-            self.object.name or self.object.id
-        )
+        return u"%s %s" % (self.coverage.name, self.object.name or self.object.id)
