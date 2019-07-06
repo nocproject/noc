@@ -7,12 +7,19 @@
 # ----------------------------------------------------------------------
 
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("main_userprofile", "heatmap_lon", models.FloatField("Longitude", blank=True, null=True))
-        self.db.add_column("main_userprofile", "heatmap_lat", models.FloatField("Latitude", blank=True, null=True))
-        self.db.add_column("main_userprofile", "heatmap_zoom", models.IntegerField("Zoom", blank=True, null=True))
+        self.db.add_column(
+            "main_userprofile", "heatmap_lon", models.FloatField("Longitude", blank=True, null=True)
+        )
+        self.db.add_column(
+            "main_userprofile", "heatmap_lat", models.FloatField("Latitude", blank=True, null=True)
+        )
+        self.db.add_column(
+            "main_userprofile", "heatmap_zoom", models.IntegerField("Zoom", blank=True, null=True)
+        )

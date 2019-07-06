@@ -13,4 +13,6 @@ from noc.core.model.fields import TagsField
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("sa_managedobjectprofile", "tags", TagsField("Tags", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobjectprofile", "tags", TagsField("Tags", null=True, blank=True)
+        )

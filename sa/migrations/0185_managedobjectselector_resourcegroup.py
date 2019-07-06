@@ -14,10 +14,12 @@ from noc.core.model.fields import DocumentReferenceField
 class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
-            "sa_managedobjectselector", "filter_service_group",
-            DocumentReferenceField("inv.ResourceGroup", null=True, blank=True)
+            "sa_managedobjectselector",
+            "filter_service_group",
+            DocumentReferenceField("inv.ResourceGroup", null=True, blank=True),
         )
         self.db.add_column(
-            "sa_managedobjectselector", "filter_client_group",
-            DocumentReferenceField("inv.ResourceGroup", null=True, blank=True)
+            "sa_managedobjectselector",
+            "filter_client_group",
+            DocumentReferenceField("inv.ResourceGroup", null=True, blank=True),
         )

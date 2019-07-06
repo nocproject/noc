@@ -12,4 +12,4 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.delete_table('sa_task')
+        self.db.delete_table("sa_task")

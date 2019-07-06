@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -15,10 +16,16 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         ManagedObjectSelector = self.db.mock_model(
-            model_name="ManagedObjectSelector",
-            db_table="sa_managedobjectselector"
+            model_name="ManagedObjectSelector", db_table="sa_managedobjectselector"
         )
         self.db.add_column(
-            "vc_vcdomain", "selector",
-            models.ForeignKey(ManagedObjectSelector, verbose_name="Selector", null=True, blank=True, on_delete=models.CASCADE)
+            "vc_vcdomain",
+            "selector",
+            models.ForeignKey(
+                ManagedObjectSelector,
+                verbose_name="Selector",
+                null=True,
+                blank=True,
+                on_delete=models.CASCADE,
+            ),
         )

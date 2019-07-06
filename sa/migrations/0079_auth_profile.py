@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -15,30 +16,33 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         self.db.create_table(
-            "sa_authprofile", (
+            "sa_authprofile",
+            (
                 ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 ("name", models.CharField("Name", max_length=64, unique=True)),
                 ("description", models.TextField("Description", null=True, blank=True)),
                 ("type", models.CharField("Name", max_length=1)),
                 ("user", models.CharField("User", max_length=32, blank=True, null=True)),
                 ("password", models.CharField("Password", max_length=32, blank=True, null=True)),
-                ("super_password", models.CharField("Super Password", max_length=32, blank=True, null=True)),
+                (
+                    "super_password",
+                    models.CharField("Super Password", max_length=32, blank=True, null=True),
+                ),
                 ("snmp_ro", models.CharField("RO Community", blank=True, null=True, max_length=64)),
-                ("snmp_rw", models.CharField("RW Community", blank=True, null=True, max_length=64))
-            )
+                ("snmp_rw", models.CharField("RW Community", blank=True, null=True, max_length=64)),
+            ),
         )
         # Mock Models
-        AuthProfile = self.db.mock_model(
-            model_name="AuthProfile",
-            db_table="sa_authprofile"
-        )
+        AuthProfile = self.db.mock_model(model_name="AuthProfile", db_table="sa_authprofile")
 
         self.db.add_column(
-            "sa_managedobject", "auth_profile",
+            "sa_managedobject",
+            "auth_profile",
             models.ForeignKey(
                 AuthProfile,
                 verbose_name="Auth Profile",
-                null=True, blank=True,
-                on_delete=models.CASCADE
-            )
+                null=True,
+                blank=True,
+                on_delete=models.CASCADE,
+            ),
         )

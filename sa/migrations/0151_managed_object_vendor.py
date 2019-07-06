@@ -8,6 +8,7 @@
 
 # Third-party modules
 import uuid
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
@@ -27,7 +28,7 @@ OLD_VENDOR_MAP = {
     "NOC": "NOC",
     "NoName": "NONAME",
     "ZTE": "ZTE",
-    "ZyXEL": "ZYXEL"
+    "ZyXEL": "ZYXEL",
 }
 
 
@@ -38,14 +39,20 @@ class Migration(BaseMigration):
         #
 
         # Select vendors
-        vendors = set(r[0] for r in self.db.execute(
-            "SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key = 'vendor'"))
+        vendors = set(
+            r[0]
+            for r in self.db.execute(
+                "SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key = 'vendor'"
+            )
+        )
         pcoll = self.mongo_db["noc.vendors"]
         # Update inventory vendors records
         inventory_vendors = {}
         for v in pcoll.find():
             if v.get("code"):
-                inventory_vendors[v["code"][0] if isinstance(v["code"], list) else v["code"]] = v["_id"]
+                inventory_vendors[v["code"][0] if isinstance(v["code"], list) else v["code"]] = v[
+                    "_id"
+                ]
                 continue
             if v["name"] in OLD_VENDOR_MAP:
                 vc = OLD_VENDOR_MAP[v["name"]]
@@ -54,31 +61,18 @@ class Migration(BaseMigration):
             vc = vc.upper()
             inventory_vendors[vc] = v["_id"]
             u = uuid.uuid4()
-            pcoll.update_one({
-                "_id": v["_id"]
-            }, {
-                "$set": {
-                    "code": vc,
-                    "uuid": u
-                }
-            })
+            pcoll.update_one({"_id": v["_id"]}, {"$set": {"code": vc, "uuid": u}})
         # Create vendors records
         for v in vendors:
             u = uuid.uuid4()
             vc = v.upper()
             if vc in inventory_vendors:
                 continue
-            pcoll.update_one({
-                "code": vc
-            }, {
-                "$set": {
-                    "code": vc
-                },
-                "$setOnInsert": {
-                    "name": v,
-                    "uuid": u
-                }
-            }, upsert=True)
+            pcoll.update_one(
+                {"code": vc},
+                {"$set": {"code": vc}, "$setOnInsert": {"name": v, "uuid": u}},
+                upsert=True,
+            )
         # Get vendor record mappings
         vmap = {}  # name -> id
         for d in pcoll.find({}, {"_id": 1, "code": 1}):
@@ -87,13 +81,12 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobject",
             "vendor",
-            DocumentReferenceField(
-                "inv.Vendor", null=True, blank=True
-            )
+            DocumentReferenceField("inv.Vendor", null=True, blank=True),
         )
         # Migrate profile data
         for v in vendors:
-            self.db.execute("""
+            self.db.execute(
+                """
                 UPDATE sa_managedobject
                 SET vendor = %s
                 WHERE
@@ -104,4 +97,6 @@ class Migration(BaseMigration):
                       key = 'vendor'
                       AND value = %s
                   )
-            """, [vmap[v.upper()], v])
+            """,
+                [vmap[v.upper()], v],
+            )

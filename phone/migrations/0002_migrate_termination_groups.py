@@ -8,6 +8,7 @@
 
 # Third-party modules
 from pymongo import UpdateMany
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -20,14 +21,9 @@ class Migration(BaseMigration):
         db = self.mongo_db
         rg_map = dict(
             (x["_legacy_id"], x["_id"])
-            for x in db.resourcegroups.find({
-                "_legacy_id": {
-                    "$exists": True
-                }
-            }, {
-                "_id": 1,
-                "_legacy_id": 1
-            })
+            for x in db.resourcegroups.find(
+                {"_legacy_id": {"$exists": True}}, {"_id": 1, "_legacy_id": 1}
+            )
         )
         # Apply Resource Groups
         for cname in ["noc.phoneranges", "noc.phonenumbers"]:
@@ -39,17 +35,14 @@ class Migration(BaseMigration):
                 rg_id = rg_map[d["_id"]]
                 bulk += [
                     UpdateMany(
+                        {"termination_group": d["_id"]},
                         {
-                            "termination_group": d["_id"]
-                        }, {
                             "$set": {
                                 "static_client_groups": [rg_id],
                                 "effective_client_groups": [rg_id],
                             },
-                            "$unset": {
-                                "termination_group": ""
-                            }
-                        }
+                            "$unset": {"termination_group": ""},
+                        },
                     )
                 ]
             if bulk:

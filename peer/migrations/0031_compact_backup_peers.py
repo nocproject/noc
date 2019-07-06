@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -19,8 +20,16 @@ class Migration(BaseMigration):
             """SELECT id,peering_point_id,peer_group_id,local_asn_id,remote_asn,local_pref,import_filter,export_filter
             FROM peer_peer"""
         )
-        for peer_id, peering_point_id, peer_group_id, local_asn_id, remote_asn, local_pref, import_filter, \
-                export_filter in peers:
+        for (
+            peer_id,
+            peering_point_id,
+            peer_group_id,
+            local_asn_id,
+            remote_asn,
+            local_pref,
+            import_filter,
+            export_filter,
+        ) in peers:
             if peer_id in backup:
                 continue
             r = self.db.execute(
@@ -33,10 +42,17 @@ class Migration(BaseMigration):
                                         AND remote_asn=%s
                                         AND local_pref=%s
                                         AND import_filter=%s
-                                        AND export_filter=%s ORDER BY local_ip DESC""", [
-                    peer_id, peering_point_id, peer_group_id, local_asn_id, remote_asn, local_pref, import_filter,
-                    export_filter
-                ]
+                                        AND export_filter=%s ORDER BY local_ip DESC""",
+                [
+                    peer_id,
+                    peering_point_id,
+                    peer_group_id,
+                    local_asn_id,
+                    remote_asn,
+                    local_pref,
+                    import_filter,
+                    export_filter,
+                ],
             )
             if r:
                 backup_id, local_backup_ip, remote_backup_ip = r[0]
@@ -46,6 +62,6 @@ class Migration(BaseMigration):
             peer_id, local_backup_ip, remote_backup_ip = args
             self.db.execute(
                 "UPDATE peer_peer SET local_backup_ip=%s,remote_backup_ip=%s WHERE id=%s",
-                [local_backup_ip, remote_backup_ip, peer_id]
+                [local_backup_ip, remote_backup_ip, peer_id],
             )
             self.db.execute("DELETE FROM peer_peer WHERE id=%s", [backup_id])

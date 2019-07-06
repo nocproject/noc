@@ -12,4 +12,7 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.execute("UPDATE sa_managedobject SET name=%s,profile_name=%s WHERE name=%s", ["SAE", "NOC.SAE", "ROOT"])
+        self.db.execute(
+            "UPDATE sa_managedobject SET name=%s,profile_name=%s WHERE name=%s",
+            ["SAE", "NOC.SAE", "ROOT"],
+        )

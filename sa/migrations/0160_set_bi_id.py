@@ -9,6 +9,7 @@
 # Third-party modules
 from pymongo import UpdateOne
 import bson
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
@@ -20,8 +21,11 @@ MONGO_CHUNK = 500
 class Migration(BaseMigration):
     def migrate(self):
         MODELS = [
-            "sa_administrativedomain", "sa_authprofile", "sa_managedobject", "sa_managedobjectprofile",
-            "sa_terminationgroup"
+            "sa_administrativedomain",
+            "sa_authprofile",
+            "sa_managedobject",
+            "sa_managedobjectprofile",
+            "sa_terminationgroup",
         ]
         # Update postgresql tables
         for table in MODELS:
@@ -39,7 +43,8 @@ class Migration(BaseMigration):
                       %s
                     ) AS c(id, bi_id)
                     WHERE c.id = t.id
-                    """ % (table, ",\n".join(chunk))
+                    """
+                    % (table, ",\n".join(chunk))
                 )
         # Update mongodb collections
         mdb = self.mongo_db
@@ -47,7 +52,9 @@ class Migration(BaseMigration):
             coll = mdb[coll_name]
             updates = []
             for d in coll.find({"bi_id": {"$exists": False}}, {"_id": 1}):
-                updates += [UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_hash(d["_id"]))}})]
+                updates += [
+                    UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_hash(d["_id"]))}})
+                ]
                 if len(updates) >= MONGO_CHUNK:
                     coll.bulk_write(updates)
                     updates = []

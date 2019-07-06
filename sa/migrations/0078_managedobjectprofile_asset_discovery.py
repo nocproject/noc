@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -17,10 +18,18 @@ class Migration(BaseMigration):
 
     def migrate(self):
         for d in self.d_types:
-            self.db.add_column("sa_managedobjectprofile", "enable_%s_discovery" % d, models.BooleanField("", default=False))
             self.db.add_column(
-                "sa_managedobjectprofile", "%s_discovery_min_interval" % d, models.IntegerField("", default=600)
+                "sa_managedobjectprofile",
+                "enable_%s_discovery" % d,
+                models.BooleanField("", default=False),
             )
             self.db.add_column(
-                "sa_managedobjectprofile", "%s_discovery_max_interval" % d, models.IntegerField("", default=86400)
+                "sa_managedobjectprofile",
+                "%s_discovery_min_interval" % d,
+                models.IntegerField("", default=600),
+            )
+            self.db.add_column(
+                "sa_managedobjectprofile",
+                "%s_discovery_max_interval" % d,
+                models.IntegerField("", default=86400),
             )

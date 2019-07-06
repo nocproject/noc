@@ -23,5 +23,10 @@ class Migration(BaseMigration):
         for f, t in LEGACY:
             self.db.execute("UPDATE peer_peeringpointtype SET name=%s WHERE name=%s", [t, f])
         for t in TYPES:
-            if self.db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [t])[0][0] == 0:
+            if (
+                self.db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [t])[0][
+                    0
+                ]
+                == 0
+            ):
                 self.db.execute("INSERT INTO peer_peeringpointtype(name) VALUES(%s)", [t])

@@ -15,5 +15,8 @@ NAMES = ["Other Normal", "Other Extended"]
 class Migration(BaseMigration):
     def migrate(self):
         for n in NAMES:
-            if self.db.execute("SELECT COUNT(*) FROM peer_communitytype WHERE name=%s", [n])[0][0] == 0:
+            if (
+                self.db.execute("SELECT COUNT(*) FROM peer_communitytype WHERE name=%s", [n])[0][0]
+                == 0
+            ):
                 self.db.execute("INSERT INTO peer_communitytype(name) VALUES(%s)", [n])
