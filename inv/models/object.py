@@ -21,7 +21,7 @@ import six
 
 # NOC modules
 from noc.gis.models.layer import Layer
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.core.middleware.tls import get_user
 from noc.core.gridvcs.manager import GridVCSField

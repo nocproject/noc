@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from mongoengine.document import Document
 
 # NOC models
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from .normativedocument import NormativeDocument
 
 

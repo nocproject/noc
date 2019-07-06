@@ -21,7 +21,7 @@ import geojson
 
 # NOC modules
 from noc.inv.models.object import Object
-from noc.lib.nosql import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.gis.models.layer import Layer
 
 
