@@ -12,9 +12,7 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
 
-    depends_on = [
-        ("sa", "0003_task_schedule")
-    ]
+    depends_on = [("sa", "0003_task_schedule")]
 
     def migrate(self):
         self.db.execute(

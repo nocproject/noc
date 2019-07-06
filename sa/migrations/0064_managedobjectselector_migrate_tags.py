@@ -14,7 +14,9 @@ from noc.core.model.fields import TagsField
 class Migration(BaseMigration):
     def migrate(self):
         # Create temporary tags fields
-        self.db.add_column("sa_managedobjectselector", "tmp_filter_tags", TagsField("Tags", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobjectselector", "tmp_filter_tags", TagsField("Tags", null=True, blank=True)
+        )
         # Migrate data
         self.db.execute(
             """

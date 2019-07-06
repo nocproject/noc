@@ -32,4 +32,6 @@ class Migration(BaseMigration):
             self.db.execute("DROP INDEX %s" % "x_managedobject_addressprefix")
 
         self.db.execute(func)
-        self.db.execute("CREATE INDEX x_managedobject_addressprefix ON sa_managedobject (cast_test_to_inet(address))")
+        self.db.execute(
+            "CREATE INDEX x_managedobject_addressprefix ON sa_managedobject (cast_test_to_inet(address))"
+        )

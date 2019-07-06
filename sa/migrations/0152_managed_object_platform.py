@@ -8,9 +8,11 @@
 
 # Python modules
 import uuid
+
 # Third-party modules
 import bson
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
@@ -55,20 +57,12 @@ class Migration(BaseMigration):
             u = uuid.uuid4()
             v = bson.ObjectId(vendor)
             pcoll.update_one(
+                {"vendor": v, "name": platform},
                 {
-                    "vendor": v,
-                    "name": platform
-                }, {
-                    "$set": {
-                        "name": platform,
-                        "full_name": platform
-                    },
-                    "$setOnInsert": {
-                        "vendor": v,
-                        "uuid": u
-                    }
+                    "$set": {"name": platform, "full_name": platform},
+                    "$setOnInsert": {"vendor": v, "uuid": u},
                 },
-                upsert=True
+                upsert=True,
             )
         # Create firmware
         for profile, vendor, version in versions:
@@ -76,21 +70,12 @@ class Migration(BaseMigration):
             pv = bson.ObjectId(profile)
             vv = bson.ObjectId(vendor)
             fcoll.update_one(
+                {"profile": pv, "vendor": vv, "version": version},
                 {
-                    "profile": pv,
-                    "vendor": vv,
-                    "version": version
-                }, {
-                    "$set": {
-                        "version": version
-                    },
-                    "$setOnInsert": {
-                        "profile": pv,
-                        "vendor": vv,
-                        "uuid": u
-                    }
+                    "$set": {"version": version},
+                    "$setOnInsert": {"profile": pv, "vendor": vv, "uuid": u},
                 },
-                upsert=True
+                upsert=True,
             )
         # Get platforms records
         pmap = {}  # vendor, platform -> id
@@ -101,15 +86,28 @@ class Migration(BaseMigration):
         for d in fcoll.find({}, {"_id": 1, "profile": 1, "version": 1}):
             fmap[str(d["profile"]), d["version"]] = str(d["_id"])
         # Create .platform field
-        self.db.add_column("sa_managedobject", "platform", DocumentReferenceField("inv.Platform", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject",
+            "platform",
+            DocumentReferenceField("inv.Platform", null=True, blank=True),
+        )
         # Create .version field
-        self.db.add_column("sa_managedobject", "version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject",
+            "version",
+            DocumentReferenceField("inv.Firmware", null=True, blank=True),
+        )
         # Create .next_version field
-        self.db.add_column("sa_managedobject", "next_version", DocumentReferenceField("inv.Firmware", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject",
+            "next_version",
+            DocumentReferenceField("inv.Firmware", null=True, blank=True),
+        )
         # Create software_image field
         self.db.add_column(
-            "sa_managedobject", "software_image",
-            models.CharField("Software Image", max_length=255, null=True, blank=True)
+            "sa_managedobject",
+            "software_image",
+            models.CharField("Software Image", max_length=255, null=True, blank=True),
         )
         #
         for profile, vendor, platform, version in data:
@@ -138,11 +136,21 @@ class Migration(BaseMigration):
                       AND a3.key = 'version'
                       AND a3.value = %s
                   )
-            """, [pmap[vendor, platform], fmap[profile, version], profile, vendor, platform, version]
+            """,
+                [
+                    pmap[vendor, platform],
+                    fmap[profile, version],
+                    profile,
+                    vendor,
+                    platform,
+                    version,
+                ],
             )
         # Fill software_image field
-        images = self.db.execute("SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key='image'")
-        for img, in images:
+        images = self.db.execute(
+            "SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key='image'"
+        )
+        for (img,) in images:
             self.db.execute(
                 """
             UPDATE sa_managedobject
@@ -155,7 +163,8 @@ class Migration(BaseMigration):
                   key = 'image'
                   AND value = %s
                 )
-            """, [img, img]
+            """,
+                [img, img],
             )
         # Remove old data
         self.db.execute(

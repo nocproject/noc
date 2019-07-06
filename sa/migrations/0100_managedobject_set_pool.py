@@ -15,7 +15,9 @@ class Migration(BaseMigration):
         mdb = self.mongo_db
         for d in mdb.noc.pools.find():
             pid = int(d["name"][1:])
-            self.db.execute("UPDATE sa_managedobject SET pool=%s WHERE activator_id=%s", [str(d["_id"]), pid])
+            self.db.execute(
+                "UPDATE sa_managedobject SET pool=%s WHERE activator_id=%s", [str(d["_id"]), pid]
+            )
         # Adjust scheme values
         # For smooth develop -> post-microservice migration
         self.db.execute("UPDATE sa_managedobject SET scheme = scheme + 1")

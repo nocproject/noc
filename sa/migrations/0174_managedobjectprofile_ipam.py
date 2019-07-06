@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
@@ -18,24 +19,32 @@ class Migration(BaseMigration):
 
     def migrate(self):
         self.db.add_column(
-            "sa_managedobjectprofile", "enable_box_discovery_address_management", models.BooleanField(default=False)
+            "sa_managedobjectprofile",
+            "enable_box_discovery_address_management",
+            models.BooleanField(default=False),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "enable_box_discovery_address_dhcp", models.BooleanField(default=False)
+            "sa_managedobjectprofile",
+            "enable_box_discovery_address_dhcp",
+            models.BooleanField(default=False),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "address_profile_interface",
-            DocumentReferenceField("ip.AddressProfile", null=True, blank=True)
+            "sa_managedobjectprofile",
+            "address_profile_interface",
+            DocumentReferenceField("ip.AddressProfile", null=True, blank=True),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "address_profile_management",
-            DocumentReferenceField("ip.AddressProfile", null=True, blank=True)
+            "sa_managedobjectprofile",
+            "address_profile_management",
+            DocumentReferenceField("ip.AddressProfile", null=True, blank=True),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "address_profile_neighbor",
-            DocumentReferenceField("ip.AddressProfile", null=True, blank=True)
+            "sa_managedobjectprofile",
+            "address_profile_neighbor",
+            DocumentReferenceField("ip.AddressProfile", null=True, blank=True),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "address_profile_dhcp",
-            DocumentReferenceField("ip.AddressProfile", null=True, blank=True)
+            "sa_managedobjectprofile",
+            "address_profile_dhcp",
+            DocumentReferenceField("ip.AddressProfile", null=True, blank=True),
         )

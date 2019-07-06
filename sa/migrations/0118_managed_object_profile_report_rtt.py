@@ -8,10 +8,15 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("sa_managedobjectprofile", "report_ping_rtt", models.BooleanField("Report RTT", default=False))
+        self.db.add_column(
+            "sa_managedobjectprofile",
+            "report_ping_rtt",
+            models.BooleanField("Report RTT", default=False),
+        )

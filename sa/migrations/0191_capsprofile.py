@@ -8,6 +8,7 @@
 
 # Third-party modules
 import bson
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
@@ -44,12 +45,14 @@ class Migration(BaseMigration):
                 "ospfv3_policy": "E",
                 "isis_policy": "E",
                 "ldp_policy": "E",
-                "rsvp_policy": "E"
+                "rsvp_policy": "E",
             }
         )
         # Create MOP.caps_profile field
         self.db.add_column(
-            "sa_managedobjectprofile", "caps_profile", DocumentReferenceField("sa.CapsProfile", null=True, blank=True)
+            "sa_managedobjectprofile",
+            "caps_profile",
+            DocumentReferenceField("sa.CapsProfile", null=True, blank=True),
         )
         # Set default caps profile
         self.db.execute("UPDATE sa_managedobjectprofile SET caps_profile = %s", [str(p_id)])

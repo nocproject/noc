@@ -25,7 +25,7 @@ DEFAULT = {
         ("summary", "show bgp summary"),
         ("ping", "ping count 5 %(query)s"),
         ("trace", "traceroute %(query)s as-number-lookup"),
-    ]
+    ],
 }
 
 
@@ -33,18 +33,34 @@ class Migration(BaseMigration):
     def migrate(self):
         qtype = {}
         for ppt in DEFAULT:
-            if self.db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [ppt])[0][0] == 0:
+            if (
+                self.db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [ppt])[
+                    0
+                ][0]
+                == 0
+            ):
                 self.db.execute("INSERT INTO peer_peeringpointtype(name) VALUES(%s)", [ppt])
-            ppt_id = self.db.execute("SELECT id FROM peer_peeringpointtype WHERE name=%s", [ppt])[0][0]
+            ppt_id = self.db.execute("SELECT id FROM peer_peeringpointtype WHERE name=%s", [ppt])[
+                0
+            ][0]
             for k, v in DEFAULT[ppt]:
                 if k not in qtype:
                     self.db.execute("INSERT INTO peer_lgquerytype(name) VALUES(%s)", [k])
-                    qtype[k] = self.db.execute("SELECT id FROM peer_lgquerytype WHERE name=%s", [k])[0][0]
+                    qtype[k] = self.db.execute(
+                        "SELECT id FROM peer_lgquerytype WHERE name=%s", [k]
+                    )[0][0]
                 q = qtype[k]
-                if self.db.execute("""SELECT COUNT(*) FROM peer_lgquerycommand
+                if (
+                    self.db.execute(
+                        """SELECT COUNT(*) FROM peer_lgquerycommand
                                 WHERE peering_point_type_id=%s
-                                AND query_type_id=%s""", [ppt_id, q])[0][0] == 0:
+                                AND query_type_id=%s""",
+                        [ppt_id, q],
+                    )[0][0]
+                    == 0
+                ):
                     self.db.execute(
                         """INSERT INTO peer_lgquerycommand(peering_point_type_id,query_type_id,command)
-                        VALUES(%s,%s,%s)""", [ppt_id, q, v]
+                        VALUES(%s,%s,%s)""",
+                        [ppt_id, q, v],
                     )

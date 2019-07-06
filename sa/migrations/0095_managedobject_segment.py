@@ -15,5 +15,7 @@ class Migration(BaseMigration):
     depends_on = [("inv", "0010_default_segment")]
 
     def migrate(self):
-        self.db.add_column("sa_managedobject", "segment", DocumentReferenceField("self", null=True, blank=True))
+        self.db.add_column(
+            "sa_managedobject", "segment", DocumentReferenceField("self", null=True, blank=True)
+        )
         self.db.create_index("sa_managedobject", ["segment"], unique=False)

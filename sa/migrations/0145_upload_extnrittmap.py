@@ -14,7 +14,8 @@ class Migration(BaseMigration):
     def migrate(self):
         collection = self.mongo_db["noc.extnrittmap"]
         mappings = [
-            (d["managed_object"], str(d["tt_system"]), str(d["queue"]), str(d["remote_id"])) for d in collection.find()
+            (d["managed_object"], str(d["tt_system"]), str(d["queue"]), str(d["remote_id"]))
+            for d in collection.find()
         ]
         for mo, tts, ttqueue, ttid in mappings:
             self.db.execute(
@@ -22,5 +23,6 @@ class Migration(BaseMigration):
                 SET tt_system = %s,
                     tt_queue = %s,
                     tt_system_id = %s
-                WHERE id = %s""", [tts, ttqueue, ttid, mo]
+                WHERE id = %s""",
+                [tts, ttqueue, ttid, mo],
             )

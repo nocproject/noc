@@ -17,7 +17,7 @@ class Migration(BaseMigration):
                 return {
                     "capability": ci["capability"],
                     "value": ci["discovered_value"],
-                    "source": sources.get(ci["capability"], "caps")
+                    "source": sources.get(ci["capability"], "caps"),
                 }
 
             return {"_id": doc["object"], "caps": [convert_caps(c) for c in doc["caps"]]}

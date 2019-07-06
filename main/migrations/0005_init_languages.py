@@ -202,5 +202,5 @@ class Migration(BaseMigration):
         for lang, native in LANGUAGES:
             self.db.execute(
                 "INSERT INTO main_language(name,native_name,is_active) VALUES(%s,%s,%s)",
-                [lang, native, lang == "English"]
+                [lang, native, lang == "English"],
             )
