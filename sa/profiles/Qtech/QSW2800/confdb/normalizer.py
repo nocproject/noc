@@ -22,31 +22,21 @@ class Qtech2800Normalizer(BaseNormalizer):
 
     @match("username", ANY, "privilege", ANY)
     def normalize_username_access_level(self, tokens):
-        yield self.make_user_class(
-            username=tokens[1],
-            class_name="level-%s" % tokens[3]
-        )
+        yield self.make_user_class(username=tokens[1], class_name="level-%s" % tokens[3])
 
     @match("username", ANY, "password", REST)
     def normalize_username_password(self, tokens):
-        yield self.make_user_encrypted_password(
-            username=tokens[1],
-            password=" ".join(tokens[3:])
-        )
+        yield self.make_user_encrypted_password(username=tokens[1], password=" ".join(tokens[3:]))
 
     @match("snmp-server", "community", ANY, ANY, ANY)
     def normalize_snmp_community(self, tokens):
         yield self.make_snmp_community_level(
-            community=tokens[4],
-            level={"rw": "read-write", "ro": "read-only"}[tokens[2]]
+            community=tokens[4], level={"rw": "read-write", "ro": "read-only"}[tokens[2]]
         )
 
     @match("vlan", ANY, "name", ANY)
     def normalize_vlan_name(self, tokens):
-        yield self.make_vlan_name(
-            vlan_id=tokens[1],
-            name=tokens[3]
-        )
+        yield self.make_vlan_name(vlan_id=tokens[1], name=tokens[3])
 
     @match("vlan", ANY)
     def normalize_vlan_id(self, tokens):
@@ -62,15 +52,13 @@ class Qtech2800Normalizer(BaseNormalizer):
     @match("Interface", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
         yield self.make_interface_description(
-            interface=self.interface_name(tokens[1]),
-            description=" ".join(tokens[3:])
+            interface=self.interface_name(tokens[1]), description=" ".join(tokens[3:])
         )
 
     @match("Interface", ANY, "shutdown")
     def normalize_interface_shutdown(self, tokens):
         yield self.make_interface_admin_status(
-            interface=self.interface_name(tokens[1]),
-            admin_status=False
+            interface=self.interface_name(tokens[1]), admin_status=False
         )
 
     @match("lldp", "enable")
@@ -85,46 +73,36 @@ class Qtech2800Normalizer(BaseNormalizer):
 
     @match("Interface", ANY, "lldp", "disable")
     def normalize_interface_lldp_enable(self, tokens):
-        yield self.make_lldp_interface_disable(
-            interface=self.interface_name(tokens[1])
-        )
+        yield self.make_lldp_interface_disable(interface=self.interface_name(tokens[1]))
 
     @match("Interface", ANY, "switchport", "security", "maximum", ANY)
     def normalize_port_security(self, tokens):
         yield self.make_unit_port_security_max_mac(
-            interface=self.interface_name(tokens[1]),
-            limit=tokens[5]
+            interface=self.interface_name(tokens[1]), limit=tokens[5]
         )
 
     @match("Interface", ANY, "storm-control", "broadcast", ANY)
     def normalize_port_storm_control_broadcast(self, tokens):
         yield self.make_interface_storm_control_broadcast_level(
-            interface=self.interface_name(tokens[1]),
-            level=tokens[4]
+            interface=self.interface_name(tokens[1]), level=tokens[4]
         )
 
     @match("Interface", ANY, "storm-control", "multicast", ANY)
     def normalize_port_storm_control_multicast(self, tokens):
         yield self.make_interface_storm_control_multicast_level(
-            interface=self.interface_name(tokens[1]),
-            level=tokens[4]
+            interface=self.interface_name(tokens[1]), level=tokens[4]
         )
 
     @match("Interface", ANY, "storm-control", "unicast", ANY)
     def normalize_port_storm_control_unicast(self, tokens):
         yield self.make_interface_storm_control_unicast_level(
-            interface=self.interface_name(tokens[1]),
-            level=tokens[4]
+            interface=self.interface_name(tokens[1]), level=tokens[4]
         )
 
     @match("Interface", ANY, "switchport", "access", "vlan", ANY)
     def normalize_switchport_untagged(self, tokens):
         if_name = self.interface_name(tokens[1])
-        yield self.make_switchport_untagged(
-            interface=if_name,
-            unit=if_name,
-            vlan_filter=tokens[5]
-        )
+        yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=tokens[5])
 
     @match("Interface", ANY, "switchport", "trunk", "allowed", "vlan", ANY)
     def normalize_switchport_tagged(self, tokens):
@@ -132,7 +110,7 @@ class Qtech2800Normalizer(BaseNormalizer):
         yield self.make_switchport_tagged(
             interface=if_name,
             unit=if_name,
-            vlan_filter=",".join(str(x) for x in ranges_to_list(tokens[6], splitter=";"))
+            vlan_filter=",".join(str(x) for x in ranges_to_list(tokens[6], splitter=";")),
         )
 
     @match("interface", ANY, "ip", "address", ANY, ANY)
@@ -140,14 +118,9 @@ class Qtech2800Normalizer(BaseNormalizer):
     def normalize_vlan_ip(self, tokens):
         if_name = self.interface_name(tokens[1])
         yield self.make_unit_inet_address(
-            interface=if_name,
-            unit=if_name,
-            address=self.to_prefix(tokens[4], tokens[5])
+            interface=if_name, unit=if_name, address=self.to_prefix(tokens[4], tokens[5])
         )
 
     @match("ip", "default-gateway", ANY)
     def normalize_default_gateway(self, tokens):
-        yield self.make_inet_static_route_next_hop(
-            route="0.0.0.0/0",
-            next_hop=tokens[2]
-        )
+        yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[2])

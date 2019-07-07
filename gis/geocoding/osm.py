@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 from six.moves.urllib.parse import quote as urllib_quote
 import requests
+
 # NOC modules
 from .base import Geocoder
 

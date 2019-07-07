@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -18,8 +19,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
-        r"^(?P<interface>\S\S\d+).+?"
-        r"(?P<status>connected|notconnect)"
+        r"^(?P<interface>\S\S\d+).+?" r"(?P<status>connected|notconnect)"
     )
 
     def execute(self, interface=None):
@@ -28,8 +28,10 @@ class Script(BaseScript):
         for l in v.splitlines():
             match = self.rx_interface_status.match(l)
             if match:
-                r += [{
-                    "interface": match.group("interface"),
-                    "status": match.group("status") == "connected"
-                }]
+                r += [
+                    {
+                        "interface": match.group("interface"),
+                        "status": match.group("status") == "connected",
+                    }
+                ]
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -25,6 +26,7 @@ class Script(BaseScript):
     @todo: subinterfaces
     @todo: Q-in-Q
     """
+
     name = "Qtech.QSW.get_interfaces"
     interface = IGetInterfaces
 
@@ -35,17 +37,19 @@ class Script(BaseScript):
         r"(?P<interface>\S+?).Primary ipaddress\s*:\s*(?P<ip1>\d+\.\d+\.\d+\.\d+)/(?P<mask1>\d+\.\d+\.\d+\.\d+)"
         r".Secondary ipaddress\s*:\s*((?P<ip2>\d+\.\d+\.\d+\.\d+)/(?P<mask2>\d+\.\d+\.\d+\.\d+)|None).VLAN\s*:\s*"
         r"(?P<vlan>\d+).Address-range\s*:\s*\S+.Interface status\s*:\s*(?P<admin_status>(Up|Down))",
-        re.DOTALL | re.MULTILINE
+        re.DOTALL | re.MULTILINE,
     )
 
     rx_sh_mng = re.compile(
         r"^ip address\s*:\s*(?P<ip>\d+\.\d+\.\d+\.\d+).netmask\s*:\s*(?P<mask>\d+\.\d+\.\d+\.\d+).gateway\s*:\s*"
-        r"\S+.ManageVLAN\s*:\s*(?P<vlan>\S+).MAC address\s*:\s*(?P<mac>\S+)", re.DOTALL | re.MULTILINE
+        r"\S+.ManageVLAN\s*:\s*(?P<vlan>\S+).MAC address\s*:\s*(?P<mac>\S+)",
+        re.DOTALL | re.MULTILINE,
     )
 
     rx_status = re.compile(
         r"^\s*(?:Fast|Gigabit)?\s*Ethernet\s+(?P<interface>\S+)\s+(?:is|current state:)\s+"
-        r"(?P<admin_status>(enabled|disabled)),\s+port+\s+link+\s+is\s+(?P<oper_status>(up|down))", re.MULTILINE
+        r"(?P<admin_status>(enabled|disabled)),\s+port+\s+link+\s+is\s+(?P<oper_status>(up|down))",
+        re.MULTILINE,
     )
 
     types = {
@@ -138,11 +142,13 @@ class Script(BaseScript):
 
         # Fallback to CLI
         # Get port-to-vlan mappings
-        pvm = {}
         switchports = {}  # interface -> (untagged, tagged)
         for swp in self.scripts.get_switchport():
-            switchports[swp["interface"]
-                        ] = (swp["untagged"] if "untagged" in swp else None, swp["tagged"], swp["description"])
+            switchports[swp["interface"]] = (
+                swp["untagged"] if "untagged" in swp else None,
+                swp["tagged"],
+                swp["description"],
+            )
 
         interfaces = []
 
@@ -154,14 +160,14 @@ class Script(BaseScript):
             mac = match.group("mac")
 
             # TODO Get router interfaces
-            ospfs = self.get_ospfint()
-            rips = self.get_ripint()
-            bgps = self.get_bgpint()
+            self.get_ospfint()
+            self.get_ripint()
+            self.get_bgpint()
 
             for match in self.rx_sh_svi.finditer(ip_int):
                 description = match.group("description")
                 if not description:
-                    description = 'Outband managment'
+                    description = "Outband managment"
                 ifname = match.group("interface")
                 ip1 = match.group("ip1")
                 ip2 = match.group("ip2")
@@ -203,7 +209,7 @@ class Script(BaseScript):
                             "mac": mac,
                             "vlan_ids": self.expand_rangelist(vlan),
                         }
-                    ]
+                    ],
                 }
                 interfaces += [iface]
 
@@ -230,11 +236,11 @@ class Script(BaseScript):
                 "admin_status": True,
                 "oper_status": True,
                 "mac": mac,
-                "description": 'Managment',
+                "description": "Managment",
                 "subinterfaces": [
                     {
                         "name": "VLAN-" + vlan,
-                        "description": 'Managment',
+                        "description": "Managment",
                         "admin_status": True,
                         "oper_status": True,
                         "enabled_afi": enabled_afi,
@@ -242,7 +248,7 @@ class Script(BaseScript):
                         "mac": mac,
                         "vlan_ids": self.expand_rangelist(vlan),
                     }
-                ]
+                ],
             }
             interfaces += [iface]
         #
@@ -272,7 +278,7 @@ class Script(BaseScript):
                         "mac": mac,
                         # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
                     }
-                ]
+                ],
             }
 
             if switchports[ifname][1]:

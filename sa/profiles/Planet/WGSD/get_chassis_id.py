@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -36,10 +37,7 @@ class Script(BaseScript):
                         ranges += [[m, m]]
                     else:
                         ranges[-1][1] = m
-                return [{
-                    "first_chassis_mac": r[0],
-                    "last_chassis_mac": r[1]
-                } for r in ranges]
+                return [{"first_chassis_mac": r[0], "last_chassis_mac": r[1]} for r in ranges]
             except self.snmp.TimeOutError:
                 pass
 
@@ -54,7 +52,4 @@ class Script(BaseScript):
             mac_begin = match.group("mac")
             match = self.rx_mac2.search(c)
             mac_end = match.group("mac")
-        return {
-            "first_chassis_mac": mac_begin,
-            "last_chassis_mac": mac_end
-        }
+        return {"first_chassis_mac": mac_begin, "last_chassis_mac": mac_end}

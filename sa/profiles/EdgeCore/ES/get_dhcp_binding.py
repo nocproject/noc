@@ -17,7 +17,10 @@ import time
 class Script(BaseScript):
     name = "EdgeCore.ES.get_dhcp_binding"
     interface = IGetDHCPBinding
-    rx_line = re.compile(r"^(?P<mac>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<expire>.+?)\s+(?P<type>dhcp-snooping)\s+(?P<vlan>\d+)\s+(?P<interface>.+?)$", re.IGNORECASE)
+    rx_line = re.compile(
+        r"^(?P<mac>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<expire>.+?)\s+(?P<type>dhcp-snooping)\s+(?P<vlan>\d+)\s+(?P<interface>.+?)$",
+        re.IGNORECASE,
+    )
 
     def execute(self):
         try:
@@ -35,10 +38,12 @@ class Script(BaseScript):
                     expire = d
                 else:
                     expire = datetime.datetime.fromtimestamp(basetimestamp + int(d))
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": match.group("mac"),
-                    "expiration": expire,
-                    "type": "A"  # Automatic
-                })
+                r.append(
+                    {
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "expiration": expire,
+                        "type": "A",  # Automatic
+                    }
+                )
         return r

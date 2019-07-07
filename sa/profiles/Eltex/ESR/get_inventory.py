@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -25,7 +26,8 @@ class Script(BaseScript):
         r"Hardware version:\s+(?P<hardware>\S+)\s*\n"
         r"System uptime:.+\n"
         r"System MAC address:\s+\S+\s*\n"
-        r"System serial number:\s+(?P<serial>\S+)\s*\n")
+        r"System serial number:\s+(?P<serial>\S+)\s*\n"
+    )
 
     """
     In ESR-12V ver.1.0.9 `show interfaces sfp` command produce this error:
@@ -36,10 +38,12 @@ class Script(BaseScript):
     def execute(self):
         c = self.scripts.get_system()
         match = self.rx_ver.search(c)
-        return [{
-            "type": "CHASSIS",
-            "vendor": "ELTEX",
-            "part_no": match.group("platform"),
-            "serial": match.group("serial"),
-            "revision": match.group("hardware")
-        }]
+        return [
+            {
+                "type": "CHASSIS",
+                "vendor": "ELTEX",
+                "part_no": match.group("platform"),
+                "serial": match.group("serial"),
+                "revision": match.group("hardware"),
+            }
+        ]

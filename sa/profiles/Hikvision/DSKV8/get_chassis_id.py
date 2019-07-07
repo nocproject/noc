@@ -8,6 +8,7 @@
 
 # Python modules
 import xml.etree.ElementTree as ElementTree
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,7 +20,8 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     def execute(self):
-        v = self.http.get("/ISAPI/System/deviceInfo", json=False, cached=True, use_basic=True)
+        v = self.http.get("/ISAPI/System/deviceInfo", cached=True, use_basic=True)
+        v = v.replace("\n", "")
         root = ElementTree.fromstring(v)
         for child in root:
             key = child.tag.split("}")[1][0:]
@@ -27,7 +29,4 @@ class Script(BaseScript):
                 mac = child.text
                 break
 
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

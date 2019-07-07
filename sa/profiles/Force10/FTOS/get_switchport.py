@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-import re
 
 rx_portchannel_member = re.compile(r"^(\S+\s+\S+)\s+\((Port-channel\s+\d+)\)")
 
@@ -21,7 +23,7 @@ class Script(BaseScript):
     def execute(self):
         r = []
         port_channel_members = {}  # portchannel -> [interfaces]
-        interface_status = {}      # Interface -> stauts
+        interface_status = {}  # Interface -> stauts
         # Get interafces status
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
@@ -29,9 +31,9 @@ class Script(BaseScript):
         for s in self.cli("show interface switchport").split("\n\nName: ")[1:]:
             if not s:
                 continue
-            l = s.splitlines()
+            lines = s.splitlines()
             # Check interface is portchannel member
-            name = l.pop(0).strip()
+            name = lines.pop(0).strip()
             match = rx_portchannel_member.match(name)
             if match:
                 # Skip portchannel members
@@ -50,11 +52,11 @@ class Script(BaseScript):
                 "members": port_channel_members.get(name, []),
                 "802.1ad Tunnel": False,
                 "tagged": "",
-                "status": interface_status.get(name, False)
+                "status": interface_status.get(name, False),
             }
             vlan_membership_found = False
-            while l:
-                ll = l.pop(0)
+            while lines:
+                ll = lines.pop(0)
                 if ll.startswith("Description: "):
                     p["description"] = ll[12:].strip()
                 elif ll.startswith("802.1QTagged:"):
@@ -65,8 +67,8 @@ class Script(BaseScript):
             if not vlan_membership_found:
                 continue
             # Parse vlans
-            l.pop(0)
-            for ll in l:
+            lines.pop(0)
+            for ll in lines:
                 if not ll:
                     continue
                 # Untagged

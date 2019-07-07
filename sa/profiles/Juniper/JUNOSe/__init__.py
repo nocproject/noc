@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -16,6 +17,7 @@ class Profile(BaseProfile):
     """
     Juniper.JUNOSe profile
     """
+
     name = "Juniper.JUNOSe"
     pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"
@@ -28,7 +30,7 @@ class Profile(BaseProfile):
     config_volatile = [
         r"^! Configuration script being generated on.*?^",
         r"^(Please wait\.\.\.)\n",
-        r"^(\.+)\n"
+        r"^(\.+)\n",
     ]
     rogue_chars = ["\r", "\x00", "\x0d"]
 
@@ -43,6 +45,7 @@ class Profile(BaseProfile):
         :param v2:
         :return:
         """
+
         def convert(v):
             return v.replace(" patch-", ".").replace(" release-", ".")
 
@@ -66,8 +69,8 @@ class Profile(BaseProfile):
         return "\n".join(r)
 
     rx_adapter = re.compile(
-        r"^(?P<slot>\d+/\d+)\s+(?P<name>\S+(?: \S+)+?)\s+"
-        r"\d{10}\s+\d{10}\s+\S{3}\s+\d+\s*$")
+        r"^(?P<slot>\d+/\d+)\s+(?P<name>\S+(?: \S+)+?)\s+" r"\d{10}\s+\d{10}\s+\S{3}\s+\d+\s*$"
+    )
 
     def get_interfaces_list(self, script):
         r = []

@@ -2,13 +2,14 @@
 # ----------------------------------------------------------------------
 # SNMP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import weakref
 # Third-party modules
+import six
 import tornado.ioloop
 import tornado.gen
 # NOC modules
@@ -247,9 +248,9 @@ class SNMP(object):
                             cached=cached)
         t2 = self.get_table(oid2, community_suffix=community_suffix,
                             cached=cached)
-        for k1, v1 in t1.items():
+        for k1, v1 in six.iteritems(t1):
             try:
-                yield (v1, t2[k1])
+                yield v1, t2[k1]
             except KeyError:
                 pass
 

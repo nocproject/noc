@@ -10,12 +10,13 @@
 from __future__ import absolute_import
 from collections import defaultdict
 import logging
+
 # Third-party modules
 from pymongo.errors import BulkWriteError, OperationFailure
 from pymongo import UpdateOne, DeleteOne, InsertOne
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (IntField, ObjectIdField,
-                                EmbeddedDocumentField, ListField)
+from mongoengine.fields import IntField, ObjectIdField, EmbeddedDocumentField, ListField
+
 # NOC modules
 from noc.crm.models.subscriber import Subscriber
 from noc.core.defer import call_later
@@ -35,10 +36,7 @@ class SummaryItem(EmbeddedDocument):
         """
         Convert a list of summary items to dict profile -> summary
         """
-        return dict(
-            (r.profile, r.summary)
-            for r in items
-        )
+        return dict((r.profile, r.summary) for r in items)
 
     @classmethod
     def dict_to_items(cls, d):
@@ -57,10 +55,7 @@ class ObjectSummaryItem(EmbeddedDocument):
         """
         Convert a list of summary items to dict profile -> summary
         """
-        return dict(
-            (r.profile, r.summary)
-            for r in items
-        )
+        return dict((r.profile, r.summary) for r in items)
 
     @classmethod
     def dict_to_items(cls, d):
@@ -75,10 +70,7 @@ class ServiceSummary(Document):
         "collection": "noc.servicesummary",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "managed_object",
-            "interface"
-        ]
+        "indexes": ["managed_object", "interface"],
     }
     managed_object = IntField()
     interface = ObjectIdField()
@@ -98,14 +90,10 @@ class ServiceSummary(Document):
 
         def iter_services(sd):
             yield sd
-            for cs in Service._get_collection().find({
-                "parent": sd["_id"],
-                "logical_status": "R"
-            }, {
-                "_id": 1,
-                "subscriber": 1,
-                "profile": 1
-            }):
+            for cs in Service._get_collection().find(
+                {"parent": sd["_id"], "logical_status": "R"},
+                {"_id": 1, "subscriber": 1, "profile": 1},
+            ):
                 for ns in iter_services(cs):
                     yield ns
 
@@ -122,27 +110,20 @@ class ServiceSummary(Document):
         # service -> interface bindings
         svc_interface = dict(
             (x["service"], x["_id"])
-            for x in Interface._get_collection().find({
-                "managed_object": managed_object,
-                "service": {
-                    "$exists": True
-                }
-            }, {
-                "_id": 1,
-                "service": 1
-            }, comment="[servicesummary.build_summary_for_object] Getting services for interfaces")
+            for x in Interface._get_collection().find(
+                {"managed_object": managed_object, "service": {"$exists": True}},
+                {"_id": 1, "service": 1},
+                comment="[servicesummary.build_summary_for_object] Getting services for interfaces",
+            )
         )
         # Iterate over object's services
         # And walk underlying tree
         ri = {}
-        for svc in Service._get_collection().find({
-            "managed_object": managed_object,
-            "logical_status": "R"
-        }, {
-            "_id": 1,
-            "subscriber": 1,
-            "profile": 1
-        }, comment="[servicesummary.build_summary_for_object] Getting object services for object"):
+        for svc in Service._get_collection().find(
+            {"managed_object": managed_object, "logical_status": "R"},
+            {"_id": 1, "subscriber": 1, "profile": 1},
+            comment="[servicesummary.build_summary_for_object] Getting object services for object",
+        ):
             # All subscribers for underlying tree
             subscribers = set()
             # profile_id -> count
@@ -151,22 +132,12 @@ class ServiceSummary(Document):
                 subscribers.add(s["subscriber"])
                 svc_profiles[s["profile"]] += 1
             # Get subscriber profiles count
-            ra = Subscriber._get_collection().aggregate([
-                {
-                    "$match": {
-                        "_id": {
-                            "$in": list(subscribers)
-                        }
-                    }
-                }, {
-                    "$group": {
-                        "_id": "$profile",
-                        "total": {
-                            "$sum": 1
-                        }
-                    }
-                }
-            ])
+            ra = Subscriber._get_collection().aggregate(
+                [
+                    {"$match": {"_id": {"$in": list(subscribers)}}},
+                    {"$group": {"_id": "$profile", "total": {"$sum": 1}}},
+                ]
+            )
             subscriber_profiles = dict((x["_id"], x["total"]) for x in ra)
             # Bind to interface
             # None for unbound services
@@ -177,7 +148,7 @@ class ServiceSummary(Document):
             else:
                 ri[iface] = {
                     "service": dict(svc_profiles),  # defaultdict -> dict
-                    "subscriber": subscriber_profiles
+                    "subscriber": subscriber_profiles,
                 }
         return ri
 
@@ -186,9 +157,7 @@ class ServiceSummary(Document):
         if hasattr(managed_object, "id"):
             managed_object = managed_object.id
         call_later(
-            "noc.sa.models.servicesummary.refresh_object",
-            delay=20,
-            managed_object=managed_object
+            "noc.sa.models.servicesummary.refresh_object", delay=20, managed_object=managed_object
         )
 
     @classmethod
@@ -197,10 +166,7 @@ class ServiceSummary(Document):
         from noc.inv.models.networksegment import NetworkSegment
 
         def to_dict(v):
-            return dict(
-                (r["profile"], r["summary"])
-                for r in v
-            )
+            return dict((r["profile"], r["summary"]) for r in v)
 
         def to_list(v):
             return [{"profile": k, "summary": v[k]} for k in sorted(v)]
@@ -212,14 +178,11 @@ class ServiceSummary(Document):
         # Get existing summary
         old_summary = dict(
             (x["interface"], x)
-            for x in coll.find({
-                "managed_object": managed_object
-            }, {
-                "_id": 1,
-                "interface": 1,
-                "service": 1,
-                "subscriber": 1
-            }, comment="[servicesummary._refresh_object] Refresh summary of services for managed object")
+            for x in coll.find(
+                {"managed_object": managed_object},
+                {"_id": 1, "interface": 1, "service": 1, "subscriber": 1},
+                comment="[servicesummary._refresh_object] Refresh summary of services for managed object",
+            )
         )
         # Get actual summary
         new_summary = ServiceSummary.build_summary_for_object(managed_object)
@@ -227,9 +190,7 @@ class ServiceSummary(Document):
         for iface in old_summary:
             if iface not in new_summary:
                 # Stale, delete
-                bulk += [
-                    DeleteOne({"_id": old_summary[iface]["_id"]})
-                ]
+                bulk += [DeleteOne({"_id": old_summary[iface]["_id"]})]
                 continue
             oi = old_summary[iface]
             old_services = to_dict(oi["service"])
@@ -238,26 +199,29 @@ class ServiceSummary(Document):
             if old_services != ni["service"] or old_subs != ni["subscriber"]:
                 # Changed, update
                 bulk += [
-                    UpdateOne({
-                        "_id": oi["_id"]
-                    }, {
-                        "$set": {
-                            "service": to_list(ni["service"]),
-                            "subscriber": to_list(ni["subscriber"])
-                        }
-                    })
+                    UpdateOne(
+                        {"_id": oi["_id"]},
+                        {
+                            "$set": {
+                                "service": to_list(ni["service"]),
+                                "subscriber": to_list(ni["subscriber"]),
+                            }
+                        },
+                    )
                 ]
             # Mark as processed
             del new_summary[iface]
         # Process new items
         bulk += [
-            InsertOne({
-                "managed_object": managed_object,
-                "interface": iface,
-                "service": to_list(new_summary[iface]["service"]),
-                "subscriber": to_list(new_summary[iface]["subscriber"])
-
-            }) for iface in new_summary
+            InsertOne(
+                {
+                    "managed_object": managed_object,
+                    "interface": iface,
+                    "service": to_list(new_summary[iface]["service"]),
+                    "subscriber": to_list(new_summary[iface]["subscriber"]),
+                }
+            )
+            for iface in new_summary
         ]
         if bulk:
             logger.info("Committing changes to database")
@@ -274,30 +238,19 @@ class ServiceSummary(Document):
     @classmethod
     def get_object_summary(cls, managed_object):
         def to_dict(v):
-            return dict(
-                (r["profile"], r["summary"])
-                for r in v
-            )
+            return dict((r["profile"], r["summary"]) for r in v)
 
         if hasattr(managed_object, "id"):
             managed_object = managed_object.id
-        r = {
-            "service": {},
-            "subscriber": {},
-            "interface": {}
-        }
-        for ss in ServiceSummary._get_collection().find({
-            "managed_object": managed_object
-        }, {
-            "interface": 1,
-            "service": 1,
-            "subscriber": 1
-        }, comment="[servicesummary.get_object_summary] Getting summary of services for object"):
+        r = {"service": {}, "subscriber": {}, "interface": {}}
+        for ss in ServiceSummary._get_collection().find(
+            {"managed_object": managed_object},
+            {"interface": 1, "service": 1, "subscriber": 1},
+            comment="[servicesummary.get_object_summary] Getting summary of services for object",
+        ):
             ds = to_dict(ss["service"])
             if ss.get("interface"):
-                r["interface"][ss["interface"]] = {
-                    "service": ds
-                }
+                r["interface"][ss["interface"]] = {"service": ds}
             for k, v in ds.items():
                 if k in r["service"]:
                     r["service"][k] += v
@@ -316,32 +269,18 @@ class ServiceSummary(Document):
     @classmethod
     def get_objects_summary(cls, managed_objects):
         def to_dict(v):
-            return dict(
-                (r["profile"], r["summary"])
-                for r in v
-            )
+            return dict((r["profile"], r["summary"]) for r in v)
 
         kk = {}
-        for ss in ServiceSummary._get_collection().find({
-            "managed_object": {
-                "$in": [getattr(mo, "id", mo) for mo in managed_objects]
-            }
-        }, {
-            "managed_object": 1,
-            "interface": 1,
-            "service": 1,
-            "subscriber": 1
-        }, comment="[servicesummary.get_objects_summary] Getting summary of services for objects list"):
-            r = {
-                "service": {},
-                "subscriber": {},
-                "interface": {}
-            }
+        for ss in ServiceSummary._get_collection().find(
+            {"managed_object": {"$in": [getattr(mo, "id", mo) for mo in managed_objects]}},
+            {"managed_object": 1, "interface": 1, "service": 1, "subscriber": 1},
+            comment="[servicesummary.get_objects_summary] Getting summary of services for objects list",
+        ):
+            r = {"service": {}, "subscriber": {}, "interface": {}}
             ds = to_dict(ss["service"])
             if ss.get("interface"):
-                r["interface"][ss["interface"]] = {
-                    "service": ds
-                }
+                r["interface"][ss["interface"]] = {"service": ds}
             for k, v in ds.items():
                 if k in r["service"]:
                     r["service"][k] += v
@@ -388,9 +327,7 @@ class ServiceSummary(Document):
         """
         from noc.fm.models.alarmseverity import AlarmSeverity
 
-        return AlarmSeverity.severity_for_weight(
-            cls.get_weight(summary)
-        )
+        return AlarmSeverity.severity_for_weight(cls.get_weight(summary))
 
     @classmethod
     def get_direct_summary(cls, managed_objects, summary_all=False):
@@ -406,64 +343,53 @@ class ServiceSummary(Document):
         pipeline = []
         if not summary_all:
             # Filter managed objects
-            pipeline += [{
-                "$match": {
-                    "managed_object": {
-                        "$in": [getattr(mo, "id", mo) for mo in managed_objects]
+            pipeline += [
+                {
+                    "$match": {
+                        "managed_object": {"$in": [getattr(mo, "id", mo) for mo in managed_objects]}
                     }
                 }
-            }]
+            ]
         # Mark service and profile with type field
-        pipeline += [{
-            "$project": {
-                "_id": 0,
-                "service": {
-                    "$map": {
-                        "input": "$service",
-                        "as": "svc",
-                        "in": {
-                            "type": "svc",
-                            "profile": "$$svc.profile",
-                            "summary": "$$svc.summary"
-                        }
-                    }
-                },
-                "subscriber": {
-                    "$map": {
-                        "input": "$subscriber",
-                        "as": "sub",
-                        "in": {
-                            "type": "sub",
-                            "profile": "$$sub.profile",
-                            "summary": "$$sub.summary"
-                        }
-                    }
-                }
-            }},
-            # Concatenate services and profiles
+        pipeline += [
             {
                 "$project": {
-                    "summary": {
-                        "$concatArrays": ["$service", "$subscriber"]
-                    }
+                    "_id": 0,
+                    "service": {
+                        "$map": {
+                            "input": "$service",
+                            "as": "svc",
+                            "in": {
+                                "type": "svc",
+                                "profile": "$$svc.profile",
+                                "summary": "$$svc.summary",
+                            },
+                        }
+                    },
+                    "subscriber": {
+                        "$map": {
+                            "input": "$subscriber",
+                            "as": "sub",
+                            "in": {
+                                "type": "sub",
+                                "profile": "$$sub.profile",
+                                "summary": "$$sub.summary",
+                            },
+                        }
+                    },
                 }
             },
+            # Concatenate services and profiles
+            {"$project": {"summary": {"$concatArrays": ["$service", "$subscriber"]}}},
             # Unwind *summary* array to independed records
-            {
-                "$unwind": "$summary"
-            },
+            {"$unwind": "$summary"},
             # Group by (type, profile)
             {
                 "$group": {
-                    "_id": {
-                        "type": "$summary.type",
-                        "profile": "$summary.profile"
-                    },
-                    "summary": {
-                        "$sum": "$summary.summary"
-                    }
+                    "_id": {"type": "$summary.type", "profile": "$summary.profile"},
+                    "summary": {"$sum": "$summary.summary"},
                 }
-            }
+            },
         ]  # noqa
         try:
             for doc in ServiceSummary._get_collection().aggregate(pipeline):

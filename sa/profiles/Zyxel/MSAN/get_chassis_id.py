@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -31,14 +32,14 @@ class Script(BaseScript):
                     r += [
                         {
                             "first_chassis_mac": match.group("mac"),
-                            "last_chassis_mac": match.group("mac")
+                            "last_chassis_mac": match.group("mac"),
                         }
                     ]
                 for match in self.rx_mac2.finditer(v):
                     r += [
                         {
                             "first_chassis_mac": match.group("mac"),
-                            "last_chassis_mac": match.group("mac")
+                            "last_chassis_mac": match.group("mac"),
                         }
                     ]
             except self.CLISyntaxError:
@@ -49,14 +50,11 @@ class Script(BaseScript):
                 return [
                     {
                         "first_chassis_mac": match.group("mac"),
-                        "last_chassis_mac": match.group("mac")
+                        "last_chassis_mac": match.group("mac"),
                     }
                 ]
             match = self.rx_mac3.search(self.cli("statistics rstp"))
             return [
-                {
-                    "first_chassis_mac": match.group("mac"),
-                    "last_chassis_mac": match.group("mac")
-                }
+                {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}
             ]
         return r

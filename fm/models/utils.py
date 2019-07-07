@@ -8,31 +8,32 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from bson import ObjectId
 
 
 def get_event(event_id):
-        """
+    """
         Get event by event_id
         """
-        for ec in (ActiveEvent, ArchivedEvent, FailedEvent):
-            e = ec.objects.filter(id=event_id).first()
-            if e:
-                return e
-        return None
+    for ec in (ActiveEvent, ArchivedEvent, FailedEvent):
+        e = ec.objects.filter(id=event_id).first()
+        if e:
+            return e
+    return None
 
 
 def get_alarm(alarm_id):
-        """
+    """
         Get alarm by alarm_id
         """
-        for ac in (ActiveAlarm, ArchivedAlarm):
-            a = ac.objects.filter(id=alarm_id).first()
-            if a:
-                return a
-        return None
+    for ac in (ActiveAlarm, ArchivedAlarm):
+        a = ac.objects.filter(id=alarm_id).first()
+        if a:
+            return a
+    return None
 
 
 def get_severity(alarms):
@@ -40,6 +41,7 @@ def get_severity(alarms):
     Return severity CSS class name for the alarms
     :param alarms: Single instance or list of alarms
     """
+
     def f(a):
         if hasattr(a, "id"):
             return a.id
@@ -56,11 +58,7 @@ def get_severity(alarms):
         if len(al) == 1:
             q = {"_id": al[0]}
         else:
-            q = {
-                "_id": {
-                    "$in": al
-                }
-            }
+            q = {"_id": {"$in": al}}
         for d in ac._get_collection().find(q, {"severity": 1}):
             severity = max(severity, d["severity"])
             al.remove(d["_id"])

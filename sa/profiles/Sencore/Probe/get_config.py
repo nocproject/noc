@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'FeNikS'
+__author__ = "FeNikS"
 # ---------------------------------------------------------------------
 # Sencore.Probe.get_config
 # ---------------------------------------------------------------------
@@ -16,16 +16,14 @@ class Script(BaseScript):
     name = "Sencore.Probe.get_config"
     interface = IGetConfig
 
-    suffixes = [
-        "/probe/status", "/probe/generaldata?&&", "/probe/etrdata?&&"
-    ]
+    suffixes = ["/probe/status", "/probe/generaldata?&&", "/probe/etrdata?&&"]
 
     def execute(self):
-        result = ["<?xml version=\"1.0\"?>\n<Root>"]
+        result = ['<?xml version="1.0"?>\n<Root>']
 
         for suffix in self.suffixes:
             data = self.http.get(suffix)
-            data = data.replace("<?xml version=\"1.0\"?>", "")
+            data = data.replace('<?xml version="1.0"?>', "")
             result.append(data)
         result.append("</Root>")
         config = "\n".join(result)

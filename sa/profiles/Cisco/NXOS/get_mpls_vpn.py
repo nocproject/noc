@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
@@ -19,9 +20,8 @@ class Script(BaseScript):
 
     rx_line_split = re.compile(r"^VRF-Name:\s+", re.MULTILINE)
     rx_line_name = re.compile(
-        r"^(?P<name>\S+),\s+VRF-ID:\s(?P<id>\d+),\s+"
-        r"State:\s+(?P<state>Up|Down)\s+",
-        re.MULTILINE
+        r"^(?P<name>\S+),\s+VRF-ID:\s(?P<id>\d+),\s+" r"State:\s+(?P<state>Up|Down)\s+",
+        re.MULTILINE,
     )
     rx_line_rd = re.compile(r"^\s+RD:\s(?P<rd>\d\S*:\d)\s*", re.MULTILINE)
 
@@ -34,7 +34,7 @@ class Script(BaseScript):
                 firstline = False
                 continue
             ll = ll.strip().split()
-            if ll[1] not in vrfif.keys():
+            if ll[1] not in vrfif:
                 vrfif[ll[1]] = []
             vrfif[ll[1]].append(ll[0])
         vpns = []
@@ -51,7 +51,7 @@ class Script(BaseScript):
                 "status": True,
                 "name": name,
                 "interfaces": vrfif.get(name, []),
-                "rd": rd
+                "rd": rd,
             }
             vpns += [vpn]
 

@@ -10,6 +10,7 @@
 import sys
 import os
 import subprocess
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 

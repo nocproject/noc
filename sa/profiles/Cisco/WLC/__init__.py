@@ -18,10 +18,4 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\(Cisco Controller\)\s+>"
     requires_netmask_conversion = True
 
-    matchers = {
-        "is_platform_5508": {
-            "platform": {
-                "$regex": r"AIR-CT5508.*"
-            }
-        }
-    }
+    matchers = {"is_platform_5508": {"platform": {"$regex": r"AIR-CT5508.*"}}}

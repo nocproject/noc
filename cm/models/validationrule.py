@@ -9,16 +9,23 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, DictField,
-                                ListField, EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    DictField,
+    ListField,
+    EmbeddedDocumentField,
+)
 from mongoengine.signals import pre_delete
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.handler import get_handler
 
 logger = logging.getLogger(__name__)
@@ -27,11 +34,7 @@ A_DISABLE = ""
 A_INCLUDE = "I"
 A_EXCLUDE = "X"
 
-ACTIONS = [
-    (A_DISABLE, "Disable"),
-    (A_INCLUDE, "Include"),
-    (A_EXCLUDE, "Exclude")
-]
+ACTIONS = [(A_DISABLE, "Disable"), (A_INCLUDE, "Include"), (A_EXCLUDE, "Exclude")]
 
 
 @six.python_2_unicode_compatible
@@ -54,11 +57,7 @@ class ObjectItem(EmbeddedDocument):
 
 @six.python_2_unicode_compatible
 class ValidationRule(Document):
-    meta = {
-        "collection": "noc.validationrules",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.validationrules", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     is_active = BooleanField(default=True)
@@ -100,10 +99,10 @@ class ValidationRule(Document):
     @classmethod
     def on_delete(cls, sender, document, **kwargs):
         from noc.cm.models.validationpolicy import ValidationPolicy
+
         logger.info("Deleting rule %s", document.name)
         for vp in ValidationPolicy.objects.filter(rules__rule=document):
-            logger.info("Removing rule %s from policy %s",
-                        document.name, vp.name)
+            logger.info("Removing rule %s from policy %s", document.name, vp.name)
             vp.rules = [r for r in vp.rules if r.rule.id != document.id]
             vp.save()
 

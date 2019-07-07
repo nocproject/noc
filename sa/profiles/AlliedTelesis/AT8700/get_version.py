@@ -2,15 +2,13 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT7500.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
-# coded by azhur
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -23,19 +21,13 @@ class Script(BaseScript):
         platform = ""
         version = ""
 
-        for l in v.splitlines():
-            l = l.split()
-            if not l:
+        for line in v.splitlines():
+            line = line.split()
+            if not line:
                 continue
-            if "Base" in l[0]:
-                platform = l[2]
-                rev = l[4]
-                serial = l[5]
-            if "Software" in l[0]:
-                version = l[2].strip()
+            if "Base" in line[0]:
+                platform = line[2]
+            if "Software" in line[0]:
+                version = line[2].strip()
 
-        return {
-            "vendor": "Allied Telesis",
-            "platform": platform,
-            "version": version
-        }
+        return {"vendor": "Allied Telesis", "platform": platform, "version": version}

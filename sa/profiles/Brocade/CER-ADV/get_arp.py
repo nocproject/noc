@@ -8,30 +8,39 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
 
 class Script(BaseScript):
-    name = 'Brocade.CER-ADV.get_arp'
+    name = "Brocade.CER-ADV.get_arp"
     interface = IGetARP
-    rx_line = re.compile('^\\d+\\s+(?P<ip>\\S+)\\s+(?P<mac>\\S+)\\s+(?P<type>\\S+)\\s+\\d+\\s+(?P<interface>\\S+)')
+    rx_line = re.compile(
+        "^\\d+\\s+(?P<ip>\\S+)\\s+(?P<mac>\\S+)\\s+(?P<type>\\S+)\\s+\\d+\\s+(?P<interface>\\S+)"
+    )
 
     def execute(self, vrf=None):
         if vrf:
-            s = self.cli('show arp vrf %s' % vrf)
+            s = self.cli("show arp vrf %s" % vrf)
         else:
-            s = self.cli('show arp')
+            s = self.cli("show arp")
         r = []
         for l in s.splitlines():
             match = self.rx_line.match(l.strip())
             if not match:
                 continue
-            type = match.group('type')
-            mac = match.group('mac')
-            if mac.lower() in ('incomplete' or 'none') or type.lower() in ('pending', 'invalid'):
+            type = match.group("type")
+            mac = match.group("mac")
+            if mac.lower() in ("incomplete" or "none") or type.lower() in ("pending", "invalid"):
                 continue
             else:
-                r.append({'ip': match.group('ip'), 'mac': match.group('mac'), 'interface': match.group('interface')})
+                r.append(
+                    {
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "interface": match.group("interface"),
+                    }
+                )
         return r

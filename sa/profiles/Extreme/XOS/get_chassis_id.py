@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -25,9 +26,6 @@ class Script(BaseScript):
         match = rx_mac.search(self.cli("show switch", cached=True))
         if match:
             mac = match.group("mac").lower()
-            return {
-                "first_chassis_mac": mac,
-                "last_chassis_mac": mac
-            }
+            return {"first_chassis_mac": mac, "last_chassis_mac": mac}
 
         raise self.NotSupportedError()

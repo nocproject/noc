@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -23,7 +24,8 @@ class Script(BaseScript):
         r"^\s*product model\s*:\s+(?P<platform>\S+)\s*\n"
         r"^\s*system up time\s*:\s+(?P<uptime>\S+)\s*\n"
         r"^\s*f/w version\s*:\s+(?P<version>\S+) \| \S+\s*\n"
-        r"^\s*bootbase version\s*:\s+(?P<bootprom>\S+) \| \S+\s*\n", re.MULTILINE
+        r"^\s*bootbase version\s*:\s+(?P<bootprom>\S+) \| \S+\s*\n",
+        re.MULTILINE,
     )
     rx_ver2 = re.compile(
         r"^\s*Model: (?:\S+ \/ )?(?P<platform>\S+)\s*\n"
@@ -32,20 +34,23 @@ class Script(BaseScript):
         r"^\s*Bootbase version: (?P<bootprom>\S+) \| \S+\s*\n"
         r".+?\n"
         r"(^\s*Hardware version: (?P<hardware>\S+)\s*\n)?"
-        r"^\s*Serial number: (?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL
+        r"^\s*Serial number: (?P<serial>\S+)\s*\n",
+        re.MULTILINE | re.DOTALL,
     )
     rx_ver3 = re.compile(
         r"^\s*ZyNOS version\s*: (?P<version>\S+) \| \S+\s*\n"
         r".+?\n"
         r".+?\n"
         r"^\s*bootbase version\s*: (?P<bootprom>\S+)"
-        r"\((?P<platform>MSC\S+)\) \| \S+\s*\n", re.MULTILINE
+        r"\((?P<platform>MSC\S+)\) \| \S+\s*\n",
+        re.MULTILINE,
     )
     rx_ver4 = re.compile(
         r"^\s*Bootcode Version: (?P<bootprom>.+)\s*\n"
         r"^\s*Hardware Version: (?P<hardware>.+)\s*\n"
         r"^\s*Serial Number: (?P<serial>.+)\s*\n"
-        r"^\s*F/W Version: (?P<version>\S+)\s*\n", re.MULTILINE
+        r"^\s*F/W Version: (?P<version>\S+)\s*\n",
+        re.MULTILINE,
     )
     rx_chips = re.compile(r"^\s*(?P<platform>\S+?)(/\S+)?\s+")
 
@@ -68,7 +73,7 @@ class Script(BaseScript):
                 r = {
                     "vendor": "ZyXEL",
                     "platform": match1.group("platform"),
-                    "version": match.group("version")
+                    "version": match.group("version"),
                 }
                 if match.group("bootprom") != "not defined":
                     if "attributes" not in r:
@@ -89,9 +94,7 @@ class Script(BaseScript):
             "vendor": "ZyXEL",
             "platform": platform,
             "version": match.group("version"),
-            "attributes": {
-                "Boot PROM": match.group("bootprom")
-            }
+            "attributes": {"Boot PROM": match.group("bootprom")},
         }
         if ("hardware" in match.groupdict()) and (match.group("hardware")):
             r["attributes"]["HW version"] = match.group("hardware")

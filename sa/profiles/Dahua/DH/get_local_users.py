@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -27,4 +30,4 @@ class Script(BaseScript):
                     r[line_id]["username"] = value
                 elif line[2] == "Group":
                     r[line_id]["class"] = value
-        return r.values()
+        return list(six.itervalues(r))

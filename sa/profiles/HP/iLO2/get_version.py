@@ -22,8 +22,4 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("show /map1/firmware1/ version")
         match = rx_ver.search(v)
-        return {
-            "vendor": "HP",
-            "platform": "iLO2",
-            "version": match.group("version")
-        }
+        return {"vendor": "HP", "platform": "iLO2", "version": match.group("version")}

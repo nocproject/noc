@@ -29,7 +29,8 @@ class Migration(BaseMigration):
                 UPDATE sa_managedobject
                 SET fqdn=address, address_resolution_policy='O'
                 WHERE id IN (%s)
-                """ % ",".join(fixes)
+                """
+                % ",".join(fixes)
             )
         if dot_fixes:
             self.db.execute(
@@ -37,5 +38,6 @@ class Migration(BaseMigration):
                 UPDATE sa_managedobject
                 SET fqdn=concat(address, '.'), address_resolution_policy='O'
                 WHERE id IN (%s)
-                """ % ",".join(dot_fixes)
+                """
+                % ",".join(dot_fixes)
             )

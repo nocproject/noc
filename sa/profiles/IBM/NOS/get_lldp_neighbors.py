@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -19,9 +20,11 @@ class Script(BaseScript):
     name = "IBM.NOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_lldp = re.compile(r"^(?P<local_port>\S+)\s+\|\s+\d+\s+\|\s+(?P<remote_id>\S+|.{17})"
-                         r"\s+\|\s(?P<remote_port>\S+)\s+\|\s+(?P<remote_n>\S+)\s*\|",
-                         re.MULTILINE)
+    rx_lldp = re.compile(
+        r"^(?P<local_port>\S+)\s+\|\s+\d+\s+\|\s+(?P<remote_id>\S+|.{17})"
+        r"\s+\|\s(?P<remote_port>\S+)\s+\|\s+(?P<remote_n>\S+)\s*\|",
+        re.MULTILINE,
+    )
 
     rx_mac = re.compile(r"(?:(?:\d|\w){2}[\-\s\:]){5}(?:\d|\w){2}")
 
@@ -55,11 +58,8 @@ class Script(BaseScript):
                     "remote_port_subtype": remote_port_subtype,
                     "remote_chassis_id": remote_chassis_id,
                     "remote_chassis_id_subtype": remote_chassis_id_subtype,
-                    "remote_system_name": rn
+                    "remote_system_name": rn,
                 }
-                i = {
-                    "local_interface": local_port,
-                    "neighbors": [n]
-                }
+                i = {"local_interface": local_port, "neighbors": [n]}
                 r += [i]
         return r

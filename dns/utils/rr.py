@@ -6,15 +6,23 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-TYPE_PREF = {
-    "NS": 0,
-    "MX": 10
-}
+TYPE_PREF = {"NS": 0, "MX": 10}
 DEFAULT_PREF = 100
 
 
 class RR(object):
-    __slots__ = ["zone", "name", "ttl", "type", "priority", "rdata", "_idna", "_content", "_order", "_sorder"]
+    __slots__ = [
+        "zone",
+        "name",
+        "ttl",
+        "type",
+        "priority",
+        "rdata",
+        "_idna",
+        "_content",
+        "_order",
+        "_sorder",
+    ]
 
     def __init__(self, zone, name, ttl, type, rdata, priority=None):
         self.zone = zone
@@ -74,11 +82,7 @@ class RR(object):
         return self.priority < other.priority
 
     def to_json(self):
-        r = {
-            "name": self.name,
-            "type": self.type,
-            "rdata": self.rdata
-        }
+        r = {"name": self.name, "type": self.type, "rdata": self.rdata}
         if self.ttl:
             r["ttl"] = self.ttl
         if self.priority:

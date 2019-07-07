@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,10 @@
 import re
 import time
 from collections import defaultdict
+
+# Third-party modules
+import six
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -23,42 +27,45 @@ class Script(BaseScript):
 
     rx_iface_sep = re.compile(r"^(?:\s)?(\S+) current state\s*:\s*", re.MULTILINE)
     rx_line_proto = re.compile(
-        r"Line protocol current state :\s*(?P<o_state>UP|DOWN)",
-        re.IGNORECASE)
+        r"Line protocol current state :\s*(?P<o_state>UP|DOWN)", re.IGNORECASE
+    )
     rx_pvid = re.compile(r"PVID\s+:\s+(?P<pvid>\d+)")
     rx_mtu = re.compile(r"The Maximum Transmit Unit is (?P<mtu>\d+)( bytes)?")
     rx_mac = re.compile(
         r"Hardware [Aa]ddress(?::| is) (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
     )
     rx_ipv4 = re.compile(
-        r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})",
-        re.IGNORECASE
+        r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})", re.IGNORECASE
     )
     rx_ipv4_unnumb = re.compile(
         r"Internet Address is unnumbered, using address of "
         r"(?P<iface>\S+\d+)\("
         r"(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})"
         r"\)",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
     rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
     rx_dis_ip_int = re.compile(
         r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)",
-        re.IGNORECASE)
-    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
-                       re.MULTILINE | re.IGNORECASE)
-    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+",
-                         re.MULTILINE)
-    rx_ndp = re.compile(
-        r"^\s*Interface: (?P<name>\S+)\s*\n"
-        r"^\s*Status: Enabled", re.MULTILINE)
+        re.IGNORECASE,
+    )
+    rx_ip = re.compile(
+        r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_ospf = re.compile(
+        r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+",
+        re.MULTILINE,
+    )
+    rx_ndp = re.compile(r"^\s*Interface: (?P<name>\S+)\s*\n" r"^\s*Status: Enabled", re.MULTILINE)
     rx_ifindex = re.compile(
         r"^Name: (?P<name>\S+)\s*\n"
         r"^Physical IF Info:\s*\n"
-        r"^\s*IfnetIndex: 0x(?P<ifindex>[0-9A-F]+)\s*\n", re.MULTILINE)
+        r"^\s*IfnetIndex: 0x(?P<ifindex>[0-9A-F]+)\s*\n",
+        re.MULTILINE,
+    )
     rx_lldp = re.compile(
-        r"\n^\s*Interface\s(?P<name>\S+):"
-        r"\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
+        r"\n^\s*Interface\s(?P<name>\S+):" r"\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
     )
 
     def get_ospfint(self):
@@ -120,13 +127,7 @@ class Script(BaseScript):
 
     def get_mpls_vpn(self):
         imap = {}  # interface -> VRF
-        vrfs = {
-            "default": {
-                "forwarding_instance": "default",
-                "type": "ip",
-                "interfaces": []
-            }
-        }
+        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         try:
             r = self.scripts.get_mpls_vpn()
         except self.CLISyntaxError:
@@ -136,7 +137,7 @@ class Script(BaseScript):
                 vrfs[v["name"]] = {
                     "forwarding_instance": v["name"],
                     "type": "VRF",
-                    "interfaces": []
+                    "interfaces": [],
                 }
                 rd = v.get("rd")
                 if rd:
@@ -153,12 +154,17 @@ class Script(BaseScript):
         vlans = self.scripts.get_switchport()
         r = super(Script, self).execute_snmp()
         if vlans:
-            vlans = {v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])} for v in vlans}
+            vlans = {
+                v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])}
+                for v in vlans
+            }
             for fi in r:
                 for iface in fi["interfaces"]:
                     if iface["name"] in vlans:
                         if vlans[iface["name"]]["untagged"]:
-                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]]["untagged"]
+                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]][
+                                "untagged"
+                            ]
                         iface["subinterfaces"][0]["tagged_vlans"] = vlans[iface["name"]]["tagged"]
         time.sleep(2)
         vrfs, imap = self.get_mpls_vpn()
@@ -168,10 +174,11 @@ class Script(BaseScript):
                     subs = iface["subinterfaces"]
                     for vrf in set(imap.get(si["name"], "default") for si in subs):
                         c = iface.copy()
-                        c["subinterfaces"] = [si for si in subs
-                                              if imap.get(si["name"], "default") == vrf]
+                        c["subinterfaces"] = [
+                            si for si in subs if imap.get(si["name"], "default") == vrf
+                        ]
                         vrfs[vrf]["interfaces"] += [c]
-            return vrfs.values()
+            return list(six.itervalues(vrfs))
         return r
 
     def execute_cli(self):
@@ -180,7 +187,7 @@ class Script(BaseScript):
         for sp in self.scripts.get_switchport():
             switchports[sp["interface"]] = (
                 sp["untagged"] if "untagged" in sp else None,
-                sp["tagged"]
+                sp["tagged"],
             )
 
         # Get portchannels
@@ -233,12 +240,11 @@ class Script(BaseScript):
                 "admin_status": True,
                 "oper_status": True,
                 "enabled_protocols": [],
-                "enabled_afi": []
+                "enabled_afi": [],
             }
-            if (ifname in switchports and
-                    ifname not in portchannel_members):
+            if ifname in switchports and ifname not in portchannel_members:
                 # Bridge
-                sub["enabled_afi"] += ['BRIDGE']
+                sub["enabled_afi"] += ["BRIDGE"]
                 u, t = switchports[ifname]
                 if u:
                     sub["untagged_vlan"] = u
@@ -246,7 +252,7 @@ class Script(BaseScript):
                     sub["tagged_vlans"] = t
             elif ifname in ipv4_interfaces:
                 # IPv4
-                sub["enabled_afi"] = ['IPv4']
+                sub["enabled_afi"] = ["IPv4"]
                 sub["ipv4_addresses"] = ipv4_interfaces[ifname]
             if ifname in ospfs:
                 # OSPF
@@ -291,8 +297,8 @@ class Script(BaseScript):
                 match = self.rx_pvid.search(line)
                 if match and "untagged_vlan" not in sub:
                     sub["untagged_vlan"] = int(match.group("pvid"))
-                    if 'BRIDGE' not in sub["enabled_afi"]:
-                        sub["enabled_afi"] += ['BRIDGE']
+                    if "BRIDGE" not in sub["enabled_afi"]:
+                        sub["enabled_afi"] += ["BRIDGE"]
                     continue
                 # Static vlans
                 if line.startswith("Encapsulation "):
@@ -309,7 +315,7 @@ class Script(BaseScript):
                 match = self.rx_ipv4_unnumb.search(line)
                 if match:
                     sub["ip_unnumbered_subinterface"] = match.group("iface")
-                    sub["enabled_afi"] = ['IPv4']
+                    sub["enabled_afi"] = ["IPv4"]
                     continue
             if "." not in ifname:
                 if o_stat is None:
@@ -325,7 +331,7 @@ class Script(BaseScript):
                     "oper_status": o_stat,
                     "type": iftype,
                     "enabled_protocols": [],
-                    "subinterfaces": [sub]
+                    "subinterfaces": [sub],
                 }
                 if ifname in ifindexes:
                     iface["snmp_ifindex"] = int(ifindexes[ifname], 16)
@@ -357,13 +363,7 @@ class Script(BaseScript):
                     sub["vlan_ids"] = [vlan_id]
                 interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
-        vrfs = {
-            "default": {
-                "forwarding_instance": "default",
-                "type": "ip",
-                "interfaces": []
-            }
-        }
+        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         imap = {}  # interface -> VRF
         try:
             r = self.scripts.get_mpls_vpn()
@@ -375,7 +375,7 @@ class Script(BaseScript):
                     "forwarding_instance": v["name"],
                     "type": "VRF",
                     "vpn_id": v.get("vpn_id"),
-                    "interfaces": []
+                    "interfaces": [],
                 }
                 rd = v.get("rd")
                 if rd:
@@ -387,9 +387,10 @@ class Script(BaseScript):
             if subs:
                 for vrf in set(imap.get(si["name"], "default") for si in subs):
                     c = i.copy()
-                    c["subinterfaces"] = [si for si in subs
-                                          if imap.get(si["name"], "default") == vrf]
+                    c["subinterfaces"] = [
+                        si for si in subs if imap.get(si["name"], "default") == vrf
+                    ]
                     vrfs[vrf]["interfaces"] += [c]
             elif i.get("aggregated_interface"):
                 vrfs["default"]["interfaces"] += [i]
-        return vrfs.values()
+        return list(six.itervalues(vrfs))

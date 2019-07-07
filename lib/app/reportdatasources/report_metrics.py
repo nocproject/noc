@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ReportMetrics datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,10 +10,10 @@
 from __future__ import absolute_import
 import time
 from collections import namedtuple, OrderedDict
-# Third-party modules
+
 # NOC modules
-from .base import BaseReportColumn
 from noc.core.clickhouse.connect import connection
+from .base import BaseReportColumn
 
 
 class ReportMetrics(BaseReportColumn):
@@ -23,10 +23,7 @@ class ReportMetrics(BaseReportColumn):
         # (List#, Name, Alias): TypeNormalizer or (TypeNormalizer, DefaultValue)
     }
     # KEY_FIELDS = OrderedDict([("iface_name", "path")])
-    CUSTOM_FILTER = {
-        "having": [],
-        "where": [],
-    }
+    CUSTOM_FILTER = {"having": [], "where": []}
     KEY_FIELDS = None
 
     def __init__(self, mos_ids, f_date, to_date, columns=None):
@@ -54,22 +51,31 @@ class ReportMetrics(BaseReportColumn):
         ts_from_date = time.mktime(from_date.timetuple())
         ts_to_date = time.mktime(to_date.timetuple())
         custom_conditions = self.get_custom_conditions()
-        def_map = {"q_select": [],
-                   "q_where": ["%s",  # mo_filter
-                               "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" %
-                               (ts_from_date, ts_from_date, ts_to_date)] + custom_conditions["where"][:],
-                   "q_group": self.KEY_FIELDS,
-                   "q_having": custom_conditions["having"][:],
-                   "q_order_by": self.KEY_FIELDS}
+        def_map = {
+            "q_select": [],
+            "q_where": [
+                "%s",  # mo_filter
+                "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))"
+                % (ts_from_date, ts_from_date, ts_to_date),
+            ]
+            + custom_conditions["where"][:],
+            "q_group": self.KEY_FIELDS,
+            "q_having": custom_conditions["having"][:],
+            "q_order_by": self.KEY_FIELDS,
+        }
         for num, field, alias in sorted(self.SELECT_QUERY_MAP, key=lambda x: x[0]):
             func = self.SELECT_QUERY_MAP[(num, field, alias)] or "avg(%s)" % field
             def_map["q_select"] += ["%s AS %s" % (func, alias or "a_" + field)]
-        query = " ".join(["SELECT %s" % ",".join(def_map["q_select"]),
-                          "FROM %s" % self.TABLE_NAME,
-                          "WHERE %s" % " AND ".join(def_map["q_where"]),
-                          "GROUP BY %s" % ",".join(def_map["q_group"]),
-                          "HAVING %s" % " AND ".join(def_map["q_having"]) if def_map["q_having"] else "",
-                          "ORDER BY %s" % ",".join(def_map["q_order_by"])])
+        query = " ".join(
+            [
+                "SELECT %s" % ",".join(def_map["q_select"]),
+                "FROM %s" % self.TABLE_NAME,
+                "WHERE %s" % " AND ".join(def_map["q_where"]),
+                "GROUP BY %s" % ",".join(def_map["q_group"]),
+                "HAVING %s" % " AND ".join(def_map["q_having"]) if def_map["q_having"] else "",
+                "ORDER BY %s" % ",".join(def_map["q_order_by"]),
+            ]
+        )
         return query
 
     def do_query(self):
@@ -77,13 +83,13 @@ class ReportMetrics(BaseReportColumn):
         f_date, to_date = self.from_date, self.to_date
         query = self.get_query_ch(f_date, to_date)
         while mo_ids:
-            chunk, mo_ids = mo_ids[:self.CHUNK_SIZE], mo_ids[self.CHUNK_SIZE:]
+            chunk, mo_ids = mo_ids[: self.CHUNK_SIZE], mo_ids[self.CHUNK_SIZE :]
             for row in self.ch_client.execute(query % self.get_mo_filter(chunk)):
                 yield row
 
     def extract(self):
         # do_query_ch(self, moss, query_map, f_date, to_date)
-        Metrics = namedtuple("Metrics", [x[1] for x in self.KEY_FIELDS] + self.ATTRS.keys())
+        Metrics = namedtuple("Metrics", [x[1] for x in self.KEY_FIELDS] + list(self.ATTRS))
         Metrics.__new__.__defaults__ = ("",) * len(Metrics._fields)
         current_mo, block = None, []
         for row in self.do_query():
@@ -103,17 +109,17 @@ class ReportInterfaceMetrics(ReportMetrics):
     SELECT_QUERY_MAP = {
         # (List#, Name, Alias): TypeNormalizer or (TypeNormalizer, DefaultValue)
         # Column#, db_name, column_alias, query
-        (0, 'managed_object', None): "",
-        (1, 'path', 'iface'): "arrayStringConcat(path)",
-        (2, 'load_in', 'l_in'): "round(quantile(0.90)(load_in), 0)",
-        (3, 'load_in', 'load_in_p'): "",
-        (4, 'load_out', None): "",
-        (5, 'load_out', 'load_out_p'): "",
-        (6, 'packets_in', None): "",
-        (7, 'packets_out', None): "",
-        (8, 'errors_in', None): "",
-        (9, 'errors_out', None): "",
-        (10, 'speed', None): "",
+        (0, "managed_object", None): "",
+        (1, "path", "iface"): "arrayStringConcat(path)",
+        (2, "load_in", "l_in"): "round(quantile(0.90)(load_in), 0)",
+        (3, "load_in", "load_in_p"): "",
+        (4, "load_out", None): "",
+        (5, "load_out", "load_out_p"): "",
+        (6, "packets_in", None): "",
+        (7, "packets_out", None): "",
+        (8, "errors_in", None): "",
+        (9, "errors_out", None): "",
+        (10, "speed", None): "",
     }
     # KEY_FIELDS = OrderedDict([("iface_name", "path")])
     KEY_FIELDS = ("managed_object", "path")
@@ -121,20 +127,17 @@ class ReportInterfaceMetrics(ReportMetrics):
 
 class ReportCPUMetrics(ReportMetrics):
     TABLE_NAME = "noc.cpu"
-    SELECT_QUERY_MAP = {(0, 'managed_object', None): "",
-                        (1, "usage", "cpu_usage"): ""}
+    SELECT_QUERY_MAP = {(0, "managed_object", None): "", (1, "usage", "cpu_usage"): ""}
     KEY_FIELDS = ["managed_object", "path"]
 
 
 class ReportMemoryMetrics(ReportMetrics):
     TABLE_NAME = "noc.memory"
-    SELECT_QUERY_MAP = {(0, 'managed_object', None): "",
-                        (1, "usage", "memory_usage"): ""}
+    SELECT_QUERY_MAP = {(0, "managed_object", None): "", (1, "usage", "memory_usage"): ""}
     KEY_FIELDS = ["managed_object", "path"]
 
 
 class ReportPingMetrics(ReportMetrics):
     TABLE_NAME = "noc.ping"
-    SELECT_QUERY_MAP = {(0, 'managed_object', None): "",
-                        (1, "avg(rtt)", "ping_rtt"): ""}
+    SELECT_QUERY_MAP = {(0, "managed_object", None): "", (1, "avg(rtt)", "ping_rtt"): ""}
     KEY_FIELDS = ["managed_object"]

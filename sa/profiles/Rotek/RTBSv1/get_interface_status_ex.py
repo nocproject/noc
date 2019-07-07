@@ -2,9 +2,12 @@
 # ---------------------------------------------------------------------
 # Rotek.RTBSv1.get_interface_status_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Third-party modules
+import six
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -42,16 +45,11 @@ class Script(BaseScript):
             try:
                 v = self.profile.convert_interface_name(name)
             except InterfaceTypeError as why:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, why
-                )
+                self.logger.debug("Ignoring unknown interface %s: %s", name, why)
                 unknown_interfaces += [name]
                 continue
             ifindex = int(oid.split(".")[-1])
-            r[ifindex] = {
-                "interface": v
-            }
+            r[ifindex] = {"interface": v}
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -80,9 +78,8 @@ class Script(BaseScript):
                         r[ifindex]["in_speed"] = s * 1000
                         r[ifindex]["out_speed"] = s * 1000
         if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
-        return r.values()
+            self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
+        return list(six.itervalues(r))
 
     def get_data2(self):
         # ifIndex -> ifName mapping
@@ -96,19 +93,14 @@ class Script(BaseScript):
             try:
                 v = self.profile.convert_interface_name(name)
             except InterfaceTypeError as why:
-                self.logger.debug(
-                    "Ignoring unknown interface %s: %s",
-                    name, why
-                )
+                self.logger.debug("Ignoring unknown interface %s: %s", name, why)
                 unknown_interfaces += [name]
                 continue
             ifindex = int(oid.split(".")[-1])
-            for i in ss.items():
+            for i in six.iteritems(ss):
                 if int(i[0]) == ifindex:
                     v = "%s.%s" % (v, i[1])
-                    r[ifindex] = {
-                        "interface": v
-                    }
+                    r[ifindex] = {"interface": v}
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -137,9 +129,8 @@ class Script(BaseScript):
                         r[ifindex]["in_speed"] = s * 1000
                         r[ifindex]["out_speed"] = s * 1000
         if unknown_interfaces:
-            self.logger.info("%d unknown interfaces has been ignored",
-                             len(unknown_interfaces))
-        return r.values()
+            self.logger.info("%d unknown interfaces has been ignored", len(unknown_interfaces))
+        return list(six.itervalues(r))
 
     def execute_snmp(self, interfaces=None, **kwargs):
         r = self.get_data()

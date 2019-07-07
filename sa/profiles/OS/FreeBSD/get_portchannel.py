@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # OS.FreeBSD.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Python modules
+import re
+
+# Third-party modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -17,12 +19,11 @@ class Script(BaseScript):
     interface = IGetPortchannel
     cache = True
     rx_if_name = re.compile(
-        r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?"
-        r" mtu (?P<mtu>\d+)$")
+        r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?" r" mtu (?P<mtu>\d+)$"
+    )
     rx_if_lagg = re.compile(r"^\tgroups:.+?bridge.*?$")
     rx_if_lagg_p = re.compile(r"^\tlaggproto lacp")
-    rx_if_lagg_m = re.compile(
-        r"^\tlaggport: (?P<ifname>\S+) flags=[0-9a-f]+<.*>")
+    rx_if_lagg_m = re.compile(r"^\tlaggport: (?P<ifname>\S+) flags=[0-9a-f]+<.*>")
 
     def execute(self):
         self.interfaces = []
@@ -30,8 +31,8 @@ class Script(BaseScript):
         for s in self.cli("ifconfig -v", cached=True).splitlines():
             match = self.rx_if_name.search(s)
             if match:
-                if ("members" in self.iface):
-                    if not "type" in self.iface:
+                if "members" in self.iface:
+                    if "type" not in self.iface:
                         self.iface["type"] = "S"
                     self.interfaces += [self.iface]
                     self.iface = {}
@@ -48,7 +49,7 @@ class Script(BaseScript):
                     self.iface["members"] = [ifname]
                 continue
         if "members" in self.iface:
-            if not "type" in self.iface:
+            if "type" not in self.iface:
                 self.iface["type"] = "S"
             self.interfaces += [self.iface]
         return self.interfaces

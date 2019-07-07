@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -37,15 +38,18 @@ class Migration(BaseMigration):
                     # To create single segment use templates like {{object.name}}
                     # To create segments on per-interface basic use
                     # names like {{object.name}}-{{interface.name}}
-                    ("c", "Segmentate to child segment")
+                    ("c", "Segmentate to child segment"),
                 ],
-                default="d"
-            )
+                default="d",
+            ),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "autosegmentation_level_limit", models.IntegerField("Level", default=999)
+            "sa_managedobjectprofile",
+            "autosegmentation_level_limit",
+            models.IntegerField("Level", default=999),
         )
         self.db.add_column(
-            "sa_managedobjectprofile", "autosegmentation_segment_name",
-            models.CharField(max_length=255, default="{{object.name}}")
+            "sa_managedobjectprofile",
+            "autosegmentation_segment_name",
+            models.CharField(max_length=255, default="{{object.name}}"),
         )

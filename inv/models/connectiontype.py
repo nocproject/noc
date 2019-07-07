@@ -8,11 +8,19 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField, DictField,
-                                ListField, UUIDField, ObjectIdField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    DictField,
+    ListField,
+    UUIDField,
+    ObjectIdField,
+)
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
@@ -22,21 +30,20 @@ from noc.core.model.decorator import on_delete_check
 
 
 @category
-@on_delete_check(check=[
-    ("inv.ConnectionType", "extend")
-])
+@on_delete_check(check=[("inv.ConnectionType", "extend")])
 @six.python_2_unicode_compatible
 class ConnectionType(Document):
     """
     Equipment vendor
     """
+
     meta = {
         "collection": "noc.connectiontypes",
         "strict": False,
         "auto_create_index": False,
         "indexes": ["extend", "data", "c_group"],
         "json_collection": "inv.connectiontypes",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name"],
     }
 
     name = StringField(unique=True)
@@ -53,8 +60,10 @@ class ConnectionType(Document):
             "f",  # Only female type
             "mmf",  # female, 1 or more males
             "mf",  # male-female
-            "mff"  # male, 2 or more females
-        ], default="mf")
+            "mff",  # male, 2 or more females
+        ],
+        default="mf",
+    )
     # ModelData
     data = DictField(default={})
     # Compatible group
@@ -63,11 +72,7 @@ class ConnectionType(Document):
     c_group = ListField(StringField())
     uuid = UUIDField(binary=True)
 
-    OPPOSITE_GENDER = {
-        "s": "s",
-        "m": "f",
-        "f": "m"
-    }
+    OPPOSITE_GENDER = {"s": "s", "m": "f", "f": "m"}
     category = ObjectIdField()
 
     def __str__(self):
@@ -81,16 +86,14 @@ class ConnectionType(Document):
             "uuid": self.uuid,
             "description": self.description,
             "genders": self.genders,
-            "c_group": self.c_group
+            "c_group": self.c_group,
         }
         if self.extend:
             r["extend__name"] = self.extend.name
         return r
 
     def to_json(self):
-        return to_json(self.json_data,
-                       order=["name", "$collection",
-                              "uuid", "description"])
+        return to_json(self.json_data, order=["name", "$collection", "uuid", "description"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

@@ -8,16 +8,14 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.sa.models.objectdata import ObjectData
 from noc.sa.models.managedobject import ManagedObject
 
 
 def fix():
-    uplinks = dict(
-        (d["_id"], d.get("uplinks", []))
-        for d in ObjectData._get_collection().find()
-    )
+    uplinks = dict((d["_id"], d.get("uplinks", [])) for d in ObjectData._get_collection().find())
     seg_status = defaultdict(lambda: False)
     for mo in ManagedObject.objects.all():
         u = uplinks.get(mo.id, [])

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -22,15 +23,14 @@ class Script(BaseScript):
         r"\s*(?P<vname>[A-Za-z0-9\-\.]+)\n"
         r"(([ 0-9]+)\n)?[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
         r"([ \-xnf]+)\n[ ]+(?P<portmask>[\-tu]+)\s*"
-        r"(?P<uplinkmask>[\-tu]*)", re.MULTILINE | re.IGNORECASE)
+        r"(?P<uplinkmask>[\-tu]*)",
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def execute(self):
         v = self.cli("switch vlan show *")
         r = []
         for match in self.rx_vlan.finditer(v):
             if match.group("vstatus") == "enabled":
-                r += [{
-                    "vlan_id": int(match.group("vid")),
-                    "name": match.group("vname")
-                }]
+                r += [{"vlan_id": int(match.group("vid")), "name": match.group("vname")}]
         return r

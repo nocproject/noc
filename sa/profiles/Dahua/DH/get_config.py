@@ -14,12 +14,21 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 class Script(BaseScript):
     name = "Dahua.DH.get_config"
     interface = IGetConfig
-    config_sections = ["General", "Network", "RTSP",
-                       "VideoColor", "VideoInOptions",
-                       "Encode", "VideoStandard", "Ptz"]  # "VideoOut"
+    config_sections = [
+        "General",
+        "Network",
+        "RTSP",
+        "VideoColor",
+        "VideoInOptions",
+        "Encode",
+        "VideoStandard",
+        "Ptz",
+    ]  # "VideoOut"
 
     def execute(self, **kwargs):
-        res = self.http.get("/cgi-bin/configManager.cgi?action=getConfig&%s" %
-                            "&".join(["%s=%s" % ("name", c) for c in self.config_sections]))
+        res = self.http.get(
+            "/cgi-bin/configManager.cgi?action=getConfig&%s"
+            % "&".join(["%s=%s" % ("name", c) for c in self.config_sections])
+        )
 
         return res

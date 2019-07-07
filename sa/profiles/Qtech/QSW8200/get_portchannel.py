@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -24,7 +25,7 @@ class Script(BaseScript):
         r"^MinLinks\s*:.+\n"
         r"^UpLinks\s* :.+\n"
         r"^Member Port:(?P<members>.+)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -32,9 +33,11 @@ class Script(BaseScript):
         cmd = self.cli("show port-channel", cached=True)
         for match in self.rx_item.finditer(cmd):
             members = match.group("members").split()
-            r += [{
-                "interface": "port-channel%s" % match.group("portgroup"),
-                "members": members,
-                "type": "L" if match.group("mode") == "Lacp" else "S"
-            }]
+            r += [
+                {
+                    "interface": "port-channel%s" % match.group("portgroup"),
+                    "members": members,
+                    "type": "L" if match.group("mode") == "Lacp" else "S",
+                }
+            ]
         return r

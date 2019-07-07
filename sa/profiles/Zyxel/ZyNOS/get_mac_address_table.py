@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -17,8 +18,10 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_mac_address_table"
     interface = IGetMACAddressTable
 
-    rx_line = re.compile(r"^\s*(?P<interfaces>T?\d+)\s+(?P<vlan_id>\d+)\s+"
-                         r"(?P<mac>\S+)\s+(?P<type>\S+)\s*$", re.MULTILINE)
+    rx_line = re.compile(
+        r"^\s*(?P<interfaces>T?\d+)\s+(?P<vlan_id>\d+)\s+" r"(?P<mac>\S+)\s+(?P<type>\S+)\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"
@@ -34,12 +37,13 @@ class Script(BaseScript):
             mac_address = match.group("mac")
             if mac is not None and mac.lower() != mac_address:
                 continue
-            r.append({
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("interfaces")],
-                "type": {"Dynamic": "D",
-                         "Static": "S"}[match.group("type")],
-            })
+            r.append(
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("interfaces")],
+                    "type": {"Dynamic": "D", "Static": "S"}[match.group("type")],
+                }
+            )
 
         return r

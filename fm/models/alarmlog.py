@@ -8,24 +8,23 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 import noc.lib.nosql as nosql
 
 
 @six.python_2_unicode_compatible
 class AlarmLog(nosql.EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     timestamp = nosql.DateTimeField()
-    from_status = nosql.StringField(
-        max_length=1, regex=r"^[AC]$", required=True)
-    to_status = nosql.StringField(
-        max_length=1, regex=r"^[AC]$", required=True)
+    from_status = nosql.StringField(max_length=1, regex=r"^[AC]$", required=True)
+    to_status = nosql.StringField(max_length=1, regex=r"^[AC]$", required=True)
     message = nosql.StringField()
 
     def __str__(self):
         return u"%s [%s -> %s]: %s" % (
-            self.timestamp, self.from_status,
-            self.to_status, self.message)
+            self.timestamp,
+            self.from_status,
+            self.to_status,
+            self.message,
+        )

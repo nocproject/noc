@@ -9,8 +9,10 @@
 # Python modules
 from __future__ import absolute_import
 import logging
+
 # Third-party modules
 import six
+
 # NOC modules
 from .base import BaseFact
 from noc.inv.models.interface import Interface as DBInterface
@@ -20,16 +22,36 @@ logger = logging.getLogger(__name__)
 
 @six.python_2_unicode_compatible
 class Interface(BaseFact):
-    ATTRS = ["name", "description", "admin_status", "speed", "duplex",
-             "[protocols]", "profile", "type", "mac", "default_name",
-             "aggregated_interface"]
+    ATTRS = [
+        "name",
+        "description",
+        "admin_status",
+        "speed",
+        "duplex",
+        "[protocols]",
+        "profile",
+        "type",
+        "mac",
+        "default_name",
+        "aggregated_interface",
+    ]
     ID = ["name"]
 
-    def __init__(self, name, description=None, admin_status=False,
-                 speed="auto", duplex="auto", protocols=None,
-                 profile=None, type=None, mac=None, default_name=None,
-                 aggregated_interface=None,
-                 **kwargs):
+    def __init__(
+        self,
+        name,
+        description=None,
+        admin_status=False,
+        speed="auto",
+        duplex="auto",
+        protocols=None,
+        profile=None,
+        type=None,
+        mac=None,
+        default_name=None,
+        aggregated_interface=None,
+        **kwargs
+    ):
         super(Interface, self).__init__()
         self.name = name
         self.description = description
@@ -155,8 +177,7 @@ class Interface(BaseFact):
         if self.name:
             self.name = self.managed_object.get_profile().convert_interface_name(self.name)
             iface = DBInterface.objects.filter(
-                managed_object=self.managed_object.id,
-                name=self.name
+                managed_object=self.managed_object.id, name=self.name
             ).first()
             if iface:
                 logger.debug("bind %s to database", unicode(self))

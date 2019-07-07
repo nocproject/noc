@@ -15,11 +15,12 @@ class MACLog(Document):
     """
     Customer MAC address changes
     """
+
     meta = {
         "collection": "noc.mac_log",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["mac", "-timestamp"]
+        "indexes": ["mac", "-timestamp"],
     }
     # Todo: Add Validation
     timestamp = DateTimeField()

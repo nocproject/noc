@@ -25,8 +25,5 @@ class Script(BaseScript):
             match = rx_vlan_line.match(l.strip())
             if match:
                 name = match.group("name")
-                r.append({
-                    "vlan_id": int(match.group("vlan_id")),
-                    "name": name
-                })
+                r.append({"vlan_id": int(match.group("vlan_id")), "name": name})
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -26,7 +27,6 @@ class Script(BaseScript):
             if match.group("mac") not in macs:
                 macs += [match.group("mac")]
         macs.sort()
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

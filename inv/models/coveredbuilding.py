@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, IntField)
+from mongoengine.fields import StringField, IntField
+
 # NOC modules
 from .coverage import Coverage
 from noc.gis.models.building import Building
@@ -24,7 +26,7 @@ class CoveredBuilding(Document):
         "collection": "noc.coveredbuildings",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["building", "coverage"]
+        "indexes": ["building", "coverage"],
     }
     coverage = PlainReferenceField(Coverage)
     # Coverage preference.
@@ -38,7 +40,4 @@ class CoveredBuilding(Document):
     homes = IntField()
 
     def __str__(self):
-        return u"%s %s" % (
-            self.coverage.name,
-            self.building.primary_address.display_ru()
-        )
+        return u"%s %s" % (self.coverage.name, self.building.primary_address.display_ru())

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -24,21 +25,15 @@ class Script(BaseScript):
         r"\s+Chassis ID\s+:\s+(?P<chassis_id>[^\n]+).+?"
         r"\s+- Port ID type:\s+[^(]+\((?P<port_id_type>\d+)\).+?"
         r"\s+Port ID\s+:\s+(?P<port_id>[^\n]+)",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
-    rx_system_name = re.compile(
-        r"^\s+- System Name: \"(?P<sysname>[^\"]+)\"",
-        re.MULTILINE
-    )
+    rx_system_name = re.compile(r"^\s+- System Name: \"(?P<sysname>[^\"]+)\"", re.MULTILINE)
 
-    rx_caps = re.compile(
-        r"^\s+Enabled Capabilities:\s+(?P<caps>[^\n]+)",
-        re.MULTILINE
-    )
+    rx_caps = re.compile(r"^\s+Enabled Capabilities:\s+(?P<caps>[^\n]+)", re.MULTILINE)
 
     def execute(self):
         def unq(s):
-            if s and s.startswith("\"") and s.endswith("\""):
+            if s and s.startswith('"') and s.endswith('"'):
                 return s[1:-1]
             else:
                 return s
@@ -50,10 +45,7 @@ class Script(BaseScript):
             return []  # LLDP is not enabled
         # For each interface
         for s in self.rx_isep.split(v)[1:]:
-            sr = {
-                "local_interface": s.split(" ", 1)[0],
-                "neighbors": []
-            }
+            sr = {"local_interface": s.split(" ", 1)[0], "neighbors": []}
             # For each neighbor
             for ns in self.rx_nsep.split(s)[1:]:
                 n = {}
@@ -73,10 +65,14 @@ class Script(BaseScript):
                 if match:
                     for c in match.group("caps").split(", "):
                         caps |= {
-                            "other": 1, "repeater": 2, "bridge": 4,
-                            "wlanaccesspoint": 8, "router": 16,
-                            "telephone": 32, "docsis": 64,
-                            "station": 128
+                            "other": 1,
+                            "repeater": 2,
+                            "bridge": 4,
+                            "wlanaccesspoint": 8,
+                            "router": 16,
+                            "telephone": 32,
+                            "docsis": 64,
+                            "station": 128,
                         }[c.lower()]
                 n["remote_capabilities"] = caps
                 sr["neighbors"] += [n]

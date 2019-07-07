@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,7 +21,8 @@ class Script(BaseScript):
     rx_int = re.compile(
         r"^(?P<ifname>\S+)\s+(?P<ifindex>\d+)"
         r"\s+(?P<tag>\w)(?:\s+\w){3}\s+(?P<vlan>\d+)\*?\s+(?P<desc>\S+)\s+(?P<vlans>(?:(?:\d+\s+)+))",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     rx_desc = re.compile(r"Description\s(?P<desc>.*)")
 
@@ -83,7 +85,7 @@ class Script(BaseScript):
                     "tagged_vlans": vlans,
                     "enabled_afi": ["BRIDGE"],
                     "enabled_protocols": [],
-                    "snmp_ifindex": ifindex
+                    "snmp_ifindex": ifindex,
                 }
                 iface = {
                     "name": ifname,
@@ -93,7 +95,7 @@ class Script(BaseScript):
                     "type": iftype,
                     "enabled_protocols": [],
                     "snmp_ifindex": ifindex,
-                    "subinterfaces": [sub]
+                    "subinterfaces": [sub],
                 }
                 interfaces += [iface]
         return [{"interfaces": interfaces}]

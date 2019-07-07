@@ -22,7 +22,7 @@ class Script(BaseScript):
         for s in data:
             if s.startswith("#"):
                 continue
-            u = s.split(':')
+            u = s.split(":")
             if len(u) > 3:
                 name = u[0]
                 user_id = int(u[2])
@@ -36,11 +36,7 @@ class Script(BaseScript):
                         user_class = "user"
                 else:
                     continue
-                r.append({
-                    "username": name,
-                    "class": user_class,
-                    "is_active": True
-                })
+                r.append({"username": name, "class": user_class, "is_active": True})
         if not r:
             raise Exception("Not implemented")
         return r

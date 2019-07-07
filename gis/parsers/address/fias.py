@@ -12,8 +12,10 @@ import os
 from collections import namedtuple
 import re
 import csv
+
 # Third-party modules
 import dbf
+
 # NOC modules
 from noc.gis.models.division import Division
 from noc.gis.models.building import Building
@@ -52,7 +54,7 @@ class FIASParser(AddressParser):
         self.download_file(
             self.config.get("oktmo", "download_url"),
             os.path.join(self.prefix, "oktmo.csv.gz"),
-            auto_deflate=True
+            auto_deflate=True,
         )
         # Check for FIAS files
         if not os.path.isfile(os.path.join(self.prefix, "ADDROBJ.DBF")):
@@ -66,10 +68,11 @@ class FIASParser(AddressParser):
     def load_oktmo(self):
         self.info("Load OKTMO structure")
         # Inject top level
-        for t in self.addrobj.find({"code": {"$regex": "^\d+\d+ 0 000 000 000 000 0000 0000 000$"}}):
+        for t in self.addrobj.find(
+            {"code": {"$regex": "^\d+\d+ 0 000 000 000 000 0000 0000 000$"}}
+        ):
             oktmo = t["okato"][:2] + "000000"
-            o = OKTMO(okato=t["okato"], oktmo=oktmo,
-                      name=t["offname"], parent=None)
+            o = OKTMO(okato=t["okato"], oktmo=oktmo, name=t["offname"], parent=None)
             self.oktmo[oktmo] = o
             self.okato[t["okato"]] = o
         # Load CSV
@@ -80,8 +83,7 @@ class FIASParser(AddressParser):
             next(reader)
             # Read rest
             for okato, oktmo, name, parent in reader:
-                o = OKTMO(okato=okato, oktmo=oktmo,
-                          name=name, parent=parent)
+                o = OKTMO(okato=okato, oktmo=oktmo, name=name, parent=parent)
                 self.oktmo[oktmo] = o
                 self.okato[okato] = o
 
@@ -118,9 +120,7 @@ class FIASParser(AddressParser):
                 parent = self.get_top()
             ao = self.get_addrobj(oktmo=oktmo)
             self.info("Creating %s" % o.name)
-            data = {
-                "OKTMO": oktmo
-            }
+            data = {"OKTMO": oktmo}
             if ao:
                 name = ao["offname"]
                 short_name = ao["shortname"]
@@ -136,12 +136,7 @@ class FIASParser(AddressParser):
                 short_name = None
             if not short_name:
                 short_name, name = normalize_division(name)
-            d = Division(
-                name=name,
-                short_name=short_name,
-                parent=parent,
-                data=data
-            )
+            d = Division(name=name, short_name=short_name, parent=parent, data=data)
             d.save()
         self.div_cache[oktmo] = d
         return d
@@ -178,12 +173,7 @@ class FIASParser(AddressParser):
             data["FIAS_CODE"] = ao["code"]
             if not short_name:
                 short_name, name = normalize_division(name)
-            d = Division(
-                name=name,
-                short_name=short_name,
-                parent=parent,
-                data=data
-            )
+            d = Division(name=name, short_name=short_name, parent=parent, data=data)
             d.save()
         self.aoid_cache[ao["aoid"]] = d
         return d
@@ -215,9 +205,7 @@ class FIASParser(AddressParser):
                 parent=parent,
                 name=a["offname"],
                 short_name=a["shortname"],
-                data={
-                    "FIAS_AOGUID": aoguid
-                }
+                data={"FIAS_AOGUID": aoguid},
             )
             s.save()
         self.street_cache[aoguid] = s
@@ -235,8 +223,7 @@ class FIASParser(AddressParser):
         Refine OKTMO by OKATO
         """
         oktmo = oktmo.strip()
-        if (okato and len(oktmo) == 8 and len(okato) == 11 and
-                okato[-3:] != "000"):
+        if okato and len(oktmo) == 8 and len(okato) == 11 and okato[-3:] != "000":
             o = self.okato.get(okato)
             if o:
                 return o.oktmo
@@ -320,10 +307,10 @@ class FIASParser(AddressParser):
                             data={
                                 "FIAS_HOUSEGUID": r.houseguid,
                                 "OKATO": r.okato,
-                                "OKTMO": r.oktmo
+                                "OKTMO": r.oktmo,
                             },
                             start_date=r.startdate,
-                            end_date=r.enddate
+                            end_date=r.enddate,
                         )
                         bld.save()
                         # Create address
@@ -357,9 +344,7 @@ class FIASParser(AddressParser):
                             estate=estate,
                             estate2=estate2,
                             estate_letter=estate_letter,
-                            data={
-                                "FIAS_HOUSEGUID": r.houseguid
-                            }
+                            data={"FIAS_HOUSEGUID": r.houseguid},
                         )
                         a.save()
 
@@ -376,7 +361,7 @@ class FIASParser(AddressParser):
             r.placecode,
             r.streetcode,
             r.extrcode,
-            r.sextcode
+            r.sextcode,
         ]
         return " ".join(r)
 
@@ -396,19 +381,21 @@ class FIASParser(AddressParser):
                     continue
                 if r.actstatus != 1:
                     continue  # Skip historical data
-                batch += [{
-                    "aoid": r.aoid.strip(),
-                    "aoguid": r.aoguid.strip(),
-                    "offname": r.offname.strip(),
-                    "shortname": r.shortname.strip(),
-                    "code": self.get_fias_code(r),
-                    "postalcode": r.postalcode.strip(),
-                    "okato": r.okato.strip(),
-                    "oktmo": r.oktmo.strip(),
-                    "kladr": r.code.strip(),
-                    "parentguid": r.parentguid.strip(),
-                    "centstatus": r.centstatus
-                }]
+                batch += [
+                    {
+                        "aoid": r.aoid.strip(),
+                        "aoguid": r.aoguid.strip(),
+                        "offname": r.offname.strip(),
+                        "shortname": r.shortname.strip(),
+                        "code": self.get_fias_code(r),
+                        "postalcode": r.postalcode.strip(),
+                        "okato": r.okato.strip(),
+                        "oktmo": r.oktmo.strip(),
+                        "kladr": r.code.strip(),
+                        "parentguid": r.parentguid.strip(),
+                        "centstatus": r.centstatus,
+                    }
+                ]
                 if len(batch) >= N:
                     self.info("   writing %d records" % N)
                     self.addrobj.insert(batch)

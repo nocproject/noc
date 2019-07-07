@@ -18,7 +18,7 @@ class NewAddressDiscoveryLog(Document):
         "collection": "noc.log.discovery.address.new",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["-timestamp"]
+        "indexes": ["-timestamp"],
     }
     timestamp = DateTimeField()
     vrf = StringField()

@@ -10,6 +10,7 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
@@ -20,14 +21,15 @@ class Script(BaseScript):
     name = "Cambium.ePMP.get_interfaces"
     interface = IGetInterfaces
 
-    INTERFACE_TYPES = {"ether": "physical",
-                       "/ieee802.11": "physical"}
+    INTERFACE_TYPES = {"ether": "physical", "/ieee802.11": "physical"}
 
-    rx_iface = re.compile(r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
-                          "\s+link\/(?P<type>\S+)\s(?P<mac>\S+) brd.+\n"
-                          "(\s+inet\s+(?P<inet_ip>\S+)/(?P<inet_prefix>\d+)\s+brd\s+"
-                          "(?P<inet_broadcast>\S+)\s+scope\s+(?P<scope>\S+)\s+|)",
-                          re.MULTILINE)
+    rx_iface = re.compile(
+        r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
+        "\s+link\/(?P<type>\S+)\s(?P<mac>\S+) brd.+\n"
+        "(\s+inet\s+(?P<inet_ip>\S+)/(?P<inet_prefix>\d+)\s+brd\s+"
+        "(?P<inet_broadcast>\S+)\s+scope\s+(?P<scope>\S+)\s+|)",
+        re.MULTILINE,
+    )
 
     def execute_cli(self):
         r = []
@@ -44,7 +46,7 @@ class Script(BaseScript):
                 "oper_status": "UP" in match.group("status"),
                 "type": i_type,
                 "mac": match.group("mac"),
-                "enabled_protocols": []
+                "enabled_protocols": [],
             }
             if "." in iface_name:
                 iface_name, num = iface_name.rsplit(".", 1)
@@ -57,26 +59,32 @@ class Script(BaseScript):
             subs[iface_name] += [s.copy()]
 
             # sub = {"subinterfaces": [i.copy()]}
-            r += [{
-                "name": iface_name,
-                "admin_status": "LOWER_UP" in match.group("status"),
-                "oper_status": "UP" in match.group("status"),
-                "type": i_type,
-                "mac": match.group("mac"),
-                "enabled_protocols": []
-            }]
+            r += [
+                {
+                    "name": iface_name,
+                    "admin_status": "LOWER_UP" in match.group("status"),
+                    "oper_status": "UP" in match.group("status"),
+                    "type": i_type,
+                    "mac": match.group("mac"),
+                    "enabled_protocols": [],
+                }
+            ]
 
         for l in r:
             if l["name"] in subs:
                 l["subinterfaces"] = subs[l["name"]]
             else:
-                l["subinterfaces"] = [{
-                    "name": l["name"],
-                    "description": l.get("description", ""),
-                    "type": "SVI",
-                    "enabled_afi": ["BRIDGE"] if l["type"] in ["physical", "aggregated"] else [],
-                    "admin_status": l["admin_status"],
-                    "oper_status": l["oper_status"],
-                    "snmp_ifindex": l["snmp_ifindex"],
-                }]
+                l["subinterfaces"] = [
+                    {
+                        "name": l["name"],
+                        "description": l.get("description", ""),
+                        "type": "SVI",
+                        "enabled_afi": ["BRIDGE"]
+                        if l["type"] in ["physical", "aggregated"]
+                        else [],
+                        "admin_status": l["admin_status"],
+                        "oper_status": l["oper_status"],
+                        "snmp_ifindex": l["snmp_ifindex"],
+                    }
+                ]
         return [{"interfaces": r}]

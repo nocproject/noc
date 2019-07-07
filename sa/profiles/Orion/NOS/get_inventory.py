@@ -18,10 +18,12 @@ class Script(BaseScript):
 
     def execute_cli(self):
         v = self.profile.get_version(self)
-        return [{
-            "type": "CHASSIS",
-            "vendor": "Orion",
-            "part_no": v["platform"],
-            "revision": v["hardware"],
-            "serial": v["serial"]
-        }]
+        return [
+            {
+                "type": "CHASSIS",
+                "vendor": "Orion",
+                "part_no": v["platform"],
+                "revision": v["hardware"],
+                "serial": v["serial"],
+            }
+        ]

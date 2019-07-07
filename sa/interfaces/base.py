@@ -9,8 +9,10 @@
 # Python modules
 import re
 import datetime
+
 # Third-party modules
 import six
+
 # NOC Modules
 from noc.lib.text import list_to_ranges, ranges_to_list
 from noc.core.ip import IPv6
@@ -29,6 +31,7 @@ class NoneParameter(Parameter):
         ...
     ValueError: NoneParameter: 'None'
     """
+
     def __init__(self, required=True):
         super(NoneParameter, self).__init__(required=required)
 
@@ -57,10 +60,10 @@ class StringParameter(Parameter):
     ...
     ValueError: StringParameter: '3'.
     """
+
     def __init__(self, required=True, default=None, choices=None):
         self.choices = set(choices) if choices else None
-        super(StringParameter, self).__init__(required=required,
-                                              default=default)
+        super(StringParameter, self).__init__(required=required, default=default)
 
     def clean(self, value):
         if not isinstance(value, str):
@@ -105,10 +108,10 @@ class REStringParameter(StringParameter):
     >>> REStringParameter("ex+p",default="exxp").clean(None)
     'exxp'
     """
+
     def __init__(self, regexp, required=True, default=None):
         self.rx = re.compile(regexp)  # Compile before calling the constructor
-        super(REStringParameter, self).__init__(required=required,
-                                                default=default)
+        super(REStringParameter, self).__init__(required=required, default=default)
 
     def clean(self, value):
         if value is None and self.default is not None:
@@ -129,6 +132,7 @@ class REParameter(StringParameter):
         ...
     ValueError: REParameter: '+'
     """
+
     def clean(self, value):
         try:
             re.compile(value)
@@ -147,6 +151,7 @@ class PyExpParameter(StringParameter):
         ...
     ValueError: REParameter: 'a =!= b'
     """
+
     def clean(self, value):
         try:
             compile(value, "<string>", "eval")
@@ -178,6 +183,7 @@ class BooleanParameter(Parameter):
     >>> BooleanParameter(default=True).clean(None)
     True
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -190,11 +196,7 @@ class BooleanParameter(Parameter):
         self.raise_error(value)
 
     def get_form_field(self, label=None):
-        return {
-            "xtype": "checkboxfield",
-            "name": label,
-            "boxLabel": label
-        }
+        return {"xtype": "checkboxfield", "name": label, "boxLabel": label}
 
 
 class IntParameter(Parameter):
@@ -229,8 +231,8 @@ class IntParameter(Parameter):
     ValueError: IntParameter: None
     None
     """
-    def __init__(self, required=True, default=None,
-                 min_value=None, max_value=None):
+
+    def __init__(self, required=True, default=None, min_value=None, max_value=None):
         self.min_value = min_value
         self.max_value = max_value
         super(IntParameter, self).__init__(required=required, default=default)
@@ -242,8 +244,9 @@ class IntParameter(Parameter):
             i = int(value)
         except (ValueError, TypeError):
             self.raise_error(value)
-        if ((self.min_value is not None and i < self.min_value) or
-                (self.max_value is not None and i > self.max_value)):
+        if (self.min_value is not None and i < self.min_value) or (
+            self.max_value is not None and i > self.max_value
+        ):
             self.raise_error(value)
         return i
 
@@ -275,8 +278,8 @@ class FloatParameter(Parameter):
         ...
     ValueError: FloatParameter: 15
     """
-    def __init__(self, required=True, default=None,
-                 min_value=None, max_value=None):
+
+    def __init__(self, required=True, default=None, min_value=None, max_value=None):
         self.min_value = min_value
         self.max_value = max_value
         super(FloatParameter, self).__init__(required=required, default=default)
@@ -289,8 +292,9 @@ class FloatParameter(Parameter):
                 value = float(value)
             except ValueError:
                 self.raise_error(value)
-        if ((self.min_value is not None and value < self.min_value) or
-                (self.max_value is not None and value > self.max_value)):
+        if (self.min_value is not None and value < self.min_value) or (
+            self.max_value is not None and value > self.max_value
+        ):
             self.raise_error(value)
         return value
 
@@ -331,9 +335,9 @@ class InstanceOfParameter(Parameter):
     ...
     ValueError: InstanceOfParameter: 1
     """
+
     def __init__(self, cls, required=True, default=None):
-        super(InstanceOfParameter, self).__init__(required=required,
-                                                  default=default)
+        super(InstanceOfParameter, self).__init__(required=required, default=default)
         self.cls = cls
         if isinstance(cls, six.string_types):
             self.is_valid = self.is_valid_classname
@@ -344,8 +348,7 @@ class InstanceOfParameter(Parameter):
         return isinstance(value, self.cls)
 
     def is_valid_classname(self, value):
-        return (hasattr(value, "__class__") and
-                value.__class__.__name__ == self.cls)
+        return hasattr(value, "__class__") and value.__class__.__name__ == self.cls
 
     def clean(self, value):
         if value is None:
@@ -385,9 +388,9 @@ class SubclassOfParameter(Parameter):
     ValueError: SubclassOfParameter: <class base.C3>
     >>> SubclassOfParameter(cls="C",required=False).clean(None)
     """
+
     def __init__(self, cls, required=True, default=None):
-        super(SubclassOfParameter, self).__init__(required=required,
-                                                  default=default)
+        super(SubclassOfParameter, self).__init__(required=required, default=default)
         self.cls = cls
         if isinstance(cls, six.string_types):
             self.is_valid = self.is_valid_classname
@@ -448,12 +451,12 @@ class ListOfParameter(ListParameter):
     ...
     ValueError: IntParameter: 'x'
     """
+
     def __init__(self, element, required=True, default=None, convert=False):
         self.element = element
         self.is_list = type(element) in (list, tuple)
         self.convert = convert
-        super(ListOfParameter, self).__init__(required=required,
-                                              default=default)
+        super(ListOfParameter, self).__init__(required=required, default=default)
 
     def clean(self, value):
         if value is None and self.default is not None:
@@ -462,10 +465,7 @@ class ListOfParameter(ListParameter):
             value = [value]
         v = super(ListOfParameter, self).clean(value)
         if self.is_list:
-            return [
-                [e.clean(vv) for e, vv in zip(self.element, nv)]
-                for nv in value
-            ]
+            return [[e.clean(vv) for e, vv in zip(self.element, nv)] for nv in value]
         else:
             return [self.element.clean(x) for x in v]
 
@@ -491,10 +491,7 @@ class ListOfParameter(ListParameter):
                 for nv in value
             ]
         else:
-            return [
-                self.element.script_clean_result(profile, x)
-                for x in v
-            ]
+            return [self.element.script_clean_result(profile, x) for x in v]
 
 
 class StringListParameter(ListOfParameter):
@@ -508,10 +505,14 @@ class StringListParameter(ListOfParameter):
       ...
     ValueError: StringParameter: '3'
     """
+
     def __init__(self, required=True, default=None, convert=False, choices=None):
         super(StringListParameter, self).__init__(
-            element=StringParameter(choices=choices), required=required,
-            default=default, convert=convert)
+            element=StringParameter(choices=choices),
+            required=required,
+            default=default,
+            convert=convert,
+        )
 
 
 class DictParameter(Parameter):
@@ -523,14 +524,13 @@ class DictParameter(Parameter):
         ...
     ValueError: DictParameter: {'i': '10', 'x': 'ten'}
     """
+
     def __init__(self, required=True, default=None, attrs=None, truncate=False):
         super(DictParameter, self).__init__(required=required, default=default)
         self.attrs = attrs or {}
         self.truncate = truncate
         self._defaults = dict(
-            (k, attrs[k].default)
-            for k in self.attrs
-            if self.attrs[k].default is not None
+            (k, attrs[k].default) for k in self.attrs if self.attrs[k].default is not None
         )
         self._required_input = set(k for k in self.attrs if self.attrs[k].required)
 
@@ -613,11 +613,11 @@ class DictListParameter(ListOfParameter):
     >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()},convert=True).clean({"i":"10","s":"ten"})
     [{'i': 10, 's': 'ten'}]
     """
-    def __init__(self, required=True, default=None,
-                 attrs=None, convert=False):
+
+    def __init__(self, required=True, default=None, attrs=None, convert=False):
         super(DictListParameter, self).__init__(
-            element=DictParameter(attrs=attrs),
-            required=required, default=default, convert=convert)
+            element=DictParameter(attrs=attrs), required=required, default=default, convert=convert
+        )
 
 
 class DateTimeParameter(StringParameter):
@@ -644,8 +644,7 @@ class DateTimeParameter(StringParameter):
                 us = int(us.rstrip("Z"), 10)
                 return dt + datetime.timedelta(microseconds=us)
             else:
-                return datetime.datetime.strptime(value,
-                                                  "%Y-%m-%dT%H:%M:%S")
+                return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
         elif isinstance(value, datetime):
             return value
         else:
@@ -678,8 +677,7 @@ class DateTimeShiftParameter(StringParameter):
                 us = int(us.rstrip("Z"), 10)
                 return dt + datetime.timedelta(microseconds=us)
             else:
-                return datetime.datetime.strptime(value,
-                                                  "%Y-%m-%dT%H:%M:%S")
+                return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
         elif isinstance(value, datetime):
             return value
         else:
@@ -695,6 +693,7 @@ class IPv4Parameter(StringParameter):
         ...
     ValueError: IPvParameter: '192.168.0.256'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -737,6 +736,7 @@ class IPv4PrefixParameter(StringParameter):
         ...
     ValueError: IPv4PrefixParameter: '192.168.0.0/-5'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -787,6 +787,7 @@ class IPv6Parameter(StringParameter):
     >>> IPv6Parameter().clean("2001:db8:0:7:0:0:0:1")
     '2001:db8:0:7::1'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -815,6 +816,7 @@ class IPv6PrefixParameter(StringParameter):
     ...
     ValueError: IPv6PrefixParameter: '2001:db8::'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -880,9 +882,11 @@ class VLANIDParameter(IntParameter):
         ...
     ValueError: VLANIDParameter: 0
     """
+
     def __init__(self, required=True, default=None):
-        super(VLANIDParameter, self).__init__(required=required, default=default,
-                                              min_value=1, max_value=4095)
+        super(VLANIDParameter, self).__init__(
+            required=required, default=default, min_value=1, max_value=4095
+        )
 
 
 class VLANStackParameter(ListOfParameter):
@@ -899,9 +903,7 @@ class VLANStackParameter(ListOfParameter):
 
     def __init__(self, required=True, default=None):
         super(VLANStackParameter, self).__init__(
-            element=IntParameter(),
-            required=required,
-            default=default, convert=True
+            element=IntParameter(), required=required, default=default, convert=True
         )
 
     def clean(self, value):
@@ -923,10 +925,10 @@ class VLANIDListParameter(ListOfParameter):
     >>> VLANIDListParameter().clean([1,2,3])
     [1, 2, 3]
     """
+
     def __init__(self, required=True, default=None):
         super(VLANIDListParameter, self).__init__(
-            element=VLANIDParameter(),
-            required=required, default=default
+            element=VLANIDParameter(), required=required, default=default
         )
 
 
@@ -988,10 +990,10 @@ class MACAddressParameter(StringParameter):
         ...
     ValueError: MACAddressParameter: '\xa8\xf9K\x80\xb4\xc0'.
     """
+
     def __init__(self, required=True, default=None, accept_bin=True):
         self.accept_bin = accept_bin
-        super(MACAddressParameter, self).__init__(required=required,
-                                                  default=default)
+        super(MACAddressParameter, self).__init__(required=required, default=default)
 
     def clean(self, value):
         if value is None and self.default is not None:
@@ -1025,6 +1027,7 @@ class OIDParameter(Parameter):
         ...
     ValueError: OIDParameter: '1.3.6.1.2.1.1.X.0'
     """
+
     def clean(self, value):
         def is_false(v):
             try:
@@ -1099,6 +1102,7 @@ class GeoPointParameter(Parameter):
     ...
     ValueError: GeoPointParameter: [1]
     """
+
     def clean(self, value):
         if type(value) in (list, tuple):
             # List or tuple
@@ -1124,6 +1128,7 @@ class ModelParameter(Parameter):
     """
     Model reference parameter
     """
+
     def __init__(self, model, required=True):
         super(ModelParameter, self).__init__(required=required)
         self.model = model
@@ -1144,15 +1149,14 @@ class ModelParameter(Parameter):
             self.raise_error("Not found: %d" % value)
 
 
-DocFieldMap = {
-    "FloatField": FloatParameter()
-}
+DocFieldMap = {"FloatField": FloatParameter()}
 
 
 class DocumentParameter(Parameter):
     """
     Document reference parameter
     """
+
     def __init__(self, document, required=True):
         super(DocumentParameter, self).__init__(required=required)
         self.document = document
@@ -1175,8 +1179,7 @@ class DocumentParameter(Parameter):
 
 class EmbeddedDocumentParameter(Parameter):
     def __init__(self, document, required=True):
-        super(EmbeddedDocumentParameter, self).__init__(
-            required=required)
+        super(EmbeddedDocumentParameter, self).__init__(required=required)
         self.document = document
 
     def clean(self, value):
@@ -1206,6 +1209,7 @@ class TagsParameter(Parameter):
     >>> TagsParameter().clean("1 , 2,  tags")
     [u'1', u'2', u'tags']
     """
+
     def clean(self, value):
         if type(value) in (list, tuple):
             v = [unicode(v).strip() for v in value]
@@ -1243,4 +1247,5 @@ class ObjectIdParameter(REStringParameter):
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

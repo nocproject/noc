@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # mib API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,8 @@ import subprocess
 import re
 import imp
 import datetime
+# Third-party modules
+import six
 # NOC modules
 from noc.config import config
 from noc.core.service.api import API, api
@@ -168,7 +170,7 @@ class MIBAPI(API):
                         "oid": v["oid"],
                         "description": v.get("description"),
                         "syntax": v["syntax"]["type"] if "syntax" in v else None
-                    } for node, v in m.MIB[i].items()]
+                    } for node, v in six.iteritems(m.MIB[i])]
             mib.load_data(cdata)
             # Move file to permanent place
             safe_rewrite(self.get_path(mib_name), data)

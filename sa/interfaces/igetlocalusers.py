@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
 from .base import ListOfParameter, DictParameter, StringParameter, BooleanParameter
@@ -19,9 +20,13 @@ from .base import ListOfParameter, DictParameter, StringParameter, BooleanParame
 #
 #
 class IGetLocalUsers(BaseInterface):
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "username": StringParameter(),
-        "class": StringParameter(),
-        "is_active": BooleanParameter(default=True)
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(
+            attrs={
+                "username": StringParameter(),
+                "class": StringParameter(),
+                "is_active": BooleanParameter(default=True),
+            }
+        )
+    )
     preview = "NOC.sa.managedobject.scripts.ShowLocalUsers"

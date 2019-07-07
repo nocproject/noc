@@ -2,10 +2,12 @@
 # ---------------------------------------------------------------------
 # Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018, The NOC Project
+# Copyright (C) 2007-2019, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import six
 # NOC modules
 from noc.lib.datasource import datasource_registry
 
@@ -57,7 +59,7 @@ class Rule(object):
                     "lambda vars: datasource_registry['%s'](%s)" % (
                         ds.datasource,
                         ", ".join(["%s=vars['%s']" % (k, v)
-                                   for k, v in ds.search.items()])
+                                   for k, v in six.iteritems(ds.search)])
                     ),
                     {"datasource_registry": datasource_registry}, {})
 
@@ -71,7 +73,7 @@ class Rule(object):
         if self.var_mapping:
             vars = self.c_defaults.copy()
             # Map vars
-            for k, v in self.var_mapping.items():
+            for k, v in six.iteritems(self.var_mapping):
                 try:
                     vars[v] = e.vars[k]
                 except KeyError:
@@ -81,10 +83,10 @@ class Rule(object):
             ds_vars["managed_object"] = e.managed_object
             context = dict(
                 (k, v(ds_vars))
-                for k, v in self.datasources.items()
+                for k, v in six.iteritems(self.datasources)
             )
             context.update(vars)
-            for k, v in self.d_defaults.items():
+            for k, v in six.iteritems(self.d_defaults):
                 x = eval(v, {}, context)
                 if x:
                     vars[k] = x

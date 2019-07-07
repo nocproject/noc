@@ -16,12 +16,23 @@ import re
 import operator
 from threading import Lock
 import datetime
+
 # Third-party modules
-from django.db.models import (Q, Model, CharField, BooleanField,
-                              ForeignKey, IntegerField, FloatField,
-                              DateTimeField, BigIntegerField, SET_NULL, CASCADE)
+from django.db.models import (
+    Q,
+    CharField,
+    BooleanField,
+    ForeignKey,
+    IntegerField,
+    FloatField,
+    DateTimeField,
+    BigIntegerField,
+    SET_NULL,
+    CASCADE,
+)
 import cachetools
 import six
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
@@ -37,7 +48,13 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
-from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey, ObjectIDArrayField
+from noc.core.model.fields import (
+    INETField,
+    TagsField,
+    DocumentReferenceField,
+    CachedForeignKey,
+    ObjectIDArrayField,
+)
 from noc.lib.db import SQL
 from noc.lib.app.site import site
 from noc.core.stencil import stencil_registry
@@ -73,8 +90,9 @@ from .objectdata import ObjectData
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 18
 
-Credentials = namedtuple("Credentials", [
-    "user", "password", "super_password", "snmp_ro", "snmp_rw"])
+Credentials = namedtuple(
+    "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw"]
+)
 
 id_lock = Lock()
 
@@ -88,37 +106,39 @@ logger = logging.getLogger(__name__)
 @on_delete
 @datastream
 @resourcegroup
-@on_delete_check(check=[
-    # ("cm.ValidationRule.ObjectItem", ""),
-    ("fm.ActiveAlarm", "managed_object"),
-    ("fm.ActiveEvent", "managed_object"),
-    ("fm.ArchivedAlarm", "managed_object"),
-    ("fm.ArchivedEvent", "managed_object"),
-    ("fm.FailedEvent", "managed_object"),
-    ("inv.Interface", "managed_object"),
-    ("inv.SubInterface", "managed_object"),
-    ("maintenance.Maintenance", "escalate_managed_object"),
-    ("maintenance.Maintenance", "direct_objects__object"),
-    ("inv.ForwardingInstance", "managed_object"),
-    ("sa.ManagedObject", "controller"),
-    ("sla.SLAProbe", "managed_object")
-], delete=[
-    ("sa.ManagedObjectAttribute", "managed_object"),
-    ("sa.CPEStatus", "managed_object"),
-    ("cm.ObjectFact", "object"),
-    ("inv.MACDB", "managed_object"),
-    ("sa.ServiceSummary", "managed_object"),
-    ("inv.DiscoveryID", "object"),
-    ("sa.ObjectCapabilities", "object")
-], clean=[
-    ("ip.Address", "managed_object"),
-    ("sa.Service", "managed_object")
-])
+@on_delete_check(
+    check=[
+        # ("cm.ValidationRule.ObjectItem", ""),
+        ("fm.ActiveAlarm", "managed_object"),
+        ("fm.ActiveEvent", "managed_object"),
+        ("fm.ArchivedAlarm", "managed_object"),
+        ("fm.ArchivedEvent", "managed_object"),
+        ("fm.FailedEvent", "managed_object"),
+        ("inv.Interface", "managed_object"),
+        ("inv.SubInterface", "managed_object"),
+        ("maintenance.Maintenance", "escalate_managed_object"),
+        ("maintenance.Maintenance", "direct_objects__object"),
+        ("inv.ForwardingInstance", "managed_object"),
+        ("sa.ManagedObject", "controller"),
+        ("sla.SLAProbe", "managed_object"),
+    ],
+    delete=[
+        ("sa.ManagedObjectAttribute", "managed_object"),
+        ("sa.CPEStatus", "managed_object"),
+        ("cm.ObjectFact", "object"),
+        ("inv.MACDB", "managed_object"),
+        ("sa.ServiceSummary", "managed_object"),
+        ("inv.DiscoveryID", "object"),
+        ("sa.ObjectCapabilities", "object"),
+    ],
+    clean=[("ip.Address", "managed_object"), ("sa.Service", "managed_object")],
+)
 @six.python_2_unicode_compatible
 class ManagedObject(NOCModel):
     """
     Managed Object
     """
+
     class Meta(object):
         verbose_name = "Managed Object"
         verbose_name_plural = "Managed Objects"
@@ -127,69 +147,34 @@ class ManagedObject(NOCModel):
 
     name = CharField("Name", max_length=64, unique=True)
     is_managed = BooleanField("Is Managed?", default=True)
-    container = DocumentReferenceField(
-        Object, null=True, blank=True
-    )
+    container = DocumentReferenceField(Object, null=True, blank=True)
     administrative_domain = CachedForeignKey(
-        AdministrativeDomain,
-        verbose_name="Administrative Domain", on_delete=CASCADE
+        AdministrativeDomain, verbose_name="Administrative Domain", on_delete=CASCADE
     )
-    segment = DocumentReferenceField(
-        NetworkSegment, null=False, blank=False
-    )
-    pool = DocumentReferenceField(
-        Pool,
-        null=False, blank=False
-    )
-    profile = DocumentReferenceField(
-        Profile, null=False, blank=False
-    )
-    vendor = DocumentReferenceField(
-        Vendor, null=True, blank=True
-    )
-    platform = DocumentReferenceField(
-        Platform, null=True, blank=True
-    )
-    version = DocumentReferenceField(
-        Firmware, null=True, blank=True
-    )
+    segment = DocumentReferenceField(NetworkSegment, null=False, blank=False)
+    pool = DocumentReferenceField(Pool, null=False, blank=False)
+    profile = DocumentReferenceField(Profile, null=False, blank=False)
+    vendor = DocumentReferenceField(Vendor, null=True, blank=True)
+    platform = DocumentReferenceField(Platform, null=True, blank=True)
+    version = DocumentReferenceField(Firmware, null=True, blank=True)
     # Firmware version to upgrade
     # Empty, when upgrade not scheduled
-    next_version = DocumentReferenceField(
-        Firmware, null=True, blank=True
-    )
+    next_version = DocumentReferenceField(Firmware, null=True, blank=True)
     object_profile = CachedForeignKey(
-        ManagedObjectProfile,
-        verbose_name="Object Profile", on_delete=CASCADE
+        ManagedObjectProfile, verbose_name="Object Profile", on_delete=CASCADE
     )
-    description = CharField(
-        "Description",
-        max_length=256, null=True, blank=True)
+    description = CharField("Description", max_length=256, null=True, blank=True)
     # Access
     auth_profile = CachedForeignKey(
-        AuthProfile,
-        verbose_name="Auth Profile",
-        null=True, blank=True, on_delete=CASCADE
+        AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=CASCADE
     )
-    scheme = IntegerField(
-        "Scheme",
-        choices=SCHEME_CHOICES
-    )
+    scheme = IntegerField("Scheme", choices=SCHEME_CHOICES)
     address = CharField("Address", max_length=64)
     port = IntegerField("Port", blank=True, null=True)
     user = CharField("User", max_length=32, blank=True, null=True)
-    password = CharField(
-        "Password",
-        max_length=32, blank=True, null=True
-    )
-    super_password = CharField(
-        "Super Password",
-        max_length=32, blank=True, null=True
-    )
-    remote_path = CharField(
-        "Path",
-        max_length=256, blank=True, null=True
-    )
+    password = CharField("Password", max_length=32, blank=True, null=True)
+    super_password = CharField("Super Password", max_length=32, blank=True, null=True)
+    remote_path = CharField("Path", max_length=256, blank=True, null=True)
     trap_source_type = CharField(
         max_length=1,
         choices=[
@@ -197,14 +182,13 @@ class ManagedObject(NOCModel):
             ("m", "Management Address"),
             ("s", "Specify address"),
             ("l", "Loopback address"),
-            ("a", "All interface addresses")
+            ("a", "All interface addresses"),
         ],
-        default="d", null=False, blank=False
+        default="d",
+        null=False,
+        blank=False,
     )
-    trap_source_ip = INETField(
-        "Trap Source IP",
-        null=True, blank=True, default=None
-    )
+    trap_source_ip = INETField("Trap Source IP", null=True, blank=True, default=None)
     syslog_source_type = CharField(
         max_length=1,
         choices=[
@@ -212,25 +196,16 @@ class ManagedObject(NOCModel):
             ("m", "Management Address"),
             ("s", "Specify address"),
             ("l", "Loopback address"),
-            ("a", "All interface addresses")
+            ("a", "All interface addresses"),
         ],
-        default="d", null=False, blank=False
+        default="d",
+        null=False,
+        blank=False,
     )
-    syslog_source_ip = INETField(
-        "Syslog Source IP",
-        null=True, blank=True, default=None)
-    trap_community = CharField(
-        "Trap Community",
-        blank=True, null=True, max_length=64
-    )
-    snmp_ro = CharField(
-        "RO Community",
-        blank=True, null=True, max_length=64
-    )
-    snmp_rw = CharField(
-        "RW Community",
-        blank=True, null=True, max_length=64
-    )
+    syslog_source_ip = INETField("Syslog Source IP", null=True, blank=True, default=None)
+    trap_community = CharField("Trap Community", blank=True, null=True, max_length=64)
+    snmp_ro = CharField("RO Community", blank=True, null=True, max_length=64)
+    snmp_rw = CharField("RW Community", blank=True, null=True, max_length=64)
     access_preference = CharField(
         "CLI Privilege Policy",
         max_length=8,
@@ -239,101 +214,66 @@ class ManagedObject(NOCModel):
             ("S", "SNMP Only"),
             ("C", "CLI Only"),
             ("SC", "SNMP, CLI"),
-            ("CS", "CLI, SNMP")
+            ("CS", "CLI, SNMP"),
         ],
-        default="P"
+        default="P",
     )
     # IPAM
-    fqdn = CharField(
-        "FQDN",
-        max_length=256,
-        null=True, blank=True
-    )
+    fqdn = CharField("FQDN", max_length=256, null=True, blank=True)
     address_resolution_policy = CharField(
         "Address Resolution Policy",
-        choices=[
-            ("P", "Profile"),
-            ("D", "Disabled"),
-            ("O", "Once"),
-            ("E", "Enabled")
-        ],
+        choices=[("P", "Profile"), ("D", "Disabled"), ("O", "Once"), ("E", "Enabled")],
         max_length=1,
-        null=False, blank=False,
-        default="P"
+        null=False,
+        blank=False,
+        default="P",
     )
     #
     vc_domain = ForeignKey(
-        "vc.VCDomain",
-        verbose_name="VC Domain",
-        null=True, blank=True, on_delete=CASCADE
+        "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True, on_delete=CASCADE
     )
     # CM
     config = GridVCSField("config")
     # Default VRF
-    vrf = ForeignKey("ip.VRF", verbose_name="VRF",
-                     blank=True, null=True, on_delete=CASCADE)
+    vrf = ForeignKey("ip.VRF", verbose_name="VRF", blank=True, null=True, on_delete=CASCADE)
     # Reference to controller, when object is CPE
     controller = ForeignKey(
-        "self", verbose_name="Controller",
-        blank=True, null=True,
-        on_delete=CASCADE
+        "self", verbose_name="Controller", blank=True, null=True, on_delete=CASCADE
     )
     # CPE id on given controller
-    local_cpe_id = CharField(
-        "Local CPE ID",
-        max_length=128,
-        null=True, blank=True
-    )
+    local_cpe_id = CharField("Local CPE ID", max_length=128, null=True, blank=True)
     # Globally unique CPE id
-    global_cpe_id = CharField(
-        "Global CPE ID",
-        max_length=128,
-        null=True, blank=True
-    )
+    global_cpe_id = CharField("Global CPE ID", max_length=128, null=True, blank=True)
     # Last seen date, for CPE
-    last_seen = DateTimeField(
-        "Last Seen",
-        blank=True, null=True
-    )
+    last_seen = DateTimeField("Last Seen", blank=True, null=True)
     # Stencils
     shape = CharField(
-        "Shape", blank=True, null=True,
-        choices=stencil_registry.choices, max_length=128
+        "Shape", blank=True, null=True, choices=stencil_registry.choices, max_length=128
     )
     #
-    time_pattern = ForeignKey(
-        TimePattern,
-        null=True, blank=True,
-        on_delete=SET_NULL
-    )
+    time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
     config_filter_handler = CharField(
-        "Config Filter handler",
-        max_length=256, null=True, blank=True
+        "Config Filter handler", max_length=256, null=True, blank=True
     )
     config_diff_filter_handler = CharField(
-        "Config Diff Filter Handler",
-        max_length=256, null=True, blank=True
+        "Config Diff Filter Handler", max_length=256, null=True, blank=True
     )
     config_validation_handler = CharField(
-        "Config Validation Handler",
-        max_length=256, null=True, blank=True
+        "Config Validation Handler", max_length=256, null=True, blank=True
     )
     max_scripts = IntegerField(
-        "Max. Scripts",
-        null=True, blank=True,
-        help_text="Concurrent script session limits")
+        "Max. Scripts", null=True, blank=True, help_text="Concurrent script session limits"
+    )
     # Latitude and longitude, copied from container
     x = FloatField(null=True, blank=True)
     y = FloatField(null=True, blank=True)
     default_zoom = IntegerField(null=True, blank=True)
     # Software characteristics
-    software_image = CharField("Software Image", max_length=255,
-                               null=True, blank=True)
+    software_image = CharField("Software Image", max_length=255, null=True, blank=True)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = DocumentReferenceField(RemoteSystem,
-                                           null=True, blank=True)
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
@@ -346,9 +286,9 @@ class ManagedObject(NOCModel):
             ("E", "Enable"),
             ("D", "Disable"),
             ("P", "From Profile"),
-            ("R", "Escalate as depended")
+            ("R", "Escalate as depended"),
         ],
-        default="P"
+        default="P",
     )
     # Discovery running policy
     box_discovery_running_policy = CharField(
@@ -357,10 +297,10 @@ class ManagedObject(NOCModel):
             ("P", "From Profile"),
             ("R", "Require Up"),
             ("r", "Require if enabled"),
-            ("i", "Ignore")
+            ("i", "Ignore"),
         ],
         max_length=1,
-        default="P"
+        default="P",
     )
     periodic_discovery_running_policy = CharField(
         "Periodic Running Policy",
@@ -368,64 +308,41 @@ class ManagedObject(NOCModel):
             ("P", "From Profile"),
             ("R", "Require Up"),
             ("r", "Require if enabled"),
-            ("i", "Ignore")
+            ("i", "Ignore"),
         ],
         max_length=1,
-        default="P"
+        default="P",
     )
     # Raise alarms on discovery problems
     box_discovery_alarm_policy = CharField(
         "Box Discovery Alarm Policy",
         max_length=1,
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable"),
-            ("P", "From Profile")
-        ],
-        default="P"
+        choices=[("E", "Enable"), ("D", "Disable"), ("P", "From Profile")],
+        default="P",
     )
     periodic_discovery_alarm_policy = CharField(
         "Box Discovery Alarm Policy",
         max_length=1,
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable"),
-            ("P", "From Profile")
-        ],
-        default="P"
+        choices=[("E", "Enable"), ("D", "Disable"), ("P", "From Profile")],
+        default="P",
     )
     # Telemetry settings
     box_discovery_telemetry_policy = CharField(
         "Box Discovery Telemetry Policy",
         max_length=1,
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable"),
-            ("P", "From Profile")
-        ],
-        default="P"
+        choices=[("E", "Enable"), ("D", "Disable"), ("P", "From Profile")],
+        default="P",
     )
-    box_discovery_telemetry_sample = IntegerField(
-        "Box Discovery Telemetry Sample",
-        default=0
-    )
+    box_discovery_telemetry_sample = IntegerField("Box Discovery Telemetry Sample", default=0)
     periodic_discovery_telemetry_policy = CharField(
         "Box Discovery Telemetry Policy",
         max_length=1,
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable"),
-            ("P", "From Profile")
-        ],
-        default="P"
+        choices=[("E", "Enable"), ("D", "Disable"), ("P", "From Profile")],
+        default="P",
     )
-    periodic_discovery_telemetry_sample = IntegerField(
-        "Box Discovery Telemetry Sample",
-        default=0
-    )
+    periodic_discovery_telemetry_sample = IntegerField("Box Discovery Telemetry Sample", default=0)
     # TT system for this object
-    tt_system = DocumentReferenceField(TTSystem,
-                                       null=True, blank=True)
+    tt_system = DocumentReferenceField(TTSystem, null=True, blank=True)
     # TT system queue for this object
     tt_queue = CharField(max_length=64, null=True, blank=True)
     # Object id in tt system
@@ -434,23 +351,15 @@ class ManagedObject(NOCModel):
     cli_session_policy = CharField(
         "CLI Session Policy",
         max_length=1,
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable"),
-            ("P", "From Profile")
-        ],
-        default="P"
+        choices=[("E", "Enable"), ("D", "Disable"), ("P", "From Profile")],
+        default="P",
     )
     # CLI privilege policy
     cli_privilege_policy = CharField(
         "CLI Privilege Policy",
         max_length=1,
-        choices=[
-            ("E", "Raise privileges"),
-            ("D", "Do not raise"),
-            ("P", "From Profile")
-        ],
-        default="P"
+        choices=[("E", "Raise privileges"), ("D", "Do not raise"), ("P", "From Profile")],
+        default="P",
     )
     # Config policy
     config_policy = CharField(
@@ -461,19 +370,15 @@ class ManagedObject(NOCModel):
             ("s", "Script"),
             ("S", "Script, Download"),
             ("D", "Download, Script"),
-            ("d", "Download")
+            ("d", "Download"),
         ],
-        default="P"
+        default="P",
     )
     config_fetch_policy = CharField(
         "Config Fetch Policy",
         max_length=1,
-        choices=[
-            ("P", "From Profile"),
-            ("s", "Startup"),
-            ("r", "Running")
-        ],
-        default="P"
+        choices=[("P", "From Profile"), ("s", "Startup"), ("r", "Running")],
+        default="P",
     )
     # Interface discovery settings
     interface_discovery_policy = CharField(
@@ -484,9 +389,9 @@ class ManagedObject(NOCModel):
             ("s", "Script"),
             ("S", "Script, ConfDB"),
             ("C", "ConfDB, Script"),
-            ("c", "ConfDB")
+            ("c", "ConfDB"),
         ],
-        default="P"
+        default="P",
     )
     # Caps discovery settings
     caps_discovery_policy = CharField(
@@ -497,9 +402,9 @@ class ManagedObject(NOCModel):
             ("s", "Script"),
             ("S", "Script, ConfDB"),
             ("C", "ConfDB, Script"),
-            ("c", "ConfDB")
+            ("c", "ConfDB"),
         ],
-        default="P"
+        default="P",
     )
     # VLAN discovery settings
     vlan_discovery_policy = CharField(
@@ -510,9 +415,9 @@ class ManagedObject(NOCModel):
             ("s", "Script"),
             ("S", "Script, ConfDB"),
             ("C", "ConfDB, Script"),
-            ("c", "ConfDB")
+            ("c", "ConfDB"),
         ],
-        default="P"
+        default="P",
     )
     # Autosegmentation
     autosegmentation_policy = CharField(
@@ -537,31 +442,23 @@ class ManagedObject(NOCModel):
             # To create single segment use templates like {{object.name}}
             # To create segments on per-interface basic use
             # names like {{object.name}}-{{interface.name}}
-            ("c", "Segmentate to child segment")
+            ("c", "Segmentate to child segment"),
         ],
-        default="p"
+        default="p",
     )
     #
     event_processing_policy = CharField(
         "Event Processing Policy",
         max_length=1,
-        choices=[
-            ("P", "Profile"),
-            ("E", "Process Events"),
-            ("D", "Drop events")
-        ],
-        default="P"
+        choices=[("P", "Profile"), ("E", "Process Events"), ("D", "Drop events")],
+        default="P",
     )
     # Collect and archive syslog events
     syslog_archive_policy = CharField(
         "SYSLOG Archive Policy",
         max_length=1,
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable"),
-            ("P", "Profile")
-        ],
-        default="P"
+        choices=[("E", "Enable"), ("D", "Disable"), ("P", "Profile")],
+        default="P",
     )
     # Behavior on denied firmware detection
     denied_firmware_policy = CharField(
@@ -572,9 +469,9 @@ class ManagedObject(NOCModel):
             ("I", "Ignore"),
             ("s", "Ignore&Stop"),
             ("A", "Raise Alarm"),
-            ("S", "Raise Alarm&Stop")
+            ("S", "Raise Alarm&Stop"),
         ],
-        default="P"
+        default="P",
     )
     # Resource groups
     static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
@@ -609,10 +506,12 @@ class ManagedObject(NOCModel):
         return self.name
 
     @classmethod
-    @cachedmethod(operator.attrgetter("_id_cache"),
-                  key="managedobject-id-%s",
-                  lock=lambda _: id_lock,
-                  version=MANAGEDOBJECT_CACHE_VERSION)
+    @cachedmethod(
+        operator.attrgetter("_id_cache"),
+        key="managedobject-id-%s",
+        lock=lambda _: id_lock,
+        version=MANAGEDOBJECT_CACHE_VERSION,
+    )
     def get_by_id(cls, id):
         mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
@@ -621,8 +520,7 @@ class ManagedObject(NOCModel):
             return None
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         mo = ManagedObject.objects.filter(bi_id=id)[:1]
         if mo:
@@ -716,9 +614,11 @@ class ManagedObject(NOCModel):
 
         :rtype: List of User instancies
         """
-        return [u for u in User.objects.filter(is_active=True)
-                if ManagedObject.objects.filter(UserAccess.Q(u) &
-                                                Q(id=self.id)).exists()]
+        return [
+            u
+            for u in User.objects.filter(is_active=True)
+            if ManagedObject.objects.filter(UserAccess.Q(u) & Q(id=self.id)).exists()
+        ]
 
     @property
     def granted_groups(self):
@@ -727,78 +627,64 @@ class ManagedObject(NOCModel):
 
         :rtype: List of Group instancies
         """
-        return [g for g in Group.objects.filter()
-                if ManagedObject.objects.filter(GroupAccess.Q(g) &
-                                                Q(id=self.id)).exists()]
+        return [
+            g
+            for g in Group.objects.filter()
+            if ManagedObject.objects.filter(GroupAccess.Q(g) & Q(id=self.id)).exists()
+        ]
 
     def on_save(self):
         # Invalidate caches
-        deleted_cache_keys = [
-            "managedobject-name-to-id-%s" % self.name
-        ]
+        deleted_cache_keys = ["managedobject-name-to-id-%s" % self.name]
         # Notify new object
         if not self.initial_data["id"]:
             self.event(self.EV_NEW, {"object": self})
         # Remove discovery jobs from old pool
         if "pool" in self.changed_fields and self.initial_data["id"]:
             pool_name = Pool.get_by_id(self.initial_data["pool"]).name
-            Job.remove(
-                "discovery",
-                self.BOX_DISCOVERY_JOB,
-                key=self.id,
-                pool=pool_name
-            )
-            Job.remove(
-                "discovery",
-                self.PERIODIC_DISCOVERY_JOB,
-                key=self.id,
-                pool=pool_name
-            )
+            Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=pool_name)
+            Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=pool_name)
         # Reset matchers
         if (
-            "vendor" in self.changed_fields or
-            "platform" in self.changed_fields or
-            "version" in self.changed_fields or
-            "software_image" in self.changed_fields
+            "vendor" in self.changed_fields
+            or "platform" in self.changed_fields
+            or "version" in self.changed_fields
+            or "software_image" in self.changed_fields
         ):
             self.reset_matchers()
         # Invalidate credentials cache
         if (
-            self.initial_data["id"] is None or
-            "scheme" in self.changed_fields or
-            "address" in self.changed_fields or
-            "port" in self.changed_fields or
-            "auth_profile" in self.changed_fields or
-            "user" in self.changed_fields or
-            "password" in self.changed_fields or
-            "super_password" in self.changed_fields or
-            "snmp_ro" in self.changed_fields or
-            "snmp_rw" in self.changed_fields or
-            "profile" in self.changed_fields or
-            "vendor" in self.changed_fields or
-            "platform" in self.changed_fields or
-            "version" in self.changed_fields or
-            "pool" in self.changed_fields or
-            "access_preference" in self.changed_fields or
-            "cli_privilege_policy" in self.changed_fields or
-            "remote_path" in self.changed_fields
+            self.initial_data["id"] is None
+            or "scheme" in self.changed_fields
+            or "address" in self.changed_fields
+            or "port" in self.changed_fields
+            or "auth_profile" in self.changed_fields
+            or "user" in self.changed_fields
+            or "password" in self.changed_fields
+            or "super_password" in self.changed_fields
+            or "snmp_ro" in self.changed_fields
+            or "snmp_rw" in self.changed_fields
+            or "profile" in self.changed_fields
+            or "vendor" in self.changed_fields
+            or "platform" in self.changed_fields
+            or "version" in self.changed_fields
+            or "pool" in self.changed_fields
+            or "access_preference" in self.changed_fields
+            or "cli_privilege_policy" in self.changed_fields
+            or "remote_path" in self.changed_fields
         ):
             deleted_cache_keys += ["cred-%s" % self.id]
         # Rebuild paths
         if (
-            self.initial_data["id"] is None or
-            "administrative_domain" in self.changed_fields or
-            "segment" in self.changed_fields or
-            "container" in self.changed_fields
+            self.initial_data["id"] is None
+            or "administrative_domain" in self.changed_fields
+            or "segment" in self.changed_fields
+            or "container" in self.changed_fields
         ):
             ObjectData.refresh_path(self)
             if self.container and "container" in self.changed_fields:
                 x, y, zoom = self.container.get_coordinates_zoom()
-                ManagedObject.objects.filter(id=self.id).update(
-                    x=x,
-                    y=y,
-                    default_zoom=zoom
-                )
+                ManagedObject.objects.filter(id=self.id).update(x=x, y=y, default_zoom=zoom)
         if self.initial_data["id"] and "container" in self.changed_fields:
             # Move object to another container
             if self.container:
@@ -814,8 +700,7 @@ class ManagedObject(NOCModel):
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
         #
-        cache.delete("managedobject-id-%s" % self.id,
-                     version=MANAGEDOBJECT_CACHE_VERSION)
+        cache.delete("managedobject-id-%s" % self.id, version=MANAGEDOBJECT_CACHE_VERSION)
         cache.delete_many(deleted_cache_keys)
         # Rebuild segment access
         if self.initial_data["id"] is None:
@@ -831,20 +716,23 @@ class ManagedObject(NOCModel):
             self.update_topology()
             # Refresh links
             from noc.inv.models.link import Link
+
             for l in Link.object_links(self):
                 l.save()
         # Handle became unmanaged
         if (
-            not self.initial_data["id"] is None and
-            "is_managed" in self.changed_fields and
-            not self.is_managed
+            not self.initial_data["id"] is None
+            and "is_managed" in self.changed_fields
+            and not self.is_managed
         ):
             # Clear alarms
             from noc.fm.models.activealarm import ActiveAlarm
+
             for aa in ActiveAlarm.objects.filter(managed_object=self.id):
                 aa.clear_alarm("Management is disabled")
             # Clear discovery id
             from noc.inv.models.discoveryid import DiscoveryID
+
             DiscoveryID.clean_for_object(self)
 
     def on_delete(self):
@@ -852,6 +740,7 @@ class ManagedObject(NOCModel):
         SelectorCache.refresh()
         # Reset discovery cache
         from noc.inv.models.discoveryid import DiscoveryID
+
         DiscoveryID.clean_for_object(self)
 
     def get_index(self):
@@ -859,10 +748,7 @@ class ManagedObject(NOCModel):
         Get FTS index
         """
         card = "Managed object %s (%s)" % (self.name, self.address)
-        content = [
-            self.name,
-            self.address,
-        ]
+        content = [self.name, self.address]
         if self.trap_source_ip:
             content += [self.trap_source_ip]
         platform = self.platform
@@ -881,12 +767,7 @@ class ManagedObject(NOCModel):
                 content += [config[:10000000]]
             else:
                 content += [config]
-        r = {
-            "title": self.name,
-            "content": "\n".join(content),
-            "card": card,
-            "tags": self.tags
-        }
+        r = {"title": self.name, "content": "\n".join(content), "card": card, "tags": self.tags}
         return r
 
     @classmethod
@@ -956,8 +837,7 @@ class ManagedObject(NOCModel):
             v = self.managedobjectattribute_set.get(key=name)
             v.value = value
         except ManagedObjectAttribute.DoesNotExist:
-            v = ManagedObjectAttribute(managed_object=self,
-                                       key=name, value=value)
+            v = ManagedObjectAttribute(managed_object=self, key=name, value=value)
         v.save()
 
     def update_attributes(self, attr):
@@ -996,8 +876,8 @@ class ManagedObject(NOCModel):
         this managed object
         """
         from noc.inv.models.object import Object
-        return list(Object.objects.filter(
-            data__management__managed_object=self.id))
+
+        return list(Object.objects.filter(data__management__managed_object=self.id))
 
     def run_discovery(self, delta=0):
         """
@@ -1005,14 +885,13 @@ class ManagedObject(NOCModel):
         """
         if not self.object_profile.enable_box_discovery or not self.is_managed:
             return
-        logger.debug("[%s] Scheduling box discovery after %ds",
-                     self.name, delta)
+        logger.debug("[%s] Scheduling box discovery after %ds", self.name, delta)
         Job.submit(
             "discovery",
             self.BOX_DISCOVERY_JOB,
             key=self.id,
             pool=self.pool.name,
-            delta=delta or self.pool.get_delta()
+            delta=delta or self.pool.get_delta(),
         )
 
     def event(self, event_id, data=None, delay=None, tag=None):
@@ -1027,28 +906,28 @@ class ManagedObject(NOCModel):
         selectors = SelectorCache.get_object_selectors(self)
         # Find notification groups
         groups = set()
-        for o in ObjectNotification.objects.filter(**{
-                event_id: True,
-                "selector__in": selectors
-        }):
+        for o in ObjectNotification.objects.filter(**{event_id: True, "selector__in": selectors}):
             groups.add(o.notification_group)
         if not groups:
             return  # Nothing to notify
         # Render message
         subject, body = ObjectNotification.render_message(event_id, data)
         # Send notification
-        if not tag and event_id in (
+        if (
+            not tag
+            and event_id
+            in (
                 self.EV_ALARM_CLEARED,
                 self.EV_ALARM_COMMENTED,
                 self.EV_ALARM_REOPENED,
-                self.EV_ALARM_RISEN) and "alarm" in data:
-            tag = "alarm:%s" % data["alarm"].id
-        NotificationGroup.group_notify(
-            groups, subject=subject, body=body, delay=delay, tag=tag)
-        # Schedule FTS reindex
-        if event_id in (
-            self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED
+                self.EV_ALARM_RISEN,
+            )
+            and "alarm" in data
         ):
+            tag = "alarm:%s" % data["alarm"].id
+        NotificationGroup.group_notify(groups, subject=subject, body=body, delay=delay, tag=tag)
+        # Schedule FTS reindex
+        if event_id in (self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED):
             TextIndex.update_index(ManagedObject, self)
 
     def save_config(self, data, validate=True):
@@ -1062,7 +941,10 @@ class ManagedObject(NOCModel):
             # Convert list to plain text
             r = []
             for d in sorted(data, key=operator.itemgetter("name")):
-                r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
+                r += [
+                    "==[ %s ]========================================\n%s"
+                    % (d["name"], d["config"])
+                ]
             data = "\n".join(r)
         # Wipe out unnecessary parts
         if self.config_filter_handler:
@@ -1074,8 +956,9 @@ class ManagedObject(NOCModel):
                 logger.warning("Handler is not allowed for config filter")
             else:
                 logger.info(
-                    "[%s] Invalid config_filter_handler \"%s\", ignoring",
-                    self.name, self.config_filter_handler
+                    '[%s] Invalid config_filter_handler "%s", ignoring',
+                    self.name,
+                    self.config_filter_handler,
                 )
         # Pass data through config filter, if given
         if self.config_diff_filter_handler:
@@ -1087,8 +970,9 @@ class ManagedObject(NOCModel):
                 logger.warning("Handler is not allowed for config diff filter")
             else:
                 logger.info(
-                    "[%s] Invalid config_diff_filter_handler \"%s\", ignoring",
-                    self.name, self.config_diff_filter_handler
+                    '[%s] Invalid config_diff_filter_handler "%s", ignoring',
+                    self.name,
+                    self.config_diff_filter_handler,
                 )
         # Pass data through the validation filter, if given
         # @todo: Replace with config validation policy
@@ -1100,18 +984,15 @@ class ManagedObject(NOCModel):
                 if warnings:
                     # There are some warnings. Notify responsible persons
                     self.event(
-                        self.EV_CONFIG_POLICY_VIOLATION,
-                        {
-                            "object": self,
-                            "warnings": warnings
-                        }
+                        self.EV_CONFIG_POLICY_VIOLATION, {"object": self, "warnings": warnings}
                     )
             elif handler and not handler.allow_config_validation:
                 logger.warning("Handler is not allowed for config validation")
             else:
                 logger.info(
-                    "[%s] Invalid config_validation_handler \"%s\", ignoring",
-                    self.name, self.config_validation_handler
+                    '[%s] Invalid config_validation_handler "%s", ignoring',
+                    self.name,
+                    self.config_validation_handler,
                 )
         # Calculate diff
         old_data = self.config.read()
@@ -1129,7 +1010,9 @@ class ManagedObject(NOCModel):
                     old_data = handler(self, old_data)
                     new_data = handler(self, data)
                     if not old_data and not new_data:
-                        logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
+                        logger.error(
+                            "[%s] broken config_diff_filter: Returns empty result", self.name
+                        )
                 elif handler and not handler.allow_config_diff_filter:
                     self.logger.warning("Handler is not allowed for config diff filter")
                 else:
@@ -1138,19 +1021,17 @@ class ManagedObject(NOCModel):
                 new_data = data
             changed = old_data != new_data
             if changed:
-                diff = "".join(difflib.unified_diff(
-                    old_data.splitlines(True),
-                    new_data.splitlines(True),
-                    fromfile=os.path.join("a", self.name.encode("utf8")),
-                    tofile=os.path.join("b", self.name.encode("utf8"))
-                ))
+                diff = "".join(
+                    difflib.unified_diff(
+                        old_data.splitlines(True),
+                        new_data.splitlines(True),
+                        fromfile=os.path.join("a", self.name.encode("utf8")),
+                        tofile=os.path.join("b", self.name.encode("utf8")),
+                    )
+                )
         if changed:
             # Notify changes
-            self.notify_config_changes(
-                is_new=is_new,
-                data=data,
-                diff=diff
-            )
+            self.notify_config_changes(is_new=is_new, data=data, diff=diff)
             # Save config
             self.write_config(data)
         # Apply mirroring settings
@@ -1169,13 +1050,7 @@ class ManagedObject(NOCModel):
         :return:
         """
         self.event(
-            self.EV_CONFIG_CHANGED,
-            {
-                "object": self,
-                "is_new": is_new,
-                "config": data,
-                "diff": diff
-            }
+            self.EV_CONFIG_CHANGED, {"object": self, "is_new": is_new, "config": data, "diff": diff}
         )
 
     def write_config(self, data):
@@ -1210,8 +1085,11 @@ class ManagedObject(NOCModel):
             logger.debug("[%s] Storage is not configured. Skipping", self.name)
             return
         if not storage.is_config_mirror:
-            logger.debug("[%s] Config mirroring is disabled for storage '%s'. Skipping",
-                         self.name, storage.name)
+            logger.debug(
+                "[%s] Config mirroring is disabled for storage '%s'. Skipping",
+                self.name,
+                storage.name,
+            )
             return  # No storage setting
         # Check template
         template = self.object_profile.config_mirror_template
@@ -1219,7 +1097,9 @@ class ManagedObject(NOCModel):
             logger.debug("[%s] Path template is not configured. Skipping", self.name)
             return
         # Render path
-        path = self.object_profile.config_mirror_template.render_subject(object=self, datetime=datetime).strip()
+        path = self.object_profile.config_mirror_template.render_subject(
+            object=self, datetime=datetime
+        ).strip()
         if not path:
             logger.debug("[%s] Empty mirror path. Skipping", self.name)
             return
@@ -1227,7 +1107,7 @@ class ManagedObject(NOCModel):
             "[%s] Mirroring to %s:%s",
             self.name,
             self.object_profile.config_mirror_storage.name,
-            path
+            path,
         )
         dir_path = os.path.dirname(path)
         try:
@@ -1258,6 +1138,7 @@ class ManagedObject(NOCModel):
             return
         # Validate
         from noc.cm.engine import Engine
+
         engine = Engine(self)
         try:
             engine.check()
@@ -1276,7 +1157,7 @@ class ManagedObject(NOCModel):
                 password=self.auth_profile.password,
                 super_password=self.auth_profile.super_password,
                 snmp_ro=self.auth_profile.snmp_ro or self.snmp_ro,
-                snmp_rw=self.auth_profile.snmp_rw or self.snmp_rw
+                snmp_rw=self.auth_profile.snmp_rw or self.snmp_rw,
             )
         else:
             return Credentials(
@@ -1284,7 +1165,7 @@ class ManagedObject(NOCModel):
                 password=self.password,
                 super_password=self.super_password,
                 snmp_ro=self.snmp_ro,
-                snmp_rw=self.snmp_rw
+                snmp_rw=self.snmp_rw,
             )
 
     @property
@@ -1304,6 +1185,7 @@ class ManagedObject(NOCModel):
         for effective PM settings
         """
         from noc.inv.models.interface import Interface
+
         for i in Interface.objects.filter(managed_object=self.id):
             yield i
 
@@ -1345,9 +1227,7 @@ class ManagedObject(NOCModel):
         """
         if self.vendor and self.platform and self.version:
             cls = self.profile.get_profile().get_parser(
-                self.vendor.code,
-                self.platform.name,
-                self.version.version
+                self.vendor.code, self.platform.name, self.version.version
             )
             if cls:
                 return get_handler(cls)(self)
@@ -1387,15 +1267,10 @@ class ManagedObject(NOCModel):
                 key=self.id,
                 pool=self.pool.name,
                 delta=self.pool.get_delta(),
-                keep_ts=True
+                keep_ts=True,
             )
         else:
-            Job.remove(
-                "discovery",
-                self.BOX_DISCOVERY_JOB,
-                key=self.id,
-                pool=self.pool.name
-            )
+            Job.remove("discovery", self.BOX_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
         if self.is_managed and self.object_profile.enable_periodic_discovery:
             Job.submit(
                 "discovery",
@@ -1403,15 +1278,10 @@ class ManagedObject(NOCModel):
                 key=self.id,
                 pool=self.pool.name,
                 delta=self.pool.get_delta(),
-                keep_ts=True
+                keep_ts=True,
             )
         else:
-            Job.remove(
-                "discovery",
-                self.PERIODIC_DISCOVERY_JOB,
-                key=self.id,
-                pool=self.pool.name
-            )
+            Job.remove("discovery", self.PERIODIC_DISCOVERY_JOB, key=self.id, pool=self.pool.name)
 
     def update_topology(self):
         """
@@ -1426,11 +1296,7 @@ class ManagedObject(NOCModel):
                 # Fallback to MO container
                 pop = container.get_pop()
             if pop:
-                call_later(
-                    "noc.inv.util.pop_links.update_pop_links",
-                    20,
-                    pop_id=pop.id
-                )
+                call_later("noc.inv.util.pop_links.update_pop_links", 20, pop_id=pop.id)
 
     @classmethod
     def get_search_Q(cls, query):
@@ -1447,8 +1313,7 @@ class ManagedObject(NOCModel):
         query = query.strip()
         if query:
             if ".*" in query and is_ipv4(query.replace(".*", ".1")):
-                return Q(address__regex=query.replace(".", "\\.")
-                         .replace("*", "[0-9]+"))
+                return Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
             elif set("+*[]()") & set(query):
                 # Maybe regular expression
                 try:
@@ -1469,6 +1334,7 @@ class ManagedObject(NOCModel):
                 try:
                     mac = MACAddressParameter().clean(query)
                     from noc.inv.models.discoveryid import DiscoveryID
+
                     mo = DiscoveryID.find_object(mac)
                     if mo:
                         return Q(pk=mo.pk)
@@ -1687,6 +1553,7 @@ class ManagedObject(NOCModel):
                 logger.warning("Handler is not allowed for resolver")
                 return None
         import socket
+
         try:
             return socket.gethostbyname(fqdn)
         except socket.gaierror:
@@ -1713,10 +1580,7 @@ class ManagedObject(NOCModel):
             qs["platform__in"] = [cfg["platform"]]
         if "version" in cfg:
             qs["version__in"] = [cfg["version"]]
-        return [
-            int(r)
-            for r in ManagedObject.objects.filter(**qs).values_list("bi_id", flat=True)
-        ]
+        return [int(r) for r in ManagedObject.objects.filter(**qs).values_list("bi_id", flat=True)]
 
     @property
     def metrics(self):
@@ -1792,15 +1656,9 @@ class ManagedObjectAttribute(NOCModel):
         unique_together = [("managed_object", "key")]
         ordering = ["managed_object", "key"]
 
-    managed_object = ForeignKey(
-        ManagedObject,
-        verbose_name="Managed Object", on_delete=CASCADE
-    )
+    managed_object = ForeignKey(ManagedObject, verbose_name="Managed Object", on_delete=CASCADE)
     key = CharField("Key", max_length=64)
-    value = CharField(
-        "Value", max_length=4096,
-        blank=True, null=True
-    )
+    value = CharField("Value", max_length=4096, blank=True, null=True)
 
     def __str__(self):
         return u"%s: %s" % (self.managed_object, self.key)
@@ -1819,8 +1677,7 @@ class ScriptsProxy(object):
     def __getattr__(self, name):
         if name in self._cache:
             return self._cache[name]
-        if not script_loader.has_script("%s.%s" % (
-                self._object.profile.name, name)):
+        if not script_loader.has_script("%s.%s" % (self._object.profile.name, name)):
             raise AttributeError("Invalid script %s" % name)
         cw = self._caller(self._object, name)
         self._cache[name] = cw
@@ -1840,11 +1697,7 @@ class ScriptsProxy(object):
 
     def __iter__(self):
         prefix = self._object.profile.name + "."
-        return (
-            x.split(".")[-1]
-            for x in script_loader.iter_scripts()
-            if x.startswith(prefix)
-        )
+        return (x.split(".")[-1] for x in script_loader.iter_scripts() if x.startswith(prefix))
 
 
 class ActionsProxy(object):
@@ -1890,10 +1743,7 @@ class MatchersProxy(object):
             version["image"] = self._object.software_image
         # Compile matchers
         matchers = self._object.get_profile().matchers
-        self._data = dict(
-            (m, match(version, matchers[m]))
-            for m in matchers
-        )
+        self._data = dict((m, match(version, matchers[m])) for m in matchers)
 
     def __getattr__(self, name):
         if self._data is None:

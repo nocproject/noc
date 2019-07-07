@@ -16,11 +16,9 @@ import re
 class Script(BaseScript):
     name = "Vitesse.VSC.ping"
     interface = IPing
-    rx_result = re.compile(
-        r"Sent (?P<count>\d+) packets, received (?P<success>\d+) OK, \d+ bad")
+    rx_result = re.compile(r"Sent (?P<count>\d+) packets, received (?P<success>\d+) OK, \d+ bad")
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         if is_ipv4(address):
             cmd = "ping ip %s" % address
         elif is_ipv6(address):

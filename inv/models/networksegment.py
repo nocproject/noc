@@ -11,17 +11,26 @@ from __future__ import absolute_import
 import operator
 import cachetools
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, DictField, ReferenceField,
-                                ListField, BooleanField, IntField,
-                                EmbeddedDocumentField, LongField)
+from mongoengine.fields import (
+    StringField,
+    DictField,
+    ReferenceField,
+    ListField,
+    BooleanField,
+    IntField,
+    EmbeddedDocumentField,
+    LongField,
+)
 from mongoengine.errors import ValidationError
 from django.db.models.aggregates import Count
 from pymongo.errors import OperationFailure
+
 # NOC modules
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
@@ -40,21 +49,26 @@ _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 class VLANTranslation(EmbeddedDocument):
     filter = ForeignKeyField(VCFilter)
-    rule = StringField(choices=[
-        # Rewrite tag to parent vlan's
-        ("map", "map"),
-        # Append parent tag as S-VLAN
-        ("push", "push")
-    ], default="push")
+    rule = StringField(
+        choices=[
+            # Rewrite tag to parent vlan's
+            ("map", "map"),
+            # Append parent tag as S-VLAN
+            ("push", "push"),
+        ],
+        default="push",
+    )
     parent_vlan = PlainReferenceField("vc.VLAN")
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("sa.ManagedObject", "segment"),
-    ("inv.NetworkSegment", "parent"),
-    ("vc.VLAN", "segment")
-])
+@on_delete_check(
+    check=[
+        ("sa.ManagedObject", "segment"),
+        ("inv.NetworkSegment", "parent"),
+        ("vc.VLAN", "segment"),
+    ]
+)
 @on_save
 @six.python_2_unicode_compatible
 class NetworkSegment(Document):
@@ -62,7 +76,7 @@ class NetworkSegment(Document):
         "collection": "noc.networksegments",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["parent", "sibling", "adm_domains"]
+        "indexes": ["parent", "sibling", "adm_domains"],
     }
 
     name = StringField(unique=True)
@@ -74,12 +88,7 @@ class NetworkSegment(Document):
     # * e - enable management vlan and get from management_vlan field
     # * p - use profile settings
     management_vlan_policy = StringField(
-        choices=[
-            ("d", "Disable"),
-            ("p", "Profile"),
-            ("e", "Enable")
-        ],
-        default="p"
+        choices=[("d", "Disable"), ("p", "Profile"), ("e", "Enable")], default="p"
     )
     management_vlan = IntField(required=False, min_value=1, max_value=4095)
     # MVR VLAN processing order
@@ -87,12 +96,7 @@ class NetworkSegment(Document):
     # * e - enable multicast vlan and get from multicast_vlan field
     # * p - use profile settings
     multicast_vlan_policy = StringField(
-        choices=[
-            ("d", "Disable"),
-            ("p", "Profile"),
-            ("e", "Enable")
-        ],
-        default="p"
+        choices=[("d", "Disable"), ("p", "Profile"), ("e", "Enable")], default="p"
     )
     multicast_vlan = IntField(required=False, min_value=1, max_value=4095)
 
@@ -130,12 +134,8 @@ class NetworkSegment(Document):
     max_shown_downlinks = IntField(default=1000)
     # Horizontal transit policy
     horizontal_transit_policy = StringField(
-        choices=[
-            ("E", "Always Enable"),
-            ("C", "Calculate"),
-            ("D", "Disable"),
-            ("P", "Profile")
-        ], default="P"
+        choices=[("E", "Always Enable"), ("C", "Calculate"), ("D", "Disable"), ("P", "Profile")],
+        default="P",
     )
     # Horizontal transit settings
     # i.e. Allow traffic flow not only from parent-to-childrens and
@@ -279,10 +279,7 @@ class NetworkSegment(Document):
 
     @property
     def has_children(self):
-        return bool(
-            NetworkSegment.objects.filter(
-                parent=self.id).only("id").first()
-        )
+        return bool(NetworkSegment.objects.filter(parent=self.id).only("id").first())
 
     def set_redundancy(self, status):
         """
@@ -291,44 +288,29 @@ class NetworkSegment(Document):
         :return:
         """
         siblings = list(self.get_siblings())
-        filter = {
-            "status": {"$ne": status}
-        }
+        filter = {"status": {"$ne": status}}
         if len(siblings) == 1:
             filter["_id"] = self.id
         else:
-            filter["_id"] = {
-                "$in": [s.id for s in siblings]
-            }
+            filter["_id"] = {"$in": [s.id for s in siblings]}
 
-        set_op = {
-            "is_redundant": status
-        }
+        set_op = {"is_redundant": status}
         if not status:
             set_op["lost_redundancy"] = False
-        NetworkSegment._get_collection().update_many(
-            filter, {
-                "$set": set_op
-            }
-        )
+        NetworkSegment._get_collection().update_many(filter, {"$set": set_op})
 
     def set_lost_redundancy(self, status):
-        NetworkSegment._get_collection().update({
-            "_id": self.id
-        }, {
-            "$set": {
-                "lost_redundancy": bool(status)
-            }
-        })
+        NetworkSegment._get_collection().update(
+            {"_id": self.id}, {"$set": {"lost_redundancy": bool(status)}}
+        )
 
     def get_direct_summary(self):
         objects = dict(
             (d["object_profile"], d["count"])
-            for d in self.managed_objects.values(
-                "object_profile"
-            ).annotate(
-                count=Count("id")
-            ).order_by("count"))
+            for d in self.managed_objects.values("object_profile")
+            .annotate(count=Count("id"))
+            .order_by("count")
+        )
         # Direct services
         mo_ids = self.managed_objects.values_list("id", flat=True)
         services, subscribers = ServiceSummary.get_direct_summary(mo_ids)
@@ -346,12 +328,16 @@ class NetworkSegment(Document):
                     d1[kk] = d2[kk]
 
         services, subscribers, objects = self.get_direct_summary()
-        r = {"direct_services": to_list(services),
-             "direct_subscribers": to_list(subscribers),
-             "direct_objects": to_list(objects)}
+        r = {
+            "direct_services": to_list(services),
+            "direct_subscribers": to_list(subscribers),
+            "direct_objects": to_list(objects),
+        }
         # map(lambda x: update_dict(*x), zip([services, subscribers, objects], self.get_total_summary()))
-        [update_dict(k, v) for k, v in zip(
-            [services, subscribers, objects], self.get_total_summary())]
+        [
+            update_dict(k, v)
+            for k, v in zip([services, subscribers, objects], self.get_total_summary())
+        ]
         r["total_services"] = to_list(services)
         r["total_subscribers"] = to_list(subscribers)
         r["total_objects"] = to_list(objects)
@@ -368,20 +354,21 @@ class NetworkSegment(Document):
         path = network_segment.get_path()
         # Update upwards
         path.reverse()
-        for ns in sorted(NetworkSegment.objects.filter(id__in=path), key=lambda x: path.index(x.id)):
+        for ns in sorted(
+            NetworkSegment.objects.filter(id__in=path), key=lambda x: path.index(x.id)
+        ):
             r = ns.get_summary()
             NetworkSegment._get_collection().update_one({"_id": ns.id}, {"$set": r}, upsert=True)
 
     def update_access(self):
         from noc.sa.models.administrativedomain import AdministrativeDomain
+
         # Get all own administrative domains
         adm_domains = set(
             d["administrative_domain"]
-            for d in self.managed_objects.values(
-                "administrative_domain"
-            ).annotate(
-                count=Count("id")
-            ).order_by("count")
+            for d in self.managed_objects.values("administrative_domain")
+            .annotate(count=Count("id"))
+            .order_by("count")
         )
         p = set()
         for a in adm_domains:
@@ -400,11 +387,7 @@ class NetworkSegment(Document):
                 self.parent.update_access()
 
     def update_uplinks(self):
-        call_later(
-            "noc.core.topology.segment.update_uplinks",
-            60,
-            segment_id=self.id
-        )
+        call_later("noc.core.topology.segment.update_uplinks", 60, segment_id=self.id)
 
     def get_horizontal_transit_policy(self):
         if self.horizontal_transit_policy in ("E", "C"):
@@ -450,7 +433,9 @@ class NetworkSegment(Document):
         coll = NetworkSegment._get_collection()
         for _ in range(max_level):
             # Get next wave
-            wave = set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
+            wave = (
+                set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
+            )
             if not wave:
                 break
             seen |= wave
@@ -458,24 +443,20 @@ class NetworkSegment(Document):
 
     def ensure_discovery_jobs(self):
         if self.profile and self.profile.discovery_interval > 0:
-            Job.submit(
-                "scheduler",
-                self.DISCOVERY_JOB,
-                key=self.id,
-                keep_ts=True
-            )
+            Job.submit("scheduler", self.DISCOVERY_JOB, key=self.id, keep_ts=True)
         else:
-            Job.remove(
-                "scheduler",
-                self.DISCOVERY_JOB,
-                key=self.id
-            )
+            Job.remove("scheduler", self.DISCOVERY_JOB, key=self.id)
 
     def on_save(self):
         if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
             self.ensure_discovery_jobs()
-        if hasattr(self, "_changed_fields") and self.vlan_border and "vlan_translation" in self._changed_fields:
+        if (
+            hasattr(self, "_changed_fields")
+            and self.vlan_border
+            and "vlan_translation" in self._changed_fields
+        ):
             from noc.vc.models.vlan import VLAN
+
             for vlan in VLAN.objects.filter(segment=self.id):
                 vlan.refresh_translation()
         if hasattr(self, "_changed_fields") and "parent" in self._changed_fields:
@@ -504,6 +485,7 @@ class NetworkSegment(Document):
         :param segment:
         :return:
         """
+
         def iter_segments(ps):
             # Return segment
             yield ps
@@ -575,67 +557,56 @@ class NetworkSegment(Document):
         if match:
             pipeline += [{"$match": match}]
         # Mark service and profile with type field
-        pipeline += [{
-            "$project": {
-                "_id": 0,
-                "service": {
-                    "$map": {
-                        "input": "$total_services",
-                        "as": "svc",
-                        "in": {
-                            "type": "svc",
-                            "profile": "$$svc.profile",
-                            "summary": "$$svc.summary"
-                        }
-                    }
-                },
-                "subscriber": {
-                    "$map": {
-                        "input": "$total_subscribers",
-                        "as": "sub",
-                        "in": {
-                            "type": "sub",
-                            "profile": "$$sub.profile",
-                            "summary": "$$sub.summary"
-                        }
-                    }
-                },
-                "object": {
-                    "$map": {
-                        "input": "$total_objects",
-                        "as": "obj",
-                        "in": {
-                            "type": "obj",
-                            "profile": "$$obj.profile",
-                            "summary": "$$obj.summary"
-                        }
-                    }
-                }
-            }},
-            # Concatenate services and profiles
+        pipeline += [
             {
                 "$project": {
-                    "summary": {
-                        "$concatArrays": ["$service", "$subscriber", "$object"]
-                    }
+                    "_id": 0,
+                    "service": {
+                        "$map": {
+                            "input": "$total_services",
+                            "as": "svc",
+                            "in": {
+                                "type": "svc",
+                                "profile": "$$svc.profile",
+                                "summary": "$$svc.summary",
+                            },
+                        }
+                    },
+                    "subscriber": {
+                        "$map": {
+                            "input": "$total_subscribers",
+                            "as": "sub",
+                            "in": {
+                                "type": "sub",
+                                "profile": "$$sub.profile",
+                                "summary": "$$sub.summary",
+                            },
+                        }
+                    },
+                    "object": {
+                        "$map": {
+                            "input": "$total_objects",
+                            "as": "obj",
+                            "in": {
+                                "type": "obj",
+                                "profile": "$$obj.profile",
+                                "summary": "$$obj.summary",
+                            },
+                        }
+                    },
                 }
             },
+            # Concatenate services and profiles
+            {"$project": {"summary": {"$concatArrays": ["$service", "$subscriber", "$object"]}}},
             # Unwind *summary* array to independed records
-            {
-                "$unwind": "$summary"
-            },
+            {"$unwind": "$summary"},
             # Group by (type, profile)
             {
                 "$group": {
-                    "_id": {
-                        "type": "$summary.type",
-                        "profile": "$summary.profile"
-                    },
-                    "summary": {
-                        "$sum": "$summary.summary"
-                    }
+                    "_id": {"type": "$summary.type", "profile": "$summary.profile"},
+                    "summary": {"$sum": "$summary.summary"},
                 }
-            }
+            },
         ]  # noqa
         try:
             for doc in NetworkSegment._get_collection().aggregate(pipeline):

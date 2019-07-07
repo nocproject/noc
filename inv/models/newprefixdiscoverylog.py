@@ -18,7 +18,7 @@ class NewPrefixDiscoveryLog(Document):
         "collection": "noc.log.discovery.prefix.new",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["-timestamp"]
+        "indexes": ["-timestamp"],
     }
     timestamp = DateTimeField()
     vrf = StringField()

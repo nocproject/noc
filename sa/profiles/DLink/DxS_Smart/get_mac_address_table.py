@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -19,17 +20,16 @@ class Script(BaseScript):
     cached = True
 
     rx_line = re.compile(
-        r"(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>Learnt|Static)\s+"
-        r"(?P<interfaces>\S+)", re.MULTILINE)
+        r"(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>Learnt|Static)\s+" r"(?P<interfaces>\S+)",
+        re.MULTILINE,
+    )
     rx_line1 = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<vlan_name>\S+)?\s+(?P<mac>\S+)\s+"
-        "(?P<interface>\d+)\s+(?P<type>Dynamic|Static)", re.MULTILINE)
+        "(?P<interface>\d+)\s+(?P<type>Dynamic|Static)",
+        re.MULTILINE,
+    )
 
-    T_MAP = {
-        "Learnt": "D",
-        "Dynamic": "D",
-        "Static": "S"
-    }
+    T_MAP = {"Learnt": "D", "Dynamic": "D", "Static": "S"}
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -43,11 +43,11 @@ class Script(BaseScript):
                     vlan_oid.append(v[0])
 
                 # mac iface type
-                for v in self.snmp.get_tables([
-                        "1.3.6.1.2.1.17.7.1.2.2.1.2",
-                        "1.3.6.1.2.1.17.7.1.2.2.1.3"]):
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.17.7.1.2.2.1.2", "1.3.6.1.2.1.17.7.1.2.2.1.3"]
+                ):
                     if v[1]:
-                        macar = v[0].split('.')[1:]
+                        macar = v[0].split(".")[1:]
                         chassis = ":".join(["%02x" % int(c) for c in macar])
                         if mac is not None:
                             if chassis == mac:
@@ -61,8 +61,8 @@ class Script(BaseScript):
                     if int(v[2]) > 3 or int(v[2]) < 1:
                         continue
                     iface = self.snmp.get(
-                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]),
-                        cached=True)  # IF-MIB
+                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True
+                    )  # IF-MIB
                     if interface is not None:
                         if iface == interface:
                             pass
@@ -70,7 +70,7 @@ class Script(BaseScript):
                             continue
                     for i in vlan_oid:
                         if v[0] in i:
-                            vlan_id = int(i.split('.')[0])
+                            vlan_id = int(i.split(".")[0])
                             break
                     if vlan is not None:
                         if vlan_id == vlan:
@@ -78,12 +78,14 @@ class Script(BaseScript):
                         else:
                             continue
 
-                    r.append({
-                        "interfaces": [iface],
-                        "mac": chassis,
-                        "type": {"3": "D", "2": "S", "1": "S"}[str(v[2])],
-                        "vlan_id": vlan_id,
-                    })
+                    r.append(
+                        {
+                            "interfaces": [iface],
+                            "mac": chassis,
+                            "type": {"3": "D", "2": "S", "1": "S"}[str(v[2])],
+                            "vlan_id": vlan_id,
+                        }
+                    )
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -97,16 +99,20 @@ class Script(BaseScript):
                 m_interface = match.group("interfaces")
                 m_vlan = match.group("vlan_id")
                 m_mac = match.group("mac")
-                if ((interface is None and vlan is None and mac is None)
+                if (
+                    (interface is None and vlan is None and mac is None)
                     or (interface is not None and interface == m_interface)
                     or (vlan is not None and vlan == m_vlan)
-                    or (mac is not None and mac == m_mac)):
-                    r += [{
-                        "vlan_id": m_vlan,
-                        "mac": m_mac,
-                        "interfaces": [m_interface],
-                        "type": self.T_MAP[match.group("type")]
-                    }]
+                    or (mac is not None and mac == m_mac)
+                ):
+                    r += [
+                        {
+                            "vlan_id": m_vlan,
+                            "mac": m_mac,
+                            "interfaces": [m_interface],
+                            "type": self.T_MAP[match.group("type")],
+                        }
+                    ]
             return r
         except self.CLISyntaxError:
             pass
@@ -122,10 +128,12 @@ class Script(BaseScript):
             m_interface = match.group("interface")
             m_vlan = match.group("vlan_id")
             m_mac = match.group("mac")
-            r += [{
-                "vlan_id": m_vlan,
-                "mac": m_mac,
-                "interfaces": [m_interface],
-                "type": self.T_MAP[match.group("type")]
-            }]
+            r += [
+                {
+                    "vlan_id": m_vlan,
+                    "mac": m_mac,
+                    "interfaces": [m_interface],
+                    "type": self.T_MAP[match.group("type")],
+                }
+            ]
         return r

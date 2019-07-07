@@ -15,28 +15,26 @@ class Script(BaseScript):
     name = "Alcatel.AOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_line = re.compile(r"\w*Remote LLDP Agents on Local Slot/Port\s+",
-                         re.MULTILINE)
+    rx_line = re.compile(r"\w*Remote LLDP Agents on Local Slot/Port\s+", re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>.+):", re.MULTILINE)
-    rx_re_ent = re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",
-                           re.MULTILINE | re.IGNORECASE)
+    rx_re_ent = re.compile(
+        r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)", re.MULTILINE | re.IGNORECASE
+    )
     rx_remote_chassis_id_subtype = re.compile(
-        r"Chassis Subtype\s+=\s(?P<subtype>.\s+)\S+",
-        re.MULTILINE | re.IGNORECASE)
-    rx_remote_chassis_id = re.compile(r"Chassis\s+(?P<id>.+),",
-                                      re.MULTILINE | re.IGNORECASE)
+        r"Chassis Subtype\s+=\s(?P<subtype>.\s+)\S+", re.MULTILINE | re.IGNORECASE
+    )
+    rx_remote_chassis_id = re.compile(r"Chassis\s+(?P<id>.+),", re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id_subtype = re.compile(
-        r"Port Subtype\s+=\s\d\s\((?P<subtype>.+)\)",
-        re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id = re.compile(r"\w*, Port\s+(?P<port>.+):\n",
-                                   re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)",
-                                    re.IGNORECASE)
-    rx_remote_system_name = re.compile(r"System Name\s+= (?P<name>.+),",
-                                       re.MULTILINE | re.IGNORECASE)
+        r"Port Subtype\s+=\s\d\s\((?P<subtype>.+)\)", re.MULTILINE | re.IGNORECASE
+    )
+    rx_remote_port_id = re.compile(r"\w*, Port\s+(?P<port>.+):\n", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)", re.IGNORECASE)
+    rx_remote_system_name = re.compile(
+        r"System Name\s+= (?P<name>.+),", re.MULTILINE | re.IGNORECASE
+    )
     rx_remote_capabilities = re.compile(
-        r"Capabilities Supported\s+= (?P<capabilities>.+),",
-        re.MULTILINE | re.IGNORECASE)
+        r"Capabilities Supported\s+= (?P<capabilities>.+),", re.MULTILINE | re.IGNORECASE
+    )
 
     def execute(self):
         r = []
@@ -93,13 +91,12 @@ class Script(BaseScript):
                 n["remote_port_subtype"] = 7
             # 8-255 are reserved
 
-                # remote_port
+            # remote_port
             match = self.rx_remote_port_id.search(s)
             if not match:
                 continue
             n["remote_port"] = match.group("port").strip()
-            if n["remote_port_subtype"] == 7 \
-                    and n["remote_port"].lower().startswith("rmon port"):
+            if n["remote_port_subtype"] == 7 and n["remote_port"].lower().startswith("rmon port"):
                 match = self.rx_remote_port_id2.search(n["remote_port"])
                 if not match:
                     continue

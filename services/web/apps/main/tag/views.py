@@ -28,12 +28,12 @@ class TagApplication(ExtDocApplication):
         :param request:
         :return:
         """
-        if "query" not in request.GET:
+        query = request.GET.get("__query")
+        if query:
+            tags = Tag.objects.filter(tag__contains=query[0])
+        else:
             # If not query - return all
             tags = Tag.objects.filter()
-        else:
-            q = request.GET["query"]
-            tags = Tag.objects.filter(tag__startswith=q)
         return {
             "data": [{"id": t.tag, "label": t.tag} for t in tags],
             "total": tags.count(),

@@ -2,17 +2,16 @@
 # ---------------------------------------------------------------------
 # Supertel.K2X.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -22,7 +21,8 @@ class Script(BaseScript):
     rx_lldp = re.compile(
         r"^(?P<interface>g\d+)\s+(?P<chassis_id>\S+)\s+(?P<port_id>\S+)\s+"
         r"((?P<name>\S+)\s+|)(?P<capabilities>\S+)\s*$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
@@ -83,14 +83,10 @@ class Script(BaseScript):
             for c in match.group("capabilities").split(","):
                 c = c.strip()
                 if c:
-                    cap |= {
-                        "O": 1, "r": 2, "B": 4,
-                        "W": 8, "R": 16, "T": 32,
-                        "D": 256, "H": 512,
-                    }[c]
+                    cap |= {"O": 1, "r": 2, "B": 4, "W": 8, "R": 16, "T": 32, "D": 256, "H": 512}[c]
                 # Get remote port subtype
                 remote_port_subtype = 5
-#                remote_port_subtype = 7
+                #                remote_port_subtype = 7
 
                 i = {"local_interface": local_interface, "neighbors": []}
                 n = {
@@ -98,7 +94,7 @@ class Script(BaseScript):
                     "remote_port": remote_port,
                     "remote_capabilities": cap,
                     "remote_port_subtype": remote_port_subtype,
-                    }
+                }
                 if remote_system_name:
                     n["remote_system_name"] = remote_system_name
 

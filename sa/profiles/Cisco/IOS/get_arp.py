@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_arp import Script as BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -15,7 +16,9 @@ from noc.sa.interfaces.igetarp import IGetARP
 class Script(BaseScript):
     name = "Cisco.IOS.get_arp"
     interface = IGetARP
-    rx_line = re.compile(r"^Internet\s+(?P<ip>\S+)\s+\d+\s+(?P<mac>\S+)\s+\S+(?:\s+(?P<interface>\S+))")
+    rx_line = re.compile(
+        r"^Internet\s+(?P<ip>\S+)\s+\d+\s+(?P<mac>\S+)\s+\S+(?:\s+(?P<interface>\S+))"
+    )
 
     def execute_cli(self, vrf=None):
         if vrf:
@@ -31,5 +34,11 @@ class Script(BaseScript):
             if mac.lower() == "incomplete":
                 r.append({"ip": match.group("ip"), "mac": None, "interface": None})
             else:
-                r.append({"ip": match.group("ip"), "mac": match.group("mac"), "interface": match.group("interface")})
+                r.append(
+                    {
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "interface": match.group("interface"),
+                    }
+                )
         return r

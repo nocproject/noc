@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
@@ -17,10 +18,8 @@ class Script(BaseScript):
     name = "HP.Comware.get_mpls_vpn"
     interface = IGetMPLSVPN
 
-    rx_line = re.compile(
-        r"^\s+(?P<vrf>\S+)\s+(?P<rd>\S+:\S+|<not set>)\s+", re.MULTILINE)
-    rx_if = re.compile(
-        "^\s+Interfaces : (?P<ifaces>.+)", re.MULTILINE | re.DOTALL)
+    rx_line = re.compile(r"^\s+(?P<vrf>\S+)\s+(?P<rd>\S+:\S+|<not set>)\s+", re.MULTILINE)
+    rx_if = re.compile("^\s+Interfaces : (?P<ifaces>.+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         vpns = []
@@ -42,7 +41,7 @@ class Script(BaseScript):
                     "status": True,
                     "name": vrf,
                     "rd": match.group("rd"),
-                    "interfaces": interfaces
+                    "interfaces": interfaces,
                 }
                 vpns += [vpn]
         return vpns

@@ -8,16 +8,14 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 import noc.lib.nosql as nosql
 
 
 @six.python_2_unicode_compatible
 class DataSource(nosql.EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     name = nosql.StringField()
     datasource = nosql.StringField()
     search = nosql.DictField()
@@ -27,7 +25,7 @@ class DataSource(nosql.EmbeddedDocument):
 
     def __eq__(self, other):
         return (
-            self.name == other.name and
-            self.datasource == other.datasource and
-            self.search == other.search
+            self.name == other.name
+            and self.datasource == other.datasource
+            and self.search == other.search
         )

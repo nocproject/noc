@@ -17,9 +17,8 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^\s*NI CARD TYPE\s+: (?P<platform>.+)\n"
-        r"^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
-        re.MULTILINE
+        r"^\s*NI CARD TYPE\s+: (?P<platform>.+)\n" r"^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -27,5 +26,5 @@ class Script(BaseScript):
         return {
             "vendor": "ECI",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

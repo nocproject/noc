@@ -9,6 +9,7 @@
 # Third-party modules
 import pyproj
 import geojson
+
 # NOC modules
 from noc.gis.models.layer import Layer
 from noc.inv.models.object import Object
@@ -71,10 +72,7 @@ class Map(object):
         src_proj = self.get_proj(srid)
         cx0, cy0 = pyproj.transform(src_proj, self.db_proj, x0, y0)
         cx1, cy1 = pyproj.transform(src_proj, self.db_proj, x1, y1)
-        bbox = geojson.Polygon(
-            [[[cx0, cy0], [cx1, cy0], [cx1, cy1],
-              [cx0, cy1], [cx0, cy0]]]
-        )
+        bbox = geojson.Polygon([[[cx0, cy0], [cx1, cy0], [cx1, cy1], [cx0, cy1], [cx0, cy0]]])
         return bbox
 
     def get_layer_objects(self, layer, x0, y0, x1, y1, srid):
@@ -89,23 +87,12 @@ class Map(object):
             geojson.Feature(
                 id=str(d["_id"]),
                 geometry=self.transform(d["point"], self.db_proj, srid),
-                properties={
-                    "object": str(d["_id"]),
-                    "label": d.get("name", "")
-                }
+                properties={"object": str(d["_id"]), "label": d.get("name", "")},
             )
-            for d in Object._get_collection().find({
-                "layer": lr.id,
-                "point": {
-                    "$geoWithin": {
-                        "$geometry": bbox
-                    }
-                }
-            }, {
-                "_id": 1,
-                "point": 1,
-                "label": 1
-            })
+            for d in Object._get_collection().find(
+                {"layer": lr.id, "point": {"$geoWithin": {"$geometry": bbox}}},
+                {"_id": 1, "point": 1, "label": 1},
+            )
         ]
         return geojson.FeatureCollection(features=features, crs=srid)
 
@@ -116,7 +103,8 @@ class Map(object):
         """
         if not hasattr(self, "_conduit_layers_ids"):
             self._conduit_layers_ids = Layer.objects.filter(
-                code__in=self.CONDUITS_LAYERS).values_list("id")
+                code__in=self.CONDUITS_LAYERS
+            ).values_list("id")
         return self._conduit_layers_ids
 
     def transform(self, data, src_srid, dst_srid):
@@ -126,11 +114,9 @@ class Map(object):
             return data
         if data["type"] == "Point":
             x, y = data["coordinates"]
-            data["coordinates"] = pyproj.transform(
-                src, dst, x, y)
+            data["coordinates"] = pyproj.transform(src, dst, x, y)
         elif data["type"] == "LineString":
-            data["coordinates"] = [pyproj.transform(src, dst, x, y)
-                                   for x, y in data["coordinates"]]
+            data["coordinates"] = [pyproj.transform(src, dst, x, y) for x, y in data["coordinates"]]
         return data
 
     def get_connection_layer(self, layer, x0, y0, x1, y1, srid):
@@ -141,31 +127,18 @@ class Map(object):
         features = [
             geojson.Feature(
                 id="-".join(str(c["object"]) for c in d["connection"]),
-                geometry=self.transform(d["line"], self.db_proj, srid)
+                geometry=self.transform(d["line"], self.db_proj, srid),
             )
-            for d in ObjectConnection._get_collection().find({
-                "layer": layer.id,
-                "$or": [
-                    {
-                        "line": {
-                            "$geoWithin": {
-                                "$geometry": bbox
-                            }
-                        }
-                    },
-                    {
-                        "line": {
-                            "$geoIntersects": {
-                                "$geometry": bbox
-                            }
-                        }
-                    }
-                ]
-            }, {
-                "_id": 1,
-                "connection": 1,
-                "line": 1
-            })
+            for d in ObjectConnection._get_collection().find(
+                {
+                    "layer": layer.id,
+                    "$or": [
+                        {"line": {"$geoWithin": {"$geometry": bbox}}},
+                        {"line": {"$geoIntersects": {"$geometry": bbox}}},
+                    ],
+                },
+                {"_id": 1, "connection": 1, "line": 1},
+            )
         ]
         return geojson.FeatureCollection(features=features, crs=srid)
 
@@ -180,9 +153,7 @@ class Map(object):
             point = geojson.Point(coordinates=[point[0], point[1]])
             if len(point) == 3:
                 point = self.transform(point, point[2], self.db_proj)
-        q = {
-            "point__near": point
-        }
+        q = {"point__near": point}
         if isinstance(layers, list):
             q["layer__in"] = layers
         else:

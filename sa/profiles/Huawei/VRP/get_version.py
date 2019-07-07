@@ -6,6 +6,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.core.mib import mib
@@ -23,63 +24,70 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"^VRP.+Software, Version (?P<version>[^ ,]+),?\s*(\(\S+\s+(?P<image>\S+)\))?.*?\n"
         r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]+uptime",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp = re.compile(
         r"Versatile Routing Platform Software.*?"
         r"Version (?P<version>[^ ,]+),?\s*(\(\S+\s+(?P<image>\S+)\))?.*?\n"
         r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+)?"
         r"[^ \t\n\r\f\v\-]+)[^\n]+",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp1 = re.compile(
         r"Huawei Versatile Routing Platform Software\s*"
         r"VRP \(R\) software, Version (?P<version>\d+.\d+) \((?:CX\S+|ATN\S+|ATN(?: \S+){0,2}) (?P<image>\S+)\)\s*"
         r"Copyright \(C\) \d+-\d+ Huawei Technologies Co., Ltd.\s*"
         r"(?:HUAWEI\s*)?(?P<platform>(?:CX\S+|ATN\S+|ATN(?: \S+){0,2}))\s*",
-        re.MULTILINE | re.IGNORECASE
+        re.MULTILINE | re.IGNORECASE,
     )
     rx_ver_snmp2 = re.compile(
         r"(?P<platform>(?:\S+\s+)?(?:S\d+|AR\d+\S*)(?:[A-Z]+-[A-Z]+)?(?:\d+\S+)?)"
         r"\s+Huawei\sVersatile\sRouting\sPlatform"
         r"\sSoftware.*Version\s(?P<version>\d+\.\d+)\s"
         r"\((?:S\d+|AR\d+\S*)\s(?P<image>\S+)+\).*",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp3 = re.compile(
         r"^\s*VRP.+Software, Version (?P<version>\S+)\s+"
         r"\((?P<platform>S\S+|CX\d+) (?P<image>[^)]+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp4_ne_me = re.compile(
         r"Huawei Versatile Routing Platform Software.*?"
         r".+Version (?P<version>\S+)\s*(\(\S+\s+(?P<image>\S+)\))?.*?"
         r"\s*(?P<platform>NetEngine\s+|MultiserviceEngine\s+\S+|HUAWEI\s*NE\S+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp5 = re.compile(
         r"Huawei Versatile Routing Platform.*?"
         r"Version (?P<version>\S+) .*?"
         r"\s*(?:Quidway|Huawei) (?P<platform>[A-Z0-9]+)\s",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp6 = re.compile(
         r"Huawei Versatile Routing Platform .* \((?P<platform>[A-Z0-9]+) (?P<version>\S+)\) .*?",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
-    rx_ver_snmp7_eudemon = re.compile(r"Huawei Versatile Routing Platform Software.*?"
-                                      r".+Version (?P<version>\S+)\s*(\((?P<platform>\S+)\s+(?P<image>\S+)\))?.*?",
-                                      re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver_snmp7_eudemon = re.compile(
+        r"Huawei Versatile Routing Platform Software.*?"
+        r".+Version (?P<version>\S+)\s*(\((?P<platform>\S+)\s+(?P<image>\S+)\))?.*?",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
-    rx_parts = re.compile(r"\[Slot_(?P<slot_n>\d+)\]\n"
-                          r"(.+\n)+\n\n"
-                          r"\[(?P<slot_type>(Main_Board|Port_\d+))\]\n"
-                          r"(.*\n){1,4}\n"
-                          r"\[(?P<part_name>Board\sProperties)\]\n"
-                          r"(?P<part_body>(.+\n)+)\n", re.IGNORECASE | re.MULTILINE)
+    rx_parts = re.compile(
+        r"\[Slot_(?P<slot_n>\d+)\]\n"
+        r"(.+\n)+\n\n"
+        r"\[(?P<slot_type>(Main_Board|Port_\d+))\]\n"
+        r"(.*\n){1,4}\n"
+        r"\[(?P<part_name>Board\sProperties)\]\n"
+        r"(?P<part_body>(.+\n)+)\n",
+        re.IGNORECASE | re.MULTILINE,
+    )
 
-    rx_patch = re.compile(r"Patch Package Name\s*:(?P<patch_name>.+)\n"
-                          r"Patch Package Version\s*:(?P<patch_version>\S+)")
+    rx_patch = re.compile(
+        r"Patch Package Name\s*:(?P<patch_name>.+)\n"
+        r"Patch Package Version\s*:(?P<patch_version>\S+)"
+    )
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
 
     def parse_serial(self):
@@ -138,10 +146,9 @@ class Script(BaseScript):
             self.rx_ver_snmp1,
             self.rx_ver_snmp2,
             self.rx_ver_snmp3,
-            self.rx_ver_snmp5
+            self.rx_ver_snmp5,
         ]
-        if ("NetEngine" in v or "MultiserviceEngine" in v or
-                "HUAWEINE" in v or "HUAWEI NE" in v):
+        if "NetEngine" in v or "MultiserviceEngine" in v or "HUAWEINE" in v or "HUAWEI NE" in v:
             # Use specified regex for this platform
             match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
         if "Eudemon" in v:
@@ -177,11 +184,7 @@ class Script(BaseScript):
                 continue
             serial += [x.strip(" \x00")]
 
-        r = {
-            "vendor": "Huawei",
-            "platform": platform,
-            "version": version
-        }
+        r = {"vendor": "Huawei", "platform": platform, "version": version}
         attributes = {}
         if image:
             r["version"] = "%s (%s)" % (version, image)
@@ -205,11 +208,7 @@ class Script(BaseScript):
                 raise self.NotSupportedError()
 
         platform, version, image = self.parse_version(v)
-        r = {
-            "vendor": "Huawei",
-            "platform": platform,
-            "version": version
-        }
+        r = {"vendor": "Huawei", "platform": platform, "version": version}
         attributes = {}
         if image:
             r["version"] = "%s (%s)" % (version, image)

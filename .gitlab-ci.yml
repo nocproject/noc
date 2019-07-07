@@ -11,7 +11,6 @@ check labels:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - set -x
     - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA))
     - python ./scripts/check-labels.py $FLIST
   only:
@@ -99,6 +98,26 @@ pylint:
     - merge_requests
   tags:
     - docker
+
+bandit:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - set -x
+    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_COMMIT_SHA) | egrep ".py$" | grep -v ".docker/"|| true)
+    - >
+      if [ ! -z "$FLIST" ];
+      then
+        bandit "$FLIST";
+      else
+        echo "No files to lint"
+        true;
+      fi
+  only:
+    - merge_requests
+  tags:
+    - docker
+  allow_failure: true
 
 futurize:
   stage: lint
@@ -233,7 +252,7 @@ Build docs:
   artifacts:
     paths:
       - build/docs/en
-    expire_in: 1 day
+    expire_in: 2 hours
   only:
     changes:
       - docs/**
@@ -251,7 +270,7 @@ Build Master Docs:
   artifacts:
     paths:
       - build/docs/en
-    expire_in: 1 day
+    expire_in: 2 hours
   only:
     refs:
       - master

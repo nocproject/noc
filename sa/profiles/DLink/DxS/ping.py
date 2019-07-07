@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -18,16 +19,17 @@ class Script(BaseScript):
     interface = IPing
     rx_result = re.compile(
         r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     # DES-1210-28/ME
     rx_result_des1210 = re.compile(
         r"(?P<count>\d+)\s+Packets Transmitted,\s+(?P<success>\d+)\s+Packets Received,\s+\d+%\s+Packets Loss",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None, *args, **kwargs):
+    def execute(
+        self, address, count=None, source_address=None, size=None, df=None, *args, **kwargs
+    ):
         cmd = "ping %s" % address
         if count:
             cmd += " times %d" % int(count)
@@ -43,8 +45,5 @@ class Script(BaseScript):
         r = self.cli(cmd)
         rx = self.find_re([self.rx_result, self.rx_result_des1210], r)
         match = rx.search(r)
-        r = {
-            "success": int(match.group("success")),
-            "count": int(match.group("count")),
-        }
+        r = {"success": int(match.group("success")), "count": int(match.group("count"))}
         return r

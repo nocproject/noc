@@ -14,18 +14,16 @@ import re
 class Script(BaseScript):
     name = "HP.1910.get_interface_index"
     interface = IGetIfIndex
-    rx_line = re.compile(
-        r"Interface = \S+, Ifindex = (?P<index>\d+)")
+    rx_line = re.compile(r"Interface = \S+, Ifindex = (?P<index>\d+)")
 
     def execute(self, interface):
 
         # Try SNMP first
         if self.has_snmp():
             try:
-                interface = interface.replace('Gi ', 'GigabitEthernet')
-                interface = interface.replace('Vl ', 'Vlan-interface')
-                for iface in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1"],
-                    bulk=True):
+                interface = interface.replace("Gi ", "GigabitEthernet")
+                interface = interface.replace("Vl ", "Vlan-interface")
+                for iface in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1"], bulk=True):
                     if iface[1] == interface:
                         iface_index = iface[0]
                         break

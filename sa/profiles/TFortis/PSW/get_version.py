@@ -6,6 +6,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,7 +19,8 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_html_ver = re.compile(
-        r"Firmware version(?P<version>.*)Bootloader version(?P<bootloader>.*)\sMAC")
+        r"Firmware version(?P<version>.*)Bootloader version(?P<bootloader>.*)\sMAC"
+    )
     rx_html_platform = re.compile(r"^TFortis (?P<platform>.*)\x00")
     rx_html_platform2 = re.compile(r"(?P<platform>PSW-\S+)")
 
@@ -35,7 +37,5 @@ class Script(BaseScript):
             "vendor": "TFortis",
             "platform": platform.group("platform").strip("\x00"),
             "version": match.group("version"),
-            "attributes": {
-                "Bootloader": match.group("bootloader"),
-            }
+            "attributes": {"Bootloader": match.group("bootloader")},
         }

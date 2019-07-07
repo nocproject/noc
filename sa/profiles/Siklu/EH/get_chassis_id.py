@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -18,15 +19,11 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_id = re.compile(
-        r"^eth \S+ mac-addr\s+:\s*(\S+)\s*$",
-        re.IGNORECASE | re.MULTILINE
-    )
+    rx_id = re.compile(r"^eth \S+ mac-addr\s+:\s*(\S+)\s*$", re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         v = self.cli("show eth all")
         macs = self.rx_id.findall(v)
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

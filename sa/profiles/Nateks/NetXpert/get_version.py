@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,17 +21,13 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r".*Series Software, Version (?P<version>[\S\s]*)\, RELEASE SOFTWARE",
-        re.MULTILINE)
+        r".*Series Software, Version (?P<version>[\S\s]*)\, RELEASE SOFTWARE", re.MULTILINE
+    )
     rx_boot = re.compile(
-        r".*ROM: System Bootstrap, Version (?P<bootrom>\d+\.\d+\.\d+).*",
-        re.MULTILINE)
-    rx_sn = re.compile(
-        r"Serial num:(?P<sn>[^ ,]+),.*\n",
-        re.MULTILINE)
-    rx_plat = re.compile(
-        r"Nateks (?P<platform>.*) RISC",
-        re.MULTILINE)
+        r".*ROM: System Bootstrap, Version (?P<bootrom>\d+\.\d+\.\d+).*", re.MULTILINE
+    )
+    rx_sn = re.compile(r"Serial num:(?P<sn>[^ ,]+),.*\n", re.MULTILINE)
+    rx_plat = re.compile(r"Nateks (?P<platform>.*) RISC", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show version", cached=True)
@@ -47,8 +44,5 @@ class Script(BaseScript):
             "vendor": "Nateks",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "Boot PROM": bootrom,
-                "Serial Number": sn
-            }
+            "attributes": {"Boot PROM": bootrom, "Serial Number": sn},
         }

@@ -10,15 +10,16 @@
 import operator
 from threading import Lock
 import bisect
+
 # Third-party modules
 import six
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, ListField, LongField,
-                                EmbeddedDocumentField)
+from mongoengine.fields import StringField, ListField, LongField, EmbeddedDocumentField
 from pymongo import ReadPreference
+
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -33,10 +34,7 @@ mac_lock = Lock()
 
 @six.python_2_unicode_compatible
 class MACRange(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     first_mac = StringField()
     last_mac = StringField()
 
@@ -50,13 +48,12 @@ class DiscoveryID(Document):
     """
     Managed Object's discovery identity
     """
+
     meta = {
         "collection": "noc.inv.discovery_id",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "object", "hostname", "udld_id", "macs"
-        ]
+        "indexes": ["object", "hostname", "udld_id", "macs"],
     }
     object = ForeignKeyField(ManagedObject)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))
@@ -112,8 +109,7 @@ class DiscoveryID(Document):
         return [MACRange(first_mac=str(MAC(r[0])), last_mac=str(MAC(r[1]))) for r in ranges]
 
     @classmethod
-    def submit(cls, object, chassis_mac=None,
-               hostname=None, router_id=None, additional_macs=None):
+    def submit(cls, object, chassis_mac=None, hostname=None, router_id=None, additional_macs=None):
         # Process ranges
         macs = cls._macs_as_ints(chassis_mac, additional_macs)
         ranges = cls._macs_to_ranges(macs)
@@ -131,25 +127,21 @@ class DiscoveryID(Document):
             o.macs = macs
             o.save()
         else:
-            cls(object=object, chassis_mac=ranges,
-                hostname=hostname, router_id=router_id, macs=macs).save()
+            cls(
+                object=object, chassis_mac=ranges, hostname=hostname, router_id=router_id, macs=macs
+            ).save()
 
     @classmethod
-    @cachedmethod(operator.attrgetter("_mac_cache"),
-                  key="discoveryid-mac-%s",
-                  lock=lambda _: mac_lock)
+    @cachedmethod(
+        operator.attrgetter("_mac_cache"), key="discoveryid-mac-%s", lock=lambda _: mac_lock
+    )
     def get_by_mac(cls, mac):
-        return cls._get_collection().find_one({
-            "macs": int(MAC(mac))
-        }, {"_id": 0, "object": 1})
+        return cls._get_collection().find_one({"macs": int(MAC(mac))}, {"_id": 0, "object": 1})
 
     @classmethod
-    @cachetools.cachedmethod(
-        operator.attrgetter("_udld_cache"), lock=lambda _: mac_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_udld_cache"), lock=lambda _: mac_lock)
     def get_by_udld_id(cls, device_id):
-        return cls._get_collection().find_one({
-            "udld_id": device_id
-        }, {"_id": 0, "object": 1})
+        return cls._get_collection().find_one({"udld_id": device_id}, {"_id": 0, "object": 1})
 
     @classmethod
     def find_object(cls, mac=None, ipv4_address=None):
@@ -160,6 +152,7 @@ class DiscoveryID(Document):
         :param cls:
         :return: Managed object instance or None
         """
+
         def has_ip(ip, addresses):
             x = ip + "/"
             for a in addresses:
@@ -183,18 +176,12 @@ class DiscoveryID(Document):
             # Fallback to interface addresses
             o = set(
                 d["managed_object"]
-                for d in SubInterface._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED
-                ).find({
-                    "ipv4_addresses": {
-                        "$gt": ipv4_address + "/",
-                        "$lt": ipv4_address + "/99"
-                    }
-                }, {
-                    "_id": 0,
-                    "managed_object": 1,
-                    "ipv4_addresses": 1
-                })
+                for d in SubInterface._get_collection()
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .find(
+                    {"ipv4_addresses": {"$gt": ipv4_address + "/", "$lt": ipv4_address + "/99"}},
+                    {"_id": 0, "managed_object": 1, "ipv4_addresses": 1},
+                )
                 if has_ip(ipv4_address, d["ipv4_addresses"])
             )
             if len(o) == 1:
@@ -218,15 +205,15 @@ class DiscoveryID(Document):
         else:
             c_macs = []
         # Get interface macs
-        i_macs = set(i.mac for i in Interface.objects.filter(
-            managed_object=object.id,
-            mac__exists=True).only("mac") if i.mac
+        i_macs = set(
+            i.mac
+            for i in Interface.objects.filter(managed_object=object.id, mac__exists=True).only(
+                "mac"
+            )
+            if i.mac
         )
         # Enrich discovered macs with additional interface's ones
-        c_macs += [
-            (m, m) for m in i_macs
-            if not any(1 for f, t in c_macs if f <= m <= t)
-        ]
+        c_macs += [(m, m) for m in i_macs if not any(1 for f, t in c_macs if f <= m <= t)]
         return c_macs
 
     @classmethod
@@ -253,11 +240,21 @@ class DiscoveryID(Document):
         c_macs = {int(did[0][0]): did[1] for did in os.scalar("macs", "object") if did[0]}
         # c_macs = [r.macs for r in os]
         # Other interface macs
-        i_macs = {int(MAC(i[0])): i[1] for i in Interface.objects.filter(
-            managed_object__in=objects, mac__exists=True).scalar("mac", "managed_object") if i[0]}
+        i_macs = {
+            int(MAC(i[0])): i[1]
+            for i in Interface.objects.filter(managed_object__in=objects, mac__exists=True).scalar(
+                "mac", "managed_object"
+            )
+            if i[0]
+        }
         # Other subinterface macs (actual for DSLAM)
-        si_macs = {int(MAC(i[0])): i[1] for i in SubInterface.objects.filter(
-            managed_object__in=objects, mac__exists=True).scalar("mac", "managed_object") if i[0]}
+        si_macs = {
+            int(MAC(i[0])): i[1]
+            for i in SubInterface.objects.filter(
+                managed_object__in=objects, mac__exists=True
+            ).scalar("mac", "managed_object")
+            if i[0]
+        }
         c_macs.update(i_macs)
         c_macs.update(si_macs)
 
@@ -290,15 +287,9 @@ class DiscoveryID(Document):
         mlist = sorted(int(MAC(m)) for m in macs)
         # Search for macs
         obj_ranges = {}  # (first, last) -> mo
-        for d in DiscoveryID._get_collection().find({
-            "macs": {
-                "$in": mlist
-            }
-        }, {
-            "_id": 0,
-            "object": 1,
-            "chassis_mac": 1
-        }):
+        for d in DiscoveryID._get_collection().find(
+            {"macs": {"$in": mlist}}, {"_id": 0, "object": 1, "chassis_mac": 1}
+        ):
             mo = ManagedObject.get_by_id(d["object"])
             if mo:
                 for dd in d.get("chassis_mac", []):
@@ -326,5 +317,5 @@ class DiscoveryID(Document):
         :return:
         """
         DiscoveryID._get_collection().update_one(
-            {"object": object.id},
-            {"$set": {"udld_id": local_id}}, upsert=True)
+            {"object": object.id}, {"$set": {"udld_id": local_id}}, upsert=True
+        )

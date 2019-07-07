@@ -11,7 +11,8 @@ import re
 
 rx_ver = re.compile(
     r"ProductCode (?P<version>\S+) build.*Hardware type: (?P<platform>\S+)",
-    re.MULTILINE | re.DOTALL)
+    re.MULTILINE | re.DOTALL,
+)
 
 
 class Script(BaseScript):
@@ -25,5 +26,5 @@ class Script(BaseScript):
         return {
             "vendor": "Protei",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

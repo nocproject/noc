@@ -8,15 +8,23 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, DateTimeField, ListField,
-                                IntField, BinaryField, EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    DateTimeField,
+    ListField,
+    IntField,
+    BinaryField,
+    EmbeddedDocumentField,
+)
+
 # NOC modules
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 
 DAL_NONE = -1
 DAL_RO = 0
@@ -27,11 +35,7 @@ DAL_ADMIN = 2
 class DashboardAccess(EmbeddedDocument):
     user = ForeignKeyField(User)
     group = ForeignKeyField(Group)
-    level = IntField(choices=[
-        (DAL_RO, "Read-only"),
-        (DAL_MODIFY, "Modify"),
-        (DAL_ADMIN, "Admin")
-    ])
+    level = IntField(choices=[(DAL_RO, "Read-only"), (DAL_MODIFY, "Modify"), (DAL_ADMIN, "Admin")])
 
 
 @six.python_2_unicode_compatible
@@ -40,9 +44,7 @@ class Dashboard(Document):
         "collection": "noc.dashboards",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "owner", "tags"
-        ]
+        "indexes": ["owner", "tags"],
     }
 
     title = StringField()
@@ -80,12 +82,21 @@ class Dashboard(Document):
                 return level
         return level
 
-    def save(self, force_insert=False, validate=True, clean=True,
-             write_concern=None, cascade=None, cascade_kwargs=None,
-             _refs=None, save_condition=None, **kwargs):
+    def save(
+        self,
+        force_insert=False,
+        validate=True,
+        clean=True,
+        write_concern=None,
+        cascade=None,
+        cascade_kwargs=None,
+        _refs=None,
+        save_condition=None,
+        **kwargs
+    ):
         # Split DashBoard Acces to {User, level}, {Group, level}
         # self.update(add_to_set__access=[parent_1, parent_2, parent_1])
-        if "access" in getattr(self, '_changed_fields', []):
+        if "access" in getattr(self, "_changed_fields", []):
             # Check unique
             processed = []
             access = []
@@ -98,8 +109,10 @@ class Dashboard(Document):
                     continue
                 if da.user and da.group:
                     # Split User and Group rights
-                    access += [DashboardAccess(user=da.user.id, level=da.level),
-                               DashboardAccess(group=da.group.id, level=da.level)]
+                    access += [
+                        DashboardAccess(user=da.user.id, level=da.level),
+                        DashboardAccess(group=da.group.id, level=da.level),
+                    ]
                     processed += ["u%d" % da.user.id, "g%d" % da.group.id]
                     continue
                 access += [da]
@@ -110,10 +123,16 @@ class Dashboard(Document):
             self.access = access
 
         super(Dashboard, self).save(
-            force_insert=force_insert, validate=validate, clean=clean,
-            write_concern=write_concern, cascade=cascade,
-            cascade_kwargs=cascade_kwargs, _refs=_refs,
-            save_condition=save_condition, **kwargs)
+            force_insert=force_insert,
+            validate=validate,
+            clean=clean,
+            write_concern=write_concern,
+            cascade=cascade,
+            cascade_kwargs=cascade_kwargs,
+            _refs=_refs,
+            save_condition=save_condition,
+            **kwargs
+        )
 
     def clean_access(self, item=None):
         """

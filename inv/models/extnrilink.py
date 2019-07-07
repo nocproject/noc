@@ -10,6 +10,7 @@
 from mongoengine.document import Document
 from mongoengine.queryset import Q
 from mongoengine.fields import IntField, ObjectIdField, StringField, BooleanField, ReferenceField
+
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 
@@ -20,11 +21,12 @@ class ExtNRILink(Document):
     When *nri* topology discovery is enabled
     interface discovery pre-populating links using this table
     """
+
     meta = {
         "collection": "noc.extnrilinks",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["src_mo", "dst_mo", "link"]
+        "indexes": ["src_mo", "dst_mo", "link"],
     }
     # Source links on remote system
     source = StringField(required=False)
@@ -56,6 +58,7 @@ class ExtNRILink(Document):
         Return managed objects connected to mo
         """
         from noc.sa.models.managedobject import ManagedObject
+
         if hasattr(mo, "id"):
             mo = mo.id
         r = set()

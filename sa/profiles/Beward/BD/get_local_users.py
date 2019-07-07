@@ -21,9 +21,6 @@ class Script(BaseScript):
         for line in res.splitlines()[1:]:
             if not line:
                 continue
-            r += [{
-                "username": line.split(":")[0],
-                "class": "admin"  # not API for permission
-            }]
+            r += [{"username": line.split(":")[0], "class": "admin"}]  # not API for permission
 
         return r

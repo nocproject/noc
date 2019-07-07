@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,11 +19,11 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_platform = re.compile(
-        r"^\s*Model Name\s+: (?P<platform>\S+).*\n", re.MULTILINE)
+    rx_platform = re.compile(r"^\s*Model Name\s+: (?P<platform>\S+).*\n", re.MULTILINE)
     rx_version = re.compile(
         r"^\s*Software Version\s+: \S+ \(standalone\)( dev-build by)? (?P<version>.+)\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         v = self.cli("show version", cached=True)
@@ -31,5 +32,5 @@ class Script(BaseScript):
         return {
             "vendor": "Upvel",
             "platform": match1.group("platform"),
-            "version": match2.group("version")
+            "version": match2.group("version"),
         }

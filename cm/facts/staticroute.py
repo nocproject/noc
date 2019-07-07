@@ -8,21 +8,41 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
+
 # NOC modules
 from .base import BaseFact
 
 
 @six.python_2_unicode_compatible
 class StaticRoute(BaseFact):
-    ATTRS = ["prefix", "afi", "vrf", "interface", "next_hop",
-             "description", "tag", "distance", "discard"]
+    ATTRS = [
+        "prefix",
+        "afi",
+        "vrf",
+        "interface",
+        "next_hop",
+        "description",
+        "tag",
+        "distance",
+        "discard",
+    ]
     ID = ["vrf", "prefix", "next_hop"]
 
-    def __init__(self, prefix, afi=None, vrf=None, interface=None,
-                 next_hop=None, description=None, tag=None,
-                 distance=None, discard=None):
+    def __init__(
+        self,
+        prefix,
+        afi=None,
+        vrf=None,
+        interface=None,
+        next_hop=None,
+        description=None,
+        tag=None,
+        distance=None,
+        discard=None,
+    ):
         super(StaticRoute, self).__init__()
         self.prefix = prefix
         self.afi = afi

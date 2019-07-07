@@ -22,8 +22,4 @@ class Script(BaseScript):
         version = c.split()[2]
         p = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
         platform = self.profile.get_platforms(p.split(".")[-1])
-        return {
-            "vendor": "Eltex",
-            "platform": platform,
-            "version": version
-        }
+        return {"vendor": "Eltex", "platform": platform, "version": version}

@@ -8,13 +8,15 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 rx_interface_status = re.compile(
-    r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+"
-    r"(?P<status>up|down).*$", re.IGNORECASE)
+    r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+" r"(?P<status>up|down).*$",
+    re.IGNORECASE,
+)
 
 
 class Script(BaseScript):
@@ -27,16 +29,16 @@ class Script(BaseScript):
                 # Get interface status
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for i, n, s in self.snmp.join([
-                    "1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"
-                ]):
+                for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
                     # ifOperStatus up(1)
-                    if n.startswith("Stack") or n.startswith("Voice") \
-                    or n.startswith("SPAN") or n.startswith("VLAN-"):
+                    if (
+                        n.startswith("Stack")
+                        or n.startswith("Voice")
+                        or n.startswith("SPAN")
+                        or n.startswith("VLAN-")
+                    ):
                         continue
-                    if interface \
-                    and interface == self.profile.convert_interface_name(n):
+                    if interface and interface == self.profile.convert_interface_name(n):
                         return [{"interface": n, "status": int(s) == 1}]
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r
@@ -52,8 +54,7 @@ class Script(BaseScript):
         for l in self.cli(cmd).splitlines():
             match = rx_interface_status.match(l)
             if match:
-                r += [{
-                    "interface": match.group("interface"),
-                    "status": match.group("status") == "up"
-                }]
+                r += [
+                    {"interface": match.group("interface"), "status": match.group("status") == "up"}
+                ]
         return r

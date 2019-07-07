@@ -10,9 +10,11 @@
 from __future__ import absolute_import
 import datetime
 import difflib
+
 # Third-party modules
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.lib.app.site import site
@@ -28,7 +30,7 @@ from noc.core.model.decorator import on_delete_check
         ("kb.KBEntryHistory", "kb_entry"),
         ("kb.KBEntryPreviewLog", "kb_entry"),
         ("kb.KBGlobalBookmark", "kb_entry"),
-        ("kb.KBEntryAttachment", "kb_entry")
+        ("kb.KBEntryAttachment", "kb_entry"),
     ]
 )
 @six.python_2_unicode_compatible
@@ -36,6 +38,7 @@ class KBEntry(NOCModel):
     """
     KB Entry
     """
+
     class Meta(object):
         verbose_name = "KB Entry"
         verbose_name_plural = "KB Entries"
@@ -46,10 +49,14 @@ class KBEntry(NOCModel):
     subject = models.CharField("Subject", max_length=256)
     body = models.TextField("Body")
     language = models.ForeignKey(
-        Language, verbose_name="Language", limit_choices_to={"is_active": True}, on_delete=models.CASCADE
+        Language,
+        verbose_name="Language",
+        limit_choices_to={"is_active": True},
+        on_delete=models.CASCADE,
     )
-    markup_language = models.CharField("Markup Language", max_length="16",
-                                       choices=[(x, x) for x in loader])
+    markup_language = models.CharField(
+        "Markup Language", max_length="16", choices=[(x, x) for x in loader]
+    )
     tags = TagsField("Tags", null=True, blank=True)
 
     def __str__(self):
@@ -76,8 +83,12 @@ class KBEntry(NOCModel):
         super(KBEntry, self).save(*args, **kwargs)
         if old_body != self.body:
             diff = "\n".join(difflib.unified_diff(self.body.splitlines(), old_body.splitlines()))
-            KBEntryHistory(kb_entry=self, user=user, diff=diff,
-                           timestamp=datetime.datetime.now().replace(microsecond=0)).save()
+            KBEntryHistory(
+                kb_entry=self,
+                user=user,
+                diff=diff,
+                timestamp=datetime.datetime.now().replace(microsecond=0),
+            ).save()
 
     @property
     def parser(self):
@@ -99,6 +110,7 @@ class KBEntry(NOCModel):
         Returns latest KBEntryHistory record
         """
         from .kbentryhistory import KBEntryHistory
+
         d = KBEntryHistory.objects.filter(kb_entry=self).order_by("-timestamp")[:1]
         if d:
             return d[0]
@@ -112,12 +124,15 @@ class KBEntry(NOCModel):
         from django.db import connection
 
         c = connection.cursor()
-        c.execute("""
+        c.execute(
+            """
             SELECT kb_entry_id,MAX(timestamp)
             FROM kb_kbentryhistory
             GROUP BY 1
             ORDER BY 2 DESC
-            LIMIT %d""" % num)
+            LIMIT %d"""
+            % num
+        )
         return [KBEntry.objects.get(id=r[0]) for r in c.fetchall()]
 
     def log_preview(self, user):
@@ -143,12 +158,15 @@ class KBEntry(NOCModel):
         from django.db import connection
 
         c = connection.cursor()
-        c.execute("""
+        c.execute(
+            """
             SELECT kb_entry_id,COUNT(*)
             FROM kb_kbentrypreviewlog
             GROUP BY 1
             ORDER BY 2 DESC
-            LIMIT %d""" % num)
+            LIMIT %d"""
+            % num
+        )
         return [KBEntry.objects.get(id=r[0]) for r in c.fetchall()]
 
     @classmethod
@@ -163,11 +181,10 @@ class KBEntry(NOCModel):
         """
         Returns a list of visible attachments
         """
-        return [{"name": x.name, "size": x.size, "mtime": x.mtime,
-                 "description": x.description}
-                for x in
-                self.kbentryattachment_set.filter(
-                    is_hidden=False).order_by("name")]
+        return [
+            {"name": x.name, "size": x.size, "mtime": x.mtime, "description": x.description}
+            for x in self.kbentryattachment_set.filter(is_hidden=False).order_by("name")
+        ]
 
     @property
     def has_visible_attachments(self):

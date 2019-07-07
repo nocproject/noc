@@ -37,6 +37,10 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
             type: "auto"
         },
         {
+            name: "uplink_policy",
+            type: "auto"
+        },
+        {
             name: "management_vlan",
             type: "int",
             allowNull: true

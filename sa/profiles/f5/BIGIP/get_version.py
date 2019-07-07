@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,9 +22,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_version = re.compile(
-        r"Product\s+(?P<platform>\S+).+"
-        r"Version\s+(?P<version>\S+)",
-        re.MULTILINE | re.DOTALL
+        r"Product\s+(?P<platform>\S+).+" r"Version\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL
     )
 
     def execute(self):
@@ -32,5 +31,5 @@ class Script(BaseScript):
         return {
             "vendor": "f5",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

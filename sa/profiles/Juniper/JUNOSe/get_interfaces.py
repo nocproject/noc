@@ -9,6 +9,7 @@
 # Python modules
 import re
 import copy
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,8 +21,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
     TIMEOUT = 360
 
-    rx_conf_iface = re.compile(
-        r"interface (?P<iftype>\S+) (?P<ifname>\S+)")
+    rx_conf_iface = re.compile(r"interface (?P<iftype>\S+) (?P<ifname>\S+)")
     rx_iface = re.compile(
         r"^(?P<interface>\S+)\s+is\s+(?P<oper_status>Up|Down), "
         r"Administrative status is (?P<admin_status>Up|Down)\s*\n"
@@ -29,11 +29,15 @@ class Script(BaseScript):
         r"^\s*Hardware is .+, address is (?P<mac>\S+)\s*\n"
         r"^.+\n"
         r"(^.+\n)?"
-        r"^\s*MTU: Operational (?P<mtu>\d+)", re.MULTILINE)
+        r"^\s*MTU: Operational (?P<mtu>\d+)",
+        re.MULTILINE,
+    )
     rx_iface1 = re.compile(
         r"^(?P<interface>\S+)\s+is\s+(?P<oper_status>Up|Down), "
         r"Administrative status is (?P<admin_status>Up|Down)\s*\n"
-        r"^\s+VLAN ID: (?P<vlan_id>\d+)", re.MULTILINE)
+        r"^\s+VLAN ID: (?P<vlan_id>\d+)",
+        re.MULTILINE,
+    )
     rx_ipif = re.compile(
         r"^(?:TUNNEL )?(?P<interface>\S+) line protocol( (?P<l_proto>\S+))? is (?P<oper_status>up|down), "
         "ip is (?P<admin_status>up|down)\s*\n"
@@ -45,12 +49,10 @@ class Script(BaseScript):
         r"((?P<ip_secondary>(^\s+[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ \(secondary\)\s*\n)*))?"
         r"(^\s+Broadcast address is (?P<broadcast>\S+)\s*\n)?"
         r"^\s+Operational MTU = (?P<mtu>\d+)  Administrative MTU = \d+\s*\n",
-        re.MULTILINE)
-    rx_secondary = re.compile(
-        r"^\s+(?P<ip>\S+)/(?P<mask>\S+) \(secondary\)\s*\n",
-        re.MULTILINE)
-    rx_vrfs = re.compile(
-        "^(?P<vrf>\S+)\s+(?P<rd>\d+:\d+)\s+\S+\s*\n", re.MULTILINE)
+        re.MULTILINE,
+    )
+    rx_secondary = re.compile(r"^\s+(?P<ip>\S+)/(?P<mask>\S+) \(secondary\)\s*\n", re.MULTILINE)
+    rx_vrfs = re.compile("^(?P<vrf>\S+)\s+(?P<rd>\d+:\d+)\s+\S+\s*\n", re.MULTILINE)
     phys_interfaces = []
     logical_interfaces = []
 
@@ -66,13 +68,13 @@ class Script(BaseScript):
                 v = self.cli("show ip interface vrf %s %s" % (vrf, l_iface))
             match = self.rx_ipif.search(v)
             if match:
-                ifname = match.group('interface')
+                ifname = match.group("interface")
                 parent_iface = ifname
                 iface = {
                     "name": ifname,
-                    "admin_status": match.group('admin_status') == "Up",
-                    "oper_status": match.group('oper_status') == "Up",
-                    "enabled_protocols": []
+                    "admin_status": match.group("admin_status") == "Up",
+                    "oper_status": match.group("oper_status") == "Up",
+                    "enabled_protocols": [],
                 }
                 iftype = ""
                 if match.group("l_proto") == "Ethernet":
@@ -88,11 +90,11 @@ class Script(BaseScript):
                 iface["type"] = iftype
                 sub = {
                     "name": ifname,
-                    "admin_status": match.group('admin_status') == "Up",
-                    "oper_status": match.group('oper_status') == "Up",
-                    "mtu": match.group('mtu'),
-                    "enabled_afi": ['IPv4'],
-                    "enabled_protocols": []
+                    "admin_status": match.group("admin_status") == "Up",
+                    "oper_status": match.group("oper_status") == "Up",
+                    "mtu": match.group("mtu"),
+                    "enabled_afi": ["IPv4"],
+                    "enabled_protocols": [],
                 }
                 if "." in ifname:
                     parent_iface, vlan_tag = ifname.split(".")
@@ -102,17 +104,14 @@ class Script(BaseScript):
                 if match.group("ip") and match.group("mask"):
                     ip_address = match.group("ip")
                     ip_subnet = match.group("mask")
-                    ip_address = "%s/%s" % (
-                        ip_address, IPv4.netmask_to_len(ip_subnet))
+                    ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                     sub["ipv4_addresses"] = [ip_address]
                 if match.group("ip_secondary"):
                     ip_secondary = match.group("ip_secondary")
                     for match1 in self.rx_secondary.finditer(ip_secondary):
                         ip_address = match1.group("ip")
                         ip_subnet = match1.group("mask")
-                        ip_address = "%s/%s" % (
-                            ip_address, IPv4.netmask_to_len(ip_subnet)
-                        )
+                        ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                         sub["ipv4_addresses"] += [ip_address]
                 if ", " in match.group("n_proto"):
                     # Need more examples
@@ -133,11 +132,9 @@ class Script(BaseScript):
                     sub["tunnel"] = {}
                     sub["tunnel"]["type"] = "GRE"
                     if match.group("ip_address"):
-                        sub["tunnel"]["local_address"] = \
-                            match.group("ip_address")
+                        sub["tunnel"]["local_address"] = match.group("ip_address")
                     elif match.group("ip"):
-                        sub["tunnel"]["local_address"] = \
-                            match.group("ip")
+                        sub["tunnel"]["local_address"] = match.group("ip")
                 if match.group("descr"):
                     descr = match.group("descr").strip()
                     iface["description"] = descr
@@ -145,15 +142,13 @@ class Script(BaseScript):
 
                 found = False
                 for i in ifaces:
-                    if i['name'] == parent_iface:
-                        if i['subinterfaces'][0]["name"] != sub["name"]:
-                            i['subinterfaces'] += [sub]
+                    if i["name"] == parent_iface:
+                        if i["subinterfaces"][0]["name"] != sub["name"]:
+                            i["subinterfaces"] += [sub]
                         else:
-                            sub["enabled_afi"] += \
-                                i['subinterfaces'][0]["enabled_afi"]
-                            sub["enabled_protocols"] += \
-                                i['subinterfaces'][0]["enabled_protocols"]
-                            i['subinterfaces'][0].update(sub)
+                            sub["enabled_afi"] += i["subinterfaces"][0]["enabled_afi"]
+                            sub["enabled_protocols"] += i["subinterfaces"][0]["enabled_protocols"]
+                            i["subinterfaces"][0].update(sub)
                         found = True
                         changed = True
                         break
@@ -167,24 +162,24 @@ class Script(BaseScript):
                     v = self.cli("show interface %s" % l_iface)
                     match = self.rx_iface1.search(v)
                     if match:
-                        ifname = match.group('interface')
+                        ifname = match.group("interface")
                         parent_iface, vlan_tag = ifname.split(".")
                         sub = {
                             "name": ifname,
-                            "admin_status": match.group('admin_status') == "Up",
-                            "oper_status": match.group('oper_status') == "Up",
-                            "vlan_ids": [match.group('vlan_id')]
+                            "admin_status": match.group("admin_status") == "Up",
+                            "oper_status": match.group("oper_status") == "Up",
+                            "vlan_ids": [match.group("vlan_id")],
                         }
                         for i in ifaces:
-                            if i['name'] == parent_iface:
-                                if i['subinterfaces'][0]["name"] != sub["name"]:
-                                    i['subinterfaces'] += [sub]
+                            if i["name"] == parent_iface:
+                                if i["subinterfaces"][0]["name"] != sub["name"]:
+                                    i["subinterfaces"] += [sub]
                                 else:
-                                    sub["enabled_afi"] += \
-                                        i['subinterfaces'][0]["enabled_afi"]
-                                    sub["enabled_protocols"] += \
-                                        i['subinterfaces'][0]["enabled_protocols"]
-                                    i['subinterfaces'][0].update(sub)
+                                    sub["enabled_afi"] += i["subinterfaces"][0]["enabled_afi"]
+                                    sub["enabled_protocols"] += i["subinterfaces"][0][
+                                        "enabled_protocols"
+                                    ]
+                                    i["subinterfaces"][0].update(sub)
                                 # Need more examples
                                 # changed = True
                                 break
@@ -207,21 +202,23 @@ class Script(BaseScript):
             c = self.cli(cmd)
             match = self.rx_iface.search(c)
             iface = {
-                "name": match.group('interface'),
+                "name": match.group("interface"),
                 "type": "physical",
-                "admin_status": match.group('admin_status') == "Up",
-                "oper_status": match.group('oper_status') == "Up",
-                "mac": match.group('mac'),
+                "admin_status": match.group("admin_status") == "Up",
+                "oper_status": match.group("oper_status") == "Up",
+                "mac": match.group("mac"),
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": match.group('interface'),
-                    "admin_status": match.group('admin_status') == "Up",
-                    "oper_status": match.group('oper_status') == "Up",
-                    "mac": match.group('mac'),
-                    "mtu": match.group('mtu'),
-                    "enabled_afi": ['BRIDGE'],
-                    "enabled_protocols": []
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("interface"),
+                        "admin_status": match.group("admin_status") == "Up",
+                        "oper_status": match.group("oper_status") == "Up",
+                        "mac": match.group("mac"),
+                        "mtu": match.group("mtu"),
+                        "enabled_afi": ["BRIDGE"],
+                        "enabled_protocols": [],
+                    }
+                ],
             }
             if match.group("descr"):
                 descr = match.group("descr").strip()
@@ -229,16 +226,20 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["description"] = descr
             self.phys_interfaces += [iface]
 
-        r = [{
-            'forwarding_instance': 'default',
-            'type': 'ip',
-            'interfaces': self.get_ifaces("default")
-        }]
+        r = [
+            {
+                "forwarding_instance": "default",
+                "type": "ip",
+                "interfaces": self.get_ifaces("default"),
+            }
+        ]
         for match in self.rx_vrfs.finditer(self.cli("show ip vrf")):
-            r += [{
-                'forwarding_instance': match.group("vrf"),
-                'type': 'ip',
-                'rd': match.group("rd"),
-                'interfaces': self.get_ifaces(match.group("vrf"))
-            }]
+            r += [
+                {
+                    "forwarding_instance": match.group("vrf"),
+                    "type": "ip",
+                    "rd": match.group("rd"),
+                    "interfaces": self.get_ifaces(match.group("vrf")),
+                }
+            ]
         return r

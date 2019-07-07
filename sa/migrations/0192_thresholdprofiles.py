@@ -9,11 +9,13 @@
 # Python modules
 import itertools
 import operator
+
 # Third-party modules
 import bson
 import psycopg2
 import cachetools
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.lib.nosql import get_db
@@ -24,7 +26,9 @@ class Migration(BaseMigration):
 
     def migrate(self):
         # Convert pickled field ty BYTEA
-        self.db.execute("ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA USING metrics::bytea")
+        self.db.execute(
+            "ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA USING metrics::bytea"
+        )
         #
         current = itertools.count()
         mdb = self.mongo_db
@@ -49,7 +53,10 @@ class Migration(BaseMigration):
                     tp = {"_id": tp_id}
                 # Fill profile
                 tp["name"] = "op14-%05d-%03d" % (next(current), n)
-                tp["description"] = "Migrated for interface profile '%s' metric '%s'" % (name, metric["metric_type"])
+                tp["description"] = "Migrated for interface profile '%s' metric '%s'" % (
+                    name,
+                    metric["metric_type"],
+                )
                 tp["window_type"] = metric.get("window_type")
                 tp["window"] = metric.get("window")
                 tp["window_function"] = metric.get("window_function")
@@ -63,7 +70,7 @@ class Migration(BaseMigration):
                             "value": metric["high_error"],
                             "clear_op": "<",
                             "clear_value": metric["high_error"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Error")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Error"),
                         }
                     ]
                 if metric.get("low_error", False) or metric.get("low_error", False) == 0:
@@ -73,7 +80,7 @@ class Migration(BaseMigration):
                             "value": metric["low_error"],
                             "clear_op": ">",
                             "clear_value": metric["low_error"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Error"),
                         }
                     ]
                 if metric.get("low_warn", False) or metric.get("low_warn", False) == 0:
@@ -83,7 +90,7 @@ class Migration(BaseMigration):
                             "value": metric["low_warn"],
                             "clear_op": ">",
                             "clear_value": metric["low_warn"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | Low Warning"),
                         }
                     ]
                 if metric.get("high_warn", False) or metric.get("high_warn", False) == 0:
@@ -93,7 +100,7 @@ class Migration(BaseMigration):
                             "value": metric["high_warn"],
                             "clear_op": "<",
                             "clear_value": metric["high_warn"],
-                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Warning")
+                            "alarm_class": self.get_alarm_class_id("NOC | PM | High Warning"),
                         }
                     ]
                 # Save profile
@@ -102,15 +109,22 @@ class Migration(BaseMigration):
                 metric["threshold_profile"] = str(tp_id)
             # Store back
             wb_metrics = psycopg2.Binary(dumps(metrics, HIGHEST_PROTOCOL))
-            self.db.execute("UPDATE sa_managedobjectprofile SET metrics=%s WHERE id=%s", [wb_metrics, p_id])
+            self.db.execute(
+                "UPDATE sa_managedobjectprofile SET metrics=%s WHERE id=%s", [wb_metrics, p_id]
+            )
 
     @staticmethod
     def has_thresholds(metric):
         return (
-            metric.get("low_error", False) or metric.get("low_warn", False) or metric.get("high_warn", False) or
-            metric.get("high_error", False) or metric.get("low_error", False) == 0 or
-            metric.get("low_warn", False) == 0 or metric.get("high_warn", False) == 0 or
-            metric.get("high_error", False) == 0 or metric.get("threshold_profile")
+            metric.get("low_error", False)
+            or metric.get("low_warn", False)
+            or metric.get("high_warn", False)
+            or metric.get("high_error", False)
+            or metric.get("low_error", False) == 0
+            or metric.get("low_warn", False) == 0
+            or metric.get("high_warn", False) == 0
+            or metric.get("high_error", False) == 0
+            or metric.get("threshold_profile")
         )
 
     @classmethod

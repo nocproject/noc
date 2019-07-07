@@ -123,6 +123,13 @@ Glossary
     postgres
         See :doc:`/reference/postgres`.
 
+    RCA
+        See :term:`Root-Cause Analysis`
+
+    Root-Cause Analysys
+        A process of problems correlation in order to separate
+        real problems (or root problems) and their inferred consequences.
+
     RS-232
         `RS-232 serial communications standard<https://en.wikipedia.org/wiki/RS-232>`_
 
@@ -136,7 +143,7 @@ Glossary
         See :doc:`/reference/service`.
 
     SSH
-        Secure Shell. Encrypted CLI protocol
+        Secure Shell. Encrypted :term:`CLI` protocol
 
     STP
         Spanning Tree Protocol

@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import print_function
+
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -24,27 +26,24 @@ class Migration(BaseMigration):
                 text = d["text"]["en"]
                 bulk += [
                     UpdateOne(
+                        {"_id": d["_id"]},
                         {
-                            "_id": d["_id"]
-                        }, {
                             "$set": {
                                 "subject_template": text["subject_template"],
                                 "body_template": text["body_template"],
                                 "symptoms": text["symptoms"],
                                 "probable_causes": text["probable_causes"],
-                                "recommended_actions": text["recommended_actions"]
+                                "recommended_actions": text["recommended_actions"],
                             },
-                            "$unset": {
-                                "text": ""
-                            }
-                        }
+                            "$unset": {"text": ""},
+                        },
                     )
                 ]
             if bulk:
-                print("Commiting changes to database")
+                print ("Commiting changes to database")
                 try:
                     db.noc.fm.uptimes.bulk_write(bulk)
-                    print("Database has been synced")
+                    print ("Database has been synced")
                 except BulkWriteError as e:
-                    print(("Bulk write error: '%s'", e.details))
-                    print("Stopping check")
+                    print (("Bulk write error: '%s'", e.details))
+                    print ("Stopping check")

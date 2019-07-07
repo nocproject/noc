@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -18,6 +19,7 @@ class KBEntryHistory(NOCModel):
     """
     Modification History
     """
+
     class Meta(object):
         verbose_name = "KB Entry History"
         verbose_name_plural = "KB Entry Histories"

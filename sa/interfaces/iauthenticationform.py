@@ -8,13 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
 from .base import ListOfParameter, DictParameter, StringParameter
 
 
 class IAuthenticationForm(BaseInterface):
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "xtype": StringParameter(),
-        "name": StringParameter()
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(attrs={"xtype": StringParameter(), "name": StringParameter()})
+    )

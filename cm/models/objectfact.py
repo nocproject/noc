@@ -8,13 +8,15 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, DateTimeField, UUIDField
+
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 
 
 @six.python_2_unicode_compatible
@@ -23,10 +25,7 @@ class ObjectFact(Document):
         "collection": "noc.objectfacts",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "object",
-            "attrs.rule"
-        ]
+        "indexes": ["object", "attrs.rule"],
     }
     uuid = UUIDField(binary=True, primary_key=True)
     object = ForeignKeyField(ManagedObject)

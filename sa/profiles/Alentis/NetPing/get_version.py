@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,16 +19,11 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_snmp = re.compile(
-        r"^(?P<platform>\S+), FW v(?P<version>\S+)$")
+    rx_snmp = re.compile(r"^(?P<platform>\S+), FW v(?P<version>\S+)$")
 
-    rx_plat = re.compile(
-        r"^var devname='+(?P<platform>.+)+';$",
-        re.MULTILINE)
+    rx_plat = re.compile(r"^var devname='+(?P<platform>.+)+';$", re.MULTILINE)
 
-    rx_ver = re.compile(
-        r"^var fwver='v+(?P<version>\S+)+';$",
-        re.MULTILINE)
+    rx_ver = re.compile(r"^var fwver='v+(?P<version>\S+)+';$", re.MULTILINE)
 
     def execute(self):
         # Try SNMP first
@@ -38,11 +34,7 @@ class Script(BaseScript):
                 if match:
                     platform = match.group("platform")
                     version = match.group("version")
-                return {
-                        "vendor": "Alentis",
-                        "platform": platform,
-                        "version": version
-                        }
+                return {"vendor": "Alentis", "platform": platform, "version": version}
             except self.snmp.TimeOutError:
                 pass
 
@@ -56,10 +48,8 @@ class Script(BaseScript):
         data = self.profile.var_data(self, "/setup_get.cgi")
 
         return {
-                "vendor": "Alentis",
-                "platform": platform,
-                "version": version,
-                "attributes": {
-                        "Serial Number": data["serialnum"]
-                    }
-                }
+            "vendor": "Alentis",
+            "platform": platform,
+            "version": version,
+            "attributes": {"Serial Number": data["serialnum"]},
+        }

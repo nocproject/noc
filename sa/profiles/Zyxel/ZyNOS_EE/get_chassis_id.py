@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,18 +20,15 @@ class Script(BaseScript):
     cache = True
 
     rx_ver = re.compile(
-        r"^\sMAC Address\s:\s+(?P<id>\S+).",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        r"^\sMAC Address\s:\s+(?P<id>\S+).", re.IGNORECASE | re.MULTILINE | re.DOTALL
+    )
 
     def execute(self):
         # Try SNMP first
         if self.has_snmp():
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.17.1.1.0", cached=True)
-                return {
-                    "first_chassis_mac": mac,
-                    "last_chassis_mac": mac
-                }
+                return {"first_chassis_mac": mac, "last_chassis_mac": mac}
                 return mac
             except self.snmp.TimeOutError:
                 pass
@@ -38,7 +36,4 @@ class Script(BaseScript):
         # Fallback to CLI
         match = self.rx_ver.search(self.cli("sys mrd atsh", cached=True))
         mac = match.group("id")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

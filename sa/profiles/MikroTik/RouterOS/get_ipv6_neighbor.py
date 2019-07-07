@@ -21,7 +21,7 @@ class Script(BaseScript):
         "reachable": "reachable",
         "stale": "stale",
         "delay": "delay",
-        "probe": "probe"
+        "probe": "probe",
     }
 
     def execute(self, vrf=None):
@@ -31,10 +31,12 @@ class Script(BaseScript):
             return []
         nb = []
         for n, f, r in v:
-            nb += [{
-                "ip": r["address"],
-                "mac": r["mac-address"],
-                "interface": r["interface"],
-                "state": self.s_map[r["status"]]
-            }]
+            nb += [
+                {
+                    "ip": r["address"],
+                    "mac": r["mac-address"],
+                    "interface": r["interface"],
+                    "state": self.s_map[r["status"]],
+                }
+            ]
         return nb

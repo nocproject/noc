@@ -19,25 +19,27 @@ class Script(BaseScript):
     def execute(self):
 
         data = self.profile.var_data(self, "/setup_get.cgi")
-        ip = data["ip"].encode('UTF8')
-        mask = IPv4.netmask_to_len(data["mask"].encode('UTF8'))
+        ip = data["ip"].encode("UTF8")
+        mask = IPv4.netmask_to_len(data["mask"].encode("UTF8"))
 
         iface = {
-            "name": 'Fa1',
+            "name": "Fa1",
             "admin_status": True,
             "oper_status": True,
             "type": "physical",
-            "description": data["location"].encode('UTF8'),
-            "mac": data["mac"].encode('UTF8'),
-            "subinterfaces": [{
-                "name": 'Fa1',
-                "admin_status": True,
-                "oper_status": True,
-                "type": "physical",
-                "description": data["hostname"].encode('UTF8'),
-                "mac": data["mac"].encode('UTF8'),
-                "enabled_afi": ["IPv4"],
-                "ipv4_addresses": ["%s/%s" % (ip, mask)]
-                }]
-            }
+            "description": data["location"].encode("UTF8"),
+            "mac": data["mac"].encode("UTF8"),
+            "subinterfaces": [
+                {
+                    "name": "Fa1",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "type": "physical",
+                    "description": data["hostname"].encode("UTF8"),
+                    "mac": data["mac"].encode("UTF8"),
+                    "enabled_afi": ["IPv4"],
+                    "ipv4_addresses": ["%s/%s" % (ip, mask)],
+                }
+            ],
+        }
         return [{"interfaces": [iface]}]

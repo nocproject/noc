@@ -10,11 +10,13 @@
 import os
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
+from mongoengine.fields import StringField, UUIDField, ObjectIdField
 import cachetools
+
 # NOC modules
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
@@ -24,9 +26,7 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("pm.MetricType", "required_capability")
-])
+@on_delete_check(check=[("pm.MetricType", "required_capability")])
 @category
 @six.python_2_unicode_compatible
 class Capability(Document):
@@ -34,7 +34,8 @@ class Capability(Document):
         "collection": "noc.inv.capabilities",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "inv.capabilities"
+        "json_collection": "inv.capabilities",
+        "json_unique_fields": ["name", "uuid"],
     }
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
@@ -68,15 +69,15 @@ class Capability(Document):
             "uuid": self.uuid,
             "description": self.description,
             "type": self.type,
-            "card_template": self.card_template
+            "card_template": self.card_template,
         }
         return r
 
     def to_json(self):
-        return to_json(self.json_data,
-                       order=["name", "$collection",
-                              "uuid", "description", "type",
-                              "card_template"])
+        return to_json(
+            self.json_data,
+            order=["name", "$collection", "uuid", "description", "type", "card_template"],
+        )
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

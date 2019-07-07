@@ -21,7 +21,4 @@ class Script(BaseScript):
     def execute(self):
         match = self.re_search(self.rx_ver, self.cli("show switch"))
         mac = match.group("id")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

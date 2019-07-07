@@ -17,6 +17,7 @@ class Script(BaseScript):
     """
     Returns system uptime in seconds
     """
+
     name = "Generic.get_uptime"
     interface = IGetUptime
     requires = []

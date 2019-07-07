@@ -8,6 +8,7 @@
 # ----------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.lib.validators import is_int
@@ -16,9 +17,7 @@ from noc.lib.validators import is_int
 class Profile(BaseProfile):
     name = "3Com.SuperStack3_4400"
     pattern_prompt = r"^Select menu option.*:"
-    pattern_more = [
-        (r"(|-- )Enter <CR> for more or 'q' to quit(--|\s--):", "\r\n"),
-    ]
+    pattern_more = [(r"(|-- )Enter <CR> for more or 'q' to quit(--|\s--):", "\r\n")]
     command_submit = "\r\n"
     username_submit = "\r\n"
     password_submit = "\r\n"
@@ -52,7 +51,8 @@ class Profile(BaseProfile):
         r"^MAC Address\t+:\s+(?P<mac>\S+)\n"
         r"^Product Number\t*:\s+(?P<part_no>\S+)\n"
         r"^Serial Number\t*:\s+(?P<serial>\S+)\n",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def get_hardware(self, script):
         c = script.cli("system summary", cached=True)

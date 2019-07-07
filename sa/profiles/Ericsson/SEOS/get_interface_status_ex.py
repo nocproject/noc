@@ -8,6 +8,7 @@
 
 # Third-party modules
 import six
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -38,7 +39,9 @@ class Script(BaseScript):
                 try:
                     v = self.profile.convert_interface_name("%s/%s" % (name, descr))
                 except InterfaceTypeError as e:
-                    self.logger.debug("Ignoring unknown interface %s: %s", "%s/%s" % (name, descr), e)
+                    self.logger.debug(
+                        "Ignoring unknown interface %s: %s", "%s/%s" % (name, descr), e
+                    )
                     unknown_interfaces += [name]
                     continue
                 if "." in v:
@@ -51,7 +54,9 @@ class Script(BaseScript):
         # Apply ifOperStatus
         self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
         # Apply Radio ifAdminStatus
-        self.apply_table(radio, "1.3.6.1.4.1.193.81.3.4.3.1.2.1.8", "admin_status", lambda x: x == 3)
+        self.apply_table(
+            radio, "1.3.6.1.4.1.193.81.3.4.3.1.2.1.8", "admin_status", lambda x: x == 3
+        )
         # Apply Radio ifOperStatus
         self.apply_table(radio, "1.3.6.1.4.1.193.81.3.4.3.1.2.1.7", "oper_status", lambda x: x == 3)
         # Apply dot3StatsDuplexStatus
@@ -83,4 +88,4 @@ class Script(BaseScript):
             rr["out_speed"] = self.snmp.get("1.3.6.1.4.1.193.81.3.4.1.1.14.1.7.1")
             res[ifindex] = rr
         r.update(res)
-        return r.values()
+        return list(six.itervalues(r))

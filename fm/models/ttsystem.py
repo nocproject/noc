@@ -11,12 +11,20 @@ import operator
 from threading import Lock
 import datetime
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, ListField, IntField, ReferenceField,
-                                DateTimeField, BooleanField)
+from mongoengine.fields import (
+    StringField,
+    ListField,
+    IntField,
+    ReferenceField,
+    DateTimeField,
+    BooleanField,
+)
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
@@ -28,17 +36,12 @@ logger = logging.getLogger(__name__)
 DEFAULT_TTSYSTEM_SHARD = "default"
 
 
-@on_delete_check(check=[
-    ("sa.ManagedObject", "tt_system"),
-    ("sa.ManagedObjectSelector", "filter_tt_system")
-])
+@on_delete_check(
+    check=[("sa.ManagedObject", "tt_system"), ("sa.ManagedObjectSelector", "filter_tt_system")]
+)
 @six.python_2_unicode_compatible
 class TTSystem(Document):
-    meta = {
-        "collection": "noc.ttsystem",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.ttsystem", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     #
@@ -105,10 +108,4 @@ class TTSystem(Document):
             return
         d = datetime.datetime.now() + datetime.timedelta(seconds=cooldown)
         logger.info("[%s] Setting failure status till %s", self.name, d)
-        self._get_collection().update({
-            "_id": self.id
-        }, {
-            "$set": {
-                "failed_till": d
-            }
-        })
+        self._get_collection().update({"_id": self.id}, {"$set": {"failed_till": d}})

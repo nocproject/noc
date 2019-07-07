@@ -8,11 +8,13 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField, ObjectIdField, IntField
 from mongoengine.errors import ValidationError
+
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from noc.sa.models.profile import Profile
@@ -29,9 +31,7 @@ class ProfileCheckRule(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "sa.profilecheckrules",
-        "json_depends_on": [
-            "sa.profile"
-        ]
+        "json_depends_on": ["sa.profile"],
     }
 
     name = StringField(required=True, unique=True)
@@ -40,26 +40,21 @@ class ProfileCheckRule(Document):
     # Rule preference, processed from lesser to greater
     preference = IntField(required=True, default=1000)
     # Check method
-    method = StringField(required=True, choices=[
-        "snmp_v2c_get",
-        "http_get",
-        "https_get"
-    ], default="snmp_v2c_get")
+    method = StringField(
+        required=True, choices=["snmp_v2c_get", "http_get", "https_get"], default="snmp_v2c_get"
+    )
     # Method input parameters, defined by method
     param = StringField()
     #
-    match_method = StringField(required=True, choices=[
-        "eq",  # Full match
-        "contains",  # Contains
-        "re"   # regular expression
-    ], default="eq")
+    match_method = StringField(
+        required=True,
+        choices=["eq", "contains", "re"],  # Full match  # Contains  # regular expression
+        default="eq",
+    )
     #
     value = StringField(required=True)
     #
-    action = StringField(required=True, choices=[
-        "match",
-        "maybe"
-    ], default="match")
+    action = StringField(required=True, choices=["match", "maybe"], default="match")
     # Resulting profile name
     profile = PlainReferenceField(Profile, required=True)
     #
@@ -86,7 +81,7 @@ class ProfileCheckRule(Document):
             "match_method": self.match_method,
             "value": self.value,
             "action": self.action,
-            "profile__name": self.profile.name
+            "profile__name": self.profile.name,
         }
 
     def to_json(self):
@@ -103,8 +98,9 @@ class ProfileCheckRule(Document):
                 "match_method",
                 "value",
                 "action",
-                "profile__name"
-            ])
+                "profile__name",
+            ],
+        )
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

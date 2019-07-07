@@ -13,7 +13,12 @@ import sys
 
 # Third-party modules
 from pymongo.errors import AutoReconnect
-from mongoengine.connection import MongoEngineConnectionError, connect as mongo_connect
+from mongoengine.connection import (
+    MongoEngineConnectionError,
+    connect as mongo_connect,
+    _get_connection,
+    _get_db,
+)
 
 # NOC modules
 from noc.config import config
@@ -69,3 +74,21 @@ def is_connected():
     """
     global _connected
     return _connected
+
+
+def get_connection():
+    """
+
+    :return:
+    :rtype: pymongo.collection.Connection
+    """
+    return _get_connection()
+
+
+def get_db():
+    """
+
+    :return:
+    :rtype: pymongo.database.Database
+    """
+    return _get_db()

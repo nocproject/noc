@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -22,7 +23,8 @@ class Script(BaseScript):
         r"Software version\s*(?P<version>\S+)\n(\n|)"
         r"Hardware revision:\s(?P<revision>\S+)\s+(?P<platform>\S+)\s"
         r"(?P<description>.+)",
-        re.IGNORECASE | re.MULTILINE)
+        re.IGNORECASE | re.MULTILINE,
+    )
 
     def execute(self):
         r = {}
@@ -34,9 +36,7 @@ class Script(BaseScript):
                 "vendor": "Lucent",
                 "platform": match.group("platform"),
                 "version": match.group("version"),
-                "attributes": {
-                    "HW version": match.group("revision")
-                }
+                "attributes": {"HW version": match.group("revision")},
             }
 
         return r

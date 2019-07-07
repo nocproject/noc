@@ -25,19 +25,23 @@ class Migration(BaseMigration):
         # Make legacy Address.state_id field nullable
         self.db.execute("ALTER TABLE ip_prefix ALTER state_id DROP NOT NULL")
         # Create new Address.state
-        self.db.add_column("ip_prefix", "state", DocumentReferenceField("wf.State", null=True, blank=True))
+        self.db.add_column(
+            "ip_prefix", "state", DocumentReferenceField("wf.State", null=True, blank=True)
+        )
         # Fill Address.state
         for i in range(1, 6):
             self.db.execute(
                 """UPDATE ip_prefix
                 SET state = %s
                 WHERE state_id = %s
-                """, [self.RSMAP[i], i]
+                """,
+                [self.RSMAP[i], i],
             )
         self.db.execute(
             """
             UPDATE ip_prefix
             SET state = %s
             WHERE state_id > 5
-            """, [self.WF_FREE]
+            """,
+            [self.WF_FREE],
         )

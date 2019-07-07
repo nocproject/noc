@@ -297,7 +297,7 @@ class BaseScript(six.with_metaclass(BaseScriptMetaclass, object)):
         Returns callable accepting self and version hash arguments
         """
         c = [lambda self, x, g=f: g(x) for f in args]
-        for k, v in kwargs.items():
+        for k, v in six.iteritems(kwargs):
             # Split to field name and lookup operator
             if "__" in k:
                 f, o = k.split("__")

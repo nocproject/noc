@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -19,13 +20,12 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_bridge_port = re.compile(
-        r"^(?P<ifname>\S+)\s+(?P<bridge_port>\d+)\s+(?P<pvid>\d+)\s+\d+\s*\n",
-        re.MULTILINE)
-    rx_vlan_map = re.compile(
-        r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
+        r"^(?P<ifname>\S+)\s+(?P<bridge_port>\d+)\s+(?P<pvid>\d+)\s+\d+\s*\n", re.MULTILINE
+    )
+    rx_vlan_map = re.compile(r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_ifname = re.compile("port : (?P<ifname>\S+)")
     rx_ifindex = re.compile("if-index : (?P<ifindex>\d+)")
-    rx_ififo = re.compile("info : \"(?P<info>.+?)\"")
+    rx_ififo = re.compile('info : "(?P<info>.+?)"')
     rx_type = re.compile("type : (?P<type>\S+)")
     rx_mac = re.compile("phy-addr : (?P<mac>\S+)")
     rx_admin_status = re.compile(
@@ -37,9 +37,9 @@ class Script(BaseScript):
     rx_ip = re.compile(
         "^(?P<iface>\d+)\s+(?P<vlan_id>\d+)\s+(?P<admin_status>up|down)\s+"
         "(?P<oper_status>up|down)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)",
-        re.MULTILINE)
-    rx_mgmt_ip = re.compile(
-        "host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)")
+        re.MULTILINE,
+    )
+    rx_mgmt_ip = re.compile("host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)")
     rx_mgmt_vlan = re.compile("mgnt-vlan-id (?P<vlan_id>\d+)")
 
     types = {
@@ -55,7 +55,7 @@ class Script(BaseScript):
         "l2-vlan": "SVI",
         "sw-loopback": "loopback",
         "bonding": "other",
-        "bridge-port": "other"
+        "bridge-port": "other",
     }
 
     @staticmethod
@@ -75,8 +75,7 @@ class Script(BaseScript):
 
     def execute(self):
         self.cli(
-            "environment inhibit-alarms mode batch terminal-timeout timeout:360",
-            ignore_errors=True
+            "environment inhibit-alarms mode batch terminal-timeout timeout:360", ignore_errors=True
         )
 
         bridge_port = {}
@@ -124,12 +123,14 @@ class Script(BaseScript):
                     "type": iftype,
                     "snmp_ifindex": int(ifindex),
                     "enabled_protocols": [],
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "enabled_afi": []
-                    }],
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "admin_status": admin_status,
+                            "oper_status": oper_status,
+                            "enabled_afi": [],
+                        }
+                    ],
                 }
                 match = self.rx_mac.search(p)
                 if match:
@@ -169,7 +170,7 @@ class Script(BaseScript):
                     "oper_status": oper_status,
                     "enabled_afi": ["BRIDGE", "ATM"],
                     "vpi": vpi,
-                    "vci": vci
+                    "vci": vci,
                 }
                 if ifname in bridge_port:
                     sub["vlan_ids"] = [int(bridge_port.get(ifname))]
@@ -190,14 +191,16 @@ class Script(BaseScript):
                 "oper_status": match.group("oper_status") == "up",
                 "type": "SVI",
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": match.group("iface"),
-                    "admin_status": match.group("admin_status") == "up",
-                    "oper_status": match.group("oper_status") == "up",
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [ip_address],
-                    "vlan_ids": [int(match.group("vlan_id"))]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("iface"),
+                        "admin_status": match.group("admin_status") == "up",
+                        "oper_status": match.group("oper_status") == "up",
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip_address],
+                        "vlan_ids": [int(match.group("vlan_id"))],
+                    }
+                ],
             }
             interfaces += [i]
 
@@ -208,16 +211,13 @@ class Script(BaseScript):
                 "name": "mgmt",
                 "type": "management",
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": "mgmt",
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [match.group("ip")]
-                }]
+                "subinterfaces": [
+                    {"name": "mgmt", "enabled_afi": ["IPv4"], "ipv4_addresses": [match.group("ip")]}
+                ],
             }
             match = self.rx_mgmt_vlan.search(v)
             if match:
-                i["subinterfaces"][0]["vlan_ids"] = \
-                    [int(match.group("vlan_id"))]
+                i["subinterfaces"][0]["vlan_ids"] = [int(match.group("vlan_id"))]
             interfaces += [i]
 
         return [{"interfaces": interfaces}]

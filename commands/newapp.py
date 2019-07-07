@@ -13,6 +13,7 @@ import os
 import datetime
 import re
 # Third-party modules
+import six
 from django.template import Template, Context
 from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
@@ -261,7 +262,7 @@ class Command(BaseCommand):
                         "type": "string",
                         "name": "id"
                     }]
-                    for n, f in model._fields.items():
+                    for n, f in six.iteritems(model._fields):
                         if n == "id":
                             continue
                         fc = f.__class__.__name__

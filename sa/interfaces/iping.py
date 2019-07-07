@@ -6,10 +6,17 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (IPParameter, DictParameter,
-                   IntParameter, BooleanParameter, StringParameter, FloatParameter)
+from .base import (
+    IPParameter,
+    DictParameter,
+    IntParameter,
+    BooleanParameter,
+    StringParameter,
+    FloatParameter,
+)
 
 
 class IPing(BaseInterface):
@@ -19,10 +26,12 @@ class IPing(BaseInterface):
     size = IntParameter(required=False)
     df = BooleanParameter(required=False)
     vrf = StringParameter(required=False)
-    returns = DictParameter(attrs={
-        "success": IntParameter(),
-        "count": IntParameter(),
-        "min": FloatParameter(required=False),
-        "avg": FloatParameter(required=False),
-        "max": FloatParameter(required=False)
-    })
+    returns = DictParameter(
+        attrs={
+            "success": IntParameter(),
+            "count": IntParameter(),
+            "min": FloatParameter(required=False),
+            "avg": FloatParameter(required=False),
+            "max": FloatParameter(required=False),
+        }
+    )

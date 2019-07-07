@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine import document, fields
 from django.template import Template, Context
+
 # NOC modules
 from .eventlog import EventLog
 from .eventclass import EventClass
@@ -23,11 +25,12 @@ from noc.lib import nosql
 class ArchivedEvent(document.Document):
     """
     """
+
     meta = {
         "collection": "noc.events.archive",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["timestamp", "alarms"]
+        "indexes": ["timestamp", "alarms"],
     }
     status = "S"
 

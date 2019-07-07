@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -18,20 +19,15 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_dom_status"
     interface = IGetDOMStatus
 
-    rx_port = re.compile(
-        "Port (?P<port>\S+\d+) transceiver diagnostic information:")
+    rx_port = re.compile("Port (?P<port>\S+\d+) transceiver diagnostic information:")
 
-    ne_map = {
-        "tx power": "tx_power",
-        "rx power": "rx_power"
-    }
+    ne_map = {"tx power": "tx_power", "rx power": "rx_power"}
     ar_map = {
         "current tx power(dbm)": "tx_power",
         "current rx power(dbm)": "rx_power",
         "bias current(ma)": "current",
         "temperature()": "temp",
-        "voltage(v)": "voltage"
-
+        "voltage(v)": "voltage",
     }
 
     def parse_ports(self, s):
@@ -39,7 +35,7 @@ class Script(BaseScript):
         if match:
             port = match.group("port")
             obj = match.groupdict()
-            return port, obj, s[match.end():]
+            return port, obj, s[match.end() :]
         else:
             return None
 

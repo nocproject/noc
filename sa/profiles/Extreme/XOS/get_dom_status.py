@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -22,12 +23,13 @@ class Script(BaseScript):
 
     rx_trans_split = re.compile(r"Port\s+(\S+)\n")
     rx_no_trans = re.compile(r"No ([\S\+\/]+) detected\.")
-    k_map = {"temperature": "temp_c",
-             "voltage": "voltage_v",
-             "tx bias": "current_ma",
-             "tx power": "optical_tx_dbm",
-             "rx power": "optical_rx_dbm"
-             }
+    k_map = {
+        "temperature": "temp_c",
+        "voltage": "voltage_v",
+        "tx bias": "current_ma",
+        "tx power": "optical_tx_dbm",
+        "rx power": "optical_rx_dbm",
+    }
 
     def normalize_output(self, out):
         if out and len(out.split()) == 3:
@@ -52,8 +54,7 @@ class Script(BaseScript):
         if interface is not None:
             ifaces = [interface.split(":")]
         elif self.has_capability("Stack | Member Ids"):
-            ifaces = [(s_id, None) for s_id in
-                      self.capabilities["Stack | Member Ids"].split(" | ")]
+            ifaces = [(s_id, None) for s_id in self.capabilities["Stack | Member Ids"].split(" | ")]
         else:
             ifaces = [(None, None)]
 
@@ -78,12 +79,14 @@ class Script(BaseScript):
                     port = "%s:%s" % (slot, port)
                 if not d:
                     continue
-                r += [{
-                    "interface": port,
-                    "temp_c": self.normalize_output(d.get("temp_c")),
-                    "voltage_v": self.normalize_output(d.get("voltage_v")),
-                    "current_ma": self.normalize_output(d.get("current_ma")),
-                    "optical_rx_dbm": self.normalize_output(d.get("optical_rx_dbm")),
-                    "optical_tx_dbm": self.normalize_output(d.get("optical_tx_dbm"))
-                }]
+                r += [
+                    {
+                        "interface": port,
+                        "temp_c": self.normalize_output(d.get("temp_c")),
+                        "voltage_v": self.normalize_output(d.get("voltage_v")),
+                        "current_ma": self.normalize_output(d.get("current_ma")),
+                        "optical_rx_dbm": self.normalize_output(d.get("optical_rx_dbm")),
+                        "optical_tx_dbm": self.normalize_output(d.get("optical_tx_dbm")),
+                    }
+                ]
         return r

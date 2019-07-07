@@ -20,5 +20,6 @@ class Migration(BaseMigration):
             UPDATE ip_prefix
             SET asn_id = NULL
             WHERE asn_id = %s
-        """, [as_id]
+        """,
+            [as_id],
         )

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -21,21 +22,28 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     CAPS_MAP = {
-        "O": 1, "Other": 1,
-        "r": 2, "Repeater": 2,
-        "B": 4, "Bridge": 4,
-        "W": 8, "Access Point": 8,
-        "R": 16, "Router": 16,
-        "T": 32, "Telephone": 32,
-        "C": 64, "Cable Device": 64,
-        "S": 128, "Station only": 128,
-        "D": 256, "H": 512, "TP": 1024,
+        "O": 1,
+        "Other": 1,
+        "r": 2,
+        "Repeater": 2,
+        "B": 4,
+        "Bridge": 4,
+        "W": 8,
+        "Access Point": 8,
+        "R": 16,
+        "Router": 16,
+        "T": 32,
+        "Telephone": 32,
+        "C": 64,
+        "Cable Device": 64,
+        "S": 128,
+        "Station only": 128,
+        "D": 256,
+        "H": 512,
+        "TP": 1024,
     }
 
-    rx_detail = re.compile(
-        r"^Port description:(?P<port_descr>.*)\n",
-        re.MULTILINE
-    )
+    rx_detail = re.compile(r"^Port description:(?P<port_descr>.*)\n", re.MULTILINE)
 
     def execute_cli(self):
         r = []
@@ -53,7 +61,7 @@ class Script(BaseScript):
                     if c:
                         cap |= self.CAPS_MAP[c]
 
-                if (is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id)):
+                if is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id):
                     remote_chassis_id_subtype = 5
                 elif is_mac(remote_chassis_id):
                     remote_chassis_id = MACAddressParameter().clean(remote_chassis_id)
@@ -74,10 +82,7 @@ class Script(BaseScript):
                 elif is_int(remote_port):
                     # Actually local(7)
                     remote_port_subtype = 7
-                i = {
-                    "local_interface": local_interface,
-                    "neighbors": []
-                }
+                i = {"local_interface": local_interface, "neighbors": []}
                 n = {
                     "remote_chassis_id": remote_chassis_id,
                     "remote_chassis_id_subtype": remote_chassis_id_subtype,

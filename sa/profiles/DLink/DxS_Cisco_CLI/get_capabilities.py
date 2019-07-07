@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -18,8 +19,8 @@ class Script(BaseScript):
 
     rx_lldp = re.compile(r"Global status of LLDP\s+: Enable$", re.MULTILINE)
     rx_cdp = re.compile(
-        r"Global status of LLDP\s+: Enable\n"
-        r"Global cdp compliance\s+: YES", re.MULTILINE)
+        r"Global status of LLDP\s+: Enable\n" r"Global cdp compliance\s+: YES", re.MULTILINE
+    )
 
     @false_on_cli_error
     def has_lldp(self):

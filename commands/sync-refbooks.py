@@ -9,6 +9,8 @@
 # Python modules
 from __future__ import print_function
 import os
+# Third-party modules
+import six
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.main.refbooks.refbooks import RefBook
@@ -38,7 +40,7 @@ class Command(BaseCommand):
                     except Exception:
                         continue
                     classes[ec] = None
-        return classes.keys()
+        return list(classes)
 
     def sync_refbooks(self):
         # Make built-in refbooks inventory
@@ -51,7 +53,7 @@ class Command(BaseCommand):
             if name in loaded_refbooks:
                 del loaded_refbooks[name]
         # Delete stale refbooks
-        for rb in loaded_refbooks.values():
+        for rb in six.itervalues(loaded_refbooks):
             self.print("DELETE REFBOOK: %s" % rb.name)
             rb.delete()
 

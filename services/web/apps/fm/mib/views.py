@@ -2,10 +2,12 @@
 # ---------------------------------------------------------------------
 # fm.mib application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.fm.models.mib import MIB
@@ -109,7 +111,7 @@ class MIBApplication(ExtDocApplication):
         errors = {}
         while len(left):
             n = len(left)
-            for name in left.keys():
+            for name in left:
                 try:
                     svc = open_sync_rpc("mib")
                     r = svc.compile(left[name].read())

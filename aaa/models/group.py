@@ -9,10 +9,12 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import cachetools
 import six
 from django.db import models
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
@@ -20,9 +22,7 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("sa.GroupAccess", "group")
-])
+@on_delete_check(check=[("sa.GroupAccess", "group")])
 @six.python_2_unicode_compatible
 class Group(NOCModel):
     class Meta(object):

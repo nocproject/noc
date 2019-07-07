@@ -9,12 +9,22 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+
 # Third-party modules
 import six
 from django.template import Template, Context
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DateTimeField, ListField, EmbeddedDocumentField,
-                                IntField, LongField, ObjectIdField, DictField)
+from mongoengine.fields import (
+    StringField,
+    DateTimeField,
+    ListField,
+    EmbeddedDocumentField,
+    IntField,
+    LongField,
+    ObjectIdField,
+    DictField,
+)
+
 # NOC modules
 from noc.config import config
 import noc.lib.nosql as nosql
@@ -40,8 +50,8 @@ class ArchivedAlarm(Document):
             "managed_object",
             ("managed_object", "discriminator", "control_time"),
             "escalation_tt",
-            "escalation_ts"
-        ]
+            "escalation_ts",
+        ],
     }
     status = "C"
 
@@ -104,9 +114,14 @@ class ArchivedAlarm(Document):
             yield "alarm", self.id
 
     def log_message(self, message):
-        self.log += [AlarmLog(timestamp=datetime.datetime.now(),
-                     from_status=self.status, to_status=self.status,
-                     message=message)]
+        self.log += [
+            AlarmLog(
+                timestamp=datetime.datetime.now(),
+                from_status=self.status,
+                to_status=self.status,
+                message=message,
+            )
+        ]
         self.save()
 
     def get_template_vars(self):
@@ -161,8 +176,7 @@ class ArchivedAlarm(Document):
         """
         reopens = self.reopens or 0
         ts = datetime.datetime.now()
-        log = self.log + [AlarmLog(timestamp=ts, from_status="C",
-                                   to_status="A", message=message)]
+        log = self.log + [AlarmLog(timestamp=ts, from_status="C", to_status="A", message=message)]
         a = ActiveAlarm(
             id=self.id,
             timestamp=self.timestamp,
@@ -188,7 +202,7 @@ class ArchivedAlarm(Document):
             adm_path=self.adm_path,
             segment_path=self.segment_path,
             container_path=self.container_path,
-            uplinks=self.uplinks
+            uplinks=self.uplinks,
         )
         a.save()
         # @todo: Clear related correlator jobs
@@ -197,14 +211,17 @@ class ArchivedAlarm(Document):
         # Do not set notifications for child and for previously reopened
         # alarms
         if not a.root and not reopens:
-            a.managed_object.event(a.managed_object.EV_ALARM_REOPENED, {
-                "alarm": a,
-                "subject": a.subject,
-                "body": a.body,
-                "symptoms": a.alarm_class.symptoms,
-                "recommended_actions": a.alarm_class.recommended_actions,
-                "probable_causes": a.alarm_class.probable_causes
-            })
+            a.managed_object.event(
+                a.managed_object.EV_ALARM_REOPENED,
+                {
+                    "alarm": a,
+                    "subject": a.subject,
+                    "body": a.body,
+                    "symptoms": a.alarm_class.symptoms,
+                    "recommended_actions": a.alarm_class.recommended_actions,
+                    "probable_causes": a.alarm_class.probable_causes,
+                },
+            )
         return a
 
     def iter_consequences(self):
@@ -229,32 +246,19 @@ class ArchivedAlarm(Document):
 
     def set_escalation_close_error(self, error):
         self.escalation_error = error
-        self._get_collection().update(
-            {"_id": self.id},
-            {"$set": {
-                "escalation_close_error": error
-            }}
-        )
+        self._get_collection().update({"_id": self.id}, {"$set": {"escalation_close_error": error}})
 
     def close_escalation(self):
         now = datetime.datetime.now()
         self.escalation_close_ts = now
-        self._get_collection().update(
-            {"_id": self.id},
-            {"$set": {
-                "escalation_close_ts": now
-            }}
-        )
+        self._get_collection().update({"_id": self.id}, {"$set": {"escalation_close_ts": now}})
 
     def set_escalation_close_ctx(self):
         current_context, current_span = get_current_span()
         if current_context or self.escalation_close_ctx:
             self.escalation_close_ctx = current_context
             self._get_collection().update(
-                {"_id": self.id},
-                {"$set": {
-                    "escalation_close_ctx": current_context
-                }}
+                {"_id": self.id}, {"$set": {"escalation_close_ctx": current_context}}
             )
 
 

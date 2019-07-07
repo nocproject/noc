@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -25,7 +26,8 @@ class Script(BaseScript):
         r"^OS Version.+\n"
         r"^Software version\s+:\s+(?P<version>\S+)\s*\n"
         r"Software type\s+:\s+(?P<fwt>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_serial = re.compile("Serial Number\.+ (?P<serial>\S+)")
     rx_platform = re.compile("Machine Model\.+ (?P<platform>\S+)")
     rx_version = re.compile("Software Version\.+ (?P<version>\S+)")
@@ -34,7 +36,8 @@ class Script(BaseScript):
         r"^Serial Number\.+\s*(?P<serial>\S+).*"
         r"^Software Version\.+\s*(?P<version>\S+)"
         r"^Operating System\.+\s*(?P<os_version>.+)"
-        r"^Network", re.MULTILINE | re.DOTALL
+        r"^Network",
+        re.MULTILINE | re.DOTALL,
     )
 
     def execute(self):
@@ -47,8 +50,8 @@ class Script(BaseScript):
                 "version": match.group("version"),
                 "attributes": {
                     "Boot PROM": match.group("bootprom"),
-                    "Firmware Type": match.group("fwt")
-                }
+                    "Firmware Type": match.group("fwt"),
+                },
             }
             v = self.cli("show hardware", cached=True)
             match = self.rx_serial.search(v)
@@ -59,7 +62,7 @@ class Script(BaseScript):
             r = {
                 "vendor": "Alstec",
                 "platform": self.rx_platform.search(v).group("platform"),
-                "version": self.rx_version.search(v).group("version")
+                "version": self.rx_version.search(v).group("version"),
             }
             match = self.rx_serial.search(v)
             if match:

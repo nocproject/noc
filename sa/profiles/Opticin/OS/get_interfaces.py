@@ -2,13 +2,16 @@
 # ---------------------------------------------------------------------
 # Opticin.OS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+
+# Third-party modules
+import six
+
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
@@ -22,17 +25,23 @@ class Script(BaseScript):
 
     cache = True
 
-    rx_svi_name = re.compile(r"^system management vlan:\s+(?P<vl_id>\d)$",
-                             re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_svi_name = re.compile(
+        r"^system management vlan:\s+(?P<vl_id>\d)$", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
 
-    rx_ip_if = re.compile(r"^System IP:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$",
-                          re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_ip_if = re.compile(
+        r"^System IP:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
 
-    rx_ip_mask = re.compile(r"^System Mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(|\s+)$",
-                            re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_ip_mask = re.compile(
+        r"^System Mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(|\s+)$",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
 
-    rx_ip_mac = re.compile(r"System MAC[^:]*?:\s*(?P<mac>\S+)$",
-                           re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_ip_mac = re.compile(
+        r"System MAC[^:]*?:\s*(?P<mac>\S+)$", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
 
     def execute(self):
         ifaces = {}
@@ -107,9 +116,7 @@ class Script(BaseScript):
 
         # set name ifaces
         for current in name_:
-            ifaces[current] = {
-                "name": current
-            }
+            ifaces[current] = {"name": current}
         # other
         for current in ifaces:
             is_svi = current.startswith("Vlan")
@@ -141,24 +148,15 @@ class Script(BaseScript):
 
         # Get VRFs and "default" VRF interfaces
         r = []
-        vpns = [{
-            "name": "default",
-            "type": "ip",
-            "interfaces": []
-        }]
+        vpns = [{"name": "default", "type": "ip", "interfaces": []}]
         for fi in vpns:
             # Forwarding instance
-            rr = {
-                "forwarding_instance": fi["name"],
-                "type": fi["type"],
-                "interfaces": []
-            }
+            rr = {"forwarding_instance": fi["name"], "type": fi["type"], "interfaces": []}
             rd = fi.get("rd")
             if rd:
                 rr["rd"] = rd
             # create ifaces
-
-            rr["interfaces"] = ifaces.values()
+            rr["interfaces"] = list(six.itervalues(ifaces))
         r += [rr]
         # Return result
         return r

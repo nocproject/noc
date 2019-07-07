@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -19,33 +20,32 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_admin_status = re.compile(
-        r"Port No\s+:(?P<interface>\d+).\s*"
-        r"Active\s+:(?P<admin>(Yes|No)).*$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"Port No\s+:(?P<interface>\d+).\s*" r"Active\s+:(?P<admin>(Yes|No)).*$",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
     rx_ospf_status = re.compile(
-        r"^\s+Internet Address (?P<ifaddr>"
-        r"\d+\.\d+\.\d+\.\d+\/\d+).+$",
-        re.MULTILINE)
+        r"^\s+Internet Address (?P<ifaddr>" r"\d+\.\d+\.\d+\.\d+\/\d+).+$", re.MULTILINE
+    )
     rx_rip_status = re.compile(
         r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<direction>\S+)\s+.+$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_ipif = re.compile(
         r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
         r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
-        r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
+        r"\s+VID\[(?P<vid>\d+)\]$",
+        re.MULTILINE,
+    )
     rx_ctp = re.compile(
-        r"^\s+(?P<interface>\d+)\s+\S+\s+Enable\s+\d+"
-        r"\s+\d+\s+\d+\s+.+$",
-        re.MULTILINE)
-    rx_gvrp = re.compile(
-        r"^Port\s+(?P<interface>\d+)$",
-        re.MULTILINE)
+        r"^\s+(?P<interface>\d+)\s+\S+\s+Enable\s+\d+" r"\s+\d+\s+\d+\s+.+$", re.MULTILINE
+    )
+    rx_gvrp = re.compile(r"^Port\s+(?P<interface>\d+)$", re.MULTILINE)
     rx_lldp = re.compile(
-        r"^\s+(?P<interface>\d+)\s+(tx\-rx|rx\-only|tx\-only)"
-        r"\s+\S+\s+\S+\s+\S+\s+\S+$",
-        re.MULTILINE)
+        r"^\s+(?P<interface>\d+)\s+(tx\-rx|rx\-only|tx\-only)" r"\s+\S+\s+\S+\s+\S+\s+\S+$",
+        re.MULTILINE,
+    )
 
     # @todo: vlan trunking, STP, LLDP (fw >= 3.90)
 
@@ -67,9 +67,7 @@ class Script(BaseScript):
             v = self.cli("show ip ospf interface", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(
-            match.group("ifaddr") for match in self.rx_ospf_status.finditer(v)
-        )
+        return set(match.group("ifaddr") for match in self.rx_ospf_status.finditer(v))
 
     def get_rip_addresses(self):
         """
@@ -164,13 +162,15 @@ class Script(BaseScript):
                 "oper_status": swp["status"],
                 "mac": mac,
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": name,
-                    "admin_status": admin,
-                    "oper_status": swp["status"],
-                    "enabled_afi": ["BRIDGE"],
-                    "mac": mac
-                }]
+                "subinterfaces": [
+                    {
+                        "name": name,
+                        "admin_status": admin,
+                        "oper_status": swp["status"],
+                        "enabled_afi": ["BRIDGE"],
+                        "mac": mac,
+                    }
+                ],
             }
             if swp["tagged"]:
                 iface["subinterfaces"][0]["tagged_vlans"] = swp["tagged"]
@@ -178,7 +178,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["untagged_vlan"] = swp["untagged"]
             except KeyError:
                 pass
-            if "description" in swp.keys():
+            if "description" in swp:
                 iface["description"] = swp["description"]
                 iface["subinterfaces"][0]["description"] = swp["description"]
             if name in ctp:
@@ -198,24 +198,26 @@ class Script(BaseScript):
                 ipifarr[vid] = [ip]
             else:
                 ipifarr[vid].append(ip)
-        for v in ipifarr.keys():
+        for v in ipifarr:
             iface = {
                 "name": "vlan%d" % v if v else "Management",
                 "mac": mac,  # @todo: get mgmt mac
                 # @todo: get vlan name to form better description
                 "description": "vlan%d" % v if v else "Outband management",
                 "admin_status": True,  # always True, since inactive
-                "oper_status": True,   # SVIs aren't shown at all
-                "subinterfaces": [{
-                    "name": "vlan%d" % v if v else "Management",
-                    "description": "vlan%d" % v if v else "Outband management",
-                    "admin_status": True,
-                    "oper_status": True,
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": ipifarr[v],
-                    "mac": mac,
-                    "enabled_protocols": []
-                }]
+                "oper_status": True,  # SVIs aren't shown at all
+                "subinterfaces": [
+                    {
+                        "name": "vlan%d" % v if v else "Management",
+                        "description": "vlan%d" % v if v else "Outband management",
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": ipifarr[v],
+                        "mac": mac,
+                        "enabled_protocols": [],
+                    }
+                ],
             }
             if v == 0:  # Outband management
                 iface["type"] = "management"

@@ -34,18 +34,20 @@ class Script(BaseScript):
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "snmp_ifindex": ii,
-                "subinterfaces": [{
-                    "name": ii,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "snmp_ifindex": ii
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ii,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "snmp_ifindex": ii,
+                    }
+                ],
             }
             interfaces += [iface]
         ip = self.snmp.get("1.3.6.1.4.1.35419.1.1.3.0")
         m = self.snmp.get("1.3.6.1.4.1.35419.1.1.4.0")
         mask = str(IPv4.netmask_to_len(m))
-        ip = ip + '/' + mask
+        ip = ip + "/" + mask
         ip_list = [ip]
         iface = {
             "type": "physical",
@@ -54,15 +56,17 @@ class Script(BaseScript):
             "oper_status": True,
             "mac": self.snmp.get("1.3.6.1.4.1.35419.1.1.6.0"),
             "snmp_ifindex": 10,
-            "subinterfaces": [{
-                "name": "eth0",
-                "admin_status": True,
-                "oper_status": True,
-                "mac": self.snmp.get("1.3.6.1.4.1.35419.1.1.6.0"),
-                "ipv4_addresses": ip_list,
-                "snmp_ifindex": 10,
-                "enabled_afi": ['BRIDGE', 'IPv4']
-            }]
+            "subinterfaces": [
+                {
+                    "name": "eth0",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "mac": self.snmp.get("1.3.6.1.4.1.35419.1.1.6.0"),
+                    "ipv4_addresses": ip_list,
+                    "snmp_ifindex": 10,
+                    "enabled_afi": ["BRIDGE", "IPv4"],
+                }
+            ],
         }
         interfaces += [iface]
         return [{"interfaces": interfaces}]

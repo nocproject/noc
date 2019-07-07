@@ -8,21 +8,26 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (DictListParameter, StringParameter,
-                   InterfaceNameParameter, MACAddressParameter)
+from .base import DictListParameter, StringParameter, InterfaceNameParameter, MACAddressParameter
 
 
 class IGetHuaweiNDPNeighbors(BaseInterface):
     """
     Huawei NDP neighbors interface
     """
-    returns = DictListParameter(attrs={
-        "local_interface": InterfaceNameParameter(),
-        "neighbors": DictListParameter(attrs={
-            "chassis_mac": MACAddressParameter(),
-            "name": StringParameter(),
-            "interface": StringParameter()
-        })
-    })
+
+    returns = DictListParameter(
+        attrs={
+            "local_interface": InterfaceNameParameter(),
+            "neighbors": DictListParameter(
+                attrs={
+                    "chassis_mac": MACAddressParameter(),
+                    "name": StringParameter(),
+                    "interface": StringParameter(),
+                }
+            ),
+        }
+    )

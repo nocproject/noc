@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
@@ -23,7 +24,8 @@ class Script(BaseScript):
     \s+Interface:\s+(?P<interface>.+?)\n
     .+?
     Remote\sMAC:\s+(?P<mac>.+?)\n
-    """, re.VERBOSE | re.DOTALL | re.MULTILINE
+    """,
+        re.VERBOSE | re.DOTALL | re.MULTILINE,
     )
     oam_splitter = re.compile(r"\s+-{52}(?P<oam>.+?)Remote\sEFM", re.DOTALL | re.MULTILINE)
 

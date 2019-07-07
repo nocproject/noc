@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -15,6 +16,9 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
-            "peer_person", "type",
-            models.CharField("type", max_length=1, default="P", choices=[("P", "Person"), ("R", "Role")])
+            "peer_person",
+            "type",
+            models.CharField(
+                "type", max_length=1, default="P", choices=[("P", "Person"), ("R", "Role")]
+            ),
         )

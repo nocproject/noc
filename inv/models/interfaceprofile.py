@@ -9,15 +9,23 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, LongField,
-                                ReferenceField, ListField,
-                                EmbeddedDocumentField, IntField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    LongField,
+    ReferenceField,
+    ListField,
+    EmbeddedDocumentField,
+    IntField,
+)
 import cachetools
+
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
@@ -30,9 +38,7 @@ id_lock = Lock()
 
 
 class InterfaceProfileMetrics(EmbeddedDocument):
-    meta = {
-        "strict": False
-    }
+    meta = {"strict": False}
     metric_type = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
@@ -46,22 +52,21 @@ class InterfaceProfileMetrics(EmbeddedDocument):
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("inv.Interface", "profile"),
-    ("inv.InterfaceClassificationRule", "profile"),
-    ("inv.SubInterface", "profile")
-    # ("sa.ServiceProfile", "")
-])
+@on_delete_check(
+    check=[
+        ("inv.Interface", "profile"),
+        ("inv.InterfaceClassificationRule", "profile"),
+        ("inv.SubInterface", "profile")
+        # ("sa.ServiceProfile", "")
+    ]
+)
 @six.python_2_unicode_compatible
 class InterfaceProfile(Document):
     """
     Interface SLA profile and settings
     """
-    meta = {
-        "collection": "noc.interface_profiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+
+    meta = {"collection": "noc.interface_profiles", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
     description = StringField()
     style = ForeignKeyField(Style, required=False)
@@ -71,36 +76,25 @@ class InterfaceProfile(Document):
         choices=[
             ("I", "Ignore Events"),
             ("L", "Log events, do not raise alarms"),
-            ("A", "Raise alarms")
+            ("A", "Raise alarms"),
         ],
-        default="A"
+        default="A",
     )
     # Discovery settings
     discovery_policy = StringField(
-        choices=[
-            ("I", "Ignore"),
-            ("O", "Create new"),
-            ("R", "Replace"),
-            ("C", "Add to cloud")
-        ],
-        default="R"
+        choices=[("I", "Ignore"), ("O", "Create new"), ("R", "Replace"), ("C", "Add to cloud")],
+        default="R",
     )
     # Collect mac addresses on interface
     mac_discovery_policy = StringField(
-        choices=[
-            ("d", "Disabled"),
-            ("m", "Management VLAN"),
-            ("e", "Enabled")
-        ],
-        default="d"
+        choices=[("d", "Disabled"), ("m", "Management VLAN"), ("e", "Enabled")], default="d"
     )
     # Collect and keep interface status
     status_discovery = BooleanField(default=False)
     #
     allow_lag_mismatch = BooleanField(default=False)
     # Send up/down notifications
-    status_change_notification = ForeignKeyField(NotificationGroup,
-                                                 required=False)
+    status_change_notification = ForeignKeyField(NotificationGroup, required=False)
     # Interface profile metrics
     metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
     # Alarm weight
@@ -158,8 +152,7 @@ class InterfaceProfile(Document):
         Get list of interface profile ids with status_discovery = True
         :return:
         """
-        return list(x["_id"] for x in InterfaceProfile._get_collection().find({
-            "status_discovery": True
-        }, {
-            "_id": 1
-        }))
+        return list(
+            x["_id"]
+            for x in InterfaceProfile._get_collection().find({"status_discovery": True}, {"_id": 1})
+        )

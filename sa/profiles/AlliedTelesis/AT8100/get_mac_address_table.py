@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+"
         r"(?P<mac>[\.0-9a-f]+)\s+\S+\s+(?P<type>\w+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
@@ -33,13 +33,12 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(v):
             if mac is not None and mac != match.group("mac"):
                 continue
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("interfaces")],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S"
-                }[match.group("type")],
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("interfaces")],
+                    "type": {"dynamic": "D", "static": "S"}[match.group("type")],
+                }
+            ]
         return r

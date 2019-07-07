@@ -19,7 +19,7 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         config = self.cli("show running-config")
         try:
-            i = config.index('!')
+            i = config.index("!")
             config = config[i:]
         except ValueError:
             pass

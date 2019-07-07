@@ -8,12 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, ObjectIdField, FileField,
-                                DateTimeField, IntField)
+from mongoengine.fields import StringField, ObjectIdField, FileField, DateTimeField, IntField
 from mongoengine import signals
+
 # NOC modules
 from .object import Object
 
@@ -23,11 +24,12 @@ class ObjectFile(Document):
     """
     Inventory object
     """
+
     meta = {
         "collection": "noc.objectfiles",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object"]
+        "indexes": ["object"],
     }
 
     object = ObjectIdField()

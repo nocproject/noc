@@ -10,6 +10,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -29,9 +30,7 @@ class Profile(BaseProfile):
             p += " le 32"
         return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
 
-    rx_interface_name = re.compile(
-        r"^(?P<type>Eth|[A-Z]+E|Vlan)(?P<number>[\d/]+)$"
-    )
+    rx_interface_name = re.compile(r"^(?P<type>Eth|[A-Z]+E|Vlan)(?P<number>[\d/]+)$")
 
     def convert_interface_name(self, s):
         """
@@ -42,11 +41,10 @@ class Profile(BaseProfile):
         if not match:
             return s
         return "%s%s" % (
-            {
-                "GE": "GigabitEthernet",
-                "Eth": "Ethernet",
-                "Vlan": "Vlan-interface"
-            }[match.group("type")], match.group("number")
+            {"GE": "GigabitEthernet", "Eth": "Ethernet", "Vlan": "Vlan-interface"}[
+                match.group("type")
+            ],
+            match.group("number"),
         )
 
     convert_mac = BaseProfile.convert_mac_to_huawei

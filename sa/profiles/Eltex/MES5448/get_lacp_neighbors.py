@@ -2,16 +2,13 @@
 # ---------------------------------------------------------------------
 # Eltex.MES5448.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import parse_table
 
 
@@ -33,7 +30,7 @@ class Script(BaseScript):
                 "interface": i[0],
                 "local_port_id": s3,
                 "remote_system_id": i[2],
-                "remote_port_id": int(i[5])
+                "remote_port_id": int(i[5]),
             }
             found = False
             for iface in r:
@@ -45,12 +42,14 @@ class Script(BaseScript):
                 for iface in p:
                     for member in iface["members"]:
                         if member == i[0]:
-                            r += [{
-                                "lag_id": i[3],  # XXX check this
-                                "interface": iface["interface"],
-                                "system_id": mac,
-                                "bundle": [bundle]
-                            }]
+                            r += [
+                                {
+                                    "lag_id": i[3],  # XXX check this
+                                    "interface": iface["interface"],
+                                    "system_id": mac,
+                                    "bundle": [bundle],
+                                }
+                            ]
                             found = True
                             break
                     if found:

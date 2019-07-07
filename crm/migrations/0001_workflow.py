@@ -8,6 +8,7 @@
 
 # Python modules
 import bson
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 

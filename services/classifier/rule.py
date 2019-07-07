@@ -57,7 +57,7 @@ class Rule(object):
         for ds in rule.datasources:
             self.datasources[ds.name] = eval(
                 "lambda vars: datasource_registry['%s'](%s)" %
-                (ds.datasource, ", ".join(["%s=vars['%s']" % (k, v) for k, v in ds.search.items()])),
+                (ds.datasource, ", ".join(["%s=vars['%s']" % (k, v) for k, v in six.iteritems(ds.search)])),
                 {"datasource_registry": datasource_registry}, {}
             )
         # Parse vars
@@ -209,13 +209,13 @@ class Rule(object):
                 c += ["    return None"]
         # Vars binding
         if self.vars:
-            has_expressions = any(v for v in self.vars.values()
+            has_expressions = any(v for v in six.itervalues(self.vars)
                                   if not isinstance(v, six.string_types))
             if has_expressions:
-                # Callculate vars context
+                # Calculate vars context
                 c += ["var_context = {'event': event}"]
                 c += ["var_context.update(e_vars)"]
-            for k, v in self.vars.items():
+            for k, v in six.iteritems(self.vars):
                 if isinstance(v, six.string_types):
                     c += ["e_vars[\"%s\"] = \"%s\"" % (k, pyq(v))]
                 else:

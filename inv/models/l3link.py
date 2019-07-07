@@ -8,12 +8,14 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DateTimeField, ListField, IntField
+
 # NOC modules
-from noc.lib.nosql import (Document, PlainReferenceListField,
-                           StringField, DateTimeField, ListField,
-                           IntField)
+from noc.core.mongo.fields import PlainReferenceListField
 from noc.core.model.decorator import on_delete, on_save
 
 
@@ -25,11 +27,12 @@ class L3Link(Document):
     Network L3 links.
     Always contains a list of subinterface references
     """
+
     meta = {
         "collection": "noc.links",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["subinterfaces", "linked_objects"]
+        "indexes": ["subinterfaces", "linked_objects"],
     }
 
     subinterfaces = PlainReferenceListField("inv.SubInterface")

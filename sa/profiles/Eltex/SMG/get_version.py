@@ -23,20 +23,12 @@ class Script(BaseScript):
                 # v = None
                 if v:
                     match = self.re_search("^V\.(?P<version>\S+)\s(?P<platform>\d+)", v)
-                    version = match.group('version')
-                    platform = 'SMG-' + match.group('platform')
-                    return {
-                        "vendor": "Eltex",
-                        "platform": platform,
-                        "version": version,
-                    }
+                    version = match.group("version")
+                    platform = "SMG-" + match.group("platform")
+                    return {"vendor": "Eltex", "platform": platform, "version": version}
             except self.snmp.TimeOutError:
                 pass
         self.cli("sh")
         version = self.cli("cat /usr/local/version")
         # platform = self.cli("cat /usr/share/mibs/eltex/eltex-smg.mib")
-        return {
-            "vendor": "Eltex",
-            "platform": "SMG",
-            "version": version,
-        }
+        return {"vendor": "Eltex", "platform": "SMG", "version": version}

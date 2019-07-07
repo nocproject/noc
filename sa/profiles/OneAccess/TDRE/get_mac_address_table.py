@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -21,16 +22,14 @@ class Script(BaseScript):
         r"^\s+macAddress = (?P<mac>\S+)\s*\n"
         r"^\s+port = (?P<port>port\d)\s*\n"
         r"^\s+type = (?P<type>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         self.cli("SELGRP Status")
         for etherswitch in ["1", "2"]:
-            c = self.cli(
-                "GET ethernet%s/switchCache[]/" % etherswitch
-            )
+            c = self.cli("GET ethernet%s/switchCache[]/" % etherswitch)
             for match in self.rx_line.finditer(c):
                 if match.group("type") == "dynamic":
                     mtype = "D"
@@ -43,10 +42,12 @@ class Script(BaseScript):
                         found = True
                         break
                 if not found:
-                    r += [{
-                        "vlan_id": 1,  # XXX Can not get vlan id
-                        "mac": match.group("mac"),
-                        "interfaces": [match.group("port")],
-                        "type": mtype
-                    }]
+                    r += [
+                        {
+                            "vlan_id": 1,  # XXX Can not get vlan id
+                            "mac": match.group("mac"),
+                            "interfaces": [match.group("port")],
+                            "type": mtype,
+                        }
+                    ]
         return r

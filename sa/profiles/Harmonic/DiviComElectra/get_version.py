@@ -1,4 +1,4 @@
-__author__ = 'FeNikS'
+__author__ = "FeNikS"
 # -*- coding: utf-8 -*-
 
 # ---------------------------------------------------------------------
@@ -10,6 +10,7 @@ __author__ = 'FeNikS'
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,11 +20,10 @@ class Script(BaseScript):
     name = "Harmonic.DiviComElectra.get_version"
     interface = IGetVersion
 
-    rx_version = re.compile(
-        r" CodeVersion=\"(?P<ver>.*?)\"", re.DOTALL | re.MULTILINE)
+    rx_version = re.compile(r" CodeVersion=\"(?P<ver>.*?)\"", re.DOTALL | re.MULTILINE)
 
     def execute(self):
-        version = ''
+        version = ""
         try:
             data = self.scripts.get_config()
             match = self.rx_version.search(data)
@@ -35,5 +35,5 @@ class Script(BaseScript):
         return {
             "vendor": "Harmonic",
             "platform": "DiviComElectra",
-            "version": version if version else "Unknown"
+            "version": version if version else "Unknown",
         }

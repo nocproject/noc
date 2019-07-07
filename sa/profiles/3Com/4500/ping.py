@@ -19,7 +19,8 @@ class Script(BaseScript):
         r"\s+(?P<count>\d+) packet\(s\) transmitted.\s+(?P<success>\d+) "
         r"packet\(s\) received.\s+\S+% packet loss.\s+"
         r"round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms",
-        re.DOTALL | re.MULTILINE)
+        re.DOTALL | re.MULTILINE,
+    )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping -q"
@@ -39,6 +40,6 @@ class Script(BaseScript):
             "count": result.group("count"),
             "min": result.group("min"),
             "avg": result.group("avg"),
-            "max": result.group("max")
+            "max": result.group("max"),
         }
         return r

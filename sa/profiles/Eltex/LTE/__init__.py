@@ -15,12 +15,9 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Eltex.LTE"
     pattern_username = r"(?<!Last )login: "
-    pattern_more = [
-        (r"\[Yes/press any key for no\]", "Y")
-    ]
+    pattern_more = [(r"\[Yes/press any key for no\]", "Y")]
     # pattern_unprivileged_prompt = r"^\S+>"
-    pattern_syntax_error = \
-        r"^(Command not found|Incomplete command|Invalid argument)"
+    pattern_syntax_error = r"^(Command not found|Incomplete command|Invalid argument)"
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
@@ -31,6 +28,7 @@ class Profile(BaseProfile):
 
     class switch(object):
         """Switch context manager to use with "with" statement"""
+
         def __init__(self, script):
             self.script = script
 

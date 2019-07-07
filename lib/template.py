@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Template helper utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
-# Django modules
+
+# Third-party modules
 from django.template import Template, Context
 
 
@@ -19,6 +20,7 @@ def render_template(name, context=None):
     :param context:
     :return:
     """
+
     def get_path(name):
         local_path = os.path.join("local", "templates", name)
         if os.path.exists(local_path):
@@ -52,22 +54,23 @@ def render_message(name, context=None):
     :param context:
     :return: subject, body tuple
     """
+
     def strip_leading_newlines(lines):
-        l = lines[:]
-        while l and not l[0].strip():
-            l.pop(0)
-        return l
+        lc = lines[:]
+        while lc and not lc[0].strip():
+            lc.pop(0)
+        return lc
 
     msg = render_template(name, context)
     if not msg:
         return None, None  # No template
-    l = strip_leading_newlines(msg.splitlines())
-    if l and l[0].startswith("Subject"):
-        subject = l.pop(0)[8:].strip()
-        body = "\n".join(strip_leading_newlines(l[1:]))
+    ln = strip_leading_newlines(msg.splitlines())
+    if ln and ln[0].startswith("Subject"):
+        subject = ln.pop(0)[8:].strip()
+        body = "\n".join(strip_leading_newlines(ln[1:]))
         return subject, body
     else:
-        return None, "\n".join(l)
+        return None, "\n".join(ln)
 
 
 _tpl_cache = {}  # name -> template instance

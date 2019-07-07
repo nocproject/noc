@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,11 +22,10 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"Cisco (?:Adaptive|PIX) Security Appliance Software Version (?P<version>\S+)"
         r".+Hardware:\s+(?P<platform>.+?),",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
     rx_image = re.compile(
-        r".+System image file is \".+?:/(?P<image>.+?)\"",
-        re.MULTILINE | re.DOTALL
+        r".+System image file is \".+?:/(?P<image>.+?)\"", re.MULTILINE | re.DOTALL
     )
 
     def execute(self):
@@ -43,7 +43,5 @@ class Script(BaseScript):
             "vendor": "Cisco",
             "platform": match.group("platform"),
             "version": match.group("version"),
-            "attributes": {
-                "image": image,
-            }
+            "attributes": {"image": image},
         }

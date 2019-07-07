@@ -16,6 +16,7 @@ class Script(BaseScript):
     Enter a configuration mode and execute a list of CLI commands.
     return a list of results
     """
+
     name = "Generic.configure"
     interface = ICommands
     requires = []

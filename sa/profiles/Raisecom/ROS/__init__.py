@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.core.confdb.patterns import ANY
@@ -22,28 +23,21 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_exit = "exit"
-    pattern_syntax_error = \
-        r"% \".+\"  (?:Unknown command.)|Error input in the position marked by"
+    pattern_syntax_error = r"% \".+\"  (?:Unknown command.)|Error input in the position marked by"
     pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
-    config_volatile = [r"radius(-server | accounting-server |-)encrypt-key \S+\n",
-                       r"tacacs(-server | accounting-server |-)encrypt-key \S+\n"]
+    config_volatile = [
+        r"radius(-server | accounting-server |-)encrypt-key \S+\n",
+        r"tacacs(-server | accounting-server |-)encrypt-key \S+\n",
+    ]
     config_tokenizer = "context"
     config_tokenizer_settings = {
         "line_comment": "!",
-        "contexts": [
-            ["interface", ANY, ANY]
-        ],
-        "end_of_context": "!"
+        "contexts": [["interface", ANY, ANY]],
+        "end_of_context": "!",
     }
 
-    matchers = {
-        "is_iscom2624g": {
-            "platform": {
-                "$regex": "ISCOM26(?:24|08)G"
-            }
-        }
-    }
+    matchers = {"is_iscom2624g": {"platform": {"$regex": "ISCOM26(?:24|08)G"}}}
 
     # Version until ROS_4.15.1086.ISCOM2128EA-MA-AC.002.20151224
     rx_ver = re.compile(
@@ -55,7 +49,8 @@ class Profile(BaseProfile):
         r"Hardware\s*\S+\s*Version Rev\.\s*(?P<hw_rev>\S+)\s*\n\n"
         r"System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
         r"Serial number\s*:\s*(?P<serial>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     rx_ver_wipv6 = re.compile(
         r"Product name: (?P<platform>\S+)\s*\n"
@@ -65,7 +60,8 @@ class Profile(BaseProfile):
         r"Hardware\s*\S+\s*Version Rev\.\s*(?P<hw_rev>\S+)\s*\n\n"
         r"System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
         r"Serial number\s*:\s*(?P<serial>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     rx_ver2 = re.compile(
         r"Product Name: (?P<platform>\S+)\s*\n"
@@ -79,7 +75,8 @@ class Profile(BaseProfile):
         r"Compiled.+\n\n"
         r"System MacAddress: (?P<mac>\S+)\s*\n"
         r"Serial number: (?P<serial>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     rx_ver3 = re.compile(
         r"Product Name: (?P<platform>\S+)\s*\n"
@@ -93,7 +90,8 @@ class Profile(BaseProfile):
         r"Compiled.+\n\n"
         r"System MacAddress: (?P<mac>\S+)\s*\n"
         r"Serial number: (?P<serial>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     # Version start  ROS_4.15.1200_20161130(Compiled Nov 30 2016, 10:51:45)
     rx_ver_2016 = re.compile(
@@ -103,7 +101,8 @@ class Profile(BaseProfile):
         r"Hardware\s*\S*\s*Version(\sRev\.|:)\s*(?P<hw_rev>\S+)\s*\n\n"
         r"System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
         r"Serial number\s*:\s*(?P<serial>\S+)\s*",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     # Version start  ROS_5.1.1.420 (Compiled May 15 2015, 12:36:24)
     rx_ver_2015 = re.compile(
@@ -115,7 +114,8 @@ class Profile(BaseProfile):
         r"Hardware\s*\S*\s*Version(\sRev\.|:)?\s*(?P<hw_rev>\S+)\s*\n\n"
         r"System MacAddress( is)?\s*:\s*(?P<mac>\S+)\s*\n"
         r"Serial number\s*:\s*(?P<serial>\S+)\s*",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     # Version start  5.2.1_20171221
     rx_ver_2017 = re.compile(
@@ -127,7 +127,8 @@ class Profile(BaseProfile):
         r"Bootrom Version: (?P<bootstrap>\S+)\s*\n\n"
         r"System MAC Address: (?P<mac>\S+)\s*\n"
         r"Serial number: (?P<serial>\S+)\s*",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def get_version(self, script):
         c = script.cli("show version", cached=True)

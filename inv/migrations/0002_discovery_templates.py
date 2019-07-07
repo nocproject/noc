@@ -41,18 +41,35 @@ class Migration(BaseMigration):
 
     def migrate(self):
         for tn, description, subject, body in [
-            ("inv.discovery.new_prefixes_report", "Discovery's New Prefixes Report", NEW_PREFIXES_REPORT_SUBJECT,
-             NEW_PREFIXES_REPORT_BODY), ("inv.discovery.new_addresses_report", "Discovery's New Addresses Report",
-                                         NEW_ADDRESSES_REPORT_SUBJECT, NEW_ADDRESSES_REPORT_BODY),
-            ("inv.discovery.address_collision_report", "Discovery's Address Collision Report",
-             ADDRESS_COLLISION_REPORT_SUBJECT, ADDRESS_COLLISION_REPORT_BODY)
+            (
+                "inv.discovery.new_prefixes_report",
+                "Discovery's New Prefixes Report",
+                NEW_PREFIXES_REPORT_SUBJECT,
+                NEW_PREFIXES_REPORT_BODY,
+            ),
+            (
+                "inv.discovery.new_addresses_report",
+                "Discovery's New Addresses Report",
+                NEW_ADDRESSES_REPORT_SUBJECT,
+                NEW_ADDRESSES_REPORT_BODY,
+            ),
+            (
+                "inv.discovery.address_collision_report",
+                "Discovery's Address Collision Report",
+                ADDRESS_COLLISION_REPORT_SUBJECT,
+                ADDRESS_COLLISION_REPORT_BODY,
+            ),
         ]:
-            self.db.execute("INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)", [tn, subject, body])
+            self.db.execute(
+                "INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)",
+                [tn, subject, body],
+            )
             self.db.execute(
                 """
                 INSERT INTO main_systemtemplate(name, description, template_id)
                 SELECT %s, %s, id
                 FROM main_template
                 WHERE name=%s
-            """, [tn, description, tn]
+            """,
+                [tn, description, tn],
             )

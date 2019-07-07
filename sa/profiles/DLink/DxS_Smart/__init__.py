@@ -16,15 +16,14 @@ from noc.core.script.error import NotSupportedError
 
 class Profile(BaseProfile):
     name = "DLink.DxS_Smart"
-    pattern_more = [
-        (r"--More--", " "),
-        (r"CTRL\+C.+?(a All)|(r Refresh)", "a")
-    ]
+    pattern_more = [(r"--More--", " "), (r"CTRL\+C.+?(a All)|(r Refresh)", "a")]
     pattern_unprivileged_prompt = r"^\S+:(3|6|user|operator)#"
-    pattern_syntax_error = r"(?:% Invalid Command|" \
-                           r"% Invalid input detected at|" \
-                           r"Available commands:|" \
-                           r"Next possible completions:)"
+    pattern_syntax_error = (
+        r"(?:% Invalid Command|"
+        r"% Invalid input detected at|"
+        r"Available commands:|"
+        r"Next possible completions:)"
+    )
     command_super = "enable admin"
     pattern_prompt = r"(?P<hostname>\S+(:\S+)*)[#>]"
     command_disable_pager = ""
@@ -58,7 +57,7 @@ class Profile(BaseProfile):
         "DGS-1500-20": "1.3.6.1.4.1.171.10.126.1.1",
         "DGS-1500-28": "1.3.6.1.4.1.171.10.126.2.1",
         "DGS-1500-28P": "1.3.6.1.4.1.171.10.126.3.1",
-        "DGS-1500-52": "1.3.6.1.4.1.171.10.126.4.1"
+        "DGS-1500-52": "1.3.6.1.4.1.171.10.126.4.1",
     }
 
     def cmp_version(self, x, y):
@@ -113,21 +112,17 @@ class Profile(BaseProfile):
         r"((?P<speed>10M|100M|1000M|10G)/"
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|Disabled|802.3x))?\s+"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    rx_descr = re.compile(
-        r"^\s+(?P<port>\d+)\s(?P<descr>.+)\n",
-        re.MULTILINE)
+    rx_descr = re.compile(r"^\s+(?P<port>\d+)\s(?P<descr>.+)\n", re.MULTILINE)
 
     def get_ports(self, script, interface=None):
         descr = []
         try:
             c = script.cli("show ports description", cached=True)
             for match in self.rx_descr.finditer(c):
-                descr += [{
-                    "port": match.group("port"),
-                    "descr": match.group("descr").strip()
-                }]
+                descr += [{"port": match.group("port"), "descr": match.group("descr").strip()}]
         except script.CLISyntaxError:
             pass
         objects = []
@@ -139,36 +134,38 @@ class Profile(BaseProfile):
         except script.CLISyntaxError:
             raise script.NotSupportedError()
         for match in self.rx_port.finditer(c):
-            objects += [{
-                "port": match.group("port"),
-                "admin_state": match.group("admin_state") == "Enabled",
-                "admin_speed": match.group("admin_speed"),
-                "admin_duplex": match.group("admin_duplex"),
-                "admin_flowctrl": match.group("admin_flowctrl"),
-                "status": match.group("status") is None,
-                "speed": match.group("speed"),
-                "duplex": match.group("duplex"),
-                "flowctrl": match.group("flowctrl"),
-                "mdix": match.group("mdix")
-            }]
+            objects += [
+                {
+                    "port": match.group("port"),
+                    "admin_state": match.group("admin_state") == "Enabled",
+                    "admin_speed": match.group("admin_speed"),
+                    "admin_duplex": match.group("admin_duplex"),
+                    "admin_flowctrl": match.group("admin_flowctrl"),
+                    "status": match.group("status") is None,
+                    "speed": match.group("speed"),
+                    "duplex": match.group("duplex"),
+                    "flowctrl": match.group("flowctrl"),
+                    "mdix": match.group("mdix"),
+                }
+            ]
         prev_port = None
         ports = []
         for i in objects:
             for d in descr:
-                if int(i['port']) == int(d['port']):
-                    i['descr'] = d['descr']
-            if prev_port and (prev_port == i['port']):
-                if i['status'] is True:
+                if int(i["port"]) == int(d["port"]):
+                    i["descr"] = d["descr"]
+            if prev_port and (prev_port == i["port"]):
+                if i["status"] is True:
                     k = 0
                     for j in ports:
-                        if j['port'] == i['port']:
+                        if j["port"] == i["port"]:
                             ports[k] = i
                             break
                         k = k + 1
             else:
 
                 ports += [i]
-            prev_port = i['port']
+            prev_port = i["port"]
         return ports
 
     rx_vlan = re.compile(
@@ -178,7 +175,8 @@ class Profile(BaseProfile):
         r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
         r"^(Current Untagged P|Untagged p)orts\s*:\s*"
         r"(?P<untagged_ports>\S*?)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
 
     rx_vlan1 = re.compile(
         r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
@@ -187,42 +185,41 @@ class Profile(BaseProfile):
         r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
         r"(Static ports\s+:\s*\S+\s*\n)?"
         r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
 
     def get_vlans(self, script):
         vlans = []
         c = script.cli("show vlan", cached=True)
         for match in self.rx_vlan.finditer(c):
-            tagged_ports = \
-                script.expand_interface_range(match.group("tagged_ports"))
-            untagged_ports = \
-                script.expand_interface_range(match.group("untagged_ports"))
-            vlans += [{
-                "vlan_id": int(match.group("vlan_id")),
-                "vlan_name": match.group("vlan_name"),
-                "vlan_type": match.group("vlan_type"),
-                "tagged_ports": tagged_ports,
-                "untagged_ports": untagged_ports
-            }]
-        if vlans == []:
-            for match in self.rx_vlan1.finditer(c):
-                tagged_ports = []
-                member_ports = \
-                    script.expand_interface_range(match.group("member_ports"))
-                untagged_ports = \
-                    script.expand_interface_range(
-                        match.group("untagged_ports")
-                    )
-                for port in member_ports:
-                    if port not in untagged_ports:
-                        tagged_ports += [port]
-                vlans += [{
+            tagged_ports = script.expand_interface_range(match.group("tagged_ports"))
+            untagged_ports = script.expand_interface_range(match.group("untagged_ports"))
+            vlans += [
+                {
                     "vlan_id": int(match.group("vlan_id")),
                     "vlan_name": match.group("vlan_name"),
                     "vlan_type": match.group("vlan_type"),
                     "tagged_ports": tagged_ports,
-                    "untagged_ports": untagged_ports
-                }]
+                    "untagged_ports": untagged_ports,
+                }
+            ]
+        if vlans == []:
+            for match in self.rx_vlan1.finditer(c):
+                tagged_ports = []
+                member_ports = script.expand_interface_range(match.group("member_ports"))
+                untagged_ports = script.expand_interface_range(match.group("untagged_ports"))
+                for port in member_ports:
+                    if port not in untagged_ports:
+                        tagged_ports += [port]
+                vlans += [
+                    {
+                        "vlan_id": int(match.group("vlan_id")),
+                        "vlan_name": match.group("vlan_name"),
+                        "vlan_type": match.group("vlan_type"),
+                        "tagged_ports": tagged_ports,
+                        "untagged_ports": untagged_ports,
+                    }
+                ]
         return vlans
 
 

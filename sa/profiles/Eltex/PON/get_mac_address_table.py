@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -19,11 +20,15 @@ class Script(BaseScript):
 
     rx_olt = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interfaces>(\S+ \d+|\S+))\s+"
-        r"(?P<type>\S+)\s+\S+\s+\S+\s+\d+\s*$", re.MULTILINE)
+        r"(?P<type>\S+)\s+\S+\s+\S+\s+\d+\s*$",
+        re.MULTILINE,
+    )
 
     rx_switch = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interfaces>(\S+ \d+|\S+))\s+"
-        r"(?P<type>\S+)\s+\S+\s+\S+\s+\d+\s*$", re.MULTILINE)
+        r"(?P<type>\S+)\s+\S+\s+\S+\s+\d+\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -89,19 +94,18 @@ class Script(BaseScript):
             cmd += " x"
         for match in self.rx_olt.finditer(self.cli(cmd)):
             interfaces = match.group("interfaces")
-            if interfaces == '0':
+            if interfaces == "0":
                 continue
-            r.append({
+            r.append(
+                {
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [interfaces],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "permanent": "S",
-                        "self": "S"
-                        }[match.group("type").lower()],
-                    })
+                    "type": {"dynamic": "D", "static": "S", "permanent": "S", "self": "S"}[
+                        match.group("type").lower()
+                    ],
+                }
+            )
         # Switch ports
         cmd = "show mac"
         if vlan is not None:
@@ -114,17 +118,16 @@ class Script(BaseScript):
         with self.profile.switch(self):
             for match in self.rx_switch.finditer(self.cli(cmd)):
                 interfaces = match.group("interfaces")
-                if interfaces == '0':
+                if interfaces == "0":
                     continue
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interfaces],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "permanent": "S",
-                        "self": "S"
-                        }[match.group("type").lower()],
-                    })
+                r.append(
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [interfaces],
+                        "type": {"dynamic": "D", "static": "S", "permanent": "S", "self": "S"}[
+                            match.group("type").lower()
+                        ],
+                    }
+                )
         return r

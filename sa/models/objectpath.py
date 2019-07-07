@@ -9,6 +9,7 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import ListField, ObjectIdField, IntField
@@ -18,11 +19,7 @@ id_lock = Lock()
 
 
 class ObjectPath(Document):
-    meta = {
-        "collection": "noc.cache.objectpaths",
-        "strict": False,
-        "auto_create_index": False,
-    }
+    meta = {"collection": "noc.cache.objectpaths", "strict": False, "auto_create_index": False}
     # Object id
     object = IntField(primary_key=True)
     adm_path = ListField(IntField())
@@ -34,17 +31,15 @@ class ObjectPath(Document):
     @classmethod
     def refresh(cls, obj):
         ObjectPath._get_collection().update(
-            {
-                "_id": obj.id
-            },
+            {"_id": obj.id},
             {
                 "$set": {
                     "adm_path": obj.administrative_domain.get_path(),
                     "segment_path": obj.segment.get_path(),
-                    "container_path": obj.container.get_path() if obj.container else []
+                    "container_path": obj.container.get_path() if obj.container else [],
                 }
             },
-            upsert=True
+            upsert=True,
         )
 
     @classmethod

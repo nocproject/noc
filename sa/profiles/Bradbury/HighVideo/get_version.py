@@ -1,4 +1,4 @@
-__author__ = 'FeNikS'
+__author__ = "FeNikS"
 # -*- coding: utf-8 -*-
 
 # ---------------------------------------------------------------------
@@ -18,10 +18,10 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
-        version = ''
+        version = ""
 
         return {
             "vendor": "Bradbury",
             "platform": "HighVideo",
-            "version": version if version else "Unknown"
+            "version": version if version else "Unknown",
         }

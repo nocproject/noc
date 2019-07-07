@@ -17,14 +17,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_ver = re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+    rx_ver = re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
-        match = self.re_search(self.rx_ver,
-            self.cli("show switch", cached=True))
+        match = self.re_search(self.rx_ver, self.cli("show switch", cached=True))
         mac = match.group("id")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

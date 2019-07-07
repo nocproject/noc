@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
 from .base import BooleanParameter, StringListParameter, DictParameter
@@ -18,7 +19,9 @@ class ICommands(BaseInterface):
     commands = StringListParameter()
     # Do not stop on CLI errors
     ignore_cli_errors = BooleanParameter(default=False)
-    returns = DictParameter(attrs={
-        "errors": BooleanParameter(default=False),  # Has CLI errors when execute
-        "output": StringListParameter()  # Device output
-    })
+    returns = DictParameter(
+        attrs={
+            "errors": BooleanParameter(default=False),  # Has CLI errors when execute
+            "output": StringListParameter(),  # Device output
+        }
+    )

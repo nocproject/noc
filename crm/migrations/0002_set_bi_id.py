@@ -8,8 +8,10 @@
 
 # Python modules
 import bson
+
 # Third-party modules
 from pymongo import UpdateOne
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
@@ -21,11 +23,18 @@ class Migration(BaseMigration):
     def migrate(self):
         # Update mongodb collections
         mdb = self.mongo_db
-        for coll_name in ("noc.subscribers", "noc.suppliers", "noc.subscriberprofiles", "noc.supplierprofiles"):
+        for coll_name in (
+            "noc.subscribers",
+            "noc.suppliers",
+            "noc.subscriberprofiles",
+            "noc.supplierprofiles",
+        ):
             coll = mdb[coll_name]
             updates = []
             for d in coll.find({"bi_id": {"$exists": False}}, {"_id": 1}):
-                updates += [UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_hash(d["_id"]))}})]
+                updates += [
+                    UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_hash(d["_id"]))}})
+                ]
                 if len(updates) >= MONGO_CHUNK:
                     coll.bulk_write(updates)
                     updates = []

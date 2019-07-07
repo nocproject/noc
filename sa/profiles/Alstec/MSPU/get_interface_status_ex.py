@@ -6,6 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -53,4 +56,4 @@ class Script(BaseScript):
                 ri["in_speed"] = s // 10
                 ri["out_speed"] = s // 10
 
-        return r.values()
+        return list(six.itervalues(r))

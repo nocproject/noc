@@ -20,15 +20,14 @@ class Script(BaseScript):
         r = []
         c = self.cli("show mac address-table")
         for vlan_id, mac, port, mtype in parse_table(c, footer="\d+ valid mac entries"):
-            r += [{
-                "vlan_id": vlan_id,
-                "mac": mac,
-                "interfaces": [port],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S",
-                    "permanent": "S",
-                    "self": "S"
-                }[mtype.lower()],
-            }]
+            r += [
+                {
+                    "vlan_id": vlan_id,
+                    "mac": mac,
+                    "interfaces": [port],
+                    "type": {"dynamic": "D", "static": "S", "permanent": "S", "self": "S"}[
+                        mtype.lower()
+                    ],
+                }
+            ]
         return r

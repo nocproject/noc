@@ -9,8 +9,10 @@
 
 # Python modules
 import numpy as np
+
 # Third-party modules
 from six.moves import zip_longest
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -18,17 +20,25 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Extreme.XOS"
     pattern_prompt = r"^(\*\s)?(Slot-\d+ )?\S+? #"
-    pattern_syntax_error = \
-        r"%% (Incomplete command|Invalid input detected at)"
+    pattern_syntax_error = r"%% (Incomplete command|Invalid input detected at)"
     command_disable_pager = "disable clipaging"
     pattern_more = [
         (r"^Press <SPACE> to continue or <Q> to quit:", " "),
-        (r"^Do you want to continue with download and remove existing files from internal-memory\? \(y/N\)", "y\n"),
-        (r"Do you want to install image after downloading\? \(y - yes, n - no, \<cr\> - cancel\)", "y\n"),
+        (
+            r"^Do you want to continue with download and remove existing files from internal-memory\? \(y/N\)",
+            "y\n",
+        ),
+        (
+            r"Do you want to install image after downloading\? \(y - yes, n - no, \<cr\> - cancel\)",
+            "y\n",
+        ),
         (r"Are you sure you want to reboot the stack\? \(y/N\)", "y\n"),
-        (r"Do you want to save configuration changes to currently selected configuration file (primary.cfg) and reboot?"
-         r"(y - save and reboot, n - reboot without save, <cr> - cancel command)", "y\n"),
-        (r"Do you want to save configuration to \S+ and overwrite it\? \(y/N\)", "y\n")
+        (
+            r"Do you want to save configuration changes to currently selected configuration file (primary.cfg) and reboot?"
+            r"(y - save and reboot, n - reboot without save, <cr> - cancel command)",
+            "y\n",
+        ),
+        (r"Do you want to save configuration to \S+ and overwrite it\? \(y/N\)", "y\n"),
     ]
 
     def get_interface_names(self, name):
@@ -63,13 +73,13 @@ class Profile(BaseProfile):
         empty_header = None
         header = {}
 
-        for num, lines in enumerate(zip_longest(*v, fillvalue='-')):
+        for num, lines in enumerate(zip_longest(*v, fillvalue="-")):
             #
             if empty_header is None:
-                empty_header = (' ',) * len(lines)
+                empty_header = (" ",) * len(lines)
                 head += [lines]
                 continue
-            if set(head[-1]) == {' '} and lines != empty_header:
+            if set(head[-1]) == {" "} and lines != empty_header:
                 head = np.array(head)
                 # Transpone list header string
                 header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])
@@ -81,8 +91,9 @@ class Profile(BaseProfile):
             header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
         return header
 
-    def parse_table_struct(self, v, header_start="", header_end="",
-                           table_start="=======", table_end="======="):
+    def parse_table_struct(
+        self, v, header_start="", header_end="", table_start="=======", table_end="======="
+    ):
         """
         Parse table with structured table format:
         ex:

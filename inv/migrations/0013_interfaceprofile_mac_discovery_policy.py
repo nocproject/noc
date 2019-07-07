@@ -16,14 +16,9 @@ class Migration(BaseMigration):
         coll = db["noc.interface_profiles"]
         for d in list(coll.find({}, {"_id": 1, "mac_discovery": 1})):
             coll.update_many(
+                {"_id": d["_id"]},
                 {
-                    "_id": d["_id"]
-                }, {
-                    "$set": {
-                        "mac_discovery_policy": "e" if d.get("mac_discovery") else "d"
-                    },
-                    "$unset": {
-                        "mac_discovery": 1
-                    }
-                }
+                    "$set": {"mac_discovery_policy": "e" if d.get("mac_discovery") else "d"},
+                    "$unset": {"mac_discovery": 1},
+                },
             )

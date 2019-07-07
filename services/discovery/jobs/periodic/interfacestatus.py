@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface Status check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             }
             changes = self.update_if_changed(
                 iface, kwargs,
-                ignore_empty=kwargs.keys(),
+                ignore_empty=list(six.iterkeys(kwargs)),
                 bulk=bulk
             )
             self.log_changes(

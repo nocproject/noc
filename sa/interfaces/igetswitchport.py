@@ -7,10 +7,17 @@
 # ---------------------------------------------------------------------
 
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, DictParameter, VLANIDParameter,
-                   InterfaceNameParameter, StringParameter, BooleanParameter)
+from .base import (
+    ListOfParameter,
+    DictParameter,
+    VLANIDParameter,
+    InterfaceNameParameter,
+    StringParameter,
+    BooleanParameter,
+)
 
 
 #
@@ -22,21 +29,25 @@ from .base import (ListOfParameter, DictParameter, VLANIDParameter,
 # must be set to True, while "untagged" must contain top label
 #
 class IGetSwitchport(BaseInterface):
-    returns = ListOfParameter(element=DictParameter(attrs={
-        # Interface name
-        "interface": InterfaceNameParameter(),
-        # Operational status. True - Up, False - Down
-        "status": BooleanParameter(default=False),
-        # Optional interface description
-        "description": StringParameter(required=False),
-        # 802.1Q VLAN Tagging enabled
-        "802.1Q Enabled": BooleanParameter(default=False),
-        # Q-in-Q tunneling
-        "802.1ad Tunnel": BooleanParameter(default=False),
-        # Untagged VLAN if present
-        "untagged": VLANIDParameter(required=False),
-        # List of tagged vlans
-        "tagged": ListOfParameter(element=VLANIDParameter()),
-        # List of port-channel members, if applicable
-        "members": ListOfParameter(element=InterfaceNameParameter())
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(
+            attrs={
+                # Interface name
+                "interface": InterfaceNameParameter(),
+                # Operational status. True - Up, False - Down
+                "status": BooleanParameter(default=False),
+                # Optional interface description
+                "description": StringParameter(required=False),
+                # 802.1Q VLAN Tagging enabled
+                "802.1Q Enabled": BooleanParameter(default=False),
+                # Q-in-Q tunneling
+                "802.1ad Tunnel": BooleanParameter(default=False),
+                # Untagged VLAN if present
+                "untagged": VLANIDParameter(required=False),
+                # List of tagged vlans
+                "tagged": ListOfParameter(element=VLANIDParameter()),
+                # List of port-channel members, if applicable
+                "members": ListOfParameter(element=InterfaceNameParameter()),
+            }
+        )
+    )

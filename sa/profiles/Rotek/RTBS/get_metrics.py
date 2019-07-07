@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.platform import PlatformRule
@@ -16,15 +17,9 @@ from noc.lib.validators import is_ipv4
 
 class Script(GetMetricsScript):
     name = "Rotek.RTBS.get_metrics"
-    OID_RULES = [
-        PlatformRule
-    ]
+    OID_RULES = [PlatformRule]
 
-    @metrics(
-        ["Check | Result", "Check | RTT"],
-        volatile=False,
-        access="C"  # CLI version
-    )
+    @metrics(["Check | Result", "Check | RTT"], volatile=False, access="C")  # CLI version
     def get_avail_metrics(self, metrics):
         if not self.credentials["path"]:
             return
@@ -43,12 +38,12 @@ class Script(GetMetricsScript):
                     metric="Check | Result",
                     path=("ping", ip),
                     value=bool(result["success"]),
-                    multi=True
+                    multi=True,
                 )
                 if result["success"] and check_rtt != 998:
                     self.set_metric(
                         id=check_rtt,
                         metric="Check | RTT",
                         path=("ping", ip),
-                        value=bool(result["success"])
+                        value=bool(result["success"]),
                     )

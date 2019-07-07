@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -17,31 +18,18 @@ class Script(BaseScript):
     name = "ZTE.ZXA10.get_inventory"
     interface = IGetInventory
 
-    type = {
-        "PRWGS": "PWR",
-        "SCXN": "MAINBOARD",
-        "GUSQ": "LINECARD",
-        "VDWVD": "LINECARD"
-    }
-    rx_platform = re.compile(
-        r"^\d+\s+(?P<platform>\S+)MBRack\s+.+\n", re.MULTILINE
-    )
+    type = {"PRWGS": "PWR", "SCXN": "MAINBOARD", "GUSQ": "LINECARD", "VDWVD": "LINECARD"}
+    rx_platform = re.compile(r"^\d+\s+(?P<platform>\S+)MBRack\s+.+\n", re.MULTILINE)
     rx_card = re.compile(
-        r"^Real-Type\s+:\s+(?P<type>\S+)\s+Serial-Number\s+:(?P<serial>.*)\n",
-        re.MULTILINE
+        r"^Real-Type\s+:\s+(?P<type>\S+)\s+Serial-Number\s+:(?P<serial>.*)\n", re.MULTILINE
     )
     rx_detail = re.compile(
-        r"^M-CODE\s+:\s+\S+\s+Hardware-VER\s+:\s+(?P<hardware>\S+)\s*\n",
-        re.MULTILINE
+        r"^M-CODE\s+:\s+\S+\s+Hardware-VER\s+:\s+(?P<hardware>\S+)\s*\n", re.MULTILINE
     )
 
     def execute_cli(self):
         v = self.scripts.get_version()
-        r = [{
-            "type": "CHASSIS",
-            "vendor": "ZTE",
-            "part_no": [v["platform"]],
-        }]
+        r = [{"type": "CHASSIS", "vendor": "ZTE", "part_no": [v["platform"]]}]
         ports = self.profile.fill_ports(self)
         for p in ports:
             v = self.cli("show card shelfno %s slotno %s" % (p["shelf"], p["slot"]))

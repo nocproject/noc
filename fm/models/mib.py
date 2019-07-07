@@ -11,11 +11,13 @@ from __future__ import absolute_import
 import re
 import threading
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, IntField, ListField, DictField
 import cachetools
+
 # NOC modules
 from noc.lib.validators import is_oid
 from noc.lib.escape import fm_unescape, fm_escape
@@ -33,16 +35,10 @@ id_lock = threading.Lock()
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
 
-@on_delete_check(check=[
-    ("fm.MIBData", "mib")
-])
+@on_delete_check(check=[("fm.MIBData", "mib")])
 @six.python_2_unicode_compatible
 class MIB(Document):
-    meta = {
-        "collection": "noc.mibs",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.mibs", "strict": False, "auto_create_index": False}
     name = StringField(required=True, unique=True)
     description = StringField(required=False)
     last_updated = DateTimeField(required=True)
@@ -136,22 +132,18 @@ class MIB(Document):
                 # Try to resolve collision
                 if not mib_preference:
                     # No preference for target MIB
-                    raise OIDCollision(oid, oid_name, o.name,
-                                       "No preference for %s" % self.name)
+                    raise OIDCollision(oid, oid_name, o.name, "No preference for %s" % self.name)
                 o_mib = o.name.split("::")[0]
                 if o_mib not in prefs:
-                    mp = MIBPreference.objects.filter(
-                        mib=o_mib).first()
+                    mp = MIBPreference.objects.filter(mib=o_mib).first()
                     if not mp:
                         # No preference for destination MIB
-                        raise OIDCollision(oid, oid_name, o.name,
-                                           "No preference for %s" % o_mib)
+                        raise OIDCollision(oid, oid_name, o.name, "No preference for %s" % o_mib)
                     prefs[o_mib] = mp.preference  # Add to cache
                 o_preference = prefs[o_mib]
                 if mib_preference == o_preference:
                     # Equal preferences, collision
-                    raise OIDCollision(oid, oid_name, o.name,
-                                       "Equal preferences")
+                    raise OIDCollision(oid, oid_name, o.name, "Equal preferences")
                 if mib_preference < o_preference:
                     # Replace existing
                     o.aliases = sorted(o.aliases + [o.name])
@@ -174,11 +166,7 @@ class MIB(Document):
                 if syntax:
                     syntax = MIB.parse_syntax(syntax)
                 MIBData(
-                    mib=self.id,
-                    oid=oid,
-                    name=oid_name,
-                    description=description,
-                    syntax=syntax
+                    mib=self.id, oid=oid, name=oid_name, description=description, syntax=syntax
                 ).save()
 
     @classmethod
@@ -231,8 +219,7 @@ class MIB(Document):
                 name = d.name
                 if rest:
                     name += "." + ".".join(reversed(rest))
-                return (MIBAlias.rewrite(name),
-                        SyntaxAlias.rewrite(name, d.syntax))
+                return (MIBAlias.rewrite(name), SyntaxAlias.rewrite(name, d.syntax))
             else:
                 rest += [l_oid.pop()]
         return oid, None
@@ -344,11 +331,7 @@ class MIB(Document):
                     rv = "(%s)" % ",".join(b)
                 else:
                     # Render according to TC
-                    rv = render_tc(
-                        v,
-                        syntax["base_type"],
-                        syntax.get("display_hint", None)
-                    )
+                    rv = render_tc(v, syntax["base_type"], syntax.get("display_hint", None))
                     try:
                         unicode(rv, "utf8")
                     except ValueError:

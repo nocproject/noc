@@ -8,6 +8,7 @@
 
 # Third-party modules
 from noc.core.model.fields import AutoCompleteTagsField
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 

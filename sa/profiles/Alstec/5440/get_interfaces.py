@@ -22,7 +22,7 @@ class Script(BaseScript):
         r"Link encap:Ethernet\s+HWaddr (?P<mac>\S+)\s*\n"
         r"(^\s+inet addr:(?P<ip>\S+)\s+Bcast:\S+\s+Mask:(?P<mask>\S+)\s*\n)?"
         r"^\s+(?P<flags>.+)MTU:(?P<mtu>\d+)\s+Metric:\d+\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -35,7 +35,7 @@ class Script(BaseScript):
                 "admin_status": "RUNNING " in match.group("flags"),
                 "oper_status": "UP " in match.group("flags"),
                 "mac": match.group("mac"),
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             sub = {
                 "name": ifname,

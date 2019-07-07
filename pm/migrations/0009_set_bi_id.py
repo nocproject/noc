@@ -9,6 +9,7 @@
 # Third-party modules
 from pymongo import UpdateOne
 import bson
+
 # NOC modules
 from noc.core.bi.decorator import bi_hash
 from noc.core.migration.base import BaseMigration
@@ -24,7 +25,9 @@ class Migration(BaseMigration):
             coll = mdb[coll_name]
             updates = []
             for d in coll.find({"bi_id": {"$exists": False}}, {"_id": 1}):
-                updates += [UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_hash(d["_id"]))}})]
+                updates += [
+                    UpdateOne({"_id": d["_id"]}, {"$set": {"bi_id": bson.Int64(bi_hash(d["_id"]))}})
+                ]
                 if len(updates) >= MONGO_CHUNK:
                     coll.bulk_write(updates)
                     updates = []

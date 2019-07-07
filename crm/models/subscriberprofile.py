@@ -9,13 +9,15 @@
 # Python modules
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, IntField, LongField, BooleanField
 import cachetools
+
 # NOC models
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
@@ -26,16 +28,10 @@ id_lock = Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("crm.Subscriber", "profile")
-])
+@on_delete_check(check=[("crm.Subscriber", "profile")])
 @six.python_2_unicode_compatible
 class SubscriberProfile(Document):
-    meta = {
-        "collection": "noc.subscriberprofiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.subscriberprofiles", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()

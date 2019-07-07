@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.lib.text import parse_table
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
@@ -18,11 +19,8 @@ class Script(BaseScript):
     name = "Planet.WGSD.get_capabilities"
 
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
-    rx_lacp_en = re.compile(r"\s+Partner"
-                            r"[\S\s]+?"
-                            r"\s+Oper Key:\s+1", re.MULTILINE)
-    rx_gvrp_en = re.compile(
-        r"GVRP Feature is currently Enabled on the device?")
+    rx_lacp_en = re.compile(r"\s+Partner" r"[\S\s]+?" r"\s+Oper Key:\s+1", re.MULTILINE)
+    rx_gvrp_en = re.compile(r"GVRP Feature is currently Enabled on the device?")
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
 
     @false_on_cli_error

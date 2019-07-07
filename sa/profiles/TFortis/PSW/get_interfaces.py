@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -24,7 +25,7 @@ class Script(BaseScript):
         r"Port\sSpeed/Duplex:[\s\t]+(?P<speed>.*)\n"
         r"Port\sLink:[\s\t]+(?P<oper_status>.*)\n"
         r"(?:Port\sPoE:[\s\t]+(?P<poe>.*))?",
-        re.MULTILINE | re.VERBOSE
+        re.MULTILINE | re.VERBOSE,
     )
     rx_vlans = re.compile(
         r"""
@@ -34,7 +35,7 @@ class Script(BaseScript):
         Tagged\sPorts:\s*(?P<tagged_ports>.*)\n
         Untagged\sPorts:(:?\s*(?P<untagged_ports>.*))?
         """,
-        re.MULTILINE | re.VERBOSE
+        re.MULTILINE | re.VERBOSE,
     )
 
     def parse_section(self, section):
@@ -51,9 +52,9 @@ class Script(BaseScript):
         match = self.rx_ecfg.search(section)
         if match:
             name = match.group("name")
-            r['admin_status'] = "enable" in match.group('admin_status').lower()
-            r['oper_status'] = "up" in match.group('oper_status').lower()
-            r['enabled_protocols'] = ""
+            r["admin_status"] = "enable" in match.group("admin_status").lower()
+            r["oper_status"] = "up" in match.group("oper_status").lower()
+            r["enabled_protocols"] = ""
 
         return name, r
 
@@ -92,11 +93,9 @@ class Script(BaseScript):
                 "type": "physical",
                 "admin_status": cfg["admin_status"],
                 "oper_status": cfg["oper_status"],
-                "subinterfaces": [{
-                    "name": name,
-                    "enabled_afi": ["BRIDGE"],
-                    "tagged_vlans": tagged
-                }]
+                "subinterfaces": [
+                    {"name": name, "enabled_afi": ["BRIDGE"], "tagged_vlans": tagged}
+                ],
             }
             if untag:
                 i["subinterfaces"][0]["untagged_vlan"] = untag

@@ -20,15 +20,13 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^\s*(?P<port>\d+/\d+)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<admin_status>Up|Dwn|-)/(?P<oper_status>Up|Dwn)",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    rx_port_name = re.compile(
-        r"^\s+ifName\s+(?P<ifname>\S+)\s*\n", re.MULTILINE
-    )
+    rx_port_name = re.compile(r"^\s+ifName\s+(?P<ifname>\S+)\s*\n", re.MULTILINE)
     rx_line = re.compile(
         "^(?P<interfaces>\d+/\d+(?:/\d+)?)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<mac>\S+)\s+(\S+)\s+(?P<type>\S+)\s+",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -50,7 +48,7 @@ class Script(BaseScript):
                 ports += [ifname]
                 v1 = self.cli(
                     "show port statistics interface %s" % ifname,
-                    cached=True  # used in get_interfaces
+                    cached=True,  # used in get_interfaces
                 )
                 match1 = self.rx_port_name.search(v1)
                 port_map[ifname] = match1.group("ifname")
@@ -68,13 +66,15 @@ class Script(BaseScript):
             # Set interface's name according to ifName
             if ifname in port_map:
                 ifname = port_map[ifname]
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [ifname],
-                "type": {
-                    "dynamic": "D", "static": "S", "p-locked": "S"
-                }[match.group("type").lower()]
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [ifname],
+                    "type": {"dynamic": "D", "static": "S", "p-locked": "S"}[
+                        match.group("type").lower()
+                    ],
+                }
+            ]
 
         return r

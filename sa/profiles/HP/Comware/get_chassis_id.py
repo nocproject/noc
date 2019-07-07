@@ -17,15 +17,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_id = re.compile(r"^\s*MAC_ADDRESS\s+:\s+(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+    rx_id = re.compile(r"^\s*MAC_ADDRESS\s+:\s+(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
-        match = self.re_search(self.rx_id, self.cli("display device manuinfo",
-            cached=True))
+        match = self.re_search(self.rx_id, self.cli("display device manuinfo", cached=True))
         mac = match.group("id")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
-
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

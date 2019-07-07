@@ -1,1 +1,1 @@
-__author__ = 'fedoseev.ns'
+__author__ = "fedoseev.ns"

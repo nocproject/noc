@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -22,20 +23,16 @@ class Script(BaseScript):
     # Extract vlan information
     #
     rx_vlan_line = re.compile(
-        r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+(?:active|act/lshut)",
-        re.MULTILINE)
+        r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+(?:active|act/lshut)", re.MULTILINE
+    )
 
     def extract_vlans(self, data):
         return [
-            {
-                "vlan_id": int(match.group("vlan_id")),
-                "name": match.group("name")
-            }
+            {"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}
             for match in self.rx_vlan_line.finditer(data)
         ]
 
-    rx_vlan_ubr = re.compile(
-        r"^(\S+\s+){4}(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)", re.MULTILINE)
+    rx_vlan_ubr = re.compile(r"^(\S+\s+){4}(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)", re.MULTILINE)
 
     def execute_ubr(self):
         """
@@ -45,15 +42,12 @@ class Script(BaseScript):
         vlans = self.cli("show running-config | include cable dot1q-vc-map")
         r = []
         for match in self.rx_vlan_ubr.finditer(vlans):
-            r += [{
-                "vlan_id": int(match.group("vlan_id")),
-                "name": match.group("name")
-            }]
+            r += [{"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}]
         return r
 
     rx_vlan_dot1q = re.compile(
-        r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):",
-        re.MULTILINE)
+        r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):", re.MULTILINE
+    )
 
     def execute_vlan_switch(self):
         """
@@ -72,16 +66,12 @@ class Script(BaseScript):
             r = []
             for match in self.rx_vlan_dot1q.finditer(vlans):
                 vlan_id = int(match.group("vlan_id"))
-                r += [{
-                    "vlan_id": vlan_id
-                }]
+                r += [{"vlan_id": vlan_id}]
             return r
         vlans, _ = vlans.split("\nVLAN Type", 1)
         return self.extract_vlans(vlans)
 
-    rx_5350_vlans = re.compile(
-        r"^Virtual LAN ID: \s+(?P<vlan_id>\d{1,4})",
-        re.MULTILINE)
+    rx_5350_vlans = re.compile(r"^Virtual LAN ID: \s+(?P<vlan_id>\d{1,4})", re.MULTILINE)
 
     def execute_vlans(self):
         # Cisco 5350/5350XM:
@@ -92,9 +82,7 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         for match in self.rx_5350_vlans.finditer(vlans):
             vlan_id = int(match.group("vlan_id"))
-            r += [{
-                "vlan_id": vlan_id
-            }]
+            r += [{"vlan_id": vlan_id}]
         return r
 
     #
@@ -123,13 +111,9 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         r = []
         for vlan_index, vlan_state, vlan_name in self.snmp.get_tables(
-                [
-                    mib["CISCO-VTP-MIB::vtpVlanState"],
-                    mib["CISCO-VTP-MIB::vtpVlanName"]]):
+            [mib["CISCO-VTP-MIB::vtpVlanState"], mib["CISCO-VTP-MIB::vtpVlanName"]]
+        ):
             # print port_num, ifindex, port_type, pvid
             domain_id, vlan_id = vlan_index.split(".")
-            r += [{
-                "vlan_id": vlan_id,
-                "name": vlan_name
-            }]
+            r += [{"vlan_id": vlan_id, "name": vlan_name}]
         return r

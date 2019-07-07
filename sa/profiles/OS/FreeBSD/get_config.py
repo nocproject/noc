@@ -16,10 +16,7 @@ class Script(BaseScript):
     name = "OS.FreeBSD.get_config"
     interface = IGetConfig
     rx_not_found = re.compile(r"^cat:.+?No (?:match|such file or directory)")
-    configs = [
-        "/etc/rc.conf", "/etc/rc.conf.d/*",
-        "/usr/local/etc/rc.conf.d/*", "/etc/rc.local"
-    ]
+    configs = ["/etc/rc.conf", "/etc/rc.conf.d/*", "/usr/local/etc/rc.conf.d/*", "/etc/rc.local"]
 
     def execute_cli(self, **kwargs):
         config = ""

@@ -9,27 +9,23 @@
 # Python modules
 import threading
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 import cachetools
+
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
 
-@on_delete_check(check=[
-    ("sa.ManagedObjectProfile", "caps_profile")
-])
+@on_delete_check(check=[("sa.ManagedObjectProfile", "caps_profile")])
 @six.python_2_unicode_compatible
 class CapsProfile(Document):
-    meta = {
-        "collection": "capsprofiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "capsprofiles", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
@@ -40,103 +36,160 @@ class CapsProfile(Document):
     # Enable L2 protocols caps discovery
     enable_l2 = BooleanField(default=False)
     #
-    bfd_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    cdp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    fdp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    huawei_ndp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    lacp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    lldp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    oam_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    rep_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    stp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    udld_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
+    bfd_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    cdp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    fdp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    huawei_ndp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    lacp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    lldp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    oam_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    rep_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    stp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    udld_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
     # Enable L3 protocols caps discovery
     enable_l3 = BooleanField(default=False)
-    hsrp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    vrrp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    vrrpv3_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    bgp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    ospf_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    ospfv3_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    isis_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    ldp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
-    rsvp_policy = StringField(choices=[
-        ("D", "Disable"),  # Always disable
-        ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
-        ("E", "Enable")  # Always enable
-    ], default="T")
+    hsrp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    vrrp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    vrrpv3_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    bgp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    ospf_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    ospfv3_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    isis_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    ldp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
+    rsvp_policy = StringField(
+        choices=[
+            ("D", "Disable"),  # Always disable
+            ("T", "Enable for Topology"),  # Enable if appropriate topology discovery is enabled
+            ("E", "Enable"),  # Always enable
+        ],
+        default="T",
+    )
 
     L2_SECTIONS = ["bfd", "cdp", "fdp", "huawei_ndp", "lacp", "lldp", "oam", "rep", "stp", "udld"]
     L3_SECTIONS = ["hsrp", "vrrp", "vrrpv3", "bgp", "ospf", "ospfv3", "isis", "ldp", "rsvp"]
@@ -166,6 +219,7 @@ class CapsProfile(Document):
         :param nsp: Network Segment Profile instance
         :return: List of string
         """
+
         def l2_is_enabled(method):
             cp = getattr(self, "%s_policy" % method)
             if cp == "E":

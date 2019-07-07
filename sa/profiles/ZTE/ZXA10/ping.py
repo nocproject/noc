@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -16,16 +17,13 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "ZTE.ZXA10.ping"
     interface = IPing
-    rx_fail = re.compile(
-        r"Success rate is \d+ percent\((?P<success>\d+)/(?P<count>\d+)\)\."
-    )
+    rx_fail = re.compile(r"Success rate is \d+ percent\((?P<success>\d+)/(?P<count>\d+)\)\.")
     rx_success = re.compile(
         r"Success rate is \d+ percent\((?P<success>\d+)/(?P<count>\d+)\),\s*"
         r"round-trip min/avg/max= (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms\."
     )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None, vrf=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None, vrf=None):
         cmd = "ping %s" % address
         if count:
             cmd += " repaat %d" % int(count)
@@ -41,10 +39,7 @@ class Script(BaseScript):
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         match = self.rx_fail.search(v)
-        return {
-            "success": match.group("success"),
-            "count": match.group("count")
-        }
+        return {"success": match.group("success"), "count": match.group("count")}

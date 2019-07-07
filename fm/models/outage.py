@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
 from mongoengine.document import Document
@@ -20,7 +21,7 @@ class Outage(Document):
         "collection": "noc.fm.outages",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object", ("object", "-start")]
+        "indexes": ["object", ("object", "-start")],
     }
 
     object = IntField()
@@ -46,28 +47,14 @@ class Outage(Document):
         """
         ts = ts or datetime.datetime.now()
         col = Outage._get_collection()
-        lo = col.find_one({
-            "object": object.id,
-            "start": {
-                "$lte": ts
-            }
-        }, {
-            "_id": 1,
-            "stop": 1
-        }, sort=[("object", 1), ("start", -1)])
+        lo = col.find_one(
+            {"object": object.id, "start": {"$lte": ts}},
+            {"_id": 1, "stop": 1},
+            sort=[("object", 1), ("start", -1)],
+        )
         if not status and lo and not lo.get("stop"):
             # Close interval
-            col.update({
-                "_id": lo["_id"]
-            }, {
-                "$set": {
-                    "stop": ts
-                }
-            })
+            col.update({"_id": lo["_id"]}, {"$set": {"stop": ts}})
         elif status and (not lo or lo.get("stop")):
             # New outage
-            col.insert({
-                "object": object.id,
-                "start": ts,
-                "stop": None
-            })
+            col.insert({"object": object.id, "start": ts, "stop": None})

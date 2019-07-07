@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -28,19 +29,19 @@ class Script(BaseScript):
         r"^\s*flow-control\s+\S+\s*\n"
         r"^\s*xover\s+\S+\s*\n"
         r"^\s*pvid\s+(?P<vlan_id>\d+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_dsl = re.compile(
         r"^(?P<port>\d+) Configuration\s*\n"
         r"^\s*\n"
         r"(^\s*name(?P<name>.*)\n)?"
         r"(^\s*state\s+(?P<admin_status>enabled|disabled)\s*\n)?",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_dsl_vpi_vci = re.compile(
         r"^\s*(?P<name>\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)\s+llc-bridged\s+"
         r"((?P<vlan_ids>\d+(, \d+)*)\s*)?\S*\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_inband = re.compile(
         r"^Inband Management Address (?P<ifnum>\d+):\s*\n"
@@ -49,27 +50,27 @@ class Script(BaseScript):
         r"^\s*Vlan ID\s+(?P<vlan_id>\d+)\s*\n"
         r"^\s*port status\s+(?P<admin_status>enable|disable)\s*\n"
         r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_inband2 = re.compile(
         r"^\s*ip address\s+(?P<ip>\S+)( \((?:dhcp|bootp)\))?\s*\n"
         r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
         r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_outband = re.compile(
         r"^\s*ip address\s+(?P<ip>\S+)( \((?:dhcp|bootp)\))?\s*\n"
         r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
         r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n"
         r"(^\s*Port Status\s+(?P<admin_status>enable|disable)\s*\n)?",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_vlan = re.compile(
         r"^VLAN\s+(?P<vlan_id>\d+)\s*\n"
         r"^\s*Name.*\n"
         r"^\s*Tagged Members(?P<tagged>.*)\n"
         r"^\s*UnTagged Members(?P<untagged>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -77,19 +78,15 @@ class Script(BaseScript):
         v = self.cli("show interface ethernet all configuration")
         for match in self.rx_eth.finditer(v):
             iface = {
-                "name": match.group('port'),
+                "name": match.group("port"),
                 "type": "physical",
-                "subinterfaces": [{
-                    "name": match.group('port'),
-                    "enabled_afi": ["BRIDGE"],
-                }]
+                "subinterfaces": [{"name": match.group("port"), "enabled_afi": ["BRIDGE"]}],
             }
-            if int(match.group('vlan_id')) > 0:
-                iface["subinterfaces"][0]["untagged_vlan"] = int(match.group('vlan_id'))
+            if int(match.group("vlan_id")) > 0:
+                iface["subinterfaces"][0]["untagged_vlan"] = int(match.group("vlan_id"))
             if "admin_status" in match.groupdict():
                 iface["admin_status"] = match.group("admin_status") == "up"
-                iface["subinterfaces"][0]["admin_status"] = \
-                    match.group("admin_status") == "up"
+                iface["subinterfaces"][0]["admin_status"] = match.group("admin_status") == "up"
             interfaces += [iface]
 
         v = self.cli("show interface dsl all configuration")
@@ -97,11 +94,7 @@ class Script(BaseScript):
             match = self.rx_dsl.search(p)
             if not match:
                 continue
-            iface = {
-                "name": match.group("port"),
-                "type": "physical",
-                "subinterfaces": []
-            }
+            iface = {"name": match.group("port"), "type": "physical", "subinterfaces": []}
             if match.group("admin_status"):
                 iface["admin_status"] = match.group("admin_status") == "enabled"
             if match.group("name") and match.group("name").strip():
@@ -112,9 +105,7 @@ class Script(BaseScript):
                 sub["admin_status"] = iface["admin_status"]
                 sub["enabled_afi"] = ["BRIDGE", "ATM"]
                 if sub["vlan_ids"]:
-                    sub["vlan_ids"] = [
-                        int(x) for x in sub["vlan_ids"].split(", ") if int(x) > 0
-                    ]
+                    sub["vlan_ids"] = [int(x) for x in sub["vlan_ids"].split(", ") if int(x) > 0]
                 iface["subinterfaces"] += [sub]
 
             interfaces += [iface]
@@ -122,15 +113,17 @@ class Script(BaseScript):
         v = self.cli("show management inband")
         for match in self.rx_inband.finditer(v):
             iface = {
-                "name": "mgmt_i" + match.group('ifnum'),
+                "name": "mgmt_i" + match.group("ifnum"),
                 "admin_status": match.group("admin_status") == "enable",
                 "type": "SVI",
                 "mac": match.group("mac"),
-                "subinterfaces": [{
-                    "name": "mgmt_i" + match.group('ifnum'),
-                    "admin_status": match.group("admin_status") == "enable",
-                    "mac": match.group("mac")
-                }]
+                "subinterfaces": [
+                    {
+                        "name": "mgmt_i" + match.group("ifnum"),
+                        "admin_status": match.group("admin_status") == "enable",
+                        "mac": match.group("mac"),
+                    }
+                ],
             }
             if match.group("ip") != "0.0.0.0":
                 ip = match.group("ip")
@@ -139,8 +132,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
                 iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
             if match.group("vlan_id") != "0":
-                iface["subinterfaces"][0]["vlan_ids"] = \
-                    [match.group("vlan_id")]
+                iface["subinterfaces"][0]["vlan_ids"] = [match.group("vlan_id")]
             interfaces += [iface]
 
         match = self.rx_inband2.search(v)
@@ -149,10 +141,7 @@ class Script(BaseScript):
                 "name": "mgmt_i",
                 "type": "SVI",
                 "mac": match.group("mac"),
-                "subinterfaces": [{
-                    "name": "mgmt_i",
-                    "mac": match.group("mac")
-                }]
+                "subinterfaces": [{"name": "mgmt_i", "mac": match.group("mac")}],
             }
             if match.group("ip") != "0.0.0.0":
                 ip = match.group("ip")
@@ -168,15 +157,11 @@ class Script(BaseScript):
             "name": "mgmt_o",
             "type": "SVI",
             "mac": match.group("mac"),
-            "subinterfaces": [{
-                "name": "mgmt_o",
-                "mac": match.group("mac")
-            }]
+            "subinterfaces": [{"name": "mgmt_o", "mac": match.group("mac")}],
         }
         if "admin_status" in match.groupdict():
             iface["admin_status"] = match.group("admin_status") == "enable"
-            iface["subinterfaces"][0]["admin_status"] = \
-                match.group("admin_status") == "enable"
+            iface["subinterfaces"][0]["admin_status"] = match.group("admin_status") == "enable"
         if match.group("ip") != "0.0.0.0":
             ip = match.group("ip")
             mask = match.group("mask")

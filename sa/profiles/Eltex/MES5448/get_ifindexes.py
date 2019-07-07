@@ -27,17 +27,15 @@ class Script(BaseScript):
                     try:
                         v = self.profile.convert_interface_name(name)
                     except InterfaceTypeError as e:
-                        self.logger.debug(
-                            "Ignoring unknown interface %s: %s",
-                            name, e
-                        )
+                        self.logger.debug("Ignoring unknown interface %s: %s", name, e)
                         unknown_interfaces += [name]
                         continue
                     ifindex = int(oid.split(".")[-1])
                     r[v] = ifindex
                 if unknown_interfaces:
-                    self.logger.info("%d unknown interfaces has been ignored",
-                                     len(unknown_interfaces))
+                    self.logger.info(
+                        "%d unknown interfaces has been ignored", len(unknown_interfaces)
+                    )
             except self.snmp.TimeOutError:
                 pass
         return r

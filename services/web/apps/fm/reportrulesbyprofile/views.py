@@ -8,6 +8,8 @@
 
 # Python modules
 import re
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.core.profile.loader import loader as profile_loader
@@ -41,7 +43,7 @@ class Reportreportrulesbyprofile(SimpleReport):
                     else:
                         d[2] += 1
         # Build data
-        data = [(p, v[0], v[1], v[2], v[0] + v[1] + v[2]) for p, v in r.items()]
+        data = [(p, v[0], v[1], v[2], v[0] + v[1] + v[2]) for p, v in six.iteritems(r)]
         data = sorted(data, key=lambda x: -x[4])
         return self.from_dataset(title=self.title,
                                  columns=["Profile",

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -26,18 +27,11 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.17.1.1.0", cached=True)
-                return {
-                    "first_chassis_mac": mac,
-                    "last_chassis_mac": mac
-                }
+                return {"first_chassis_mac": mac, "last_chassis_mac": mac}
             except self.snmp.TimeOutError:
                 pass
 
         # Fallback to CLI
-        match = self.re_search(self.rx_mac,
-                               self.cli("show system", cached=True))
+        match = self.re_search(self.rx_mac, self.cli("show system", cached=True))
         mac = match.group("mac")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

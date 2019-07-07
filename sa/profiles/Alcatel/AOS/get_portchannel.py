@@ -14,15 +14,11 @@ import re
 class Script(BaseScript):
     name = "Alcatel.AOS.get_portchannel"
     interface = IGetPortchannel
-    rx_line = re.compile(
-        r"^\s+(?P<port>\d+)\s+(Static|Dynamic)",
-        re.MULTILINE)
-    rx_line1 = re.compile(
-        r"\s+(?P<interface>\d+\/\d+)\s+\S+\s+",
-        re.MULTILINE)
+    rx_line = re.compile(r"^\s+(?P<port>\d+)\s+(Static|Dynamic)", re.MULTILINE)
+    rx_line1 = re.compile(r"\s+(?P<interface>\d+\/\d+)\s+\S+\s+", re.MULTILINE)
     rx_line2 = re.compile(
-        r"^\s+(?P<interface>\d+\/\d+)\s+\S+\s+\d+\s+\S+\s+(?P<port>\d+)",
-        re.MULTILINE)
+        r"^\s+(?P<interface>\d+\/\d+)\s+\S+\s+\d+\s+\S+\s+(?P<port>\d+)", re.MULTILINE
+    )
 
     def execute(self):
         r = []
@@ -41,10 +37,12 @@ class Script(BaseScript):
                 for match1 in self.rx_line2.finditer(data1):
                     if int(match1.group("port")) == port:
                         members += [match1.group("interface")]
-            r += [{
-                "interface": "%i" % port,
-                "members": members,
-                # <!> TODO: port-channel type detection
-                "type": "L"
-            }]
+            r += [
+                {
+                    "interface": "%i" % port,
+                    "members": members,
+                    # <!> TODO: port-channel type detection
+                    "type": "L",
+                }
+            ]
         return r

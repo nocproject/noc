@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from __future__ import print_function
+# Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -34,8 +34,10 @@ class Script(BaseScript):
 
     def apply_table(self, r, oid, name, f=None):
         if not f:
+
             def f(x):
                 return x
+
         for ifindex, v in six.iteritems(self.get_iftable(oid)):
             s = r.get(ifindex)
             if s:
@@ -49,9 +51,7 @@ class Script(BaseScript):
                 name = name.split()[2]
             if name.startswith("p"):
                 name = "s%s" % name
-            r[ifindex] = {
-                "interface": name
-            }
+            r[ifindex] = {"interface": name}
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
@@ -66,7 +66,7 @@ class Script(BaseScript):
                 ri["in_speed"] = s // 1000
                 ri["out_speed"] = s // 1000
 
-        return r.values()
+        return list(six.itervalues(r))
 
     def get_data_sw(self, o):
         # ifIndex -> ifName mapping
@@ -77,9 +77,7 @@ class Script(BaseScript):
                 name = name.split()[2]
             if name.startswith("p"):
                 name = "s%s" % name
-            r[ifindex] = {
-                "interface": name
-            }
+            r[ifindex] = {"interface": name}
         # Apply ifAdminStatus
         self.apply_table(r, "%s.15.2.1.3" % o, "admin_status", lambda x: x == "UP" or "1")
         # Apply ifOperStatus
@@ -97,7 +95,7 @@ class Script(BaseScript):
                 s = int(s)
                 ri["in_speed"] = s * 1000
                 ri["out_speed"] = s * 1000
-        return r.values()
+        return list(six.itervalues(r))
 
     def get_data_adsl(self, o):
         # ifIndex -> ifName mapping
@@ -108,9 +106,7 @@ class Script(BaseScript):
         adsl_oid = "%s.10.2.1.2" % o
         r = {}  # ifindex -> data
         for ifindex, name in six.iteritems(self.get_iftable(adsl_oid)):
-            r[ifindex] = {
-                "interface": name
-            }
+            r[ifindex] = {"interface": name}
 
         # Apply ifAdminStatus
         self.apply_table(r, "%s.10.2.1.3" % o, "admin_status", lambda x: x == "up" or x == 1)
@@ -123,7 +119,7 @@ class Script(BaseScript):
                 s = int(s)
                 ri["in_speed"] = s
                 ri["out_speed"] = s
-        return r.values()
+        return list(six.itervalues(r))
 
     def execute_snmp(self, interfaces=None):
         if self.is_platform_MXA24:

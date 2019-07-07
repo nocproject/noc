@@ -18,10 +18,9 @@ class Migration(BaseMigration):
         # Deleting model 'Chart'
         self.db.delete_table("pm_chart")
         # Deleting model 'TimeSeriesData'
-        self.db.delete_table('pm_timeseriesdata')
+        self.db.delete_table("pm_timeseriesdata")
         # Deleting model 'TimeSeries'
-        self.db.delete_table('pm_timeseries')
-
+        self.db.delete_table("pm_timeseries")
 
 
 SP_DROP = "DROP FUNCTION IF EXISTS pm_timeseries_register(CHAR,INTEGER,DOUBLE PRECISION)"

@@ -13,10 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "BDCOM.IOS"
-    pattern_more = [
-        (r"^ --More-- ", " "),
-        (r"\(y/n\) \[n\]", "y\n")
-    ]
+    pattern_more = [(r"^ --More-- ", " "), (r"\(y/n\) \[n\]", "y\n")]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"^Unknown command"
@@ -26,9 +23,11 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     command_save_config = "write"
     command_exit = "exit"
-    config_volatile = ["^%.*?$",
-                       r"enable password 7 \S+( level \d+)?\n",
-                       r"username \S+ password 7 \S+( author\-group \S+)?\n"]
+    config_volatile = [
+        "^%.*?$",
+        r"enable password 7 \S+( level \d+)?\n",
+        r"username \S+ password 7 \S+( author\-group \S+)?\n",
+    ]
 
     def convert_interface_name(self, interface):
         if interface.startswith("f"):

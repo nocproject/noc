@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.core.gridvcs.utils import REPOS
 from noc.core.gridvcs.base import GridVCS
@@ -21,35 +22,31 @@ def fix():
 def fix_repo(repo):
     vcs = GridVCS(repo)
     # Get files without chunk 0
-    revs = set(
-        d["_id"]
-        for d in vcs.fs._GridFS__files.find({}, {"_id": 1})
-    )
-    chunks = set(
-        d["files_id"]
-        for d in vcs.fs._GridFS__chunks.find({"n": 0}, {"files_id": 1})
-    )
+    revs = set(d["_id"] for d in vcs.fs._GridFS__files.find({}, {"_id": 1}))
+    chunks = set(d["files_id"] for d in vcs.fs._GridFS__chunks.find({"n": 0}, {"files_id": 1}))
     corrupt_files = revs - chunks
     if not corrupt_files:
         return
     # Reduce to corrupt objects
     corrupt_objects = set(
         d["object"]
-        for d in vcs.fs._GridFS__files.find({"_id": {"$in": list(corrupt_files)}}, {"_id": 0, "object": 1})
+        for d in vcs.fs._GridFS__files.find(
+            {"_id": {"$in": list(corrupt_files)}}, {"_id": 0, "object": 1}
+        )
     )
     for obj in corrupt_objects:
         fix_object(vcs, obj, corrupt_files)
 
 
 def fix_object(vcs, object, corrupt):
-    print("@@@ %s" % object)
+    print ("@@@ %s" % object)
     revs = list(vcs.iter_revisions(object))
     show_revs(revs, corrupt)
     while True:
         cidx = find_corrupt(vcs, revs, corrupt)
         if cidx is None:
             break
-        print("  -> CORRUPT %d" % cidx)
+        print ("  -> CORRUPT %d" % cidx)
         cut_corrupt(vcs, revs, cidx)
         show_revs(revs, corrupt)
 
@@ -92,4 +89,4 @@ def cut_corrupt(vcs, revs, cidx):
 
 def show_revs(revs, corrupt):
     for r in revs:
-        print("    %s %s %s" % (r.ts, r.ft, "*" if r.id in corrupt else " "))
+        print ("    %s %s %s" % (r.ts, r.ft, "*" if r.id in corrupt else " "))

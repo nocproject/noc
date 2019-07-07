@@ -20,13 +20,13 @@ class Script(BaseScript):
         r"^\s*sent=(?P<sent>\d+) received=(?P<received>\d+) "
         r"packet-loss=\d+% min-rtt=(?P<min>\d+)ms "
         r"avg-rtt=(?P<avg>\d+)ms max-rtt=(?P<max>\d+)ms",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_result1 = re.compile(
-        r"^\s*sent=(?P<sent>\d+) received=(?P<received>\d+) "
-        r"packet-loss=\d+%", re.MULTILINE)
+        r"^\s*sent=(?P<sent>\d+) received=(?P<received>\d+) " r"packet-loss=\d+%", re.MULTILINE
+    )
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "/ping %s" % address
         if count:
             cmd += " count=%d" % int(count)
@@ -46,11 +46,8 @@ class Script(BaseScript):
                 "count": match.group("sent"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
             match = self.rx_result1.search(c)
-            return {
-                "success": match.group("received"),
-                "count": match.group("sent")
-            }
+            return {"success": match.group("received"), "count": match.group("sent")}

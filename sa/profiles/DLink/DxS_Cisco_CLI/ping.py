@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -19,7 +20,8 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
         r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"
-        r" ms)?", re.MULTILINE | re.DOTALL
+        r" ms)?",
+        re.MULTILINE | re.DOTALL,
     )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):
@@ -50,5 +52,5 @@ class Script(BaseScript):
             "count": int(match.group("count")),
             "min": match.group("min"),
             "avg": match.group("avg"),
-            "max": match.group("max")
+            "max": match.group("max"),
         }

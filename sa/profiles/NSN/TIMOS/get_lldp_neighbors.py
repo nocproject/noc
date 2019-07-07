@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -28,7 +29,8 @@ class Script(BaseScript):
         r"^Port\sId\s+:\s(?P<remote_port>.+?)\n"
         r"^Port\sDescription\s+:\s(?P<remote_port_description>.+?)\n"
         r"^System\sName\s+:\s(?P<remote_system_name>\S+)\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     CAPS_MAP = {
         "other": 1,
@@ -39,7 +41,7 @@ class Script(BaseScript):
         "telephone": 32,
         "docsis": 64,
         "station": 128,
-        "cvlan": 0
+        "cvlan": 0,
     }
 
     NOT_SPECIFIED = "(not specified)"
@@ -65,8 +67,8 @@ class Script(BaseScript):
             match_obj = self.rx_remote_info.search(v)
             pri = match_obj.groupdict()
             pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
-            if 'n/a' in pri['remote_system_name']:
-                del pri['remote_system_name']
+            if "n/a" in pri["remote_system_name"]:
+                del pri["remote_system_name"]
             return pri
 
     def execute_cli(self):
@@ -79,16 +81,18 @@ class Script(BaseScript):
             match = self.rx_some.search(line)
             if not match:
                 continue
-            port = match.group('port')
-            local_lldp = self.cli('show port %s ethernet detail | match IfIndex' % port)
+            port = match.group("port")
+            local_lldp = self.cli("show port %s ethernet detail | match IfIndex" % port)
             lldp_match = self.rx_local_lldp.search(local_lldp)
             if not lldp_match:
                 continue
-            local_interface_id = str(lldp_match.group('local_interface_id'))
+            local_interface_id = str(lldp_match.group("local_interface_id"))
             pri = self.get_port_info(port)
-            r += [{
-                "local_interface": port,
-                "local_interface_id": local_interface_id,
-                "neighbors": [pri]
-            }]
+            r += [
+                {
+                    "local_interface": port,
+                    "local_interface_id": local_interface_id,
+                    "neighbors": [pri],
+                }
+            ]
         return r

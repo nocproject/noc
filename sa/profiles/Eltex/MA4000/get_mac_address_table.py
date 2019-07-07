@@ -25,10 +25,5 @@ class Script(BaseScript):
             cmd += " all"
         t = parse_table(self.cli(cmd))
         for i in t:
-            r += [{
-                "vlan_id": int(i[1]),
-                "mac": i[2],
-                "interfaces": [i[3]],
-                "type": "D"
-            }]
+            r += [{"vlan_id": int(i[1]), "mac": i[2], "interfaces": [i[3]], "type": "D"}]
         return r

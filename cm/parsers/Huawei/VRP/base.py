@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.lib.text import ranges_to_list
 from noc.cm.parsers.base import BaseParser
@@ -20,10 +21,21 @@ class BaseVRPParser(BaseParser):
         super(BaseVRPParser, self).__init__(managed_object)
 
     STATUSES = {"sntp"}
-    SERVICES = {"telnet", "web", "ssh", "cluster",
-                "ntdp", "ndp", "lldp", "dhcp",
-                "http server", "http secure-server",
-                "telnet server", "stp", "info-center"}
+    SERVICES = {
+        "telnet",
+        "web",
+        "ssh",
+        "cluster",
+        "ntdp",
+        "ndp",
+        "lldp",
+        "dhcp",
+        "http server",
+        "http secure-server",
+        "telnet server",
+        "stp",
+        "info-center",
+    }
     PROTOCOLS = {"ntdp", "ndp", "bpdu"}
 
     def parse(self, config):
@@ -80,8 +92,11 @@ class BaseVRPParser(BaseParser):
                     self.on_interface_descripion(ll)
                 elif line.startswith("ip address "):
                     self.on_subinterface_ipv4_address(ll)
-                elif (line.startswith("broadcast-suppression") or line.startswith("multicast-suppression") or
-                      line.startswith("unicast-suppression")):
+                elif (
+                    line.startswith("broadcast-suppression")
+                    or line.startswith("multicast-suppression")
+                    or line.startswith("unicast-suppression")
+                ):
                     self.on_storm_control(ll)
                 elif line.startswith("speed "):
                     self.on_interface_speed(ll)
@@ -95,7 +110,9 @@ class BaseVRPParser(BaseParser):
                     pass
                 elif line.startswith("port-security"):
                     self.on_interface_port_security(ll)
-                elif line.startswith("port trunk allow-pass ") or line.startswith("port hybrid tagged vlan "):
+                elif line.startswith("port trunk allow-pass ") or line.startswith(
+                    "port hybrid tagged vlan "
+                ):
                     # port trunk allow-pass vlan 118 718
                     self.on_interface_tagged(ll)
                 elif line.startswith("port hybrid "):
@@ -155,9 +172,7 @@ class BaseVRPParser(BaseParser):
         return r
 
     def get_user_defaults(self):
-        return {
-            "level": 0
-        }
+        return {"level": 0}
 
     def on_interface_context(self, tokens):
         # print tokens
@@ -177,7 +192,7 @@ class BaseVRPParser(BaseParser):
     def on_interface_descripion(self, tokens):
         si = self.get_current_subinterface()
         description = " ".join(tokens[1:])
-        if description.startswith("\"") and description.startswith("\""):
+        if description.startswith('"') and description.startswith('"'):
             description = description[1:-1]
         si.description = description
         if "." not in si.name:

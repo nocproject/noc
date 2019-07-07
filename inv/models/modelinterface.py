@@ -11,19 +11,30 @@ from __future__ import absolute_import
 import os
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, ListField,
-                                EmbeddedDocumentField, UUIDField)
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ListField,
+    EmbeddedDocumentField,
+    UUIDField,
+)
 import cachetools
+
 # NOC modules
 from .error import ModelDataError
 from noc.lib.utils import deep_copy
 from noc.lib.escape import json_escape as q
-from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
-                                    FloatParameter, IntParameter,
-                                    StringListParameter)
+from noc.sa.interfaces.base import (
+    StringParameter,
+    BooleanParameter,
+    FloatParameter,
+    IntParameter,
+    StringListParameter,
+)
 
 id_lock = Lock()
 
@@ -33,7 +44,7 @@ T_MAP = {
     "int": IntParameter(),
     "float": FloatParameter(),
     "bool": BooleanParameter(),
-    "strlist": StringListParameter()
+    "strlist": StringListParameter(),
 }
 
 A_TYPE = ["str", "int", "float", "bool", "objectid", "ref", "strlist"]
@@ -41,10 +52,7 @@ A_TYPE = ["str", "int", "float", "bool", "objectid", "ref", "strlist"]
 
 @six.python_2_unicode_compatible
 class ModelInterfaceAttr(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     name = StringField()
     type = StringField(choices=[(t, t) for t in A_TYPE])
     description = StringField()
@@ -58,11 +66,11 @@ class ModelInterfaceAttr(EmbeddedDocument):
 
     def __eq__(self, v):
         return (
-            self.name == v.name and
-            self.type == v.type and
-            self.description == v.description and
-            self.required == v.required and
-            self.is_const == v.is_const
+            self.name == v.name
+            and self.type == v.type
+            and self.description == v.description
+            and self.required == v.required
+            and self.is_const == v.is_const
         )
 
     def _clean(self, value):
@@ -96,11 +104,12 @@ class ModelInterface(Document):
     """
     Equipment vendor
     """
+
     meta = {
         "collection": "noc.modelinterfaces",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "inv.modelinterfaces"
+        "json_collection": "inv.modelinterfaces",
     }
 
     name = StringField(unique=True)
@@ -123,20 +132,20 @@ class ModelInterface(Document):
         ar = []
         for a in self.attrs:
             r = ["        {"]
-            r += ["            \"name\": \"%s\"," % q(a.name)]
-            r += ["            \"type\": \"%s\"," % q(a.type)]
-            r += ["            \"description\": \"%s\"," % q(a.description)]
-            r += ["            \"required\": %s," % q(a.required)]
-            r += ["            \"is_const\": %s" % q(a.is_const)]
+            r += ['            "name": "%s",' % q(a.name)]
+            r += ['            "type": "%s",' % q(a.type)]
+            r += ['            "description": "%s",' % q(a.description)]
+            r += ['            "required": %s,' % q(a.required)]
+            r += ['            "is_const": %s' % q(a.is_const)]
             r += ["        }"]
             ar += ["\n".join(r)]
         r = [
             "{",
-            "    \"name\": \"%s\"," % q(self.name),
-            "    \"$collection\": \"%s\"," % self._meta["json_collection"],
-            "    \"uuid\": \"%s\"," % str(self.uuid),
-            "    \"description\": \"%s\"," % q(self.description),
-            "    \"attrs\": [",
+            '    "name": "%s",' % q(self.name),
+            '    "$collection": "%s",' % self._meta["json_collection"],
+            '    "uuid": "%s",' % str(self.uuid),
+            '    "description": "%s",' % q(self.description),
+            '    "attrs": [',
             ",\n".join(ar),
             "    ]",
             "}",
@@ -179,6 +188,5 @@ class ModelInterface(Document):
             raise ModelDataError("Invalid interface '%s'" % interface)
         attr = mi.get_attr(key)
         if not attr:
-            raise ModelDataError("Invalid attribute '%s.%s'" % (
-                interface, key))
+            raise ModelDataError("Invalid attribute '%s.%s'" % (interface, key))
         return attr

@@ -16,6 +16,7 @@ import datetime
 import dateutil.parser
 import operator
 # Third-party modules
+import six
 from six.moves import zip
 import bson
 from pymongo import ReadPreference
@@ -126,7 +127,7 @@ class AlarmApplication(ExtApplication):
                 del q[p]
         # Extract IN
         # extjs not working with same parameter name in query
-        for p in q.keys():
+        for p in q:
             if p.endswith("__in") and self.rx_oper_splitter.match(p):
                 field = self.rx_oper_splitter.match(p).group("field") + "__in"
                 if field not in q:
@@ -142,7 +143,7 @@ class AlarmApplication(ExtApplication):
         # Advanced filter
         for p in self.advanced_filter_params:
             params = []
-            for x in q.keys():
+            for x in q:
                 if x.startswith(p):
                     params += [q[x]]
                     del q[x]
@@ -612,7 +613,7 @@ class AlarmApplication(ExtApplication):
                 show_in_summary = be_show
             else:
                 show_in_summary = be_true
-            for p, c in d.items():
+            for p, c in six.iteritems(d):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if collapse and c < 2:
@@ -701,7 +702,7 @@ class AlarmApplication(ExtApplication):
                 show_in_summary = be_show
             else:
                 show_in_summary = be_true
-            for p, c in sorted(d.items(), key=lambda x: -x[1]):
+            for p, c in sorted(six.iteritems(d), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     v += [{"profile": str(pv.id),

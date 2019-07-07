@@ -45,7 +45,7 @@ def snmp_get(address, oids, port=161,
         oids = [oids]
     elif isinstance(oids, dict):
         oid_map = dict((oids[k], k) for k in oids)
-        oids = oids.values()
+        oids = list(six.itervalues(oids))
     else:
         raise ValueError("oids must be either string or dict")
     logger.debug("[%s] SNMP GET %s", address, oids)

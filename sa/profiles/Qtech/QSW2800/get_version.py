@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -26,14 +27,16 @@ class Script(BaseScript):
         r"^\s*BootRom Version\s+(?P<bootprom>\S+)\n"
         r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
         r"^\s*(?:Device serial number |Serial No.:(?:|\s))(?P<serial>\S+)\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     rx_ver2 = re.compile(
         r"^\s*SoftWare(?: Package)? Version\s+(?P<version>\S+(?:\(\S+\))?)\n"
         r"^\s*BootRom Version\s+(?P<bootprom>\S+)\n"
         r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
         r"^\s*(?:Device serial number |Serial No.:(?:|\s))(?P<serial>\S+)\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     rx_vendor = re.compile(r"^DeviceOid\s+\d+\s+(?P<oid>\S+)", re.MULTILINE)
     rx_version = re.compile(r"Software, Version (?P<version>\S+),")
@@ -87,7 +90,7 @@ class Script(BaseScript):
         "1.3.6.1.4.1.27514.3.2.10": "QSW-3470-10T",
         "1.3.6.1.4.1.27514.6.55": "QSW-2500E",
         "1.3.6.1.4.1.27514.101": "QFC-PBIC",
-        "1.3.6.1.4.1.27514.102.1.2.40": "QSW-8300-52F"
+        "1.3.6.1.4.1.27514.102.1.2.40": "QSW-8300-52F",
     }
 
     def fix_platform(self, oid):
@@ -121,8 +124,8 @@ class Script(BaseScript):
                     "attributes": {
                         "Boot PROM": bootprom,
                         "HW version": hardware,
-                        "Serial Number": serial
-                    }
+                        "Serial Number": serial,
+                    },
                 }
             elif match2:
                 version = match2.group("version")
@@ -138,19 +141,15 @@ class Script(BaseScript):
                     "attributes": {
                         "Boot PROM": bootprom,
                         "HW version": hardware,
-                        "Serial Number": serial
-                    }
+                        "Serial Number": serial,
+                    },
                 }
             else:
                 oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
                 platform = self.fix_platform(oid)
                 match = self.rx_version.search(ver)
                 version = match.group("version")
-                return {
-                    "vendor": "Qtech",
-                    "platform": platform,
-                    "version": version
-                }
+                return {"vendor": "Qtech", "platform": platform, "version": version}
         except self.snmp.TimeOutError:
             raise self.NotSupportedError
 
@@ -180,12 +179,8 @@ class Script(BaseScript):
                 "attributes": {
                     "Boot PROM": bootprom,
                     "HW version": hardware,
-                    "Serial Number": serial
-                }
+                    "Serial Number": serial,
+                },
             }
         else:
-            return {
-                "vendor": "Qtech",
-                "platform": "Unknown",
-                "version": "Unknown"
-            }
+            return {"vendor": "Qtech", "platform": "Unknown", "version": "Unknown"}

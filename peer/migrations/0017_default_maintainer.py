@@ -16,5 +16,5 @@ class Migration(BaseMigration):
             rir_id = self.db.execute("SELECT id FROM peer_rir LIMIT 1")[0][0]
             self.db.execute(
                 "INSERT INTO peer_maintainer(maintainer,description,auth,rir_id) VALUES(%s,%s,%s,%s)",
-                ["Default maintainer", "Please change to your maintainer", "NO AUTH", rir_id]
+                ["Default maintainer", "Please change to your maintainer", "NO AUTH", rir_id],
             )

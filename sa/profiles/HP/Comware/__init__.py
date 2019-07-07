@@ -17,14 +17,10 @@ class Profile(BaseProfile):
     command_exit = "quit"
     pattern_more = [(r"^\s+---- More ----$", " ")]
     pattern_prompt = r"^[<\[]\S+[>\]]"
-    pattern_syntax_error = \
-        r"% (?:Unrecognized command|Too many parameters|Incomplete command)" \
-        r" found at"
-    rogue_chars = [
-        re.compile(r"\x1b\[16D\s+\x1b\[16D"),
-        re.compile(r"\x1b\[42D\s+\x1b\[42D"),
-        "\r"
-    ]
+    pattern_syntax_error = (
+        r"% (?:Unrecognized command|Too many parameters|Incomplete command)" r" found at"
+    )
+    rogue_chars = [re.compile(r"\x1b\[16D\s+\x1b\[16D"), re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
 
     spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 

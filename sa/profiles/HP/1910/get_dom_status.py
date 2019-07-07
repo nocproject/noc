@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -19,13 +20,15 @@ class Script(BaseScript):
 
     # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     rx_line = re.compile(
-        r"^(?P<interface>\S+)\s+(?P<temp_c>(\d+|N/A|N/S))\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_rx_dbm>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(No|Yes|N/A|N/S)")
+        r"^(?P<interface>\S+)\s+(?P<temp_c>(\d+|N/A|N/S))\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_rx_dbm>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(No|Yes|N/A|N/S)"
+    )
 
     def execute(self, interface=None):
         r = []
         if interface is not None:
-            cmd = "display transceiver diagnosis interface %s"\
-                % interface.replace('Ge ', 'GigabitEthernet ')
+            cmd = "display transceiver diagnosis interface %s" % interface.replace(
+                "Ge ", "GigabitEthernet "
+            )
         else:
             cmd = "display transceiver diagnosis interface"
         v = self.cli(cmd)
@@ -48,12 +51,14 @@ class Script(BaseScript):
             optical_tx_dbm = match.group("optical_tx_dbm")
             if optical_tx_dbm == "N/A" or optical_tx_dbm == "N/S":
                 optical_tx_dbm = None
-            r.append({
-                "interface": match.group("interface"),
-                "temp_c": temp_c,
-                "voltage_v": voltage_v,
-                "current_ma": current_ma,
-                "optical_rx_dbm": optical_rx_dbm,
-                "optical_tx_dbm": optical_tx_dbm
-            })
+            r.append(
+                {
+                    "interface": match.group("interface"),
+                    "temp_c": temp_c,
+                    "voltage_v": voltage_v,
+                    "current_ma": current_ma,
+                    "optical_rx_dbm": optical_rx_dbm,
+                    "optical_tx_dbm": optical_tx_dbm,
+                }
+            )
         return r

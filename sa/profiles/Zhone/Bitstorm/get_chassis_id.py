@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -23,7 +24,9 @@ class Script(BaseScript):
         r"^Model\s*(?P<platform>\S+)\n"
         r"^Serial Number\s*(?P<serial>\S+)\n"
         r"^MAC Address Eth1\s*(?P<mac1>\S+)\n"
-        r"^MAC Address Eth2\s*(?P<mac2>\S+)\n", re.MULTILINE | re.IGNORECASE)
+        r"^MAC Address Eth2\s*(?P<mac2>\S+)\n",
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def execute(self):
         v = self.cli("show system information", cached=True)
@@ -31,7 +34,7 @@ class Script(BaseScript):
         if match:
             return {
                 "first_chassis_mac": match.group("mac1"),
-                "last_chassis_mac": match.group("mac2")
+                "last_chassis_mac": match.group("mac2"),
             }
         else:
             return {}

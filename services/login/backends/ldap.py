@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # LDAP Authentication backend
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 # Third-party modules
 import ldap3
+import six
 # NOC modules
 from noc.main.models.authldapdomain import AuthLDAPDomain
 from .base import BaseAuthBackend
@@ -235,7 +236,7 @@ class LdapBackend(BaseAuthBackend):
         attrs = entry.entry_get_attributes_dict()
         self.logger.debug("User attributes: %s", attrs if attrs else "No attributes response")
         user_info["user_dn"] = entry.entry_get_dn()
-        for k, v in ldap_domain.get_attr_mappings().items():
+        for k, v in six.iteritems(ldap_domain.get_attr_mappings()):
             if k in attrs:
                 value = attrs[k]
                 if isinstance(value, (list, tuple)):

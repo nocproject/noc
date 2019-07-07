@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,4 +17,7 @@ class Script(BaseScript):
 
     def execute(self):
         s = self.cli("/system identity print")
-        return s.split(":", 1)[1].strip()
+        if s and "name: " in s:
+            return s.split(":", 1)[1].strip()
+        else:
+            return "MikroTik"

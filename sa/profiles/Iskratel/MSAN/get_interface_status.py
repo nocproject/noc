@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -24,18 +25,21 @@ class Script(BaseScript):
         r"(?:Auto|1000 Full)\s+"
         r"(?:\s+|Auto|100 Full|1000 Full)\s+"
         r"(?P<oper_status>Up|Down)\s+(?:Enable|Disable)\s+"
-        r"(?:Enable|Disable)(?P<descr>.*?)?\n", re.MULTILINE)
+        r"(?:Enable|Disable)(?P<descr>.*?)?\n",
+        re.MULTILINE,
+    )
 
     def execute_cli(self, interface=None):
         r = []
         for match in self.rx_port.finditer(self.cli("show port all")):
-            if (interface is not None) and (interface == match.group('port')):
-                return [{
-                    "interface": match.group('port'),
-                    "status": match.group('oper_status') != "Down"
-                }]
-            r += [{
-                "interface": match.group('port'),
-                "status": match.group('oper_status') != "Down"
-            }]
+            if (interface is not None) and (interface == match.group("port")):
+                return [
+                    {
+                        "interface": match.group("port"),
+                        "status": match.group("oper_status") != "Down",
+                    }
+                ]
+            r += [
+                {"interface": match.group("port"), "status": match.group("oper_status") != "Down"}
+            ]
         return r

@@ -8,15 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, DictParameter,
-                   StringParameter, BooleanParameter)
+from .base import ListOfParameter, DictParameter, StringParameter, BooleanParameter
 
 
 class IGetObjectStatus(BaseInterface):
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "name": StringParameter(),
-        "status": BooleanParameter()
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(attrs={"name": StringParameter(), "status": BooleanParameter()})
+    )
     preview = "NOC.sa.managedobject.scripts.ShowObjectStatus"

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -19,21 +20,26 @@ class Script(BaseScript):
     @todo: ES4626 support
     @todo: QinQ
     """
+
     name = "EdgeCore.ES.get_switchport"
     interface = IGetSwitchport
     cache = True
 
-    rx_interface_3526 = re.compile(r"Information of (?P<interface>[^\n]+?)\n",
-                                   re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_interface_3526 = re.compile(
+        r"Information of (?P<interface>[^\n]+?)\n", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
     rx_interface_swport_3526 = re.compile(
         r"Information of (?P<interface>[^\n]+?)\n.*?VLAN Membership Mode(|\s+):\s+(?P<mode>[^\n]+?)\n.*?Native VLAN(|\s+):\s+(?P<native>\d+).*?Allowed VLAN(|\s+):\s+(?P<vlans>.*?)Forbidden VLAN(|\s+):",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
     rx_interface_qinq_3526 = re.compile(
         r"802.1Q-tunnel Status(|\s+):\s+(?P<qstatus>\S+).*?802.1Q-tunnel Mode(|\s+):\s+(?P<qmode>\S+)",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
     rx_interface_swport_4626 = re.compile(
         r"(?P<interface>[^\n]+)\n.*?Mode\s+:(?P<mode>\S+).*?Port VID\s+:(?P<pvid>\d+).*?",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
     rx_member = re.compile(r"Member port of trunk \d+")
     rx_not_present = re.compile(r"Not present\.")
     rx_vlans = re.compile(r"\)([^,]+?)(\d)")
@@ -52,14 +58,16 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
-        if (self.match_version(platform__contains="3526") or
-           self.match_version(platform__contains="3510") or
-           self.match_version(platform__contains="2228N") or
-           self.match_version(platform__contains="3528") or
-           self.match_version(platform__contains="3552") or
-           self.match_version(platform__contains="4612") or
-           self.match_version(platform__contains="ECS4210") or
-           self.match_version(platform__contains="ECS4100")):
+        if (
+            self.match_version(platform__contains="3526")
+            or self.match_version(platform__contains="3510")
+            or self.match_version(platform__contains="2228N")
+            or self.match_version(platform__contains="3528")
+            or self.match_version(platform__contains="3552")
+            or self.match_version(platform__contains="4612")
+            or self.match_version(platform__contains="ECS4210")
+            or self.match_version(platform__contains="ECS4100")
+        ):
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
                 matchint = self.rx_interface_3526.search(block)
@@ -72,7 +80,7 @@ class Script(BaseScript):
                     "802.1ad Tunnel": False,
                     "802.1Q Enabled": False,
                     "tagged": "",
-                    "status": interface_status.get(name, False)
+                    "status": interface_status.get(name, False),
                 }
                 if self.rx_member.search(block):
                     # skip portchannel members
@@ -91,9 +99,7 @@ class Script(BaseScript):
                     if mqinq.group("qmode").lower() in ["access"]:
                         swport["802.1ad Tunnel"] = True
                     # untagged/tagged
-                vlans = self.rx_vlans.sub(
-                    r"),\g<2>", match.group("vlans").rstrip(",\n ")
-                )
+                vlans = self.rx_vlans.sub(r"),\g<2>", match.group("vlans").rstrip(",\n "))
                 vlans = vlans.replace(" ", "")
                 untagged = None
                 tagged = []
@@ -113,12 +119,14 @@ class Script(BaseScript):
             for block in cmd.split("\n\n"):
                 match = self.rx_interface_swport_4626.search(block)
                 name = match.group("interface")
-                swport = {"interface": name,
-                          "members": portchannel_members.get(name, ""),
-                          "802.1ad Tunnel": False,
-                          "802.1Q Enabled": False,
-                          "tagged": "",
-                          "status": interface_status.get(name, False)}
+                swport = {
+                    "interface": name,
+                    "members": portchannel_members.get(name, ""),
+                    "802.1ad Tunnel": False,
+                    "802.1Q Enabled": False,
+                    "tagged": "",
+                    "status": interface_status.get(name, False),
+                }
                 if self.rx_agg_member.search(block):
                     # skip portchannel members
                     r += [swport]
@@ -129,8 +137,7 @@ class Script(BaseScript):
                 tagged = []
                 p = self.rx_trunk.search(block)
                 if p:
-                    swport["tagged"] = self.expand_rangelist(
-                        p.group("tagged").replace(";", ","))
+                    swport["tagged"] = self.expand_rangelist(p.group("tagged").replace(";", ","))
                 r += [swport]
         else:
             raise self.NotSupportedError()

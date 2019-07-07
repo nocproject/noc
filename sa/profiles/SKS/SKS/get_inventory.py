@@ -24,11 +24,7 @@ class Script(BaseScript):
             r = []
             t = parse_table(v)
             for i in t:
-                stack[i[0]] = {
-                    "type": "CHASSIS",
-                    "vendor": "SKS",
-                    "revision": i[3]
-                }
+                stack[i[0]] = {"type": "CHASSIS", "vendor": "SKS", "revision": i[3]}
             v = self.cli("show system", cached=True)
             t = parse_table(v, footer=r"Unit\s+Temperature")
             for i in t:
@@ -53,7 +49,7 @@ class Script(BaseScript):
                 "type": "CHASSIS",
                 "vendor": "SKS",
                 "part_no": v["platform"],
-                "revision": v["attributes"]["HW version"]
+                "revision": v["attributes"]["HW version"],
             }
             if "Serial Number" in v["attributes"]:
                 r["serial"] = v["attributes"]["Serial Number"]

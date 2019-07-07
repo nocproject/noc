@@ -18,14 +18,14 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
-        r"(?P<mac>\S+)\s+N/A\s+(?P<interface>\S+)\s+dynamic", re.MULTILINE)
+        r"(?P<mac>\S+)\s+N/A\s+(?P<interface>\S+)\s+dynamic",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
         for match in self.rx_line.finditer(self.cli("show ip arp")):
-            if (
-                interface is not None and interface != match.group("interface")
-            ):
+            if interface is not None and interface != match.group("interface"):
                 continue
             r += [match.groupdict()]
         return r

@@ -9,6 +9,7 @@
 # Third-party modules
 import bson
 from pymongo import InsertOne
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
@@ -19,7 +20,9 @@ class Migration(BaseMigration):
 
     def migrate(self):
         # Get existing termination groups
-        tg_data = self.db.execute("SELECT id, name, description, remote_system, remote_id, tags FROM sa_terminationgroup")
+        tg_data = self.db.execute(
+            "SELECT id, name, description, remote_system, remote_id, tags FROM sa_terminationgroup"
+        )
         if not tg_data:
             return  # Nothing to convert
         bulk = []
@@ -33,7 +36,7 @@ class Migration(BaseMigration):
                     "parent": None,
                     "description": "Created from former termination groups",
                     "technology": bson.ObjectId("5b6d6819d706360001a0b716"),  # Group
-                    "bi_id": bson.Int64(bi_hash(root_id))
+                    "bi_id": bson.Int64(bi_hash(root_id)),
                 }
             )
         ]
@@ -48,11 +51,13 @@ class Migration(BaseMigration):
                         "parent": root_id,
                         "description": description,
                         # May be changed by phone migration
-                        "technology": bson.ObjectId("5b6d6be1d706360001f5c04e"),  # Network | IPoE Termination
+                        "technology": bson.ObjectId(
+                            "5b6d6be1d706360001f5c04e"
+                        ),  # Network | IPoE Termination
                         "remote_system": bson.ObjectId(remote_system) if remote_system else None,
                         "remote_id": remote_id,
                         "bi_id": bson.Int64(bi_hash(new_id)),
-                        "_legacy_id": id  # To be removed in future migrations
+                        "_legacy_id": id,  # To be removed in future migrations
                     }
                 )
             ]

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,9 +21,13 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_version_HP = re.compile(r"^Comware Software, Version (?P<version>.+)$", re.MULTILINE)
-    rx_platform_HP = re.compile(r"^HP.*?\s(?P<platform>[A-Z,0-9a-z\-]+).*?.*?(Switch|uptime)", re.MULTILINE)
-    rx_devinfo = re.compile(r"^Slot 1:\nDEVICE_NAME\s+:\s+(?P<platform>[A-Z,0-9a-z\-]+)\s+.+?\n"
-                            r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\n")
+    rx_platform_HP = re.compile(
+        r"^HP.*?\s(?P<platform>[A-Z,0-9a-z\-]+).*?.*?(Switch|uptime)", re.MULTILINE
+    )
+    rx_devinfo = re.compile(
+        r"^Slot 1:\nDEVICE_NAME\s+:\s+(?P<platform>[A-Z,0-9a-z\-]+)\s+.+?\n"
+        r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\n"
+    )
 
     def execute_cli(self, **kwargs):
         platform = "Comware"
@@ -45,12 +50,7 @@ class Script(BaseScript):
                     s = match.group("serial")
             except Exception:
                 pass
-        r = {
-            "vendor": "HP",
-            "platform": platform,
-            "version": version,
-            "attributes": {}
-        }
+        r = {"vendor": "HP", "platform": platform, "version": version, "attributes": {}}
         if not s and self.has_snmp():
             s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
             if not s:

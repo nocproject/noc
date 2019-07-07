@@ -2,16 +2,18 @@
 # ---------------------------------------------------------------------
 # Gis-related utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import math
+
 # Third-party modules
 import geojson
 from geopy.point import Point as GPoint
-from geopy.distance import vincenty, great_circle, ELLIPSOIDS
+from geopy.distance import vincenty, ELLIPSOIDS
+
 # NOC settings
 from noc.config import config
 
@@ -44,10 +46,7 @@ def distance(p1, p2, ellipsoid=ELLIPSOID):
     """
     Distance between two points in meters
     """
-    return vincenty(
-        _get_point(p1),
-        _get_point(p2),
-        ellipsoid=ellipsoid).meters
+    return vincenty(_get_point(p1), _get_point(p2), ellipsoid=ellipsoid).meters
 
 
 def bearing(p1, p2):

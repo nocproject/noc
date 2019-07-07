@@ -14,20 +14,17 @@ class Migration(BaseMigration):
     def migrate(self):
         db = self.mongo_db
         c = db.noc.inv.discovery_id
-        for r in c.find({"first_chassis_mac": {"$exists": True}, "last_chassis_mac": {"$exists": True}}):
+        for r in c.find(
+            {"first_chassis_mac": {"$exists": True}, "last_chassis_mac": {"$exists": True}}
+        ):
             c.update(
+                {"_id": r["_id"]},
                 {
-                    "_id": r["_id"]
-                }, {
-                    "$unset": {
-                        "first_chassis_mac": "",
-                        "last_chassis_mac": ""
-                    },
+                    "$unset": {"first_chassis_mac": "", "last_chassis_mac": ""},
                     "$set": {
-                        "chassis_mac": [{
-                            "first_mac": r["first_chassis_mac"],
-                            "last_mac": r["last_chassis_mac"]
-                        }]
-                    }
-                }
+                        "chassis_mac": [
+                            {"first_mac": r["first_chassis_mac"], "last_mac": r["last_chassis_mac"]}
+                        ]
+                    },
+                },
             )

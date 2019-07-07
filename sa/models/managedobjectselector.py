@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
@@ -17,6 +18,7 @@ from django.db import models
 from django.db.models import Q
 import cachetools
 from psycopg2.extensions import adapt
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.inv.models.vendor import Vendor
@@ -41,21 +43,23 @@ id_lock = Lock()
 
 @on_save
 @on_delete
-@on_delete_check(check=[
-    # ("cm.SelectorItem", "selector"),
-    ("fm.AlarmDiagnosticConfig", "selector"),
-    # ("fm.EscalationItem", "selector"),
-    ("fm.AlarmTrigger", "selector"),
-    ("fm.EventTrigger", "selector"),
-    ("inv.InterfaceClassificationRule", "selector"),
-    ("inv.NetworkSegment", "selector"),
-    ("sa.CommandSnippet", "selector"),
-    ("sa.GroupAccess", "selector"),
-    ("sa.ManagedObjectSelectorByAttribute", "selector"),
-    ("sa.ObjectNotification", "selector"),
-    ("sa.UserAccess", "selector"),
-    ("vc.VCDomainProvisioningConfig", "selector"),
-])
+@on_delete_check(
+    check=[
+        # ("cm.SelectorItem", "selector"),
+        ("fm.AlarmDiagnosticConfig", "selector"),
+        # ("fm.EscalationItem", "selector"),
+        ("fm.AlarmTrigger", "selector"),
+        ("fm.EventTrigger", "selector"),
+        ("inv.InterfaceClassificationRule", "selector"),
+        ("inv.NetworkSegment", "selector"),
+        ("sa.CommandSnippet", "selector"),
+        ("sa.GroupAccess", "selector"),
+        ("sa.ManagedObjectSelectorByAttribute", "selector"),
+        ("sa.ObjectNotification", "selector"),
+        ("sa.UserAccess", "selector"),
+        ("vc.VCDomainProvisioningConfig", "selector"),
+    ]
+)
 @six.python_2_unicode_compatible
 class ManagedObjectSelector(NOCModel):
     class Meta(object):
@@ -69,41 +73,87 @@ class ManagedObjectSelector(NOCModel):
     description = models.TextField(_("Description"), blank=True, null=True)
     is_enabled = models.BooleanField(_("Is Enabled"), default=True)
     filter_id = models.IntegerField(_("Filter by ID"), null=True, blank=True)
-    filter_name = models.CharField(_("Filter by Name (REGEXP)"),
-                                   max_length=256, null=True, blank=True, validators=[check_re])
-    filter_managed = models.NullBooleanField(_("Filter by Is Managed"), null=True, blank=True, default=True)
+    filter_name = models.CharField(
+        _("Filter by Name (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re]
+    )
+    filter_managed = models.NullBooleanField(
+        _("Filter by Is Managed"), null=True, blank=True, default=True
+    )
     filter_pool = DocumentReferenceField(Pool, null=True, blank=True)
     filter_profile = DocumentReferenceField(Profile, null=True, blank=True)
     filter_vendor = DocumentReferenceField(Vendor, null=True, blank=True)
     filter_platform = DocumentReferenceField(Platform, null=True, blank=True)
     filter_version = DocumentReferenceField(Firmware, null=True, blank=True)
-    filter_object_profile = models.ForeignKey(ManagedObjectProfile, verbose_name=_("Filter by Object's Profile"),
-                                              null=True, blank=True, on_delete=models.CASCADE)
-    filter_address = models.CharField(_("Filter by Address (REGEXP)"),
-                                      max_length=256, null=True, blank=True, validators=[check_re])
-    filter_prefix = models.ForeignKey(PrefixTable, verbose_name=_("Filter by Prefix Table"),
-                                      null=True, blank=True, on_delete=models.CASCADE)
-    filter_administrative_domain = models.ForeignKey(AdministrativeDomain,
-                                                     verbose_name=_("Filter by Administrative Domain"),
-                                                     null=True, blank=True, on_delete=models.CASCADE)
-    filter_vrf = models.ForeignKey("ip.VRF", verbose_name=_("Filter by VRF"),
-                                   null=True, blank=True, on_delete=models.CASCADE)
-    filter_vc_domain = models.ForeignKey("vc.VCDomain", verbose_name=_("Filter by VC Domain"),
-                                         null=True, blank=True, on_delete=models.CASCADE)
+    filter_object_profile = models.ForeignKey(
+        ManagedObjectProfile,
+        verbose_name=_("Filter by Object's Profile"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    filter_address = models.CharField(
+        _("Filter by Address (REGEXP)"),
+        max_length=256,
+        null=True,
+        blank=True,
+        validators=[check_re],
+    )
+    filter_prefix = models.ForeignKey(
+        PrefixTable,
+        verbose_name=_("Filter by Prefix Table"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    filter_administrative_domain = models.ForeignKey(
+        AdministrativeDomain,
+        verbose_name=_("Filter by Administrative Domain"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    filter_vrf = models.ForeignKey(
+        "ip.VRF", verbose_name=_("Filter by VRF"), null=True, blank=True, on_delete=models.CASCADE
+    )
+    filter_vc_domain = models.ForeignKey(
+        "vc.VCDomain",
+        verbose_name=_("Filter by VC Domain"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
     filter_service_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     filter_client_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     filter_tt_system = DocumentReferenceField(TTSystem, null=True, blank=True)
-    filter_user = models.CharField(_("Filter by User (REGEXP)"), max_length=256, null=True, blank=True)
-    filter_remote_path = models.CharField(_("Filter by Remote Path (REGEXP)"),
-                                          max_length=256, null=True, blank=True, validators=[check_re])
-    filter_description = models.CharField(_("Filter by Description (REGEXP)"),
-                                          max_length=256, null=True, blank=True, validators=[check_re])
+    filter_user = models.CharField(
+        _("Filter by User (REGEXP)"), max_length=256, null=True, blank=True
+    )
+    filter_remote_path = models.CharField(
+        _("Filter by Remote Path (REGEXP)"),
+        max_length=256,
+        null=True,
+        blank=True,
+        validators=[check_re],
+    )
+    filter_description = models.CharField(
+        _("Filter by Description (REGEXP)"),
+        max_length=256,
+        null=True,
+        blank=True,
+        validators=[check_re],
+    )
     filter_tags = TagsField(_("Filter By Tags"), null=True, blank=True)
-    source_combine_method = models.CharField(_("Source Combine Method"),
-                                             max_length=1, default="O", choices=[("A", "AND"), ("O", "OR")])
-    sources = models.ManyToManyField("self",
-                                     verbose_name=_("Sources"), symmetrical=False,
-                                     null=True, blank=True, related_name="sources_set")
+    source_combine_method = models.CharField(
+        _("Source Combine Method"), max_length=1, default="O", choices=[("A", "AND"), ("O", "OR")]
+    )
+    sources = models.ManyToManyField(
+        "self",
+        verbose_name=_("Sources"),
+        symmetrical=False,
+        null=True,
+        blank=True,
+        related_name="sources_set",
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -171,19 +221,23 @@ class ManagedObjectSelector(NOCModel):
             q &= Q(address__regex=self.filter_address)
         # Filter by prefix table
         if self.filter_prefix:
-            q &= SQL("""
+            q &= SQL(
+                """
                 EXISTS (
                     SELECT * FROM main_prefixtableprefix p
                     WHERE   table_id=%d
-                        AND address::inet <<= p.prefix)""" % self.filter_prefix.id)
+                        AND address::inet <<= p.prefix)"""
+                % self.filter_prefix.id
+            )
         # Filter by administrative domain
         if self.filter_administrative_domain:
-            dl = AdministrativeDomain.get_nested_ids(
-                self.filter_administrative_domain
-            )
-            q &= SQL("""
+            dl = AdministrativeDomain.get_nested_ids(self.filter_administrative_domain)
+            q &= SQL(
+                """
                 "sa_managedobject"."administrative_domain_id" IN (%s)
-            """ % ", ".join(str(x) for x in dl))
+            """
+                % ", ".join(str(x) for x in dl)
+            )
         # Filter by VRF
         if self.filter_vrf:
             q &= Q(vrf=self.filter_vrf)
@@ -210,7 +264,8 @@ class ManagedObjectSelector(NOCModel):
             q &= QTags(self.filter_tags)
         # Restrict to attributes when necessary
         for s in self.managedobjectselectorbyattribute_set.all():
-            q &= SQL("""
+            q &= SQL(
+                """
                 ("sa_managedobject"."id" IN (
                     SELECT managed_object_id
                     FROM sa_managedobjectattribute
@@ -218,10 +273,9 @@ class ManagedObjectSelector(NOCModel):
                         key ~ %s
                         AND value ~ %s
                 ))
-            """ % (
-                adapt(s.key_re).getquoted(),
-                adapt(s.value_re).getquoted()
-            ))
+            """
+                % (adapt(s.key_re).getquoted(), adapt(s.value_re).getquoted())
+            )
         # Restrict to sources
         if self.sources.count():
             if self.source_combine_method == "A":
@@ -253,7 +307,7 @@ class ManagedObjectSelector(NOCModel):
         ["filter_user", "user", "=="],
         ["filter_remote_path", "remote_path", "~"],
         ["filter_description", "description", "~"],
-        ["filter_tags", "tags", "CONTAINS"]
+        ["filter_tags", "tags", "CONTAINS"],
     ]
 
     @property
@@ -261,6 +315,7 @@ class ManagedObjectSelector(NOCModel):
         """
         Return selector as text expression
         """
+
         def q(s):
             if isinstance(s, six.integer_types):
                 return str(s)
@@ -268,7 +323,7 @@ class ManagedObjectSelector(NOCModel):
                 s = [q(x) for x in s]
                 return u"[%s]" % ", ".join(s)
             else:
-                return u"\"%s\"" % unicode(s).replace("\\", "\\\\").replace("'", "\\'")
+                return u'"%s"' % unicode(s).replace("\\", "\\\\").replace("'", "\\'")
 
         expr = []
         # Filter by is_managed
@@ -302,6 +357,7 @@ class ManagedObjectSelector(NOCModel):
         :return:
         """
         from .managedobject import ManagedObject
+
         return ManagedObject.objects.filter(self.Q)
 
     def match(self, managed_object):
@@ -373,17 +429,15 @@ class ManagedObjectSelectorByAttribute(NOCModel):
         app_label = "sa"
 
     selector = models.ForeignKey(
-        ManagedObjectSelector,
-        verbose_name=_("Object Selector"), on_delete=models.CASCADE
+        ManagedObjectSelector, verbose_name=_("Object Selector"), on_delete=models.CASCADE
     )
-    key_re = models.CharField(_("Filter by key (REGEXP)"),
-                              max_length=256, validators=[check_re])
-    value_re = models.CharField(_("Filter by value (REGEXP)"),
-                                max_length=256, validators=[check_re])
+    key_re = models.CharField(_("Filter by key (REGEXP)"), max_length=256, validators=[check_re])
+    value_re = models.CharField(
+        _("Filter by value (REGEXP)"), max_length=256, validators=[check_re]
+    )
 
     def __str__(self):
-        return u"%s: %s = %s" % (
-            self.selector.name, self.key_re, self.value_re)
+        return u"%s: %s = %s" % (self.selector.name, self.key_re, self.value_re)
 
 
 # Avoid circular references

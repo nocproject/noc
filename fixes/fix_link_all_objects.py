@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import print_function
+
 # NOC modules
 from noc.inv.models.link import Link
 
@@ -17,4 +18,4 @@ def fix():
         try:
             l.save()
         except AssertionError:
-            print("Assertion Error, check link with id: %s" % l.id)
+            print ("Assertion Error, check link with id: %s" % l.id)

@@ -20,7 +20,8 @@ class Script(BaseScript):
         r"(?P<interface>Eth-Trunk\d+).*?\n"
         r"(?:LAG ID: \d+\s+)?Working\s?Mode: (?P<mode>\S+).*?\n"
         r"(?:Actor)?PortName[^\n]+(?P<members>.*?)(\n\s*\n|\n\s\s)",
-        re.IGNORECASE | re.DOTALL | re.MULTILINE)
+        re.IGNORECASE | re.DOTALL | re.MULTILINE,
+    )
 
     def execute_cli(self):
         if self.is_kernel_3:
@@ -44,13 +45,15 @@ class Script(BaseScript):
             """
             return []
         for match in self.rx_chan_line_vrp5.finditer(trunk):
-            r += [{
-                "interface": match.group("interface"),
-                "members": [l.split(" ", 1)[0] for l in match.group("members").lstrip("\n").splitlines()],
-                "type": {
-                    "normal": "S",
-                    "static": "L",
-                    "lacp": "L"
-                }[match.group("mode").lower()]
-            }]
+            r += [
+                {
+                    "interface": match.group("interface"),
+                    "members": [
+                        l.split(" ", 1)[0] for l in match.group("members").lstrip("\n").splitlines()
+                    ],
+                    "type": {"normal": "S", "static": "L", "lacp": "L"}[
+                        match.group("mode").lower()
+                    ],
+                }
+            ]
         return r

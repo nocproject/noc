@@ -17,12 +17,11 @@ from noc.lib.text import parse_kv
 class Script(BaseScript):
     """
     """
+
     name = "APC.AOS.get_chassis_id"
     interface = IGetChassisID
 
-    SNMP_GET_OIDS = {
-        "SNMP": mib["IF-MIB::ifPhysAddress", 2]
-    }
+    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 2]}
 
     def execute_cli(self):
         v = self.cli("about", cached=True)
@@ -30,9 +29,6 @@ class Script(BaseScript):
         s = parse_kv({"mac address": "mac"}, v)
         if s:
             s = s["mac"].replace(" ", ":")
-            return [{
-                "first_chassis_mac": MAC(s),
-                "last_chassis_mac": MAC(s)
-            }]
+            return [{"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}]
         else:
             raise self.NotSupportedError

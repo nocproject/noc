@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -18,8 +19,9 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^\s*(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+"
-        r"(?P<iface>\S+ \S+)\s*$", re.MULTILINE)
+        r"^\s*(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+" r"(?P<iface>\S+ \S+)\s*$",
+        re.MULTILINE,
+    )
 
     """
     Ignoring lines like these. This are invalid mac addreses
@@ -42,15 +44,14 @@ Static  35   ff:ff:ff:ff:ff:ff  GigabitEthernet 1/1-8 2.5GigabitEthernet 1/1-2 1
         if vlan is not None:
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("iface")],
-                "type": {
-                    "dynamic": "D",
-                    "static": "S",
-                    "self": "C",
-                    "secure": "S"
-                }[match.group("type").lower()],
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("iface")],
+                    "type": {"dynamic": "D", "static": "S", "self": "C", "secure": "S"}[
+                        match.group("type").lower()
+                    ],
+                }
+            ]
         return r

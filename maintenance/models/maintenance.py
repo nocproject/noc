@@ -12,19 +12,25 @@ import datetime
 import dateutil.parser
 import operator
 from threading import Lock
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField, BooleanField, ReferenceField, DateTimeField,
-    ListField, EmbeddedDocumentField
+    StringField,
+    BooleanField,
+    ReferenceField,
+    DateTimeField,
+    ListField,
+    EmbeddedDocumentField,
 )
 import cachetools
+
 # NOC modules
 from .maintenancetype import MaintenanceType
 from mongoengine.errors import ValidationError
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.sa.models.objectdata import ObjectData
 from noc.main.models.timepattern import TimePattern
@@ -47,11 +53,8 @@ class Maintenance(Document):
         "collection": "noc.maintenance",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "affected_objects.object",
-            ("start", "is_completed")
-        ],
-        "legacy_collections": ["noc.maintainance"]
+        "indexes": ["affected_objects.object", ("start", "is_completed")],
+        "legacy_collections": ["noc.maintainance"],
     }
 
     type = ReferenceField(MaintenanceType)
@@ -106,55 +109,43 @@ class Maintenance(Document):
                     delay=(dateutil.parser.parse(self.start) - datetime.datetime.now()).seconds,
                     scheduler="escalator",
                     pool=self.escalate_managed_object.escalator_shard,
-                    maintenance_id=self.id
+                    maintenance_id=self.id,
                 )
             else:
                 call_later(
                     "noc.services.escalator.maintenance.close_maintenance",
                     scheduler="escalator",
                     pool=self.escalate_managed_object.escalator_shard,
-                    maintenance_id=self.id
+                    maintenance_id=self.id,
                 )
 
     def update_affected_objects(self):
         """
         Calculate and fill affected objects
         """
+
         def get_downlinks(objects):
             r = set()
             # Get all additional objects which may be affected
-            for d in ObjectData._get_collection().find({
-                "uplinks": {
-                    "$in": list(objects)
-                }
-            }, {
-                "_id": 1
-            }):
+            for d in ObjectData._get_collection().find(
+                {"uplinks": {"$in": list(objects)}}, {"_id": 1}
+            ):
                 if d["_id"] not in objects:
                     r.add(d["_id"])
             if not r:
                 return r
             # Leave only objects with all uplinks affected
             rr = set()
-            for d in ObjectData._get_collection().find({
-                "_id": {
-                    "$in": list(r)
-                }
-            }, {
-                "_id": 1,
-                "uplinks": 1
-            }):
+            for d in ObjectData._get_collection().find(
+                {"_id": {"$in": list(r)}}, {"_id": 1, "uplinks": 1}
+            ):
                 if len([1 for u in d["uplinks"] if u in objects]) == len(d["uplinks"]):
                     rr.add(d["_id"])
             return rr
 
         def get_segment_objects(segment):
             # Get objects belonging to segment
-            so = set(
-                ManagedObject.objects.filter(
-                    segment=segment
-                ).values_list("id", flat=True)
-            )
+            so = set(ManagedObject.objects.filter(segment=segment).values_list("id", flat=True))
             # Get objects from underlying segments
             for ns in NetworkSegment.objects.filter(parent=segment):
                 so |= get_segment_objects(ns)
@@ -174,14 +165,7 @@ class Maintenance(Document):
         # @todo: Calculate affected objects considering topology
         affected = [{"object": o} for o in sorted(affected)]
         Maintenance._get_collection().update(
-            {
-                "_id": self.id
-            },
-            {
-                "$set": {
-                    "affected_objects": affected
-                }
-            }
+            {"_id": self.id}, {"$set": {"affected_objects": affected}}
         )
 
     @classmethod
@@ -191,16 +175,10 @@ class Maintenance(Document):
         """
         affected = set()
         now = datetime.datetime.now()
-        for d in cls._get_collection().find({
-            "start": {
-                "$lte": now
-            },
-            "is_completed": False
-        }, {
-            "_id": 0,
-            "affected_objects": 1,
-            "time_pattern": 1
-        }):
+        for d in cls._get_collection().find(
+            {"start": {"$lte": now}, "is_completed": False},
+            {"_id": 0, "affected_objects": 1, "time_pattern": 1},
+        ):
             if d.get("time_pattern"):
                 # Restrict to time pattern
                 tp = TimePattern.get_by_id(d["time_pattern"])
@@ -218,11 +196,13 @@ class Maintenance(Document):
         """
         r = []
         now = datetime.datetime.now()
-        for m in Maintenance.objects.filter(
-                start__lte=now,
-                is_completed=False,
-                affected_objects__object=mo.id
-        ).exclude("affected_objects").order_by("start"):
+        for m in (
+            Maintenance.objects.filter(
+                start__lte=now, is_completed=False, affected_objects__object=mo.id
+            )
+            .exclude("affected_objects")
+            .order_by("start")
+        ):
             if m.time_pattern and not m.time_pattern.match(now):
                 continue
             r += [m]

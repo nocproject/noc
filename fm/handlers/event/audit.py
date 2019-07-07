@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # NOC modules
 from noc.sa.models.interactionlog import InteractionLog
 from noc.config import config
@@ -55,7 +56,7 @@ def log_cmd(event):
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_COMMAND,
-        text=event.vars.get("command")
+        text=event.vars.get("command"),
     ).save()
 
 
@@ -69,7 +70,7 @@ def log_login(event):
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGIN,
-        text="User logged in"
+        text="User logged in",
     ).save()
 
 
@@ -83,7 +84,7 @@ def log_logout(event):
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGOUT,
-        text="User logged out"
+        text="User logged out",
     ).save()
 
 
@@ -97,7 +98,7 @@ def log_reboot(event):
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_REBOOT,
-        text="System rebooted"
+        text="System rebooted",
     ).save()
 
 
@@ -111,7 +112,7 @@ def log_started(event):
         object=event.managed_object.id,
         user=None,
         op=InteractionLog.OP_STARTED,
-        text="System started"
+        text="System started",
     ).save()
 
 
@@ -125,7 +126,7 @@ def log_halted(event):
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_HALTED,
-        text="System halted"
+        text="System halted",
     ).save()
 
 
@@ -139,5 +140,5 @@ def log_config_changed(event):
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_CONFIG_CHANGED,
-        text="Config changed"
+        text="Config changed",
     ).save()

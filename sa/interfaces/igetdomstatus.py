@@ -8,10 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, InterfaceNameParameter,
-                   DictParameter, FloatParameter, NoneParameter)
+from .base import (
+    ListOfParameter,
+    InterfaceNameParameter,
+    DictParameter,
+    FloatParameter,
+    NoneParameter,
+)
 
 
 class IGetDOMStatus(BaseInterface):
@@ -23,18 +29,18 @@ class IGetDOMStatus(BaseInterface):
                                        "optical_rx_dbm": None}])
     [{'interface': 'Gi 0/1', 'optical_rx_dbm': None, 'optical_tx_dbm': -2.5}]
     """
+
     interface = InterfaceNameParameter(required=False)
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "interface": InterfaceNameParameter(),
-        "temp_c": (NoneParameter(required=False) |
-                   FloatParameter(required=False)),
-        "voltage_v": (NoneParameter(required=False) |
-                      FloatParameter(required=False)),
-        "current_ma": (NoneParameter(required=False) |
-                       FloatParameter(required=False)),
-        "optical_rx_dbm": (NoneParameter(required=False) |
-                           FloatParameter(required=False)),
-        "optical_tx_dbm": (NoneParameter(required=False) |
-                           FloatParameter(required=False))
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(
+            attrs={
+                "interface": InterfaceNameParameter(),
+                "temp_c": (NoneParameter(required=False) | FloatParameter(required=False)),
+                "voltage_v": (NoneParameter(required=False) | FloatParameter(required=False)),
+                "current_ma": (NoneParameter(required=False) | FloatParameter(required=False)),
+                "optical_rx_dbm": (NoneParameter(required=False) | FloatParameter(required=False)),
+                "optical_tx_dbm": (NoneParameter(required=False) | FloatParameter(required=False)),
+            }
+        )
+    )
     preview = "NOC.sa.managedobject.scripts.ShowDomStatus"

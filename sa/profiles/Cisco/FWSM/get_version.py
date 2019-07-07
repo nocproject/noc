@@ -11,7 +11,10 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
-rx_ver = re.compile(r'FWSM Firewall Version (?P<version>\S+).*Hardware:\s+(?P<platform>\S+),', re.MULTILINE | re.DOTALL)
+rx_ver = re.compile(
+    r"FWSM Firewall Version (?P<version>\S+).*Hardware:\s+(?P<platform>\S+),",
+    re.MULTILINE | re.DOTALL,
+)
 
 
 class Script(BaseScript):
@@ -26,5 +29,5 @@ class Script(BaseScript):
         return {
             "vendor": "Cisco",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

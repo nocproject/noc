@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -33,7 +34,5 @@ class Script(BaseScript):
             "vendor": "Iskratel",
             "platform": v["platform"],
             "version": version,
-            "attributes": {
-                "Serial Number": v["serial"]
-            }
+            "attributes": {"Serial Number": v["serial"]},
         }

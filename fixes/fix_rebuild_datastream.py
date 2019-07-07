@@ -11,6 +11,12 @@ from noc.commands.datastream import Command
 
 
 def fix():
-    for ds in ["managedobject", "administrativedomain", "cfgping", "cfgsyslog", "cfgtrap",
-               "dnszone"]:
+    for ds in [
+        "managedobject",
+        "administrativedomain",
+        "cfgping",
+        "cfgsyslog",
+        "cfgtrap",
+        "dnszone",
+    ]:
         Command().run_from_argv(["rebuild", "--datastream", ds])

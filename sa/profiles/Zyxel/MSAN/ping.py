@@ -16,14 +16,10 @@ class Script(BaseScript):
     name = "Zyxel.MSAN.ping"
     interface = IPing
 
-    rx_result = re.compile(
-        r"^\s*(ip: ping - )?reply (received )?from", re.MULTILINE)
-    rx_result1 = re.compile(
-        r"^\s*(?P<sent>\d+)\s+(?P<recv>\d+)\s+\d+\s+\d+\s+\d+", re.MULTILINE)
+    rx_result = re.compile(r"^\s*(ip: ping - )?reply (received )?from", re.MULTILINE)
+    rx_result1 = re.compile(r"^\s*(?P<sent>\d+)\s+(?P<recv>\d+)\s+\d+\s+\d+\s+\d+", re.MULTILINE)
 
-    def execute(
-        self, address, count=None, source_address=None, size=None, df=None
-    ):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ip ping %s" % address
         if count:
             cmd += " %d" % int(count)
@@ -39,7 +35,4 @@ class Script(BaseScript):
                 success = match[-1][1]
             else:
                 success = 0
-        return {
-            "success": int(success),
-            "count": int(count)
-        }
+        return {"success": int(success), "count": int(count)}

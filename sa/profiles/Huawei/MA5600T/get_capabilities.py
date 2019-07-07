@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -17,7 +18,7 @@ from noc.core.mib import mib
 class Script(BaseScript):
     name = "Huawei.MA5600T.get_capabilities"
 
-    rx_lacp_id = re.compile("^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
+    rx_lacp_id = re.compile(r"^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
 
     @false_on_cli_error
     def has_stp_cli(self):

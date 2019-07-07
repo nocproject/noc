@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -22,7 +23,7 @@ class Script(BaseScript):
         r"\s+(?P<temp_c>\S+).+\n\s+Voltage\s+(?P<voltage_v>\S+).+\n\s+"
         r"Current\s+(?P<current_ma>\S+).+\n\s+Tx Power\s+"
         r"(?P<optical_tx_dbm>\S+).+\n\s+Rx Power\s+(?P<optical_rx_dbm>\S+)",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
 
     def execute(self, interface=None):
@@ -54,12 +55,14 @@ class Script(BaseScript):
             optical_tx_dbm = match.group("optical_tx_dbm")
             if optical_tx_dbm == "N/A":
                 optical_tx_dbm = None
-            r += [{
-                "interface": match.group("interface"),
-                "temp_c": temp_c,
-                "voltage_v": voltage_v,
-                "current_ma": current_ma,
-                "optical_rx_dbm": optical_rx_dbm,
-                "optical_tx_dbm": optical_tx_dbm
-            }]
+            r += [
+                {
+                    "interface": match.group("interface"),
+                    "temp_c": temp_c,
+                    "voltage_v": voltage_v,
+                    "current_ma": current_ma,
+                    "optical_rx_dbm": optical_rx_dbm,
+                    "optical_tx_dbm": optical_tx_dbm,
+                }
+            ]
         return r

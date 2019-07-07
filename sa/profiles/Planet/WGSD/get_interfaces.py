@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.lib.text import parse_table
 from noc.core.script.base import BaseScript
@@ -35,9 +36,10 @@ class Script(BaseScript):
     rx_sh_ip_int = re.compile(
         r"^(?P<ip>\d+\S+)/(?P<mask>\d+)\s+(?P<interface>.+?)\s+"
         r"((?P<admin_status>UP|DOWN)/(?P<oper_status>UP|DOWN)\s+)?"
-        r"(?:Static|Dinamic|DHCP)\s", re.MULTILINE)
-    rx_ifname = re.compile(
-        r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
+        r"(?:Static|Dinamic|DHCP)\s",
+        re.MULTILINE,
+    )
+    rx_ifname = re.compile(r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+"
         r"\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
@@ -48,30 +50,28 @@ class Script(BaseScript):
         r"(^\s+Link aggregation type is (?P<link_type>\S+)\s*\n)?"
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
     rx_sh_int_des = re.compile(
         r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)"
         r"\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
-        re.MULTILINE)
-    rx_sh_int_des2 = re.compile(
-        r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
+        re.MULTILINE,
+    )
+    rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
-    rx_lldp = re.compile(
-        r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
+    rx_lldp = re.compile(r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
 
-    rx_gvrp_en = re.compile(
-        r"GVRP Feature is currently Enabled on the device?")
-    rx_gvrp = re.compile(
-        r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
+    rx_gvrp_en = re.compile(r"GVRP Feature is currently Enabled on the device?")
+    rx_gvrp = re.compile(r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
 
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
     rx_stp = re.compile(
-        r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)",
-        re.MULTILINE)
+        r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)", re.MULTILINE
+    )
 
     rx_vlan = re.compile(
-        r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+",
-        re.MULTILINE)
+        r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+", re.MULTILINE
+    )
 
     def execute(self):
         d = {}
@@ -80,18 +80,14 @@ class Script(BaseScript):
             try:
                 for s in self.snmp.getnext("1.3.6.1.2.1.31.1.1.1.1"):
                     n = s[1]
-                    sifindex = s[0][len("1.3.6.1.2.1.31.1.1.1.1") + 1:]
+                    sifindex = s[0][len("1.3.6.1.2.1.31.1.1.1.1") + 1 :]
                     if int(sifindex) < 1000:
                         sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
                         mtu = self.snmp.get("1.3.6.1.2.1.2.2.1.4.%s" % sifindex)
                         smac = MACAddressParameter().clean(sm)
                     else:
                         continue
-                    d[n] = {
-                        "sifindex": sifindex,
-                        "smac": smac,
-                        "mtu": mtu
-                    }
+                    d[n] = {"sifindex": sifindex, "smac": smac, "mtu": mtu}
             except self.snmp.TimeOutError:
                 pass
 
@@ -152,7 +148,7 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "description": description.strip(),
-                "enabled_afi": []
+                "enabled_afi": [],
             }
             if ifindex:
                 sub["snmp_ifindex"] = ifindex
@@ -165,7 +161,7 @@ class Script(BaseScript):
                 "oper_status": o_stat,
                 "enabled_protocols": [],
                 "description": description.strip(),
-                "subinterfaces": [sub]
+                "subinterfaces": [sub],
             }
             if ifindex:
                 iface["snmp_ifindex"] = ifindex
@@ -209,7 +205,7 @@ class Script(BaseScript):
                     continue
                 ip = match.group("ip")
                 netmask = match.group("mask")
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
                 ip_list = [ip]
                 enabled_afi = []
                 if ":" in ip:
@@ -229,7 +225,7 @@ class Script(BaseScript):
             typ = self.profile.get_interface_type(ifname)
             ip = match.group("ip")
             netmask = match.group("mask")
-            ip = ip + '/' + netmask
+            ip = ip + "/" + netmask
             ip_list = [ip]
             enabled_afi = []
             if ":" in ip:
@@ -239,7 +235,7 @@ class Script(BaseScript):
                 ip_interfaces = "ipv4_addresses"
                 enabled_afi += ["IPv4"]
             if ifname.startswith("vlan"):
-                vlan = ifname.split(' ')[1]
+                vlan = ifname.split(" ")[1]
                 ifname = ifname.strip()
             else:
                 continue
@@ -256,14 +252,16 @@ class Script(BaseScript):
                 "type": typ,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": a_stat,
-                    "oper_status": o_stat,
-                    "enabled_afi": enabled_afi,
-                    ip_interfaces: ip_list,
-                    "vlan_ids": self.expand_rangelist(vlan),
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "enabled_afi": enabled_afi,
+                        ip_interfaces: ip_list,
+                        "vlan_ids": self.expand_rangelist(vlan),
+                    }
+                ],
             }
             interfaces += [iface]
 

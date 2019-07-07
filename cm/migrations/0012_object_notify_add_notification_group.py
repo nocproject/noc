@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -17,13 +18,16 @@ class Migration(BaseMigration):
 
     def migrate(self):
         NotificationGroup = self.db.mock_model(
-            model_name='NotificationGroup',
-            db_table='main_notificationgroup'
+            model_name="NotificationGroup", db_table="main_notificationgroup"
         )
         self.db.add_column(
-            "cm_objectnotify", "notification_group",
+            "cm_objectnotify",
+            "notification_group",
             models.ForeignKey(
                 NotificationGroup,
                 verbose_name="Notification Group",
-                null=True, blank=True, on_delete=models.CASCADE)
+                null=True,
+                blank=True,
+                on_delete=models.CASCADE,
+            ),
         )

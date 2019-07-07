@@ -23,21 +23,21 @@ class Script(BaseScript):
         r"^\s+Subnet Mask.+: (?P<ip_subnet>\S+)\s*\n"
         r"^\s+Default Gateway.+: \S+\s*\n"
         r"^\s+VLAN ID,PRI.+: (?P<vlan_id>\d+),\d+\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_eth = re.compile(r"^\s+(?P<name>\d+)", re.MULTILINE)
     rx_vlan = re.compile(
         r"^vlan id (?P<vlan_id>\d+).*\n"
         r"^name\s*: (?P<vlan_name>.+)\s*\n"
         r"^member of ports\s*: (?P<ports>.+)\s*",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_vlan2 = re.compile(
         r"^vlan id (?P<vlan_id>\d+).*\n"
         r"^name\s*: (?P<vlan_name>.+)\s*\n"
         r"^untagged on ports:\s+(?P<uport>.+)\s*"
         r"^tagged on ports\s*:\s+(?P<tports>.+)\s*",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -48,11 +48,9 @@ class Script(BaseScript):
                 "name": match.group("name"),
                 "type": "physical",
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": match.group("name"),
-                    "enabled_afi": ["BRIDGE"],
-                    "tagged_vlans": []
-                }]
+                "subinterfaces": [
+                    {"name": match.group("name"), "enabled_afi": ["BRIDGE"], "tagged_vlans": []}
+                ],
             }
             interfaces += [iface]
         for v in self.scripts.get_vlans():
@@ -88,15 +86,17 @@ class Script(BaseScript):
             "oper_status": True,
             "mac": match.group("mac"),
             "enabled_protocols": [],
-            "subinterfaces": [{
-                "name": "MGMT",
-                "admin_status": True,
-                "oper_status": True,
-                "mac": match.group("mac"),
-                "enabled_afi": ['IPv4'],
-                "ipv4_addresses": [ip_address],
-                "vlan_ids": [int(match.group("vlan_id"))]
-            }]
+            "subinterfaces": [
+                {
+                    "name": "MGMT",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "mac": match.group("mac"),
+                    "enabled_afi": ["IPv4"],
+                    "ipv4_addresses": [ip_address],
+                    "vlan_ids": [int(match.group("vlan_id"))],
+                }
+            ],
         }
         interfaces += [iface]
         return [{"interfaces": interfaces}]

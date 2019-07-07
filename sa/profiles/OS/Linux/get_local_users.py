@@ -20,7 +20,7 @@ class Script(BaseScript):
         r = []
         data = data.split("\n")
         for s in data:
-            u = s.split(':')
+            u = s.split(":")
             if len(u) > 3:
                 name = u[0]
                 user_id = int(u[2])
@@ -30,11 +30,7 @@ class Script(BaseScript):
                     user_class = "system"
                 else:
                     user_class = "operator"
-                r.append({
-                        "username": name,
-                        "class": user_class,
-                        "is_active": True
-                        })
+                r.append({"username": name, "class": user_class, "is_active": True})
         if not r:
-                    raise Exception("Not implemented")
+            raise Exception("Not implemented")
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetipv6neighbor import IGetIPv6Neighbor
@@ -18,15 +19,15 @@ class Script(BaseScript):
     interface = IGetIPv6Neighbor
 
     rx_line = re.compile(
-        r"^(?P<ip>[0-9a-fA-F:\.]+) via (?P<interface>\S+):\s+"
-        r"(?P<mac>\S+)\s+(?P<state>\S+)\s*$")
+        r"^(?P<ip>[0-9a-fA-F:\.]+) via (?P<interface>\S+):\s+" r"(?P<mac>\S+)\s+(?P<state>\S+)\s*$"
+    )
 
     s_map = {
         "INCMP": "incomplete",
         "Permanent/REACHABLE": "reachable",
         "STALE": "stale",
         "DELAY": "delay",
-        "PROBE": "probe"
+        "PROBE": "probe",
     }
 
     def execute(self, vrf=None):

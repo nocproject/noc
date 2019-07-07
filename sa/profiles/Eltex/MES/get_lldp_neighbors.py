@@ -8,9 +8,11 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
 from six.moves import zip
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -19,12 +21,25 @@ from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
 from noc.core.mac import MAC
 from noc.core.mib import mib
-from noc.core.lldp import LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS, \
-    LLDP_CHASSIS_SUBTYPE_LOCAL, LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_COMPONENT, \
-    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NETWORK_ADDRESS, LLDP_PORT_SUBTYPE_LOCAL, \
-    LLDP_CAP_OTHER, LLDP_CAP_REPEATER, LLDP_CAP_BRIDGE, LLDP_CAP_WLAN_ACCESS_POINT, \
-    LLDP_CAP_ROUTER, LLDP_CAP_TELEPHONE, LLDP_CAP_DOCSIS_CABLE_DEVICE, LLDP_CAP_STATION_ONLY, \
-    lldp_caps_to_bits
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
+)
 
 
 class Script(BaseScript):
@@ -38,7 +53,7 @@ class Script(BaseScript):
         r"^System Name:(?P<sys_name>.*)\n"
         r"^System description:(?P<sys_descr>(?:.*\n)*?)"
         r"^Port description:(?P<port_descr>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def get_local_iface(self):
@@ -46,9 +61,12 @@ class Script(BaseScript):
         names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
         # Get LocalPort Table
         for port_num, port_subtype, port_id, port_descr in self.snmp.get_tables(
-                [mib["LLDP-MIB::lldpLocPortIdSubtype"],
-                 mib["LLDP-MIB::lldpLocPortId"],
-                 mib["LLDP-MIB::lldpLocPortDesc"]]):
+            [
+                mib["LLDP-MIB::lldpLocPortIdSubtype"],
+                mib["LLDP-MIB::lldpLocPortId"],
+                mib["LLDP-MIB::lldpLocPortDesc"],
+            ]
+        ):
             if port_subtype == LLDP_PORT_SUBTYPE_ALIAS:
                 # Iface alias
                 iface_name = port_descr
@@ -61,50 +79,63 @@ class Script(BaseScript):
             else:
                 # Iface local
                 iface_name = port_id
-            r[port_num] = {"local_interface": iface_name,
-                           "local_interface_subtype": port_subtype}
+            r[port_num] = {"local_interface": iface_name, "local_interface_subtype": port_subtype}
         if not r:
-            self.logger.warning("Not getting local LLDP port mappings. Check 1.0.8802.1.1.2.1.3.7 table")
+            self.logger.warning(
+                "Not getting local LLDP port mappings. Check 1.0.8802.1.1.2.1.3.7 table"
+            )
             raise NotImplementedError()
         return r
 
     def execute_snmp(self):
         neighb = (
-            "remote_chassis_id_subtype", "remote_chassis_id",
-            "remote_port_subtype", "remote_port",
-            "remote_port_description", "remote_system_name"
+            "remote_chassis_id_subtype",
+            "remote_chassis_id",
+            "remote_port_subtype",
+            "remote_port",
+            "remote_port_description",
+            "remote_system_name",
         )
         r = []
         local_ports = self.get_local_iface()
         if self.has_snmp():
-            for v in self.snmp.get_tables([mib["LLDP-MIB::lldpRemLocalPortNum"],
-                                           mib["LLDP-MIB::lldpRemChassisIdSubtype"],
-                                           mib["LLDP-MIB::lldpRemChassisId"],
-                                           mib["LLDP-MIB::lldpRemPortIdSubtype"],
-                                           mib["LLDP-MIB::lldpRemPortId"],
-                                           mib["LLDP-MIB::lldpRemPortDesc"],
-                                           mib["LLDP-MIB::lldpRemSysName"]
-                                           ], bulk=True):
+            for v in self.snmp.get_tables(
+                [
+                    mib["LLDP-MIB::lldpRemLocalPortNum"],
+                    mib["LLDP-MIB::lldpRemChassisIdSubtype"],
+                    mib["LLDP-MIB::lldpRemChassisId"],
+                    mib["LLDP-MIB::lldpRemPortIdSubtype"],
+                    mib["LLDP-MIB::lldpRemPortId"],
+                    mib["LLDP-MIB::lldpRemPortDesc"],
+                    mib["LLDP-MIB::lldpRemSysName"],
+                ],
+                bulk=True,
+            ):
                 if v:
                     neigh = dict(zip(neighb, v[2:]))
                     # cleaning
                     if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
                         neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
-                    neigh["remote_port"] = neigh["remote_port"].strip(" \x00")  # \x00 Found on some devices
+                    neigh["remote_port"] = neigh["remote_port"].strip(
+                        " \x00"
+                    )  # \x00 Found on some devices
                     if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
-                        neigh["remote_chassis_id"] = \
-                            MAC(neigh["remote_chassis_id"])
+                        neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
                     if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                         try:
                             neigh["remote_port"] = MAC(neigh["remote_port"])
                         except ValueError:
-                            self.logger.warning("Bad MAC address on Remote Neighbor: %s", neigh["remote_port"])
-                    r += [{
-                        "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
-                        # @todo if local interface subtype != 5
-                        # "local_interface_id": 5,
-                        "neighbors": [neigh]
-                    }]
+                            self.logger.warning(
+                                "Bad MAC address on Remote Neighbor: %s", neigh["remote_port"]
+                            )
+                    r += [
+                        {
+                            "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
+                            # @todo if local interface subtype != 5
+                            # "local_interface_id": 5,
+                            "neighbors": [neigh],
+                        }
+                    ]
         return r
 
     def execute_cli(self):
@@ -131,15 +162,13 @@ class Script(BaseScript):
                     "S": LLDP_CAP_STATION_ONLY,  # S-VLAN
                     "C": 256,  # C-VLAN
                     "H": 512,  # Host
-                    "TP": 1024  # Two Ports MAC Relay
-                }
+                    "TP": 1024,  # Two Ports MAC Relay
+                },
             )
-            if (is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id)):
+            if is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id):
                 remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
             elif is_mac(remote_chassis_id):
-                remote_chassis_id = MACAddressParameter().clean(
-                    remote_chassis_id
-                )
+                remote_chassis_id = MACAddressParameter().clean(remote_chassis_id)
                 remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
             else:
                 remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL
@@ -157,10 +186,7 @@ class Script(BaseScript):
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = LLDP_PORT_SUBTYPE_LOCAL
-            i = {
-                "local_interface": local_interface,
-                "neighbors": []
-            }
+            i = {"local_interface": local_interface, "neighbors": []}
             n = {
                 "remote_chassis_id": remote_chassis_id,
                 "remote_chassis_id_subtype": remote_chassis_id_subtype,
@@ -185,9 +211,7 @@ class Script(BaseScript):
                     if is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id):
                         remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
                     elif is_mac(remote_chassis_id):
-                        remote_chassis_id = MACAddressParameter().clean(
-                            remote_chassis_id
-                        )
+                        remote_chassis_id = MACAddressParameter().clean(remote_chassis_id)
                         remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_MAC
                     else:
                         remote_chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_LOCAL

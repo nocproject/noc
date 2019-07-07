@@ -8,10 +8,18 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import EmbeddedDocumentField, StringField, BooleanField, ListField, ReferenceField
+from mongoengine.fields import (
+    EmbeddedDocumentField,
+    StringField,
+    BooleanField,
+    ListField,
+    ReferenceField,
+)
+
 # NOC modules
 from .validationrule import ValidationRule
 
@@ -27,11 +35,7 @@ class RuleItem(EmbeddedDocument):
 
 @six.python_2_unicode_compatible
 class ValidationPolicy(Document):
-    meta = {
-        "collection": "noc.validationpolicy",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.validationpolicy", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     is_active = BooleanField(default=True)

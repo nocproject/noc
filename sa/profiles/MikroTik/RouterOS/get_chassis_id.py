@@ -17,10 +17,13 @@ class Script(BaseScript):
 
     def execute_cli(self):
         macs = []
-        macs += [d["mac-address"] for n, f, d in self.cli_detail(
-            "/interface ethernet print detail without-paging", cached=True)]
+        macs += [
+            d["mac-address"]
+            for n, f, d in self.cli_detail(
+                "/interface ethernet print detail without-paging", cached=True
+            )
+        ]
         macs.sort()
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

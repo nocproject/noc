@@ -18,7 +18,8 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+"
-        r"(?P<interfaces>\d+)\s+(?P<type>[\(\)\,\-\w\s]+)$")
+        r"(?P<interfaces>\d+)\s+(?P<type>[\(\)\,\-\w\s]+)$"
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show switch fdb"
@@ -35,15 +36,17 @@ class Script(BaseScript):
         for l in vlans.split("\n"):
             match = self.rx_line.match(l.strip())
             if match:
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {
-                        "Dynamic": "D",
-                        "Static": "S",
-                        "Static (fixed,non-aging)": "S",
-                        "Multicast": "M"
-                    }[match.group("type")]
-                })
+                r.append(
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": {
+                            "Dynamic": "D",
+                            "Static": "S",
+                            "Static (fixed,non-aging)": "S",
+                            "Multicast": "M",
+                        }[match.group("type")],
+                    }
+                )
         return r

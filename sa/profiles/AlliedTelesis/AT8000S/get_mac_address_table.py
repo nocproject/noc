@@ -18,7 +18,8 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+"
-        r"(?P<interfaces>(?:\d/)?[ge]\d+)\s+(?P<type>\w+)$")
+        r"(?P<interfaces>(?:\d/)?[ge]\d+)\s+(?P<type>\w+)$"
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show bridge address-table"
@@ -36,13 +37,12 @@ class Script(BaseScript):
         for l in vlans.split("\n"):
             match = self.rx_line.match(l.strip())
             if match:
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S"
-                    }[match.group("type")],
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": {"dynamic": "D", "static": "S"}[match.group("type")],
+                    }
+                ]
         return r

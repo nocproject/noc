@@ -11,10 +11,12 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 from collections import defaultdict
+
 # Third-party modules
 import six
 from django.db import models, connection
 import cachetools
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
@@ -23,8 +25,7 @@ from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
 from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey
 from noc.lib.app.site import site
-from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
-                                ValidationError)
+from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
@@ -40,17 +41,20 @@ id_lock = Lock()
 
 @full_text_search
 @workflow
-@on_delete_check(ignore=[
-    ("ip.PrefixBookmark", "prefix"),
-    ("ip.Prefix", "parent"),
-    ("ip.Prefix", "ipv6_transition"),
-    ("ip.Address", "prefix")
-])
+@on_delete_check(
+    ignore=[
+        ("ip.PrefixBookmark", "prefix"),
+        ("ip.Prefix", "parent"),
+        ("ip.Prefix", "ipv6_transition"),
+        ("ip.Address", "prefix"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Prefix(NOCModel):
     """
     Allocated prefix
     """
+
     class Meta(object):
         verbose_name = _("Prefix")
         verbose_name_plural = _("Prefixes")
@@ -64,103 +68,80 @@ class Prefix(NOCModel):
         verbose_name=_("Parent"),
         null=True,
         blank=True,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+    )
     vrf = CachedForeignKey(
-        VRF,
-        verbose_name=_("VRF"),
-        default=VRF.get_global,
-        on_delete=models.CASCADE
+        VRF, verbose_name=_("VRF"), default=VRF.get_global, on_delete=models.CASCADE
     )
-    afi = models.CharField(
-        _("Address Family"),
-        max_length=1,
-        choices=AFI_CHOICES)
+    afi = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
     prefix = CIDRField(_("Prefix"))
-    name = models.CharField(
-        _("Name"),
-        max_length=255,
-        null=True, blank=True
-    )
-    profile = DocumentReferenceField(
-        PrefixProfile,
-        null=False, blank=False
-    )
+    name = models.CharField(_("Name"), max_length=255, null=True, blank=True)
+    profile = DocumentReferenceField(PrefixProfile, null=False, blank=False)
     asn = CachedForeignKey(
-        AS, verbose_name=_("AS"),
+        AS,
+        verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
-        null=True, blank=True, on_delete=models.CASCADE
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
     )
     project = CachedForeignKey(
-        Project, verbose_name="Project",
+        Project,
+        verbose_name="Project",
         on_delete=models.SET_NULL,
-        null=True, blank=True, related_name="prefix_set")
+        null=True,
+        blank=True,
+        related_name="prefix_set",
+    )
     vc = models.ForeignKey(
         VC,
         verbose_name=_("VC"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        help_text=_("VC bound to prefix"))
-    description = models.TextField(
-        _("Description"),
-        blank=True,
-        null=True)
-    tags = TagsField("Tags", null=True, blank=True)
-    tt = models.IntegerField(
-        "TT",
-        blank=True,
-        null=True,
-        help_text=_("Ticket #"))
-    state = DocumentReferenceField(
-        State,
-        null=True, blank=True
+        help_text=_("VC bound to prefix"),
     )
+    description = models.TextField(_("Description"), blank=True, null=True)
+    tags = TagsField("Tags", null=True, blank=True)
+    tt = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
+    state = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
         blank=True,
-        help_text=_("Prefix temporary allocated till the date"))
+        help_text=_("Prefix temporary allocated till the date"),
+    )
     ipv6_transition = models.OneToOneField(
         "self",
         related_name="ipv4_transition",
-        null=True, blank=True,
+        null=True,
+        blank=True,
         limit_choices_to={"afi": "6"},
-        on_delete=models.SET_NULL)
+        on_delete=models.SET_NULL,
+    )
     prefix_discovery_policy = models.CharField(
         _("Prefix Discovery Policy"),
         max_length=1,
-        choices=[
-            ("P", "Profile"),
-            ("E", "Enable"),
-            ("D", "Disable")
-        ],
+        choices=[("P", "Profile"), ("E", "Enable"), ("D", "Disable")],
         default="P",
         blank=False,
-        null=False
+        null=False,
     )
     address_discovery_policy = models.CharField(
         _("Address Discovery Policy"),
         max_length=1,
-        choices=[
-            ("P", "Profile"),
-            ("E", "Enable"),
-            ("D", "Disable")
-        ],
+        choices=[("P", "Profile"), ("E", "Enable"), ("D", "Disable")],
         default="P",
         blank=False,
-        null=False
+        null=False,
     )
     source = models.CharField(
         "Source",
         max_length=1,
-        choices=[
-            ("M", "Manual"),
-            ("i", "Interface"),
-            ("w", "Whois"),
-            ("n", "Neighbor")
-        ],
-        null=False, blank=False,
-        default="M"
+        choices=[("M", "Manual"), ("i", "Interface"), ("w", "Whois"), ("n", "Neighbor")],
+        null=False,
+        blank=False,
+        default="M",
     )
 
     csv_ignored_fields = ["parent"]
@@ -179,8 +160,7 @@ class Prefix(NOCModel):
             return None
 
     def get_absolute_url(self):
-        return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi,
-                            self.prefix)
+        return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi, self.prefix)
 
     @property
     def has_transition(self):
@@ -203,16 +183,11 @@ class Prefix(NOCModel):
         """
         Get nearest closing prefix
         """
-        r = Prefix.objects.filter(
-            vrf=vrf,
-            afi=str(afi)
-        ).extra(
-            select={
-                "masklen": "masklen(prefix)"
-            },
+        r = Prefix.objects.filter(vrf=vrf, afi=str(afi)).extra(
+            select={"masklen": "masklen(prefix)"},
             where=["prefix >> %s"],
             params=[str(prefix)],
-            order_by=["-masklen"]
+            order_by=["-masklen"],
         )[:1]
         if r:
             return r[0]
@@ -231,8 +206,9 @@ class Prefix(NOCModel):
         """
         Returns true if the prefix is a root of VRF
         """
-        return ((self.is_ipv4 and self.prefix == "0.0.0.0/0") or
-                (self.is_ipv6 and self.prefix == "::/0"))
+        return (self.is_ipv4 and self.prefix == "0.0.0.0/0") or (
+            self.is_ipv6 and self.prefix == "::/0"
+        )
 
     def clean(self):
         """
@@ -274,11 +250,9 @@ class Prefix(NOCModel):
                 AND afi=%%s
                 AND prefix << %%s
                 AND parent_id=%%s
-            """ % Prefix._meta.db_table,
-            [
-                self.id, self.vrf.id, self.afi, self.prefix,
-                self.parent.id if self.parent else None
-            ]
+            """
+            % Prefix._meta.db_table,
+            [self.id, self.vrf.id, self.afi, self.prefix, self.parent.id if self.parent else None],
         )
         # Reconnect children addresses
         c.execute(
@@ -288,12 +262,9 @@ class Prefix(NOCModel):
             WHERE
                     prefix_id=%%s
                 AND address << %%s
-            """ % Address._meta.db_table,
-            [
-                self.id,
-                self.parent.id if self.parent else None,
-                self.prefix
-            ]
+            """
+            % Address._meta.db_table,
+            [self.id, self.parent.id if self.parent else None, self.prefix],
         )
 
     def delete(self, *args, **kwargs):
@@ -321,33 +292,20 @@ class Prefix(NOCModel):
         # self.clear_transition()
         # Recursive delete
         # Get nested prefixes
-        ids = Prefix.objects.filter(
-            vrf=self.vrf,
-            afi=self.afi
-        ).extra(
-            where=["prefix <<= %s"],
-            params=[self.prefix]
-        ).values_list("id", flat=True)
+        ids = (
+            Prefix.objects.filter(vrf=self.vrf, afi=self.afi)
+            .extra(where=["prefix <<= %s"], params=[self.prefix])
+            .values_list("id", flat=True)
+        )
         #
-        zones = set()
-        for a in Address.objects.filter(prefix__in=ids):
-            zones.add(a.address)
-            zones.add(a.fqdn)
         # Delete nested addresses
         Address.objects.filter(prefix__in=ids).delete()
         # Delete nested prefixes
         Prefix.objects.filter(id__in=ids).delete()
         # Delete permissions
-        PrefixAccess.objects.filter(
-            vrf=self.vrf,
-            afi=self.afi
-        ).extra(
-            where=["prefix <<= %s"],
-            params=[self.prefix]
+        PrefixAccess.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["prefix <<= %s"], params=[self.prefix]
         )
-        # Touch dns zones
-        for z in zones:
-            DNSZone.touch(z)
 
     @property
     def maintainers(self):
@@ -374,10 +332,9 @@ class Prefix(NOCModel):
                                 AND can_change=TRUE
                            ))
             ORDER BY username
-            """ % (User._meta.db_table, PrefixAccess._meta.db_table),
-            [
-                self.vrf.id, self.afi, self.prefix
-            ]
+            """
+            % (User._meta.db_table, PrefixAccess._meta.db_table),
+            [self.vrf.id, self.afi, self.prefix],
         )
 
     @property
@@ -436,8 +393,7 @@ class Prefix(NOCModel):
         :param user:
         :return:
         """
-        return PrefixAccess.user_can_view(
-            user, self.vrf, self.afi, self.prefix)
+        return PrefixAccess.user_can_view(user, self.vrf, self.afi, self.prefix)
 
     def can_change(self, user):
         """
@@ -445,8 +401,7 @@ class Prefix(NOCModel):
         :param user:
         :return:
         """
-        return PrefixAccess.user_can_change(
-            user, self.vrf, self.afi, self.prefix)
+        return PrefixAccess.user_can_change(user, self.vrf, self.afi, self.prefix)
 
     def has_bookmark(self, user):
         """
@@ -455,6 +410,7 @@ class Prefix(NOCModel):
         :return:
         """
         from .prefixbookmark import PrefixBookmark  # noqa
+
         try:
             PrefixBookmark.objects.get(user=user, prefix=self)
             return True
@@ -468,8 +424,8 @@ class Prefix(NOCModel):
         :return:
         """
         from .prefixbookmark import PrefixBookmark  # noqa
-        b, created = PrefixBookmark.objects.get_or_create(user=user,
-                                                          prefix=self)
+
+        b, created = PrefixBookmark.objects.get_or_create(user=user, prefix=self)
         if created:
             return True
         b.delete()
@@ -488,7 +444,7 @@ class Prefix(NOCModel):
             "id": "ip.prefix:%s" % self.id,
             "title": self.prefix,
             "content": "\n".join(content),
-            "card": card
+            "card": card,
         }
         if self.tags:
             r["tags"] = self.tags
@@ -499,9 +455,12 @@ class Prefix(NOCModel):
         return "/api/card/view/prefix/%s/" % obj_id
 
     def get_path(self):
-        return Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-            where=["prefix >>= %s"],
-            params=[self.prefix]).order_by("prefix").values_list("id", flat=True)
+        return (
+            Prefix.objects.filter(vrf=self.vrf, afi=self.afi)
+            .extra(where=["prefix >>= %s"], params=[self.prefix])
+            .order_by("prefix")
+            .values_list("id", flat=True)
+        )
 
     @property
     def address_ranges(self):
@@ -526,11 +485,7 @@ class Prefix(NOCModel):
                         )
                 ORDER BY from_address, to_address
                 """,
-                [
-                    self.vrf.id, self.afi,
-                    self.prefix,
-                    self.prefix, self.prefix
-                ]
+                [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix],
             )
         )
 
@@ -553,12 +508,8 @@ class Prefix(NOCModel):
             raise ValueError("Cannot rebase to prefix of lesser size")
         # Rebase prefix and all nested prefixes
         # Parents are left untouched
-        for p in Prefix.objects.filter(
-            vrf=self.vrf,
-            afi=self.afi
-        ).extra(
-            where=["prefix <<= %s"],
-            params=[self.prefix]
+        for p in Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["prefix <<= %s"], params=[self.prefix]
         ):
             np = IP.prefix(p.prefix).rebase(b, nb).prefix
             # Prefix.objects.filter(pk=p.pk).update(prefix=np, vrf=vrf)
@@ -567,12 +518,8 @@ class Prefix(NOCModel):
             p.save()  # Raise events
         # Rebase addresses
         # Parents are left untouched
-        for a in Address.objects.filter(
-            vrf=self.vrf,
-            afi=self.afi
-        ).extra(
-            where=["address <<= %s"],
-            params=[self.prefix]
+        for a in Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["address <<= %s"], params=[self.prefix]
         ):
             na = IP.prefix(a.address).rebase(b, nb).address
             # Address.objects.filter(pk=a.pk).update(address=na, vrf=vrf)
@@ -581,21 +528,14 @@ class Prefix(NOCModel):
             a.save()  # Raise events
         # Rebase permissions
         # move all permissions to the nested blocks
-        for pa in PrefixAccess.objects.filter(
-            vrf=self.vrf
-        ).extra(
-            where=["prefix <<= %s"],
-            params=[self.prefix]
+        for pa in PrefixAccess.objects.filter(vrf=self.vrf).extra(
+            where=["prefix <<= %s"], params=[self.prefix]
         ):
             np = IP.prefix(pa.prefix).rebase(b, nb).prefix
-            PrefixAccess.objects.filter(pk=pa.pk).update(
-                prefix=np, vrf=vrf)
+            PrefixAccess.objects.filter(pk=pa.pk).update(prefix=np, vrf=vrf)
         # create permissions for covered blocks
-        for pa in PrefixAccess.objects.filter(
-            vrf=self.vrf
-        ).extra(
-            where=["prefix >> %s"],
-            params=[self.prefix]
+        for pa in PrefixAccess.objects.filter(vrf=self.vrf).extra(
+            where=["prefix >> %s"], params=[self.prefix]
         ):
             PrefixAccess(
                 user=pa.user,
@@ -603,7 +543,7 @@ class Prefix(NOCModel):
                 afi=pa.afi,
                 prefix=new_prefix,
                 can_view=pa.can_view,
-                can_change=pa.can_change
+                can_change=pa.can_change,
             ).save()
         # @todo: Rebase bookmarks
         # @todo: Update caches
@@ -616,7 +556,8 @@ class Prefix(NOCModel):
         Queryset returning all nested prefixes inside the prefix
         """
         return Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-            where=["prefix <<= %s"], params=[self.prefix])
+            where=["prefix <<= %s"], params=[self.prefix]
+        )
 
     @property
     def nested_address_set(self):
@@ -624,15 +565,15 @@ class Prefix(NOCModel):
         Queryset returning all nested addresses inside the prefix
         """
         return Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-            where=["address <<= %s"], params=[self.prefix])
+            where=["address <<= %s"], params=[self.prefix]
+        )
 
     def iter_free(self):
         """
         Generator returning all available free prefixes inside
         :return:
         """
-        for fp in IP.prefix(self.prefix).iter_free(
-                [p.prefix for p in self.children_set.all()]):
+        for fp in IP.prefix(self.prefix).iter_free([p.prefix for p in self.children_set.all()]):
             yield str(fp)
 
     @property
@@ -667,7 +608,9 @@ class Prefix(NOCModel):
                 size -= len(IPv4(self.prefix).special_addresses)
             n_pfx = sum(
                 IPv4(p).size
-                for p in Prefix.objects.filter(parent=self).only("prefix").values_list("prefix", flat=True)
+                for p in Prefix.objects.filter(parent=self)
+                .only("prefix")
+                .values_list("prefix", flat=True)
             )
             return float(n_ips + n_pfx) * 100.0 / float(size)
         return None
@@ -691,18 +634,19 @@ class Prefix(NOCModel):
         # Calculate nested prefixes
         usage = defaultdict(int)
         address_usage = defaultdict(int)
-        for parent, prefix in Prefix.objects.filter(
-                parent__in=ipv4_prefixes
-        ).values_list("parent", "prefix"):
+        for parent, prefix in Prefix.objects.filter(parent__in=ipv4_prefixes).values_list(
+            "parent", "prefix"
+        ):
             ln = int(prefix.split("/")[1])
             usage[parent] += 2 ** (32 - ln)
         # Calculate nested addresses
         has_address = set()
-        for parent, count in Address.objects.filter(
-                prefix__in=ipv4_prefixes
-        ).values("prefix").annotate(
-            count=models.Count("prefix")
-        ).values_list("prefix", "count"):
+        for parent, count in (
+            Address.objects.filter(prefix__in=ipv4_prefixes)
+            .values("prefix")
+            .annotate(count=models.Count("prefix"))
+            .values_list("prefix", "count")
+        ):
             usage[parent] += count
             has_address.add(parent)
             address_usage[parent] += count
@@ -726,11 +670,17 @@ class Prefix(NOCModel):
             size = IPv4(self.prefix).size
             if not size:
                 return 100.0
-            n_ips = Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-                where=["address <<= %s"], params=[str(self.prefix)]).count()
+            n_ips = (
+                Address.objects.filter(vrf=self.vrf, afi=self.afi)
+                .extra(where=["address <<= %s"], params=[str(self.prefix)])
+                .count()
+            )
             if self.effective_prefix_special_address == "X":
-                n_pfx = Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-                    where=["prefix <<= %s"], params=[str(self.prefix)]).count()
+                n_pfx = (
+                    Prefix.objects.filter(vrf=self.vrf, afi=self.afi)
+                    .extra(where=["prefix <<= %s"], params=[str(self.prefix)])
+                    .count()
+                )
                 size -= len(IPv4(self.prefix).special_addresses) * n_pfx
             return float(n_ips) * 100.0 / float(size) if n_ips else 0.0
         else:
@@ -775,7 +725,6 @@ class Prefix(NOCModel):
 
 
 # Avoid circular references
-from noc.dns.models.dnszone import DNSZone
 from .address import Address
 from .prefixaccess import PrefixAccess
 from .addressrange import AddressRange

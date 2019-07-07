@@ -20,7 +20,8 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(?P<mac>\S+)\s+\S+\((?P<vlan_id>\d+)\)\s+\d+\s+"
         r"(?P<type>([dhmis\s]+))\s+?(?:\S+)?\s+"
-        r"(?P<interfaces>\d+(\:\d+)?)(?:\S+)?$")
+        r"(?P<interfaces>\d+(\:\d+)?)(?:\S+)?$"
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show fdb"
@@ -36,17 +37,19 @@ class Script(BaseScript):
             match = self.rx_line.match(l.strip())
             if match:
                 mactype = match.group("type")
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {
-                        "d m": "D",
-                        "dhm": "D",
-                        "dhmi": "D",
-                        "d mi": "D",
-                        "s m": "S",
-                        "shm": "S"
-                    }[mactype.strip()]
-                })
+                r.append(
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": {
+                            "d m": "D",
+                            "dhm": "D",
+                            "dhmi": "D",
+                            "d mi": "D",
+                            "s m": "S",
+                            "shm": "S",
+                        }[mactype.strip()],
+                    }
+                )
         return r

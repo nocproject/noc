@@ -11,8 +11,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
-rx_ver = re.compile(r"^(?P<platform>.+?) version (?P<version>.+?)\s+",
-    re.MULTILINE | re.DOTALL)
+rx_ver = re.compile(r"^(?P<platform>.+?) version (?P<version>.+?)\s+", re.MULTILINE | re.DOTALL)
 
 
 class Script(BaseScript):

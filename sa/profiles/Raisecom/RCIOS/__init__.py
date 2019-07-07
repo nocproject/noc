@@ -21,9 +21,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>\S+)# "
     command_exit = "exit"
     pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
-    pattern_more = [
-        (r"^--More-- \(\d+% of \d+ bytes\)", "r")
-    ]
+    pattern_more = [(r"^--More-- \(\d+% of \d+ bytes\)", "r")]
 
     INTERFACE_TYPES = {
         "3g": "tunnel",

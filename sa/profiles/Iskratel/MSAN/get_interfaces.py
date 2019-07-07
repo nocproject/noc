@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -25,11 +26,11 @@ class Script(BaseScript):
         r"^\s+PVC\n"
         r"^PVC\s+VLAN ID\n"
         r"^------- -------\n"
-        r"^(?P<pvcs>(\d+/\d+\s+\d+\n)+)", re.MULTILINE | re.DOTALL)
-    rx_pvc = re.compile(
-        r"^(?P<vpi>\d+)/(?P<vci>\d+)\s+(?P<vlan>\d+)$", re.MULTILINE)
-    rx_pvc1 = re.compile(
-        r"^(?P<port>\d+/\d+/\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)$", re.MULTILINE)
+        r"^(?P<pvcs>(\d+/\d+\s+\d+\n)+)",
+        re.MULTILINE | re.DOTALL,
+    )
+    rx_pvc = re.compile(r"^(?P<vpi>\d+)/(?P<vci>\d+)\s+(?P<vlan>\d+)$", re.MULTILINE)
+    rx_pvc1 = re.compile(r"^(?P<port>\d+/\d+/\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)$", re.MULTILINE)
     rx_svi = re.compile(
         r"^IP Address\.+ (?P<ip>\S+)\n"
         r"^Subnet Mask\.+ (?P<mask>\S+)\n"
@@ -38,30 +39,30 @@ class Script(BaseScript):
         r"(^.+\n)?"
         r"(^.+\n)?"
         r"^Management VLAN ID\.+ (?P<vlan>\d+)\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_port = re.compile(
         r"^(?P<port>\d+/\d+)\s+(?:\s+|PC|PC Mbr)\s+"
         r"(?P<admin_status>Enable|Disable)\s+"
         r"(?:Auto|1000 Full|100 Full|100 Half|10 Full|10 Half)\s+"
         r"(?:\s+|Auto|1000 Full|100 Full|100 Half|10 Full|10 Half)\s+"
         r"(?P<oper_status>Up|Down)\s+(?:Enable|Disable)\s+"
-        r"(?:Enable|Disable)(?P<descr>.*?)\n", re.MULTILINE)
+        r"(?:Enable|Disable)(?P<descr>.*?)\n",
+        re.MULTILINE,
+    )
     rx_port1 = re.compile(r"(?P<port>\d+/\d+)/\d+")
     rx_port2 = re.compile(
         r"Interface\.+\S+\n"
         r"ifIndex\.+(?P<ifindex>\d+)\n"
         r"Description\.+(?P<descr>.*)\n"
         r"MAC Address\.+(?P<mac>\S+)\n",
-        re.MULTILINE)
-    rx_port3 = re.compile(
-        r"Interface\.+\S+\n"
-        r"Description\.+(?P<descr>.*)\n",
-        re.MULTILINE)
-    rx_vlan = re.compile(
-        r"^(?P<port>\d+/\d+/\d+)\s+(?P<vlan>\d+)\s+", re.MULTILINE)
+        re.MULTILINE,
+    )
+    rx_port3 = re.compile(r"Interface\.+\S+\n" r"Description\.+(?P<descr>.*)\n", re.MULTILINE)
+    rx_vlan = re.compile(r"^(?P<port>\d+/\d+/\d+)\s+(?P<vlan>\d+)\s+", re.MULTILINE)
     rx_vlan1 = re.compile(
-        r"^(?P<port>\d+/\d+)\s+Include\s+Include\s+(?P<type>\S+)\s*\n",
-        re.MULTILINE)
+        r"^(?P<port>\d+/\d+)\s+Include\s+Include\s+(?P<type>\S+)\s*\n", re.MULTILINE
+    )
 
     def execute(self):
         v = self.profile.get_hardware(self)
@@ -72,21 +73,25 @@ class Script(BaseScript):
                 c = self.cli("show interface all pvc")
                 for match in self.rx_if_pvc.finditer(c):
                     for match1 in self.rx_pvc.finditer(match.group("pvcs")):
-                        pvc += [{
-                            "port": match.group("port"),
-                            "vpi": int(match1.group("vpi")),
-                            "vci": int(match1.group("vci")),
-                            "vlan": int(match1.group("vlan"))
-                        }]
+                        pvc += [
+                            {
+                                "port": match.group("port"),
+                                "vpi": int(match1.group("vpi")),
+                                "vci": int(match1.group("vci")),
+                                "vlan": int(match1.group("vlan")),
+                            }
+                        ]
             except self.CLISyntaxError:
                 c = self.cli("\x08" * 22)
                 c = self.cli("show pvc all")
                 for match in self.rx_pvc1.finditer(c):
-                    pvc += [{
-                        "port": match.group("port"),
-                        "vpi": int(match.group("vpi")),
-                        "vci": int(match.group("vci"))
-                    }]
+                    pvc += [
+                        {
+                            "port": match.group("port"),
+                            "vpi": int(match.group("vpi")),
+                            "vci": int(match.group("vci")),
+                        }
+                    ]
                 c = self.cli("show vlan port all")
                 for match in self.rx_vlan.finditer(c):
                     ifname = match.group("port")
@@ -96,18 +101,17 @@ class Script(BaseScript):
                             break
         interfaces = []
         for match in self.rx_port.finditer(self.cli("show port all")):
-            ifname = match.group('port')
+            ifname = match.group("port")
             i = {
                 "name": ifname,
                 "type": "physical",
-                "admin_status": match.group('admin_status') == "Enable",
-                "oper_status": match.group('oper_status') == "Up",
+                "admin_status": match.group("admin_status") == "Enable",
+                "oper_status": match.group("oper_status") == "Up",
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
-            descr = match.group('descr').strip()
-            if descr and not descr.startswith('Short ') \
-                    and not descr.startswith('Long '):
+            descr = match.group("descr").strip()
+            if descr and not descr.startswith("Short ") and not descr.startswith("Long "):
                 i["description"] = descr
             try:
                 c = self.cli("show port description %s" % ifname)
@@ -131,26 +135,27 @@ class Script(BaseScript):
                         break
             for p in pvc:
                 match1 = self.rx_port1.search(p["port"])
-                if p["port"] == ifname \
-                        or (match1 and match1.group("port") == ifname):
+                if p["port"] == ifname or (match1 and match1.group("port") == ifname):
                     s = {
                         "name": p["port"],
-                        "admin_status": match.group('admin_status') == "Enable",
-                        "oper_status": match.group('oper_status') == "Enable",
+                        "admin_status": match.group("admin_status") == "Enable",
+                        "oper_status": match.group("oper_status") == "Enable",
                         "vpi": p["vpi"],
                         "vci": p["vci"],
-                        "enabled_afi": ["BRIDGE", 'ATM']
+                        "enabled_afi": ["BRIDGE", "ATM"],
                     }
                     if "vlan" in p:
                         s["vlan_ids"] = p["vlan"]
                     i["subinterfaces"] += [s]
             if not i["subinterfaces"]:
-                i["subinterfaces"] = [{
-                    "name": ifname,
-                    "admin_status": match.group('admin_status') == "Enable",
-                    "oper_status": match.group('oper_status') == "Up",
-                    "enabled_afi": ['BRIDGE']
-                }]
+                i["subinterfaces"] = [
+                    {
+                        "name": ifname,
+                        "admin_status": match.group("admin_status") == "Enable",
+                        "oper_status": match.group("oper_status") == "Up",
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ]
                 if "mac" in i:
                     i["subinterfaces"][0]["mac"] = i["mac"]
                 if "description" in i:
@@ -161,8 +166,7 @@ class Script(BaseScript):
             for match in self.rx_vlan1.finditer(c):
                 ifname = match.group("port")
                 for i in interfaces:
-                    if i["name"] == ifname \
-                            and len(i["subinterfaces"]) == 1:
+                    if i["name"] == ifname and len(i["subinterfaces"]) == 1:
                         if match.group("type") == "Untagged":
                             i["subinterfaces"][0]["untagged_vlan"] = v["vlan_id"]
                         if match.group("type") == "Tagged":
@@ -178,18 +182,20 @@ class Script(BaseScript):
                 "oper_status": True,
                 "admin_status": True,
                 "enabled_protocols": [],
-                "subinterfaces": [{
-                    "name": "mgmt",
-                    "oper_status": True,
-                    "admin_status": True,
-                    "mac": match.group('mac'),
-                    "vlan_ids": [int(match.group('vlan'))],
-                    "enabled_afi": ['IPv4']
-                }]
+                "subinterfaces": [
+                    {
+                        "name": "mgmt",
+                        "oper_status": True,
+                        "admin_status": True,
+                        "mac": match.group("mac"),
+                        "vlan_ids": [int(match.group("vlan"))],
+                        "enabled_afi": ["IPv4"],
+                    }
+                ],
             }
             addr = match.group("ip")
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
-            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
             interfaces += [i]
         return [{"interfaces": interfaces}]

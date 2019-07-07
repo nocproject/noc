@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -18,9 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_wlc5508 = re.compile(
-        r"^Burned-in MAC Address\.*\s(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+    rx_wlc5508 = re.compile(r"^Burned-in MAC Address\.*\s(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
     def execute_wlc5508(self):
         """
@@ -30,10 +29,7 @@ class Script(BaseScript):
         v = self.cli("show sysinfo")
         match = self.re_search(self.rx_wlc5508, v)
         base = match.group("id")
-        return [{
-            "first_chassis_mac": base,
-            "last_chassis_mac": base
-        }]
+        return [{"first_chassis_mac": base, "last_chassis_mac": base}]
 
     def execute_cli(self):
         if self.is_platform_5508:

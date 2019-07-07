@@ -8,18 +8,27 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
     def migrate(self):
-        self.db.add_column("fm_alarmtrigger", "handler", models.CharField("Handler", max_length=128, null=True, blank=True))
         self.db.add_column(
-            "fm_alarmtrigger", "description", models.CharField("Description", max_length=256, null=True, blank=True)
+            "fm_alarmtrigger",
+            "handler",
+            models.CharField("Handler", max_length=128, null=True, blank=True),
         )
         self.db.add_column(
-            "fm_eventtrigger", "description", models.CharField("Description", max_length=256, null=True, blank=True)
+            "fm_alarmtrigger",
+            "description",
+            models.CharField("Description", max_length=256, null=True, blank=True),
+        )
+        self.db.add_column(
+            "fm_eventtrigger",
+            "description",
+            models.CharField("Description", max_length=256, null=True, blank=True),
         )
         # Fill description
         rows = self.db.execute(
@@ -32,7 +41,8 @@ class Migration(BaseMigration):
                 """UPDATE fm_eventtrigger
                 SET description = 'Removed pyRule ' || %s
                 WHERE id = %s
-                """, [rule_name, t_id]
+                """,
+                [rule_name, t_id],
             )
         rows = self.db.execute(
             """SELECT t.id, r.name
@@ -44,7 +54,8 @@ class Migration(BaseMigration):
                 """UPDATE fm_alarmtrigger
                 SET description = 'Removed pyRule ' || %s
                 WHERE id = %s
-                """, [rule_name, t_id]
+                """,
+                [rule_name, t_id],
             )
         # drop pyrule
         self.db.delete_column("fm_eventtrigger", "pyrule_id")

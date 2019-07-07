@@ -9,12 +9,14 @@
 # Python modules
 from __future__ import absolute_import
 import re
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, ListField, EmbeddedDocumentField, BooleanField
+
 # NOC modules
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.ip import IP
 from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -25,19 +27,17 @@ from .interfaceprofile import InterfaceProfile
 @six.python_2_unicode_compatible
 class InterfaceClassificationMatch(EmbeddedDocument):
     # Field name
-    field = StringField(choices=[
-        ("name", "name"),
-        ("description", "description"),
-        ("ip", "ip"),
-        ("tagged", "tagged vlan"),
-        ("untagged", "untagged vlan")
-    ])
+    field = StringField(
+        choices=[
+            ("name", "name"),
+            ("description", "description"),
+            ("ip", "ip"),
+            ("tagged", "tagged vlan"),
+            ("untagged", "untagged vlan"),
+        ]
+    )
     # Operation
-    op = StringField(choices=[
-        ("eq", "Equals"),
-        ("regexp", "RegExp"),
-        ("in", "in")
-    ])
+    op = StringField(choices=[("eq", "Equals"), ("regexp", "RegExp"), ("in", "in")])
     #
     value = StringField()
     # "ip in"
@@ -60,58 +60,60 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         if a:
             return a(f_name)
         else:
-            raise SyntaxError("%s %s is not implemented" % (
-                self.field, self.op))
+            raise SyntaxError("%s %s is not implemented" % (self.field, self.op))
 
     # name
     def compile_name_eq(self, f_name):
-        return "\n".join([
-            "def %s(iface):" % f_name,
-            "    return iface.name.lower() == %s" % repr(self.value.lower())
-        ])
+        return "\n".join(
+            [
+                "def %s(iface):" % f_name,
+                "    return iface.name.lower() == %s" % repr(self.value.lower()),
+            ]
+        )
 
     def compile_name_regexp(self, f_name):
-        return "\n".join([
-            "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value)),
-            "def %s(iface):" % f_name,
-            "    return bool(rx_%s.search(iface.name))" % f_name
-        ])
+        return "\n".join(
+            [
+                "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value)),
+                "def %s(iface):" % f_name,
+                "    return bool(rx_%s.search(iface.name))" % f_name,
+            ]
+        )
 
     # description
     def compile_description_eq(self, f_name):
-        return "\n".join([
-            "def %s(iface):" % f_name,
-            "    return iface.description.lower() == %s" % repr(self.value.lower())
-        ])
+        return "\n".join(
+            [
+                "def %s(iface):" % f_name,
+                "    return iface.description.lower() == %s" % repr(self.value.lower()),
+            ]
+        )
 
     def compile_description_regexp(self, f_name):
-        return "\n".join([
-            "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value)),
-            "def %s(iface):" % f_name,
-            "    return iface.description and bool(rx_%s.search(iface.description))" % f_name
-        ])
+        return "\n".join(
+            [
+                "rx_%s = re.compile(%s, re.IGNORECASE)" % (f_name, repr(self.value)),
+                "def %s(iface):" % f_name,
+                "    return iface.description and bool(rx_%s.search(iface.description))" % f_name,
+            ]
+        )
 
     # IP
     def compile_ip_eq(self, f_name):
         v = IP.prefix(self.value)
         r = [
             "def %s(iface):" % f_name,
-            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]" % {
-                "afi": v.afi
-            },
+            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]"
+            % {"afi": v.afi},
             "    a = sum(a, [])",
         ]
         if "/" in self.value:
             # Compare prefixes
-            r += [
-                "    return any(x for x in a if x == %r)" % v.prefix
-            ]
+            r += ["    return any(x for x in a if x == %r)" % v.prefix]
         else:
             # Compare addresses
             v = v.prefix.split("/")[0]
-            r += [
-                "    return any(x for x in a if x.split('/')[0] == %r)" % v
-            ]
+            r += ["    return any(x for x in a if x.split('/')[0] == %r)" % v]
         return "\n".join(r)
 
     def compile_ip_in(self, f_name):
@@ -126,7 +128,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "        for a in si.ipv6_addresses:",
             "            if a in pt_%s:" % f_name,
             "                return True",
-            "    return False"
+            "    return False",
         ]
         return "\n".join(r)
 
@@ -137,8 +139,8 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
-            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())" %
-            vlan
+            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())"
+            % vlan,
         ]
         return "\n".join(r)
 
@@ -151,7 +153,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
             "        if si.untagged_vlan and vcf_%s.check(si.untagged_vlan):" % f_name,
             "            return True",
-            "    return False"
+            "    return False",
         ]
         return "\n".join(r)
 
@@ -162,8 +164,8 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
-            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())" %
-            vlan
+            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())"
+            % vlan,
         ]
         return "\n".join(r)
 
@@ -177,7 +179,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "        if si.tagged_vlans:",
             "            if any(vlan for vlan in si.tagged_vlans if vcf_%s.check(vlan)):" % f_name,
             "                return True",
-            "    return False"
+            "    return False",
         ]
         return "\n".join(r)
 
@@ -187,18 +189,15 @@ class InterfaceClassificationRule(Document):
     meta = {
         "collection": "noc.inv.interfaceclassificationrules",
         "strict": False,
-        "auto_create_index": False
+        "auto_create_index": False,
     }
     name = StringField(required=False)
     is_active = BooleanField(default=True)
     description = StringField(required=False)
     order = IntField()
     selector = ForeignKeyField(ManagedObjectSelector, required=False)
-    match = ListField(
-        EmbeddedDocumentField(InterfaceClassificationMatch),
-        required=False)
-    profile = PlainReferenceField(InterfaceProfile,
-                                  default=InterfaceProfile.get_default_profile)
+    match = ListField(EmbeddedDocumentField(InterfaceClassificationMatch), required=False)
+    profile = PlainReferenceField(InterfaceProfile, default=InterfaceProfile.get_default_profile)
 
     def __str__(self):
         r = [unicode(x) for x in self.match]
@@ -218,11 +217,7 @@ class InterfaceClassificationRule(Document):
 
     @classmethod
     def get_classificator_code(cls):
-        r = [
-            "import re",
-            "import bson",
-            "from noc.sa.models.selectorcache import SelectorCache"
-        ]
+        r = ["import re", "import bson", "from noc.sa.models.selectorcache import SelectorCache"]
         mf = [
             "gsc = {}",
             "def classify(interface):",
@@ -239,7 +234,7 @@ class InterfaceClassificationRule(Document):
             "        s_cache[s] = r",
             "        return r",
             "    s_cache = {}",
-            "    mo = interface.managed_object"
+            "    mo = interface.managed_object",
         ]
         for rule in cls.objects.filter(is_active=True).order_by("order"):
             rid = str(rule.id)
@@ -251,12 +246,12 @@ class InterfaceClassificationRule(Document):
             if lmn:
                 mf += [
                     "    if in_selector(mo, %d) and %s:" % (rule.selector.id, " and ".join(lmn)),
-                    "        return bson.ObjectId('%s')" % rule.profile.id
+                    "        return bson.ObjectId('%s')" % rule.profile.id,
                 ]
             else:
                 mf += [
                     "    if in_selector(mo, %d):" % rule.selector.id,
-                    "        return bson.ObjectId('%s')" % rule.profile.id
+                    "        return bson.ObjectId('%s')" % rule.profile.id,
                 ]
         r += mf
         return "\n".join(r)
@@ -267,11 +262,14 @@ class InterfaceClassificationRule(Document):
         # Hack to retrieve reference
         handlers = {}
         # Compile code
-        exec(code, {
-            "re": re,
-            "PrefixTable": PrefixTable,
-            "VCFilter": VCFilter,
-            "ManagedObjectSelector": ManagedObjectSelector,
-            "handlers": handlers
-        })
+        exec (
+            code,
+            {
+                "re": re,
+                "PrefixTable": PrefixTable,
+                "VCFilter": VCFilter,
+                "ManagedObjectSelector": ManagedObjectSelector,
+                "handlers": handlers,
+            },
+        )
         return handlers[0]

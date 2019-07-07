@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.gis.models.geocodercache import GeocoderCache
 
@@ -25,6 +26,6 @@ def fix():
                 lon=o.lon,
                 lat=o.lat,
                 error=o.error,
-                expires=o.expires
+                expires=o.expires,
             ).save()
             o.delete()

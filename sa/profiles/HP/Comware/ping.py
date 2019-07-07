@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -22,7 +23,8 @@ class Script(BaseScript):
         r"^\s+(?P<success>\d+) packet\(s\) received\n"
         r"^\s+\S+ packet loss\n"
         r"(^\s+round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms\n)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping"
@@ -40,10 +42,7 @@ class Script(BaseScript):
         match = self.rx_result.search(self.cli(cmd))
         if not match:
             raise self.NotSupportedError()
-        r = {
-            "success": int(match.group("success")),
-            "count": int(match.group("count")),
-        }
+        r = {"success": int(match.group("success")), "count": int(match.group("count"))}
         if match.group("min"):
             r["min"] = match.group("min")
             r["avg"] = match.group("avg")

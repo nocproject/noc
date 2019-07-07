@@ -8,6 +8,10 @@
 
 # Python modules
 import time
+
+# Third-party modules
+import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -40,13 +44,10 @@ class Script(BaseScript):
         "ipip": "tunnel",
         "eoip": "tunnel",
         "eoip-tunnel": "tunnel",
-        "bond": "aggregated"
+        "bond": "aggregated",
     }
 
-    ignored_types = {
-        "mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte",
-        "cap", "vrrp", "vif"
-    }
+    ignored_types = {"mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte", "cap", "vrrp", "vif"}
     si = {}
 
     def get_tunnel(self, tun_type, f, afi, ipif):
@@ -54,7 +55,7 @@ class Script(BaseScript):
         tun = self.si["tunnel"]
         tun["type"] = tun_type
         if tun_type in ["PPP", "PPPOE", "L2TP", "PPTP", "OVPN", "SSTP"]:
-            if (f == "D" and afi == "IPv4"):
+            if f == "D" and afi == "IPv4":
                 tun["local_address"] = ipif["address"].split("/", 1)[0].strip()
                 tun["remote_address"] = ipif["network"]
                 return
@@ -63,7 +64,7 @@ class Script(BaseScript):
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
                 # in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
-                if "local-address" in r1.keys():
+                if "local-address" in r1:
                     tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
                 return
@@ -95,7 +96,7 @@ class Script(BaseScript):
                     "admin_status": "X" not in f,
                     "oper_status": "R" in f,
                     "enabled_protocols": [],
-                    "subinterfaces": []
+                    "subinterfaces": [],
                 }
                 if "mac-address" in r:
                     ifaces[r["name"]]["mac"] = r["mac-address"]
@@ -105,16 +106,16 @@ class Script(BaseScript):
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
                 if (
-                    r["type"].startswith("ipip-") or
-                    r["type"].startswith("eoip-") or
-                    r["type"].startswith("gre-")
+                    r["type"].startswith("ipip-")
+                    or r["type"].startswith("eoip-")
+                    or r["type"].startswith("gre-")
                 ):
                     self.si = {
                         "name": r["name"],
                         "admin_status": "X" not in f,
                         "oper_status": "R" in f,
                         "enabled_afi": ["IPv4"],
-                        "enabled_protocols": []
+                        "enabled_protocols": [],
                     }
                     if self.get_mtu(r) is not None:
                         self.si["mtu"] = self.get_mtu(r)
@@ -137,7 +138,7 @@ class Script(BaseScript):
                     "oper_status": "R" in f,
                     "enabled_afi": [],
                     "vlan_ids": [int(r["vlan-id"])],
-                    "enabled_protocols": []
+                    "enabled_protocols": [],
                 }
                 if self.get_mtu(r) is not None:
                     self.si["mtu"] = self.get_mtu(r)
@@ -151,9 +152,10 @@ class Script(BaseScript):
                 if "vlan-mode" not in r:
                     continue
                 if (
-                    r["vlan-mode"] in ["check", "secure"] and
-                    r["vlan-header"] in ["add-if-missing", "leave-as-is"] and
-                    r["default-vlan-id"] != "auto" and int(r["default-vlan-id"]) != 0
+                    r["vlan-mode"] in ["check", "secure"]
+                    and r["vlan-header"] in ["add-if-missing", "leave-as-is"]
+                    and r["default-vlan-id"] != "auto"
+                    and int(r["default-vlan-id"]) != 0
                 ):
                     vlan_tags[r["name"]] = True
                 else:
@@ -163,7 +165,9 @@ class Script(BaseScript):
         # "RB532", "x86", CCR1009 not support internal switch port
         try:
             # Attach subinterfaces with `BRIDGE` AFI to parent
-            v = self.cli_detail("/interface ethernet switch vlan print detail without-paging", cached=True)
+            v = self.cli_detail(
+                "/interface ethernet switch vlan print detail without-paging", cached=True
+            )
             for n, f, r in v:
                 # vlan-id=auto ? Need more testing
                 if not is_int(r["vlan-id"]):
@@ -183,7 +187,7 @@ class Script(BaseScript):
                         "oper_status": i.get("oper_status"),
                         "enabled_afi": ["BRIDGE"],
                         "enabled_protocols": [],
-                        "tagged_vlans": []
+                        "tagged_vlans": [],
                     }
                     if self.get_mtu(i) is not None:
                         self.si["mtu"] = self.get_mtu(i)
@@ -226,7 +230,7 @@ class Script(BaseScript):
                             "oper_status": i.get("oper_status"),
                             "enabled_afi": ["BRIDGE"],
                             "enabled_protocols": [],
-                            "utagged_vlans": vlan_id
+                            "utagged_vlans": vlan_id,
                         }
                         if self.get_mtu(i) is not None:
                             self.si["mtu"] = self.get_mtu(i)
@@ -249,7 +253,7 @@ class Script(BaseScript):
                             "oper_status": i.get("oper_status"),
                             "enabled_afi": ["BRIDGE"],
                             "enabled_protocols": [],
-                            "tagged_vlans": [vlan_id]
+                            "tagged_vlans": [vlan_id],
                         }
                         if self.get_mtu(i) is not None:
                             self.si["mtu"] = self.get_mtu(i)
@@ -280,7 +284,7 @@ class Script(BaseScript):
                         # XXX Workaround
                         "admin_status": i["admin_status"],
                         "oper_status": i["oper_status"],
-                        "enabled_protocols": []
+                        "enabled_protocols": [],
                     }
                     if "mac" in i:
                         self.si["mac"] = i["mac"]
@@ -289,7 +293,7 @@ class Script(BaseScript):
                     for sub in i["subinterfaces"]:
                         if sub["name"] == r["interface"]:
                             self.logger.debug(
-                                '\nError: subinterfaces already exists in interface \n%s\n' % i
+                                "\nError: subinterfaces already exists in interface \n%s\n" % i
                             )
                             break
                     else:
@@ -299,7 +303,7 @@ class Script(BaseScript):
                             # XXX Workaround
                             "admin_status": i["admin_status"],
                             "oper_status": i["oper_status"],
-                            "enabled_protocols": []
+                            "enabled_protocols": [],
                         }
                         if "mac" in i:
                             self.si["mac"] = i["mac"]
@@ -315,7 +319,7 @@ class Script(BaseScript):
                         t = misc[i]
                         break
             if not self.si:
-                self.logger.debug('Error: Interface name not found!!!')
+                self.logger.debug("Error: Interface name not found!!!")
                 continue
 
             afi = "IPv6" if ":" in r["address"] else "IPv4"
@@ -359,7 +363,7 @@ class Script(BaseScript):
                         "admin_status": i["admin_status"],
                         "oper_status": i["oper_status"],
                         "mac": r["mac-address"],
-                        "enabled_protocols": []
+                        "enabled_protocols": [],
                     }
                     if self.get_mtu(i) is not None:
                         self.si["mtu"] = self.get_mtu(i)
@@ -381,7 +385,7 @@ class Script(BaseScript):
                         "admin_status": i["admin_status"],
                         "oper_status": i["oper_status"],
                         "mac": r["mac-address"],
-                        "enabled_protocols": []
+                        "enabled_protocols": [],
                     }
                     if self.get_mtu(i) is not None:
                         self.si["mtu"] = self.get_mtu(i)
@@ -407,7 +411,7 @@ class Script(BaseScript):
                             # XXX Workaround
                             "admin_status": i["admin_status"],
                             "oper_status": i["oper_status"],
-                            "enabled_protocols": ["OSPF"]
+                            "enabled_protocols": ["OSPF"],
                         }
                         i["subinterfaces"] += [self.si]
                     else:
@@ -429,7 +433,7 @@ class Script(BaseScript):
                             # XXX Workaround
                             "admin_status": i["admin_status"],
                             "oper_status": i["oper_status"],
-                            "enabled_protocols": [proto]
+                            "enabled_protocols": [proto],
                         }
                         i["subinterfaces"] += [self.si]
                     else:
@@ -444,4 +448,4 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             pass
 
-        return [{"interfaces": ifaces.values()}]
+        return [{"interfaces": list(six.itervalues(ifaces))}]

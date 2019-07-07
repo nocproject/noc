@@ -11,12 +11,14 @@ from __future__ import absolute_import
 import threading
 import operator
 import uuid
+
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, LongField, URLField, UUIDField, ListField)
+from mongoengine.fields import StringField, LongField, URLField, UUIDField, ListField
 from mongoengine.errors import NotUniqueError
 import cachetools
 import six
+
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check, on_save
@@ -27,21 +29,27 @@ id_lock = threading.Lock()
 
 @bi_sync
 @on_save
-@on_delete_check(check=[
-    ("inv.ObjectModel", "vendor"), ("inv.Platform", "vendor"), ("inv.Firmware", "vendor"),
-    ("sa.ManagedObject", "vendor"), ("sa.ManagedObjectSelector", "filter_vendor")
-])
+@on_delete_check(
+    check=[
+        ("inv.ObjectModel", "vendor"),
+        ("inv.Platform", "vendor"),
+        ("inv.Firmware", "vendor"),
+        ("sa.ManagedObject", "vendor"),
+        ("sa.ManagedObjectSelector", "filter_vendor"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Vendor(Document):
     """
     Equipment vendor
     """
+
     meta = {
         "collection": "noc.vendors",
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.vendors",
-        "json_unique_fields": ["name", "code"]
+        "json_unique_fields": ["name", "code"],
     }
     # Short vendor name, included as first part of platform
     name = StringField(unique=True)
@@ -85,8 +93,7 @@ class Vendor(Document):
         return Vendor.objects.filter(code=code).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_code_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
     def get_by_code(cls, code):
         return cls._get_by_code(code)
 
@@ -110,15 +117,16 @@ class Vendor(Document):
                 p.save()  # Rebuild full name
 
     def to_json(self):
-        return to_json({
-            "name": self.name,
-            "$collection": self._meta["json_collection"],
-            "full_name": self.full_name,
-            "code": self.code,
-            "site": self.site,
-            "uuid": self.uuid
-        },
-            order=["name", "uuid", "full_name", "code", "site"]
+        return to_json(
+            {
+                "name": self.name,
+                "$collection": self._meta["json_collection"],
+                "full_name": self.full_name,
+                "code": self.code,
+                "site": self.site,
+                "uuid": self.uuid,
+            },
+            order=["name", "uuid", "full_name", "code", "site"],
         )
 
     def get_json_path(self):

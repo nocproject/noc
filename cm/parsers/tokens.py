@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # pyParsing tokens
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from pyparsing import (alphanums, Combine, Group, LineEnd, nums, Suppress, Word,
-                       restOfLine)
+from pyparsing import alphanums, Combine, LineEnd, nums, Suppress, Word, restOfLine
 
 # Match \s+
 SPACE = Suppress(Word(" ").leaveWhitespace())
@@ -29,4 +28,3 @@ OCTET = Word(nums, max=3)
 IPv4_ADDRESS = Combine(OCTET + "." + OCTET + "." + OCTET + "." + OCTET)
 # RD
 RD = Combine(Word(nums) + Word(":") + Word(nums))
-

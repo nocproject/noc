@@ -21,6 +21,6 @@ class Migration(BaseMigration):
                     "min_zoom": 0,
                     "max_zoom": 5,
                     "SW": [-180.0, -90.0],
-                    "NE": [179.999999, 89.999999]
+                    "NE": [179.999999, 89.999999],
                 }
             )

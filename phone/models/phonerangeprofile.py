@@ -10,13 +10,15 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
 import cachetools
+
 # NOC modules
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
 from noc.core.model.decorator import on_delete_check
@@ -25,16 +27,10 @@ from .phonenumberprofile import PhoneNumberProfile
 id_lock = Lock()
 
 
-@on_delete_check(check=[
-    ("phone.PhoneRange", "profile")
-])
+@on_delete_check(check=[("phone.PhoneRange", "profile")])
 @six.python_2_unicode_compatible
 class PhoneRangeProfile(Document):
-    meta = {
-        "collection": "noc.phonerangeprofiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.phonerangeprofiles", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
@@ -52,7 +48,6 @@ class PhoneRangeProfile(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return PhoneRangeProfile.objects.filter(id=id).first()

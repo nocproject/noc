@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+import six
 from django.views.generic.list import ListView
 from django.shortcuts import get_object_or_404
 # NOC modules
@@ -118,7 +119,7 @@ class RefBookAppplication(Application):
             if not can_edit:
                 return self.response_forbidden("Read-only refbook")
             # Retrieve record data
-            fns = [int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
+            fns = [int(k[6:]) for k in six.iterkeys(request.POST) if k.startswith("field_")]
             data = ["" for i in range(max(fns) + 1)]
             for i in fns:
                 data[i] = request.POST["field_%d" % i]
@@ -162,7 +163,7 @@ class RefBookAppplication(Application):
             if not can_edit:
                 return self.response_forbidden("Read-only refbook")
             # Retrieve record data
-            fns = [int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
+            fns = [int(k[6:]) for k in six.iterkeys(request.POST) if k.startswith("field_")]
             data = ["" for i in range(max(fns) + 1)]
             for i in fns:
                 data[i] = request.POST["field_%d" % i]

@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # Event Summary Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
+import six
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
@@ -39,7 +40,7 @@ class EventSummaryReport(SimpleReport):
         """ Summary by event class """
         c = ActiveEvent.objects.item_frequencies("event_class")
         r = []
-        for k, v in c.items():
+        for k, v in six.iteritems(c):
             if not k:
                 continue
             r += [[EventClass.objects.filter(id=k).first(), int(v)]]
@@ -50,7 +51,7 @@ class EventSummaryReport(SimpleReport):
         """Summary by managed object"""
         c = ActiveEvent.objects.item_frequencies("managed_object")
         r = []
-        for k, v in c.items():
+        for k, v in six.iteritems(c):
             if not k:
                 continue
             r += [[ManagedObject.objects.get(id=k), int(v)]]
@@ -62,7 +63,7 @@ class EventSummaryReport(SimpleReport):
         c = ActiveEvent.objects.item_frequencies("managed_object")
         pc = {}
         mo_map = {}  # managed object id -> profile name
-        for k, v in c.items():
+        for k, v in six.iteritems(c):
             if not k:
                 continue
             try:
@@ -74,7 +75,7 @@ class EventSummaryReport(SimpleReport):
                 pc[p] += v
             except KeyError:
                 pc[p] = v
-        return sorted(pc.items(), key=lambda x: -x[1])
+        return sorted(six.iteritems(pc), key=lambda x: -x[1])
 
     @staticmethod
     def get_by_status():

@@ -14,15 +14,16 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Opticin.OS"
     pattern_unprivileged_prompt = r"^(?P<hostname>[^\n]+)h>"
-    pattern_syntax_error = \
-        r"% Unknown command|% Invalid input detected at|" \
+    pattern_syntax_error = (
+        r"% Unknown command|% Invalid input detected at|"
         r"% Incomplete command|% Ambiguous command"
+    )
     command_super = "enable"
     pattern_prompt = r"^(?P<hostname>[^\n]+)\\enable>"
     pattern_more = [
         (r"----------MORE------------", " "),
         (r"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", " "),
-        (r"Startup configuration file name", "\n")
+        (r"Startup configuration file name", "\n"),
     ]
     config_volatile = ["\x08+"]
     rogue_chars = ["\r"]
@@ -39,6 +40,7 @@ class Profile(BaseProfile):
         """
         s = s.replace("Port1", "Port 1")
         return s.replace("Port2", "Port 2")
+
 
 #    def setup_session(self, script):
 #        try:

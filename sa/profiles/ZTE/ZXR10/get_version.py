@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # re modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,11 +22,12 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^(?P<platform>.+?) Software, Version.*? (?P<version>\S+),.+ ROS Version (?P<ros>[^,].+?)System",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
     rx_snmp_ver1 = re.compile(
-        r"ROS Version (?P<ros>.+?) (?P<platform>.+?) Software, Version.*? (?P<version>\S+), Copyright")
-    rx_snmp_ver2 = re.compile(
-        r"ZTE Ethernet Switch\s+(?P<platform>.+?), Version: (?P<version>\S+)")
+        r"ROS Version (?P<ros>.+?) (?P<platform>.+?) Software, Version.*? (?P<version>\S+), Copyright"
+    )
+    rx_snmp_ver2 = re.compile(r"ZTE Ethernet Switch\s+(?P<platform>.+?), Version: (?P<version>\S+)")
 
     def execute_snmp(self):
         v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
@@ -35,11 +37,7 @@ class Script(BaseScript):
         platform = match.group("platform")
         if platform.startswith("ZXR10 "):
             platform = platform[6:]
-        return {
-            "vendor": "ZTE",
-            "platform": platform,
-            "version": match.group("version")
-        }
+        return {"vendor": "ZTE", "platform": platform, "version": match.group("version")}
 
     def execute_cli(self):
         v = self.cli("show version software")
@@ -47,8 +45,4 @@ class Script(BaseScript):
         platform = match.group("platform")
         if platform.startswith("ZXR10 "):
             platform = platform[6:]
-        return {
-            "vendor": "ZTE",
-            "platform": platform,
-            "version": match.group("version")
-        }
+        return {"vendor": "ZTE", "platform": platform, "version": match.group("version")}

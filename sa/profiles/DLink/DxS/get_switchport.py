@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
- 
-# Python modules
-import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -24,17 +22,17 @@ class Script(BaseScript):
         interfaces = []
 
         for p in ports:
-            iface = p['port']
+            iface = p["port"]
             i = {
                 "interface": iface,
-                "status": p['status'],
+                "status": p["status"],
                 "members": [],
                 "802.1Q Enabled": True,
-                "tagged": [v["vlan_id"] for v in vlans if iface in v["tagged_ports"]]
+                "tagged": [v["vlan_id"] for v in vlans if iface in v["tagged_ports"]],
             }
-            desc = p['desc']
-            if desc and desc != 'null':
-                i['description'] = desc
+            desc = p["desc"]
+            if desc and desc != "null":
+                i["description"] = desc
             untagged = [v["vlan_id"] for v in vlans if iface in v["untagged_ports"]]
             if untagged:
                 i["untagged"] = untagged[0]

@@ -362,7 +362,7 @@ class BIAPI(API):
             if node and node["id"] == p_id:
                 return node
             else:
-                if node and "children" in node.keys():
+                if node and "children" in node:
                     for child in node["children"]:
                         _searched = search_parent(child, p_id)
                         if _searched:
@@ -371,7 +371,7 @@ class BIAPI(API):
                     return None
 
         def sort_children(node):
-            if "children" not in node.keys():
+            if "children" not in set(node):
                 return
             else:
                 node["children"] = sorted(node["children"],
@@ -448,7 +448,7 @@ class BIAPI(API):
                 parent_id = id
                 if searched:
                     if searched["id"] != id:
-                        if "children" not in searched.keys():
+                        if "children" not in searched:
                             searched["children"] = []
                         if id not in [x["id"] for x in searched["children"]]:
                             searched["children"] += [{

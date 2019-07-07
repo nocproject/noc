@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -15,12 +16,12 @@ from noc.core.mac import MAC
 
 
 class Script(BaseScript):
-    name = 'ZTE.ZXA10.get_mac_address_table'
+    name = "ZTE.ZXA10.get_mac_address_table"
     interface = IGetMACAddressTable
 
     rx_mac = re.compile(
         r"^(?P<mac>\S+[0-9a-f\.]+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s+(?P<interface>\S+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -33,12 +34,12 @@ class Script(BaseScript):
             cmd += " %s" % MAC(mac).to_cisco()
         r = []
         for match in self.rx_mac.finditer(self.cli(cmd)):
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("interface")],
-                "type": {
-                    "Dynamic": "D",
-                }[match.group("type")]
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("interface")],
+                    "type": {"Dynamic": "D"}[match.group("type")],
+                }
+            ]
         return r

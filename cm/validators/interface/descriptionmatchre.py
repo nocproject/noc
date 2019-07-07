@@ -22,7 +22,7 @@ class InterfaceDescriptionMatchRegexpValidator(CLIPSInterfaceValidator):
             "xtype": "textfield",
             "fieldLabel": "REGEX",
             "allowBlank": False,
-            "uiStyle": "extra"
+            "uiStyle": "extra",
         }
     ]
     RULES = """

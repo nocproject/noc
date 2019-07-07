@@ -6,50 +6,44 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
-from collections import defaultdict
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
+
 # NOC modules
-from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
-from noc.lib.text import ranges_to_list
 
 
 class BaseJUNOSParser(BaseParser):
-
     def __init__(self, managed_object):
         super(BaseJUNOSParser, self).__init__(managed_object)
 
     def parse(self, config):
-        VALUE = OneOrMore(Word(alphanums + "-/.:_+[]") | QuotedString("\""))
+        VALUE = OneOrMore(Word(alphanums + "-/.:_+[]") | QuotedString('"'))
         context = []
         inactive_level = None
-        for l in config.splitlines():
+        for line in config.splitlines():
             # @todo: Skip inactive blocks
-            if "##" in l:
-                l = l.split("##", 1)[0]
-            l = l.strip()
-            if l == "{master}":
+            if "##" in line:
+                line = line.split("##", 1)[0]
+            line = line.strip()
+            if line == "{master}":
                 continue
-            elif l.startswith("inactive:"):
-                if l.endswith("{"):
+            elif line.startswith("inactive:"):
+                if line.endswith("{"):
                     inactive_level = len(context)
-                    context += [l[9:-1].strip()]
-            elif l.startswith("/*"):
+                    context += [line[9:-1].strip()]
+            elif line.startswith("/*"):
                 continue
-            elif l.endswith("{"):
-                context += [l[:-1].strip()]
-            elif l == "}":
+            elif line.endswith("{"):
+                context += [line[:-1].strip()]
+            elif line == "}":
                 context.pop(-1)
                 if inactive_level is not None and inactive_level >= len(context):
                     inactive_level = None
-            elif l.endswith(";"):
+            elif line.endswith(";"):
                 if inactive_level is not None:
                     continue
-                cp = " ".join(context).split() + l[:-1].split()
+                cp = " ".join(context).split() + line[:-1].split()
                 h = self.handlers
                 for p in cp:
                     if p in h:
@@ -280,35 +274,19 @@ class BaseJUNOSParser(BaseParser):
         pass
 
     handlers = {
-        "groups": {
-            "re0": {
-                "system": {
-                    "host-name": on_system_host_name,
-                }
-            }
-        },
+        "groups": {"re0": {"system": {"host-name": on_system_host_name}}},
         "system": {
             "host-name": on_system_host_name,
             "domain-name": on_system_domain_name,
             "time-zone": on_system_time_zone,
             "name-server": on_system_name_server,
-            "login": {
-                "user": {
-                    "*": {
-                        "class": on_system_login_user_class
-                    }
-                }
-            },
-            "ntp": {
-                "server": on_system_ntp_server
-            }
+            "login": {"user": {"*": {"class": on_system_login_user_class}}},
+            "ntp": {"server": on_system_ntp_server},
         },
         "interfaces": {
             "*": {
                 "description": on_interfaces_description,
-                "gigether-options": {
-                    "802.3ad": on_interface_aggregated
-                },
+                "gigether-options": {"802.3ad": on_interface_aggregated},
                 "unit": {
                     "*": {
                         "description": on_subinterface_description,
@@ -316,18 +294,14 @@ class BaseJUNOSParser(BaseParser):
                         "family": {
                             "inet": {
                                 "address": on_subinterface_ipv4_address,
-                                "filter": {
-                                    "*": on_subinterface_ipv4_filter
-                                }
+                                "filter": {"*": on_subinterface_ipv4_filter},
                             },
-                            "inet6": {
-                                "address": on_subinterface_ipv6_address
-                            },
+                            "inet6": {"address": on_subinterface_ipv6_address},
                             "iso": on_subinterface_iso,
-                            "mpls": on_subinterface_mpls
-                        }
+                            "mpls": on_subinterface_mpls,
+                        },
                     }
-                }
+                },
             }
         },
         "protocols": {
@@ -335,33 +309,13 @@ class BaseJUNOSParser(BaseParser):
                 "interface": {
                     "*": {
                         "point-to-point": on_isis_interface_ptp,
-                        "level": {
-                            "*": {
-                                "metric": on_isis_interface_metric
-                            }
-                        }
+                        "level": {"*": {"metric": on_isis_interface_metric}},
                     }
                 }
             },
-            "ldp": {
-                "interface": {
-                    "*": on_ldp_interface
-                }
-            },
-            "pim": {
-                "interface": {
-                    "*": on_pim_interface
-                }
-            }
+            "ldp": {"interface": {"*": on_ldp_interface}},
+            "pim": {"interface": {"*": on_pim_interface}},
         },
-        "routing-options": {
-            "static": {
-                "route": {
-                    "*": on_static_route
-                }
-            }
-        },
-        "snmp": {
-            "contact": on_snmp_contact
-        }
+        "routing-options": {"static": {"route": {"*": on_static_route}}},
+        "snmp": {"contact": on_snmp_contact},
     }

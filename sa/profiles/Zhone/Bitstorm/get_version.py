@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.lib.text import parse_table
 from noc.core.script.base import BaseScript
@@ -27,20 +28,22 @@ class Script(BaseScript):
     System Description       Paradyne DSLAM; Model: 8820-A2-xxx
     """
     # rx_ver = re.compile(r"software version MXK (?P<version>\S+)")
-    rx_platform = re.compile(
-        r"^(?P<platform>MXK \d+)\s*\n", re.MULTILINE)
+    rx_platform = re.compile(r"^(?P<platform>MXK \d+)\s*\n", re.MULTILINE)
     rx_ver = re.compile(
         r"^FW Rev\s*(?P<version>\S+)\n"
         r"^Model\s*(?P<platform>\S+)\n"
         r"^Serial Number\s*(?P<serial>\S+)\n"
         r"^MAC Address Eth1\s*(?P<mac1>\S+)\n"
-        r"^MAC Address Eth2\s*(?P<mac2>\S+)\n", re.MULTILINE | re.IGNORECASE)
+        r"^MAC Address Eth2\s*(?P<mac2>\S+)\n",
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_ver2 = re.compile(
         r"\s*System Name\s*(?P<hostname>\S*)(\s*\n)"
         r"\s*System Location\s*(?P<location>[\S\s]*)(\s*\n)"
         r"\s*System Contact\s*(?P<contact>[\S\s]*)(\s*\n)"
         r"\s*System Description\s*(?P<description>.*)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def execute(self):
         v = self.cli("show system information", cached=True)
@@ -63,11 +66,7 @@ class Script(BaseScript):
             # v = self.cli("slots", cached=True)
             # match = self.re_search(self.rx_platform, v)
             platform = match.group("platform")
-        r = {
-            "vendor": "Zhone",
-            "version": version,
-            "platform": platform
-        }
+        r = {"vendor": "Zhone", "version": version, "platform": platform}
         if "serial" in match.groupdict():
             r["attributes"] = {}
             r["attributes"]["Serial Number"] = match.group("serial")

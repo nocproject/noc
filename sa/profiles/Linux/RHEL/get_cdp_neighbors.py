@@ -55,9 +55,11 @@ class Script(BaseScript):
         gsw2-73-sar                    enp2s0        CDP     127          S             Gi1/0/4
         example.ru                    eth0          CDP     115          HRS           vnet0
     """
-    rx_ladvdc = re.compile(r"(?P<device_id>\S+)\s+(?P<local_interface>\S+)\s+"
-                           r"CDP\s+\d+\s+\S+\s+(?P<remote_interface>\S+)\s+\n",
-                           re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ladvdc = re.compile(
+        r"(?P<device_id>\S+)\s+(?P<local_interface>\S+)\s+"
+        r"CDP\s+\d+\s+\S+\s+(?P<remote_interface>\S+)\s+\n",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     """
     $ lldpcli show neighbors summary
@@ -75,16 +77,20 @@ class Script(BaseScript):
 
     """
 
-    rx_lldpd = re.compile(r"Interface:\s+(?P<local_interface>\S+), via: CDPv2\n"
-                          r"\s+Chassis:\s+\n"
-                          r"\s+ChassisID:\s+\S+\s(?P<device_id>\S+)\n"
-                          r"\s+SysName:\s+\S+\n"
-                          r"\s+Port:\s+\n"
-                          r"\s+PortID:\s+ifname (?P<remote_interface>\S+)\n",
-                          re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_lldpd = re.compile(
+        r"Interface:\s+(?P<local_interface>\S+), via: CDPv2\n"
+        r"\s+Chassis:\s+\n"
+        r"\s+ChassisID:\s+\S+\s(?P<device_id>\S+)\n"
+        r"\s+SysName:\s+\S+\n"
+        r"\s+Port:\s+\n"
+        r"\s+PortID:\s+ifname (?P<remote_interface>\S+)\n",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
     # Linux interface regex
-    check_ifcfg = re.compile(r"(bond\d+|eno\d+|ens\d+|enp\d+s\d+|en[0-9a-fA-F]{8}|eth\d+|vnet\d+)",
-                             re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    check_ifcfg = re.compile(
+        r"(bond\d+|eno\d+|ens\d+|enp\d+s\d+|en[0-9a-fA-F]{8}|eth\d+|vnet\d+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     def execute(self):
 
@@ -99,7 +105,7 @@ class Script(BaseScript):
         map = {
             "INTERFACE": "local_interface",
             "HOSTNAME": "device_id",
-            "PORTNAME": "remote_interface"
+            "PORTNAME": "remote_interface",
         }
         # try ladvdc
         id_last = 999
@@ -107,10 +113,10 @@ class Script(BaseScript):
 
         if "INTERFACE" in v:
             for l in v.splitlines():
-                name, value = l.split('=')
-                id = int(name.split('_')[-1])
+                name, value = l.split("=")
+                id = int(name.split("_")[-1])
 
-                name2 = ''.join(name.split('_')[:-1])
+                name2 = "".join(name.split("_")[:-1])
                 if name2 not in map:
                     continue
 
@@ -118,8 +124,10 @@ class Script(BaseScript):
                     neighbors += [{map[name2]: value.strip("'")}]
                 #   print value.strip("'")
                 else:
-                    if map[name2] == 'remote_interface':
-                        neighbors[id][map[name2]] = self.profile.convert_interface_name_cisco(value.strip("'"))
+                    if map[name2] == "remote_interface":
+                        neighbors[id][map[name2]] = self.profile.convert_interface_name_cisco(
+                            value.strip("'")
+                        )
                         #       print map[name2]
                     else:
                         neighbors[id][map[name2]] = value.strip("'")
@@ -127,10 +135,7 @@ class Script(BaseScript):
 
                 id_last = id
 
-            return {
-                "device_id": device_id,
-                "neighbors": neighbors
-            }
+            return {"device_id": device_id, "neighbors": neighbors}
 
         """
 
@@ -155,15 +160,16 @@ class Script(BaseScript):
             if self.check_ifcfg.match(match.group("remote_interface")):
                 remote_if = match.group("remote_interface")
             else:
-                remote_if = self.profile.convert_interface_name_cisco(match.group("remote_interface"))
+                remote_if = self.profile.convert_interface_name_cisco(
+                    match.group("remote_interface")
+                )
 
-            neighbors += [{
-                "device_id": match.group("device_id"),
-                "local_interface": match.group("local_interface"),
-                "remote_interface": remote_if,
-            }]
+            neighbors += [
+                {
+                    "device_id": match.group("device_id"),
+                    "local_interface": match.group("local_interface"),
+                    "remote_interface": remote_if,
+                }
+            ]
 
-        return {
-            "device_id": device_id,
-            "neighbors": neighbors
-        }
+        return {"device_id": device_id, "neighbors": neighbors}

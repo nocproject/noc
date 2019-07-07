@@ -19,23 +19,23 @@ class Script(BaseScript):
         configs = []
 
         conf = {}
-        conf['name'] = "admin display"
-        conf['config'] = self.cli("admin display")
-        conf['config'] = self.strip_first_lines(conf['config'], 6)
-        conf['config'] = self.cleaned_config(conf['config'])
+        conf["name"] = "admin display"
+        conf["config"] = self.cli("admin display")
+        conf["config"] = self.strip_first_lines(conf["config"], 6)
+        conf["config"] = self.cleaned_config(conf["config"])
         configs.append(conf)
 
         conf = {}
-        conf['name'] = "show bof"
-        conf['config'] = self.cli("show bof")
-        conf['config'] = self.cleaned_config(conf['config'])
+        conf["name"] = "show bof"
+        conf["config"] = self.cli("show bof")
+        conf["config"] = self.cleaned_config(conf["config"])
         configs.append(conf)
 
         conf = {}
-        conf['name'] = "li"
+        conf["name"] = "li"
         self.cli("configure li")
-        conf['config'] = self.cli("info")
-        conf['config'] = self.cleaned_config(conf['config'])
+        conf["config"] = self.cli("info")
+        conf["config"] = self.cleaned_config(conf["config"])
         self.cli("exit")
         configs.append(conf)
 

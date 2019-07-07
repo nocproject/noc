@@ -6,6 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+
+# Third-party modules
+import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -50,9 +56,9 @@ class Script(BaseScript):
             "configuration": {
                 "MSTP": {
                     "region": self.mib_get("hpicfBridgeMSTRegionName"),
-                    "revision": self.mib_get("hpicfBridgeMSTRegionRevision")
+                    "revision": self.mib_get("hpicfBridgeMSTRegionRevision"),
                 }
-            }
+            },
         }
         # Get bridge id
         bridge_id = self.mib_get("dot1dBaseBridgeAddress").replace(" ", "")
@@ -97,7 +103,7 @@ class Script(BaseScript):
                         vlans[instance_id] = v[instance_id]
 
         if 0 not in vlans:
-            vlans[0] = ''
+            vlans[0] = ""
         # Convert bitmask to vlan list
         rest_vlans = set(range(1, 4096))
         for instance_id in vlans:
@@ -151,8 +157,10 @@ class Script(BaseScript):
                 "2": "discarding",
                 "??": "learning",
                 "5": "forwarding",
-                "_": "unknown"
-            }[v[instance_id, port_id]]  # @todo: refine states
+                "_": "unknown",
+            }[
+                v[instance_id, port_id]
+            ]  # @todo: refine states
         # Port role
         v = self.mib_walk("hpicfBridgeMSTPortRole")
         for instance_id, port_id in v:
@@ -165,8 +173,10 @@ class Script(BaseScript):
                 "3": "designated",
                 "_": "master",
                 "__": "nonstp",
-                "!!": "unknown"
-            }[v[instance_id, port_id]]  # @todo: refine roles
+                "!!": "unknown",
+            }[
+                v[instance_id, port_id]
+            ]  # @todo: refine roles
         # Designated bridge
         v = self.mib_walk("hpicfBridgeMSTPortDesignatedBridge")
         for instance_id, port_id in v:
@@ -181,9 +191,15 @@ class Script(BaseScript):
             x = v[instance_id, port_id]
             if " " in x:
                 pr, p = x.split(" ")
-                instance_ports[instance_id][port_id]["designated_port_id"] = "%d.%d" % (int(pr, 16), int(p, 16))
+                instance_ports[instance_id][port_id]["designated_port_id"] = "%d.%d" % (
+                    int(pr, 16),
+                    int(p, 16),
+                )
             else:
-                instance_ports[instance_id][port_id]["designated_port_id"] = "%d.%d" % (ord(x[0]), ord(x[1]))
+                instance_ports[instance_id][port_id]["designated_port_id"] = "%d.%d" % (
+                    ord(x[0]),
+                    ord(x[1]),
+                )
         # Fill missed designated bridge ids
         for instance_id in instance_ports:
             for port_id in instance_ports[instance_id]:
@@ -195,12 +211,14 @@ class Script(BaseScript):
 
         # Install interfaces
         for instance_id in instances:
-            instances[instance_id]["interfaces"] = sorted(
-                instance_ports[instance_id].values(), lambda x, y: cmp(x["port_id"], y["port_id"])
+            instances[instance_id]["interfaces"] = list(
+                sorted(
+                    six.itervalues(instance_ports[instance_id]), key=operator.itemgetter("port_id")
+                )
             )
 
         # Install instances
-        r["instances"] = sorted(instances.values(), lambda x, y: cmp(x["id"], y["id"]))
+        r["instances"] = list(sorted(six.itervalues(instances), key=operator.itemgetter["id"]))
         return r
 
     def process_rstp(self):
@@ -210,25 +228,22 @@ class Script(BaseScript):
         bridge_id = "%s-%s" % (bridge_id[:6], bridge_id[6:])
 
         # Create instances
-        instance = {'id': 0, 'vlans': "1-4095", 'bridge_id': bridge_id}
+        instance = {"id": 0, "vlans": "1-4095", "bridge_id": bridge_id}
 
-        for l in self.cli('sh spanning-tree instance ist').splitlines():
-            if l.find('Switch Priority') > 0:
-                instance['bridge_priority'] = int(l.split(':')[1].strip())
-            if l.find('Regional Root MAC Address') > 0:
-                instance['root_id'] = l.split(':')[1].strip()
-            if l.find('Regional Root Priority') > 0:
-                instance['root_priority'] = int(l.split(':')[1].strip())
+        for l in self.cli("sh spanning-tree instance ist").splitlines():
+            if l.find("Switch Priority") > 0:
+                instance["bridge_priority"] = int(l.split(":")[1].strip())
+            if l.find("Regional Root MAC Address") > 0:
+                instance["root_id"] = l.split(":")[1].strip()
+            if l.find("Regional Root Priority") > 0:
+                instance["root_priority"] = int(l.split(":")[1].strip())
 
         # port_id -> {"interface","port_id","edge","point_to_point"}
         ports = {}
         ifname = self.mib_walk("ifName")
         v = self.mib_walk("dot1dBasePortIfIndex")
         for port_id in v:
-            ports[port_id] = {
-                "interface": ifname[int(v[port_id])],
-                "port_id": port_id,
-            }
+            ports[port_id] = {"interface": ifname[int(v[port_id])], "port_id": port_id}
         # Edge port status
         v = self.mib_walk("hpicfBridgeRstpOperEdgePort")
         for port_id in v:
@@ -238,36 +253,36 @@ class Script(BaseScript):
         for port_id in v:
             ports[port_id]["point_to_point"] = v[port_id] == "1"
 
-        for bl in self.cli('sh spanning-tree instance ist detail').split('\n\n'):
+        for bl in self.cli("sh spanning-tree instance ist detail").split("\n\n"):
             iface = {}
             for l in bl.splitlines():
-                if l.find('Port') == 2:
-                    iface['interface'] = l.split(':')[1].strip()
-                if l.find('Role') > 0:
-                    iface['role'] = l.split(':')[1].strip().lower()
-                if l.find('State') > 0:
-                    iface['state'] = l.split(':')[1].strip().lower()
-                if l.find('Priority') == 2:
-                    pri = l.split(':')[1].strip()
-                    iface['priority'] = int(pri)
-                if l.find('Designated Bridge ID') > 0:
-                    iface['designated_bridge_priority'] = l.split(':')[1].lstrip()
-                    iface['designated_bridge_id'] = l.split(':')[2].rstrip()
-                if l.find('Designated Port ID') > 0:
-                    iface['designated_port_id'] = l.split(':')[2].rstrip()
+                if l.find("Port") == 2:
+                    iface["interface"] = l.split(":")[1].strip()
+                if l.find("Role") > 0:
+                    iface["role"] = l.split(":")[1].strip().lower()
+                if l.find("State") > 0:
+                    iface["state"] = l.split(":")[1].strip().lower()
+                if l.find("Priority") == 2:
+                    pri = l.split(":")[1].strip()
+                    iface["priority"] = int(pri)
+                if l.find("Designated Bridge ID") > 0:
+                    iface["designated_bridge_priority"] = l.split(":")[1].lstrip()
+                    iface["designated_bridge_id"] = l.split(":")[2].rstrip()
+                if l.find("Designated Port ID") > 0:
+                    iface["designated_port_id"] = l.split(":")[2].rstrip()
 
             if not iface:
                 continue
 
             for p in ports:
-                if iface['interface'] == ports[p]['interface']:
-                    iface['port_id'] = '%s.%s' % (pri, ports[p]['port_id'])
-                    iface['edge'] = ports[p]['edge']
-                    iface['point_to_point'] = ports[p]['point_to_point']
+                if iface["interface"] == ports[p]["interface"]:
+                    iface["port_id"] = "%s.%s" % (pri, ports[p]["port_id"])
+                    iface["edge"] = ports[p]["edge"]
+                    iface["point_to_point"] = ports[p]["point_to_point"]
             try:
-                instance['interfaces'].append(iface)
+                instance["interfaces"].append(iface)
             except KeyError:
-                instance['interfaces'] = [iface]
+                instance["interfaces"] = [iface]
 
         r["instances"] = [instance]
         return r

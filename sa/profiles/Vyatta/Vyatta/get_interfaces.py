@@ -9,6 +9,7 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,6 +19,7 @@ class Script(BaseScript):
     """
     Vyatta.Vyatta.get_interfaces
     """
+
     name = "Vyatta.Vyatta.get_interfaces"
     interface = IGetInterfaces
 
@@ -44,7 +46,7 @@ class Script(BaseScript):
                     "ipv6_addresses": [],
                     "admin_status": True,
                     "oper_status": True,
-                    "enabled_afi": []
+                    "enabled_afi": [],
                 }
                 if "@" in last_if:
                     name, base = last_if.split("@")
@@ -81,8 +83,7 @@ class Script(BaseScript):
                     "type": self.profile.get_interface_type(iface),
                     "admin_status": True,
                     "oper_status": True,
-                    "subinterfaces": [self.get_si(ifaces[si])
-                                      for si in subs[iface]]
+                    "subinterfaces": [self.get_si(ifaces[si]) for si in subs[iface]],
                 }
                 if ifaces[iface].get("description"):
                     i["description"] = ifaces[iface]["description"]
@@ -92,7 +93,7 @@ class Script(BaseScript):
                     "type": self.profile.get_interface_type(iface),
                     "admin_status": True,
                     "oper_status": True,
-                    "subinterfaces": [self.get_si(ifaces[iface])]
+                    "subinterfaces": [self.get_si(ifaces[iface])],
                 }
                 if ifaces[iface].get("description"):
                     i["description"] = ifaces[iface]["description"]

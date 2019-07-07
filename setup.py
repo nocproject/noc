@@ -12,6 +12,8 @@ import distutils.command.sdist
 from distutils.command.install import INSTALL_SCHEMES
 import subprocess
 import os
+# Third-party modules
+import six
 
 #
 # Prefix to where noc to be installed
@@ -84,7 +86,7 @@ def get_data():
             data[d] = [df]
         else:
             data[d].append(df)
-    return data.items()
+    return list(six.iteritems(data))
 
 
 class noc_sdist(distutils.command.sdist.sdist):
@@ -99,7 +101,7 @@ class noc_sdist(distutils.command.sdist.sdist):
 #
 
 
-for scheme in INSTALL_SCHEMES.values():
+for scheme in six.itervalues(INSTALL_SCHEMES):
     scheme["purelib"] = PREFIX
     scheme["data"] = PREFIX
 #

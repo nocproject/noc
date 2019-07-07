@@ -17,14 +17,14 @@ class Script(BaseScript):
     interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports=[]):
-        a = ''
+        a = ""
         if not self.scripts.has_vlan(vlan_id=vlan_id):
             a = 1
         if tagged_ports:
-            ports = ''
+            ports = ""
             for port in tagged_ports:
                 if ports:
-                    ports = ports + ',' + port
+                    ports = ports + "," + port
                 else:
                     ports = port
             tagged = ports
@@ -45,12 +45,12 @@ class Script(BaseScript):
                     self.snmp.set(oid, 1)  # or 4
                 if tagged:
                     oid = "1.3.6.1.2.1.17.7.1.4.3.1.1." + str(vlan_id)
-                    binports = ''
+                    binports = ""
                     for i in range(len(max(tagged))):
                         if i in tagged:
-                            binports = binports + '1'
+                            binports = binports + "1"
                         else:
-                            binports = binports + '0'
+                            binports = binports + "0"
                     # TODO: bin_to_hex
                     self.snmp.set(oid, self.bin_to_hex(binports))
             except self.snmp.TimeOutError:

@@ -14,10 +14,7 @@ from mongoengine.fields import StringField, IntField
 
 @six.python_2_unicode_compatible
 class Entrance(EmbeddedDocument):
-    meta = {
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"strict": False, "auto_create_index": False}
     number = StringField()
     # Floors
     first_floor = IntField()

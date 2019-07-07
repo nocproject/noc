@@ -11,6 +11,7 @@ import logging
 import datetime
 import csv
 # Third-party modules
+import six
 from six import StringIO
 import xlsxwriter
 from django.http import HttpResponse
@@ -221,7 +222,7 @@ class ReportObjectDetailApplication(ExtApplication):
         mos_filter = None
         if detail_stat:
             ref = ReportModelFilter()
-            ids = ref.proccessed(detail_stat).values()
+            ids = list(six.itervalues(ref.proccessed(detail_stat)))
             mos_filter = set(mos_id).intersection(ids[0])
             mos_id = sorted(mos_filter)
         avail = {}
@@ -251,7 +252,7 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend(type_columns)
         if "object_caps" in columns_filter:
             object_caps = ReportObjectCaps(mos_id)
-            caps_columns = object_caps.ATTRS.values()
+            caps_columns = list(six.itervalues(object_caps.ATTRS))
             ccc = iter(object_caps)
             r[-1].extend(caps_columns)
         if "object_tags" in columns_filter:

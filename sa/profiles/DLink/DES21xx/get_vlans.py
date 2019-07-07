@@ -17,15 +17,15 @@ class Script(BaseScript):
     cache = True
     interface = IGetVlans
     rx_vlan = re.compile(
-        r"VLAN_ID:(?P<vlanid>\d+)\n(VLAN name:(?P<vlanname>\S+)\n)*",
-        re.MULTILINE | re.DOTALL)
+        r"VLAN_ID:(?P<vlanid>\d+)\n(VLAN name:(?P<vlanname>\S+)\n)*", re.MULTILINE | re.DOTALL
+    )
 
     def execute(self):
         r = []
         for match in self.rx_vlan.finditer(self.cli("show vlan", cached=True)):
             d = {}
-            d["vlan_id"] = int(match.group('vlanid'))
-            if match.group('vlanname'):
-                d["name"] = match.group('vlanname')
+            d["vlan_id"] = int(match.group("vlanid"))
+            if match.group("vlanname"):
+                d["name"] = match.group("vlanname")
             r += [d]
         return r

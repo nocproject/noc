@@ -8,14 +8,13 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
-rx_mac = re.compile(
-    r"^(System )?MAC [Aa]ddress\s*:\s+(?P<mac>\S+)$", re.MULTILINE)
-rx_mac1 = re.compile(
-    r"^\d+\s+(?P<mac>\S+)\s+STATIC\s+System\s+CPU$", re.MULTILINE)
+rx_mac = re.compile(r"^(System )?MAC [Aa]ddress\s*:\s+(?P<mac>\S+)$", re.MULTILINE)
+rx_mac1 = re.compile(r"^\d+\s+(?P<mac>\S+)\s+STATIC\s+System\s+CPU$", re.MULTILINE)
 
 
 class Script(BaseScript):
@@ -29,10 +28,7 @@ class Script(BaseScript):
             try:
                 mac = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.1.1.0", cached=True)
                 if mac:
-                    return {
-                        "first_chassis_mac": mac,
-                        "last_chassis_mac": mac
-                    }
+                    return {"first_chassis_mac": mac, "last_chassis_mac": mac}
             except self.snmp.TimeOutError:
                 pass
 
@@ -43,7 +39,4 @@ class Script(BaseScript):
             v = self.cli("show mac-address-table static")
             match = rx_mac1.search(v)
         mac = match.group("mac")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

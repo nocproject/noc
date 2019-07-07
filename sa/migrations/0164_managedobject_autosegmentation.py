@@ -8,6 +8,7 @@
 
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -39,8 +40,8 @@ class Migration(BaseMigration):
                     # To create single segment use templates like {{object.name}}
                     # To create segments on per-interface basic use
                     # names like {{object.name}}-{{interface.name}}
-                    ("c", "Segmentate to child segment")
+                    ("c", "Segmentate to child segment"),
                 ],
-                default="p"
-            )
+                default="p",
+            ),
         )

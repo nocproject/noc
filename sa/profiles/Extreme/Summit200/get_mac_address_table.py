@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -20,7 +21,7 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^\d\S+\s+(?P<mac>\S+)\s+vlan(?P<vlan_id>\d+)(?:\(\d+\))?\s+\d+\s+\d+\s+"
         r"(?P<type>([dhmis\s]+))\s+(?P<interfaces>\d+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -35,17 +36,19 @@ class Script(BaseScript):
         v = self.cli(cmd)
         for match in self.rx_line.finditer(v):
             mactype = match.group("type")
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("interfaces")],
-                "type": {
-                    "d m": "D",
-                    "dhm": "D",
-                    "dhmi": "D",
-                    "d mi": "D",
-                    "s m": "S",
-                    "shm": "S"
-                }[mactype.strip()]
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("interfaces")],
+                    "type": {
+                        "d m": "D",
+                        "dhm": "D",
+                        "dhmi": "D",
+                        "d mi": "D",
+                        "s m": "S",
+                        "shm": "S",
+                    }[mactype.strip()],
+                }
+            ]
         return r

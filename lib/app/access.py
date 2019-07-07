@@ -13,6 +13,7 @@ class PermissionDenied(Exception):
     """
     Basic Permission Denied exception
     """
+
     pass
 
 
@@ -22,6 +23,7 @@ class Permission(object):
     Each permission must implement ``check`` method
     and optional queryset method
     """
+
     def __init__(self):
         self.app = None
 
@@ -64,6 +66,7 @@ class LogicPermision(Permission):
     Boolean logic permission. Used to combine two permissions
     using logic condition
     """
+
     def __init__(self, left, right):
         super(Permission, self).__init__()
         self.left = left
@@ -74,6 +77,7 @@ class ORPermission(LogicPermision):
     """
     _or_ combination. Permit if either left or right conditions are met
     """
+
     def check(self, app, user, obj=None):
         return self.left.check(app, user, obj) or self.right.check(app, user, obj)
 
@@ -85,6 +89,7 @@ class ANDPermission(LogicPermision):
     """
     _and_ combination. Permit if both left and right conditions are met
     """
+
     def check(self, app, user, obj=None):
         return self.left.check(app, user, obj) and self.right.check(app, user, obj)
 
@@ -96,6 +101,7 @@ class Permit(Permission):
     """
     Always permit
     """
+
     def check(self, app, user, obj=None):
         return True
 
@@ -104,6 +110,7 @@ class Deny(Permission):
     """
     Always deny
     """
+
     def check(self, app, user, obj=None):
         return False
 
@@ -112,6 +119,7 @@ class PermitLogged(Permission):
     """
     Permit any authenticated user
     """
+
     def check(self, app, user, obj=None):
         return user.is_authenticated()
 
@@ -120,6 +128,7 @@ class PermitSuperuser(Permission):
     """
     Permit superusers
     """
+
     def check(self, app, user, obj=None):
         return user.is_superuser
 
@@ -128,6 +137,7 @@ class HasPerm(Permission):
     """
     Permit if the user has permission _perm_
     """
+
     def __init__(self, perm):
         super(HasPerm, self).__init__()
         self.perm = perm

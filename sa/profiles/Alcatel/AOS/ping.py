@@ -18,10 +18,10 @@ class Script(BaseScript):
         r"^(?P<success>\d+)\s+packets transmitted,\s+(?P<count>\d+)\s+"
         r"packets received,\s+\d+%\s+packet loss?\nround-trip \(ms\)\s+"
         r"min/avg/max\s+=\s+(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
-    def execute(self, address, count=None,
-                source_address=None, size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, df=None):
 
         cmd = "ping %s" % address
         if count:
@@ -42,10 +42,7 @@ class Script(BaseScript):
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
-            return {
-                "success": 0,
-                "count": count or 5
-            }
+            return {"success": 0, "count": count or 5}

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -40,15 +41,17 @@ class Script(BaseScript):
                     continue
                 if interface is not None and match.group("interfaces") != interface:
                     continue
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "learned": "D",
-                        "Config static": "S"
-                    }[match.group("type").lower()]
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": {
+                            "dynamic": "D",
+                            "static": "S",
+                            "learned": "D",
+                            "Config static": "S",
+                        }[match.group("type").lower()],
+                    }
+                ]
         return r
