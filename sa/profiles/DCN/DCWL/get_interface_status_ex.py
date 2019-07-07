@@ -36,103 +36,69 @@ class Script(BaseScript):
         c = cls.SPEED.get(name)
         return c
 
-    def execute(self, interfaces=None):
-        result = []
-        res = {}
-        wres = {}
+    def get_radio_status(self):
+        r = {}
         w = self.cli("get radio all detail")
-        for wline in w.splitlines():
-            wr = wline.split(" ", 1)
-            if wr[0] == "name":
-                wname = wr[1].strip()
-            elif wr[0] == "status":
-                wstatus = wr[1].strip()
-            elif wr[0].strip() == "mode":
-                mode = wr[1].strip()
-                speed = self.get_interface_speed(mode)
-                wres[wname] = {"speed": speed, "status": wstatus}
-        c = self.cli("get interface all detail")
-        ssid = None
-        for vline in c.splitlines():
-            rr = vline.split(" ", 1)
-            if rr[0] == "name":
-                name = rr[1].strip()
-            if rr[0] == "ssid":
-                ssid = rr[1].strip().replace(" ", "").replace("Managed", "")
-                if ssid.startswith("2a2d"):
-                    # 2a2d - hex string
-                    ssid = ssid.decode("hex")
-            if rr[0] == "bss":
-                bss = rr[1].strip()
-            if ssid:
-                res[name] = {"ssid": "%s.%s" % (name, ssid), "bss": bss}
 
-        for s in six.itervalues(res):
-            v = self.cli("get bss %s detail" % s["bss"])
-            for vline in v.splitlines():
-                rr = vline.split(" ", 1)
-                if rr[0] == "status":
-                    status = rr[1].strip()
-                if rr[0] == "radio":
-                    radio = rr[1].strip()
-                if rr[0] == "beacon-interface":
-                    name = rr[1].strip()
-                    if name in res:
-                        res[name].update({"radio": radio, "status": status})
-        for o in six.iteritems(res):
-            if "status" not in o[1]:
+        for block in w.split("\n\n"):
+            if not block:
                 continue
-            status = o[1]["status"]
-            if "up" in status:
-                oper_status = True
-            else:
-                oper_status = False
-            interface = o[1]["ssid"]
-            for w in six.iteritems(wres):
-                if w[0] in o[1]["radio"]:
-                    astatus = w[1]["status"]
-                    if "up" in astatus:
-                        admin_status = True
-                    else:
-                        admin_status = False
-                    in_speed = w[1]["speed"]
-                    out_speed = w[1]["speed"]
-                    full_duplex = True
-                    r = {
-                        "interface": interface,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "full_duplex": full_duplex,
-                        "in_speed": in_speed,
-                        "out_speed": out_speed,
-                    }
-                    result += [r]
-        for o in six.iteritems(res):
-            if "status" not in o[1]:
+            value = self.profile.table_parser(block)
+            if "name" in value:
+                r[value["name"]] = {
+                    "status": value["status"] == "up",
+                    "speed": self.get_interface_speed(value["mode"]),
+                }
+        return r
+
+    def get_bss_status(self, bss):
+        v = self.cli("get bss %s detail" % bss)
+        value = self.profile.table_parser(v)
+        if value.get("beacon-interface"):
+            return {
+                "oper_status": value["status"] == "up",
+                "admin_status": value["global-radius"] == "on",
+                "radio": value["radio"],
+                "name": value["beacon-interface"],
+            }
+
+    def execute(self, interfaces=None):
+        r = {}
+        wres = self.get_radio_status()
+        c = self.cli("get interface all detail")
+        for block in c.split("\n\n"):
+            value = self.profile.table_parser(block)
+            if "name" not in value:
+                self.logger.info("Ignoring unknown interface: '%s", value)
                 continue
-            status = o[1]["status"]
-            if "up" in status:
-                oper_status = True
-            else:
-                oper_status = False
-            interface = o[0]
-            for w in six.iteritems(wres):
-                if w[0] in o[1]["radio"]:
-                    astatus = w[1]["status"]
-                    if "up" in astatus:
-                        admin_status = True
-                    else:
-                        admin_status = False
-                    in_speed = w[1]["speed"]
-                    out_speed = w[1]["speed"]
-                    full_duplex = True
-                    r = {
-                        "interface": interface,
-                        "admin_status": admin_status,
-                        "oper_status": oper_status,
-                        "full_duplex": full_duplex,
-                        "in_speed": in_speed,
-                        "out_speed": out_speed,
-                    }
-                    result += [r]
-        return result
+            ifname = value["name"]
+            if value.get("bss") and value.get("ssid"):
+                bss = self.get_bss_status(value["bss"])
+                if_ssid = "%s.%s" % (ifname, value["ssid"])
+                r[ifname] = {
+                    "interface": ifname,
+                    "admin_status": bss["admin_status"],
+                    "oper_status": bss["oper_status"],
+                    "full_duplex": True,
+                    "in_speed": wres[bss["radio"]]["speed"],
+                    "out_speed": wres[bss["radio"]]["speed"],
+                }
+                r[if_ssid] = {
+                    "interface": if_ssid,
+                    "admin_status": bss["admin_status"],
+                    "oper_status": bss["oper_status"],
+                    "full_duplex": True,
+                    "in_speed": wres[bss["radio"]]["speed"],
+                    "out_speed": wres[bss["radio"]]["speed"],
+                }
+            elif ifname == "eth0":
+                # Physical always up
+                r[ifname] = {
+                    "interface": ifname,
+                    "admin_status": True,
+                    "oper_status": True,
+                    "full_duplex": True,
+                    "in_speed": 100000,
+                    "out_speed": 100000,
+                }
+        return list(six.itervalues(r))
