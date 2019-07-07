@@ -1,8 +1,8 @@
 .. _profiles-vendor-DLink:
 
-======
-D-Link
-======
+=====
+DLink
+=====
 
 .. toctree::
     :titlesonly:
@@ -10,5 +10,11 @@ D-Link
 
     /profiles/DLink.*
 
-`DLink.*` family of profiles support various `D-Link Corporation <https://www.dlink.com>`_
+`DLink.*` family of profiles support various 
+`D-Link <http://www.dlink.com/>`_
 network equipment.
+
+Supported Platforms
+-------------------
+
+.. include:: ../include/auto/supported-vendor-platforms-DLINK.rst

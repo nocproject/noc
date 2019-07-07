@@ -10,7 +10,8 @@ Cisco
 
     /profiles/Cisco.*
 
-`Cisco.*` family of profiles support various `Cisco Systems <https://www.cisco.com>`_
+`Cisco.*` family of profiles support various 
+`Cisco Systems <http://cisco.com/>`_
 network equipment.
 
 Supported Platforms
