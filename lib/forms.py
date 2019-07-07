@@ -17,16 +17,16 @@ class NOCBoundField(forms.forms.BoundField):
     """
     Bound field with django-admin like label-tag
     """
+
     def __init__(self, *args, **kwargs):
         super(NOCBoundField, self).__init__(*args, **kwargs)
-        self.is_checkbox = isinstance(self.field.widget,
-            forms.CheckboxInput)
+        self.is_checkbox = isinstance(self.field.widget, forms.CheckboxInput)
 
     def label_tag(self, contents=None, attrs=None):
         if not contents:
-            contents = force_unicode(escape(
-                self.field.label if self.field.label else self.name)) + (
-            u":" if not self.is_checkbox else u"")
+            contents = force_unicode(
+                escape(self.field.label if self.field.label else self.name)
+            ) + (u":" if not self.is_checkbox else u"")
         classes = []
         if self.is_checkbox:
             classes += [u"vCheckboxLabel"]
@@ -35,18 +35,16 @@ class NOCBoundField(forms.forms.BoundField):
         if classes:
             attrs = attrs.copy() if attrs else {}
             attrs["class"] = u" ".join(classes)
-        return super(NOCBoundField, self).label_tag(contents=contents,
-            attrs=attrs)
+        return super(NOCBoundField, self).label_tag(contents=contents, attrs=attrs)
 
 
 class NOCForm(forms.Form):
     """
     Form wrapper returning NOCBoundField items
     """
+
     class Media:
-        css = {
-            "all": ["/media/admin/css/forms.css"],
-            }
+        css = {"all": ["/media/admin/css/forms.css"]}
 
     def __init__(self, *args, **kwargs):
         super(NOCForm, self).__init__(*args, **kwargs)

@@ -10,10 +10,12 @@
 from __future__ import absolute_import
 from builtins import str
 import os
+
 # Third-party modules
 from django.http import HttpResponse
 import ujson
 import six
+
 # NOC modules
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
@@ -100,13 +102,11 @@ class ExtApplication(Application):
 
     def response(self, content="", status=200):
         if not isinstance(content, six.string_types):
-            return HttpResponse(ujson.dumps(content),
-                                content_type="text/json; charset=utf-8",
-                                status=status)
+            return HttpResponse(
+                ujson.dumps(content), content_type="text/json; charset=utf-8", status=status
+            )
         else:
-            return HttpResponse(content,
-                                content_type="text/plain; charset=utf-8",
-                                status=status)
+            return HttpResponse(content, content_type="text/plain; charset=utf-8", status=status)
 
     def fav_convert(self, item):
         """
@@ -118,8 +118,7 @@ class ExtApplication(Application):
         """
         Returns a set of user's favorite items
         """
-        f = Favorites.objects.filter(
-            user=user.id, app=self.app_id).first()
+        f = Favorites.objects.filter(user=user.id, app=self.app_id).first()
         if f:
             return set(f.favorites)
         else:
@@ -144,14 +143,12 @@ class ExtApplication(Application):
         """
         # Todo: Fix
         if request.method == "POST":
-            if request.META.get("CONTENT_TYPE") == 'application/json':
+            if request.META.get("CONTENT_TYPE") == "application/json":
                 q = ujson.decode(request.body)
             else:
-                q = dict((str(k), v[0] if len(v) == 1 else v)
-                         for k, v in request.POST.lists())
+                q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.POST.lists())
         else:
-            q = dict((str(k), v[0] if len(v) == 1 else v)
-                     for k, v in request.GET.lists())
+            q = dict((str(k), v[0] if len(v) == 1 else v) for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
         if limit and limit > 0:
             try:
@@ -228,13 +225,13 @@ class ExtApplication(Application):
             limit = min(limit or self.row_limit, self.row_limit + 1)
         # Apply paging
         if limit:
-            data = data[start:start + limit]
+            data = data[start : start + limit]
         # Fetch and format data
         out = [formatter(o, fields=only) for o in data]
         if self.row_limit and len(out) > self.row_limit + 1:
             return self.response(
-                "System records limit exceeded (%d records)" % self.row_limit,
-                status=self.TOO_LARGE)
+                "System records limit exceeded (%d records)" % self.row_limit, status=self.TOO_LARGE
+            )
         # Set favorites
         if not only and formatter == self.instance_to_dict:
             if fav_items is None:
@@ -250,11 +247,7 @@ class ExtApplication(Application):
                 total = unpaged_data.count()
             else:
                 total = ld
-            out = {
-                "total": total,
-                "success": True,
-                "data": out
-            }
+            out = {"total": total, "success": True, "data": out}
         return self.response(out, status=self.OK)
 
     def clean_list_data(self, data):
@@ -266,28 +259,32 @@ class ExtApplication(Application):
         """
         return self.apply_bulk_fields(data)
 
-    @view(url="^favorites/app/(?P<action>set|reset)/$",
-          method=["POST"],
-          access=PermitLogged(), api=True)
+    @view(
+        url="^favorites/app/(?P<action>set|reset)/$",
+        method=["POST"],
+        access=PermitLogged(),
+        api=True,
+    )
     def api_favorites_app(self, request, action):
         """
         Set/reset favorite app status
         """
         v = action == "set"
-        fv = Favorites.objects.filter(
-            user=request.user.id, app=self.app_id).first()
+        fv = Favorites.objects.filter(user=request.user.id, app=self.app_id).first()
         if fv:
             if fv.favorite_app != v:
                 fv.favorite_app = v
                 fv.save()
         elif v:
-            Favorites(user=request.user, app=self.app_id,
-                      favorite_app=v).save()
+            Favorites(user=request.user, app=self.app_id, favorite_app=v).save()
         return True
 
-    @view(url="^favorites/item/(?P<item>[0-9a-f]+)/(?P<action>set|reset)/$",
-          method=["POST"],
-          access=PermitLogged(), api=True)
+    @view(
+        url="^favorites/item/(?P<item>[0-9a-f]+)/(?P<action>set|reset)/$",
+        method=["POST"],
+        access=PermitLogged(),
+        api=True,
+    )
     def api_favorites_items(self, request, item, action):
         """
         Set/reset favorite items
@@ -299,35 +296,27 @@ class ExtApplication(Application):
             Favorites.remove_item(request.user, self.app_id, item)
         return True
 
-    @view(url="^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"],
-          access="launch", api=True)
+    @view(url="^futures/(?P<f_id>[0-9a-f]{24})/$", method=["GET"], access="launch", api=True)
     def api_future_status(self, request, f_id):
-        op = self.get_object_or_404(SlowOp, id=f_id,
-                                    app_id=self.get_app_id(),
-                                    user=request.user.username)
+        op = self.get_object_or_404(
+            SlowOp, id=f_id, app_id=self.get_app_id(), user=request.user.username
+        )
         if op.is_ready():
             # Note: the slow operation will be purged by TTL index
             result = op.result()
             if isinstance(result, Exception):
-                return self.render_json({
-                    "success": False,
-                    "message": "Error",
-                    "traceback": str(result)
-                }, status=self.INTERNAL_ERROR)
+                return self.render_json(
+                    {"success": False, "message": "Error", "traceback": str(result)},
+                    status=self.INTERNAL_ERROR,
+                )
             else:
                 return result
         else:
             return self.response_accepted(request.path)
 
     def submit_slow_op(self, request, fn, *args, **kwargs):
-        f = SlowOp.submit(
-            fn,
-            self.get_app_id(), request.user.username,
-            *args, **kwargs
-        )
+        f = SlowOp.submit(fn, self.get_app_id(), request.user.username, *args, **kwargs)
         if f.done():
             return f.result()
         else:
-            return self.response_accepted(
-                location="%sfutures/%s/" % (self.base_url, f.slow_op.id)
-            )
+            return self.response_accepted(location="%sfutures/%s/" % (self.base_url, f.slow_op.id))

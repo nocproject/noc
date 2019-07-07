@@ -11,6 +11,7 @@ import threading
 import logging
 import re
 import itertools
+
 # Third-party modules
 import clips
 
@@ -25,12 +26,11 @@ class CLIPSEnv(object):
     with CLIPSEnv() as env:
         ....
     """
+
     free_envs = {}
     used_envs = {}
     env_seq = itertools.count()
-    semaphore = threading.BoundedSemaphore(
-        clips._clips.getMaxEnvironments()
-    )
+    semaphore = threading.BoundedSemaphore(clips._clips.getMaxEnvironments())
     lock = threading.Lock()
 
     def __init__(self):
@@ -69,10 +69,8 @@ class CLIPSEnv(object):
         logger.debug("Prepare CLIPS")
         # Install python functions
         logger.debug("Register python function py-match-re")
-        clips.RegisterPythonFunction(
-            clips_match_re,
-            "py-match-re"
-        )
+        clips.RegisterPythonFunction(clips_match_re, "py-match-re")
+
 
 # Extension functions
 def _clips_bool(r):
