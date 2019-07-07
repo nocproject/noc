@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -23,11 +24,10 @@ class Script(BaseScript):
         r"^Device ID:\s*(?P<remote_chassis_id>\S+)\s*\n"
         r"^Port ID:\s*(?P<remote_port>.+?)\s*\n"
         r"^Capabilities:\s*(?P<caps>.+?)\s*\n",
-        re.MULTILINE)
-    rx_system_name = re.compile(
-        r"^System Name:(?P<system_name>.*)\n", re.MULTILINE)
-    rx_port_descr = re.compile(
-        r"^Port description:(?P<port_descr>.*)\n", re.MULTILINE)
+        re.MULTILINE,
+    )
+    rx_system_name = re.compile(r"^System Name:(?P<system_name>.*)\n", re.MULTILINE)
+    rx_port_descr = re.compile(r"^Port description:(?P<port_descr>.*)\n", re.MULTILINE)
 
     def execute_cli(self):
         r = []
@@ -67,16 +67,21 @@ class Script(BaseScript):
             s = match.group("caps")
             for c in s.strip().split(", "):
                 cap |= {
-                    "Other": 1, "Repeater": 2, "Bridge": 4,
-                    "WLAN": 8, "Router": 16, "Telephone": 32,
-                    "Cable": 64, "Station": 128
+                    "Other": 1,
+                    "Repeater": 2,
+                    "Bridge": 4,
+                    "WLAN": 8,
+                    "Router": 16,
+                    "Telephone": 32,
+                    "Cable": 64,
+                    "Station": 128,
                 }[c]
             n = {
                 "remote_chassis_id": remote_chassis_id,
                 "remote_chassis_id_subtype": remote_chassis_id_subtype,
                 "remote_port": remote_port,
                 "remote_port_subtype": remote_port_subtype,
-                "remote_capabilities": cap
+                "remote_capabilities": cap,
             }
             match = self.rx_system_name.search(v)
             if match and match.group("system_name"):
@@ -84,9 +89,6 @@ class Script(BaseScript):
             match = self.rx_port_descr.search(v)
             if match and match.group("port_descr"):
                 n["remote_port_description"] = match.group("port_descr")
-            i = {
-                "local_interface": local_if,
-                "neighbors": [n]
-            }
+            i = {"local_interface": local_if, "neighbors": [n]}
             r += [i]
         return r

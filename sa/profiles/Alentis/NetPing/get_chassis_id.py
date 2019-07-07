@@ -21,17 +21,11 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.1", cached=True)
-                return {
-                    "first_chassis_mac": mac,
-                    "last_chassis_mac": mac
-                }
+                return {"first_chassis_mac": mac, "last_chassis_mac": mac}
             except self.snmp.TimeOutError:
                 pass
 
         # Fallback to HTTP
         data = self.profile.var_data(self, "/setup_get.cgi")
         mac = data["mac"]
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

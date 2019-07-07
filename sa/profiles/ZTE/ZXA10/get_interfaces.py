@@ -17,17 +17,12 @@ class Script(BaseScript):
     interface = IGetInterfaces
     TIMEOUT = 240
 
-    type = {
-        "GUSQ": "gei_",
-        "VDWVD": "vdsl_",
-        "SCXN": "gei_",
-        "PRWGS": ""
-    }
+    type = {"GUSQ": "gei_", "VDWVD": "vdsl_", "SCXN": "gei_", "PRWGS": ""}
     rx_iface = re.compile(
         r"^(?P<ifname>\S+) is (?P<admin_status>activate|deactivate|down|administratively down|up),\s*"
         r"line protocol is (?P<oper_status>down|up).+\n"
         r"^\s+Description is none",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_vlan = re.compile(
         r"^(?P<mode>access=0|trunk\>0|hybrid\>=0)\s+(?P<pvid>\d+).+\n"
@@ -35,13 +30,13 @@ class Script(BaseScript):
         r"(^(?P<untagged>\d+)\s*\n)?"
         r"^TaggedVlan:\s*\n"
         r"(^(?P<tagged>[\d,]+)\s*\n)?",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_pvc = re.compile(
         r"^\s+Pvc (?P<pvc_no>\d+):\s*\n"
         r"^\s+Admin Status\s+:\s*(?P<admin_status>enable|disable)\s*\n"
         r"^\s+VPI/VCI\s+:\s*(?P<vpi>\d+)/(?P<vci>\d+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ip = re.compile(
         r"^(?P<ifname>\S+)\s+AdminStatus is (?P<admin_status>up),\s+"
@@ -49,12 +44,10 @@ class Script(BaseScript):
         r"^\s+Internet address is (?P<ip>\S+)\s*\n"
         r"^\s+Broadcast address is .+\n"
         r"^\s+IP MTU is (?P<mtu>\d+) bytes\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_mac = re.compile(
-        r"^\s+Description is none\s*\n"
-        r"^\s+MAC address is (?P<mac>\S+)\s*\n",
-        re.MULTILINE
+        r"^\s+Description is none\s*\n" r"^\s+MAC address is (?P<mac>\S+)\s*\n", re.MULTILINE
     )
 
     def execute_cli(self):
@@ -75,7 +68,7 @@ class Script(BaseScript):
                     "type": "physical",
                     "admin_status": admin_status,
                     "oper_status": oper_status,
-                    "subinterfaces": []
+                    "subinterfaces": [],
                 }
                 if prefix == "gei_":
                     v = self.cli("show vlan port %s" % ifname)
@@ -84,8 +77,7 @@ class Script(BaseScript):
                         "name": ifname,
                         "admin_status": admin_status,
                         "oper_status": oper_status,
-                        "enabled_afi": ["BRIDGE"]
-
+                        "enabled_afi": ["BRIDGE"],
                     }
                     if match.group("untagged"):
                         sub["untagged_vlan"] = match.group("untagged")
@@ -100,7 +92,7 @@ class Script(BaseScript):
                             # "oper_status": oper_status  # need more examples
                             "enabled_afi": ["BRIDGE", "ATM"],
                             "vpi": match.group("vpi"),
-                            "vci": match.group("vci")
+                            "vci": match.group("vci"),
                         }
                         iface["subinterfaces"] += [sub]
                 interfaces += [iface]
@@ -114,14 +106,16 @@ class Script(BaseScript):
                 "name": ifname,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "enabled_afi": ["IPv4"],
-                    "ip_addreses": [match.group("ip")],
-                    "mtu": match.group("mtu")
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "enabled_afi": ["IPv4"],
+                        "ip_addreses": [match.group("ip")],
+                        "mtu": match.group("mtu"),
+                    }
+                ],
             }
             c = self.cli("show interface %s" % ifname)
             match1 = self.rx_mac.search(c)

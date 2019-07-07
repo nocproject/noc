@@ -22,7 +22,4 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.cli("show switch", cached=True)
         match = self.rx_mac.search(v)
-        return {
-            "first_chassis_mac": match.group("mac"),
-            "last_chassis_mac": match.group("mac")
-        }
+        return {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}

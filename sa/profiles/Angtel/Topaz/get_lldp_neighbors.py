@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.lib.text import parse_table
@@ -26,12 +27,18 @@ class Script(BaseScript):
         r"^System Name:(?P<system_name>.+)\n"
         r"^System description:(?P<system_descr>.+)\n"
         r"^Port description:(?P<port_descr>.+?)\n",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
     CAPS = {
-        "": 0, "Other": 1, "Repeater": 2,
-        "Bridge": 4, "Wlan-Access-Point": 8, "Router": 16,
-        "Telephone": 32, "D": 64, "H": 128
+        "": 0,
+        "Other": 1,
+        "Repeater": 2,
+        "Bridge": 4,
+        "Wlan-Access-Point": 8,
+        "Router": 16,
+        "Telephone": 32,
+        "D": 64,
+        "H": 128,
     }
 
     def execute_cli(self):
@@ -76,7 +83,7 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": chassis_id_subtype,
                 "remote_port": port_id,
                 "remote_port_subtype": port_id_subtype,
-                "remote_capabilities": caps
+                "remote_capabilities": caps,
             }
             system_name = match.group("system_name").strip()
             if system_name:
@@ -87,9 +94,6 @@ class Script(BaseScript):
             port_descr = match.group("port_descr").strip()
             if port_descr:
                 neighbor["remote_port_description"] = port_descr
-            r += [{
-                "local_interface": ifname,
-                "neighbors": [neighbor]
-            }]
+            r += [{"local_interface": ifname, "neighbors": [neighbor]}]
 
         return r

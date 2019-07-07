@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -22,10 +23,10 @@ class Script(BaseScript):
         r"^\s*TYPE:\s+(?P<platform>\S+)\s*\n"
         r"^\s*HW_revision:\s+(?P<hardware>\S+)\s*\n"
         r"^\s*SN:\s+(?P<serial>\S+)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    rx_version = re.compile(
-        r"^Eltex \S+ software version\s+(?P<version>\S+\s+build\s+\d+)")
+    rx_version = re.compile(r"^Eltex \S+ software version\s+(?P<version>\S+\s+build\s+\d+)")
 
     def execute(self):
         plat = self.cli("show system environment", cached=True)
@@ -42,8 +43,5 @@ class Script(BaseScript):
             "vendor": "Eltex",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "HW version": hardware,
-                "Serial Number": serial
-            }
+            "attributes": {"HW version": hardware, "Serial Number": serial},
         }

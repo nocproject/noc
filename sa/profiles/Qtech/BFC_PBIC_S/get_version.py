@@ -25,9 +25,5 @@ class Script(BaseScript):
             version = "%s%s" % (o[1], o[2])
         else:
             version = "None"
-        result = {
-            "vendor": "Qtech",
-            "version": version,
-            "platform": platform,
-        }
+        result = {"vendor": "Qtech", "version": version, "platform": platform}
         return result

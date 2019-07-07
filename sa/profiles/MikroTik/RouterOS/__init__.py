@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -18,10 +19,10 @@ class Profile(BaseProfile):
     command_exit = "quit"
     pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] [^>]*> "
     pattern_more = [
-        ("Please press \"Enter\" to continue!", "\n"),
+        ('Please press "Enter" to continue!', "\n"),
         ("q to abort", "q"),
         (r"\[Q quit\|.+\]", " "),
-        (r"\[[yY]/[nN]\]", "y")
+        (r"\[[yY]/[nN]\]", "y"),
     ]
     pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
@@ -79,8 +80,7 @@ class Profile(BaseProfile):
             if not flags and l.startswith("Flags:"):
                 # Parse flags from line like
                 # Flags: X - disabled, I - invalid, D - dynamic
-                flags = [f.split("-", 1)[0].strip()
-                         for f in l[6:].split(",")]
+                flags = [f.split("-", 1)[0].strip() for f in l[6:].split(",")]
                 continue
             match = self.rx_p_new.search(l)
             if match:
@@ -97,9 +97,8 @@ class Profile(BaseProfile):
         if not f:
             f = "X"
         rx = re.compile(
-            r"^\s*(?P<line>\d+)\s+"
-            r"(?P<flags>[%s]+(?:\s+[%s]+)*\s+)?"
-            r"(?P<rest>.+)$" % (f, f))
+            r"^\s*(?P<line>\d+)\s+" r"(?P<flags>[%s]+(?:\s+[%s]+)*\s+)?" r"(?P<rest>.+)$" % (f, f)
+        )
         r = []
         for l in ns:
             match = rx.match(l)
@@ -120,14 +119,14 @@ class Profile(BaseProfile):
                             kvp[-1] += [rest]
                         break
                     if kvp:
-                        kvp[-1] += [rest[:m.start()]]
+                        kvp[-1] += [rest[: m.start()]]
                     kvp += [[m.group(1)]]
-                    rest = rest[m.end():]
+                    rest = rest[m.end() :]
                 # Convert key-value-pairs to dict
                 d = {}
                 for k, v in kvp:
                     v = v.strip()
-                    if v.startswith("\"") and v.endswith("\""):
+                    if v.startswith('"') and v.endswith('"'):
                         v = v[1:-1]
                     d[k] = v
                 r += [(n, f, d)]

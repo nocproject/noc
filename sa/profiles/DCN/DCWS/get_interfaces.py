@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,7 +22,8 @@ class Script(BaseScript):
     rx_sh_int = re.compile(
         r"\s+(?P<interface>\S+)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)"
         r"\s+(?P<ifname>[^\n]+)"
-        r"\s+Hardware is (?P<hardw>[^\n]+)", re.MULTILINE | re.IGNORECASE
+        r"\s+Hardware is (?P<hardw>[^\n]+)",
+        re.MULTILINE | re.IGNORECASE,
     )
     rx_mac = re.compile(r"\s+address\s+is\s+(?P<mac>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_alias = re.compile(r"\s+alias\s+name is (?P<alias>\S+)\s", re.MULTILINE | re.IGNORECASE)
@@ -66,7 +68,7 @@ class Script(BaseScript):
                             "snmp_ifindex": ifindex,
                             "enabled_afi": ["BRIDGE"],
                         }
-                    ]
+                    ],
                 }
             ]
         return [{"interfaces": interfaces}]

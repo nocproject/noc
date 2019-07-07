@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -21,10 +22,13 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
         r"received, \d+% packet loss\s*\nround-trip \(ms\)\s+min/avg/max = "
-        r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE)
+        r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
+        re.MULTILINE,
+    )
 
-    def execute(self, address, count=None, source_address=None,
-                size=None, df=None, *args, **kwargs):
+    def execute(
+        self, address, count=None, source_address=None, size=None, df=None, *args, **kwargs
+    ):
         cmd = "show ping %s" % address
         if count is not None:
             cmd += " number %s" % count
@@ -39,10 +43,7 @@ class Script(BaseScript):
                 "count": match.group("count"),
                 "min": match.group("min"),
                 "avg": match.group("avg"),
-                "max": match.group("max")
+                "max": match.group("max"),
             }
         else:
-            return {
-                "success": 0,
-                "count": count
-            }
+            return {"success": 0, "count": count}

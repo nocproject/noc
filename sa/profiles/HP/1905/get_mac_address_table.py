@@ -29,7 +29,8 @@ class Script(BaseScript):
                 # mac iface type
                 for v in self.snmp.get_tables(
                     ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3"],
-                        bulk=True):
+                    bulk=True,
+                ):
                     if v[1]:
                         chassis = ":".join(["%02x" % ord(c) for c in v[1]])
                         if mac is not None:
@@ -49,9 +50,9 @@ class Script(BaseScript):
                     #    oid = "1.3.6.1.2.1.2.2.1.2." + v[2]
                     #    i = self.snmp.get(oid, cached=True)
                     if int(v[3]) < 25:
-                        iface = 'Ethernet0/' + str(int(v[2]))
+                        iface = "Ethernet0/" + str(int(v[2]))
                     else:
-                        iface = 'Copper0/' + str(int(v[2]))
+                        iface = "Copper0/" + str(int(v[2]))
                     if interface is not None:
                         if iface == interface:
                             pass
@@ -59,7 +60,7 @@ class Script(BaseScript):
                             continue
                     for i in vlan_oid:
                         if v[0] in i:
-                            vlan_id = int(i.split('.')[0])
+                            vlan_id = int(i.split(".")[0])
                             break
                     if vlan is not None:
                         if vlan_id == vlan:
@@ -71,11 +72,7 @@ class Script(BaseScript):
                         {
                             "interfaces": [iface],
                             "mac": chassis,
-                            "type": {
-                                "3": "D",
-                                "2": "S",
-                                "1": "S"
-                            }[v[3]],
+                            "type": {"3": "D", "2": "S", "1": "S"}[v[3]],
                             "vlan_id": vlan_id,
                         }
                     )

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
@@ -21,19 +22,21 @@ class Script(BaseScript):
     rx_interface = re.compile(r"^(?P<interface>\S+)", re.MULTILINE)
     rx_mac = re.compile(
         r"^\s+(Peer address: )?(?P<mac>[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:"
-        r"[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2})", re.MULTILINE)
+        r"[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2})",
+        re.MULTILINE,
+    )
     rx_capsU = re.compile(
-        r"Unidirection mode: (?P<caps_U>supported|unsupported)",
-        re.IGNORECASE | re.MULTILINE)
+        r"Unidirection mode: (?P<caps_U>supported|unsupported)", re.IGNORECASE | re.MULTILINE
+    )
     rx_capsR = re.compile(
-        r"Remote loopback mode: (?P<caps_R>supported|unsupported)",
-        re.IGNORECASE | re.MULTILINE)
+        r"Remote loopback mode: (?P<caps_R>supported|unsupported)", re.IGNORECASE | re.MULTILINE
+    )
     rx_capsL = re.compile(
-        r"Link events: (?P<caps_L>supported|unsupported)",
-        re.IGNORECASE | re.MULTILINE)
+        r"Link events: (?P<caps_L>supported|unsupported)", re.IGNORECASE | re.MULTILINE
+    )
     rx_capsV = re.compile(
-        r"Variable requests: (?P<caps_V>supported|unsupported)",
-        re.IGNORECASE | re.MULTILINE)
+        r"Variable requests: (?P<caps_V>supported|unsupported)", re.IGNORECASE | re.MULTILINE
+    )
 
     def execute(self, **kwargs):
         r = []
@@ -62,9 +65,5 @@ class Script(BaseScript):
             match = self.rx_capsV.search(s)
             if match and match.group("caps_V") == "supported":
                 caps += ["V"]
-            r += [{
-                "interface": iface,
-                "remote_mac": mac,
-                "caps": caps
-            }]
+            r += [{"interface": iface, "remote_mac": mac, "caps": caps}]
         return r

@@ -15,6 +15,7 @@ class Script(BaseScript):
     """
     Brocade.IronWare.remove_vlan
     """
+
     name = "Brocade.IronWare.remove_vlan"
     interface = IRemoveVlan
 

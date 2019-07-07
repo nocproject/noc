@@ -10,6 +10,7 @@
 from collections import defaultdict
 import re
 import time
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -48,7 +49,8 @@ class Script(BaseScript):
     rx_sh_ip_int = re.compile(
         r"^(?P<ip>\d+\S+)/(?P<mask>\d+)\s+(?P<interface>.+?)\s+"
         r"((?P<admin_status>UP|DOWN)/(?P<oper_status>UP|DOWN)\s+)?"
-        r"(?:Static|Dinamic|DHCP)\s", re.MULTILINE
+        r"(?:Static|Dinamic|DHCP)\s",
+        re.MULTILINE,
     )
     rx_ifname = re.compile(r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
     rx_sh_int = re.compile(
@@ -60,11 +62,13 @@ class Script(BaseScript):
         r"^\s+Interface MTU is (?P<mtu>\d+)\s*\n"
         r"(^\s+Link aggregation type is (?P<link_type>\S+)\s*\n)?"
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
-        r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?", re.MULTILINE | re.DOTALL
+        r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
+        re.MULTILINE | re.DOTALL,
     )
     rx_sh_int_des = rx_in = re.compile(
         r"^(?P<ifname>\S+)\s+(?:(?:General|Trunk|Access \(\d+\))\s+)?(?P<oper_status>Up|Down)\s+"
-        r"(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?", re.MULTILINE
+        r"(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
+        re.MULTILINE,
     )
     rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
@@ -104,8 +108,12 @@ class Script(BaseScript):
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk()):
+        for oid, v in self.snmp.getnext(
+            oid,
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            bulk=self.get_bulk(),
+        ):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
@@ -162,10 +170,7 @@ class Script(BaseScript):
         self.apply_table(ifaces, "IF-MIB::ifAlias", "description")
         ip_ifaces = self.get_ip_ifaces()
         for sp in self.scripts.get_switchport():
-            swports[sp["interface"]] = (
-                sp["untagged"] if "untagged" in sp else None,
-                sp["tagged"]
-            )
+            swports[sp["interface"]] = (sp["untagged"] if "untagged" in sp else None, sp["tagged"])
         r = []
         subs = defaultdict(list)
         """
@@ -227,7 +232,8 @@ class Script(BaseScript):
                         "description": self.convert_description(l.get("description", "")),
                         "type": "SVI",
                         "enabled_afi": ["BRIDGE"]
-                        if l["type"] in ["physical", "aggregated"] else [],
+                        if l["type"] in ["physical", "aggregated"]
+                        else [],
                         "admin_status": l["admin_status"],
                         "oper_status": l["oper_status"],
                         "snmp_ifindex": l["snmp_ifindex"],
@@ -248,7 +254,7 @@ class Script(BaseScript):
             try:
                 for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2", max_repetitions=10):
                     n = s[1]
-                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1:]
+                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1 :]
                     if int(sifindex) < 3000:
                         sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
                         smac = MACAddressParameter().clean(sm)
@@ -300,12 +306,8 @@ class Script(BaseScript):
             mac = None
             ifindex = 0
             name = res[0].strip()
-            if (
-                self.match_version(
-                    version__regex=r"[12]\.[15]\.4[4-9]"
-                ) or self.match_version(
-                    version__regex=r"4\.0\.[4-7]$"
-                )
+            if self.match_version(version__regex=r"[12]\.[15]\.4[4-9]") or self.match_version(
+                version__regex=r"4\.0\.[4-7]$"
             ):
                 v = self.cli("show interface %s" % name)
                 time.sleep(0.5)
@@ -323,7 +325,7 @@ class Script(BaseScript):
                         o_stat = match.group("oper_status").lower() == "up"
                         description = match.group("descr").strip()
                         if not description:
-                            description = ''
+                            description = ""
 
             else:
                 if self.profile.convert_interface_name(name) in d:
@@ -342,7 +344,7 @@ class Script(BaseScript):
                 "name": self.profile.convert_interface_name(name),
                 "admin_status": a_stat,
                 "oper_status": o_stat,
-                "enabled_afi": []
+                "enabled_afi": [],
             }
             if description:
                 sub["description"] = description
@@ -358,7 +360,7 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "enabled_protocols": [],
-                "subinterfaces": [sub]
+                "subinterfaces": [sub],
             }
             if description:
                 iface["description"] = description
@@ -408,7 +410,7 @@ class Script(BaseScript):
                     continue
                 ip = match.group("ip")
                 netmask = match.group("mask")
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
                 ip_list = [ip]
                 enabled_afi = []
                 if ":" in ip:
@@ -428,7 +430,7 @@ class Script(BaseScript):
             typ = self.profile.get_interface_type(ifname)
             ip = match.group("ip")
             netmask = match.group("mask")
-            ip = ip + '/' + netmask
+            ip = ip + "/" + netmask
             ip_list = [ip]
             enabled_afi = []
             if ":" in ip:
@@ -438,7 +440,7 @@ class Script(BaseScript):
                 ip_interfaces = "ipv4_addresses"
                 enabled_afi += ["IPv4"]
             if ifname.startswith("vlan"):
-                vlan = ifname.split(' ')[1]
+                vlan = ifname.split(" ")[1]
                 ifname = ifname.strip()
             else:
                 continue
@@ -464,7 +466,7 @@ class Script(BaseScript):
                         ip_interfaces: ip_list,
                         "vlan_ids": self.expand_rangelist(vlan),
                     }
-                ]
+                ],
             }
             interfaces += [iface]
 

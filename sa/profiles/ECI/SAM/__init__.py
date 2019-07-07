@@ -45,7 +45,7 @@ class Profile(BaseProfile):
         "en": "physical",  # FortyGigabitEthernet
         "at": "physical",  # FortyGigabitEthernet
         "cp": "physical",  # FortyGigabitEthernet
-        "sw": "SVI"
+        "sw": "SVI",
     }
 
     @classmethod

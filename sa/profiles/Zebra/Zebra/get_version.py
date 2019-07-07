@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,8 +20,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(r"^(?P<platfrom>\S+)\s+(?P<version>\S+)\s+.*$",
-                        re.MULTILINE)
+    rx_ver = re.compile(r"^(?P<platfrom>\S+)\s+(?P<version>\S+)\s+.*$", re.MULTILINE)
 
     def execute(self):
         v = self.cli("show version", cached=True)

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -23,9 +24,5 @@ class Script(BaseScript):
 
     def execute(self):
         match = self.rx_ver.search(self.cli("show version"))
-        r = {
-            "vendor": "Iskratel",
-            "platform": "VOIP",
-            "version": match.group("version")
-        }
+        r = {"vendor": "Iskratel", "platform": "VOIP", "version": match.group("version")}
         return r

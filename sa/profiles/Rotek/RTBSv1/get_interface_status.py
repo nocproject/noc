@@ -20,23 +20,13 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 # Get interface status IF-MIB
-                for i, n, s in self.snmp.join([
-                    "1.3.6.1.2.1.2.2.1.2",
-                    "1.3.6.1.2.1.2.2.1.8"
-                ]):
+                for i, n, s in self.snmp.join(["1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.2.2.1.8"]):
                     iface = n
                     if interface is not None:
                         if interface == iface:
-                            r = [{
-                                    "interface": iface,
-                                    "status": int(s) == 1
-                                }]
+                            r = [{"interface": iface, "status": int(s) == 1}]
                     else:
-                        r.append({
-                                    "interface": iface,
-                                    "status": int(s) == 1
-                                })
+                        r.append({"interface": iface, "status": int(s) == 1})
                 return r
             except self.snmp.TimeOutError:
                 pass
-

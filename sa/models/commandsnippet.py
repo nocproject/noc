@@ -10,11 +10,13 @@
 from __future__ import absolute_import
 import re
 import shlex
+
 # Third-party modules
 import six
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
+
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.permission import Permission
@@ -28,6 +30,7 @@ class CommandSnippet(NOCModel):
     """
     Command snippet
     """
+
     class Meta(object):
         verbose_name = _("Command Snippet")
         verbose_name_plural = _("Command Snippets")
@@ -39,7 +42,9 @@ class CommandSnippet(NOCModel):
     description = models.TextField(_("Description"))
     snippet = models.TextField(_("Snippet"), help_text=_("Code snippet template"))
     change_configuration = models.BooleanField(_("Change configuration"), default=False)
-    selector = models.ForeignKey(ManagedObjectSelector, verbose_name=_("Object Selector"), on_delete=models.CASCADE)
+    selector = models.ForeignKey(
+        ManagedObjectSelector, verbose_name=_("Object Selector"), on_delete=models.CASCADE
+    )
     is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"), default=False)
@@ -58,8 +63,9 @@ class CommandSnippet(NOCModel):
         return site.reverse("sa:commandsnippet:change", self.id)
 
     rx_var = re.compile(r"{{\s*([^|}]+?)\s*(?:\|.+?)?}}", re.MULTILINE)
-    rx_vartag = re.compile(r"\{%\s*var\s+(?P<name>\S+)\s+(?P<type>\S+)(?P<rest>.*)\s*%\}",
-                           re.MULTILINE)
+    rx_vartag = re.compile(
+        r"\{%\s*var\s+(?P<name>\S+)\s+(?P<type>\S+)(?P<rest>.*)\s*%\}", re.MULTILINE
+    )
 
     @property
     def vars(self):
@@ -73,19 +79,11 @@ class CommandSnippet(NOCModel):
             if "." in v:
                 v = v.split(".", 1)[0]
             if v != "object":
-                vars[v] = {
-                    "type": "str",
-                    "required": True,
-                    "label": v
-                }
+                vars[v] = {"type": "str", "required": True, "label": v}
         # Search for {% var <name> <type> %}
         for match in self.rx_vartag.finditer(self.snippet):
             name, type, rest = match.groups()
-            vars[name] = {
-                "type": type,
-                "required": True,
-                "label": name
-            }
+            vars[name] = {"type": type, "required": True, "label": name}
             if rest:
                 for a in shlex.split(rest.strip()):
                     k, v = a.split("=", 1)

@@ -17,8 +17,7 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_line = re.compile(
-        r"IP\s+(?P<ip>\S+)\s+(?:\-|\d+)\s+(?P<mac>\S+)\s+ARPA\s+"
-        r"(?P<interface>\S+)"
+        r"IP\s+(?P<ip>\S+)\s+(?:\-|\d+)\s+(?P<mac>\S+)\s+ARPA\s+" r"(?P<interface>\S+)"
     )
 
     def execute(self, vrf=None):
@@ -26,11 +25,13 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(self.cli("show arp")):
             if "(" in match.group("interface"):
                 svi, phys = match.group("interface").split("(")
-                r += [{
-                    "ip": match.group("ip"),
-                    "mac": match.group("mac"),
-                    "interface": self.profile.convert_interface_name(svi)
-                }]
+                r += [
+                    {
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "interface": self.profile.convert_interface_name(svi),
+                    }
+                ]
             else:
                 r += [match.groupdict()]
         return r

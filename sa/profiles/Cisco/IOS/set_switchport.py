@@ -17,28 +17,22 @@ class Script(BaseScript):
     name = "Cisco.IOS.set_switchport"
     interface = ISetSwitchport
 
-    def execute(self, configs, protect_switchport=True, protect_type=True,
-                debug=False):
+    def execute(self, configs, protect_switchport=True, protect_type=True, debug=False):
         def is_access(c):
             return "untagged" in c and ("tagged" not in c or not c["tagged"])
 
         # Get existing switchports. interface -> config
-        ports = dict((p["interface"], p)
-                     for p in self.scripts.get_switchport())
+        ports = dict((p["interface"], p) for p in self.scripts.get_switchport())
         # Validate restrictions
         errors = []
         for c in configs:
             iface = c["interface"]
             if protect_switchport and iface not in ports:
                 errors += ["Interface '%s' is not switchport" % iface]
-            if (protect_type and
-                is_access(c) != is_access(ports[iface])):
+            if protect_type and is_access(c) != is_access(ports[iface]):
                 errors += ["Invalid port type for interface '%s'" % iface]
         if errors:
-            return {
-                "status": False,
-                "message": ".\n".join(errors)
-            }
+            return {"status": False, "message": ".\n".join(errors)}
         # Check wrether edge ports can be configured
         skip_edge_port = self.match_version(MESeries)
         # Prepare scenario
@@ -48,9 +42,11 @@ class Script(BaseScript):
             iface = c["interface"]
             p = ports[iface]
             # Check description
-            if ("description" in c and c["description"] and
-                ("description" not in p or
-                 c["description"] != p["description"])):
+            if (
+                "description" in c
+                and c["description"]
+                and ("description" not in p or c["description"] != p["description"])
+            ):
                 ic += [" description %s" % c["description"]]
             # Check status
             if c["status"] and not p["status"]:
@@ -76,10 +72,11 @@ class Script(BaseScript):
                     # ic += [" switchport trunk encapsulation dot1q"]
                     ic += [" switchport mode trunk"]
                     ic += [" no switchport access vlan"]
-                if ("untagged" in c and (
-                    "untagged" not in p or
-                    c["untagged"] != p["untagged"]) or
-                    is_access(p)):
+                if (
+                    "untagged" in c
+                    and ("untagged" not in p or c["untagged"] != p["untagged"])
+                    or is_access(p)
+                ):
                     # Add native vlan
                     ic += [" switchport trunk native vlan %d" % c["untagged"]]
                 if "untagged" not in c and "untagged" in p:
@@ -92,10 +89,7 @@ class Script(BaseScript):
                     ic += [" switchport trunk allowed vlan %s" % cv]
             # Configure edge-port
             if not skip_edge_port:
-                ept = {
-                    True: "spanning-tree portfast",
-                    False: "spanning-tree portfast trunk"
-                }
+                ept = {True: "spanning-tree portfast", False: "spanning-tree portfast trunk"}
                 if is_access(c) != is_access(p):
                     # access <-> trunk. Remove old edgeport settings
                     ic += [" no %s" % ept[not is_access(c)]]
@@ -113,8 +107,4 @@ class Script(BaseScript):
                     self.cli(c)
             self.save_config()
         # Return result
-        return {
-            "status": True,
-            "message": "Ok",
-            "log": "\n".join(commands)
-        }
+        return {"status": True, "message": "Ok", "log": "\n".join(commands)}

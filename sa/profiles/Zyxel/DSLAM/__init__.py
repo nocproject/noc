@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = "((Unknown|invalid) (command|input)|Commands are:)"
     pattern_more = [
         (r"Press any key to continue, 'n' to nopause,'e' to exit", "n"),
-        (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n")
+        (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n"),
     ]
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     command_more = "n"

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -19,19 +20,14 @@ class Script(BaseScript):
     name = "Cisco.IOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_summary_split = re.compile(r"^Device ID.+?\n",
-                                  re.MULTILINE | re.IGNORECASE)
-    rx_s_line = re.compile(
-        r"^[\S+\s]*(?P<local_if>(?:Fa|Gi|Te|Fo)\d+[\d/\.]*)\s+.+$")
-    rx_chassis_id = re.compile(
-        r"^Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_port = re.compile(
-        "^Port id:\s*(?P<remote_if>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
+    rx_summary_split = re.compile(r"^Device ID.+?\n", re.MULTILINE | re.IGNORECASE)
+    rx_s_line = re.compile(r"^[\S+\s]*(?P<local_if>(?:Fa|Gi|Te|Fo)\d+[\d/\.]*)\s+.+$")
+    rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port = re.compile("^Port id:\s*(?P<remote_if>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
     rx_enabled_caps = re.compile(
-        "^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
-        re.MULTILINE | re.IGNORECASE)
-    rx_system = re.compile(
-        r"^System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
+        "^Enabled Capabilities:\s*(?P<caps>\S*)\s*$", re.MULTILINE | re.IGNORECASE
+    )
+    rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_descr = re.compile(r"^Port Description:\s*(?P<descr>.+)$", re.MULTILINE)
 
     def execute_cli(self):
@@ -56,10 +52,7 @@ class Script(BaseScript):
             lldp_interfaces += [match.group("local_if")]
         # Get LLDP neighbors
         for local_if in lldp_interfaces:
-            i = {
-                "local_interface": local_if,
-                "neighbors": []
-            }
+            i = {"local_interface": local_if, "neighbors": []}
             # Get neighbors details
             try:
                 v = self.cli("show lldp neighbors %s detail" % local_if)
@@ -87,7 +80,7 @@ class Script(BaseScript):
             n = {
                 "remote_port": remote_port,
                 "remote_port_subtype": remote_port_subtype,
-                "remote_chassis_id_subtype": 4
+                "remote_chassis_id_subtype": 4,
             }
             match = self.rx_descr.search(v)
             if match:
@@ -105,17 +98,21 @@ class Script(BaseScript):
                     c = c.strip()
                     if c:
                         cap |= {
-                            "O": 1, "P": 2, "B": 4,
-                            "W": 8, "R": 16, "T": 32,
-                            "C": 64, "S": 128
+                            "O": 1,
+                            "P": 2,
+                            "B": 4,
+                            "W": 8,
+                            "R": 16,
+                            "T": 32,
+                            "C": 64,
+                            "S": 128,
                         }[c]
             n["remote_capabilities"] = cap
             # Get remote chassis id
             match = self.rx_system.search(v)
             if match:
                 n["remote_system_name"] = match.group("name")
-            if is_ipv4(n["remote_chassis_id"]) \
-               or is_ipv6(n["remote_chassis_id"]):
+            if is_ipv4(n["remote_chassis_id"]) or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = 5
             elif is_mac(n["remote_chassis_id"]):
                 pass

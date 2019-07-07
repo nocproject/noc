@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -61,23 +62,19 @@ class Script(BaseScript):
                 mac = match.group("mac")
                 if mac.startswith("3333."):
                     continue  # Static entries
-                interfaces = [
-                    qn(i) for i in match.group("interfaces").split(",")
-                ]
-                interfaces = [
-                    i for i in interfaces
-                    if not self.is_ignored_interface(i)
-                ]
+                interfaces = [qn(i) for i in match.group("interfaces").split(",")]
+                interfaces = [i for i in interfaces if not self.is_ignored_interface(i)]
                 if not interfaces:
                     continue
-                m_type = {"dynamic": "D",
-                          "static": "S"}.get(match.group("type").lower())
+                m_type = {"dynamic": "D", "static": "S"}.get(match.group("type").lower())
                 if not m_type:
                     continue
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": mac,
-                    "interfaces": interfaces,
-                    "type": m_type
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": mac,
+                        "interfaces": interfaces,
+                        "type": m_type,
+                    }
+                ]
         return r

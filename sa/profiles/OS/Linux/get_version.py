@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,35 +20,26 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_distrib = re.compile(r"^NAME=+(?P<distrib>.+)$", re.MULTILINE)
-    rx_release = re.compile(
-        r"^(?P<release>.+ release .+)$", re.MULTILINE)
-    rx_vendor = re.compile(
-        r"option 'Manufacturer' '(?P<vendor>\S+)'$", re.MULTILINE)
-    rx_platform = re.compile(
-        r"option 'ProductClass' '(?P<platform>\S+)'$", re.MULTILINE)
-    rx_platform_board = re.compile(
-        r"^board.name=+(?P<platform>.+)$", re.MULTILINE)
-    rx_platform_proc = re.compile(
-        r"^cpu model+\s+:+\s+(?P<platform>.+)$", re.MULTILINE)
-    rx_version = re.compile(
-        r"option 'SoftwareVersion' '(?P<version>\S+)'$", re.MULTILINE)
+    rx_release = re.compile(r"^(?P<release>.+ release .+)$", re.MULTILINE)
+    rx_vendor = re.compile(r"option 'Manufacturer' '(?P<vendor>\S+)'$", re.MULTILINE)
+    rx_platform = re.compile(r"option 'ProductClass' '(?P<platform>\S+)'$", re.MULTILINE)
+    rx_platform_board = re.compile(r"^board.name=+(?P<platform>.+)$", re.MULTILINE)
+    rx_platform_proc = re.compile(r"^cpu model+\s+:+\s+(?P<platform>.+)$", re.MULTILINE)
+    rx_version = re.compile(r"option 'SoftwareVersion' '(?P<version>\S+)'$", re.MULTILINE)
     rx_ubnt_version = re.compile(r"\.v(?P<version>[^@]+)@")
-    rx_eltex_version = re.compile(
-        r"^Eltex\/(?P<platform>\S+)\s+Version\s+(?P<version>\S+)\s")
+    rx_eltex_version = re.compile(r"^Eltex\/(?P<platform>\S+)\s+Version\s+(?P<version>\S+)\s")
     rx_proc = re.compile(r"BOARD Name\s+:+\t+(?P<version>.+)")
-    rx_hardware = re.compile(
-        r"option 'HardwareVersion' '(?P<hardware>\S+)'$", re.MULTILINE)
-    rx_serial = re.compile(
-        r"option 'SerialNumber' '(?P<serial>\S+)'$", re.MULTILINE)
+    rx_hardware = re.compile(r"option 'HardwareVersion' '(?P<hardware>\S+)'$", re.MULTILINE)
+    rx_serial = re.compile(r"option 'SerialNumber' '(?P<serial>\S+)'$", re.MULTILINE)
     rx_grub = re.compile(r"^grub \(+(?P<boot>.+)+\)$", re.MULTILINE)
 
     def execute(self):
-        vendor = ''
-        platform = ''
-        version = ''
+        vendor = ""
+        platform = ""
+        version = ""
         cmd = "cat /etc/config/general 2>/dev/null; echo 2>/dev/null"
         general = self.cli(cmd)
-        gen = general.split('\n')
+        gen = general.split("\n")
         if len(gen) > 3:
             ven = self.re_search(self.rx_vendor, general)
             if ven:
@@ -70,11 +62,16 @@ class Script(BaseScript):
             plat = self.rx_platform_board.search(self.cli(cmd))
             if plat:
                 platform = plat.group("platform")
-                if 'NanoStation' in platform or 'PowerStation' in platform or \
-                        'AirGrid' in platform or 'NanoBridge' in platform or\
-                        'PowerBridge' in platform or 'Rocket' in platform or\
-                        'Bullet' in platform:
-                    vendor = 'Ubiquity'
+                if (
+                    "NanoStation" in platform
+                    or "PowerStation" in platform
+                    or "AirGrid" in platform
+                    or "NanoBridge" in platform
+                    or "PowerBridge" in platform
+                    or "Rocket" in platform
+                    or "Bullet" in platform
+                ):
+                    vendor = "Ubiquity"
                     # Replace # with @ to prevent prompt matching
                     ps1 = self.cli("echo $PS1|sed 's/#/@/'")
                     match = self.rx_ubnt_version.search(ps1)
@@ -82,17 +79,17 @@ class Script(BaseScript):
         if not platform:
             plat = self.cli("uname -m 2>/dev/null")
             if plat:
-                platform = plat.split('\n')[0]
+                platform = plat.split("\n")[0]
         if not platform:
             plat = self.cli("cat /proc/cpuinfo 2>/dev/null")
             match = self.rx_proc.search(plat)
             if match:
                 s = match.group("version")
-                if s.count('-') == 2:
-                    s = s.split('-')
+                if s.count("-") == 2:
+                    s = s.split("-")
                     vendor = s[0]
-                    if vendor == 'ELTEX':
-                        vendor = 'Eltex'
+                    if vendor == "ELTEX":
+                        vendor = "Eltex"
                     platform = s[1]
                     version = s[2]
                 else:
@@ -104,12 +101,12 @@ class Script(BaseScript):
         if not platform:
             platform = "Unknown"
 
-# TODO better...
-        if platform == 'MIPS 4Kc V0.10':
+        # TODO better...
+        if platform == "MIPS 4Kc V0.10":
             el = self.cli("ls /flash/ 2>/dev/null")
-            if 'tau' in el:
-                vendor = 'Eltex'
-                platform = 'TAU-1'
+            if "tau" in el:
+                vendor = "Eltex"
+                platform = "TAU-1"
 
         if not vendor or not version:
             cmd = "cat /etc/*{-,_}{release,version} 2>/dev/null; echo ''"
@@ -120,27 +117,27 @@ class Script(BaseScript):
                 vendor = distrib.group("distrib")
             if release:
                 version = release.group("release")
- 
+
         if not vendor:
             ven = self.cli("uname -s 2>/dev/null")
-            ven = ven.split('\n')[0]
+            ven = ven.split("\n")[0]
             if ven:
                 vendor = "GNU/" + ven
             else:
                 vendor = "Unknown"
 
-#        if not version:
-# Russian latter!!!
-#            vers = self.cli(smart_str("cat /etc/version 2>/dev/null"))
-#            match = self.rx_eltex_version.search(vers)
-#            if match:
-#                vendor = 'Eltex'
-#                platform = match.group("platform")
-#                version = match.group("version")
-#            version = vers.split('\n')[0]
+        #        if not version:
+        # Russian latter!!!
+        #            vers = self.cli(smart_str("cat /etc/version 2>/dev/null"))
+        #            match = self.rx_eltex_version.search(vers)
+        #            if match:
+        #                vendor = 'Eltex'
+        #                platform = match.group("platform")
+        #                version = match.group("version")
+        #            version = vers.split('\n')[0]
         if not version:
             vers = self.cli("uname -r 2>/dev/null")
-            version = vers.split('\n')[0]
+            version = vers.split("\n")[0]
         if not version:
             version = "Unknown"
 
@@ -150,12 +147,7 @@ class Script(BaseScript):
             if bver:
                 boot = bver.group("boot")
 
-        r = {"vendor": vendor,
-            "platform": platform,
-            "version": version,
-            "attributes": {
-                }
-            }
+        r = {"vendor": vendor, "platform": platform, "version": version, "attributes": {}}
 
         try:
             if boot:

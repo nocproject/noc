@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,9 +20,8 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"Assembly Model Name\s+(?P<platform>.+?)$.*"
-        r"Firmware Version\s+(?P<version>\S+)",
-        re.MULTILINE | re.DOTALL
+        r"Assembly Model Name\s+(?P<platform>.+?)$.*" r"Firmware Version\s+(?P<version>\S+)",
+        re.MULTILINE | re.DOTALL,
     )
 
     def execute(self):
@@ -30,5 +30,5 @@ class Script(BaseScript):
         return {
             "vendor": "NextIO",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

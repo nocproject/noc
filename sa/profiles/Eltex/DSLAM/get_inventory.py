@@ -17,8 +17,4 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         v = self.scripts.get_version()
-        return [{
-            "type": "CHASSIS",
-            "vendor": "ELTEX",
-            "part_no": v["platform"]
-        }]
+        return [{"type": "CHASSIS", "vendor": "ELTEX", "part_no": v["platform"]}]

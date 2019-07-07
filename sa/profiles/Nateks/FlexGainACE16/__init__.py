@@ -15,7 +15,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^logged on; type `exit' to close connection.", "\n"),
         (r"^Press 'y' to continue, 'n' to break and press Enter", "\n"),
-        (r"^Yes or No <y/n>", "y\n")
+        (r"^Yes or No <y/n>", "y\n"),
     ]
     pattern_syntax_error = r"% Unknown action |% Ambiguous command:"
     pattern_username = "user:"

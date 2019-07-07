@@ -18,7 +18,8 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<mac>[:0-9A-F]+)\s+(?P<interfaces>\d+)\s+\S+\s+\S+\s+\S+\s+"
-        r"\S+\s+(?P<vlan_id>[1-9][0-9]*)\s+(?P<type>.+)$")
+        r"\S+\s+(?P<vlan_id>[1-9][0-9]*)\s+(?P<type>.+)$"
+    )
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show switch fdb"
@@ -35,15 +36,17 @@ class Script(BaseScript):
             match = self.rx_line.match(line.strip())
             if match:
                 vlan_id = int(match.group("vlan_id"))
-                r += [{
-                    "vlan_id": vlan_id,
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {
-                        "Dynamic": "D",
-                        "Static": "S",
-                        "Static (fixed,non-aging)": "S",
-                        "Multicast": "M"
-                    }[match.group("type")]
-                }]
+                r += [
+                    {
+                        "vlan_id": vlan_id,
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interfaces")],
+                        "type": {
+                            "Dynamic": "D",
+                            "Static": "S",
+                            "Static (fixed,non-aging)": "S",
+                            "Multicast": "M",
+                        }[match.group("type")],
+                    }
+                ]
         return r

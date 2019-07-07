@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -18,8 +19,7 @@ class Script(BaseScript):
     interface = IGetVlans
 
     rx_vlan_line = re.compile(
-        r"^((?P<routing_instance>\S+)\s+)?(?P<name>\S+)\s+(?P<vlan_id>[1-9][0-9]*)\s+",
-        re.MULTILINE
+        r"^((?P<routing_instance>\S+)\s+)?(?P<name>\S+)\s+(?P<vlan_id>[1-9][0-9]*)\s+", re.MULTILINE
     )
 
     def execute(self):

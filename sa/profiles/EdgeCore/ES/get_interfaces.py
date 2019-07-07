@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
@@ -21,42 +23,45 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     cache = True
-    types = {
-        "Eth": "physical",
-        "Trunk": "aggregated",
-        "VLAN": "SVI"
-    }
+    types = {"Eth": "physical", "Trunk": "aggregated", "VLAN": "SVI"}
 
     rx_ip_if_35 = re.compile(
         r".*?IP Address and Netmask:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\."
         r"\d{1,3})\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+on\s+"
-        r"(?P<name>[^\n]+?),\n", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        r"(?P<name>[^\n]+?),\n",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
 
     rx_svi_name_stat_4612 = re.compile(
-        r"(?P<name>Vlan[^\n]+?)\s+is\s+(?P<stat>up|down)",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        r"(?P<name>Vlan[^\n]+?)\s+is\s+(?P<stat>up|down)", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
 
     rx_ip_if_4612 = re.compile(
         r".*?Interface address is\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"
         r",\s+mask is\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
 
     rx_svi_name_stat_3510MA = re.compile(
         r"(?P<name>Vlan[^\n]+?)\s+is Administrative\s+(?P<a_stat>Up|Down)\s+-"
         r"\s+Link\s+(?P<o_stat>Up|Down)",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
 
     rx_ip_if_3510MA = re.compile(
         r".*?IP address:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+Mask:"
         r"\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
 
-    rx_lldp_35xx = re.compile(r"\s+LLDP Enable\s+\:\s+Yes",
-         re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_lldp_35xx = re.compile(
+        r"\s+LLDP Enable\s+\:\s+Yes", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
 
     rx_lldp_ports_35xx = re.compile(
         r".*?(?P<name>(Eth|Trunk)[^\n]+\d)\s+\|\s+(Rx|Tx-Rx)",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL,
+    )
 
     def execute(self):
         ifaces = {}
@@ -72,11 +77,10 @@ class Script(BaseScript):
         stat_ = {}
         tagged_ = {}
         untagged_ = {}
-        end_if = False
 
         # Tested only ES3510MA, ES3510, ES3526XAv2, ES3528M, ES3552M, ES4612
-        if (self.match_version(platform__contains="4626")):
-                raise self.NotSupportedError()
+        if self.match_version(platform__contains="4626"):
+            raise self.NotSupportedError()
 
         # Get interface status
         for p in self.scripts.get_interface_status():
@@ -110,11 +114,10 @@ class Script(BaseScript):
                 for v in buf.splitlines():
                     match = self.rx_lldp_ports_35xx.match(v)
                     if match:
-                        lldp.add(self.profile.convert_interface_name(
-                            match.group("name")))
+                        lldp.add(self.profile.convert_interface_name(match.group("name")))
 
         # Get SVI interfaces on 4612
-        if (self.match_version(platform__contains="4612")):
+        if self.match_version(platform__contains="4612"):
             for ls in self.cli("show ip interface").splitlines():
                 match = self.rx_svi_name_stat_4612.search(ls)
                 if match:
@@ -129,7 +132,7 @@ class Script(BaseScript):
                     mask = match.group("mask")
                     ip_addr += [IPv4(ip, netmask=mask).prefix]
 
-                if (ls.strip().startswith("Split")):
+                if ls.strip().startswith("Split"):
                     if not ip_addr:
                         continue
                     type = "SVI"
@@ -155,16 +158,19 @@ class Script(BaseScript):
                     }
 
         # Dirty-hack 3510/3526/3528/3552 managment SVI interface
-        if (self.match_version(platform__contains="3510") or
-            self.match_version(platform__contains="3526") or
-            self.match_version(platform__contains="3528") or
-            self.match_version(platform__contains="2228N") or
-            self.match_version(platform__contains="3552") or
-            self.match_version(platform__contains="ECS4210")):
+        if (
+            self.match_version(platform__contains="3510")
+            or self.match_version(platform__contains="3526")
+            or self.match_version(platform__contains="3528")
+            or self.match_version(platform__contains="2228N")
+            or self.match_version(platform__contains="3552")
+            or self.match_version(platform__contains="ECS4210")
+        ):
 
             # Dirty-hack 3510MA managment SVI interface
-            if (self.match_version(platform__contains="3510MA") or
-            self.match_version(platform__contains="ECS4210")):
+            if self.match_version(platform__contains="3510MA") or self.match_version(
+                platform__contains="ECS4210"
+            ):
                 for ls in self.cli("show ip interface").splitlines():
                     match = self.rx_svi_name_stat_3510MA.search(ls)
                     if match:
@@ -253,9 +259,7 @@ class Script(BaseScript):
             is_svi = current.startswith("VLAN")
             if is_svi:
                 continue
-            ifaces[current] = {
-                "name": current
-            }
+            ifaces[current] = {"name": current}
         # other
         for current in ifaces:
             is_svi = current.startswith("VLAN")
@@ -324,18 +328,10 @@ class Script(BaseScript):
 
         # Get VRFs and "default" VRF interfaces
         r = []
-        vpns = [{
-            "name": "default",
-            "type": "ip",
-            "interfaces": []
-            }]
+        vpns = [{"name": "default", "type": "ip", "interfaces": []}]
         for fi in vpns:
             # Forwarding instance
-            rr = {
-                "forwarding_instance": fi["name"],
-                "type": fi["type"],
-                "interfaces": []
-            }
+            rr = {"forwarding_instance": fi["name"], "type": fi["type"], "interfaces": []}
             rd = fi.get("rd")
             if rd:
                 rr["rd"] = rd

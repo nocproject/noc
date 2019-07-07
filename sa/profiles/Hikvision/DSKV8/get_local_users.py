@@ -9,6 +9,7 @@
 # Python modules
 import xml.etree.ElementTree as ElementTree
 from copy import copy
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -37,15 +38,16 @@ class Script(BaseScript):
         v = self.http.get("/ISAPI/Security/users", json=False, cached=True, use_basic=True)
         root = ElementTree.fromstring(v)
         v = self.xml_2_dict(root)
-        users = v['UserList']['User']
+        users = v["UserList"]["User"]
 
         for i in users:
-            r += [{
-                "username": i['userName'][0]['_text'],
-                "class": {
-                    "Administrator": "superuser",
-                    "Viewer": "operator",
-                }[i['userLevel'][0]['_text']],
-                "is_active": True
-            }]
+            r += [
+                {
+                    "username": i["userName"][0]["_text"],
+                    "class": {"Administrator": "superuser", "Viewer": "operator"}[
+                        i["userLevel"][0]["_text"]
+                    ],
+                    "is_active": True,
+                }
+            ]
         return r

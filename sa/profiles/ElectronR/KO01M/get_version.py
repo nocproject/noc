@@ -26,7 +26,6 @@ class Script(BaseScript):
             "vendor": "ElectronR",
             "version": version,
             "platform": platform,
-            "attributes": {
-                "Serial Number": sn}
+            "attributes": {"Serial Number": sn},
         }
         return result

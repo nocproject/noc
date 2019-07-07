@@ -19,7 +19,4 @@ class Script(BaseScript):
     def execute_snmp(self):
         base = self.snmp.get("1.3.6.1.3.55.1.2.2.0")
         if base:
-            return [{
-                "first_chassis_mac": base,
-                "last_chassis_mac": base
-            }]
+            return [{"first_chassis_mac": base, "last_chassis_mac": base}]

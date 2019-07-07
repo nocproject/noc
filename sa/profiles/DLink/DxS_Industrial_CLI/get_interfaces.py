@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -23,23 +24,20 @@ class Script(BaseScript):
         r"^\s*Interface type: \S+\s*\n"
         r"^\s*Interface description:(?P<descr>.+)\n"
         r"^\s*MAC [Aa]ddress: (?P<mac>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    rx_mtu = re.compile(
-        r"^\s*Maximum transmit unit: (?P<mtu>\d+) bytes",
-        re.MULTILINE
-    )
+    rx_mtu = re.compile(r"^\s*Maximum transmit unit: (?P<mtu>\d+) bytes", re.MULTILINE)
     rx_vlan = re.compile(
         r"^\s*VLAN (?P<vlan_id>\d+)\s*\n"
         r"^\s*Name\s*:\s+(?P<name>\S+)\s*\n"
         r"^\s*Tagged Member Ports\s*:(?P<tagged>.*)\n"
         r"^\s*Untagged Member Ports\s*:(?P<untagged>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ip_iface = re.compile(
         r"^\s*Interface (?P<ifname>vlan\d+) is (?P<admin_status>\S+), [Ll]ink status is (?P<oper_status>\S+)\s*\n"
         r"^\s*IP Address is (?P<ip>\S+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -54,7 +52,7 @@ class Script(BaseScript):
                 "type": "physical",
                 "admin_status": match.group("admin_status") == "enabled",
                 "oper_status": match.group("oper_status") == "up",
-                "mac": match.group("mac")
+                "mac": match.group("mac"),
             }
             sub = {
                 "name": match.group("ifname"),
@@ -107,7 +105,7 @@ class Script(BaseScript):
                 "oper_status": match.group("oper_status") == "up",
                 "enabled_afi": ["IPv4"],
                 "ipv4_addresses": [match.group("ip")],
-                "vlan_ids": [match.group("ifname")[4:]]
+                "vlan_ids": [match.group("ifname")[4:]],
             }
 
             v1 = self.cli("show interface %s" % match.group("ifname"))

@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"CTRL\+C.+?a All", "a"),
         (r"CTRL\+C.+?a ALL ", "a"),
-        (r"\[Yes/press any key for no\]", "Y")
+        (r"\[Yes/press any key for no\]", "Y"),
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+):(3|6|user|operator)#"
     pattern_syntax_error = r"(Command: .+|Invalid input detected at)"
@@ -38,19 +38,16 @@ class Profile(BaseProfile):
 
     def cmp_version(self, x, y):
         return cmp(
-            [int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)]
+            [int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)]
         )
 
-    rx_interface_name = re.compile(
-        "^.+ Port\s+(?P<port>\d+)\s+on Unit (?P<unit>\d+)"
-    )
+    rx_interface_name = re.compile("^.+ Port\s+(?P<port>\d+)\s+on Unit (?P<unit>\d+)")
     rx2_interface_name = re.compile("^.+ Port\s+(?P<port>\d+)\s*")
 
     def convert_interface_name(self, s):
         match = self.rx_interface_name.match(s)
         if match:
-            return match.group("unit") + '/' + match.group("port")
+            return match.group("unit") + "/" + match.group("port")
         match = self.rx2_interface_name.match(s)
         if match:
             return match.group("port")

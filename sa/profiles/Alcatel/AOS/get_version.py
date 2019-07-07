@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,18 +20,14 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_sys = re.compile(
-        r"Module in slot.+?Model.*?Name:\s+(?P<platform>.+?),$",
-        re.MULTILINE | re.DOTALL)
-    rx_ver = re.compile(
-        r"System.*?Description:\s+(?P<version>.+?)\s.*$",
-        re.MULTILINE | re.DOTALL)
-    rx_ser = re.compile(
-        r"Serial Number:\s+(?P<serial>.+?),$",
-        re.MULTILINE | re.DOTALL)
+        r"Module in slot.+?Model.*?Name:\s+(?P<platform>.+?),$", re.MULTILINE | re.DOTALL
+    )
+    rx_ver = re.compile(r"System.*?Description:\s+(?P<version>.+?)\s.*$", re.MULTILINE | re.DOTALL)
+    rx_ser = re.compile(r"Serial Number:\s+(?P<serial>.+?),$", re.MULTILINE | re.DOTALL)
     rx_ver1 = re.compile(
-        r"System.*?Description:\s+Alcatel-Lucent\s+"
-        r"(?P<ver1>\S+)\s+(?P<version>\S+)\s.*$",
-        re.MULTILINE | re.DOTALL)
+        r"System.*?Description:\s+Alcatel-Lucent\s+" r"(?P<ver1>\S+)\s+(?P<version>\S+)\s.*$",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         v = self.cli("show ni")
@@ -48,7 +45,5 @@ class Script(BaseScript):
             "vendor": "Alcatel",
             "platform": match_sys.group("platform"),
             "version": version,
-            "attributes": {
-                "Serial Number": match_serial.group("serial")
-            }
+            "attributes": {"Serial Number": match_serial.group("serial")},
         }

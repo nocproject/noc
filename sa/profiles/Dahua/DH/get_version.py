@@ -43,5 +43,5 @@ class Script(BaseScript):
             "vendor": "Dahua",
             "platform": system_info["deviceType"],
             "version": version,
-            "attributes": attributes
+            "attributes": attributes,
         }

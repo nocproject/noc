@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -20,11 +21,15 @@ class Script(BaseScript):
 
     rx_olt = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>(\S+ \d+|\S+))\s+"
-        r"(?P<type>\S+)\s+\S+\s+\S+( to CPU)?\s+\d+\s*$", re.MULTILINE)
+        r"(?P<type>\S+)\s+\S+\s+\S+( to CPU)?\s+\d+\s*$",
+        re.MULTILINE,
+    )
 
     rx_switch = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
-        r"(?P<interface>\d+|CPU)\s+", re.MULTILINE)
+        r"(?P<interface>\d+|CPU)\s+",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -73,36 +78,34 @@ class Script(BaseScript):
             c = self.cli(cmd, cached=True)
             for match in self.rx_switch.finditer(c):
                 interface = match.group("interface")
-                mtype = {
-                    "dynamic": "D",
-                    "static": "S",
-                    "permanent": "S",
-                    "self": "S"
-                }[match.group("type").lower()]
+                mtype = {"dynamic": "D", "static": "S", "permanent": "S", "self": "S"}[
+                    match.group("type").lower()
+                ]
                 if interface == "CPU":
                     mtype = "C"
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interface],
-                    "type": mtype
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [interface],
+                        "type": mtype,
+                    }
+                ]
             if r:
                 return r
             for match in self.rx_olt.finditer(c):
                 interface = match.group("interface")
-                mtype = {
-                    "dynamic": "D",
-                    "static": "S",
-                    "permanent": "S",
-                    "self": "S"
-                }[match.group("type").lower()]
+                mtype = {"dynamic": "D", "static": "S", "permanent": "S", "self": "S"}[
+                    match.group("type").lower()
+                ]
                 if interface == "CPU":
                     mtype = "C"
-                r += [{
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interface],
-                    "type": mtype
-                }]
+                r += [
+                    {
+                        "vlan_id": match.group("vlan_id"),
+                        "mac": match.group("mac"),
+                        "interfaces": [interface],
+                        "type": mtype,
+                    }
+                ]
         return r

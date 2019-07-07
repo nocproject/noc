@@ -10,11 +10,12 @@
 from __future__ import absolute_import
 import datetime
 import logging
+
 # Third-party modules
 import six
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, DateTimeField,
-                                ReferenceField, ListField, LongField)
+from mongoengine.fields import StringField, DateTimeField, ReferenceField, ListField, LongField
+
 # NOC modules
 from .serviceprofile import ServiceProfile
 from noc.crm.models.subscriber import Subscriber
@@ -30,20 +31,14 @@ logger = logging.getLogger(__name__)
 @bi_sync
 @on_save
 @on_delete
-@on_delete_check(clean=[
-    ("phone.PhoneNumber", "service")
-])
+@on_delete_check(clean=[("phone.PhoneNumber", "service")])
 @six.python_2_unicode_compatible
 class Service(Document):
     meta = {
         "collection": "noc.services",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "subscriber",
-            "managed_object",
-            "parent"
-        ]
+        "indexes": ["subscriber", "managed_object", "parent"],
     }
     profile = ReferenceField(ServiceProfile, required=True)
     # Creation timestamp
@@ -58,9 +53,9 @@ class Service(Document):
             ("S", "Suspended"),
             ("r", "Removing"),
             ("C", "Closed"),
-            ("U", "Unknown")
+            ("U", "Unknown"),
         ],
-        default="U"
+        default="U",
     )
     logical_status_start = DateTimeField()
     # Parent service
@@ -113,6 +108,7 @@ class Service(Document):
 
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
+
         mo = self.get_managed_object()
         if mo:
             ServiceSummary.refresh_object(mo)
@@ -120,13 +116,7 @@ class Service(Document):
     def unbind_interface(self):
         from noc.inv.models.interface import Interface
 
-        Interface._get_collection().update({
-            "service": self.id
-        }, {
-            "$unset": {
-                "service": ""
-            }
-        })
+        Interface._get_collection().update({"service": self.id}, {"$unset": {"service": ""}})
         self._refresh_managed_object()
 
     def get_managed_object(self):

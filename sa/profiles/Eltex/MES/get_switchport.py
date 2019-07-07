@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -21,9 +22,10 @@ class Script(BaseScript):
     TIMEOUT = 240
 
     rx_channel_description = re.compile(
-        r"^(?P<interface>(p|P)o\d+)\s+(Up|Down)\s+(Not Present|Present)\s+((?P<description>\S+.+)|)$", re.MULTILINE)
-    rx_vlan_stack = re.compile(
-        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
+        r"^(?P<interface>(p|P)o\d+)\s+(Up|Down)\s+(Not Present|Present)\s+((?P<description>\S+.+)|)$",
+        re.MULTILINE,
+    )
+    rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
     def execute_snmp(self):
         # Get portchannels
@@ -47,22 +49,21 @@ class Script(BaseScript):
         iface_descr = {}
         interface_status = {}
 
-        for v in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1",
-                                       "1.3.6.1.2.1.31.1.1.1.18",
-                                       "1.3.6.1.2.1.2.2.1.8"],
-                                      bulk=True):
-            if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
+        for v in self.snmp.get_tables(
+            ["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18", "1.3.6.1.2.1.2.2.1.8"], bulk=True
+        ):
+            if v[1][:2] == "fa" or v[1][:2] == "gi" or v[1][:2] == "te" or v[1][:2] == "po":
                 name = v[1]
                 iface_name.update({v[0]: name})
                 iface_descr.update({name: v[2]})
-                if name[:2].lower() != 'po':
+                if name[:2].lower() != "po":
                     interface_status.update({name: v[3]})
 
         # Make a list of tags for each interface or portchannel
         port_vlans = {}
-        for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.4.3.1.2",
-                                       "1.3.6.1.2.1.17.7.1.4.3.1.4"],
-                                      bulk=True):
+        for v in self.snmp.get_tables(
+            ["1.3.6.1.2.1.17.7.1.4.3.1.2", "1.3.6.1.2.1.17.7.1.4.3.1.4"], bulk=True
+        ):
             tagged = v[1]
             untagged = v[2]
 
@@ -73,24 +74,18 @@ class Script(BaseScript):
                 if j < 1008:
                     iface = iface_name[i]
                     if iface not in port_vlans:
-                        port_vlans.update({iface: {
-                            "tagged": [],
-                            "untagged": '1',
-                        }})
-                    if s[j] == '1':
+                        port_vlans.update({iface: {"tagged": [], "untagged": "1"}})
+                    if s[j] == "1":
                         port_vlans[iface]["untagged"] = v[0]
                         un += [j]
 
             s = self.hex_to_bin(tagged)
             for i in iface_name:
                 j = int(i) - 1
-                if j < 1008 and s[j] == '1' and j not in un:
+                if j < 1008 and s[j] == "1" and j not in un:
                     iface = iface_name[i]
                     if iface not in port_vlans:
-                        port_vlans.update({iface: {
-                            "tagged": [],
-                            "untagged": '',
-                        }})
+                        port_vlans.update({iface: {"tagged": [], "untagged": ""}})
                     port_vlans[iface]["tagged"].append(v[0])
 
         # Get switchport data and overall result
@@ -108,7 +103,7 @@ class Script(BaseScript):
                                 status = True
                         description = iface_descr[name]
                         if not description:
-                            description = ''
+                            description = ""
                         members = p["members"]
                         portchannels.remove(p)
                         write = True
@@ -120,7 +115,7 @@ class Script(BaseScript):
                     status = False
                 description = iface_descr[name]
                 if not description:
-                    description = ''
+                    description = ""
                 members = []
                 write = True
             if write:
@@ -131,10 +126,8 @@ class Script(BaseScript):
                 swp = {
                     "status": status,
                     "description": description,
-                    "802.1Q Enabled": len(port_vlans.get(name,
-                                                         '')) > 0,
-                    "802.1ad Tunnel": vlan_stack_status.get(name,
-                                                            False),
+                    "802.1Q Enabled": len(port_vlans.get(name, "")) > 0,
+                    "802.1ad Tunnel": vlan_stack_status.get(name, False),
                     "tagged": tagged,
                 }
                 if name in port_vlans:
@@ -180,11 +173,7 @@ class Script(BaseScript):
                         port_channels.remove(p)
                         break
             if interface not in port_vlans:
-                port_vlans.update({interface: {
-                    "tagged": [],
-                    "untagged": '',
-                }
-                })
+                port_vlans.update({interface: {"tagged": [], "untagged": ""}})
             cmd = self.cli("show interfaces switchport %s" % interface)
             for vlan in parse_table(cmd, allow_wrap=True):
                 vlan_id = vlan[0]
@@ -205,9 +194,9 @@ class Script(BaseScript):
         cmd = self.cli("show interfaces description")
         for iface in parse_table(cmd, allow_wrap=True):
             name = iface[0]
-            name = name.replace('fa', 'Fa ')
-            name = name.replace('gi', 'Gi ')
-            name = name.replace('te', 'Te ')
+            name = name.replace("fa", "Fa ")
+            name = name.replace("gi", "Gi ")
+            name = name.replace("te", "Te ")
 
             if name in portchannel_members:
                 for p in portchannels:
@@ -223,21 +212,21 @@ class Script(BaseScript):
                         if match:
                             description = match.group("description")
                             if not description:
-                                description = ''
+                                description = ""
                         else:
-                            description = ''
+                            description = ""
                         members = p["members"]
                         portchannels.remove(p)
                         write = True
                         break
-            elif name[:2].lower() in ['fa', 'gi', 'te']:
+            elif name[:2].lower() in ["fa", "gi", "te"]:
                 if interface_status[name]:
                     status = True
                 else:
                     status = False
                 description = iface[3]
                 if not description:
-                    description = ''
+                    description = ""
                 members = []
                 write = True
             if write:

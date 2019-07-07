@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -21,15 +22,12 @@ class Script(BaseScript):
         r"^(?P<port>ch\d+)(\s+Active:\s+(?P<interfaces1>\S+)|)+"
         r"(\s+Inactive:\s+(?P<interfaces2>\S+)|\s+Non-candidate:\s+"
         r"(?P<interfaces3>\S+)|)$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    rx_ifaces = re.compile(
-        r"^g\((?P<ifaces>\S+)\)",
-        re.MULTILINE)
+    rx_ifaces = re.compile(r"^g\((?P<ifaces>\S+)\)", re.MULTILINE)
 
-    rx_lacp = re.compile(
-        r"^\s+MAC Address:",
-        re.MULTILINE)
+    rx_lacp = re.compile(r"^\s+MAC Address:", re.MULTILINE)
 
     def execute(self):
         r = []
@@ -71,20 +69,22 @@ class Script(BaseScript):
         for match in self.rx_lag.finditer(cmd):
             port = match.group("port")
             memb = []
-            for members in [match.group("interfaces1"),
-                            match.group("interfaces2"),
-                            match.group("interfaces3")]:
+            for members in [
+                match.group("interfaces1"),
+                match.group("interfaces2"),
+                match.group("interfaces3"),
+            ]:
                 if members:
                     ifaces = self.rx_ifaces.search(members)
                     if ifaces:
-                        ifaces = ifaces.group("ifaces").split(',')
+                        ifaces = ifaces.group("ifaces").split(",")
                         for iface in ifaces:
-                            if '-' in iface:
-                                R = iface.split('-')
+                            if "-" in iface:
+                                R = iface.split("-")
                                 for i in range(int(R[0]), int(R[1]) + 1):
-                                    memb += ['g' + str(i)]
+                                    memb += ["g" + str(i)]
                             else:
-                                memb += ['g' + iface]
+                                memb += ["g" + iface]
                     else:
                         memb += [members]
             lacp = self.cli("show lacp port-channel %s" % port[2:])
@@ -93,9 +93,5 @@ class Script(BaseScript):
                 l_type = "L"
             else:
                 l_type = "S"
-            r += [{
-                "interface": port,
-                "type": l_type,
-                "members": memb,
-                }]
+            r += [{"interface": port, "type": l_type, "members": memb}]
         return r

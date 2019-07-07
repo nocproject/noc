@@ -8,6 +8,7 @@
 
 # NOC modules
 import re
+
 # Python modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -17,16 +18,12 @@ class Script(BaseScript):
     name = "Arista.EOS.get_switchport"
     interface = IGetSwitchport
 
-    rx_line = re.compile(
-        r"^(?P<port>\S\S\d+)\s+"
-        r"(?P<untagged>\d+|None)\s+"
-        r"(?P<tagged>.+)$"
-    )
+    rx_line = re.compile(r"^(?P<port>\S\S\d+)\s+" r"(?P<untagged>\d+|None)\s+" r"(?P<tagged>.+)$")
 
     def execute(self):
         r = []
         port_channel_members = {}  # portchannel -> [interfaces]
-        interface_status = {}      # Interface -> stauts
+        interface_status = {}  # Interface -> stauts
         # Get interafces status
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
@@ -43,7 +40,7 @@ class Script(BaseScript):
                     "interface": name,
                     "members": port_channel_members.get(name, []),
                     "status": interface_status.get(name, False),
-                    "tagged": []
+                    "tagged": [],
                 }
                 untagged = match.group("untagged")
                 if untagged != "None":

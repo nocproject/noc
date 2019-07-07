@@ -8,20 +8,21 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 
-rx_platform = re.compile(
-    r"^Hardware\n\s+cisco\s+(?P<platform>MDS\s+\S+)", re.MULTILINE)
+rx_platform = re.compile(r"^Hardware\n\s+cisco\s+(?P<platform>MDS\s+\S+)", re.MULTILINE)
 rx_version = re.compile(
     r"^Software\n\s+BIOS:\s+version\s+\S+\n\s+loader:\s+version\s+\S+\n"
     r"\s+kickstart:\s+version\s+\S+\n\s+system:\s+version\s+(?P<version>\S+)\n",
-    re.MULTILINE | re.DOTALL)
+    re.MULTILINE | re.DOTALL,
+)
 rx_image = re.compile(
-    r"system image file is:\s+bootflash:\/(?P<image>\S+)",
-    re.MULTILINE | re.DOTALL)
+    r"system image file is:\s+bootflash:\/(?P<image>\S+)", re.MULTILINE | re.DOTALL
+)
 
 
 class Script(BaseScript):
@@ -38,7 +39,5 @@ class Script(BaseScript):
             "vendor": "Cisco",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "image": image,
-            }
+            "attributes": {"image": image},
         }

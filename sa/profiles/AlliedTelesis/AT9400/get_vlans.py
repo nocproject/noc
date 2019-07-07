@@ -15,14 +15,10 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT9400.get_vlans"
     interface = IGetVlans
-    rx_vlan = re.compile(
-        r"VLAN Name \.+ (?P<vlanname>\S+)\n VLAN ID \.+ (?P<vlanid>\d+)\n")
+    rx_vlan = re.compile(r"VLAN Name \.+ (?P<vlanname>\S+)\n VLAN ID \.+ (?P<vlanid>\d+)\n")
 
     def execute(self):
         r = []
         for match in self.rx_vlan.finditer(self.cli("show vlan")):
-            r.append({
-                "vlan_id": int(match.group('vlanid')),
-                "name": match.group('vlanname')
-            })
+            r.append({"vlan_id": int(match.group("vlanid")), "name": match.group("vlanname")})
         return r

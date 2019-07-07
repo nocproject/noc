@@ -10,8 +10,10 @@
 import re
 import time
 from collections import defaultdict
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -29,6 +31,7 @@ class Script(BaseScript):
     @todo: subinterfaces
     @todo: Q-in-Q
     """
+
     name = "Cisco.IOS.get_interfaces"
     interface = IGetInterfaces
 
@@ -39,49 +42,51 @@ class Script(BaseScript):
         r"\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?"
         r"(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?"
         r"[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_sh_ip_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+"
-        r"line\s+protocol\s+is\s+", re.IGNORECASE)
-    rx_mac = re.compile(
-        r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
-        re.MULTILINE | re.IGNORECASE)
+        r"line\s+protocol\s+is\s+",
+        re.IGNORECASE,
+    )
+    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})", re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(
         r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_sec_ip = re.compile(
         r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_ipv6 = re.compile(
-        r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)",
-        re.MULTILINE | re.IGNORECASE)
+        r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)", re.MULTILINE | re.IGNORECASE
+    )
     rx_vlan_line = re.compile(
         r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+"
-        r"(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
-    rx_vlan_line_cont = re.compile(
-        r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
-        re.MULTILINE)
+        r"(?P<ports>[\w\/\s\,\.]+)$",
+        re.MULTILINE,
+    )
+    rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_pim = re.compile(r"^\S+\s+(?P<name>\S+)\s+v\d+/\S+\s+\d+")
     rx_igmp = re.compile(r"^(?P<name>\S+) is ")
     rx_cisco_interface_name = re.compile(
         r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$",
-        re.IGNORECASE)
+        re.IGNORECASE,
+    )
     rx_cisco_interface_sonet = re.compile(r"^(?P<type>Se)\s+(?P<number>\d+\S+)$")
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
     rx_lldp = re.compile(
-        r"^(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?):.+Rx: (?P<rx_state>\S+)",
-        re.MULTILINE | re.DOTALL)
+        r"^(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?):.+Rx: (?P<rx_state>\S+)", re.MULTILINE | re.DOTALL
+    )
     rx_gvtp = re.compile(r"VTP Operating Mode\s+: Off", re.MULTILINE)
-    rx_vtp = re.compile(
-        r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+enabled",
-        re.MULTILINE)
+    rx_vtp = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+enabled", re.MULTILINE)
     rx_vtp1 = re.compile(
         r"^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo)[^:]+?)\s+",
-        re.MULTILINE)
-    rx_oam = re.compile(
-        r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
+        re.MULTILINE,
+    )
+    rx_oam = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
 
     def get_lldp_interfaces(self):
         """
@@ -196,8 +201,7 @@ class Script(BaseScript):
                 r += [self.profile.convert_interface_name(match.group("name").strip())]
         return r
 
-    rx_ifindex = re.compile(
-        r"^(?P<interface>\S+): Ifindex = (?P<ifindex>\d+)")
+    rx_ifindex = re.compile(r"^(?P<interface>\S+): Ifindex = (?P<ifindex>\d+)")
 
     def get_ifindex(self):
         try:
@@ -212,8 +216,7 @@ class Script(BaseScript):
         return r
 
     # Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
-    rx_vlan_ubr = re.compile(
-        r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})")
+    rx_vlan_ubr = re.compile(r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})")
 
     def get_ubr_pvm(self):
         vlans = self.cli("show cable l2-vpn dot1q-vc-map")
@@ -231,13 +234,7 @@ class Script(BaseScript):
 
     def get_mpls_vpn(self):
         imap = {}  # interface -> VRF
-        vrfs = {
-            "default": {
-                "forwarding_instance": "default",
-                "type": "ip",
-                "interfaces": []
-            }
-        }
+        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         try:
             r = self.scripts.get_mpls_vpn()
         except self.CLISyntaxError:
@@ -247,7 +244,7 @@ class Script(BaseScript):
                 vrfs[v["name"]] = {
                     "forwarding_instance": v["name"],
                     "type": "VRF",
-                    "interfaces": []
+                    "interfaces": [],
                 }
                 rd = v.get("rd")
                 if rd:
@@ -265,12 +262,17 @@ class Script(BaseScript):
         time.sleep(2)
         r = super(Script, self).execute_snmp()
         if vlans:
-            vlans = {v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])} for v in vlans}
+            vlans = {
+                v["interface"]: {"untagged": v.get("untagged"), "tagged": v.get("tagged", [])}
+                for v in vlans
+            }
             for fi in r:
                 for iface in fi["interfaces"]:
                     if iface["name"] in vlans:
                         if vlans[iface["name"]]["untagged"]:
-                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]]["untagged"]
+                            iface["subinterfaces"][0]["untagged_vlan"] = vlans[iface["name"]][
+                                "untagged"
+                            ]
                         iface["subinterfaces"][0]["tagged_vlans"] = vlans[iface["name"]]["tagged"]
         time.sleep(2)
         vrfs, imap = self.get_mpls_vpn()
@@ -280,8 +282,9 @@ class Script(BaseScript):
                     subs = iface["subinterfaces"]
                     for vrf in set(imap.get(si["name"], "default") for si in subs):
                         c = iface.copy()
-                        c["subinterfaces"] = [si for si in subs
-                                              if imap.get(si["name"], "default") == vrf]
+                        c["subinterfaces"] = [
+                            si for si in subs if imap.get(si["name"], "default") == vrf
+                        ]
                         vrfs[vrf]["interfaces"] += [c]
             return list(six.itervalues(vrfs))
         return r
@@ -304,7 +307,7 @@ class Script(BaseScript):
                 for sp in self.scripts.get_switchport():
                     switchports[sp["interface"]] = (
                         sp["untagged"] if "untagged" in sp else None,
-                        sp["tagged"]
+                        sp["tagged"],
                     )
         # Get portchannels
         portchannel_members = {}
@@ -327,8 +330,7 @@ class Script(BaseScript):
         for l in self.cli("show ip interface").splitlines():
             match = self.rx_sh_ip_int.search(l)
             if match:
-                c_iface = self.profile.convert_interface_name(
-                    match.group("interface").strip())
+                c_iface = self.profile.convert_interface_name(match.group("interface").strip())
                 continue
             # Primary ip
             match = self.rx_ip.search(l)
@@ -393,7 +395,7 @@ class Script(BaseScript):
                         "admin_status": True,
                         "oper_status": True,
                         "type": "physical",
-                        "enabled_protocols": []
+                        "enabled_protocols": [],
                     }
                     if inm in lldp:
                         iface["enabled_protocols"] += ["LLDP"]
@@ -412,7 +414,7 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "enabled_afi": [],
-                "enabled_protocols": []
+                "enabled_protocols": [],
             }
             if "alias" in match.groups():
                 sub["description"] = match.group("alias")
@@ -448,8 +450,7 @@ class Script(BaseScript):
             matchifn = self.rx_cisco_interface_name.match(ifname)
             if not matchifn:
                 matchifn = self.rx_cisco_interface_sonet.match(ifname)
-            shotn = (matchifn.group("type").capitalize() +
-                     matchifn.group("number"))
+            shotn = matchifn.group("type").capitalize() + matchifn.group("number")
             if shotn in ospfs:
                 sub["enabled_protocols"] += ["OSPF"]
             if ifname in pims:
@@ -463,9 +464,7 @@ class Script(BaseScript):
             if "." not in ifname and ":" not in ifname:
                 iftype = self.profile.get_interface_type(ifname)
                 if not iftype:
-                    self.logger.info(
-                        "Ignoring unknown interface type for: %s", ifname
-                    )
+                    self.logger.info("Ignoring unknown interface type for: %s", ifname)
                     continue
                 iface = {
                     "name": ifname,
@@ -473,7 +472,7 @@ class Script(BaseScript):
                     "oper_status": o_stat,
                     "type": iftype,
                     "enabled_protocols": [],
-                    "subinterfaces": [sub]
+                    "subinterfaces": [sub],
                 }
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
@@ -511,13 +510,7 @@ class Script(BaseScript):
                 except KeyError:
                     interfaces[-1]["subinterfaces"] = [sub]
         # Process VRFs
-        vrfs = {
-            "default": {
-                "forwarding_instance": "default",
-                "type": "ip",
-                "interfaces": []
-            }
-        }
+        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
         imap = {}  # interface -> VRF
         try:
             r = self.scripts.get_mpls_vpn()
@@ -528,7 +521,7 @@ class Script(BaseScript):
                 vrfs[v["name"]] = {
                     "forwarding_instance": v["name"],
                     "type": "VRF",
-                    "interfaces": []
+                    "interfaces": [],
                 }
                 rd = v.get("rd")
                 if rd:
@@ -542,7 +535,6 @@ class Script(BaseScript):
             subs = i["subinterfaces"]
             for vrf in set(imap.get(si["name"], "default") for si in subs):
                 c = i.copy()
-                c["subinterfaces"] = [si for si in subs
-                                      if imap.get(si["name"], "default") == vrf]
+                c["subinterfaces"] = [si for si in subs if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]
         return list(six.itervalues(vrfs))

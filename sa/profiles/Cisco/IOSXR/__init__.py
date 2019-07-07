@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -29,15 +30,10 @@ class Profile(BaseProfile):
 
     rx_interface_name = re.compile(
         r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(?:/\d+)*(?:\.\d+)?(?:\.ip\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
-        re.IGNORECASE)
+        re.IGNORECASE,
+    )
 
-    matchers = {
-        "is_platform_crs16": {
-            "platform": {
-                "$regex": r"CRS-16"
-            }
-        },
-    }
+    matchers = {"is_platform_crs16": {"platform": {"$regex": r"CRS-16"}}}
 
     def convert_interface_name(self, s):
         """
@@ -67,8 +63,4 @@ class Profile(BaseProfile):
                 r += [me % prefix]
             else:
                 r += [mne % (prefix, max_len)]
-        return "\n".join([
-            "prefix-set %s" % name,
-            ",\n".join(r),
-            "end-set"
-        ])
+        return "\n".join(["prefix-set %s" % name, ",\n".join(r), "end-set"])

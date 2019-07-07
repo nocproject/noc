@@ -19,11 +19,9 @@ class Script(BaseScript):
         with self.profile.switch(self):
             conf = self.cli("show running-config")
 
-        for i in ['0', '1', '2', '3']:
+        for i in ["0", "1", "2", "3"]:
             conf = conf + self.cli("olt " + i)
-            for j in [
-                'ipmc', 'layer3', 'network', 'ports', 'pppoe', 'traffic'
-            ]:
+            for j in ["ipmc", "layer3", "network", "ports", "pppoe", "traffic"]:
                 conf = conf + "\n" + self.cli("show config " + j)
             self.cli("exit")
 

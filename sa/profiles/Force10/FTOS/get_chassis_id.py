@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -35,10 +36,7 @@ class Script(BaseScript):
         v = self.cli("show system brief")
         match = self.re_search(self.rx_system_id, v)
         mac = match.group("id")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}
 
     # C/E-series
     rx_chassis_id = re.compile(r"Chassis MAC\s+:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
@@ -51,7 +49,4 @@ class Script(BaseScript):
         v = self.cli("show chassis brief")
         match = self.re_search(self.rx_chassis_id, v)
         mac = match.group("id")
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

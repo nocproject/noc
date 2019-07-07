@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Alstec.24xx.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
+
+# Python modules
 import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 from noc.sa.interfaces.base import MACAddressParameter
@@ -21,15 +23,15 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^vlan \d+\s+(?P<interface>\S+)\s+"
         r"(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
-        r"(?P<mac>\S+)\s+\S+\s*$", re.MULTILINE)
+        r"(?P<mac>\S+)\s+\S+\s*$",
+        re.MULTILINE,
+    )
 
     rx_ip = re.compile(
         r"^\s*IP\sAddress\s*\.+\s(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s*", re.MULTILINE
     )
 
-    rx_mac = re.compile(
-        r"\s*MAC\sAddress\s*\.+\s(?P<MAC_address>\S+)\n", re.MULTILINE
-    )
+    rx_mac = re.compile(r"\s*MAC\sAddress\s*\.+\s(?P<MAC_address>\S+)\n", re.MULTILINE)
 
     rx_ip_gw = re.compile(
         r"^\s*Default\sGateway\s*\.+\s(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s*", re.MULTILINE
@@ -56,14 +58,18 @@ class Script(BaseScript):
                 macs = parse_table(self.cli("show mac-addr-table vlan %s" % gw_vlan[0]))
                 if len(macs[0]) == 3:
                     # Only mac, iface, type
-                    mac_gw = MACAddressParameter().clean([mac[0] for mac in macs if mac[2] == "Learned"][0])
+                    mac_gw = MACAddressParameter().clean(
+                        [m[0] for m in macs if m[2] == "Learned"][0]
+                    )
                 else:
-                    mac_gw = MACAddressParameter().clean([mac[0] for mac in macs if mac[3] == "Learned"][0])
+                    mac_gw = MACAddressParameter().clean(
+                        [m[0] for m in macs if m[3] == "Learned"][0]
+                    )
         except self.CLISyntaxError:
             macs = parse_table(self.cli("show mac-addr-table"))
-            f_mac_gw = [mac[0] for mac in macs if mac[2] == "1"]
+            f_mac_gw = [m[0] for m in macs if m[2] == "1"]
             if not f_mac_gw:
-                f_mac_gw = [mac[0] for mac in macs if mac[2] == gw_vlan[0] and mac[3] == "Learned"]
+                f_mac_gw = [m[0] for m in macs if m[2] == gw_vlan[0] and m[3] == "Learned"]
             mac_gw = f_mac_gw[0]
 
         if mac_gw:

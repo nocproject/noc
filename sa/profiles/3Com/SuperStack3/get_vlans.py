@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.core.script.base import BaseScript
@@ -17,9 +18,7 @@ class Script(BaseScript):
     name = "3Com.SuperStack3.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)?\s*\n",
-        re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>\S+)?\s*\n", re.MULTILINE)
 
     def execute(self):
         vlans = self.cli("bridge vlan summary all")
@@ -28,12 +27,7 @@ class Script(BaseScript):
             if match.group("vlan_id") == "1":
                 continue
             if match.group("name"):
-                r += [{
-                    "vlan_id": int(match.group("vlan_id")),
-                    "name": match.group("name").strip()
-                }]
+                r += [{"vlan_id": int(match.group("vlan_id")), "name": match.group("name").strip()}]
             else:
-                r += [{
-                    "vlan_id": int(match.group("vlan_id"))
-                }]
+                r += [{"vlan_id": int(match.group("vlan_id"))}]
         return r

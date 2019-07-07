@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -20,12 +21,12 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_slot = re.compile(
-        "^(?P<slot>\d+/\d+).+\d{10}\s+\d{10}\s+\S{3}\s+(?P<count>\d+)\s*\n",
-        re.MULTILINE)
+        "^(?P<slot>\d+/\d+).+\d{10}\s+\d{10}\s+\S{3}\s+(?P<count>\d+)\s*\n", re.MULTILINE
+    )
     rx_mac = re.compile(
-        r"^(?P<slot>\d+/\d+)\s+"
-        r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
-        r"\S+\s*\n", re.MULTILINE)
+        r"^(?P<slot>\d+/\d+)\s+" r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+" r"\S+\s*\n",
+        re.MULTILINE,
+    )
 
     def execute(self):
         macs = []
@@ -38,9 +39,11 @@ class Script(BaseScript):
             for s in slots:
                 if s["slot"] == slot:
                     base = match.group("mac")
-                    macs += [{
-                        "first_chassis_mac": base,
-                        "last_chassis_mac": MAC(base).shift(int(s["count"]) - 1)
-                    }]
+                    macs += [
+                        {
+                            "first_chassis_mac": base,
+                            "last_chassis_mac": MAC(base).shift(int(s["count"]) - 1),
+                        }
+                    ]
                     break
         return macs

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -19,18 +20,17 @@ class Script(BaseScript):
     interface = IGetVlans
     cache = True
 
-    rx_vlan = re.compile(
-        r"^\s+(?P<id>\d+)\s+(?P<name>.+)?\s+\d+\s*\n", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s+(?P<id>\d+)\s+(?P<name>.+)?\s+\d+\s*\n", re.MULTILINE)
 
     def execute(self):
         r = []
         c = self.cli("show vlan", cached=True)
         for match in self.rx_vlan.finditer(c):
-            if match.group('id') == "1":
+            if match.group("id") == "1":
                 continue
             d = {}
-            d["vlan_id"] = int(match.group('id'))
-            if match.group('name'):
-                d["name"] = match.group('name').strip()
+            d["vlan_id"] = int(match.group("id"))
+            if match.group("name"):
+                d["name"] = match.group("name").strip()
             r += [d]
         return r

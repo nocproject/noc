@@ -31,13 +31,12 @@ class Script(BaseScript):
             if "None" in port:
                 continue
             ports = self.expand_rangelist(port.replace(",CPU", ""))
-            r += [{
-                "vlan_id": vlan_id,
-                "mac": mmac,
-                "interfaces": ports,
-                "type": {
-                    "dynami": "D",
-                    "static": "S",
-                }[mtype],
-            }]
+            r += [
+                {
+                    "vlan_id": vlan_id,
+                    "mac": mmac,
+                    "interfaces": ports,
+                    "type": {"dynami": "D", "static": "S"}[mtype],
+                }
+            ]
         return r

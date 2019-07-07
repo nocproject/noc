@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -17,15 +18,12 @@ class Profile(BaseProfile):
     name = "Juniper.JUNOS"
     # Ignore this line: 'Last login: Tue Sep 18 09:17:21 2018 from 10.10.0.1'
     pattern_username = r"((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
-    pattern_prompt = \
-        r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?" \
+    pattern_prompt = (
+        r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?"
         r"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
-    pattern_more = [
-        (r"^---\(more.*?\)---", " "),
-        (r"\? \[yes,no\] .*?", "y\n")
-    ]
-    pattern_syntax_error = \
-        r"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
+    )
+    pattern_more = [(r"^---\(more.*?\)---", " "), (r"\? \[yes,no\] .*?", "y\n")]
+    pattern_syntax_error = r"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
     pattern_operation_error = r"error: abnormal communication termination with"
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
@@ -39,37 +37,15 @@ class Profile(BaseProfile):
         # "string_quote": "\""
     }
     config_normalizer = "JunOSNormalizer"
-    confdb_defaults = [
-        ("hints", "interfaces", "defaults", "admin-status", True)
-    ]
+    confdb_defaults = [("hints", "interfaces", "defaults", "admin-status", True)]
     default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
     matchers = {
-        "is_has_lldp": {
-            "platform": {
-                "$regex": "ex|mx|qfx|acx|srx"
-            }
-        },
-        "is_switch": {
-            "platform": {
-                "$regex": "ex|qfx"
-            }
-        },
-        "is_olive": {
-            "platform": {
-                "$regex": "olive"
-            }
-        },
-        "is_work_em": {
-            "platform": {
-                "$regex": "vrr|csrx"
-            }
-        },
-        "is_gte_16": {
-            "version": {
-                "$gte": "16"
-            }
-        }
+        "is_has_lldp": {"platform": {"$regex": "ex|mx|qfx|acx|srx"}},
+        "is_switch": {"platform": {"$regex": "ex|qfx"}},
+        "is_olive": {"platform": {"$regex": "olive"}},
+        "is_work_em": {"platform": {"$regex": "vrr|csrx"}},
+        "is_gte_16": {"version": {"$gte": "16"}},
     }
 
     rx_ver = re.compile(r"\d+")
@@ -123,19 +99,9 @@ class Profile(BaseProfile):
                 rf += ["    route-filter %s exact;" % prefix]
             else:
                 rf += ["    route-filter %s upto /%d" % (prefix, max_len)]
-        r = [
-            "term pass {",
-            "    from {"
-        ]
+        r = ["term pass {", "    from {"]
         r += rf
-        r += [
-            "    }",
-            "    then next policy;",
-            "}",
-            "term reject {",
-            "    then reject;",
-            "}"
-        ]
+        r += ["    }", "    then next policy;", "}", "term reject {", "    then reject;", "}"]
         return "\n".join(r)
 
     def get_interface_names(self, name):
@@ -154,13 +120,16 @@ class Profile(BaseProfile):
     internal_interfaces = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
         r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|sp-|fab|mams-|"
-        r"bme|esi|ams|rbeb|fti)")
+        r"bme|esi|ams|rbeb|fti)"
+    )
     internal_interfaces_without_em = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
         r"jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|sp-|fab|mams-|"
-        r"bme|esi|ams|rbeb|fti)")
+        r"bme|esi|ams|rbeb|fti)"
+    )
     internal_interfaces_olive = re.compile(
-        r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")
+        r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)"
+    )
 
     def valid_interface_name(self, script, name):
         if script.is_olive:
@@ -186,8 +155,7 @@ class Profile(BaseProfile):
 
     def command_exist(self, script, cmd):
         c = script.cli(
-            "help apropos \"%s\" | match \"^show %s\" " % (cmd, cmd),
-            cached=True, ignore_errors=True
+            'help apropos "%s" | match "^show %s" ' % (cmd, cmd), cached=True, ignore_errors=True
         )
         return ("show " + cmd in c) and ("error: nothing matches" not in c)
 

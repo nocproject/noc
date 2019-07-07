@@ -18,7 +18,4 @@ class Script(BaseScript):
 
     def execute_cli(self):
         v = self.profile.get_version(self)
-        return {
-            "first_chassis_mac": v["mac"],
-            "last_chassis_mac": v["mac"]
-        }
+        return {"first_chassis_mac": v["mac"], "last_chassis_mac": v["mac"]}

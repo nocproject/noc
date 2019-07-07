@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -29,7 +30,8 @@ class Script(BaseScript):
     # 35xx
     rx_ver = re.compile(
         r"^\s*The system fireware version is\s+:\s*\n\s+(?P<platform>.+?)-V(?P<version>\S+)EN,",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def get_version(self, show_system, version):
         # Vendor default
@@ -42,10 +44,5 @@ class Script(BaseScript):
             platform = match.group("platform")
         else:
             raise self.NotSupportedError(platform)
-        r = {
-            "vendor": vendor,
-            "platform": platform,
-            "version": version,
-            "attributes": {}
-        }
+        r = {"vendor": vendor, "platform": platform, "version": version, "attributes": {}}
         return r

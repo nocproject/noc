@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -30,19 +31,20 @@ class Script(BaseScript):
             mac = mac.lower()
         iface_name = {}
         for v in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1"]):
-            if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
+            if v[1][:2] == "fa" or v[1][:2] == "gi" or v[1][:2] == "te" or v[1][:2] == "po":
                 name = v[1]
-                name = name.replace('fa', 'Fa ')
-                name = name.replace('gi', 'Gi ')
-                name = name.replace('te', 'Te ')
-                name = name.replace('po', 'Po ')
+                name = name.replace("fa", "Fa ")
+                name = name.replace("gi", "Gi ")
+                name = name.replace("te", "Te ")
+                name = name.replace("po", "Po ")
                 iface_name.update({v[0]: name})
 
         for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"]):
             vlan_oid.append(v[0])
         # mac iface type
-        for v in self.snmp.get_tables(["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
-                                       "1.3.6.1.2.1.17.4.3.1.3"]):
+        for v in self.snmp.get_tables(
+            ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3"]
+        ):
             if None in v:
                 continue
             if v[1]:
@@ -64,7 +66,7 @@ class Script(BaseScript):
                     continue
             for i in vlan_oid:
                 if v[0] in i:
-                    vlan_id = int(i.split('.')[0])
+                    vlan_id = int(i.split(".")[0])
                     break
             if vlan is not None:
                 if vlan_id == vlan:
@@ -76,11 +78,7 @@ class Script(BaseScript):
                 {
                     "interfaces": [iface],
                     "mac": chassis,
-                    "type": {
-                        "3": "D",
-                        "2": "S",
-                        "1": "S"
-                    }[str(v[3])],
+                    "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
                     "vlan_id": vlan_id,
                 }
             )
@@ -98,7 +96,7 @@ class Script(BaseScript):
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
             interfaces = match.group("interfaces")
-            if interfaces == '0':
+            if interfaces == "0":
                 continue
             r.append(
                 {
@@ -110,7 +108,7 @@ class Script(BaseScript):
                         "static": "S",
                         "secure": "S",
                         "permanent": "S",
-                        "self": "C"
+                        "self": "C",
                     }[match.group("type").lower()],
                 }
             )

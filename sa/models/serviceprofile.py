@@ -10,13 +10,21 @@
 from __future__ import absolute_import
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from pymongo import UpdateOne
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, ReferenceField, IntField,
-                                BooleanField, LongField, ListField)
+from mongoengine.fields import (
+    StringField,
+    ReferenceField,
+    IntField,
+    BooleanField,
+    LongField,
+    ListField,
+)
 import cachetools
+
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.remotesystem import RemoteSystem
@@ -31,11 +39,7 @@ id_lock = Lock()
 @on_save
 @six.python_2_unicode_compatible
 class ServiceProfile(Document):
-    meta = {
-        "collection": "noc.serviceprofiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "noc.serviceprofiles", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
     description = StringField()
     # Jinja2 service label template
@@ -77,26 +81,18 @@ class ServiceProfile(Document):
             call_later(
                 "noc.sa.models.serviceprofile.refresh_interface_profiles",
                 sp_id=self.id,
-                ip_id=self.interface_profile.id if self.interface_profile else None
+                ip_id=self.interface_profile.id if self.interface_profile else None,
             )
 
 
 def refresh_interface_profiles(sp_id, ip_id):
     from .service import Service
     from noc.inv.models.interface import Interface
-    svc = [
-        x["_id"]
-        for x in Service._get_collection().find(
-            {"profile": sp_id}, {"_id": 1}
-        )
-    ]
+
+    svc = [x["_id"] for x in Service._get_collection().find({"profile": sp_id}, {"_id": 1})]
     if not svc:
         return
     collection = Interface._get_collection()
     bulk = []
-    bulk += [UpdateOne({
-        "_id": {"$in": svc}
-    }, {
-        "$set": {"profile": ip_id}
-    })]
+    bulk += [UpdateOne({"_id": {"$in": svc}}, {"$set": {"profile": ip_id}})]
     collection.bulk_write(bulk, ordered=False)

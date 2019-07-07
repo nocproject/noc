@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 from .oidrules.slot import SlotRule
@@ -16,6 +17,4 @@ from .oidrules.slot import SlotRule
 class Script(GetMetricsScript):
     name = "Alcatel.7302.get_metrics"
 
-    OID_RULES = [
-        SlotRule
-    ]
+    OID_RULES = [SlotRule]

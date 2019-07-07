@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -18,14 +19,14 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+"
-        r"(?P<interface>.+)\s*$", re.MULTILINE
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+" r"(?P<interface>.+)\s*$", re.MULTILINE
     )
     rx_port = re.compile(
         r"^Port: (?P<interface>\S+)\n"
         r"^index  vid mac\n"
         r"^----- ---- -----------------\n"
-        r"(?P<macs>(^\s*\d+\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s*\n)+)", re.MULTILINE
+        r"(?P<macs>(^\s*\d+\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s*\n)+)",
+        re.MULTILINE,
     )
     rx_port2 = re.compile(r"^(?P<interface>(?:up|slot)\d+)\s+(?P<mac>\S+)", re.MULTILINE)
     rx_mac = re.compile(r"^\s*\d+\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s*", re.MULTILINE)
@@ -48,7 +49,7 @@ class Script(BaseScript):
                         "vlan_id": match.group("vlan_id"),
                         "mac": match.group("mac"),
                         "interfaces": [self.profile.convert_interface_name(iface)],
-                        "type": "D"
+                        "type": "D",
                     }
                 ]
         except self.CLISyntaxError:
@@ -64,7 +65,7 @@ class Script(BaseScript):
                             "vlan_id": match1.group("vlan_id"),
                             "mac": match1.group("mac"),
                             "interfaces": [port],
-                            "type": "D"
+                            "type": "D",
                         }
                     ]
             if not r:
@@ -75,7 +76,7 @@ class Script(BaseScript):
                             "vlan_id": 1,
                             "mac": match.group("mac"),
                             "interfaces": [match.group("interface")],
-                            "type": "D"
+                            "type": "D",
                         }
                     ]
         return r

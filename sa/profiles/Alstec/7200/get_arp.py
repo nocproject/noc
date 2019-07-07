@@ -17,14 +17,14 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
-        r"(?P<interface>\S+)\s*", re.MULTILINE)
+        r"^(?P<mac>\S+)\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+" r"(?P<interface>\S+)\s*",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
         for match in self.rx_line.finditer(self.cli("show arp switch")):
-            if (interface is not None) \
-            and (interface != match.group("interface")):
+            if (interface is not None) and (interface != match.group("interface")):
                 continue
             r.append(match.groupdict())
         """

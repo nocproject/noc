@@ -19,10 +19,12 @@ class Script(BaseScript):
         v = self.scripts.get_version()
         platform = v["platform"]
         if platform not in ["x86", "CHR"]:
-            return [{
-                "type": "CHASSIS",
-                "vendor": "MikroTik",
-                "part_no": [platform],
-                "serial": v["attributes"]["Serial Number"]
-            }]
+            return [
+                {
+                    "type": "CHASSIS",
+                    "vendor": "MikroTik",
+                    "part_no": [platform],
+                    "serial": v["attributes"]["Serial Number"],
+                }
+            ]
         return []

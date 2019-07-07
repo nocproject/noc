@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -34,23 +35,23 @@ class Script(BaseScript):
         r"Line protocol current state: (?P<oper_status>\S+)."
         r"Description: (?P<description>(\S+ \S+ \S+ \S+|\S+ \S+ \S+|\S+ \S+|\S+)).The Maximum Transmit Unit is \d+.Internet Address is (?P<ip>\S+)/(?P<mask>\d+)( Primary|, acquired via DHCP)."
         r"IP Packet Frame Type: \S+,  Hardware Address: (?P<mac>\S+)",
-        re.DOTALL | re.MULTILINE)
+        re.DOTALL | re.MULTILINE,
+    )
     rx_iface = re.compile(
         r"^\s*(?P<iface>(\S+Ethernet|\S+Aggregation)\S+) current state:\s+"
-        r"(?P<status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*$")
-    rx_mac = re.compile(
-        r"^\s*IP Packet Frame Type: \S+, Hardware Address:\s+(?P<mac>\S+)$")
-    rx_description = re.compile(
-        r"^\s*Description:\s+(?P<description>.+)$")
+        r"(?P<status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*$"
+    )
+    rx_mac = re.compile(r"^\s*IP Packet Frame Type: \S+, Hardware Address:\s+(?P<mac>\S+)$")
+    rx_description = re.compile(r"^\s*Description:\s+(?P<description>.+)$")
     rx_type = re.compile(r"^\s*Port link-type: (?P<type>\S+)$")
     rx_tagged = re.compile(r"^\s*VLAN passing  : (?P<tagged>.+)$")
     rx_tag = re.compile(r"^\s*Tagged\s+VLAN ID :\s+(?P<tagged>.+)$")
     rx_untag = re.compile(r"^\s*Untagged\s+VLAN ID :\s+(?P<untagged>.+)$")
 
     types = {
-        "Fa": "physical",       # FastEthernet
-        "Gi": "physical",       # GigabitEthernet
-        "Po": "aggregated",     # Aggregated
+        "Fa": "physical",  # FastEthernet
+        "Gi": "physical",  # GigabitEthernet
+        "Po": "aggregated",  # Aggregated
     }
 
     def get_ospfint(self):
@@ -87,7 +88,7 @@ class Script(BaseScript):
         for match in self.rx_sh_svi.finditer(ifaces):
             description = match.group("description")
             if not description:
-                description = ''
+                description = ""
             ifname = match.group("interface")
             ip = match.group("ip")
             netmask = match.group("mask")
@@ -96,13 +97,13 @@ class Script(BaseScript):
                 ip_interfaces = "ipv6_addresses"
                 ip_ver = "is_ipv6"
                 enabled_afi += ["IPv6"]
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
                 ip_list = [ip]
             else:
                 ip_interfaces = "ipv4_addresses"
                 ip_ver = "is_ipv4"
                 enabled_afi += ["IPv4"]
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
                 ip_list = [ip]
             vlan = ifname[14:]
             a_stat = match.group("admin_status").lower() == "up"
@@ -127,7 +128,7 @@ class Script(BaseScript):
                         "mac": mac,
                         "vlan_ids": self.expand_rangelist(vlan),
                     }
-                ]
+                ],
             }
             interfaces += [iface]
 
@@ -137,12 +138,15 @@ class Script(BaseScript):
             match = self.rx_iface.search(ifaces[i])
             if match:
                 ifname = match.group("iface")
-                if ifname[:18] == 'Bridge-Aggregation':
-                    ifname = 'Po ' + ifname.split('Bridge-Aggregation')[1]
+                if ifname[:18] == "Bridge-Aggregation":
+                    ifname = "Po " + ifname.split("Bridge-Aggregation")[1]
                 else:
-                    ifname = ifname.replace('GigabitEthernet', 'Gi ')
-                o_stat = match.group("status") == 'UP'
-                a_stat = match.group("status") not in ['Administratively DOWN', 'DOWN ( Administratively )']
+                    ifname = ifname.replace("GigabitEthernet", "Gi ")
+                o_stat = match.group("status") == "UP"
+                a_stat = match.group("status") not in [
+                    "Administratively DOWN",
+                    "DOWN ( Administratively )",
+                ]
 
                 i += 1
                 match = self.rx_mac.search(ifaces[i])
@@ -153,7 +157,7 @@ class Script(BaseScript):
                 if match:
                     description = match.group("description")
                 else:
-                    description = ''
+                    description = ""
                 iface = {
                     "name": ifname,
                     "type": self.types[ifname[:2]],
@@ -169,7 +173,7 @@ class Script(BaseScript):
                             # "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
                             # "snmp_ifindex": ifname.split('/')[2]
                         }
-                    ]
+                    ],
                 }
 
                 # Portchannel member
@@ -191,13 +195,15 @@ class Script(BaseScript):
                     if vtype == "trunk":
                         match = self.rx_tagged.search(ifaces[i])
                         tagged = match.group("tagged")
-                        tagged = tagged.replace('(default vlan)', '')
+                        tagged = tagged.replace("(default vlan)", "")
                         iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(tagged)
                     else:
                         match = self.rx_tag.search(ifaces[i])
                         tagged = match.group("tagged")
-                        if 'none' not in tagged:
-                            iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(tagged)
+                        if "none" not in tagged:
+                            iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(
+                                tagged
+                            )
                         i += 1
                         match = self.rx_untag.search(ifaces[i])
                         untagged = match.group("untagged")

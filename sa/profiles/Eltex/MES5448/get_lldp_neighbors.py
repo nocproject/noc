@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -28,23 +29,11 @@ class Script(BaseScript):
         r"^Port Description:(?P<port_description>.*?)\n"
         r"^System Capabilities Supported:.*?\n"
         r"^System Capabilities Enabled:(?P<caps>.*?)\n",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
-    CAPS_MAP = {
-        "repeater": 2,
-        "bridge": 4,
-        "WLAN access point": 8,
-        "router": 16
-    }
-    CHASSIS_SUBTYPE = {
-        "MAC Address": 4
-    }
-    PORT_SUBTYPE = {
-        "Interface Alias": 1,
-        "MAC Address": 3,
-        "Interface Name": 5,
-        "Local": 7
-    }
+    CAPS_MAP = {"repeater": 2, "bridge": 4, "WLAN access point": 8, "router": 16}
+    CHASSIS_SUBTYPE = {"MAC Address": 4}
+    PORT_SUBTYPE = {"Interface Alias": 1, "MAC Address": 3, "Interface Name": 5, "Local": 7}
 
     def execute(self):
         r = []
@@ -52,10 +41,7 @@ class Script(BaseScript):
             if not i[1]:
                 continue
             c = self.cli("show lldp remote-device detail %s" % i[0])
-            iface = {
-                "local_interface": i[0],
-                "neighbors": []
-            }
+            iface = {"local_interface": i[0], "neighbors": []}
             for match in self.rx_detail.finditer(c):
                 cap = 0
                 for c in match.group("caps").split(","):

@@ -15,18 +15,14 @@ class Script(BaseScript):
     """
     Retrieve data for IP discovery
     """
+
     name = "Generic.get_ip_discovery"
     interface = IGetIPDiscovery
     requires = ["get_arp"]
 
     def execute(self):
         # Prepare VRFs
-        vrfs = {
-            "default": {
-                "name": "default",
-                "addresses": []
-            }
-        }
+        vrfs = {"default": {"name": "default", "addresses": []}}
         vrf_iface_map = {}
         if "get_mpls_vpn" in self.scripts:
             try:
@@ -35,11 +31,7 @@ class Script(BaseScript):
                 r = []
             for v in r:
                 if v["status"] and v["type"] == "VRF":
-                    vrf = {
-                        "name": v["name"],
-                        "addresses": [],
-                        "interfaces": []
-                    }
+                    vrf = {"name": v["name"], "addresses": [], "interfaces": []}
                     if "rd" in v:
                         vrf["rd"] = v["rd"]
                     if "vpn_id" in v:
@@ -60,12 +52,7 @@ class Script(BaseScript):
                         continue
                     vrf = vrf_iface_map.get(x["interface"], "default")
                     vrfs[vrf]["addresses"] += [
-                        {
-                            "ip": x["ip"],
-                            "afi": "6",
-                            "mac": x["mac"],
-                            "interface": x["interface"]
-                        }
+                        {"ip": x["ip"], "afi": "6", "mac": x["mac"], "interface": x["interface"]}
                     ]
         # Iterate through VRF
         data = []
@@ -81,12 +68,7 @@ class Script(BaseScript):
                     continue
                 elif not vrf and x["interface"] in vrf_iface_map:
                     continue
-                a += [{
-                    "ip": x["ip"],
-                    "afi": "4",
-                    "mac": x["mac"],
-                    "interface": x["interface"]
-                }]
+                a += [{"ip": x["ip"], "afi": "4", "mac": x["mac"], "interface": x["interface"]}]
             # Process NBD
             vd = vrfs[v].copy()
             vd["addresses"] += a

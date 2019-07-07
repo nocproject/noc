@@ -8,10 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, DictParameter,
-                   InterfaceNameParameter, BooleanParameter)
+from .base import ListOfParameter, DictParameter, InterfaceNameParameter, BooleanParameter
 
 
 #
@@ -20,8 +20,9 @@ from .base import (ListOfParameter, DictParameter,
 #
 class IGetInterfaceStatus(BaseInterface):
     interface = InterfaceNameParameter(required=False)
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "interface": InterfaceNameParameter(),
-        "status": BooleanParameter()
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(
+            attrs={"interface": InterfaceNameParameter(), "status": BooleanParameter()}
+        )
+    )
     preview = "NOC.sa.managedobject.scripts.ShowInterfaceStatus"

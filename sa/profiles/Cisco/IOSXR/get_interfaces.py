@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -31,21 +32,24 @@ class Script(BaseScript):
         "null interface": "null",
         "tunnel-te": "tunnel",
         "vlan sub-interface(s)": None,
-        "bridge-group virtual interface": "SVI"
+        "bridge-group virtual interface": "SVI",
     }
 
-    rx_iface = re.compile(r"^(?P<name>\S+)\s+is\s+(?P<status>up|(?:administratively )?down),\s+"
-                          r"line protocol is (?:up|(?:administratively )?down)\s*$", re.MULTILINE)
+    rx_iface = re.compile(
+        r"^(?P<name>\S+)\s+is\s+(?P<status>up|(?:administratively )?down),\s+"
+        r"line protocol is (?:up|(?:administratively )?down)\s*$",
+        re.MULTILINE,
+    )
 
     rx_ip = re.compile(r"^Internet address is (?P<ip>\S+)\s*$", re.MULTILINE)
 
     rx_hw = re.compile(r"^Hardware is (?P<hw>.+?)(?:, address is (?P<mac>\S+).*)?$")
 
-    rx_vlan_id = re.compile(r"^Encapsulation 802.1Q Virtual LAN, VLAN Id (?P<vlan>\d+),.*$",
-                            re.IGNORECASE)
+    rx_vlan_id = re.compile(
+        r"^Encapsulation 802.1Q Virtual LAN, VLAN Id (?P<vlan>\d+),.*$", re.IGNORECASE
+    )
 
-    rx_bundle_member = re.compile(r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$",
-                                  re.IGNORECASE)
+    rx_bundle_member = re.compile(r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$", re.IGNORECASE)
 
     rx_ifindex = re.compile(r"^ifName : (?P<name>\S+)\s+ifIndex : (?P<ifindex>\d+)")
 
@@ -61,10 +65,7 @@ class Script(BaseScript):
             if match:
                 current = self.profile.convert_interface_name(match.group("name"))
                 status = match.group("status") == "up"
-                ifaces[current] = {
-                    "name": current,
-                    "status": status
-                }
+                ifaces[current] = {"name": current, "status": status}
                 is_bundle = current.startswith("Bundle-Ether")
                 if is_bundle:
                     ifaces[current]["members"] = []
@@ -81,10 +82,7 @@ class Script(BaseScript):
             if match:
                 ip = match.group("ip")
                 if ip.lower() != "unknown":
-                    ifaces[current]["addresses"] = (
-                        ifaces[current].get("addresses", []) +
-                        [ip]
-                    )
+                    ifaces[current]["addresses"] = ifaces[current].get("addresses", []) + [ip]
                 continue
             # Process hardware type and MAC
             match = self.rx_hw.match(line)
@@ -117,26 +115,16 @@ class Script(BaseScript):
         vpns = self.scripts.get_mpls_vpn()
         for v in vpns:
             seen.update(v["interfaces"])
-        vpns = [{
-            "name": "default",
-            "type": "ip",
-            "interfaces": set(ifaces) - seen
-        }] + vpns
+        vpns = [{"name": "default", "type": "ip", "interfaces": set(ifaces) - seen}] + vpns
         # Bring result together
         for fi in vpns:
             # Forwarding instance
-            rr = {
-                "forwarding_instance": fi["name"],
-                "type": fi["type"],
-                "interfaces": []
-            }
+            rr = {"forwarding_instance": fi["name"], "type": fi["type"], "interfaces": []}
             rd = fi.get("rd")
             if rd:
                 rr["rd"] = rd
             # Get interface -> subinterfaces mapping
-            p_ifaces = dict((x, []) for x in
-                            set(i.split(".", 1)[0]
-                                for i in fi["interfaces"]))
+            p_ifaces = dict((x, []) for x in set(i.split(".", 1)[0] for i in fi["interfaces"]))
             for i in fi["interfaces"]:
                 p = i.split(".", 1)[0]
                 p_ifaces[p] += [i]
@@ -150,7 +138,7 @@ class Script(BaseScript):
                     "type": i["type"],
                     "admin_status": i["status"],
                     "oper_status": i["status"],
-                    "subinterfaces": []
+                    "subinterfaces": [],
                 }
                 if i.get("mac"):
                     p["mac"] = i["mac"]
@@ -172,7 +160,7 @@ class Script(BaseScript):
                             "admin_status": ii["status"],
                             "oper_status": ii["status"],
                             "enabled_afi": [],
-                            "enabled_protocols": []
+                            "enabled_protocols": [],
                         }
                         if ii.get("mac"):
                             sp["mac"] = ii["mac"]
@@ -212,5 +200,7 @@ class Script(BaseScript):
                 if match:
                     if match.group("name").startswith("ControlEthernet"):
                         continue
-                    m[self.profile.convert_interface_name(match.group("name"))] = match.group("ifindex")
+                    m[self.profile.convert_interface_name(match.group("name"))] = match.group(
+                        "ifindex"
+                    )
         return m

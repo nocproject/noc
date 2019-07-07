@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -20,10 +21,12 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)\s+(?P<type>\S+)\s+(?P<status>\S+)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_line1 = re.compile(
         r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<port>\S+)\s+(?P<flag>Dynamic|Static)\s+(?P<age>\d+)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self):
         r = []
@@ -54,25 +57,25 @@ class Script(BaseScript):
         try:
             v = self.cli("show arp all", cached=True)
             for match in self.rx_line.finditer(v):
-                r += [{
-                    "ip": match.group("ip"),
-                    "mac": match.group("mac"),
-                    "interface": match.group("interface")
-                }]
+                r += [
+                    {
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "interface": match.group("interface"),
+                    }
+                ]
         except self.CLISyntaxError:
             v = self.cli("show arp", cached=True)
             for match in self.rx_line1.finditer(v):
                 mac = match.group("mac")
                 if mac.lower() == "incomplete":
-                    r += [{
-                        "ip": match.group("ip"),
-                        "mac": None,
-                        "interface": None
-                    }]
+                    r += [{"ip": match.group("ip"), "mac": None, "interface": None}]
                 else:
-                    r += [{
-                        "ip": match.group("ip"),
-                        "mac": match.group("mac"),
-                        "interface": match.group("port")
-                    }]
+                    r += [
+                        {
+                            "ip": match.group("ip"),
+                            "mac": match.group("mac"),
+                            "interface": match.group("port"),
+                        }
+                    ]
         return r

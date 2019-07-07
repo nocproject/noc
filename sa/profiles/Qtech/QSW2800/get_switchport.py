@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_switchport import Script as BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -18,21 +19,25 @@ class Script(BaseScript):
     name = "Qtech.QSW2800.get_switchport"
     interface = IGetSwitchport
 
-    rx_descr = re.compile(r"^\s+(?P<interface>\S+\d+(?:/\d+)?) is layer \d+ "
-                          r"port, alias name is (?P<description>.+?), "
-                          r"index is \d+$",
-                          re.MULTILINE)
-    rx_switchport = re.compile(r"(?P<interface>\S+\d+(/\d+)?)\n"
-                               r"Type :(?P<type>Universal|"
-                               r"Aggregation(?: member)?)\n"
-                               r"(?:Mac addr num: No limit\n)?"
-                               r"Mode :\S+\s*\nPort VID :(?P<pvid>\d+)\n"
-                               r"((?:Hybrid tag|Trunk) allowed Vlan:"
-                               r"\s+(?P<tags>\S+))?",
-                               re.MULTILINE)
-    rx_qinq_port = re.compile(r"^Interface (?P<interface>\S+):\n"
-                              r"\s+dot1q-tunnel is enable",
-                              re.MULTILINE)
+    rx_descr = re.compile(
+        r"^\s+(?P<interface>\S+\d+(?:/\d+)?) is layer \d+ "
+        r"port, alias name is (?P<description>.+?), "
+        r"index is \d+$",
+        re.MULTILINE,
+    )
+    rx_switchport = re.compile(
+        r"(?P<interface>\S+\d+(/\d+)?)\n"
+        r"Type :(?P<type>Universal|"
+        r"Aggregation(?: member)?)\n"
+        r"(?:Mac addr num: No limit\n)?"
+        r"Mode :\S+\s*\nPort VID :(?P<pvid>\d+)\n"
+        r"((?:Hybrid tag|Trunk) allowed Vlan:"
+        r"\s+(?P<tags>\S+))?",
+        re.MULTILINE,
+    )
+    rx_qinq_port = re.compile(
+        r"^Interface (?P<interface>\S+):\n" r"\s+dot1q-tunnel is enable", re.MULTILINE
+    )
 
     def execute_cli(self, **kwargs):
         # Get portchannels
@@ -82,7 +87,7 @@ class Script(BaseScript):
                 "tagged": [],
                 "untagged": pvid,
                 "members": [],
-                "802.1ad Tunnel": False
+                "802.1ad Tunnel": False,
             }
             # description
             if ifname in descr:
@@ -93,7 +98,7 @@ class Script(BaseScript):
                     if pch["interface"] == ifname:
                         swp["members"] = pch["members"]
                         for mmbr in swp["members"]:  # if PC member is QinQ
-                            if mmbr in qinq_ports:   # PC is QinQ too
+                            if mmbr in qinq_ports:  # PC is QinQ too
                                 swp["802.1ad Tunnel"] = True
                                 break
                         break

@@ -6,15 +6,17 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from .base import (ListOfParameter, DictParameter,
-                   StringParameter)
+from .base import ListOfParameter, DictParameter, StringParameter
 
 
 class IGetTechSupport(BaseInterface):
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "name": StringParameter(),
-        "section": StringParameter()
-    })) | StringParameter()
+    returns = (
+        ListOfParameter(
+            element=DictParameter(attrs={"name": StringParameter(), "section": StringParameter()})
+        )
+        | StringParameter()
+    )
     preview = "NOC.sa.managedobject.scripts.TextPreview"

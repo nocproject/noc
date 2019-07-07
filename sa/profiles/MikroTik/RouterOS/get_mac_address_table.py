@@ -28,9 +28,12 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return []
 
-        return [{
-            "vlan_id": r["vlan-id"],
-            "mac": r["mac-address"],
-            "interfaces": [r["ports"]],
-            "type": "D"
-        } for n, f, r in v]
+        return [
+            {
+                "vlan_id": r["vlan-id"],
+                "mac": r["mac-address"],
+                "interfaces": [r["ports"]],
+                "type": "D",
+            }
+            for n, f, r in v
+        ]

@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -22,28 +23,27 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<oper_status>Up|Down|Not Present)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_port1 = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
-        r"(?P<admin_status>Up|Down)",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+" r"(?P<admin_status>Up|Down)",
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_descr = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?P<descr>.+)$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?P<descr>.+)$", re.MULTILINE | re.IGNORECASE
+    )
     rx_vlan = re.compile(
-        r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
-        r"(?P<membership>\S+)\s*\n", re.MULTILINE)
+        r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+" r"(?P<membership>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_vlan_ipif = re.compile(
-        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+"
-        r"(?:Static|DHCP)\s+Valid")
-    rx_mac = re.compile(
-        r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
+        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+" r"(?:Static|DHCP)\s+Valid"
+    )
+    rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_enabled = re.compile(
-        r"^\s*(?P<port>(?:Gi|Te|Po)\S+)\s+Enabled",
-        re.MULTILINE | re.IGNORECASE)
-    rx_lldp = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?:Rx|Tx)",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*(?P<port>(?:Gi|Te|Po)\S+)\s+Enabled", re.MULTILINE | re.IGNORECASE
+    )
+    rx_lldp = re.compile(r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?:Rx|Tx)", re.MULTILINE | re.IGNORECASE)
     rx_iface = re.compile(
         r"^(?P<ifname>\S+\d) is( administratively)? "
         r"(?P<admin_status>up|down), "
@@ -56,7 +56,7 @@ class Script(BaseScript):
         r"^\s+MTU (?P<mtu>\d+) bytes.+\n"
         r"(^\s+Encapsulation .+\n)?"
         r"(^\s+Members in this Aggregator: (?P<agg_list>.+)\n)?",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     IFTYPES = {
@@ -69,7 +69,7 @@ class Script(BaseScript):
         "10Giga-FX": "physical",
         "EtherSVI": "SVI",
         "PortAggregator": "aggregated",
-        "Null": "null"
+        "Null": "null",
     }
 
     def get_gvrp(self):
@@ -141,7 +141,7 @@ class Script(BaseScript):
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             if ifname in gvrp:
                 iface["enabled_protocols"] += ["GVRP"]
@@ -156,7 +156,7 @@ class Script(BaseScript):
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_afi": ["BRIDGE"],
-                "tagged_vlans": []
+                "tagged_vlans": [],
             }
             for i in descr:
                 if ifname == i["port"]:
@@ -191,15 +191,17 @@ class Script(BaseScript):
                     "admin_status": True,
                     "oper_status": True,
                     "mac": mac,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": True,
-                        "oper_status": True,
-                        "mac": mac,
-                        "enabled_afi": ["IPv4"],
-                        "ipv4_addresses": [match.group("address")],
-                        "vlan_ids": [int(match.group("vlan_id"))]
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "admin_status": True,
+                            "oper_status": True,
+                            "mac": mac,
+                            "enabled_afi": ["IPv4"],
+                            "ipv4_addresses": [match.group("address")],
+                            "vlan_ids": [int(match.group("vlan_id"))],
+                        }
+                    ],
                 }
                 interfaces += [iface]
         # Not implemented
@@ -223,7 +225,7 @@ class Script(BaseScript):
                 "name": match.group("ifname"),
                 "admin_status": match.group("admin_status") == "up",
                 "oper_status": match.group("oper_status") == "up",
-                "mtu": match.group("mtu")
+                "mtu": match.group("mtu"),
             }
             if iface["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]

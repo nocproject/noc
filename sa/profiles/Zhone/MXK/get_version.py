@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -28,8 +29,4 @@ class Script(BaseScript):
         v = self.cli("slots", cached=True)
         match = self.re_search(self.rx_platform, v)
         platform = match.group("platform")
-        return {
-            "vendor": "Zhone",
-            "version": version,
-            "platform": platform
-        }
+        return {"vendor": "Zhone", "version": version, "platform": platform}

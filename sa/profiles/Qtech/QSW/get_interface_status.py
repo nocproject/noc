@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -18,32 +19,24 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
-        r"^(?P<interface>\S+)\s+(\S+|)\s+(?P<status>(up|down))\s",
-        re.MULTILINE)
-    rx_interface_status1 = re.compile(
-        r"^(?P<interface>\S+)\s+(?P<status>UP|DOWN)", re.MULTILINE)
+        r"^(?P<interface>\S+)\s+(\S+|)\s+(?P<status>(up|down))\s", re.MULTILINE
+    )
+    rx_interface_status1 = re.compile(r"^(?P<interface>\S+)\s+(?P<status>UP|DOWN)", re.MULTILINE)
 
     def execute(self, interface=None):
         r = []
         # Try SNMP first
         if self.has_snmp():
             try:
-                for i, n, s in self.snmp.join([
-                    "1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"
-                ]):  # IF-MIB
-                    if n[:1] == 'e' or n[:1] == 'g' or n[:1] == 't':
+                for i, n, s in self.snmp.join(
+                    ["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]
+                ):  # IF-MIB
+                    if n[:1] == "e" or n[:1] == "g" or n[:1] == "t":
                         if interface:
                             if n == interface:
-                                r.append({
-                                    "interface": n,
-                                    "status": int(s) == 1
-                                })
+                                r.append({"interface": n, "status": int(s) == 1})
                         else:
-                            r.append({
-                                "interface": n,
-                                "status": int(s) == 1
-                            })
+                            r.append({"interface": n, "status": int(s) == 1})
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -57,11 +50,8 @@ class Script(BaseScript):
             c = self.cli(cmd)
             for match in self.rx_interface_status.finditer(c):
                 iface = match.group("interface")
-                if iface[:1] == 'e' or iface[:1] == 'g' or iface[:1] == 't':
-                    r.append({
-                        "interface": iface,
-                        "status": match.group("status") == "up"
-                    })
+                if iface[:1] == "e" or iface[:1] == "g" or iface[:1] == "t":
+                    r.append({"interface": iface, "status": match.group("status") == "up"})
         except self.CLISyntaxError:
             if interface:
                 cmd = "show interface ethernet %s status" % interface
@@ -70,9 +60,6 @@ class Script(BaseScript):
             c = self.cli(cmd)
             for match in self.rx_interface_status1.finditer(c):
                 iface = match.group("interface")
-                r.append({
-                    "interface": iface,
-                    "status": match.group("status") == "UP"
-                })
+                r.append({"interface": iface, "status": match.group("status") == "UP"})
 
         return r

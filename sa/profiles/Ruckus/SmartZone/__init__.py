@@ -6,17 +6,15 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-'''
-'''
+"""
+"""
 
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Ruckus.SmartZone"
-    pattern_more = [
-        (r"^Login as:$", "\n")
-    ]
+    pattern_more = [(r"^Login as:$", "\n")]
     pattern_username = "^[Pp]lease [Ll]ogin:"
     pattern_password = "^[Pp]assword:"
     pattern_unprivileged_prompt = r"^\S*>"

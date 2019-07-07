@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -26,9 +27,5 @@ class Script(BaseScript):
             ifindex, ip = oid[21:].split(".", 1)
             ifname = names.get(int(ifindex))
             if ifname:
-                r += [{
-                    "ip": ip,
-                    "mac": MAC(mac),
-                    "interface": ifname
-                }]
+                r += [{"ip": ip, "mac": MAC(mac), "interface": ifname}]
         return r

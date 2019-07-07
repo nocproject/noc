@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,7 +22,9 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^(?P<platform>\S+\s\S+)\n.+,\s(?:Version:)?\s(?P<version>\S+\s\S+).+\n.+\n.+\n(?:System image file is)"
-        r"?\s(?P<image><.+>)", re.MULTILINE)
+        r"?\s(?P<image><.+>)",
+        re.MULTILINE,
+    )
     rx_bootrom = re.compile(r"(?:[Bb]ootrom\s[Vv]ersion\s:)\s\s(?P<bootrom>\S+)")
 
     def execute_cli(self, **kwargs):
@@ -30,14 +33,16 @@ class Script(BaseScript):
         match1 = self.re_search(self.rx_bootrom, v)
         platform = match.group("platform")
         bootrom = match1.group("bootrom")
-        s = self.snmp.get(mib["1.3.6.1.4.1.14885.1001.6004.1.3.1.11.0.0.1"]) if self.has_snmp() else None
+        s = (
+            self.snmp.get(mib["1.3.6.1.4.1.14885.1001.6004.1.3.1.11.0.0.1"])
+            if self.has_snmp()
+            else None
+        )
         r = {
             "vendor": "Polygon",
             "platform": platform,
             "version": match.group("version"),
-            "attributes": {
-                "image": match.group("image"),
-            }
+            "attributes": {"image": match.group("image")},
         }
         if bootrom:
             r["attributes"]["Boot PROM"] = bootrom

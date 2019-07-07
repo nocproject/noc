@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -18,8 +19,9 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^\d+\s+(?P<interface>\S+)\s+v(?P<vlan_id>\d+)\s+"
-        r"(?P<mac>\S+)\s+(?P<type>\S+)", re.MULTILINE)
+        r"^\d+\s+(?P<interface>\S+)\s+v(?P<vlan_id>\d+)\s+" r"(?P<mac>\S+)\s+(?P<type>\S+)",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show fdb"
@@ -32,10 +34,12 @@ class Script(BaseScript):
         macs = self.cli(cmd)
         r = []
         for match in self.rx_line.finditer(macs):
-            r += [{
-                "vlan_id": int(match.group("vlan_id")),
-                "mac": mac if mac else match.group("mac"),
-                "interfaces": [match.group("interface")],
-                "type": {"DYNAMIC": "D", "STATIC": "S"}[match.group("type")]
-            }]
+            r += [
+                {
+                    "vlan_id": int(match.group("vlan_id")),
+                    "mac": mac if mac else match.group("mac"),
+                    "interfaces": [match.group("interface")],
+                    "type": {"DYNAMIC": "D", "STATIC": "S"}[match.group("type")],
+                }
+            ]
         return r

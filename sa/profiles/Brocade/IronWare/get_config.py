@@ -15,6 +15,7 @@ class Script(BaseScript):
     """
     Brocade.IronWare.get_config
     """
+
     name = "Brocade.IronWare.get_config"
     interface = IGetConfig
 

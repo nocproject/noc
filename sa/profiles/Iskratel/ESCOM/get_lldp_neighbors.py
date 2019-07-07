@@ -2,19 +2,18 @@
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
+from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -28,7 +27,7 @@ class Script(BaseScript):
         r"^System Name:(?P<system_name>.*)\n"
         r"^System description:(?P<system_description>.*)\n"
         r"^Port description:(?P<port_description>.*)\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):
@@ -57,11 +56,7 @@ class Script(BaseScript):
             for c in i[4].split(","):
                 c = c.strip()
                 if c:
-                    caps |= {
-                        "O": 1, "r": 2, "B": 4,
-                        "W": 8, "R": 16, "T": 32,
-                        "C": 64, "S": 128
-                    }[c]
+                    caps |= {"O": 1, "r": 2, "B": 4, "W": 8, "R": 16, "T": 32, "C": 64, "S": 128}[c]
             """
             if "O" in i[4]:
                 caps += 1
@@ -85,7 +80,7 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": chassis_id_subtype,
                 "remote_port": port_id,
                 "remote_port_subtype": port_id_subtype,
-                "remote_capabilities": caps
+                "remote_capabilities": caps,
             }
             if i[3]:
                 neighbor["remote_system_name"] = i[3]
@@ -93,14 +88,11 @@ class Script(BaseScript):
                 v = self.cli("show lldp neighbors %s" % i[0])
                 match = self.rx_port.search(v)
                 if match:
-                    neighbor["remote_system_description"] = \
-                        match.group("system_description").strip()
-                    neighbor["remote_port_description"] = \
-                        match.group("port_description").strip()
+                    neighbor["remote_system_description"] = match.group(
+                        "system_description"
+                    ).strip()
+                    neighbor["remote_port_description"] = match.group("port_description").strip()
             except self.CLISyntaxError:
                 pass
-            r += [{
-                "local_interface": i[0],
-                "neighbors": [neighbor]
-            }]
+            r += [{"local_interface": i[0], "neighbors": [neighbor]}]
         return r

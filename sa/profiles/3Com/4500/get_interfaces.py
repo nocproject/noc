@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,13 +21,13 @@ class Script(BaseScript):
 
     rx_sh_svi = re.compile(
         r"^\s*(?P<interface>\S+) current state : ?(?P<admin_status>(UP|DOWN|ADMINISTRATIVELY DOWN))\s*.IP Sending Frames' Format is \S+, Hardware address is (?P<mac>\S+).Description: (?P<description>(\S+ \S+ \S+ \S+|\S+ \S+ \S+|\S+ \S+|\S+)).Line protocol current state :(?P<oper_status>\S+).Internet Address is (?P<ip>\S+)\/(?P<mask>\d+)( Primary|, acquired via DHCP).The Maximum Transmit Unit is \d+",
-        re.DOTALL | re.MULTILINE)
+        re.DOTALL | re.MULTILINE,
+    )
     rx_iface = re.compile(
-        r"^\s*(?P<iface>((\S+|)Ethernet|\S+Aggregation)\S+) current state :\s+(?P<status>(UP|DOWN|ADMINISTRATIVELY DOWN))\s*$")
-    rx_mac = re.compile(
-        r"^\s*IP Sending Frames' Format is \S+, Hardware address is (?P<mac>\S+)$")
-    rx_description = re.compile(
-        r"^\s*Description:\s+(?P<description>.+)$")
+        r"^\s*(?P<iface>((\S+|)Ethernet|\S+Aggregation)\S+) current state :\s+(?P<status>(UP|DOWN|ADMINISTRATIVELY DOWN))\s*$"
+    )
+    rx_mac = re.compile(r"^\s*IP Sending Frames' Format is \S+, Hardware address is (?P<mac>\S+)$")
+    rx_description = re.compile(r"^\s*Description:\s+(?P<description>.+)$")
     rx_type = re.compile(r"^\s*Port link-type: (?P<type>\S+)$")
     rx_tagged = re.compile(r"^\s*VLAN passing  : (?P<tagged>.+)$")
     rx_tag = re.compile(r"^\s*Tagged\s+VLAN ID :\s+(?P<tagged>.+)$")
@@ -66,11 +67,11 @@ class Script(BaseScript):
         # ospfs = self.get_ospfint()
         # rips = self.get_ripint()
 
-        ifaces = self.cli("display interface").strip(' ')
+        ifaces = self.cli("display interface").strip(" ")
         for match in self.rx_sh_svi.finditer(ifaces):
             description = match.group("description")
             if not description:
-                description = ''
+                description = ""
             ifname = match.group("interface")
             ip = match.group("ip")
             netmask = match.group("mask")
@@ -79,13 +80,13 @@ class Script(BaseScript):
                 ip_interfaces = "ipv6_addresses"
                 ip_ver = "is_ipv6"
                 enabled_afi += ["IPv6"]
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
                 ip_list = [ip]
             else:
                 ip_interfaces = "ipv4_addresses"
                 ip_ver = "is_ipv4"
                 enabled_afi += ["IPv4"]
-                ip = ip + '/' + netmask
+                ip = ip + "/" + netmask
                 ip_list = [ip]
             vlan = ifname[14:]
             a_stat = match.group("admin_status").lower() == "up"
@@ -98,17 +99,19 @@ class Script(BaseScript):
                 "oper_status": o_stat,
                 "mac": mac,
                 "description": description,
-                "subinterfaces": [{
-                    "name": ifname,
-                    "description": description,
-                    "admin_status": a_stat,
-                    "oper_status": o_stat,
-                    ip_ver: True,
-                    "enabled_afi": enabled_afi,
-                    ip_interfaces: ip_list,
-                    "mac": mac,
-                    "vlan_ids": self.expand_rangelist(vlan),
-                }]
+                "subinterfaces": [
+                    {
+                        "name": ifname,
+                        "description": description,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        ip_ver: True,
+                        "enabled_afi": enabled_afi,
+                        ip_interfaces: ip_list,
+                        "mac": mac,
+                        "vlan_ids": self.expand_rangelist(vlan),
+                    }
+                ],
             }
             interfaces += [iface]
 
@@ -118,13 +121,13 @@ class Script(BaseScript):
             match = self.rx_iface.search(ifaces[i])
             if match:
                 ifname = match.group("iface")
-                if ifname[:18] == 'Bridge-Aggregation':
-                    ifname = 'Po ' + ifname.split('Bridge-Aggregation')[1]
+                if ifname[:18] == "Bridge-Aggregation":
+                    ifname = "Po " + ifname.split("Bridge-Aggregation")[1]
                 else:
-                    ifname = ifname.replace('Ethernet', 'Et ')
+                    ifname = ifname.replace("Ethernet", "Et ")
                     # ifname = ifname.replace('GigabitEthernet', 'Gi ')
-                o_stat = match.group("status") == 'UP'
-                a_stat = match.group("status") != 'ADMINISTRATIVELY DOWN'
+                o_stat = match.group("status") == "UP"
+                a_stat = match.group("status") != "ADMINISTRATIVELY DOWN"
 
                 i += 1
                 match = self.rx_mac.search(ifaces[i])
@@ -135,21 +138,23 @@ class Script(BaseScript):
                 if match:
                     description = match.group("description")
                 else:
-                    description = ''
+                    description = ""
                 iface = {
                     "name": ifname,
                     "type": self.types[ifname[:2]],
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "mac": mac,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": a_stat,
-                        "oper_status": o_stat,
-                        "mac": mac,
-                        # "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
-                        # "snmp_ifindex": ifname.split('/')[2]
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "admin_status": a_stat,
+                            "oper_status": o_stat,
+                            "mac": mac,
+                            # "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
+                            # "snmp_ifindex": ifname.split('/')[2]
+                        }
+                    ],
                 }
 
                 # Portchannel member
@@ -171,7 +176,7 @@ class Script(BaseScript):
                     if vtype == "trunk":
                         match = self.rx_tagged.search(ifaces[i])
                         tagged = match.group("tagged")
-                        tagged = tagged.replace('(default vlan)', '')
+                        tagged = tagged.replace("(default vlan)", "")
                         tagged_ = []
                         for j in self.expand_rangelist(tagged):
                             tagged_.append(int(j))
@@ -179,10 +184,12 @@ class Script(BaseScript):
                     else:
                         match = self.rx_tag.search(ifaces[i])
                         tagged = match.group("tagged")
-                    # try:
-                        if 'none' not in tagged:
-                            iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(tagged)
-                    # except:
+                        # try:
+                        if "none" not in tagged:
+                            iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(
+                                tagged
+                            )
+                        # except:
                         continue
                         # This block is never executed. Need testing.
                         """

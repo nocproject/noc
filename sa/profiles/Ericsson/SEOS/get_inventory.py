@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -24,7 +25,8 @@ class Script(BaseScript):
         r"Diagnostic\s*Monitoring\s*:\s*\S+\s*"
         r"CLEI\s*code\s*:\s*\S*\s*"
         r"Serial\s*Number\s*:\s*(\S+)\s*\S+\s*:\s*(\S*)",
-        re.DOTALL | re.IGNORECASE | re.MULTILINE)
+        re.DOTALL | re.IGNORECASE | re.MULTILINE,
+    )
 
     def execute_cli(self):
         objects = []
@@ -35,64 +37,76 @@ class Script(BaseScript):
             raise self.NotSupportedError("Not supported on")
         for l in v.splitlines():
             if "backplane" in l:
-                objects += [{
-                    "builtin": False,
-                    "description": "Chassis backplane",
-                    "number": 0,
-                    "part_no": "SE600",
-                    "serial": l.split()[2].strip(),
-                    "vendor": "Ericsson",
-                    "type": "CHASSIS"
-                }]
+                objects += [
+                    {
+                        "builtin": False,
+                        "description": "Chassis backplane",
+                        "number": 0,
+                        "part_no": "SE600",
+                        "serial": l.split()[2].strip(),
+                        "vendor": "Ericsson",
+                        "type": "CHASSIS",
+                    }
+                ]
             elif "fan tray" in l:
-                objects += [{
-                    "builtin": False,
-                    "description": "Fan Tray",
-                    "number": 1,
-                    "part_no": "SE600-FAN",
-                    "serial": l.split()[3].strip(),
-                    "vendor": "Ericsson",
-                    "type": "FAN"
-                }]
+                objects += [
+                    {
+                        "builtin": False,
+                        "description": "Fan Tray",
+                        "number": 1,
+                        "part_no": "SE600-FAN",
+                        "serial": l.split()[3].strip(),
+                        "vendor": "Ericsson",
+                        "type": "FAN",
+                    }
+                ]
             elif "alarm card" in l:
-                objects += [{
-                    "builtin": False,
-                    "description": "Alarm Card",
-                    "number": 0,
-                    "part_no": "SE600-ALARM",
-                    "serial": l.split()[3].strip(),
-                    "vendor": "Ericsson",
-                    "type": "ALRM"
-                }]
+                objects += [
+                    {
+                        "builtin": False,
+                        "description": "Alarm Card",
+                        "number": 0,
+                        "part_no": "SE600-ALARM",
+                        "serial": l.split()[3].strip(),
+                        "vendor": "Ericsson",
+                        "type": "ALRM",
+                    }
+                ]
             elif "-port" in l:
-                objects += [{
-                    "builtin": False,
-                    "description": l.split()[1].strip(),
-                    "number": l.split()[0].strip(),
-                    "part_no": l.split()[1].strip(),
-                    "serial": l.split()[2].strip(),
-                    "vendor": "Ericsson",
-                    "type": "CARD"
-                }]
+                objects += [
+                    {
+                        "builtin": False,
+                        "description": l.split()[1].strip(),
+                        "number": l.split()[0].strip(),
+                        "part_no": l.split()[1].strip(),
+                        "serial": l.split()[2].strip(),
+                        "vendor": "Ericsson",
+                        "type": "CARD",
+                    }
+                ]
                 for match in self.rx_trans.findall(media):
                     if l.split()[0].strip() == match[0].split("/")[0]:
-                        objects += [{
-                            "builtin": False,
-                            "description": match[1].strip() + " " + match[4].strip(),
-                            "number": match[0][2:],
-                            "part_no": match[1].strip(),
-                            "serial": match[3],
-                            "vendor": "NoName",
-                            "type": "XCVR"
-                        }]
+                        objects += [
+                            {
+                                "builtin": False,
+                                "description": match[1].strip() + " " + match[4].strip(),
+                                "number": match[0][2:],
+                                "part_no": match[1].strip(),
+                                "serial": match[3],
+                                "vendor": "NoName",
+                                "type": "XCVR",
+                            }
+                        ]
             elif "xcrp" in l:
-                objects += [{
-                    "builtin": False,
-                    "description": l.split()[1].strip(),
-                    "number": l.split()[0].strip(),
-                    "part_no": l.split()[1].strip(),
-                    "serial": l.split()[2].strip(),
-                    "vendor": "Ericsson",
-                    "type": "MGMT"
-                }]
+                objects += [
+                    {
+                        "builtin": False,
+                        "description": l.split()[1].strip(),
+                        "number": l.split()[0].strip(),
+                        "part_no": l.split()[1].strip(),
+                        "serial": l.split()[2].strip(),
+                        "vendor": "Ericsson",
+                        "type": "MGMT",
+                    }
+                ]
         return objects

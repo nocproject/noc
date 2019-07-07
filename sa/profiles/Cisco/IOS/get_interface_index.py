@@ -15,8 +15,7 @@ import re
 class Script(BaseScript):
     name = "Cisco.IOS.get_interface_index"
     interface = IGetIfIndex
-    rx_line = re.compile(
-        r"Interface = \S+, Ifindex = (?P<index>\d+)")
+    rx_line = re.compile(r"Interface = \S+, Ifindex = (?P<index>\d+)")
 
     def execute(self, interface):
         try:

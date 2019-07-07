@@ -16,13 +16,23 @@ class EnterpriseRule(OIDRule):
     def iter_oids(self, script, metric):
         if script.has_capability("SNMP | OID | EnterpriseID"):
             if len(self.oid) == 2:
-                gen = [mib[self.expand(o, {"enterprise": script.capabilities["SNMP | OID | EnterpriseID"]})] for o in
-                       self.oid]
+                gen = [
+                    mib[
+                        self.expand(
+                            o, {"enterprise": script.capabilities["SNMP | OID | EnterpriseID"]}
+                        )
+                    ]
+                    for o in self.oid
+                ]
                 path = ["Usage"]
                 if gen:
                     yield tuple(gen), self.type, self.scale, path
             else:
                 path = ["Usage"]
-                gen = mib[self.expand(self.oid, {"enterprise": script.capabilities["SNMP | OID | EnterpriseID"]})]
+                gen = mib[
+                    self.expand(
+                        self.oid, {"enterprise": script.capabilities["SNMP | OID | EnterpriseID"]}
+                    )
+                ]
                 if gen:
-                   yield gen, self.type, self.scale, path
+                    yield gen, self.type, self.scale, path

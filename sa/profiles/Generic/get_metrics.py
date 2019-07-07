@@ -13,9 +13,11 @@ import re
 import itertools
 import operator
 from collections import defaultdict
+
 # Third-party modules
 import six
 import ujson
+
 # NOC modules
 from noc.core.script.base import BaseScript, BaseScriptMetaclass
 from noc.sa.interfaces.igetmetrics import IGetMetrics
@@ -37,16 +39,9 @@ PROFILES_PATH = os.path.join("sa", "profiles")
 
 
 class MetricConfig(object):
-    __slots__ = (
-        "id",
-        "metric",
-        "path",
-        "ifindex",
-        "sla_type"
-    )
+    __slots__ = ("id", "metric", "path", "ifindex", "sla_type")
 
-    def __init__(self, id, metric, path=None, ifindex=None,
-                 sla_type=None):
+    def __init__(self, id, metric, path=None, ifindex=None, sla_type=None):
         self.id = id
         self.metric = metric
         self.path = path
@@ -72,8 +67,9 @@ class BatchConfig(object):
 _mt_seq = itertools.count(0)
 
 
-def metrics(metrics, has_script=None, has_capability=None,
-            matcher=None, access=None, volatile=True):
+def metrics(
+    metrics, has_script=None, has_capability=None, matcher=None, access=None, volatile=True
+):
     """
     Decorator to use inside get_metrics script to denote functions
     which can return set of metrics
@@ -102,6 +98,7 @@ def metrics(metrics, has_script=None, has_capability=None,
         Function may be called only once
     :return: None
     """
+
     def wrapper(f):
         f.mt_seq = next(_mt_seq)
         f.mt_metrics = metrics
@@ -122,18 +119,16 @@ class MetricScriptBase(BaseScriptMetaclass):
     """
     get_metrics metaclass. Performs @metrics decorator processing
     """
+
     def __new__(mcs, name, bases, attrs):
         m = super(MetricScriptBase, mcs).__new__(mcs, name, bases, attrs)
         # Inject metric_type -> [handler] mappings
         m._mt_map = defaultdict(list)
         # Get @metrics handlers
         for h in sorted(
-            (
-                getattr(m, n) for n in dir(m)
-                if hasattr(getattr(m, n), "mt_seq")
-            ),
+            (getattr(m, n) for n in dir(m) if hasattr(getattr(m, n), "mt_seq")),
             key=operator.attrgetter("mt_seq"),
-            reverse=True
+            reverse=True,
         ):
             for mt in h.mt_metrics:
                 m._mt_map[mt] += [h]
@@ -158,6 +153,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         :param script: Script class
         :return:
         """
+
         def sort_path_key(s):
             """
             M - Main, C - Custom, G - Generic, P - profile
@@ -172,25 +168,31 @@ class MetricScriptBase(BaseScriptMetaclass):
                 return 3 if "Generic" in s else 1
             else:
                 return 2 if "Generic" in s else 0
+
         pp = script.name.rsplit(".", 1)[0]
         if pp == "Generic":
-            paths = [p for p in config.get_customized_paths(
-                os.path.join("sa", "profiles", "Generic", "snmp_metrics"))]
+            paths = [
+                p
+                for p in config.get_customized_paths(
+                    os.path.join("sa", "profiles", "Generic", "snmp_metrics")
+                )
+            ]
         else:
             v, p = pp.split(".")
-            paths = sorted(config.get_customized_paths(os.path.join("sa", "profiles", "Generic", "snmp_metrics")) +
-                           config.get_customized_paths(os.path.join("sa", "profiles", v, p, "snmp_metrics")),
-                           key=sort_path_key)
+            paths = sorted(
+                config.get_customized_paths(
+                    os.path.join("sa", "profiles", "Generic", "snmp_metrics")
+                )
+                + config.get_customized_paths(os.path.join("sa", "profiles", v, p, "snmp_metrics")),
+                key=sort_path_key,
+            )
         for path in paths:
             if not os.path.exists(path):
                 continue
             for root, dirs, files in os.walk(path):
                 for f in files:
                     if f.endswith(".json"):
-                        mcs.apply_snmp_rules_from_json(
-                            script,
-                            os.path.join(root, f)
-                        )
+                        mcs.apply_snmp_rules_from_json(script, os.path.join(root, f))
 
     @classmethod
     def apply_snmp_rules_from_json(mcs, script, path):
@@ -200,13 +202,9 @@ class MetricScriptBase(BaseScriptMetaclass):
         try:
             data = ujson.loads(data)
         except ValueError as e:
-            raise ValueError(
-                "Failed to parse file '%s': %s" % (path, e)
-            )
+            raise ValueError("Failed to parse file '%s': %s" % (path, e))
         if not isinstance(data, dict):
-            raise ValueError(
-                "Error in file '%s': Must be defined as object" % path
-            )
+            raise ValueError("Error in file '%s': Must be defined as object" % path)
         if "$metric" not in data:
             raise ValueError("$metric key is required")
         script._mt_map[data["$metric"]] += [
@@ -218,6 +216,7 @@ class MetricScriptBase(BaseScriptMetaclass):
         """
         Generate SNMP handler for @metrics
         """
+
         def f(self, metrics):
             self.schedule_snmp_oids(rule, metric, metrics)
 
@@ -249,6 +248,7 @@ class Script(BaseScript):
     """
     Retrieve data for topology discovery
     """
+
     name = "Generic.get_metrics"
     interface = IGetMetrics
     requires = []
@@ -267,7 +267,7 @@ class Script(BaseScript):
         HiresRule,
         InterfaceRule,
         MatcherRule,
-        OIDsRule
+        OIDsRule,
     ]
 
     def __init__(self, *args, **kwargs):
@@ -318,10 +318,7 @@ class Script(BaseScript):
         # Generate list of MetricConfig from input parameters
         metrics = [MetricConfig(**m) for m in metrics]
         # Split by metric types
-        self.paths = dict(
-            (self.get_path_hash(m.metric, m.path), m)
-            for m in metrics
-        )
+        self.paths = dict((self.get_path_hash(m.metric, m.path), m) for m in metrics)
         for m in metrics:
             self.metric_configs[m.metric] += [m]
         # Process metrics collection
@@ -356,6 +353,7 @@ class Script(BaseScript):
         :param metric: Metric type name
         :return: callable accepting *metrics*
         """
+
         def is_applicable(f):
             if f.mt_has_script and f.mt_has_script not in self.scripts:
                 return False
@@ -397,13 +395,9 @@ class Script(BaseScript):
         """
         for m in self.metric_configs[metric]:
             for oid, vtype, scale, path in rule.iter_oids(self, m):
-                self.snmp_batch[oid] += [BatchConfig(
-                    id=m.id,
-                    metric=m.metric,
-                    path=path,
-                    type=vtype,
-                    scale=scale
-                )]
+                self.snmp_batch[oid] += [
+                    BatchConfig(id=m.id, metric=m.metric, path=path, type=vtype, scale=scale)
+                ]
                 # Mark as seen to stop further processing
                 self.seen_ids.add(m.id)
 
@@ -426,7 +420,7 @@ class Script(BaseScript):
         results = self.snmp.get_chunked(
             oids=oids,
             chunk_size=self.get_snmp_metrics_get_chunk(),
-            timeout_limits=self.get_snmp_metrics_get_timeout()
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
         )
         # Process results
         for oid in self.snmp_batch:
@@ -438,10 +432,7 @@ class Script(BaseScript):
                         if v is None:
                             break
                     else:
-                        self.logger.error(
-                            "Failed to get SNMP OID %s",
-                            oid
-                        )
+                        self.logger.error("Failed to get SNMP OID %s", oid)
                         break
                 elif callable(batch.scale):
                     # Multiple oids and calculated value
@@ -454,24 +445,19 @@ class Script(BaseScript):
                             else:
                                 v += [vv]
                         else:
-                            self.logger.error(
-                                "Failed to get SNMP OID %s",
-                                o
-                            )
+                            self.logger.error("Failed to get SNMP OID %s", o)
                             break
                     # Check result does not contain None
                     if len(v) < len(oid):
                         self.logger.error(
-                            "Cannot calculate complex value for %s "
-                            "due to missed values: %s",
-                            oid, v
+                            "Cannot calculate complex value for %s " "due to missed values: %s",
+                            oid,
+                            v,
                         )
                         continue
                 else:
                     self.logger.error(
-                        "Cannot evaluate complex oid %s. "
-                        "Scale must be callable",
-                        oid
+                        "Cannot evaluate complex oid %s. " "Scale must be callable", oid
                     )
                     continue
                 bv = batch
@@ -482,7 +468,7 @@ class Script(BaseScript):
                     ts=ts,
                     path=bv.path,
                     type=bv.type,
-                    scale=bv.scale
+                    scale=bv.scale,
                 )
 
     def get_ifindex(self, name):
@@ -496,8 +482,9 @@ class Script(BaseScript):
             self.ts = int(time.time() * NS)
         return self.ts
 
-    def set_metric(self, id, metric=None, value=0, ts=None,
-                   path=None, type="gauge", scale=1, multi=False):
+    def set_metric(
+        self, id, metric=None, value=0, ts=None, path=None, type="gauge", scale=1, multi=False
+    ):
         """
         Append metric to output
         :param id:
@@ -540,15 +527,17 @@ class Script(BaseScript):
             id = mc.id
             if not multi and id in self.seen_ids:
                 return  # Already seen
-        self.metrics += [{
-            "id": id,
-            "ts": ts or self.get_ts(),
-            "metric": metric,
-            "path": path or [],
-            "value": value,
-            "type": type,
-            "scale": scale
-        }]
+        self.metrics += [
+            {
+                "id": id,
+                "ts": ts or self.get_ts(),
+                "metric": metric,
+                "path": path or [],
+                "value": value,
+                "type": type,
+                "scale": scale,
+            }
+        ]
         self.seen_ids.add(id)
 
     def get_metrics(self):
@@ -564,31 +553,29 @@ class Script(BaseScript):
         return cls._oid_rules.get(name)
 
     @metrics(
-        ["Interface | DOM | RxPower",
-         "Interface | DOM | Temperature", "Interface | DOM | TxPower",
-         "Interface | DOM | Voltage"],
+        [
+            "Interface | DOM | RxPower",
+            "Interface | DOM | Temperature",
+            "Interface | DOM | TxPower",
+            "Interface | DOM | Voltage",
+        ],
         has_capability="DB | Interfaces",
         has_script="get_dom_status",
         access="C",  # CLI version
-        volatile=False
+        volatile=False,
     )
     def collect_dom_metrics(self, metrics):
         r = {}
         for m in self.scripts.get_dom_status():
             ipath = ["", "", "", m["interface"]]
             if m.get("temp_c") is not None:
-                self.set_metric(id=("Interface | DOM | Temperature", ipath),
-                                value=m["temp_c"])
+                self.set_metric(id=("Interface | DOM | Temperature", ipath), value=m["temp_c"])
             if m.get("voltage_v") is not None:
-                self.set_metric(id=("Interface | DOM | Voltage", ipath),
-                                value=m["voltage_v"])
+                self.set_metric(id=("Interface | DOM | Voltage", ipath), value=m["voltage_v"])
             if m.get("optical_rx_dbm") is not None:
-                self.set_metric(id=("Interface | DOM | RxPower", ipath),
-                                value=m["optical_rx_dbm"])
+                self.set_metric(id=("Interface | DOM | RxPower", ipath), value=m["optical_rx_dbm"])
             if m.get("current_ma") is not None:
-                self.set_metric(id=("Interface | DOM | Bias Current", ipath),
-                                value=m["current_ma"])
+                self.set_metric(id=("Interface | DOM | Bias Current", ipath), value=m["current_ma"])
             if m.get("optical_tx_dbm") is not None:
-                self.set_metric(id=("Interface | DOM | TxPower", ipath),
-                                value=m["optical_tx_dbm"])
+                self.set_metric(id=("Interface | DOM | TxPower", ipath), value=m["optical_tx_dbm"])
         return r

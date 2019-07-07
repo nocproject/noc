@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -19,16 +20,14 @@ class Script(BaseScript):
 
     rx_phy_split = re.compile(r"^Physical interface:\s+", re.MULTILINE)
     rx_phy_name = re.compile(r"^(?P<ifname>\S+)")
-    rx_temp = re.compile(
-        r"Module temperature\s+:\s+(?P<temp>\S+) degrees")
-    rx_volt = re.compile(
-        r"Module voltage\s+:\s+(?P<volt>\S+) V")
+    rx_temp = re.compile(r"Module temperature\s+:\s+(?P<temp>\S+) degrees")
+    rx_volt = re.compile(r"Module voltage\s+:\s+(?P<volt>\S+) V")
     rx_bias = re.compile(r"Laser bias current\s+:\s+(?P<bias>\S+) mA")
-    rx_tx_dbm = re.compile(
-        r"Laser output power\s+:\s+\S+ mW / (?P<tx_dbm>\S+|\- Inf) dBm")
+    rx_tx_dbm = re.compile(r"Laser output power\s+:\s+\S+ mW / (?P<tx_dbm>\S+|\- Inf) dBm")
     rx_rx_dbm = re.compile(
         r"(?:Laser rx|Receiver signal average optical) power\s+:\s+\S+ mW "
-        r"/ (?P<rx_dbm>\S+|\- Inf) dBm")
+        r"/ (?P<rx_dbm>\S+|\- Inf) dBm"
+    )
 
     def execute(self, interface=None):
         r = []
@@ -52,12 +51,14 @@ class Script(BaseScript):
             optical_rx_dbm = self.rx_rx_dbm.search(I).group("rx_dbm")
             if optical_rx_dbm == "- Inf":
                 optical_rx_dbm = None
-            r += [{
-                "interface": name,
-                "temp_c": temp_c,
-                "voltage_v": voltage_v,
-                "current_ma": current_ma,
-                "optical_rx_dbm": optical_rx_dbm,
-                "optical_tx_dbm": optical_tx_dbm
-            }]
+            r += [
+                {
+                    "interface": name,
+                    "temp_c": temp_c,
+                    "voltage_v": voltage_v,
+                    "current_ma": current_ma,
+                    "optical_rx_dbm": optical_rx_dbm,
+                    "optical_tx_dbm": optical_tx_dbm,
+                }
+            ]
         return r

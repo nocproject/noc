@@ -22,7 +22,6 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("show system information", cached=True)
         macs = sorted(self.rx_mac.findall(v))
-        return [{
-            "first_chassis_mac": f,
-            "last_chassis_mac": t
-        } for f, t in self.macs_to_ranges(macs)]
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

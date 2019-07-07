@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -29,7 +30,8 @@ class Script(BaseScript):
         r"^System Name: (?P<name>\S+)\s*\n"
         r"(^System Description: (?P<system_description>.+)\s*\n)?"
         r"(^Port Description: (?P<port_description>.+)\s*\n)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 

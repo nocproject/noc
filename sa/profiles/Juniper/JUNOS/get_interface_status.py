@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -18,21 +19,15 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
-        r"^Physical interface: (?P<interface>\S+)\s*,\s+.+Physical link is\s+(?P<oper>Up|Down)",
+        r"^Physical interface: (?P<interface>\S+)\s*,\s+.+Physical link is\s+(?P<oper>Up|Down)"
     )
 
     def execute_snmp(self, interface=None):
         # Get interface status
         r = []
         # IF-MIB::ifName, IF-MIB::ifOperStatus
-        for i, n, s in self.snmp.join([
-            "1.3.6.1.2.1.31.1.1.1.1",
-            "1.3.6.1.2.1.2.2.1.8"
-        ]):
-            if (
-                interface and
-                interface == self.profile.convert_interface_name(n)
-            ):
+        for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
+            if interface and interface == self.profile.convert_interface_name(n):
                 return [{"interface": n, "status": int(s) == 1}]
             if not self.profile.valid_interface_name(self, n):
                 continue
@@ -53,8 +48,5 @@ class Script(BaseScript):
                 if not self.profile.valid_interface_name(self, iface):
                     continue
                 if not interface or iface == interface:
-                    r += [{
-                        "interface": iface,
-                        "status": match.group("oper") == "Up"
-                    }]
+                    r += [{"interface": iface, "status": match.group("oper") == "Up"}]
         return r

@@ -28,5 +28,5 @@ class Script(BaseScript):
         return {
             "vendor": "Brocade",
             "platform": cm.group("platform"),
-            "version": vm.group("version")
+            "version": vm.group("version"),
         }

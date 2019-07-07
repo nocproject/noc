@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
@@ -18,9 +19,8 @@ class Script(BaseScript):
     interface = IGetOAMStatus
 
     rx_line = re.compile(
-        r"^(?P<interface>\S+)\s+\S+\s+(?P<mac>[0-9a-f:]+)\s+\S+\s+\S+\s*"
-        r"(?P<caps>[RLU\s]*)$",
-        re.MULTILINE
+        r"^(?P<interface>\S+)\s+\S+\s+(?P<mac>[0-9a-f:]+)\s+\S+\s+\S+\s*" r"(?P<caps>[RLU\s]*)$",
+        re.MULTILINE,
     )
 
     def execute(self, **kwargs):
@@ -40,9 +40,5 @@ class Script(BaseScript):
                 caps += ["R"]
             if "U" in ic:
                 caps += ["U"]
-            r += [{
-                "interface": iface,
-                "remote_mac": mac,
-                "caps": caps
-            }]
+            r += [{"interface": iface, "remote_mac": mac, "caps": caps}]
         return r

@@ -44,25 +44,25 @@ class Script(BaseScript):
 
             def hex2bin(ports):
                 bin = [
-                    '0000',
-                    '0001',
-                    '0010',
-                    '0011',
-                    '0100',
-                    '0101',
-                    '0110',
-                    '0111',
-                    '1000',
-                    '1001',
-                    '1010',
-                    '1011',
-                    '1100',
-                    '1101',
-                    '1110',
-                    '1111',
+                    "0000",
+                    "0001",
+                    "0010",
+                    "0011",
+                    "0100",
+                    "0101",
+                    "0110",
+                    "0111",
+                    "1000",
+                    "1001",
+                    "1010",
+                    "1011",
+                    "1100",
+                    "1101",
+                    "1110",
+                    "1111",
                 ]
                 ports = ["%02x" % ord(c) for c in ports]
-                p = ''
+                p = ""
                 for c in ports:
                     for i in range(len(c)):
                         p += bin[int(c[i], 16)]
@@ -74,7 +74,9 @@ class Script(BaseScript):
                 pmib = self.profile.get_pmib(self.scripts.get_version())
                 if pmib is None:
                     raise NotImplementedError()
-                for v in self.snmp.get_tables([pmib + ".7.6.1.1", pmib + ".7.6.1.2", pmib + ".7.6.1.4"], bulk=True):
+                for v in self.snmp.get_tables(
+                    [pmib + ".7.6.1.1", pmib + ".7.6.1.2", pmib + ".7.6.1.4"], bulk=True
+                ):
                     tagged = v[2]
                     untagged = v[3]
 
@@ -82,38 +84,39 @@ class Script(BaseScript):
                     s = hex2bin(untagged)
                     un = []
                     for i in range(len(s)):
-                        if s[i] == '1':
+                        if s[i] == "1":
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
                             if iface[:6] == "Slot0/":
                                 iface = iface[6:]
                             if iface not in port_vlans:
-                                port_vlans.update({iface: {
-                                    "tagged": [],
-                                    "untagged": '',
-                                }})
+                                port_vlans.update({iface: {"tagged": [], "untagged": ""}})
                             port_vlans[iface]["untagged"] = v[0]
                             un += [str(i + 1)]
 
                     # s = self.hex_to_bin(tagged)
                     s = hex2bin(tagged)
                     for i in range(len(s)):
-                        if s[i] == '1' and str(i + 1) not in un:
+                        if s[i] == "1" and str(i + 1) not in un:
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
                             iface = self.snmp.get(oid, cached=True)
                             if iface[:6] == "Slot0/":
                                 iface = iface[6:]
                             if iface not in port_vlans:
-                                port_vlans.update({iface: {
-                                    "tagged": [],
-                                    "untagged": '',
-                                }})
+                                port_vlans.update({iface: {"tagged": [], "untagged": ""}})
                             port_vlans[iface]["tagged"].append(v[0])
 
                 # Get switchport description
                 port_descr = {}
-                for iface, description in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
-                    if iface[:3] == 'Aux' or iface[:4] == 'Vlan' or iface[:11] == 'InLoopBack' or iface == 'System':
+                for iface, description in self.snmp.join_tables(
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"
+                ):
+                    if (
+                        iface[:3] == "Aux"
+                        or iface[:4] == "Vlan"
+                        or iface[:11] == "InLoopBack"
+                        or iface == "System"
+                    ):
                         continue
                     if iface[:6] == "Slot0/":
                         iface = iface[6:]
@@ -134,9 +137,9 @@ class Script(BaseScript):
                                 if name in port_descr:
                                     description = port_descr[name]
                                     if not description:
-                                        description = ''
+                                        description = ""
                                 else:
-                                    description = ''
+                                    description = ""
                                 members = p["members"]
                                 portchannels.remove(p)
                                 write = True
@@ -149,9 +152,9 @@ class Script(BaseScript):
                         if name in port_descr:
                             description = port_descr[name]
                             if not description:
-                                description = ''
+                                description = ""
                         else:
-                            description = ''
+                            description = ""
                         members = []
                         write = True
                     if write:
@@ -162,7 +165,7 @@ class Script(BaseScript):
                         swp = {
                             "status": status,
                             "description": description,
-                            "802.1Q Enabled": len(port_vlans.get(name, '')) > 0,
+                            "802.1Q Enabled": len(port_vlans.get(name, "")) > 0,
                             "802.1ad Tunnel": vlan_stack_status.get(name, False),
                             "tagged": tagged,
                         }
@@ -182,18 +185,23 @@ class Script(BaseScript):
             interfaces = []
 
             for p in ports:
-                iface = p['port']
-                i = {"interface": iface, "status": p['status'], "members": [], "802.1Q Enabled": True}
-                if 'descr' in p:
-                    descr = p['descr']
-                    if descr != '' and descr != 'null':
-                        i['description'] = descr
+                iface = p["port"]
+                i = {
+                    "interface": iface,
+                    "status": p["status"],
+                    "members": [],
+                    "802.1Q Enabled": True,
+                }
+                if "descr" in p:
+                    descr = p["descr"]
+                    if descr != "" and descr != "null":
+                        i["description"] = descr
                 tagged_vlans = []
                 for v in vlans:
-                    if iface in v['tagged_ports']:
-                        tagged_vlans += [v['vlan_id']]
-                    if iface in v['untagged_ports']:
-                        i['untagged'] = v['vlan_id']
-                i['tagged'] = tagged_vlans
+                    if iface in v["tagged_ports"]:
+                        tagged_vlans += [v["vlan_id"]]
+                    if iface in v["untagged_ports"]:
+                        i["untagged"] = v["vlan_id"]
+                i["tagged"] = tagged_vlans
                 interfaces += [i]
             return interfaces

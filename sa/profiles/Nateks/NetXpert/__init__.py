@@ -15,18 +15,15 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Nateks.NetXpert"
-    pattern_more = [
-        (r"^ --More-- ", "\n"),
-        (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
-    ]
+    pattern_more = [(r"^ --More-- ", "\n"), (r"(?:\?|interfaces)\s*\[confirm\]", "\n")]
     pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = \
-        r"% Invalid input detected at|% Ambiguous command:|" \
-        r"% Incomplete command."
+    pattern_syntax_error = (
+        r"% Invalid input detected at|% Ambiguous command:|" r"% Incomplete command."
+    )
     command_super = "enable"
     command_leave_config = "exit"
     command_exit = "exit"
     command_save_config = "write\n"
-    pattern_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" \
-        r"(?:\(_config[^\)]*\))?#"
+    pattern_prompt = (
+        r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" r"(?:\(_config[^\)]*\))?#"
+    )

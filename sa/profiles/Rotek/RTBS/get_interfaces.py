@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.core.mac import MAC
@@ -25,7 +27,8 @@ class Script(BaseScript):
         r"^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g|n)\S+):\s"
         r"<(?P<flags>.*?)>\s+mtu\s+(?P<mtu>\d+).+?\n"
         r"^\s+link/\S+(?:\s+(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}))?\s+.+?\n"
-        r"(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?", re.MULTILINE | re.DOTALL
+        r"(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?",
+        re.MULTILINE | re.DOTALL,
     )
 
     rx_status = re.compile(r"(?P<status>UP|DOWN)", re.MULTILINE)
@@ -47,7 +50,7 @@ class Script(BaseScript):
                 "ieee_mode": ieee_mode,
                 "channel": channel,
                 "freq": freq,
-                "channelbandwidth": channelbandwidth
+                "channelbandwidth": channelbandwidth,
             }
 
         for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
@@ -84,9 +87,9 @@ class Script(BaseScript):
                         "admin_status": admin_status,
                         "oper_status": oper_status,
                         "mtu": mtu,
-                        "enabled_afi": ["BRIDGE"]
+                        "enabled_afi": ["BRIDGE"],
                     }
-                ]
+                ],
             }
             if mac:
                 iface["mac"] = MAC(mac)
@@ -108,9 +111,13 @@ class Script(BaseScript):
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
                         "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s,"
-                        "freq=%sGHz, channelbandwidth=%sMHz" % (
-                            ssid_broadcast, i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"],
-                            i[1]["channelbandwidth"]
+                        "freq=%sGHz, channelbandwidth=%sMHz"
+                        % (
+                            ssid_broadcast,
+                            i[1]["ieee_mode"],
+                            i[1]["channel"],
+                            i[1]["freq"],
+                            i[1]["channelbandwidth"],
                         ),
                         "subinterfaces": [
                             {
@@ -119,9 +126,9 @@ class Script(BaseScript):
                                 "admin_status": admin_status,
                                 "oper_status": oper_status,
                                 "mtu": mtu,
-                                "enabled_afi": ["BRIDGE"]
+                                "enabled_afi": ["BRIDGE"],
                             }
-                        ]
+                        ],
                     }
                     if mac:
                         iface["mac"] = MAC(mac)
@@ -144,8 +151,8 @@ class Script(BaseScript):
                 i = self.cli("show interface %s ieee-mode" % ra)
                 c = self.cli("show interface %s channel" % ra)
                 f = self.cli("show interface %s freq" % ra)
-                res = s.split(":")[1].strip().replace("\"", "")
-                resv = v.split(":")[1].strip().replace("\"", "")
+                res = s.split(":")[1].strip().replace('"', "")
+                resv = v.split(":")[1].strip().replace('"', "")
                 ssid_broadcast = a.split(":")[1].strip()
                 ieee_mode = "IEEE 802.%s" % i.split(":")[1].strip()
                 channel = c.split(":")[1].strip()
@@ -156,7 +163,7 @@ class Script(BaseScript):
                     "ssid_broadcast": ssid_broadcast,
                     "ieee_mode": ieee_mode,
                     "channel": channel,
-                    "freq": freq
+                    "freq": freq,
                 }
 
         with self.profile.shell(self):
@@ -189,7 +196,7 @@ class Script(BaseScript):
                             "oper_status": o_status,
                             "snmp_ifindex": match.group("ifindex"),
                         }
-                    ]
+                    ],
                 }
                 if mac:
                     iface["mac"] = mac
@@ -214,18 +221,20 @@ class Script(BaseScript):
                         "oper_status": o_status,
                         "mac": MAC(mac),
                         "snmp_ifindex": match.group("ifindex"),
-                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz" % (
-                            ssid_broadcast, ri["ieee_mode"], ri["channel"], ri["freq"]),
-                        "subinterfaces": [{
-                            "name": "%s.%s" % (ifname, ri["ssid"]),
-                            "enabled_afi": ["BRIDGE"],
-                            "admin_status": a_status,
-                            "oper_status": o_status,
-                            "mtu": mtu,
-                            "mac": MAC(mac),
-                            "snmp_ifindex": match.group("ifindex"),
-                            "untagged_vlan": int(ri["vlan"]),
-                        }]
+                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz"
+                        % (ssid_broadcast, ri["ieee_mode"], ri["channel"], ri["freq"]),
+                        "subinterfaces": [
+                            {
+                                "name": "%s.%s" % (ifname, ri["ssid"]),
+                                "enabled_afi": ["BRIDGE"],
+                                "admin_status": a_status,
+                                "oper_status": o_status,
+                                "mtu": mtu,
+                                "mac": MAC(mac),
+                                "snmp_ifindex": match.group("ifindex"),
+                                "untagged_vlan": int(ri["vlan"]),
+                            }
+                        ],
                     }
                     interfaces += [iface]
 

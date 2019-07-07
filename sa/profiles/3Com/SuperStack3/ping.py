@@ -2,13 +2,13 @@
 # ----------------------------------------------------------------------
 # 3Com.SuperStack3.ping
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-import re
 
 
 class Script(BaseScript):

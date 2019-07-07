@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -20,7 +21,7 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^Name:\s*\"(?P<name>[^\"]+)\", DESCR:\s*\"(?P<descr>[^\"]+)\"\n"
         r"PID:\s*(?P<pid>\S+)?\s*,\s*VID:\s*(?P<vid>\S+)?\s*,\s*SN:\s*(?P<serial>\S+)",
-        re.MULTILINE | re.DOTALL
+        re.MULTILINE | re.DOTALL,
     )
     rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
 
@@ -32,33 +33,36 @@ class Script(BaseScript):
         v = self.cli("show inventory")
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
-                match.group("name"), match.group("pid"),
-                match.group("descr"), len(objects)
+                match.group("name"), match.group("pid"), match.group("descr"), len(objects)
             )
             if not part_no:
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"
-                objects += [{
-                    "type": type,
-                    "number": number,
-                    "vendor": vendor,
-                    "serial": match.group("serial"),
-                    "description": match.group("descr"),
-                    "part_no": [part_no],
-                    "revision": match.group("vid"),
-                    "builtin": False
-                }]
+                objects += [
+                    {
+                        "type": type,
+                        "number": number,
+                        "vendor": vendor,
+                        "serial": match.group("serial"),
+                        "description": match.group("descr"),
+                        "part_no": [part_no],
+                        "revision": match.group("vid"),
+                        "builtin": False,
+                    }
+                ]
         return objects
 
     def get_type(self, name, pid, descr, lo):
         """
         Get type, number and part_no
         """
-        if ("Transceiver" in descr or
-                name.startswith("GigabitEthernet") or
-                name.startswith("TenGigabitEthernet") or
-                pid.startswith("X2-")):
+        if (
+            "Transceiver" in descr
+            or name.startswith("GigabitEthernet")
+            or name.startswith("TenGigabitEthernet")
+            or pid.startswith("X2-")
+        ):
             # Transceivers
             # Get number
             if name.startswith("Transceiver "):

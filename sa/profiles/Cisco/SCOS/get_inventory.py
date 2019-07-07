@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -20,7 +21,8 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
         r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+"
-        r"(?P<vid>\S+[^\,]+)?\s*, SN: (?P<serial>\S+)", re.MULTILINE | re.DOTALL
+        r"(?P<vid>\S+[^\,]+)?\s*, SN: (?P<serial>\S+)",
+        re.MULTILINE | re.DOTALL,
     )
 
     def execute(self):
@@ -64,7 +66,7 @@ class Script(BaseScript):
                         "description": descr.strip(),
                         "part_no": [part_no],
                         "revision": vid,
-                        "builtin": False
+                        "builtin": False,
                     }
                 ]
 
@@ -76,7 +78,7 @@ class Script(BaseScript):
                 continue
             elif "SPA" in i.get("type"):
                 for p in objects:
-                    if ("XCVR" in p.get("type") and i.get("number") == p.get("number").split("/")[1]):
+                    if "XCVR" in p.get("type") and i.get("number") == p.get("number").split("/")[1]:
                         t = p.copy()
                         t["number"] = p.get("number").split("/")[2]
                         r += [i]
@@ -92,7 +94,7 @@ class Script(BaseScript):
         """
         if pid is None:
             pid = ""
-        if (pid.startswith("XFP") or pid.startswith("SFP")):
+        if pid.startswith("XFP") or pid.startswith("SFP"):
             # Transceivers
             # Get number
             if name.startswith("SCE8000 optic"):

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -35,6 +36,6 @@ class Script(BaseScript):
             "version": vmatch.group("version"),
             "attributes": {
                 "HW version": hmatch.group("hversion"),
-                "Serial Number": smatch.group("serial")
-            }
+                "Serial Number": smatch.group("serial"),
+            },
         }

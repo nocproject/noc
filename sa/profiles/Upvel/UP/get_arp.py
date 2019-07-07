@@ -16,17 +16,15 @@ class Script(BaseScript):
     name = "Upvel.UP.get_arp"
     interface = IGetARP
     rx_line = re.compile(
-        r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+via\s+(?P<interface>\S+):"
-        r"(?P<mac>\S+)\s*$", re.MULTILINE)
+        r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+via\s+(?P<interface>\S+):" r"(?P<mac>\S+)\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
         v = self.cli("show ip arp")
         for match in self.rx_line.finditer(v):
-            if (
-                (interface is not None) and
-                interface != match.group("interface")
-            ):
+            if (interface is not None) and interface != match.group("interface"):
                 continue
             r += [match.groupdict()]
         return r

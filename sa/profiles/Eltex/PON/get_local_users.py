@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -17,8 +18,7 @@ class Script(BaseScript):
     name = "Eltex.PON.get_local_users"
     interface = IGetLocalUsers
 
-    rx_name = re.compile(
-        r"^(?P<username>\S+)\s+\((?P<privilege>\S+)\)$")
+    rx_name = re.compile(r"^(?P<username>\S+)\s+\((?P<privilege>\S+)\)$")
 
     def execute(self):
         data = self.cli("user list")
@@ -34,9 +34,7 @@ class Script(BaseScript):
                     user_class = "superuser"
                 else:
                     user_class = privilege
-                r.append({
-                    "username": name.group("username"),
-                    "class": user_class,
-                    "is_active": True
-                    })
+                r.append(
+                    {"username": name.group("username"), "class": user_class, "is_active": True}
+                )
         return r

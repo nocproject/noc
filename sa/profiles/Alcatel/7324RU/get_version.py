@@ -17,10 +17,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_sys = re.compile(r"Model\s*:\s*(?P<platform>.+?)\s*$",
-        re.MULTILINE | re.DOTALL)
-    rx_ver = re.compile(r".+?version\s*:\s*(?P<version>.+?)\s+\|.*$",
-        re.MULTILINE | re.DOTALL)
+    rx_sys = re.compile(r"Model\s*:\s*(?P<platform>.+?)\s*$", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(r".+?version\s*:\s*(?P<version>.+?)\s+\|.*$", re.MULTILINE | re.DOTALL)
     rx_boot_ver = re.compile(r"Bootbase version: (?P<bootprom>\S+)")
     rx_hw_ver = re.compile(r"Hardware version: (?P<hw_version>\S+)")
     rx_serial = re.compile(r"Serial number: (?P<serial>\S+)")
@@ -33,7 +31,7 @@ class Script(BaseScript):
             "vendor": "Alcatel",
             "platform": match_sys.group("platform"),
             "version": match_ver.group("version"),
-            "attributes": {}
+            "attributes": {},
         }
         match = self.rx_boot_ver.search(v)
         if match:

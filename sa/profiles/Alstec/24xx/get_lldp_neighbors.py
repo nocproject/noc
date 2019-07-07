@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.lib.text import parse_table
@@ -22,7 +23,8 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<port>(?:Gi|Te|Po|e|g|cch)\S+)\s+(?P<system_id>\S+)\s+"
-        r"(?P<port_id>\S+)\s+(?P<system_name>.*)\s+(?P<caps>\S+)\s+\d+", re.IGNORECASE
+        r"(?P<port_id>\S+)\s+(?P<system_name>.*)\s+(?P<caps>\S+)\s+\d+",
+        re.IGNORECASE,
     )
 
     CAPS = {"": 0, "O": 1, "r": 2, "B": 4, "W": 8, "R": 16, "T": 32, "D": 64, "H": 128}
@@ -70,16 +72,18 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": chassis_id_subtype,
                 "remote_port": port_id,
                 "remote_port_subtype": port_id_subtype,
-                "remote_capabilities": caps
+                "remote_capabilities": caps,
             }
             """
                 if match.group("system_name"):
                     neighbor["remote_system_name"] = match.group("system_name")
                 """
             neighbor["remote_system_name"] = d[4]
-            r += [{
-                # "local_interface": match.group("port"),
-                "local_interface": d[0],
-                "neighbors": [neighbor]
-            }]
+            r += [
+                {
+                    # "local_interface": match.group("port"),
+                    "local_interface": d[0],
+                    "neighbors": [neighbor],
+                }
+            ]
         return r

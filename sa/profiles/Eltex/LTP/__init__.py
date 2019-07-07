@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -16,16 +17,14 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Eltex.LTP"
     pattern_username = r"(?<!Last>)([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
-    pattern_more = [
-        (r"--More-- ", " "),
-        (r"\[Yes/press any key for no\]", "Y")
-    ]
+    pattern_more = [(r"--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
     pattern_unprivileged_prompt = r"^\S+>"
-    pattern_syntax_error = \
-        r"^(Command not found. Use '?' to view available commands|" + \
-        "Incomplete command\s+|Invalid argument\s+)"
-#    command_disable_pager = "terminal datadump"
-#    command_super = "enable"
+    pattern_syntax_error = (
+        r"^(Command not found. Use '?' to view available commands|"
+        + "Incomplete command\s+|Invalid argument\s+)"
+    )
+    #    command_disable_pager = "terminal datadump"
+    #    command_super = "enable"
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
@@ -37,6 +36,7 @@ class Profile(BaseProfile):
 
     class switch(object):
         """Switch context manager to use with "with" statement"""
+
         def __init__(self, script):
             self.script = script
 

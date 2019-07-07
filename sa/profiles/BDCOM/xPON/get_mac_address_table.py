@@ -14,7 +14,7 @@ from noc.core.mac import MAC
 
 
 class Script(BaseScript):
-    name = 'BDCOM.xPON.get_mac_address_table'
+    name = "BDCOM.xPON.get_mac_address_table"
     interface = IGetMACAddressTable
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
@@ -30,10 +30,5 @@ class Script(BaseScript):
         for i in parse_table(self.cli(cmd), allow_extend=True):
             if i[0] == "All" or i[3] == "CPU":
                 continue
-            r += [{
-                "vlan_id": i[0],
-                "mac": i[1],
-                "interfaces": [i[3]],
-                "type": "D"
-            }]
+            r += [{"vlan_id": i[0], "mac": i[1], "interfaces": [i[3]], "type": "D"}]
         return r

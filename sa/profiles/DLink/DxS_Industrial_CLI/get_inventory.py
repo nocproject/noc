@@ -21,7 +21,7 @@ class Script(BaseScript):
             "type": "CHASSIS",
             "vendor": "DLINK",
             "part_no": [v["platform"]],
-            "revision": v["attributes"]["HW version"]
+            "revision": v["attributes"]["HW version"],
         }
         if "Serial Number" in v["attributes"]:
             p["serial"] = v["attributes"]["Serial Number"]

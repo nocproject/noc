@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.core.script.error import CLIOperationError
@@ -19,10 +20,8 @@ class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_more = r"CTRL\+C.+?a A[Ll][Ll]\s*"
     pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
-    pattern_syntax_error = \
-        r"(Available commands|Next possible completions|Ambiguous token):"
-    pattern_operation_error = \
-        r"This command can\'t be used when authentication policy is disabled."
+    pattern_syntax_error = r"(Available commands|Next possible completions|Ambiguous token):"
+    pattern_operation_error = r"This command can\'t be used when authentication policy is disabled."
     command_super = "enable admin"
     pattern_prompt = r"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
     password_submit = "\r\n"
@@ -39,9 +38,7 @@ class Profile(BaseProfile):
     snmp_ifstatus_get_timeout = 3
 
     config_tokenizer = "line"
-    config_tokenizer_settings = {
-        "line_comment": "#"
-    }
+    config_tokenizer_settings = {"line_comment": "#"}
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
 
     matchers = {
@@ -49,18 +46,22 @@ class Profile(BaseProfile):
         "is_lldp_convert_mac_to_name": {
             "platform": {
                 "$in": [
-                    "DGS-3426", "DGS-3426G", "DGS-3426P", "DGS-3427", "DGS-3450",
-                    "DGS-3612", "DGS-3612G", "DGS-3627", "DGS-3627G", "DGS-3650"
+                    "DGS-3426",
+                    "DGS-3426G",
+                    "DGS-3426P",
+                    "DGS-3427",
+                    "DGS-3450",
+                    "DGS-3612",
+                    "DGS-3612G",
+                    "DGS-3627",
+                    "DGS-3627G",
+                    "DGS-3650",
                 ]
             }
         },
         # IF-MIB::ifPhysAddress return equal values, but
         # LLDP-MIB::lldpLocPortId return different values
-        "is_bad_ifmib_snmp": {
-            "platform": {
-                "$regex": r"^DES-3200-\d\dF*/C1"
-            }
-        }
+        "is_bad_ifmib_snmp": {"platform": {"$regex": r"^DES-3200-\d\dF*/C1"}},
     }
     #
     # Version comparison
@@ -98,10 +99,10 @@ class Profile(BaseProfile):
         r = []
         if name.startswith("1/") or name.startswith("1:"):
             r += [name[2:]]
-            if ':' not in name:
-                r += [name.replace('/', ':')]
-            if '/' not in name:
-                r += [name.replace(':', '/')]
+            if ":" not in name:
+                r += [name.replace("/", ":")]
+            if "/" not in name:
+                r += [name.replace(":", "/")]
         else:
             r += ["1/%s" % name, "1:%s" % name]
         return r
@@ -119,16 +120,18 @@ class Profile(BaseProfile):
         """
         Ports in CLI like 1:1-24,2:1-24
         """
-        platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100', "DGS-3420")
+        platforms_with_stacked_ports = ("DGS-3120", "DGS-3100", "DGS-3420")
         match = self.rx_interface_name.match(s.strip())
         if match:
-            if match.group("re_slot") and match.group("re_slot") > "1" or \
-                match.group("re_platform") and \
-                any(match.group("re_platform").startswith(p)
-                    for p in platforms_with_stacked_ports):
-                return "%s:%s" % (
-                    match.group("re_slot"), match.group("re_port")
+            if (
+                match.group("re_slot")
+                and match.group("re_slot") > "1"
+                or match.group("re_platform")
+                and any(
+                    match.group("re_platform").startswith(p) for p in platforms_with_stacked_ports
                 )
+            ):
+                return "%s:%s" % (match.group("re_slot"), match.group("re_port"))
             elif match.group("re_port"):
                 return "%s" % match.group("re_port")
         elif s.startswith("Slot0/"):
@@ -140,15 +143,14 @@ class Profile(BaseProfile):
 
     def clean_lldp_neighbor(self, obj, neighbor):
         neighbor = super(Profile, self).clean_lldp_neighbor(obj, neighbor)
-        if (
-            neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_ALIAS and
-            self.rx_lldp_port.search(neighbor["remote_port"])
+        if neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_ALIAS and self.rx_lldp_port.search(
+            neighbor["remote_port"]
         ):
             neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
             return neighbor
         if (
-            neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC and
-            obj.matchers.is_lldp_convert_mac_to_name
+            neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC
+            and obj.matchers.is_lldp_convert_mac_to_name
         ):
             if neighbor.get("remote_port_description") is None:
                 # self.script.logger.warning("Can't get remote_port_description")
@@ -156,13 +158,14 @@ class Profile(BaseProfile):
             # Platform reports single MAC address for every port
             # But leaks interface name to remote_port_description
             neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
-            neighbor["remote_port"] = self.convert_interface_name(neighbor["remote_port_description"])
+            neighbor["remote_port"] = self.convert_interface_name(
+                neighbor["remote_port_description"]
+            )
         return neighbor
 
     cluster_member = None
     dlink_pager = False
-    rx_pager = re.compile(
-        r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$", re.MULTILINE)
+    rx_pager = re.compile(r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$", re.MULTILINE)
 
     def setup_session(self, script):
         # Remove duplicates prompt in DLink DGS-3120-24SC ver. 4.04.R004
@@ -188,9 +191,7 @@ class Profile(BaseProfile):
                     self.cluster_member = p[8:].strip()
         # Switch to cluster member, if necessary
         if self.cluster_member:
-            script.logger.debug(
-                "Switching to SIM member %s" % script.cluster_member
-            )
+            script.logger.debug("Switching to SIM member %s" % script.cluster_member)
             script.cli("reconfig member_id %s" % script.cluster_member)
 
     def shutdown_session(self, script):
@@ -213,7 +214,8 @@ class Profile(BaseProfile):
         r"((?P<asd>\-)\s*)?"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|Cross|Normal|\-)\s*)?"
         r"(\n\s*Desc(ription)?:\s*?(?P<desc>.*?))?$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def parse_interface(self, s):
         match = self.rx_port.search(s)
@@ -225,7 +227,7 @@ class Profile(BaseProfile):
                 descr = descr.decode("ascii", "ignore")
                 descr = descr.strip()
             else:
-                descr = ''
+                descr = ""
             obj = {
                 "port": port,
                 "media_type": media_type,
@@ -240,23 +242,24 @@ class Profile(BaseProfile):
                 "address_learning": match.group("addr_learning").strip(),
                 "mdix": match.group("mdix"),
                 "trap_state": match.group("trap_state"),
-                "desc": descr
+                "desc": descr,
             }
             key = "%s-%s" % (port, media_type)
-            return key, obj, s[match.end():]
+            return key, obj, s[match.end() :]
         else:
             return None
 
     def get_ports(self, script, interface=None):
         if (
             (
-                script.match_version(DES3200, version__gte="1.70.B007") and
-                script.match_version(DES3200, version__lte="3.00.B000")
-            ) or script.match_version(DES3200, version__gte="4.38.B000") or
-            script.match_version(DES3028, version__gte="2.90.B10") or
-            script.match_version(DGS3120, version__gte="3.00.B022") or
-            script.match_version(DGS3420, version__gte="1.73.R008") or
-            script.match_version(DGS3620, version__gte="2.50.017")
+                script.match_version(DES3200, version__gte="1.70.B007")
+                and script.match_version(DES3200, version__lte="3.00.B000")
+            )
+            or script.match_version(DES3200, version__gte="4.38.B000")
+            or script.match_version(DES3028, version__gte="2.90.B10")
+            or script.match_version(DGS3120, version__gte="3.00.B022")
+            or script.match_version(DGS3420, version__gte="1.73.R008")
+            or script.match_version(DGS3620, version__gte="2.50.017")
         ) and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             if interface is not None:
@@ -264,57 +267,61 @@ class Profile(BaseProfile):
             else:
                 c = script.cli("show ports description")
             for match in self.rx_port.finditer(c):
-                objects += [{
-                    "port": match.group("port"),
-                    "media_type": match.group("media_type"),
-                    "admin_state": match.group("admin_state") == "Enabled",
-                    "admin_speed": match.group("admin_speed"),
-                    "admin_duplex": match.group("admin_duplex"),
-                    "admin_flowctrl": match.group("admin_flowctrl"),
-                    "status": match.group("status") is None,
-                    "speed": match.group("speed"),
-                    "duplex": match.group("duplex"),
-                    "flowctrl": match.group("flowctrl"),
-                    "address_learning": match.group("addr_learning").strip(),
-                    "mdix": match.group("mdix"),
-                    "trap_state": match.group("trap_state"),
-                    "desc": match.group("desc").strip()
-                }]
+                objects += [
+                    {
+                        "port": match.group("port"),
+                        "media_type": match.group("media_type"),
+                        "admin_state": match.group("admin_state") == "Enabled",
+                        "admin_speed": match.group("admin_speed"),
+                        "admin_duplex": match.group("admin_duplex"),
+                        "admin_flowctrl": match.group("admin_flowctrl"),
+                        "status": match.group("status") is None,
+                        "speed": match.group("speed"),
+                        "duplex": match.group("duplex"),
+                        "flowctrl": match.group("flowctrl"),
+                        "address_learning": match.group("addr_learning").strip(),
+                        "mdix": match.group("mdix"),
+                        "trap_state": match.group("trap_state"),
+                        "desc": match.group("desc").strip(),
+                    }
+                ]
         else:
             try:
                 if interface is not None:
                     objects = script.cli(
                         "show ports %s description" % interface,
                         obj_parser=self.parse_interface,
-                        cmd_next="n", cmd_stop="q"
+                        cmd_next="n",
+                        cmd_stop="q",
                     )
                 else:
                     objects = script.cli(
                         "show ports description",
                         obj_parser=self.parse_interface,
-                        cmd_next="n", cmd_stop="q"
+                        cmd_next="n",
+                        cmd_stop="q",
                     )
             except script.CLISyntaxError:
                 objects = []
             # DES-3226S does not support `show ports description` command
             if objects == []:
                 objects = script.cli(
-                    "show ports", obj_parser=self.parse_interface,
-                    cmd_next="n", cmd_stop="q")
+                    "show ports", obj_parser=self.parse_interface, cmd_next="n", cmd_stop="q"
+                )
         prev_port = None
         ports = []
         for i in objects:
-            if prev_port and (prev_port == i['port']):
-                if i['status'] is True:
+            if prev_port and (prev_port == i["port"]):
+                if i["status"] is True:
                     k = 0
                     for j in ports:
-                        if j['port'] == i['port']:
+                        if j["port"] == i["port"]:
                             ports[k] = i
                             break
                         k = k + 1
             else:
                 ports += [i]
-            prev_port = i['port']
+            prev_port = i["port"]
         return ports
 
     rx_vlan = re.compile(
@@ -323,7 +330,8 @@ class Profile(BaseProfile):
         r"((VLAN )?Advertisement\s+:\s+\S+\s*\n)?"
         r"(Current )?Tagged ports\s+:(?P<tagged_ports>.*?)\n"
         r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*?)",
-        re.IGNORECASE | re.MULTILINE)
+        re.IGNORECASE | re.MULTILINE,
+    )
     rx_vlan1 = re.compile(
         r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*?)\n"
         r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*?"
@@ -333,7 +341,8 @@ class Profile(BaseProfile):
         r"((Current )?Tagged Ports\s+:.*?\n)?"
         r"(VLAN Trunk Ports\s+:.*?\n)?"
         r"(Current )?Untagged Ports\s*:(?P<untagged_ports>.*?)\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
 
     def get_vlan(self, script, v):
         v = v + "\n"
@@ -343,13 +352,9 @@ class Profile(BaseProfile):
             untagged_ports = []
             member_ports = []
             if match.group("member_ports"):
-                member_ports = script.expand_interface_range(
-                    match.group("member_ports")
-                )
+                member_ports = script.expand_interface_range(match.group("member_ports"))
             if match.group("untagged_ports"):
-                untagged_ports = script.expand_interface_range(
-                    match.group("untagged_ports")
-                )
+                untagged_ports = script.expand_interface_range(match.group("untagged_ports"))
             for port in member_ports:
                 if port not in untagged_ports:
                     tagged_ports += [port]
@@ -358,7 +363,7 @@ class Profile(BaseProfile):
                 "vlan_name": match.group("vlan_name").strip(),
                 "vlan_type": match.group("vlan_type"),
                 "tagged_ports": set(tagged_ports),
-                "untagged_ports": set(untagged_ports)
+                "untagged_ports": set(untagged_ports),
             }
         else:
             return None
@@ -371,21 +376,17 @@ class Profile(BaseProfile):
             if match_first:
                 match = self.rx_vlan.search(l)
                 if match:
-                    tagged_ports = \
-                        script.expand_interface_range(
-                            match.group("tagged_ports")
-                        )
-                    untagged_ports = \
-                        script.expand_interface_range(
-                            match.group("untagged_ports")
-                        )
-                    vlans += [{
-                        "vlan_id": int(match.group("vlan_id")),
-                        "vlan_name": match.group("vlan_name").strip(),
-                        "vlan_type": match.group("vlan_type"),
-                        "tagged_ports": tagged_ports,
-                        "untagged_ports": untagged_ports
-                    }]
+                    tagged_ports = script.expand_interface_range(match.group("tagged_ports"))
+                    untagged_ports = script.expand_interface_range(match.group("untagged_ports"))
+                    vlans += [
+                        {
+                            "vlan_id": int(match.group("vlan_id")),
+                            "vlan_name": match.group("vlan_name").strip(),
+                            "vlan_type": match.group("vlan_type"),
+                            "tagged_ports": tagged_ports,
+                            "untagged_ports": untagged_ports,
+                        }
+                    ]
                 else:
                     v = self.get_vlan(script, l)
                     if v is not None:
@@ -411,10 +412,10 @@ def DES30xx(v):
     :return:
     """
     return (
-        v["platform"].startswith("DES-3010") or
-        v["platform"].startswith("DES-3016") or
-        v["platform"].startswith("DES-3018") or
-        v["platform"].startswith("DES-3026")
+        v["platform"].startswith("DES-3010")
+        or v["platform"].startswith("DES-3016")
+        or v["platform"].startswith("DES-3018")
+        or v["platform"].startswith("DES-3026")
     )
 
 
@@ -434,10 +435,10 @@ def DES3x2x(v):
     :return:
     """
     return (
-        v["platform"].startswith("DES-3226") or
-        v["platform"].startswith("DES-3250") or
-        v["platform"].startswith("DES-3326") or
-        v["platform"].startswith("DES-3350")
+        v["platform"].startswith("DES-3226")
+        or v["platform"].startswith("DES-3250")
+        or v["platform"].startswith("DES-3326")
+        or v["platform"].startswith("DES-3350")
     )
 
 
@@ -474,8 +475,7 @@ def DGS3400(v):
     :param v:
     :return:
     """
-    return ("DGS-3420" not in v["platform"] and
-            v["platform"].startswith("DGS-34"))
+    return "DGS-3420" not in v["platform"] and v["platform"].startswith("DGS-34")
 
 
 def DGS3420(v):
@@ -494,9 +494,9 @@ def DGS3600(v):
     :return:
     """
     return (
-        "DGS-3610" not in v["platform"] and
-        "DGS-3620" not in v["platform"] and
-        v["platform"].startswith("DGS-36")
+        "DGS-3610" not in v["platform"]
+        and "DGS-3620" not in v["platform"]
+        and v["platform"].startswith("DGS-36")
     )
 
 
@@ -511,18 +511,18 @@ def DGS3620(v):
 
 def DxS_L2(v):
     if (
-        v["platform"].startswith("DES-1100") or
-        v["platform"].startswith("DES-12") or
-        v["platform"].startswith("DES-30") or
-        v["platform"].startswith("DES-32") or
-        v["platform"].startswith("DES-35") or
-        v["platform"].startswith("DES-3810") or
-        v["platform"].startswith("DGS-1100") or
-        v["platform"].startswith("DGS-12") or
-        v["platform"].startswith("DGS-15") or
-        v["platform"].startswith("DGS-30") or
-        v["platform"].startswith("DGS-32") or
-        v["platform"].startswith("DGS-37")
+        v["platform"].startswith("DES-1100")
+        or v["platform"].startswith("DES-12")
+        or v["platform"].startswith("DES-30")
+        or v["platform"].startswith("DES-32")
+        or v["platform"].startswith("DES-35")
+        or v["platform"].startswith("DES-3810")
+        or v["platform"].startswith("DGS-1100")
+        or v["platform"].startswith("DGS-12")
+        or v["platform"].startswith("DGS-15")
+        or v["platform"].startswith("DGS-30")
+        or v["platform"].startswith("DGS-32")
+        or v["platform"].startswith("DGS-37")
     ):
         return True
     else:
@@ -531,14 +531,14 @@ def DxS_L2(v):
 
 def get_platform(platform, hw_revision):
     if (
-        platform.startswith("DES-1210-") or
-        platform.startswith("DES-1228") or
-        platform.startswith("DES-2108") or
-        platform.startswith("DES-3200-") or
-        platform.startswith("DGS-1210-") or
-        platform.startswith("DGS-3120-") or
-        platform.startswith("DGS-3420-") or
-        platform.startswith("DGS-3620-")
+        platform.startswith("DES-1210-")
+        or platform.startswith("DES-1228")
+        or platform.startswith("DES-2108")
+        or platform.startswith("DES-3200-")
+        or platform.startswith("DGS-1210-")
+        or platform.startswith("DGS-3120-")
+        or platform.startswith("DGS-3420-")
+        or platform.startswith("DGS-3620-")
     ):
         if hw_revision is not None:
             if platform.endswith("/%s" % hw_revision):

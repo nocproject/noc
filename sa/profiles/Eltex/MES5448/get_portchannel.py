@@ -16,10 +16,7 @@ class Script(BaseScript):
     name = "Eltex.MES5448.get_portchannel"
     interface = IGetPortchannel
 
-    TYPES = {
-        "Dyn.": "L",
-        "Stat": "S"
-    }
+    TYPES = {"Dyn.": "L", "Stat": "S"}
 
     def execute(self):
         r = []
@@ -28,11 +25,7 @@ class Script(BaseScript):
             if i[3] == "Up":
                 if interface:
                     r += [interface]
-                interface = {
-                    "interface": i[0],
-                    "type": self.TYPES[i[5]],
-                    "members": [i[6]]
-                }
+                interface = {"interface": i[0], "type": self.TYPES[i[5]], "members": [i[6]]}
             elif not i[1] and i[6] and interface:
                 interface["members"] += [i[6]]
         if interface:

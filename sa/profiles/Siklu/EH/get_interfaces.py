@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,21 +19,15 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
-    IFINDEX = {
-        "host": 1,
-        "eth0": 2,
-        "eth1": 3,
-        "eth2": 4,
-        "eth3": 5,
-        "eth4": 6
-    }
+    IFINDEX = {"host": 1, "eth0": 2, "eth1": 3, "eth2": 4, "eth3": 5, "eth4": 6}
 
     rx_ecfg = re.compile(
-        r"^(?P<cmd>\S+)\s+(?P<name>\S+)\s+(?P<key>\S+)\s*:(?P<value>.*?)$",
-        re.MULTILINE)
+        r"^(?P<cmd>\S+)\s+(?P<name>\S+)\s+(?P<key>\S+)\s*:(?P<value>.*?)$", re.MULTILINE
+    )
     rx_vlan = re.compile(
         r"^\s*\S+\s+(?P<vlanid>\d+)\s+\d+\s+(?P<vlans>\S+)\s+(?P<untagged>\S+)\s+\S+\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def parse_section(self, section):
         r = {}
@@ -56,22 +51,24 @@ class Script(BaseScript):
                 "description": cfg["description"],
                 "admin_status": cfg["admin"] == "up",
                 "oper_status": cfg["operational"] == "up",
-                "subinterfaces": [{
-                    "name": name,
-                    "mac": cfg["mac-addr"],
-                    "description": cfg["description"],
-                    "admin_status": cfg["admin"] == "up",
-                    "oper_status": cfg["operational"] == "up",
-                    "enabled_afi": ["BRIDGE"],
-                    "tagged_vlans": []
-                }]
+                "subinterfaces": [
+                    {
+                        "name": name,
+                        "mac": cfg["mac-addr"],
+                        "description": cfg["description"],
+                        "admin_status": cfg["admin"] == "up",
+                        "oper_status": cfg["operational"] == "up",
+                        "enabled_afi": ["BRIDGE"],
+                        "tagged_vlans": [],
+                    }
+                ],
             }
             if name in self.IFINDEX:
                 i["snmp_ifindex"] = self.IFINDEX[name]
             ifaces += [i]
         c = self.cli("show vlan")
         for match in self.rx_vlan.finditer(c):
-            vlan_id = int(match.group('vlanid'))
+            vlan_id = int(match.group("vlanid"))
             if vlan_id == 1:
                 continue
             for i in ifaces:
@@ -94,13 +91,15 @@ class Script(BaseScript):
                 "type": "SVI",
                 "admin_status": True,
                 "oper_status": True,
-                "subinterfaces": [{
-                    "name": name,
-                    "admin_status": True,
-                    "oper_status": True,
-                    "ipv4_addresses": [ip_addr],
-                    "enabled_afi": ["IPv4"]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": name,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "ipv4_addresses": [ip_addr],
+                        "enabled_afi": ["IPv4"],
+                    }
+                ],
             }
             if cfg["vlan"]:
                 if int(cfg["vlan"]) > 0:

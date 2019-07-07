@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -31,7 +32,5 @@ class Script(BaseScript):
             "vendor": "Ruckus",
             "platform": pmatch.group("platform"),
             "version": match.group("version"),
-            "attributes": {
-                "SN": smatch.group("serial"),
-            }
+            "attributes": {"SN": smatch.group("serial")},
         }

@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"system boot version\s+:\s+(?P<bootprom>\S+).+"
         r"(system protocol version\s+:\s+(?P<protover>\S+).+)?"
         r"system serial number\s+:\s+(?P<serial>\S+)",
-        re.MULTILINE | re.DOTALL | re.I
+        re.MULTILINE | re.DOTALL | re.I,
     )
     rx_snmp_ver = re.compile(r"^(?P<platform>\S+)\s*", re.DOTALL)
 
@@ -42,14 +42,16 @@ class Script(BaseScript):
         if DES1210(r) or DGS1210(r) or DGS1500(r):
             s = self.cli("show switch", cached=True)
             match = self.re_search(self.rx_ver, s)
-            r.update({
-                "version": match.group("version"),
-                "attributes": {
-                    "Boot PROM": match.group("bootprom"),
-                    "HW version": match.group("hardware"),
-                    "Serial Number": match.group("serial")
+            r.update(
+                {
+                    "version": match.group("version"),
+                    "attributes": {
+                        "Boot PROM": match.group("bootprom"),
+                        "HW version": match.group("hardware"),
+                        "Serial Number": match.group("serial"),
+                    },
                 }
-            })
+            )
             return r
         else:
             raise self.NotSupportedError()

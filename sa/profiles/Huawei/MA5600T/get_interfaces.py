@@ -9,6 +9,7 @@
 # Python modules
 import re
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -27,48 +28,57 @@ class Script(BaseScript):
         r"(^\s*Forward plane MTU: \S+\n)?"
         r"(^\s*Internet Address is (?P<ip>\S+)\s*\n)?"
         r"(^\s*IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is (?P<mac>\S+)\s*\n)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_if2 = re.compile(
         r"^Description : (?P<descr>HUAWEI, SmartAX Series), (?P<ifname>[a-zA-Z]+)(?P<ifnum>\d+) Interface\s*\n"
         r"^The Maximum Transmit Unit is (?P<mtu>\d+) bytes\s*\n"
         r"(^Internet Address is (?P<ip>\S+)\s*\n)?"
         r"(^IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is (?P<mac>\S+)\s*\n)?"
         r"(^MEth port is (?P<ifparent>\S+)\s*\n)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_vlan = re.compile(
         r"^\s*\-+\s*\n"
         r"(?P<tagged>.+)"
         r"^\s*\-+\s*\n"
         r"^\s*Total:\s+\d+\s+(Native VLAN:\s+(?P<untagged>\d+|-)\s*)?\n",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
     rx_vlan2 = re.compile(
         r"^\s+\d+\s+eth\s+(?:down|up)\s+(?P<ifname>\d+/\s*\d+/\s*\d+)\s+"
         r"(?:(?P<vpi>\d+|-)\s+(?P<vci>\d+|-)\s+)?"
         r"vlan\s+(?P<type>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_tagged = re.compile(r"(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
         r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E(?:-Optic|-Elec)?\s+"
         r"(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
         r"\S+\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
-        re.MULTILINE)
-    rx_adsl_state = re.compile(
-        r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
+        re.MULTILINE,
+    )
+    rx_adsl_state = re.compile(r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
     rx_pvc = re.compile(
         r"^\s*\d+\s+p2p\s+lan\s+[0\*]/(?:\d+|\*)\s*/(?P<vlan>(?:\d+|\*))\s+\S*\s+\S+\s+\S+\s+"
         r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
-        r"(?P<admin_status>\S+)\s*\n", re.MULTILINE)
+        r"(?P<admin_status>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_sp = re.compile(
         r"^\s*\d+\s+(?P<vlan>\d+)\s+\S+\s+(:?adl|vdl||gpon)\s+0/\d+\s*/(?P<port>\d+)\s+"
         r"(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\S+\s+\S+\s+(?:\d+|\-)\s+(?:\d+|\-)\s+"
-        r"(?P<admin_status>up|down)\s*$", re.MULTILINE)
+        r"(?P<admin_status>up|down)\s*$",
+        re.MULTILINE,
+    )
     rx_stp = re.compile(
-        r"^\s*\d+\s+(?P<port>0/\s*\d+/\s*\d+)\s+\d+\s+\d+\s+Enabled\s+",
-        re.MULTILINE)
+        r"^\s*\d+\s+(?P<port>0/\s*\d+/\s*\d+)\s+\d+\s+\d+\s+Enabled\s+", re.MULTILINE
+    )
     rx_ports = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
         r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)?",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     # SmartAX MA5600T&MA5603T Multi-Service Access Module
     # ifIndex MIB Encoding Rules
@@ -94,7 +104,7 @@ class Script(BaseScript):
         "EPON": 126,
         # Dummy rule, needed in MA5626
         # IF-MIB::ifName.4261413120 = STRING: GPONNNI
-        "XG-PON": 127
+        "XG-PON": 127,
     }
 
     def snmp_index(self, int_type, shelfID, slotID, intNum):
@@ -156,7 +166,8 @@ class Script(BaseScript):
             ports["0/%d/%s" % (slot_n, match.group("port"))] = {
                 "num": match.group("port"),
                 "state": state.lower() in {"online", "activated", "registered"} if state else True,
-                "type": match.group("type")}
+                "type": match.group("type"),
+            }
         return ports
 
     def get_pvc(self, interfaces, slot_n):
@@ -172,7 +183,7 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_status") == "up",
                 "enabled_afi": ["BRIDGE", "ATM"],
                 "vpi": int(match.group("vpi")),
-                "vci": int(match.group("vci"))
+                "vci": int(match.group("vci")),
             }
             if match.group("vlan") != "*":
                 sub["vlan_ids"] = int(match.group("vlan"))
@@ -203,7 +214,7 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_status") == "up",
                 "enabled_afi": ["BRIDGE"],
                 "vpi": int(match.group("vpi")),
-                "vci": int(match.group("vci"))
+                "vci": int(match.group("vci")),
             }
             if match.group("vlan") != "*":
                 sub["vlan_ids"] = int(match.group("vlan"))
@@ -221,15 +232,8 @@ class Script(BaseScript):
         for match in rx.finditer(v):
             ifname = "%s%s" % (match.group("ifname"), match.group("ifnum"))
             iftype = self.profile.get_interface_type(ifname)
-            interfaces[ifname] = {
-                "name": ifname,
-                "type": iftype,
-                "subinterfaces": []
-            }
-            sub = {
-                "name": ifname,
-                "mtu": int(match.group("mtu"))
-            }
+            interfaces[ifname] = {"name": ifname, "type": iftype, "subinterfaces": []}
+            sub = {"name": ifname, "mtu": int(match.group("mtu"))}
             if "admin_status" in match.groupdict():
                 interfaces[ifname]["admin_status"] = match.group("admin_status") != "DOWN"
                 sub["admin_status"] = match.group("admin_status") != "DOWN"
@@ -237,12 +241,12 @@ class Script(BaseScript):
                 interfaces[ifname]["oper_status"] = match.group("oper_status") != "DOWN"
                 sub["oper_status"] = match.group("oper_status") != "DOWN"
             if match.group("descr"):
-                if match.group("descr") != 'HUAWEI, SmartAX Series':
+                if match.group("descr") != "HUAWEI, SmartAX Series":
                     interfaces[ifname]["description"] = match.group("descr")
                     sub["description"] = match.group("descr")
             if match.group("ip"):
                 sub["ipv4_addresses"] = [match.group("ip")]
-                sub["enabled_afi"] = ['IPv4']
+                sub["enabled_afi"] = ["IPv4"]
             if match.group("mac"):
                 interfaces[ifname]["mac"] = match.group("mac")
                 sub["mac"] = match.group("mac")
@@ -284,12 +288,14 @@ class Script(BaseScript):
                 "type": "aggregated",
                 "admin_status": True,
                 "oper_status": True,
-                "subinterfaces": [{
-                    "name": pc["interface"],
-                    "admin_status": True,
-                    "oper_status": True,
-                    "enabled_afi": ["BRIDGE"]
-                }]
+                "subinterfaces": [
+                    {
+                        "name": pc["interface"],
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
             }
         # ports = self.profile.fill_ports(self)
         _, boards = self.profile.get_board(self)
@@ -329,13 +335,15 @@ class Script(BaseScript):
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
                         "enabled_protocols": [],
-                        "subinterfaces": [{
-                            "name": ifname,
-                            "admin_status": admin_status,
-                            "oper_status": oper_status,
-                            "tagged_vlans": tagged,
-                            "enabled_afi": ["BRIDGE"]
-                        }]
+                        "subinterfaces": [
+                            {
+                                "name": ifname,
+                                "admin_status": admin_status,
+                                "oper_status": oper_status,
+                                "tagged_vlans": tagged,
+                                "enabled_afi": ["BRIDGE"],
+                            }
+                        ],
                     }
                     if untagged:
                         interfaces[ifname]["subinterfaces"][0]["untagged_vlan"] = untagged
@@ -352,13 +360,15 @@ class Script(BaseScript):
                         ifindex = self.snmp_index("VDSL2", 0, slot, int(p["num"]))
                     else:
                         ifindex = self.snmp_index(p["type"], 0, slot, int(p["num"]))
-                    interfaces[p_name] = {"name": p,
-                                          "type": "physical",
-                                          "admin_status": True,
-                                          "oper_status": p["state"],
-                                          "snmp_ifindex": ifindex,
-                                          "enabled_protocols": [],
-                                          "subinterfaces": []}
+                    interfaces[p_name] = {
+                        "name": p,
+                        "type": "physical",
+                        "admin_status": True,
+                        "oper_status": p["state"],
+                        "snmp_ifindex": ifindex,
+                        "enabled_protocols": [],
+                        "subinterfaces": [],
+                    }
 
                 self.get_pvc(interfaces, slot)
 
@@ -375,12 +385,14 @@ class Script(BaseScript):
                         "snmp_ifindex": ifindex,
                         "admin_status": True,
                         "oper_status": p["state"],
-                        "subinterfaces": [{
-                            "name": p_name,
-                            "admin_status": True,
-                            "oper_status": p["state"],
-                            "enabled_afi": ["BRIDGE"]
-                        }]
+                        "subinterfaces": [
+                            {
+                                "name": p_name,
+                                "admin_status": True,
+                                "oper_status": p["state"],
+                                "enabled_afi": ["BRIDGE"],
+                            }
+                        ],
                     }
                 self.get_svc(interfaces, slot)
         self.get_l3_interfaces(interfaces)

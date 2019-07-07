@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -26,7 +27,7 @@ class Script(BaseScript):
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\s*\n"
         r"(^Boot version\.+ (?P<bootprom>\S+)\s*\n)?"
         r"^Software Version\.+ (?P<version>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -36,9 +37,7 @@ class Script(BaseScript):
             "vendor": "Eltex",
             "platform": match.group("platform"),
             "version": match.group("version").split("[")[0],
-            "attributes": {
-                "Serial Number": match.group("serial")
-            }
+            "attributes": {"Serial Number": match.group("serial")},
         }
         if match.group("bootprom"):
             r["attributes"]["Boot PROM"] = match.group("bootprom")

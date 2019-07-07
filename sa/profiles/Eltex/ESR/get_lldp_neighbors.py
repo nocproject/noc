@@ -8,13 +8,20 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_MAC, LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
-    LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME, LLDP_PORT_SUBTYPE_LOCAL,
-    LLDP_CAP_BRIDGE, LLDP_CAP_ROUTER, LLDP_CAP_STATION_ONLY, LLDP_CAP_WLAN_ACCESS_POINT
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_STATION_ONLY,
+    LLDP_CAP_WLAN_ACCESS_POINT,
 )
 
 
@@ -22,10 +29,7 @@ class Script(BaseScript):
     name = "Eltex.ESR.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_neighbor = re.compile(
-        r"^(?P<local_interface>gi\d+/\d+/\d+)\s+",
-        re.MULTILINE
-    )
+    rx_neighbor = re.compile(r"^(?P<local_interface>gi\d+/\d+/\d+)\s+", re.MULTILINE)
     rx_detail = re.compile(
         r"^\s*Index:\s+\d+\s*\n"
         r"^\s*Local Interface:\s+\S+\s*\n"
@@ -41,16 +45,13 @@ class Script(BaseScript):
         r"^\s*Router:\s+(?P<router>\S+)\s*\n"
         r"^\s*Station:\s+(?P<station>\S+)\s*\n"
         r"^\s*Wlan:\s+(?P<wlan>\S+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    CHASSIS_TYPES = {
-        "mac": LLDP_CHASSIS_SUBTYPE_MAC,
-        "ifname": LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME
-    }
+    CHASSIS_TYPES = {"mac": LLDP_CHASSIS_SUBTYPE_MAC, "ifname": LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME}
     PORT_TYPES = {
         "mac": LLDP_PORT_SUBTYPE_MAC,
         "ifname": LLDP_PORT_SUBTYPE_NAME,
-        "local": LLDP_PORT_SUBTYPE_LOCAL
+        "local": LLDP_PORT_SUBTYPE_LOCAL,
     }
 
     def execute_cli(self):
@@ -65,7 +66,9 @@ class Script(BaseScript):
             v1 = self.cli("show lldp neighbors %s" % local_interface)
             for match1 in self.rx_detail.finditer(v1):
                 remote_chassis_id = match1.group("chassis_id")
-                remote_chassis_id_subtype = self.CHASSIS_TYPES[match1.group("chassis_id_type").strip()]
+                remote_chassis_id_subtype = self.CHASSIS_TYPES[
+                    match1.group("chassis_id_type").strip()
+                ]
                 remote_port = match1.group("port_id")
                 remote_port_subtype = self.PORT_TYPES[match1.group("port_id_type").strip()]
                 remote_capabilities = 0
@@ -82,7 +85,7 @@ class Script(BaseScript):
                     "remote_chassis_id": remote_chassis_id,
                     "remote_port_subtype": remote_port_subtype,
                     "remote_port": remote_port,
-                    "remote_capabilities": remote_capabilities
+                    "remote_capabilities": remote_capabilities,
                 }
                 if match1.group("port_descr") and match1.group("port_descr").strip():
                     n["remote_port_description"] = match1.group("port_descr").strip()

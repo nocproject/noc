@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -23,11 +24,10 @@ class Script(BaseScript):
         r"BDCOM\S+\s+(?P<platform>\S+)\s+\S+\s+Version\s+(?P<version>\S+)\s"
         r"Build\s(?P<build>\d+).+System Bootstrap,\s*Version\s(?P<boot>\S+),"
         r"\s*Serial num:(?P<serial>\d+)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
-    rx_hver = re.compile(
-        r"^hardware version:(?:V|)(?P<hversion>\S+)",
-        re.MULTILINE)
+    rx_hver = re.compile(r"^hardware version:(?:V|)(?P<hversion>\S+)", re.MULTILINE)
 
     # todo: add hardware ver for P3310C, P3608 (snmp output need)
 
@@ -41,8 +41,8 @@ class Script(BaseScript):
             "attributes": {
                 "build": match.group("build"),
                 "boot": match.group("boot"),
-                "serial": match.group("serial")
-            }
+                "serial": match.group("serial"),
+            },
         }
 
     def execute_cli(self):
@@ -56,9 +56,8 @@ class Script(BaseScript):
                 "attributes": {
                     "build": match.group("build"),
                     "boot": match.group("boot"),
-                    "serial": match.group("serial")
-                }
-
+                    "serial": match.group("serial"),
+                },
             }
         else:
             raise self.NotSupportedError()

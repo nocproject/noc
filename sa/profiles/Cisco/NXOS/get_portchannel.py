@@ -17,8 +17,7 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     # Member 0 : GigabitEthernet0/2 , Full-duplex, 1000Mb/s
-    rx_po2_members = re.compile(
-        r"^\s+Member\s+\d+\s+:\s+(?P<interface>.+?)\s+.*$")
+    rx_po2_members = re.compile(r"^\s+Member\s+\d+\s+:\s+(?P<interface>.+?)\s+.*$")
 
     def execute(self):
         r = []
@@ -42,26 +41,32 @@ class Script(BaseScript):
                 for line in v.splitlines():
                     match = self.rx_po2_members.match(line)
                     if match:
-                        out_if["members"].append(match.group('interface'))
+                        out_if["members"].append(match.group("interface"))
                 r += [out_if]
                 return r
         for ll in s.splitlines():
             pc, rest = ll.split(" ", 1)
             pc = pc[2:]
-            v = self.cli("show interface port-channel %s | i \"Members in this channel\"" % pc).strip()
+            v = self.cli(
+                'show interface port-channel %s | i "Members in this channel"' % pc
+            ).strip()
             if not v:
                 continue
             if v.startswith("Members in this channel"):
                 x, y = v.split(":", 1)
-                r += [{
-                    "interface": "Po %s" % pc,
-                    "members": [m.strip() for m in y.strip().split(",")],
-                    "type": "L",  # <!> TODO: port-channel type detection
-                }]
+                r += [
+                    {
+                        "interface": "Po %s" % pc,
+                        "members": [m.strip() for m in y.strip().split(",")],
+                        "type": "L",  # <!> TODO: port-channel type detection
+                    }
+                ]
             else:
-                r += [{
-                    "interface": "Po %s" % pc,
-                    "members": [],
-                    "type": "L",  # <!> TODO: port-channel type detection
-                }]
+                r += [
+                    {
+                        "interface": "Po %s" % pc,
+                        "members": [],
+                        "type": "L",  # <!> TODO: port-channel type detection
+                    }
+                ]
         return r

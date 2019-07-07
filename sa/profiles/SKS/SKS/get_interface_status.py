@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -21,10 +22,9 @@ class Script(BaseScript):
     rx_port1 = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<oper_status>Up|Down|Not Present)",
-        re.MULTILINE | re.IGNORECASE)
-    rx_port2 = re.compile(
-        r"^(?P<port>[fgt]\d\S*).*?(?P<oper_status>up|down).*\n",
-        re.MULTILINE)
+        re.MULTILINE | re.IGNORECASE,
+    )
+    rx_port2 = re.compile(r"^(?P<port>[fgt]\d\S*).*?(?P<oper_status>up|down).*\n", re.MULTILINE)
 
     def execute_cli(self, interface=None):
         r = []
@@ -35,13 +35,17 @@ class Script(BaseScript):
             c = self.cli("show interface brief")
             rx_port = self.rx_port2
         for match in rx_port.finditer(c):
-            if (interface is not None) and (interface == match.group('port')):
-                return [{
-                    "interface": match.group('port'),
-                    "status": match.group('oper_status').lower() == "up"
-                }]
-            r += [{
-                "interface": match.group('port'),
-                "status": match.group('oper_status').lower() == "up"
-            }]
+            if (interface is not None) and (interface == match.group("port")):
+                return [
+                    {
+                        "interface": match.group("port"),
+                        "status": match.group("oper_status").lower() == "up",
+                    }
+                ]
+            r += [
+                {
+                    "interface": match.group("port"),
+                    "status": match.group("oper_status").lower() == "up",
+                }
+            ]
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -19,8 +20,8 @@ class Script(BaseScript):
     cache = True
 
     rx_line = re.compile(
-        r"^\s*(?P<port_no>\d+)\s+(?P<mac>\S+)\s+(?P<cpu>yes|no)\s+\d+\.\d+",
-        re.MULTILINE)
+        r"^\s*(?P<port_no>\d+)\s+(?P<mac>\S+)\s+(?P<cpu>yes|no)\s+\d+\.\d+", re.MULTILINE
+    )
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -35,13 +36,12 @@ class Script(BaseScript):
             break
         cmd = "context ip router brctl showmacs %s" % iface
         for match in self.rx_line.finditer(self.cli(cmd, cached=True)):
-            r += [{
-                "vlan_id": 1,
-                "mac": match.group("mac"),
-                "interfaces": [match.group("port_no")],
-                "type": {
-                    "no": "D",
-                    "yes": "C"
-                }[match.group("cpu").lower()],
-            }]
+            r += [
+                {
+                    "vlan_id": 1,
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("port_no")],
+                    "type": {"no": "D", "yes": "C"}[match.group("cpu").lower()],
+                }
+            ]
         return r

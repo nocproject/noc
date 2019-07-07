@@ -16,12 +16,9 @@ class Script(BaseScript):
     name = "OS.FreeBSD.get_uptime"
     interface = IGetUptime
 
-    rx_uptime1 = re.compile(
-        r"up (?P<s>\d+) secs, \d+ user")
-    rx_uptime2 = re.compile(
-        r"up (?P<m>\d+) mins, \d+ user")
-    rx_uptime3 = re.compile(
-        r"up (?P<d>\d+) days, (?P<h>\d+):(?P<m>\d+), \d+ user")
+    rx_uptime1 = re.compile(r"up (?P<s>\d+) secs, \d+ user")
+    rx_uptime2 = re.compile(r"up (?P<m>\d+) mins, \d+ user")
+    rx_uptime3 = re.compile(r"up (?P<d>\d+) days, (?P<h>\d+):(?P<m>\d+), \d+ user")
 
     def execute(self):
         secs = mins = hours = days = 0

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -20,7 +21,8 @@ class Script(BaseScript):
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
         r"packets received.*round-trip \(ms\) "
         r"min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute_cli(self, address, count=None, source_address=None, size=None, df=None):
         cmd = "ping ip %s" % address

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -17,10 +18,8 @@ class Script(BaseScript):
     name = "Ericsson.MINI_LINK.get_chassis_id"
     interface = IGetChassisID
 
-    rx_mac_begin = re.compile(
-        r"Primary/First MAC Address:\s+(?P<mac>\S+)")
-    rx_mac_end = re.compile(
-        r"Last MAC Address:\s+(?P<mac>\S+)")
+    rx_mac_begin = re.compile(r"Primary/First MAC Address:\s+(?P<mac>\S+)")
+    rx_mac_end = re.compile(r"Last MAC Address:\s+(?P<mac>\S+)")
 
     def execute(self):
         r = []
@@ -30,8 +29,7 @@ class Script(BaseScript):
                 continue
             match1 = self.re_search(self.rx_mac_begin, c)
             match2 = self.re_search(self.rx_mac_end, c)
-            r += [{
-                "first_chassis_mac": match1.group("mac"),
-                "last_chassis_mac": match2.group("mac")
-            }]
+            r += [
+                {"first_chassis_mac": match1.group("mac"), "last_chassis_mac": match2.group("mac")}
+            ]
         return r

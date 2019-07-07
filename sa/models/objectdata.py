@@ -11,13 +11,13 @@ from threading import Lock
 import operator
 import logging
 from collections import namedtuple
+
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import IntField, ListField, ObjectIdField
 import cachetools
-import six
 
 
 ObjectUplinks = namedtuple("ObjectUplinks", ["object_id", "uplinks", "rca_neighbors"])
@@ -28,10 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class ObjectData(Document):
-    meta = {
-        "collection": "noc.objectdata",
-        "indexes": ["uplinks"]
-    }
+    meta = {"collection": "noc.objectdata", "indexes": ["uplinks"]}
     object = IntField(primary_key=True)
     # Uplinks
     uplinks = ListField(IntField())
@@ -60,11 +57,7 @@ class ObjectData(Document):
     @cachetools.cachedmethod(operator.attrgetter("_neighbor_cache"), lock=lambda _: neighbor_lock)
     def _get_neighbors(cls, object_id):
         n = set()
-        for d in ObjectData._get_collection().find({
-            "uplinks": object_id
-        }, {
-            "_id": 1
-        }):
+        for d in ObjectData._get_collection().find({"uplinks": object_id}, {"_id": 1}):
             n.add(d["_id"])
         return list(n)
 
@@ -87,11 +80,7 @@ class ObjectData(Document):
                 obj = obj.id
             o += [obj]
         uplinks = dict((obj, []) for obj in o)
-        for d in ObjectData._get_collection().find({
-            "_id": {
-                "$in": o
-            }
-        }, {"_id": 1, "uplinks": 1}):
+        for d in ObjectData._get_collection().find({"_id": {"$in": o}}, {"_id": 1, "uplinks": 1}):
             uplinks[d["_id"]] = d.get("uplinks", [])
         return uplinks
 
@@ -102,14 +91,13 @@ class ObjectData(Document):
         :param uplinks: Iterable of ObjectUplinks
         :return:
         """
-        bulk = [UpdateOne({
-            "_id": u.object_id
-        }, {
-            "$set": {
-                "uplinks": u.uplinks,
-                "rca_neighbors": u.rca_neighbors
-            }
-        }) for u in uplinks]
+        bulk = [
+            UpdateOne(
+                {"_id": u.object_id},
+                {"$set": {"uplinks": u.uplinks, "rca_neighbors": u.rca_neighbors}},
+            )
+            for u in uplinks
+        ]
         if not bulk:
             return
         try:
@@ -120,15 +108,13 @@ class ObjectData(Document):
     @classmethod
     def refresh_path(cls, obj):
         ObjectData._get_collection().update(
-            {
-                "_id": obj.id
-            },
+            {"_id": obj.id},
             {
                 "$set": {
                     "adm_path": obj.administrative_domain.get_path(),
                     "segment_path": obj.segment.get_path(),
-                    "container_path": obj.container.get_path() if obj.container else []
+                    "container_path": obj.container.get_path() if obj.container else [],
                 }
             },
-            upsert=True
+            upsert=True,
         )

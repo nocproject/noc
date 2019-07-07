@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
@@ -18,7 +19,7 @@ class Script(BaseScript):
     interface = IGetDot11Associations
     rx_assoc_line = re.compile(
         r"^(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}) (?P<ip>[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*$",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self):

@@ -24,10 +24,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         ver = self.cli("show system information 1", cached=True)
-        if (
-            "Unit 1 is unavaible" in ver
-            or "Failed to get factory information for unit 1" in ver
-        ):
+        if "Unit 1 is unavaible" in ver or "Failed to get factory information for unit 1" in ver:
             ver = self.cli("show system information 2", cached=True)
         match = self.rx_version.search(ver)
         version = match.group("version")

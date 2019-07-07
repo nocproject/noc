@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # re modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -24,11 +25,11 @@ class Script(BaseScript):
         r"^\s*\n"
         r"^The active version file name is: .+\n"
         r"^Main version name\s+: (?P<version>\S+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_ver2 = re.compile(
         r"^SCCF\s+MVER\s+V(?P<version>\S+)\s+\d+\s+VALID\s+\d+\s+active\s+(?P<platform>\S+)v\S+",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -38,13 +39,13 @@ class Script(BaseScript):
             return {
                 "vendor": "ZTE",
                 "platform": match.group("platform"),
-                "version": match.group("version")
+                "version": match.group("version"),
             }
         match = self.rx_ver2.search(v)
         if match:
             return {
                 "vendor": "ZTE",
                 "platform": "ZXDSL %s" % match.group("platform").upper(),
-                "version": match.group("version")
+                "version": match.group("version"),
             }
         raise self.NotSupportedError()

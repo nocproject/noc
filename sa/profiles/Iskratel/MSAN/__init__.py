@@ -10,6 +10,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -18,14 +19,12 @@ class Profile(BaseProfile):
     name = "Iskratel.MSAN"
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin)|User: ?"
     # Iskratel do not have "enable_super" command
-    pattern_unprivileged_prompt = \
-        r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*>"
-    pattern_prompt = \
-        r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*#"
+    pattern_unprivileged_prompt = r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*>"
+    pattern_prompt = r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*#"
     pattern_more = [
         (r"Press any key to continue or ESC to stop scrolling.", " "),
         (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t"),
-        (r"--More-- or \(q\)uit", " ")
+        (r"--More-- or \(q\)uit", " "),
     ]
     pattern_syntax_error = r"% Invalid input detected at|Command not found"
     command_exit = "logout"
@@ -50,7 +49,8 @@ class Profile(BaseProfile):
         r"IPMI version\.+ (?P<ipmi_ver>\S+)\n"
         r"Puma API Version\.+ (?P<api_ver>\S+)\n"
         r"Puma Microcode Version\.+ (?P<micr_ver>\S+)\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_hw2 = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
         r"Machine Type\.+ (?P<descr>.+)\n"
@@ -66,7 +66,8 @@ class Profile(BaseProfile):
         r"(Firmware Version\.+ (?P<api_ver>\S+)\n)?"
         r"Hardware( and CPLD)? Version\.+ (?P<hw_ver>\S+)\n.*"
         r"IPMI Version\.+ (?P<ipmi_ver>\S+)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     def get_hardware(self, script):
         c = script.cli("show hardware", cached=True)

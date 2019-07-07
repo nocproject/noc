@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -23,9 +24,7 @@ class Script(BaseScript):
     On Alpha-A10E ver.4.15.1205 `show lldp remote detail` do not display
     ChassisId field
     """
-    rx_lldp = re.compile(
-        r"^port(?P<port>\d+)\s+(?P<chassis_id>\S+)", re.MULTILINE
-    )
+    rx_lldp = re.compile(r"^port(?P<port>\d+)\s+(?P<chassis_id>\S+)", re.MULTILINE)
     rx_int = re.compile(
         r"^Port\s+port(?P<interface>\d+)\s+has\s+1\s+remotes:\s*\n"
         r"^\s*\n"
@@ -40,7 +39,7 @@ class Script(BaseScript):
         r"^SysDesc\s*:\s+(?P<sys_descr>(.+\n)+)"
         r"^SysCapSupported\s*:.*\n"
         r"^SysCapEnabled\s*:\s+(?P<caps>.+)\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute_cli(self):
@@ -52,20 +51,18 @@ class Script(BaseScript):
         v = self.cli("show lldp remote detail")
         for match in self.rx_int.finditer(v):
             neighbor = {
-                "remote_chassis_id_subtype": {
-                    "macAddress": 4,
-                    "networkAddress": 5,
-                    "ifName": 6
-                }[match.group("chassis_subtype")],
+                "remote_chassis_id_subtype": {"macAddress": 4, "networkAddress": 5, "ifName": 6}[
+                    match.group("chassis_subtype")
+                ],
                 # "remote_chassis_id": match.group("chassis_id"),
                 "remote_port_subtype": {
                     "ifAlias": 1,
                     "macAddress": 3,
                     "ifName": 5,
                     "portComponent": 5,
-                    "local": 7
+                    "local": 7,
                 }[match.group("port_subtype")],
-                "remote_port": match.group("port_id")
+                "remote_port": match.group("port_id"),
             }
             if match.group("chassis_id"):
                 neighbor["remote_chassis_id"] = match.group("chassis_id")
@@ -91,11 +88,8 @@ class Script(BaseScript):
                     "Bridge/Switch": 4,
                     "Router": 16,
                     "Telephone": 32,
-                    "Station": 128
+                    "Station": 128,
                 }[c]
             neighbor["remote_capabilities"] = caps
-            result += [{
-                "local_interface": match.group("interface"),
-                "neighbors": [neighbor]
-            }]
+            result += [{"local_interface": match.group("interface"), "neighbors": [neighbor]}]
         return result

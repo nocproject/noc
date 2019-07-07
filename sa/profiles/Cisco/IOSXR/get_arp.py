@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -22,7 +23,7 @@ class Script(BaseScript):
         r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
         r"(?:Dynamic|DHCP|Interface|Probe|Standby)\s+"
         r"ARPA\s+(?P<interface>\S+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self, vrf=None):
@@ -38,7 +39,5 @@ class Script(BaseScript):
             match = self.rx_line.match(l.strip())
             if not match:
                 continue
-            r[match.group("ip")] = (
-                match.group("mac"), match.group("interface")
-            )
+            r[match.group("ip")] = (match.group("mac"), match.group("interface"))
         return [{"ip": k, "mac": r[k][0], "interface": r[k][1]} for k in r]

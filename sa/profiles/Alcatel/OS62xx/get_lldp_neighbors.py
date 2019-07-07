@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -51,17 +52,13 @@ class Script(BaseScript):
             for c in i[4].split(","):
                 c = c.strip()
                 if c:
-                    caps |= {
-                        "O": 1, "P": 2, "B": 4,
-                        "W": 8, "R": 16, "T": 32,
-                        "C": 64, "S": 128
-                    }[c]
+                    caps |= {"O": 1, "P": 2, "B": 4, "W": 8, "R": 16, "T": 32, "C": 64, "S": 128}[c]
             neighbor = {
                 "remote_chassis_id": chassis_id,
                 "remote_chassis_id_subtype": chassis_id_subtype,
                 "remote_port": port_id,
                 "remote_port_subtype": port_id_subtype,
-                "remote_capabilities": caps
+                "remote_capabilities": caps,
             }
             if i[3]:
                 neighbor["remote_system_name"] = i[3]
@@ -72,8 +69,5 @@ class Script(BaseScript):
             match = self.rx_portdescr.search(s)
             if match:
                 neighbor["remote_port_description"] = match.group("descr").strip()
-            r += [{
-                "local_interface": i[0],
-                "neighbors": [neighbor]
-            }]
+            r += [{"local_interface": i[0], "neighbors": [neighbor]}]
         return r

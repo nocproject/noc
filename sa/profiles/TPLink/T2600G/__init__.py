@@ -18,11 +18,11 @@ class Profile(BaseProfile):
     pattern_username = r"^User:"
     pattern_more = r"Press any key to continue \(Q to quit\)"
     pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r".*(?:Error: (Invalid parameter.)|(Bad command)|(Missing parameter data)).*"
+    pattern_syntax_error = (
+        r".*(?:Error: (Invalid parameter.)|(Bad command)|(Missing parameter data)).*"
+    )
     command_super = "enable"
-    pattern_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" \
-        r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" r"(?:\(config[^\)]*\))?#"
     command_disable_pager = "terminal length 0"
     username_submit = "\r\n"
     password_submit = "\r\n"
@@ -34,13 +34,7 @@ class Profile(BaseProfile):
     command_save_config = "copy running-config startup-config\n"
     requires_netmask_conversion = True
     rx_ifname = re.compile(r"^((Gi|.*)\d\/\d\/)*(?P<number>\d+).*$")
-    matchers = {
-        "is_platform_T2600G": {
-            "platform": {
-                "$regex": r"T2600G.*"
-            }
-        }
-    }
+    matchers = {"is_platform_T2600G": {"platform": {"$regex": r"T2600G.*"}}}
 
     def convert_interface_name(self, s):
         """

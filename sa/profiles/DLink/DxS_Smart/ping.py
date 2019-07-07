@@ -19,7 +19,8 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"^\s*(?P<count>\d+) Packets Transmitted, (?P<success>\d+) "
         r"Packets Received, \d+% Packets Loss",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
 
     @BaseScript.match(DES1210)
     def execute_ping(self, address):
@@ -27,10 +28,7 @@ class Script(BaseScript):
         match = self.rx_result.search(self.cli(cmd))
         if not match:
             raise self.NotSupportedError()
-        return {
-            "success": match.group("success"),
-            "count": match.group("count"),
-        }
+        return {"success": match.group("success"), "count": match.group("count")}
 
     @BaseScript.match()
     def execute_ping_other(self, address):

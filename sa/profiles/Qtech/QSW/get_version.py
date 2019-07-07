@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,27 +20,19 @@ class Script(BaseScript):
     cache = True
 
     rx_plat_ver = re.compile(
-        r"^software version\s+:\s+QTECH\s+(?P<platform>\S+)\s+"
-        r"(?P<version>\S+)$", re.MULTILINE)
-    rx_bootprom = re.compile(
-        r"^bootrom version\s+:\s+V+(?P<bootprom>\S+)$", re.MULTILINE)
-    rx_hardware = re.compile(
-        r"^hardware version\s+:\s+V+(?P<hardware>\S+)$", re.MULTILINE)
-    rx_serial = re.compile(
-        r"^product serial number\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
-
-    rx_plat1 = re.compile(
-        r"^\s+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
-    rx_soft1 = re.compile(
-        r"^\s+SoftWare( Package)? Version (?P<version>\d\S+)$", re.MULTILINE)
-    rx_bootprom1 = re.compile(
-        r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
-    rx_hardware1 = re.compile(
-        r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE
+        r"^software version\s+:\s+QTECH\s+(?P<platform>\S+)\s+" r"(?P<version>\S+)$", re.MULTILINE
     )
+    rx_bootprom = re.compile(r"^bootrom version\s+:\s+V+(?P<bootprom>\S+)$", re.MULTILINE)
+    rx_hardware = re.compile(r"^hardware version\s+:\s+V+(?P<hardware>\S+)$", re.MULTILINE)
+    rx_serial = re.compile(r"^product serial number\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
+
+    rx_plat1 = re.compile(r"^\s+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
+    rx_soft1 = re.compile(r"^\s+SoftWare( Package)? Version (?P<version>\d\S+)$", re.MULTILINE)
+    rx_bootprom1 = re.compile(r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
+    rx_hardware1 = re.compile(r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE)
     rx_serial1 = re.compile(
-        r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$",
-        re.MULTILINE)
+        r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$", re.MULTILINE
+    )
 
     def execute(self):
         # Try SNMP first
@@ -49,13 +42,13 @@ class Script(BaseScript):
                 if not platform:
                     raise self.snmp.TimeOutError
                 if " " in platform:
-                    platform = platform.split(' ')[1]
+                    platform = platform.split(" ")[1]
                 version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0", cached=True)
-                version = version.split(' ')[2]
+                version = version.split(" ")[2]
                 bootprom = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.9.0", cached=True)
-                bootprom = bootprom.split('V')[1]
+                bootprom = bootprom.split("V")[1]
                 hardware = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.8.0", cached=True)
-                hardware = hardware.split('V')[1]
+                hardware = hardware.split("V")[1]
                 serial = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.19.0", cached=True)
                 return {
                     "vendor": "Qtech",
@@ -64,8 +57,8 @@ class Script(BaseScript):
                     "attributes": {
                         "Boot PROM": bootprom,
                         "HW version": hardware,
-                        "Serial Number": serial
-                    }
+                        "Serial Number": serial,
+                    },
                 }
             except self.snmp.TimeOutError:
                 pass
@@ -93,6 +86,6 @@ class Script(BaseScript):
             "attributes": {
                 "Boot PROM": bootprom.group("bootprom").strip(),
                 "HW version": hardware.group("hardware").strip(),
-                "Serial Number": serial.group("serial").strip()
-            }
+                "Serial Number": serial.group("serial").strip(),
+            },
         }

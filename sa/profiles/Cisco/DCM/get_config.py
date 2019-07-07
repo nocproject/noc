@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-__author__ = 'boris'
+__author__ = "boris"
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
+
 # Python modules
 import re
 from xml.dom.minidom import parseString
@@ -20,7 +21,7 @@ class Script(BaseScript):
         r"(?P<path>\[.*?\])(?P<part>\[\d*\])\n"
         r"(?P<xml>.*?)\n"
         r"=====end=====",
-        re.DOTALL | re.MULTILINE
+        re.DOTALL | re.MULTILINE,
     )
 
     head_str = """<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>

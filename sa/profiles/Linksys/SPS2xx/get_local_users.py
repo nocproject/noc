@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.get_local_users
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import datetime
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -19,7 +19,8 @@ class Script(BaseScript):
     interface = IGetLocalUsers
 
     rx_name = re.compile(
-        r"^username\s+(?P<username>\S+)\s+password .* level (?P<privilege>\d+) encrypted$")
+        r"^username\s+(?P<username>\S+)\s+password .* level (?P<privilege>\d+) encrypted$"
+    )
 
     def execute(self):
         data = self.cli("show running-config")
@@ -33,9 +34,5 @@ class Script(BaseScript):
                     user_class = "superuser"
                 else:
                     user_class = privilege
-                r += [{
-                    "username": name.group("username"),
-                    "class": user_class,
-                    "is_active": True
-                    }]
+                r += [{"username": name.group("username"), "class": user_class, "is_active": True}]
         return r

@@ -20,19 +20,15 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_mac = re.compile(
-        r"^MAC [Aa]ddress\s+:\s*(?P<id>\S+)", re.MULTILINE)
+    rx_mac = re.compile(r"^MAC [Aa]ddress\s+:\s*(?P<id>\S+)", re.MULTILINE)
     rx_line = re.compile(
         r"^\s*\d+\s+(?:\S+\s+)?"
         r"([0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-"
         r"[0-9A-F]{2}-[0-9A-F]{2})\s+CPU\s+Self\s*(?:\S*\s*)?$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
-    SNMP_GETNEXT_OIDS = {
-        "SNMP": [
-            mib["IF-MIB::ifPhysAddress"]
-        ]
-    }
+    SNMP_GETNEXT_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress"]]}
 
     def execute_cli(self):
         match = self.rx_mac.search(self.scripts.get_switch())
@@ -67,12 +63,9 @@ class Script(BaseScript):
             pass
         if macs:
             macs.sort()
-            return [{
-                "first_chassis_mac": f,
-                "last_chassis_mac": t
-            } for f, t in self.macs_to_ranges(macs)]
+            return [
+                {"first_chassis_mac": f, "last_chassis_mac": t}
+                for f, t in self.macs_to_ranges(macs)
+            ]
 
-        return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }
+        return {"first_chassis_mac": mac, "last_chassis_mac": mac}

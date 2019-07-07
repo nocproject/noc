@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(?P<interfaces>\S+)\s+(?P<mac>[0-9a-f]{2}-[0-9a-f]{2}-[0-9a-f]{2}-"
         r"[0-9a-f]{2}-[0-9a-f]{2}-[0-9a-f]{2})\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)",
-        re.MULTILINE
+        re.MULTILINE,
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -35,14 +35,12 @@ class Script(BaseScript):
             vlan_id = match.group("vlan_id")
             if vlan and vlan != vlan_id:
                 continue
-            r += [{
-                "vlan_id": vlan_id,
-                "mac": mac1,
-                "interfaces": [ifname],
-                "type": {
-                    "learned": "D",
-                    "static": "S",
-                    "self": "C",
-                }[match.group("type")]
-            }]
+            r += [
+                {
+                    "vlan_id": vlan_id,
+                    "mac": mac1,
+                    "interfaces": [ifname],
+                    "type": {"learned": "D", "static": "S", "self": "C"}[match.group("type")],
+                }
+            ]
         return r

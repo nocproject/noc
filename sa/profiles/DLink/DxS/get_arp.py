@@ -17,11 +17,13 @@ class Script(BaseScript):
     interface = IGetARP
     rx_line = re.compile(
         r"^(?P<interface>\S*)\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
-        r"(?P<mac>\S+)\s+\S+\s*$", re.MULTILINE)
+        r"(?P<mac>\S+)\s+\S+\s*$",
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
-        iface_old = ''
+        iface_old = ""
         for match in self.rx_line.finditer(self.cli("show arpentry")):
             mac = match.group("mac")
             if mac == "FF-FF-FF-FF-FF-FF":
@@ -35,5 +37,5 @@ class Script(BaseScript):
                 iface_old = iface
             if (interface is not None) and (interface != iface):
                 continue
-            r += [{'interface': iface, 'ip': match.group("ip"), 'mac': mac}]
+            r += [{"interface": iface, "ip": match.group("ip"), "mac": mac}]
         return r

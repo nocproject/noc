@@ -22,8 +22,4 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("version")
         match = rx_ver.search(v)
-        return {
-            "vendor": "Sun",
-            "platform": "iLOM3",
-            "version": match.group("version")
-        }
+        return {"vendor": "Sun", "platform": "iLOM3", "version": match.group("version")}

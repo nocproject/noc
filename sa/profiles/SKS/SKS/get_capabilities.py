@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -16,8 +17,7 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "SKS.SKS.get_capabilities"
 
-    rx_stack = re.compile(
-        r"^\s+(?P<box_id>\d+)\s+\d+\S+\s+\d+\S+\s+ \d+\S+", re.MULTILINE)
+    rx_stack = re.compile(r"^\s+(?P<box_id>\d+)\s+\d+\S+\s+\d+\S+\s+ \d+\S+", re.MULTILINE)
 
     @false_on_cli_error
     def has_lldp_cli(self):

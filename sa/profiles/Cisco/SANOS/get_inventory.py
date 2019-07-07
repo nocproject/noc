@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -20,7 +21,9 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\",\s+DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
         r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>[\S ]+)?\n,\s+"
-        r"SN: (?P<serial>\S+)?", re.MULTILINE | re.DOTALL)
+        r"SN: (?P<serial>\S+)?",
+        re.MULTILINE | re.DOTALL,
+    )
 
     def get_type(self, name, pid, descr):
         """
@@ -53,21 +56,22 @@ class Script(BaseScript):
             for match in self.rx_item.finditer(v):
                 vendor, serial = "", ""
                 type, number, part_no = self.get_type(
-                    match.group("name"), match.group("pid"),
-                    match.group("descr")
+                    match.group("name"), match.group("pid"), match.group("descr")
                 )
                 serial = match.group("serial")
                 vendor = "CISCO"
-                objects += [{
-                    "type": type,
-                    "number": number,
-                    "vendor": vendor,
-                    "serial": serial,
-                    "description": match.group("descr"),
-                    "part_no": [part_no],
-                    "revision": match.group("vid"),
-                    "builtin": False
-                }]
+                objects += [
+                    {
+                        "type": type,
+                        "number": number,
+                        "vendor": vendor,
+                        "serial": serial,
+                        "description": match.group("descr"),
+                        "part_no": [part_no],
+                        "revision": match.group("vid"),
+                        "builtin": False,
+                    }
+                ]
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         return objects

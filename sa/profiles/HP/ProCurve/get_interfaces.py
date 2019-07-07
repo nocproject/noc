@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -35,9 +36,11 @@ class Script(BaseScript):
         "ifOperStatus": "oper_status",
     }
 
-    rx_ip = re.compile(r"\s+(?P<name>\S+)\s+\|\s+(Manual|Disabled)\s"
-                       "+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"
-                       "+(?P<mask>\d{1,3}.\d{1,3}\.\d{1,3}\.\d{1,3})")
+    rx_ip = re.compile(
+        r"\s+(?P<name>\S+)\s+\|\s+(Manual|Disabled)\s"
+        "+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"
+        "+(?P<mask>\d{1,3}.\d{1,3}\.\d{1,3}\.\d{1,3})"
+    )
 
     def execute(self):
         iface = {}
@@ -65,11 +68,12 @@ class Script(BaseScript):
             for sp in self.scripts.get_switchport():
                 switchports[sp["interface"]] = (
                     sp["untagged"] if "untagged" in sp else None,
-                    sp["tagged"])
+                    sp["tagged"],
+                )
 
         i = 0
         for s in range(len(lines) / step):
-            for str in lines[i:i + step]:
+            for str in lines[i : i + step]:
                 leaf = str.split(".")[0]
                 val = str.split("=")[1].lstrip()
                 if leaf == "ifPhysAddress":
@@ -82,7 +86,7 @@ class Script(BaseScript):
                     iface[self.objstr[leaf]] = val == "1"
                 else:
                     iface[self.objstr[leaf]] = val
-            ifname = iface['name']
+            ifname = iface["name"]
             sub = iface.copy()
             ifindex = str.split("=")[0].split(".")[1].rstrip()
             sub["snmp_ifindex"] = int(ifindex)
@@ -94,9 +98,9 @@ class Script(BaseScript):
                 if match:
                     if match.group("name") == sub["name"]:
                         sub["enabled_afi"] += ["IPv4"]
-                        sub["ipv4_addresses"] = [IPv4(match.group("ip"),
-                                                 netmask=match.group("mask"))
-                                                 .prefix]
+                        sub["ipv4_addresses"] = [
+                            IPv4(match.group("ip"), netmask=match.group("mask")).prefix
+                        ]
                         if sh_ospf:
                             for o in sh_ospf.split("\n"):
                                 if o.split():

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -19,16 +20,14 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
-    rx_sh_int = re.compile(r"^(?P<ifname>\S+)\s+Link\sencap:(?P<itype>\S+)\s+"
-                           r"(?:HWaddr\s+(?P<mac>\S+)|Loopback)(:?\s+inet\s+addr:(?P<ip>\S+)\s+"
-                           r"(?:(|\S+\s+)Mask:(?P<mask>\S+))|\s+)\s+\S.+MTU:(?P<mtu>\S+)",
-                           re.MULTILINE | re.IGNORECASE)
+    rx_sh_int = re.compile(
+        r"^(?P<ifname>\S+)\s+Link\sencap:(?P<itype>\S+)\s+"
+        r"(?:HWaddr\s+(?P<mac>\S+)|Loopback)(:?\s+inet\s+addr:(?P<ip>\S+)\s+"
+        r"(?:(|\S+\s+)Mask:(?P<mask>\S+))|\s+)\s+\S.+MTU:(?P<mtu>\S+)",
+        re.MULTILINE | re.IGNORECASE,
+    )
 
-    INTERFACE_TYPES = {
-
-        "local": "loopback",  # Loopback
-        "ethernet": "physical"
-    }
+    INTERFACE_TYPES = {"local": "loopback", "ethernet": "physical"}  # Loopback
 
     @classmethod
     def get_interface_type(cls, name):
@@ -49,14 +48,15 @@ class Script(BaseScript):
                         "name": ifname,
                         "admin_status": True,
                         "oper_status": True,
-                        "subinterfaces": [{
-                            "name": ifname,
-                            "mtu": match.group("mtu"),
-                            "admin_status": True,
-                            "oper_status": True,
-                            "enabled_afi": ["BRIDGE"]
-
-                        }]
+                        "subinterfaces": [
+                            {
+                                "name": ifname,
+                                "mtu": match.group("mtu"),
+                                "admin_status": True,
+                                "oper_status": True,
+                                "enabled_afi": ["BRIDGE"],
+                            }
+                        ],
                     }
                     if match.group("ip"):
                         ip_address = match.group("ip")

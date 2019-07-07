@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -19,27 +20,23 @@ class Script(BaseScript):
 
     rx_interface_status = re.compile(
         r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<status>Up|Down)\s+\S+\s+\S.*$",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
 
     def execute(self, interface=None):
         r = []
         # Try snmp first
         if self.has_snmp():
             try:
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                                                  "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
+                for n, s in self.snmp.join_tables(
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"
+                ):  # IF-MIB
                     if n[:1] == "e" or n[:1] == "g":
                         if interface:
                             if n == interface:
-                                r += [{
-                                    "interface": n,
-                                    "status": int(s) == 1
-                                }]
+                                r += [{"interface": n, "status": int(s) == 1}]
                         else:
-                            r += [{
-                                "interface": n,
-                                "status": int(s) == 1
-                            }]
+                            r += [{"interface": n, "status": int(s) == 1}]
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -50,8 +47,10 @@ class Script(BaseScript):
         else:
             cmd = "show interfaces status"
         for match in self.rx_interface_status.finditer(self.cli(cmd)):
-            r += [{
-                "interface": match.group("interface"),
-                "status": match.group("status").lower() == "up"
-            }]
+            r += [
+                {
+                    "interface": match.group("interface"),
+                    "status": match.group("status").lower() == "up",
+                }
+            ]
         return r

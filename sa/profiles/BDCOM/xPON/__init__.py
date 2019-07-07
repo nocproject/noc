@@ -15,10 +15,7 @@ class Profile(BaseProfile):
     name = "BDCOM.xPON"
     pattern_username = r"Username: "
     pattern_password = r"Password: "
-    pattern_more = [
-        (r"^ --More-- ", " "),
-        (r"\(y/n\) \[n\]", "y\n")
-    ]
+    pattern_more = [(r"^ --More-- ", " "), (r"\(y/n\) \[n\]", "y\n")]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Unknown command"

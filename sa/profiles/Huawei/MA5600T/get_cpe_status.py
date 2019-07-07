@@ -8,6 +8,7 @@
 
 import re
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
@@ -23,10 +24,7 @@ class Script(BaseScript):
 
     splitter = re.compile("\s*-+\n")
 
-    status_map = {
-        "online": "active",  # associated
-        "offline": "inactive",  # disassociating
-    }
+    status_map = {"online": "active", "offline": "inactive"}  # associated  # disassociating
 
     @staticmethod
     def fix_cpe_header(header):
@@ -99,16 +97,20 @@ class Script(BaseScript):
                         "type": "ont",
                         "serial": serial + t["SN"][0],
                         "description": "",
-                        "location": ""
+                        "location": "",
                     }
         return list(six.itervalues(r))
 
     def execute_snmp(self, **kwargs):
         r = {}
-        names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))}
+        names = {
+            x: y for y, x in six.iteritems(self.scripts.get_ifindexes(name_oid="IF-MIB::ifName"))
+        }
         for ont_index, ont_serial, ont_descr in self.snmp.get_tables(
-                [mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"],
-                 mib["HUAWEI-XPON-MIB::hwGponDeviceOntDespt"]]
+            [
+                mib["HUAWEI-XPON-MIB::hwGponDeviceOntSn"],
+                mib["HUAWEI-XPON-MIB::hwGponDeviceOntDespt"],
+            ]
         ):
             ifindex, ont_id = ont_index.split(".")
             ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
@@ -120,8 +122,10 @@ class Script(BaseScript):
                 "type": "ont",
                 "serial": ont_serial.encode("hex").upper(),
                 "description": ont_descr,
-                "location": ""
+                "location": "",
             }
-        for ont_index, ont_status in self.snmp.get_tables([mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus"]]):
+        for ont_index, ont_status in self.snmp.get_tables(
+            [mib["HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus"]]
+        ):
             r[ont_index]["status"] = "active" if ont_status == 1 else "inactive"
         return six.itervalues(r)

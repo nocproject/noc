@@ -9,6 +9,7 @@
 # Python modules
 from collections import defaultdict
 import time
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -38,7 +39,7 @@ class Script(BaseScript):
         131: "tunnel",  # tunnel
         135: "SVI",  # l2vlan
         161: "aggregated",  # ieee8023adLag
-        53: "SVI"  # propVirtual
+        53: "SVI",  # propVirtual
     }
 
     INTERFACE_NAMES = set()
@@ -68,8 +69,12 @@ class Script(BaseScript):
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions(),
-                                        max_retries=self.get_getnext_retires(), bulk=self.get_bulk()):
+        for oid, v in self.snmp.getnext(
+            oid,
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
+            bulk=self.get_bulk(),
+        ):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
@@ -202,7 +207,8 @@ class Script(BaseScript):
                         "description": self.convert_description(l.get("description", "")),
                         "type": "SVI",
                         "enabled_afi": ["BRIDGE"]
-                        if l["type"] in ["physical", "aggregated"] else [],
+                        if l["type"] in ["physical", "aggregated"]
+                        else [],
                         "admin_status": l["admin_status"],
                         "oper_status": l["oper_status"],
                         "snmp_ifindex": l["snmp_ifindex"],

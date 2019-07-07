@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -24,8 +25,7 @@ class Profile(BaseProfile):
 
     terminal_length_changed = False
     terminal_length = 0
-    rx_length = re.compile(
-        r"^Terminal length\.+ (?P<length>\d+)", re.MULTILINE)
+    rx_length = re.compile(r"^Terminal length\.+ (?P<length>\d+)", re.MULTILINE)
 
     def setup_session(self, script):
         match = self.rx_length.search(script.cli("show terminal length"))
@@ -39,8 +39,7 @@ class Profile(BaseProfile):
         if self.terminal_length_changed:
             script.cli("terminal length %s" % self.terminal_length)
 
-    rx_cards = re.compile(
-        "^0/(?P<slot>\d+)\s*(?P<state>Working)?", re.MULTILINE)
+    rx_cards = re.compile("^0/(?P<slot>\d+)\s*(?P<state>Working)?", re.MULTILINE)
 
     def fill_cards(self, script):
         r = []

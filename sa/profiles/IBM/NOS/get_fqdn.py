@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
@@ -16,7 +17,7 @@ from noc.sa.interfaces.igetfqdn import IGetFQDN
 class Script(BaseScript):
     name = "IBM.NOS.get_fqdn"
     interface = IGetFQDN
-    rx_hostname = re.compile(r'^hostname\s+\"(?P<hostname>\S+)\"', re.MULTILINE)
+    rx_hostname = re.compile(r"^hostname\s+\"(?P<hostname>\S+)\"", re.MULTILINE)
     rx_domain_name = re.compile(r"^ip dns domain\-name\s+(?P<domain>\S+)", re.MULTILINE)
 
     def execute_snmp(self):

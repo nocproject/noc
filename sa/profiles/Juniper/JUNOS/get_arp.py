@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -27,7 +28,4 @@ class Script(BaseScript):
     def execute(self, vrf=None):
         if not vrf:
             vrf = "default"
-        return self.cli(
-            "show arp no-resolve vpn %s | except demux" % vrf,
-            list_re=self.rx_line
-        )
+        return self.cli("show arp no-resolve vpn %s | except demux" % vrf, list_re=self.rx_line)

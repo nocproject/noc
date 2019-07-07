@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,13 +22,11 @@ class Script(BaseScript):
     rx_platform = re.compile(
         r"^Device type:\s+(?P<platform>\S+).Hardware revision:\s+"
         r"(?P<hardware>\S+).Serial number:\s+(?P<serial>\S+)$",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
-    rx_version = re.compile(
-        r"^Eltex PON software version\s+(?P<version>\S+\s+build\s+\d+)")
-    platforms = {
-        "10": "PON-8X"
-    }
+    rx_version = re.compile(r"^Eltex PON software version\s+(?P<version>\S+\s+build\s+\d+)")
+    platforms = {"10": "PON-8X"}
 
     def execute(self):
         """
@@ -71,11 +70,8 @@ class Script(BaseScript):
         version = match.group("version")
 
         return {
-                "vendor": "Eltex",
-                "platform": platform,
-                "version": version,
-                "attributes": {
-                    "HW version": hardware,
-                    "Serial Number": serial
-                    }
-                }
+            "vendor": "Eltex",
+            "platform": platform,
+            "version": version,
+            "attributes": {"HW version": hardware, "Serial Number": serial},
+        }

@@ -9,6 +9,7 @@
 import re
 import datetime
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -29,19 +30,21 @@ class Script(BaseScript):
 
     def get_transiever(self, slot=None):
         r = []
-        k_map = {"sfp/sfp+ vendor": "vendor",
-                 "vendor": "vendor",
-                 "sfp/sfp+ part number": "part_no",
-                 "partnumber": "part_no",
-                 "sfp/sfp+ serial number": "serial",
-                 "serialnumber": "serial",
-                 "manufacturedate": "mfg_date",
-                 "sfp/sfp+ manufacture date": "mfg_date",
-                 "connector": "connector",
-                 "type": "type",
-                 "wavelength": "wavelength",
-                 "sfp or sfp+": "sfp_type",
-                 "rev": "rev"}
+        k_map = {
+            "sfp/sfp+ vendor": "vendor",
+            "vendor": "vendor",
+            "sfp/sfp+ part number": "part_no",
+            "partnumber": "part_no",
+            "sfp/sfp+ serial number": "serial",
+            "serialnumber": "serial",
+            "manufacturedate": "mfg_date",
+            "sfp/sfp+ manufacture date": "mfg_date",
+            "connector": "connector",
+            "type": "type",
+            "wavelength": "wavelength",
+            "sfp or sfp+": "sfp_type",
+            "rev": "rev",
+        }
         if slot:
             v = "debug hal show optic-info slot %d" % slot
         else:
@@ -60,11 +63,14 @@ class Script(BaseScript):
             d = parse_kv(k_map, block)
             # 1300Mb/sec-1310nm-LC-20.0km(0.009mm)
             # description = ""
-            description = "-".join([d.get("type", "").strip(),
-                                    d.get("wavelength", "").strip() + "nm",
-                                    d.get("connector", "").strip()
-                                    # d["Transfer Distance(meter)"].strip() + "m"
-                                    ])
+            description = "-".join(
+                [
+                    d.get("type", "").strip(),
+                    d.get("wavelength", "").strip() + "nm",
+                    d.get("connector", "").strip()
+                    # d["Transfer Distance(meter)"].strip() + "m"
+                ]
+            )
             if "part_no" not in d:
                 continue
             if "mfg_date" in d:
@@ -74,17 +80,22 @@ class Script(BaseScript):
                     d["mfg_date"] = datetime.datetime.strptime(d["mfg_date"], "%y%m%d")
                     d["mfg_date"] = d["mfg_date"].strftime("%Y-%m-%d")
                 except ValueError:
-                    self.logger.error("Unconverted format manufactured date: %s, on port: %s" % (d["mfg_date"], port))
+                    self.logger.error(
+                        "Unconverted format manufactured date: %s, on port: %s"
+                        % (d["mfg_date"], port)
+                    )
                     d["mfg_date"] = None
-            r += [{
-                "type": "XCVR",
-                "number": port,
-                "vendor": d.get("vendor", "NONAME"),
-                "part_no": d["part_no"].strip(),
-                "serial": d.get("serial", ""),
-                "description": description,
-                "mfg_date": d.get("mfg_date", "00-00-00")
-            }]
+            r += [
+                {
+                    "type": "XCVR",
+                    "number": port,
+                    "vendor": d.get("vendor", "NONAME"),
+                    "part_no": d["part_no"].strip(),
+                    "serial": d.get("serial", ""),
+                    "description": description,
+                    "mfg_date": d.get("mfg_date", "00-00-00"),
+                }
+            ]
             if "rev" in d:
                 r[-1]["revision"] = d["rev"]
             port = None
@@ -92,8 +103,7 @@ class Script(BaseScript):
 
     def get_psu(self):
         r = defaultdict(list)
-        k_map = {"state": "state",
-                 "partinfo": "partinfo"}
+        k_map = {"state": "state", "partinfo": "partinfo"}
         try:
             v = self.cli("show power detail")
         except self.CLISyntaxError:
@@ -111,22 +121,21 @@ class Script(BaseScript):
                 continue
             partinfo = d["partinfo"].split()
 
-            r[slot] += [{
-                "type": "PSU",
-                "number": number,
-                "description": "".join(partinfo[:-2]),
-                "vendor": "EXTREME",
-                "part_no": partinfo[-1],
-                "serial": partinfo[-2]
-            }]
+            r[slot] += [
+                {
+                    "type": "PSU",
+                    "number": number,
+                    "description": "".join(partinfo[:-2]),
+                    "vendor": "EXTREME",
+                    "part_no": partinfo[-1],
+                    "serial": partinfo[-2],
+                }
+            ]
         return r
 
     def get_fan(self):
         r = defaultdict(list)
-        k_map = {"state": "state",
-                 "numfan": "numfan",
-                 "partinfo": "partinfo",
-                 "revision": "rev"}
+        k_map = {"state": "state", "numfan": "numfan", "partinfo": "partinfo", "revision": "rev"}
         try:
             v = self.cli("show fans detail")
         except self.CLISyntaxError:
@@ -140,15 +149,17 @@ class Script(BaseScript):
             if d.get("state") in ["Empty", None] or "partinfo" not in d:
                 continue
             serial_no, part_no = d["partinfo"].split()
-            r[slot] += [{
-                "type": "FAN",
-                "number": 1,
-                "description": "FanTray",
-                "vendor": "EXTREME",
-                "part_no": part_no,
-                "revision": d["rev"],
-                "serial": serial_no
-            }]
+            r[slot] += [
+                {
+                    "type": "FAN",
+                    "number": 1,
+                    "description": "FanTray",
+                    "vendor": "EXTREME",
+                    "part_no": part_no,
+                    "revision": d["rev"],
+                    "serial": serial_no,
+                }
+            ]
         return r
 
     def get_slot(self):
@@ -164,9 +175,11 @@ class Script(BaseScript):
             if "Empty" in line:
                 continue
             slot = line[0].strip()
-            r[slot] = {"type": line[1].strip(),
-                       "configured": line[2].strip(),
-                       "state": line[3].strip()}
+            r[slot] = {
+                "type": line[1].strip(),
+                "configured": line[2].strip(),
+                "state": line[3].strip(),
+            }
         return r
 
     def get_type(self, m_type):
@@ -199,15 +212,17 @@ class Script(BaseScript):
             slot = int(m_number)
             m_part_no, serial_no, rev = v.split(" ", 2)
             rev = rev.split(" ")[1]
-            r += [{
-                "type": self.get_type(m_type),
-                "number": m_number,
-                "description": ss["type"] if ss else "",
-                "vendor": "EXTREME",
-                "part_no": m_part_no,
-                "revision": rev,
-                "serial": serial_no
-            }]
+            r += [
+                {
+                    "type": self.get_type(m_type),
+                    "number": m_number,
+                    "description": ss["type"] if ss else "",
+                    "vendor": "EXTREME",
+                    "part_no": m_part_no,
+                    "revision": rev,
+                    "serial": serial_no,
+                }
+            ]
             if slot in psu:
                 r += psu[slot]
             if slot in fan:

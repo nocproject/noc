@@ -11,6 +11,7 @@ import re
 import six
 from itertools import compress
 from binascii import hexlify
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -25,7 +26,8 @@ class Script(BaseScript):
     rx_vlan_comment = re.compile(r"\([^)]+\)", re.MULTILINE | re.DOTALL)
     rx_line1 = re.compile(
         r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_line2 = re.compile(
         r"""
         (?P<interface>\S+)\scurrent\sstate
@@ -36,19 +38,19 @@ class Script(BaseScript):
         .*?
         (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
         """,
-        re.MULTILINE | re.DOTALL | re.VERBOSE)
-    rx_descr1 = re.compile(
-        r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
-    rx_descr2 = re.compile(
-        r"^(?P<interface>\S+)\s+\S+\s+\S+\s+(?P<description>.+)", re.MULTILINE)
+        re.MULTILINE | re.DOTALL | re.VERBOSE,
+    )
+    rx_descr1 = re.compile(r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
+    rx_descr2 = re.compile(r"^(?P<interface>\S+)\s+\S+\s+\S+\s+(?P<description>.+)", re.MULTILINE)
     rx_descr3 = re.compile(
         r"^(?P<interface>(?:Eth|GE|TENGE)\d+/\d+/\d+)\s+"
         r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
         r"(?P<duplex>.+?)\s+"
         r"(?P<mode>access|trunk|hybrid|trunking|A|T|H)\s+"
-        r"(?P<pvid>\d+)\s*(?P<description>.*)$", re.MULTILINE)
-    rx_new_descr = re.compile(
-        r"^Interface\s+PHY\s+Protocol\s+Description", re.MULTILINE)
+        r"(?P<pvid>\d+)\s*(?P<description>.*)$",
+        re.MULTILINE,
+    )
+    rx_new_descr = re.compile(r"^Interface\s+PHY\s+Protocol\s+Description", re.MULTILINE)
 
     @staticmethod
     def convert_vlan(vlans):
@@ -67,9 +69,12 @@ class Script(BaseScript):
         names = {x: y for y, x in six.iteritems(self.scripts.get_ifindexes())}
         r = {}
         for port_num, ifindex, port_type, pvid in self.snmp.get_tables(
-                [mib["HUAWEI-L2IF-MIB::hwL2IfPortIfIndex"],
-                 mib["HUAWEI-L2IF-MIB::hwL2IfPortType"],
-                 mib["HUAWEI-L2IF-MIB::hwL2IfPVID"]]):
+            [
+                mib["HUAWEI-L2IF-MIB::hwL2IfPortIfIndex"],
+                mib["HUAWEI-L2IF-MIB::hwL2IfPortType"],
+                mib["HUAWEI-L2IF-MIB::hwL2IfPVID"],
+            ]
+        ):
             # print port_num, ifindex, port_type, pvid
             r[port_num] = {
                 "interface": names[ifindex],
@@ -78,7 +83,7 @@ class Script(BaseScript):
                 # "port_type": port_type,
                 # "untagged": pvid,
                 "tagged": [],
-                "members": []
+                "members": [],
             }
             # Avoid zero-value untagged
             # Found on ME60-X8 5.160 (V600R008C10SPC300)
@@ -92,9 +97,11 @@ class Script(BaseScript):
                 # HighVLAN
                 start = 2048
             # if vlans_bank.startswith("?"):
-                # Perhaps 1 vlan
+            # Perhaps 1 vlan
             #    vlans_bank = vlans_bank[1:]
-            r[port_num]["tagged"] += list(compress(range(start, 4096), self.convert_vlan(vlans_bank)))
+            r[port_num]["tagged"] += list(
+                compress(range(start, 4096), self.convert_vlan(vlans_bank))
+            )
             r[port_num]["802.1Q Enabled"] = True
         # tagged_vlans = list()
         # hybrid_vlans = list(self.snmp.get_tables([mib["HUAWEI-L2IF-MIB::hwL2IfHybridPortTable"]]))
@@ -148,10 +155,7 @@ class Script(BaseScript):
             try:
                 v = self.cli("display port vlan")
             except self.CLISyntaxError:
-                v = "%s\n%s" % (
-                    self.cli("display port trunk"),
-                    self.cli("display port hybrid")
-                )
+                v = "%s\n%s" % (self.cli("display port trunk"), self.cli("display port hybrid"))
 
         for match in rx_line.finditer(v):
             # port = {}
@@ -159,10 +163,7 @@ class Script(BaseScript):
             trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
             if trunk:
                 vlans = match.group("vlans").strip()
-                if (
-                    vlans and (vlans not in ["-", "none"]) and
-                    is_int(vlans[0])
-                ):
+                if vlans and (vlans not in ["-", "none"]) and is_int(vlans[0]):
                     vlans = self.rx_vlan_comment.sub("", vlans)
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)
@@ -190,7 +191,7 @@ class Script(BaseScript):
                 "802.1Q Enabled": trunk,
                 "802.1ad Tunnel": False,
                 "tagged": [x for x in tagged if x in known_vlans],
-                "members": members
+                "members": members,
             }
             if match.group("mode") in ("access", "hybrid"):
                 port["untagged"] = pvid

@@ -30,11 +30,7 @@ class Script(BaseScript):
         version = c.get("root.Properties.Firmware.Version")
         serial = c.get("root.Properties.System.SerialNumber")
 
-        r = {
-            "vendor": 'Axis',
-            "platform": platform,
-            "version": version
-        }
+        r = {"vendor": "Axis", "platform": platform, "version": version}
         if serial:
             r["attributes"] = {}
             r["attributes"]["Serial Number"] = serial

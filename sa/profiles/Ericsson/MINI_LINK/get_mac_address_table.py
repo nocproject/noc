@@ -27,10 +27,12 @@ class Script(BaseScript):
         r = []
         t = parse_table(self.cli_clean(cmd), footer="^Showing")
         for i in t:
-            r += [{
-                "vlan_id": i[0],
-                "mac": i[1],
-                "interfaces": [i[3]],
-                "type": "D" if i[2] == "learned" else "S"
-            }]
+            r += [
+                {
+                    "vlan_id": i[0],
+                    "mac": i[1],
+                    "interfaces": [i[3]],
+                    "type": "D" if i[2] == "learned" else "S",
+                }
+            ]
         return r

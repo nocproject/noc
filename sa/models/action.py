@@ -11,14 +11,21 @@ from __future__ import absolute_import
 import re
 import threading
 import operator
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, UUIDField, IntField,
-                                BooleanField, ListField,
-                                EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    IntField,
+    BooleanField,
+    ListField,
+    EmbeddedDocumentField,
+)
 import six
 import jinja2
 import cachetools
+
 # NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
@@ -37,7 +44,7 @@ class ActionParameter(EmbeddedDocument):
             ("str", "str"),
             ("interface", "interface"),
             ("ip", "ip"),
-            ("vrf", "vrf")
+            ("vrf", "vrf"),
         ]
     )
     description = StringField()
@@ -53,7 +60,7 @@ class ActionParameter(EmbeddedDocument):
             "name": self.name,
             "type": self.type,
             "description": self.description,
-            "is_required": self.is_required
+            "is_required": self.is_required,
         }
         if self.default is not None:
             r["default"] = self.default
@@ -66,7 +73,7 @@ class Action(Document):
         "collection": "noc.actions",
         "strict": False,
         "auto_create_index": False,
-        "json_collection": "sa.actions"
+        "json_collection": "sa.actions",
     }
     uuid = UUIDField(unique=True)
     name = StringField(unique=True)
@@ -84,8 +91,7 @@ class Action(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Action.objects.filter(id=id).first()
 
@@ -100,7 +106,7 @@ class Action(Document):
             "uuid": self.uuid,
             "label": self.label,
             "description": self.description,
-            "access_level": self.access_level
+            "access_level": self.access_level,
         }
         if self.handler:
             r["handler"] = self.handler
@@ -108,12 +114,19 @@ class Action(Document):
         return r
 
     def to_json(self):
-        return to_json(self.json_data,
-                       order=["name", "$collection", "uuid", "label",
-                              "description",
-                              "access_level",
-                              "handler",
-                              "params"])
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "label",
+                "description",
+                "access_level",
+                "handler",
+                "params",
+            ],
+        )
 
     def get_commands(self, obj):
         """
@@ -121,40 +134,41 @@ class Action(Document):
         :param obj: Managed Object
         """
         from .actioncommands import ActionCommands
-        for ac in ActionCommands.objects.filter(
-                action=self, profile=obj.profile.id
-        ).order_by("preference"):
+
+        for ac in ActionCommands.objects.filter(action=self, profile=obj.profile.id).order_by(
+            "preference"
+        ):
             if not ac.match:
                 return ac
             for m in ac.match:
                 if (
-                    not m.platform_re or (
-                        obj.platform and
-                        re.search(m.platform_re, obj.platform.name)
-                    )
+                    not m.platform_re
+                    or (obj.platform and re.search(m.platform_re, obj.platform.name))
                 ) and (
-                    not m.version_re or (
-                        obj.version and
-                        re.search(m.version_re, obj.version.version))
+                    not m.version_re
+                    or (obj.version and re.search(m.version_re, obj.version.version))
                 ):
                     return ac
         return None
 
-    def expand(self, obj, **kwargs):
+    def expand_ex(self, obj, **kwargs):
         ac = self.get_commands(obj)
         if not ac:
-            return None
+            return None, None
         # Render template
         loader = jinja2.DictLoader({"tpl": ac.commands})
         env = jinja2.Environment(loader=loader)
         template = env.get_template("tpl")
-        return template.render(**self.clean_args(obj, **kwargs))
+        return ac, template.render(**self.clean_args(obj, **kwargs))
+
+    def expand(self, obj, **kwargs):
+        return self.expand_ex(obj, **kwargs)[1]
 
     def execute(self, obj, **kwargs):
         """
         Execute commands
         """
-        commands = self.expand(obj, **kwargs)
+        ac, commands = self.expand_ex(obj, **kwargs)
         if commands is None:
             return None
         # Execute rendered commands
@@ -167,9 +181,7 @@ class Action(Document):
         args = {}
         for p in self.params:
             if p.name not in kwargs and p.is_required and not p.default:
-                raise ValueError(
-                    "Required parameter '%s' is missed" % p.name
-                )
+                raise ValueError("Required parameter '%s' is missed" % p.name)
             v = kwargs.get(p.name, p.default)
             if v is None:
                 continue
@@ -178,36 +190,25 @@ class Action(Document):
                 try:
                     v = int(v)
                 except ValueError:
-                    raise ValueError(
-                        "Invalid integer in parameter '%s': '%s'" % (
-                            p.name, v)
-                    )
+                    raise ValueError("Invalid integer in parameter '%s': '%s'" % (p.name, v))
             elif p.type == "float":
                 # Float type
                 try:
                     v = float(v)
                 except ValueError:
-                    raise ValueError(
-                        "Invalid float in parameter '%s': '%s'" % (
-                            p.name, v)
-                    )
+                    raise ValueError("Invalid float in parameter '%s': '%s'" % (p.name, v))
             elif p.type == "interface":
                 # Interface
                 try:
                     v = obj.get_profile().convert_interface_name(v)
                 except Exception:
-                    raise ValueError(
-                        "Invalid interface name in parameter '%s': '%s'" % (
-                            p.name, v)
-                    )
+                    raise ValueError("Invalid interface name in parameter '%s': '%s'" % (p.name, v))
             elif p.type == "ip":
                 # IP address
                 try:
                     v = IP.prefix(v)
                 except ValueError:
-                    raise ValueError(
-                        "Invalid ip in parameter '%s': '%s'" % (p.name, v)
-                    )
+                    raise ValueError("Invalid ip in parameter '%s': '%s'" % (p.name, v))
             elif p.type == "vrf":
                 if isinstance(v, VRF):
                     pass
@@ -215,20 +216,14 @@ class Action(Document):
                     try:
                         v = VRF.objects.get(id=v)
                     except VRF.DoesNotExist:
-                        raise ValueError(
-                            "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
-                        )
+                        raise ValueError("Unknown VRF in parameter '%s': '%s'" % (p.name, v))
                 elif isinstance(v, six.string_types):
                     try:
                         v = VRF.objects.get(name=v)
                     except VRF.DoesNotExist:
-                        raise ValueError(
-                            "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
-                        )
+                        raise ValueError("Unknown VRF in parameter '%s': '%s'" % (p.name, v))
                 else:
-                    raise ValueError(
-                        "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
-                    )
+                    raise ValueError("Unknown VRF in parameter '%s': '%s'" % (p.name, v))
             args[str(p.name)] = v
         return args
 

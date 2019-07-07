@@ -23,7 +23,7 @@ class Profile(BaseProfile):
         "tu": "tunnel",
         "gr": "tunnel",
         "br": "physical",
-        "ra": "physical"
+        "ra": "physical",
     }
 
     @classmethod

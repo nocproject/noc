@@ -16,21 +16,21 @@ class Script(BaseScript):
     interface = IAddVlan
 
     def execute(self, vlan_id, name, tagged_ports):
-        a = ''
+        a = ""
         if not self.scripts.has_vlan(vlan_id=vlan_id):
             a = 1
-        ports = ''
-        channels = ''
+        ports = ""
+        channels = ""
         if tagged_ports:
             for port in tagged_ports:
-                if port[:2] == 'ch':
+                if port[:2] == "ch":
                     if channels:
-                        channels = channels + ',' + port[2:]
+                        channels = channels + "," + port[2:]
                     else:
                         channels = port[2:]
                 else:
                     if ports:
-                        ports = ports + ',' + port
+                        ports = ports + "," + port
                     else:
                         ports = port
 

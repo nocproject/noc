@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -17,13 +18,11 @@ class Script(BaseScript):
     name = "Dell.Powerconnect55xx.get_version"
     cache = True
     interface = IGetVersion
-    rx_55xx_hw = re.compile(
-        r"^Type:\s+PowerConnect (?P<platform>\S+)", re.MULTILINE)
+    rx_55xx_hw = re.compile(r"^Type:\s+PowerConnect (?P<platform>\S+)", re.MULTILINE)
     rx_55xx_fw = re.compile(
-        r"^\d\s+\d\s+\S+\s+(?P<version>\S+)\s+\S+\s+\S+\s+Active\*",
-        re.MULTILINE)
-    rx_55xx_ser = re.compile(
-        r"^\s+\d\s+(?P<serial>\S+)", re.MULTILINE)
+        r"^\d\s+\d\s+\S+\s+(?P<version>\S+)\s+\S+\s+\S+\s+Active\*", re.MULTILINE
+    )
+    rx_55xx_ser = re.compile(r"^\s+\d\s+(?P<serial>\S+)", re.MULTILINE)
 
     def execute(self):
         s = self.cli("show system unit 1", cached=True)
@@ -39,7 +38,5 @@ class Script(BaseScript):
             "vendor": "Dell",
             "platform": platform,
             "version": version,
-            "attributes": {
-                "Serial Number": serial
-            }
+            "attributes": {"Serial Number": serial},
         }

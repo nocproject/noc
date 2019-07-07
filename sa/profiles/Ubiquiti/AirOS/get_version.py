@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -26,20 +27,12 @@ class Script(BaseScript):
         v_match = self.rx_version.search(v)
         board = self.cli("grep board.name /etc/board.info").strip()
         board = board.split("=", 1)[1].strip()
-        return {
-            "vendor": "Ubiquiti",
-            "platform": board,
-            "version": v_match.group("version")
-        }
+        return {"vendor": "Ubiquiti", "platform": board, "version": v_match.group("version")}
 
     def execute_snmp(self):
         try:
             platform = self.snmp.get("1.2.840.10036.3.1.2.1.3.5")
             version = self.snmp.get("1.2.840.10036.3.1.2.1.4.5")
-            return {
-                "vendor": "Ubiquiti",
-                "platform": platform,
-                "version": version
-            }
+            return {"vendor": "Ubiquiti", "platform": platform, "version": version}
         except self.snmp.TimeOutError:
             raise self.UnexpectedResultError

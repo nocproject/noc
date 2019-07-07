@@ -8,10 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import (DictParameter, ListOfParameter,
-                   InterfaceNameParameter, StringParameter, IntParameter)
+from .base import (
+    DictParameter,
+    ListOfParameter,
+    InterfaceNameParameter,
+    StringParameter,
+    IntParameter,
+)
 
 
 class IGetCopperTDRDiag(BaseInterface):
@@ -53,25 +59,31 @@ class IGetCopperTDRDiag(BaseInterface):
                  {'pair': 3, 'status': 'O', 'distance_cm': 0},\
                  {'pair': 4, 'status': 'O', 'distance_cm': 0}]}]
     """
+
     interface = InterfaceNameParameter(required=False)
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "interface": InterfaceNameParameter(),
-        "pairs": ListOfParameter(element=DictParameter(attrs={
-            "pair": IntParameter(),
-            "status": StringParameter(choices=[
-                "T",  # Terminated
-                "O",  # Open
-                "S",  # Short
-                "N"   # N/A
-            ]),
-            # Measured distance in centimeters.
-            # Interpretation depends on status.
-            # T - cable length
-            # O - always 0
-            # S - distance to short-circuit
-            # N - always 0
-            "distance_cm": IntParameter(),
-            # Optional measurement variance
-            "variance_cm": IntParameter(required=False)
-        }))
-    }))
+    returns = ListOfParameter(
+        element=DictParameter(
+            attrs={
+                "interface": InterfaceNameParameter(),
+                "pairs": ListOfParameter(
+                    element=DictParameter(
+                        attrs={
+                            "pair": IntParameter(),
+                            "status": StringParameter(
+                                choices=["T", "O", "S", "N"]  # Terminated  # Open  # Short  # N/A
+                            ),
+                            # Measured distance in centimeters.
+                            # Interpretation depends on status.
+                            # T - cable length
+                            # O - always 0
+                            # S - distance to short-circuit
+                            # N - always 0
+                            "distance_cm": IntParameter(),
+                            # Optional measurement variance
+                            "variance_cm": IntParameter(required=False),
+                        }
+                    )
+                ),
+            }
+        )
+    )

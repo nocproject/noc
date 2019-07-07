@@ -10,6 +10,7 @@
 # python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,22 +19,21 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     """
     """
+
     name = "InfiNet.WANFlexX.get_interfaces"
     interface = IGetInterfaces
     cache = True
 
-    rx_ifname = re.compile(r"^(?P<name>\S+): (?P<flags>\S+) mtu (?P<mtu>\d+)$",
-                           re.MULTILINE)
-    rx_mac = re.compile(r"^\s+ether (?P<mac>[0-9a-f:]+)\s?$",
-                        re.MULTILINE)
-    rx_vlan = re.compile(r"^\s+vlan: (?P<vlan>\d+)",
-                         re.MULTILINE)
-    rx_vlan2 = re.compile(r"^\s+vlan: (?P<vlan>\d+)\s+parent interface: (?P<ifname>\S+)",
-                          re.MULTILINE)
+    rx_ifname = re.compile(r"^(?P<name>\S+): (?P<flags>\S+) mtu (?P<mtu>\d+)$", re.MULTILINE)
+    rx_mac = re.compile(r"^\s+ether (?P<mac>[0-9a-f:]+)\s?$", re.MULTILINE)
+    rx_vlan = re.compile(r"^\s+vlan: (?P<vlan>\d+)", re.MULTILINE)
+    rx_vlan2 = re.compile(
+        r"^\s+vlan: (?P<vlan>\d+)\s+parent interface: (?P<ifname>\S+)", re.MULTILINE
+    )
     rx_vlan3 = re.compile(r"^svi(?P<vlan>\d+)$")
-    rx_ipaddr = re.compile(r"^(?P<ifname>\S+)\s+(?P<net>[0-9\./]+)\s+"
-                           r"(?P<ipaddr>[0-9\.]+)\s+",
-                           re.MULTILINE)
+    rx_ipaddr = re.compile(
+        r"^(?P<ifname>\S+)\s+(?P<net>[0-9\./]+)\s+" r"(?P<ipaddr>[0-9\.]+)\s+", re.MULTILINE
+    )
 
     TYPE_MAP = {
         "lo": "loopback",
@@ -41,7 +41,7 @@ class Script(BaseScript):
         "rf": "physical",
         "vl": "SVI",
         "nu": "null",
-        "sv": "SVI"
+        "sv": "SVI",
     }
 
     def execute(self):
@@ -53,16 +53,8 @@ class Script(BaseScript):
             if not match:
                 continue
             ifname = match.group("name")
-            iface = {
-                "name": ifname,
-                "type": self.TYPE_MAP[ifname[:2]],
-                "subinterfaces": []
-            }
-            sub = {
-                "name": ifname,
-                "mtu": match.group("mtu"),
-                "enabled_afi": []
-            }
+            iface = {"name": ifname, "type": self.TYPE_MAP[ifname[:2]], "subinterfaces": []}
+            sub = {"name": ifname, "mtu": match.group("mtu"), "enabled_afi": []}
             # get interfaces mac addresses
             match = self.rx_mac.search(block)
             if match:

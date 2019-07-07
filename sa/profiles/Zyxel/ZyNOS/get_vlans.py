@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.core.script.base import BaseScript
@@ -17,19 +18,16 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile(r"^\s*\d+\s+(?P<vlan_id>\d+)\s+.*$",
-                re.MULTILINE)
-    rx_vlan_name = re.compile(r"^\s+Name\s+:(?P<name>.*)$",
-                re.MULTILINE)
+    rx_vlan = re.compile(r"^\s*\d+\s+(?P<vlan_id>\d+)\s+.*$", re.MULTILINE)
+    rx_vlan_name = re.compile(r"^\s+Name\s+:(?P<name>.*)$", re.MULTILINE)
 
     def execute(self):
         if self.has_snmp():
             try:
                 r = []
-                for i, vid, name in self.snmp.join([
-                    "1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    "1.3.6.1.2.1.17.7.1.4.3.1.1"
-                ]):
+                for i, vid, name in self.snmp.join(
+                    ["1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.3.1.1"]
+                ):
                     if name is not None:
                         r += [{"vlan_id": vid, "name": name}]
                     else:
@@ -46,12 +44,7 @@ class Script(BaseScript):
             match_name = self.re_search(self.rx_vlan_name, vn)
             name = match_name.group("name")
             if name != "":
-                r += [{
-                    "vlan_id": vid,
-                    "name": name
-                }]
+                r += [{"vlan_id": vid, "name": name}]
             else:
-                r += [{
-                    "vlan_id": vid
-                }]
+                r += [{"vlan_id": vid}]
         return r

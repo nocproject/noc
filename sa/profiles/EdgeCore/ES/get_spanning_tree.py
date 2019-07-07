@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -31,7 +32,7 @@ class Script(BaseScript):
         "oper edge port": "EDGE_PORT",
         "role": "ROLE",
         "state": "STATE",
-        "oper link type": "LINK_TYPE"
+        "oper link type": "LINK_TYPE",
     }
 
     STATE_MAP = {
@@ -79,10 +80,7 @@ class Script(BaseScript):
         _, cfg = next(g)
         if cfg["STP_ENABLED"].lower() != "enabled":
             # No STP
-            return {
-                "mode": "None",
-                "instances": []
-            }
+            return {"mode": "None", "instances": []}
 
         # Sometimes crazy root ids like <root_priority>.0.<mac> is shown
         desg_root = cfg["DESG_ROOT"].replace(".0.", ".")
@@ -95,7 +93,7 @@ class Script(BaseScript):
             "bridge_priority": cfg["PRIORITY"],
             "root_id": root_id,
             "root_priority": int(root_priority),
-            "interfaces": []
+            "interfaces": [],
         }
         for sn, sv in g:
             if sv.get("DESG_BRIDGE"):
@@ -113,10 +111,7 @@ class Script(BaseScript):
                 "designated_bridge_priority": desg_priority,
                 "designated_port_id": sv.get("DESG_PORT", None),
                 "edge": sv.get("EDGE_PORT", "disabled") == "enabled",
-                "point_to_point": sv.get("LINK_TYPE", None) == "point-to-point"
+                "point_to_point": sv.get("LINK_TYPE", None) == "point-to-point",
             }
             instance["interfaces"] += [iface]
-        return {
-            "mode": cfg["STP_MODE"].upper(),
-            "instances": [instance]
-        }
+        return {"mode": cfg["STP_MODE"].upper(), "instances": [instance]}

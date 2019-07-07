@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,12 +21,14 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"Version (?P<version>\S+).+cisco (?P<platform>Catalyst \d+? \S+?"
-        r" processor)", re.MULTILINE | re.DOTALL)
+        r"Version (?P<version>\S+).+cisco (?P<platform>Catalyst \d+? \S+?" r" processor)",
+        re.MULTILINE | re.DOTALL,
+    )
     rx_ver1 = re.compile(
         r"^Cisco IOS Software,\s+(?P<platform>.+?) Software "
         r"\((?P<image>[^)]+)\), Version (?P<version>[^\s,]+)",
-        re.MULTILINE | re.DOTALL)
+        re.MULTILINE | re.DOTALL,
+    )
 
     def execute(self):
         v = self.cli("show version", cached=True)
@@ -43,9 +46,7 @@ class Script(BaseScript):
                     "vendor": "Cisco",
                     "platform": match.group("platform"),
                     "version": match.group("version"),
-                    "attributes": {
-                        "image": match.group("image"),
-                    }
+                    "attributes": {"image": match.group("image")},
                 }
             else:
                 raise self.NotSupportedError()

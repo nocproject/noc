@@ -19,28 +19,30 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<oper_status>Up|Down|Not Present)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_port1 = re.compile(
         r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<admin_status>Up|Down)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
     rx_descr = re.compile(
-        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+(?P<descr>.+)$",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+(?P<descr>.+)$", re.MULTILINE | re.IGNORECASE
+    )
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
-        r"(?P<membership>\S+)\s*\n", re.MULTILINE)
+        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+" r"(?P<membership>\S+)\s*\n",
+        re.MULTILINE,
+    )
     rx_vlan_ipif = re.compile(
-        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+(?:Static|DHCP)",
-        re.MULTILINE)
-    rx_mac = re.compile(
-        r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
+        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+(?:Static|DHCP)", re.MULTILINE
+    )
+    rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_enabled = re.compile(
-        r"^\s*(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+Enabled",
-        re.MULTILINE | re.IGNORECASE)
+        r"^\s*(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+Enabled", re.MULTILINE | re.IGNORECASE
+    )
     rx_lldp = re.compile(
-        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+(?:Rx|Tx)",
-        re.MULTILINE | re.IGNORECASE)
+        r"^(?P<port>(?:\d/)?(?:Gi|Te|Po|g|e|ch)\S+)\s+(?:Rx|Tx)", re.MULTILINE | re.IGNORECASE
+    )
 
     def get_gvrp(self):
         try:
@@ -96,7 +98,7 @@ class Script(BaseScript):
                 adm_status += [match.groupdict()]
         for match in self.rx_port.finditer(self.cli("show interfaces status")):
             ifname = match.group("port")
-            if ifname.startswith(('Po', 'ch')):
+            if ifname.startswith(("Po", "ch")):
                 iftype = "aggregated"
             else:
                 iftype = "physical"
@@ -110,7 +112,7 @@ class Script(BaseScript):
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_protocols": [],
-                "subinterfaces": []
+                "subinterfaces": [],
             }
             if ifname in gvrp:
                 iface["enabled_protocols"] += ["GVRP"]
@@ -125,7 +127,7 @@ class Script(BaseScript):
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
                 "enabled_afi": ["BRIDGE"],
-                "tagged_vlans": []
+                "tagged_vlans": [],
             }
             for i in descr:
                 if ifname == i["port"]:
@@ -158,15 +160,17 @@ class Script(BaseScript):
                     "admin_status": True,
                     "oper_status": True,
                     "mac": mac,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": True,
-                        "oper_status": True,
-                        "mac": mac,
-                        "enabled_afi": ["IPv4"],
-                        "ipv4_addresses": [match.group("address")],
-                        "vlan_ids": [int(match.group("vlan_id"))]
-                    }]
+                    "subinterfaces": [
+                        {
+                            "name": ifname,
+                            "admin_status": True,
+                            "oper_status": True,
+                            "mac": mac,
+                            "enabled_afi": ["IPv4"],
+                            "ipv4_addresses": [match.group("address")],
+                            "vlan_ids": [int(match.group("vlan_id"))],
+                        }
+                    ],
                 }
                 for i in interfaces:
                     if i["name"] == ifname:

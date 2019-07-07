@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -19,7 +20,8 @@ class Script(BaseScript):
 
     rx_interface = re.compile(
         r"^\s*(?:Fast|Gigabit)?\s*Ethernet\s+(?P<interface>\S+)\s+"
-        r"(?:is|current state:)\s+(enabled|disabled),\s+port\s+link\s+is\s+(up|down)")
+        r"(?:is|current state:)\s+(enabled|disabled),\s+port\s+link\s+is\s+(up|down)"
+    )
     rx_mode = re.compile(r"^\s*Port\s+mode\s*:\s*(?P<mode>\S+)$")
     rx_vlan_t = re.compile(r"^\s*Vlan\s+allowed\s*:\s*(?P<vlans>\S+)$")
     rx_vlan_at = re.compile(r"^\s*Tagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
@@ -30,6 +32,7 @@ class Script(BaseScript):
     rx_channel_description = re.compile(r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
     rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
     """
+
     def execute(self):
         # TODO
         # Get portchannels
@@ -184,7 +187,8 @@ class Script(BaseScript):
         iface_conf = self.cli("show interface")
         # Correct Qtech BUG:
         iface_conf = iface_conf.replace(
-            "\n\n                                                                          ", "\n")
+            "\n\n                                                                          ", "\n"
+        )
         iface_conf = iface_conf.splitlines()
         i = 0
         L = len(iface_conf) - 2
@@ -203,11 +207,7 @@ class Script(BaseScript):
                         port_channels.remove(p)
                         break
             if interface not in port_vlans:
-                port_vlans.update({interface: {
-                    "tagged": [],
-                    "untagged": '',
-                }
-                })
+                port_vlans.update({interface: {"tagged": [], "untagged": ""}})
 
             i += 1
             match_mod = self.rx_mode.match(iface_conf[i])
@@ -217,7 +217,7 @@ class Script(BaseScript):
             mode = match_mod.group("mode")
 
             i += 1
-            if 'trunk' == mode:
+            if "trunk" == mode:
                 match = self.rx_vlan_t.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
@@ -226,7 +226,7 @@ class Script(BaseScript):
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
-            elif 'access' == mode or 'hybrid' == mode:
+            elif "access" == mode or "hybrid" == mode:
                 match = self.rx_vlan_at.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
@@ -239,7 +239,7 @@ class Script(BaseScript):
                 match = self.rx_vlan_au.match(iface_conf[i])
                 if match:
                     vl = match.group("vlans")
-                    vlans = vl.split(',')[0]
+                    vlans = vl.split(",")[0]
                     if "-" in vlans:
                         vlans = vlans.split("-")[0]
                     port_vlans[interface]["untagged"] = vlans
@@ -270,9 +270,9 @@ class Script(BaseScript):
                         if match:
                             description = match.group("description")
                             if not description:
-                                description = ''
+                                description = ""
                         else:
-                            description = ''
+                            description = ""
                         members = p["members"]
                         portchannels.remove(p)
                         write = True
@@ -284,7 +284,7 @@ class Script(BaseScript):
                     status = False
                 description = match.group("description")
                 if not description:
-                    description = ''
+                    description = ""
                 members = []
                 write = True
             if write:

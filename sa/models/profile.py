@@ -11,11 +11,13 @@ from __future__ import absolute_import
 import os
 import threading
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
 import cachetools
+
 # NOC modules
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
@@ -26,15 +28,17 @@ id_lock = threading.Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("inv.Firmware", "profile"),
-    ("sa.ActionCommands", "profile"),
-    ("sa.ManagedObject", "profile"),
-    ("sa.ManagedObjectSelector", "filter_profile"),
-    ("sa.ProfileCheckRule", "profile"),
-    ("dev.Spec", "profile"),
-    ("peer.PeeringPoint", "profile")
-])
+@on_delete_check(
+    check=[
+        ("inv.Firmware", "profile"),
+        ("sa.ActionCommands", "profile"),
+        ("sa.ManagedObject", "profile"),
+        ("sa.ManagedObjectSelector", "filter_profile"),
+        ("sa.ProfileCheckRule", "profile"),
+        ("dev.Spec", "profile"),
+        ("peer.PeeringPoint", "profile"),
+    ]
+)
 @six.python_2_unicode_compatible
 class Profile(Document):
     meta = {
@@ -42,7 +46,7 @@ class Profile(Document):
         "strict": False,
         "auto_create_index": False,
         "json_collection": "sa.profiles",
-        "json_unique_fields": ["name"]
+        "json_unique_fields": ["name"],
     }
     name = StringField(unique=True)
     description = StringField(required=False)
@@ -59,30 +63,30 @@ class Profile(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Profile.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return Profile.objects.filter(bi_id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_name_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return Profile.objects.filter(name=name).first()
 
     def to_json(self):
-        return to_json({
-            "$collection": self._meta["json_collection"],
-            "name": self.name,
-            "uuid": self.uuid,
-            "description": self.description
-        }, order=["name", "uuid", "description"])
+        return to_json(
+            {
+                "$collection": self._meta["json_collection"],
+                "name": self.name,
+                "uuid": self.uuid,
+                "description": self.description,
+            },
+            order=["name", "uuid", "description"],
+        )
 
     def get_json_path(self):
         vendor, soft = self.name.split(".")
@@ -98,7 +102,5 @@ class Profile(Document):
     @classmethod
     def get_generic_profile_id(cls):
         if not hasattr(cls, "_generic_profile_id"):
-            cls._generic_profile_id = Profile.objects.filter(
-                name=GENERIC_PROFILE
-            ).first().id
+            cls._generic_profile_id = Profile.objects.filter(name=GENERIC_PROFILE).first().id
         return cls._generic_profile_id

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -20,10 +21,12 @@ class Script(BaseScript):
     rx_dev = re.compile(
         r"Device Type\s+:\s+(?P<part_no>\S+).+Boot PROM Version\s+:\s+"
         r"(?:Build\s+)?(?P<bootprom>\S+).+Hardware Version\s+:\s+"
-        r"(?P<revision>\S+)", re.MULTILINE | re.DOTALL)
+        r"(?P<revision>\S+)",
+        re.MULTILINE | re.DOTALL,
+    )
     rx_ser = re.compile(
-        r"Serial Number\s+:\s+(?P<serial>.+)\nSystem Name",
-        re.MULTILINE | re.DOTALL)
+        r"Serial Number\s+:\s+(?P<serial>.+)\nSystem Name", re.MULTILINE | re.DOTALL
+    )
     rx_des = re.compile(r"Device Type\s+:\s+(?P<descr>.+?)\n")
 
     def execute(self):
@@ -34,13 +37,15 @@ class Script(BaseScript):
         serial = self.rx_ser.search(s).group("serial")
         description = self.rx_des.search(s).group("descr")
 
-        r = [{
-            "type": "CHASSIS",
-            "number": "1",
-            "vendor": "DLINK",
-            "part_no": [part_no],
-            "revision": revision,
-            "serial": serial,
-            "description": description
-        }]
+        r = [
+            {
+                "type": "CHASSIS",
+                "number": "1",
+                "vendor": "DLINK",
+                "part_no": [part_no],
+                "revision": revision,
+                "serial": serial,
+                "description": description,
+            }
+        ]
         return r

@@ -9,6 +9,7 @@
 # Python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -24,7 +25,8 @@ class Script(BaseScript):
         r"(([ 0-9]+)\n)?[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
         r"([ \-xnf]+)\n[ ]+(?P<portmask>[\-tu]+)"
         r"[ ]*(?P<uplinkmask>[\-tu]*)",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE,
+    )
 
     def execute(self):
         tagged = defaultdict(list)
@@ -34,12 +36,7 @@ class Script(BaseScript):
         r = []
 
         for line in parse_table(va):
-            r += [{
-                "interface": line[0],
-                "untagged": line[3],
-                "tagged": [],
-                "members": []
-            }]
+            r += [{"interface": line[0], "untagged": line[3], "tagged": [], "members": []}]
         for match in self.rx_vlan.finditer(vl):
             up = 0
             if match.group("vstatus") == "enabled":
@@ -50,11 +47,13 @@ class Script(BaseScript):
                     # if i == "U":
                     # untagged[up]+=[match.group("vid")]
         for i in range(up):
-            r += [{
-                "interface": "enet" + str(i + 1),
-                "802.1Q Enabled": True,
-                # "untagged": untagged[i+1],
-                "tagged": tagged[i + 1],
-                "members": []
-            }]
+            r += [
+                {
+                    "interface": "enet" + str(i + 1),
+                    "802.1Q Enabled": True,
+                    # "untagged": untagged[i+1],
+                    "tagged": tagged[i + 1],
+                    "members": [],
+                }
+            ]
         return r

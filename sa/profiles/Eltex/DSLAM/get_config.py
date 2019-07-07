@@ -16,9 +16,9 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        config = ''
+        config = ""
         try:
-            for j in ['user', 'adsl', 'iptv', 'snmp', 'pppi', 'dhcp']:
+            for j in ["user", "adsl", "iptv", "snmp", "pppi", "dhcp"]:
                 config = config + "\n" + self.cli("system show cfg file " + j)
         except self.CLISyntaxError:
             pass

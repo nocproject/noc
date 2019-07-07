@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors

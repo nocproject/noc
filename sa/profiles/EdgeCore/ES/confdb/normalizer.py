@@ -22,17 +22,11 @@ class ESNormalizer(BaseNormalizer):
 
     @match("username", ANY, "access-level", ANY)
     def normalize_username_access_level(self, tokens):
-        yield self.make_user_class(
-            username=tokens[1],
-            class_name="level-%s" % tokens[3]
-        )
+        yield self.make_user_class(username=tokens[1], class_name="level-%s" % tokens[3])
 
     @match("username", ANY, "password", REST)
     def normalize_username_password(self, tokens):
-        yield self.make_user_encrypted_password(
-            username=tokens[1],
-            password=" ".join(tokens[3:])
-        )
+        yield self.make_user_encrypted_password(username=tokens[1], password=" ".join(tokens[3:]))
 
     @match("interface", "ethernet", ANY)
     def normalize_interface(self, tokens):
@@ -42,59 +36,40 @@ class ESNormalizer(BaseNormalizer):
     @match("interface", "ethernet", ANY, "description", REST)
     def normalize_interface_description(self, tokens):
         yield self.make_interface_description(
-            interface=self.interface_name(tokens[1], tokens[2]),
-            description=" ".join(tokens[4:])
+            interface=self.interface_name(tokens[1], tokens[2]), description=" ".join(tokens[4:])
         )
 
     @match("interface", "ethernet", ANY, "shutdown")
     def normalize_interface_shutdown(self, tokens):
         yield self.make_interface_admin_status(
-            interface=self.interface_name(tokens[1], tokens[2]),
-            admin_status="off"
+            interface=self.interface_name(tokens[1], tokens[2]), admin_status="off"
         )
 
     @match("interface", "ethernet", ANY, "port", "security", "max-mac-count", ANY)
     def normalize_port_security(self, tokens):
         if_name = self.interface_name(tokens[1], tokens[2])
-        yield self.make_unit_port_security_max_mac(
-            interface=if_name,
-            unit=if_name,
-            limit=tokens[6]
-        )
+        yield self.make_unit_port_security_max_mac(interface=if_name, unit=if_name, limit=tokens[6])
 
     @match("interface", "ethernet", ANY, "spanning-tree", "cost", ANY)
     def normalize_stp_cost(self, tokens):
         yield self.make_spanning_tree_interface_cost(
-            interface=self.interface_name(tokens[1], tokens[2]),
-            cost=tokens[5]
+            interface=self.interface_name(tokens[1], tokens[2]), cost=tokens[5]
         )
 
     @match("interface", "ethernet", ANY, "switchport", "allowed", "vlan", "add", ANY, "untagged")
     def normalize_switchport_untagged(self, tokens):
         if_name = self.interface_name(tokens[1], tokens[2])
-        yield self.make_switchport_untagged(
-            interface=if_name,
-            unit=if_name,
-            vlan_filter=tokens[7]
-        )
+        yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=tokens[7])
 
     @match("interface", "ethernet", ANY, "switchport", "allowed", "vlan", "add", ANY, "tagged")
     def normalize_switchport_tagged(self, tokens):
         if_name = self.interface_name(tokens[1], tokens[2])
-        yield self.make_switchport_tagged(
-            interface=if_name,
-            unit=if_name,
-            vlan_filter=tokens[7]
-        )
+        yield self.make_switchport_tagged(interface=if_name, unit=if_name, vlan_filter=tokens[7])
 
     @match("interface", "ethernet", ANY, "switchport", "native", "vlan", ANY)
     def normalize_switchport_native(self, tokens):
         if_name = self.interface_name(tokens[1], tokens[2])
-        yield self.make_switchport_native(
-            interface=if_name,
-            unit=if_name,
-            vlan_id=tokens[6]
-        )
+        yield self.make_switchport_native(interface=if_name, unit=if_name, vlan_id=tokens[6])
 
     @match("interface", "ethernet", ANY, "lldp", "admin-status", ANY)
     def normalize_interface_lldp_admin_status(self, tokens):
@@ -125,10 +100,7 @@ class ESNormalizer(BaseNormalizer):
     @match("vlan", "database", "vlan", ANY, "name", ANY, "media", "ethernet")
     @match("vlan", "database", "VLAN", ANY, "name", ANY, "media", "ethernet")
     def normalize_vlan_name(self, tokens):
-        yield self.make_vlan_name(
-            vlan_id=tokens[3],
-            name=tokens[5]
-        )
+        yield self.make_vlan_name(vlan_id=tokens[3], name=tokens[5])
 
     # @match("vlan", "database", "vlan", ANY, "media", "ethernet", "state", "active")
     @match("vlan", "database", "vlan", ANY, "media", "ethernet")
@@ -141,17 +113,12 @@ class ESNormalizer(BaseNormalizer):
     def normalize_vlan_ip(self, tokens):
         if_name = self.interface_name(tokens[1], tokens[2])
         yield self.make_unit_inet_address(
-            interface=if_name,
-            unit=if_name,
-            address=self.to_prefix(tokens[5], tokens[6])
+            interface=if_name, unit=if_name, address=self.to_prefix(tokens[5], tokens[6])
         )
 
     @match("ip", "default-gateway", ANY)
     def normalize_default_gateway(self, tokens):
-        yield self.make_inet_static_route_next_hop(
-            route="0.0.0.0/0",
-            next_hop=tokens[2]
-        )
+        yield self.make_inet_static_route_next_hop(route="0.0.0.0/0", next_hop=tokens[2])
 
     @match("spanning-tree")
     def normalize_spanning_tree(self, tokens):

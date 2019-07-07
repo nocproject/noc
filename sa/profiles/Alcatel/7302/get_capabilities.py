@@ -21,9 +21,9 @@ class Script(BaseScript):
             # MSTP Check
             mstp = self.cli("show mstp port-instance")
             if "instance count : 0" in mstp or "port-instance count : 0" in mstp:
-                print("False")
+                print ("False")
                 return False
-            print("True")
+            print ("True")
             return True
         except self.CLISyntaxError:
             pass
@@ -39,7 +39,11 @@ class Script(BaseScript):
         :return:
         """
         r = self.cli("show equipment slot")
-        return [p[0].split("/")[-1] for p in parse_table(r) if p[0].startswith("lt") and p[3] == "no-error"]
+        return [
+            p[0].split("/")[-1]
+            for p in parse_table(r)
+            if p[0].startswith("lt") and p[3] == "no-error"
+        ]
 
     def execute_platform_cli(self, caps):
         s = self.has_stack()

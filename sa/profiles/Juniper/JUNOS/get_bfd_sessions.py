@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
@@ -25,7 +26,7 @@ class Script(BaseScript):
         "ISIS": "ISIS",
         "OSPF": "OSPF",
         "BGP": "BGP",
-        "PIM": "PIM"
+        "PIM": "PIM",
     }
 
     rx_session = re.compile(
@@ -35,10 +36,9 @@ class Script(BaseScript):
         r"^\s+Client\s+(?P<client>(?:%s)(?:\s+(?:%s))*).+?\n"
         r".+?"
         r"^\s+Local discriminator (?P<local_discriminator>\d+), "
-        r"remote discriminator (?P<remote_discriminator>\d+)" % (
-            "|".join(client_map), "|".join(client_map)
-        ),
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        r"remote discriminator (?P<remote_discriminator>\d+)"
+        % ("|".join(client_map), "|".join(client_map)),
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
     def execute(self):
@@ -47,23 +47,20 @@ class Script(BaseScript):
         for bs in find_indented(s):
             match = self.rx_session.search(bs)
             if match:
-                r += [{
-                    # "local_address": IPParameter(),
-                    "remote_address": match.group("remote_address"),
-                    "local_interface": match.group("local_interface"),
-                    "local_discriminator": int(
-                        match.group("local_discriminator")
-                    ),
-                    "remote_discriminator": int(
-                        match.group("remote_discriminator")
-                    ),
-                    "state": match.group("state").upper(),
-                    "clients": [self.client_map[c] for c in match.group(
-                        "client").split()],
-                    # Transmit interval, microseconds
-                    "tx_interval": float(match.group("transmit")) * 1000000,
-                    "multiplier": int(match.group("multiplier")),
-                    # Detection time, microseconds
-                    "detect_time": float(match.group("detect_time")) * 1000000
-                }]
+                r += [
+                    {
+                        # "local_address": IPParameter(),
+                        "remote_address": match.group("remote_address"),
+                        "local_interface": match.group("local_interface"),
+                        "local_discriminator": int(match.group("local_discriminator")),
+                        "remote_discriminator": int(match.group("remote_discriminator")),
+                        "state": match.group("state").upper(),
+                        "clients": [self.client_map[c] for c in match.group("client").split()],
+                        # Transmit interval, microseconds
+                        "tx_interval": float(match.group("transmit")) * 1000000,
+                        "multiplier": int(match.group("multiplier")),
+                        # Detection time, microseconds
+                        "detect_time": float(match.group("detect_time")) * 1000000,
+                    }
+                ]
         return r

@@ -24,11 +24,7 @@ class Profile(BaseProfile):
     command_more = " "
     rogue_chars = [re.compile(r"\r\s+\r"), "\r"]
     config_tokenizer = "indent"
-    config_tokenizer_settings = {
-        "line_comment": "#",
-        "end_of_context": "exit",
-        "string_quote": "\""
-    }
+    config_tokenizer_settings = {"line_comment": "#", "end_of_context": "exit", "string_quote": '"'}
 
     def convert_interface_name(self, s):
         if "," in s:

@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -39,6 +40,6 @@ class Script(BaseScript):
             "attributes": {
                 "Bootrom version": bmatch.group("bversion"),
                 "HW version": hmatch.group("hversion"),
-                "Serial Number": smatch.group("serial")
-            }
+                "Serial Number": smatch.group("serial"),
+            },
         }

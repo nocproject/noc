@@ -21,6 +21,6 @@ class Script(BaseScript):
             self.cli("vlan %d" % vlan_id)
             self.cli("exit")
             self.cli("interface vlan %d" % vlan_id)
-            self.cli("name \"%s\"" % name)
+            self.cli('name "%s"' % name)
         self.save_config()
         return True

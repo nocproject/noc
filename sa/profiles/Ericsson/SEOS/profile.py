@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -17,10 +18,10 @@ class Profile(BaseProfile):
     """
     For correct polling on snmp it is necessary to enable "snmp extended read" in settings
     """
+
     name = "Ericsson.SEOS"
     pattern_more = "^---(more)---"
-    pattern_unprivileged_prompt = \
-        r"^(?:\[(?P<context>\S+)\])?(?P<hostname>\S+)>"
+    pattern_unprivileged_prompt = r"^(?:\[(?P<context>\S+)\])?(?P<hostname>\S+)>"
     pattern_prompt = r"^(?:\[(?P<context>\S+)\])?(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Invalid input at|% ERROR Invalid input detected"
     command_disable_pager = "terminal length 0"

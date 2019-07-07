@@ -16,13 +16,12 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(
-        r"Software Version: (?P<platform>\S+) Ver:(?P<version>\S+)")
+    rx_ver = re.compile(r"Software Version: (?P<platform>\S+) Ver:(?P<version>\S+)")
 
     def execute(self):
         match = self.rx_ver.search(self.cli("show system", cached=True))
         return {
             "vendor": "Carelink",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
         }

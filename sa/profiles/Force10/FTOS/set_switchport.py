@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.isetswitchport import ISetSwitchport
@@ -17,28 +18,22 @@ class Script(BaseScript):
     name = "Force10.FTOS.set_switchport"
     interface = ISetSwitchport
 
-    def execute(self, configs, protect_switchport=True, protect_type=True,
-                debug=False):
+    def execute(self, configs, protect_switchport=True, protect_type=True, debug=False):
         def is_access(c):
             return "untagged" in c and ("tagged" not in c or not c["tagged"])
 
         # Get existing switchports. interface -> config
-        ports = dict((p["interface"], p)
-                     for p in self.scripts.get_switchport())
+        ports = dict((p["interface"], p) for p in self.scripts.get_switchport())
         # Validate restrictions
         errors = []
         for c in configs:
             iface = c["interface"]
             if protect_switchport and iface not in ports:
                 errors += ["Interface '%s' is not switchport" % iface]
-            if (protect_type and
-                is_access(c) != is_access(ports[iface])):
+            if protect_type and is_access(c) != is_access(ports[iface]):
                 errors += ["Invalid port type for interface '%s'" % iface]
         if errors:
-            return {
-                "status": False,
-                "message": ".\n".join(errors)
-            }
+            return {"status": False, "message": ".\n".join(errors)}
         # Prepare scenario
         commands = []
         add_untagged = defaultdict(list)  # vlan -> interfaces
@@ -55,9 +50,11 @@ class Script(BaseScript):
                 ports[iface] = {"status": False, "tagged": []}
             p = ports[iface]
             # Check description
-            if ("description" in c and c["description"] and
-                ("description" not in p or
-                 c["description"] != p["description"])):
+            if (
+                "description" in c
+                and c["description"]
+                and ("description" not in p or c["description"] != p["description"])
+            ):
                 ic += [" description %s" % c["description"]]
             # Check status
             if c["status"] and not p["status"]:
@@ -83,8 +80,7 @@ class Script(BaseScript):
                 add_untagged[c["untagged"]] += [iface]
             else:
                 # Configuring trunk port
-                if ("untagged" in p and
-                    ("untagged" not in c or p["untagged"] != c["untagged"])):
+                if "untagged" in p and ("untagged" not in c or p["untagged"] != c["untagged"]):
                     remove_untagged[p["untagged"]] += [iface]
                 if "untagged" in c:
                     add_untagged[c["untagged"]] += [iface]
@@ -100,10 +96,9 @@ class Script(BaseScript):
         if 1 in remove_tagged:
             del remove_tagged[1]
         # Process VLAN mappings
-        vlans = sorted(set(
-            list(add_untagged) + list(add_tagged) +
-            list(remove_untagged) + list(remove_tagged)
-        ))
+        vlans = sorted(
+            set(list(add_untagged) + list(add_tagged) + list(remove_untagged) + list(remove_tagged))
+        )
         # Remove interfaces
         for v in vlans:
             vc = []
@@ -133,8 +128,4 @@ class Script(BaseScript):
                     self.cli(c)
             self.save_config()
         # Return result
-        return {
-            "status": True,
-            "message": "Ok",
-            "log": "\n".join(commands)
-        }
+        return {"status": True, "message": "Ok", "log": "\n".join(commands)}

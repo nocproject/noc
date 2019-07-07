@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,17 +21,14 @@ class Script(BaseScript):
 
     rx_iface = re.compile(r"Interface\s+(?P<iface>\S+)")
 
-    types = {
-        "gi": "physical",
-        "te": "physical",
-        "po": "aggregated",
-        "br": "SVI",
-    }
+    types = {"gi": "physical", "te": "physical", "po": "aggregated", "br": "SVI"}
 
     def execute(self, interface=None):
         stp = []
         c = self.cli("show spanning-tree active", cached=True)
-        for ifname, state, prio, cost, status, role, portfast, ptype in parse_table(c, allow_wrap=True):
+        for ifname, state, prio, cost, status, role, portfast, ptype in parse_table(
+            c, allow_wrap=True
+        ):
             stp += [ifname]
         vrrp = []
         c = self.cli("show vrrp", cached=True)
@@ -70,7 +68,7 @@ class Script(BaseScript):
                 "mtu": mtu,
                 "mac": mac,
                 "enabled_afi": [],
-                "enabled_protocols": []
+                "enabled_protocols": [],
             }
             if ip_addresses.get(ifname):
                 sub["enabled_afi"] += ["IPv4"]
@@ -98,11 +96,11 @@ class Script(BaseScript):
                 "oper_status": lstate == "Up",
                 "mac": mac,
                 "enabled_protocols": ["NDP"],
-                "subinterfaces": [sub]
+                "subinterfaces": [sub],
             }
             if description:
                 iface["description"] = description
             if ifname in stp:
                 iface["enabled_protocols"] += ["STP"]
             interfaces += [iface]
-        return [{'interfaces': interfaces}]
+        return [{"interfaces": interfaces}]
