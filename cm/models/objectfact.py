@@ -16,7 +16,7 @@ from mongoengine.fields import StringField, DictField, DateTimeField, UUIDField
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 
 
 @six.python_2_unicode_compatible

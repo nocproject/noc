@@ -17,7 +17,7 @@ from mongoengine.fields import StringField, ListField, EmbeddedDocumentField
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from .firmware import Firmware
 from .platform import Platform
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.lib.text import split_alnum
 
 

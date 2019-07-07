@@ -9,14 +9,16 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
 import cachetools
+
 # NOC modules
 from noc.aaa.models.group import Group
-from noc.lib.nosql import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 
 id_lock = Lock()
@@ -44,20 +46,13 @@ class AuthLDAPGroup(EmbeddedDocument):
 @on_save
 @six.python_2_unicode_compatible
 class AuthLDAPDomain(Document):
-    meta = {
-        "collection": "noc.authldapdomain"
-    }
+    meta = {"collection": "noc.authldapdomain"}
 
     name = StringField(unique=True)
     is_active = BooleanField()
     is_default = BooleanField()
     description = StringField()
-    type = StringField(
-        choices=[
-            ("ldap", "LDAP"),
-            ("ad", "Active Directory")
-        ]
-    )
+    type = StringField(choices=[("ldap", "LDAP"), ("ad", "Active Directory")])
     # Bind root
     root = StringField()
     # Users search tree
@@ -88,12 +83,7 @@ class AuthLDAPDomain(Document):
     groups = ListField(EmbeddedDocumentField(AuthLDAPGroup))
     # Convert username
     convert_username = StringField(
-        choices=[
-            ("0", "As-is"),
-            ("l", "Lowercase"),
-            ("u", "Uppercase")
-        ],
-        default="l"
+        choices=[("0", "As-is"), ("l", "Lowercase"), ("u", "Uppercase")], default="l"
     )
     # Synchronize first_name/last_name with LDAP
     sync_name = BooleanField(default=False)
@@ -102,25 +92,17 @@ class AuthLDAPDomain(Document):
 
     DEFAULT_USER_SEARCH_FILTER = {
         "ldap": "(&(objectClass=posixAccount)(uid=%(user)s))",
-        "ad": "(samAccountName=%(user)s)"
+        "ad": "(samAccountName=%(user)s)",
     }
 
     DEFAULT_GROUP_SEARCH_FILTER = {
         "ldap": "(&(objectClass=posixGroup)(memberUid=%(user)s))",
-        "ad": "(&(objectClass=group)(member=%(user_dn)s))"
+        "ad": "(&(objectClass=group)(member=%(user_dn)s))",
     }
 
     DEFAULT_ATTR_MAPPING = {
-        "ad": {
-            "givenName": "first_name",
-            "sn": "last_name",
-            "mail": "email"
-        },
-        "ldap": {
-            "givenName": "first_name",
-            "sn": "last_name",
-            "mail": "email"
-        }
+        "ad": {"givenName": "first_name", "sn": "last_name", "mail": "email"},
+        "ldap": {"givenName": "first_name", "sn": "last_name", "mail": "email"},
     }
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -131,39 +113,28 @@ class AuthLDAPDomain(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return AuthLDAPDomain.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_name_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return AuthLDAPDomain.objects.filter(name=name).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_default_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
     def get_default_domain(cls):
         return AuthLDAPDomain.objects.filter(is_default=True).first()
 
     def on_save(self):
         if self.is_default and (
-                not hasattr(self, "_changed_fields") or
-                "is_default" in self._changed_fields
+            not hasattr(self, "_changed_fields") or "is_default" in self._changed_fields
         ):
             # Only one default domain permitted
-            AuthLDAPDomain._get_collection().update_many({
-                "is_default": True,
-                "_id": {
-                    "$ne": self.id
-                }
-            }, {
-                "$set": {
-                    "is_default": False
-                }
-            })
+            AuthLDAPDomain._get_collection().update_many(
+                {"is_default": True, "_id": {"$ne": self.id}}, {"$set": {"is_default": False}}
+            )
 
     def get_user_search_filter(self):
         if self.user_search_filter:

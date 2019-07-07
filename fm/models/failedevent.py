@@ -18,7 +18,7 @@ from mongoengine.fields import DateTimeField, StringField, EmbeddedDocumentField
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import ForeignKeyField, RawDictField
+from noc.core.mongo.fields import ForeignKeyField, RawDictField
 from .eventlog import EventLog
 
 

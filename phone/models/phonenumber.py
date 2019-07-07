@@ -10,19 +10,21 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, ListField, ObjectIdField
 from mongoengine.errors import ValidationError
 import cachetools
+
 # NOC modules
 from .phonerange import PhoneRange
 from .numbercategory import NumberCategory
 from noc.sa.models.service import Service
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.lib.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.wf.models.state import State
@@ -45,8 +47,8 @@ class PhoneNumber(Document):
             "static_service_groups",
             "effective_service_groups",
             "static_client_groups",
-            "effective_client_groups"
-        ]
+            "effective_client_groups",
+        ],
     }
 
     number = StringField()
@@ -67,8 +69,8 @@ class PhoneNumber(Document):
             ("MGCP", "MGCP"),
             ("H247", "H.247"),
             ("ISDN", "ISDN"),
-            ("Skinny", "Skinny")
-        ]
+            ("Skinny", "Skinny"),
+        ],
     )
     # Auto-change status to F after *allocated_till*
     allocated_till = DateTimeField()
@@ -88,8 +90,7 @@ class PhoneNumber(Document):
         return self.number
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return PhoneNumber.objects.filter(id=id).first()
 
@@ -101,8 +102,7 @@ class PhoneNumber(Document):
             raise ValidationError("Empty phone number")
         # Change parent
         self.phone_range = PhoneRange.get_closest_range(
-            dialplan=self.dialplan,
-            from_number=self.number
+            dialplan=self.dialplan, from_number=self.number
         )
         # Set profile when necessary
         if not self.profile:

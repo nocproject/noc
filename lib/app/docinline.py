@@ -8,16 +8,23 @@
 
 # Python modules
 from functools import reduce
+
 # Third-party modules
 import six
 from mongoengine.fields import StringField, IntField, BooleanField, GeoPointField
 from mongoengine.queryset import Q
 from mongoengine.errors import NotUniqueError
 from bson import ObjectId
+
 # NOC modules
-from noc.sa.interfaces.base import BooleanParameter, IntParameter, InterfaceTypeError, DocumentParameter
+from noc.sa.interfaces.base import (
+    BooleanParameter,
+    IntParameter,
+    InterfaceTypeError,
+    DocumentParameter,
+)
 from noc.lib.validators import is_int
-from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
 
 class DocInline(object):
@@ -85,7 +92,7 @@ class DocInline(object):
             method=["GET"],
             url="^(?P<parent>[^/]+)/%s/$" % name,
             access="read",
-            api=True
+            api=True,
         )
         # Add Create handler
         app.add_view(
@@ -94,7 +101,7 @@ class DocInline(object):
             method=["POST"],
             url="^(?P<parent>[^/]+)/%s/$" % name,
             access="create",
-            api=True
+            api=True,
         )
         # Add Read Handler
         app.add_view(
@@ -103,7 +110,7 @@ class DocInline(object):
             method=["GET"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>[^/]+)/?$" % name,
             access="read",
-            api=True
+            api=True,
         )
         # Add Update Handler
         app.add_view(
@@ -112,7 +119,7 @@ class DocInline(object):
             method=["PUT"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>[^/]+)/?$" % name,
             access="update",
-            api=True
+            api=True,
         )
         # Add Delete Handler
         app.add_view(
@@ -121,7 +128,7 @@ class DocInline(object):
             method=["DELETE"],
             url="^(?P<parent>[^/]+)/%s/(?P<id>[^/]+)/?$" % name,
             access="delete",
-            api=True
+            api=True,
         )
 
     def set_app(self, app):
@@ -139,6 +146,7 @@ class DocInline(object):
 
     def get_custom_fields(self):
         from noc.main.models.customfield import CustomField
+
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_Q(self, request, query):
@@ -153,8 +161,9 @@ class DocInline(object):
                 return f
 
         q = reduce(
-            lambda x, y: x | Q(**{get_q(y): query}), self.query_fields[1:],
-            Q(**{get_q(self.query_fields[0]): query})
+            lambda x, y: x | Q(**{get_q(y): query}),
+            self.query_fields[1:],
+            Q(**{get_q(self.query_fields[0]): query}),
         )
         if self.int_query_fields and is_int(query):
             v = int(query)
@@ -202,10 +211,15 @@ class DocInline(object):
             else:
                 np, lt = p, None
                 # Skip ignored params
-            if np in self.ignored_params or p in (self.limit_param, self.page_param,
-                                                  self.start_param, self.format_param,
-                                                  self.sort_param, self.query_param,
-                                                  self.only_param):
+            if np in self.ignored_params or p in (
+                self.limit_param,
+                self.page_param,
+                self.start_param,
+                self.format_param,
+                self.sort_param,
+                self.query_param,
+                self.only_param,
+            ):
                 continue
             v = q[p]
             if v == "\x00":
@@ -215,10 +229,11 @@ class DocInline(object):
                 # Unroll __referred
                 app, fn = v.split("__", 1)
                 model = self.app.site.apps[app].model
-                extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
-                    self.model._meta.db_table, self.model._meta.pk.name,
+                extra_where = '%s."%s" IN (SELECT "%s" FROM %s)' % (
+                    self.model._meta.db_table,
+                    self.model._meta.pk.name,
                     model._meta.get_field(fn).attname,
-                    model._meta.db_table
+                    model._meta.db_table,
                 )
                 if None in nq:
                     nq[None] += [extra_where]
@@ -263,9 +278,9 @@ class DocInline(object):
                     else:
                         v = str(v)
                 elif (
-                    not isinstance(v, six.integer_types) and
-                    not isinstance(v, six.string_types) and
-                    not isinstance(v, bool)
+                    not isinstance(v, six.integer_types)
+                    and not isinstance(v, six.string_types)
+                    and not isinstance(v, bool)
                 ):
                     if hasattr(v, "id"):
                         v = v.id
@@ -314,7 +329,7 @@ class DocInline(object):
         if format == "ext":
             total = data.count()
         if start is not None and limit is not None:
-            data = data[int(start):int(start) + int(limit)]
+            data = data[int(start) : int(start) + int(limit)]
         out = [formatter(o, fields=only) for o in data]
         if format == "ext":
             out = {"total": total, "success": True, "data": out}
@@ -329,12 +344,8 @@ class DocInline(object):
             attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                },
-                status=self.app.BAD_REQUEST
+                {"status": False, "message": "Bad request", "traceback": str(e)},
+                status=self.app.BAD_REQUEST,
             )
         try:
             # Exclude callable values from query
@@ -344,17 +355,11 @@ class DocInline(object):
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Duplicated record"
-                }, status=self.CONFLICT
+                {"status": False, "message": "Duplicated record"}, status=self.CONFLICT
             )
         except self.model.MultipleObjectsReturned:
             return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Duplicated record"
-                }, status=self.CONFLICT
+                {"status": False, "message": "Duplicated record"}, status=self.CONFLICT
             )
         except self.model.DoesNotExist:
             attrs[self.parent_rel] = parent
@@ -363,10 +368,7 @@ class DocInline(object):
                 o.save()
             except NotUniqueError:
                 return self.app.render_json(
-                    {
-                        "status": False,
-                        "message": "Integrity error"
-                    }, status=self.CONFLICT
+                    {"status": False, "message": "Integrity error"}, status=self.CONFLICT
                 )
             format = request.GET.get(self.format_param)
             if format == "ext":
@@ -394,21 +396,13 @@ class DocInline(object):
             attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                },
-                status=self.BAD_REQUEST
+                {"status": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
             )
         except InterfaceTypeError as e:
             return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Bad request",
-                    "traceback": str(e)
-                },
-                status=self.BAD_REQUEST
+                {"status": False, "message": "Bad request", "traceback": str(e)},
+                status=self.BAD_REQUEST,
             )
         try:
             o = self.queryset(request).get(id=ObjectId(id))
@@ -421,10 +415,7 @@ class DocInline(object):
             o.save()
         except NotUniqueError:
             return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Integrity error"
-                }, status=self.CONFLICT
+                {"status": False, "message": "Integrity error"}, status=self.CONFLICT
             )
         return self.app.response(status=self.OK)
 
@@ -434,10 +425,7 @@ class DocInline(object):
             o = self.queryset(request).get(**q)
         except self.model.DoesNotExist:
             return self.app.render_json(
-                {
-                    "status": False,
-                    "message": "Not found"
-                }, status=self.NOT_FOUND
+                {"status": False, "message": "Not found"}, status=self.NOT_FOUND
             )
         o.delete()  # @todo: Detect errors
         return self.app.response("", status=self.DELETED)

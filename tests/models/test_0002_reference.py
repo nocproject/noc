@@ -8,11 +8,13 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 from django.db.models import ForeignKey
 import pytest
+
 # NOC modules
-from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.model.fields import DocumentReferenceField
 from noc.models import is_document, iter_model_id, get_model
 
@@ -49,7 +51,9 @@ def iter_referred_models():
 
 @pytest.mark.parametrize("model,refs", iter_referred_models())
 def test_on_delete_check(model, refs):
-    assert hasattr(model, "_on_delete"), "Must have @on_delete_check decorator (Referenced from %s)" % refs
+    assert hasattr(model, "_on_delete"), (
+        "Must have @on_delete_check decorator (Referenced from %s)" % refs
+    )
     x_checks = set(model._on_delete["check"])
     x_checks |= set(model._on_delete["clean"])
     x_checks |= set(model._on_delete["delete"])
@@ -67,4 +71,10 @@ def test_on_delete_check_reference(model, remote_model, remote_field):
     x_checks |= set(model._on_delete["clean"])
     x_checks |= set(model._on_delete["delete"])
     x_checks |= set(model._on_delete["ignore"])
-    assert (remote_model, remote_field) in x_checks, "@on_delete_check decorator must refer to (\"%s\", \"%s\")" % (remote_model, remote_field)
+    assert (
+        remote_model,
+        remote_field,
+    ) in x_checks, '@on_delete_check decorator must refer to ("%s", "%s")' % (
+        remote_model,
+        remote_field,
+    )

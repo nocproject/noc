@@ -9,17 +9,19 @@
 # Python modules
 import operator
 from threading import Lock
+
 # Third-party modules
 import six
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, ListField, EmbeddedDocumentField, FloatField
 import cachetools
+
 # NOC modules
 from noc.main.models.template import Template
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclass import EventClass
 from noc.core.window import wf_choices
-from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.window import get_window_function
 
 
@@ -55,10 +57,10 @@ class ThresholdConfig(EmbeddedDocument):
         :return:
         """
         return (
-            (self.op == "<" and value < self.value) or
-            (self.op == "<=" and value <= self.value) or
-            (self.op == ">=" and value >= self.value) or
-            (self.op == ">" and value > self.value)
+            (self.op == "<" and value < self.value)
+            or (self.op == "<=" and value <= self.value)
+            or (self.op == ">=" and value >= self.value)
+            or (self.op == ">" and value > self.value)
         )
 
     def is_clear_match(self, value):
@@ -68,10 +70,10 @@ class ThresholdConfig(EmbeddedDocument):
         :return:
         """
         return (
-            (self.clear_op == "<" and value < self.clear_value) or
-            (self.clear_op == "<=" and value <= self.clear_value) or
-            (self.clear_op == ">=" and value >= self.clear_value) or
-            (self.clear_op == ">" and value > self.clear_value)
+            (self.clear_op == "<" and value < self.clear_value)
+            or (self.clear_op == "<=" and value <= self.clear_value)
+            or (self.clear_op == ">=" and value >= self.clear_value)
+            or (self.clear_op == ">" and value > self.clear_value)
         )
 
     @property
@@ -82,11 +84,7 @@ class ThresholdConfig(EmbeddedDocument):
 # @todo: on_delete_check
 @six.python_2_unicode_compatible
 class ThresholdProfile(Document):
-    meta = {
-        "collection": "thresholdprofiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "thresholdprofiles", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
@@ -94,13 +92,7 @@ class ThresholdProfile(Document):
     umbrella_filter_handler = StringField()
     # Window function settings
     # Window depth
-    window_type = StringField(
-        max_length=1,
-        choices=[
-            ("m", "Measurements"),
-            ("t", "Time")
-        ]
-    )
+    window_type = StringField(max_length=1, choices=[("m", "Measurements"), ("t", "Time")])
     # Window size. Depends on window type
     # * m - amount of measurements
     # * t - time in seconds

@@ -17,7 +17,7 @@ from mongoengine.fields import StringField, ListField, IntField, LongField, Bool
 import cachetools
 
 # NOC models
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow

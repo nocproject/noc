@@ -9,16 +9,18 @@
 # Python modules
 from threading import Lock
 import operator
+
 # Third-party modules
 import six
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField, BooleanField
 import cachetools
+
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
-from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 
@@ -26,17 +28,12 @@ id_lock = Lock()
 
 
 @bi_sync
-@on_delete_check(check=[
-    ("vc.VLAN", "profile"),
-    ("inv.NetworkSegmentProfile", "default_vlan_profile")
-])
+@on_delete_check(
+    check=[("vc.VLAN", "profile"), ("inv.NetworkSegmentProfile", "default_vlan_profile")]
+)
 @six.python_2_unicode_compatible
 class VLANProfile(Document):
-    meta = {
-        "collection": "vlanprofiles",
-        "strict": False,
-        "auto_create_index": False
-    }
+    meta = {"collection": "vlanprofiles", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
     description = StringField()
